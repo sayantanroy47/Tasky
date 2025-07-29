@@ -93,9 +93,14 @@ class SubTask extends Equatable {
 
   /// Marks this subtask as not completed
   SubTask markIncomplete() {
-    return copyWith(
+    return SubTask(
+      id: id,
+      taskId: taskId,
+      title: title,
       isCompleted: false,
       completedAt: null,
+      sortOrder: sortOrder,
+      createdAt: createdAt,
     );
   }
 

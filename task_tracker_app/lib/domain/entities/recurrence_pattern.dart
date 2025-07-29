@@ -183,7 +183,7 @@ class RecurrencePattern extends Equatable {
   }
 
   /// Calculates the next monthly occurrence
-  DateTime _getNextMonthlyOccurrence(DateTime currentDate) {
+  DateTime? _getNextMonthlyOccurrence(DateTime currentDate) {
     if (daysOfWeek == null || daysOfWeek!.isEmpty) {
       // Same day of month
       final nextMonth = DateTime(
@@ -232,7 +232,7 @@ class RecurrencePattern extends Equatable {
         currentDate.second,
       );
     } catch (e) {
-      // Invalid date, return null
+      // Invalid date, return null for this occurrence
       return null;
     }
   }

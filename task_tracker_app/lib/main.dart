@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/theme/app_theme.dart';
 import 'core/constants/app_constants.dart';
-import 'presentation/pages/home_page.dart';
+import 'core/providers/theme_provider.dart';
+import 'core/routing/app_router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,21 +15,42 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
   
-  runApp(const TaskTrackerApp());
+  runApp(
+    const ProviderScope(
+      child: TaskTrackerApp(),
+    ),
+  );
 }
 
-class TaskTrackerApp extends StatelessWidget {
+class TaskTrackerApp extends ConsumerWidget {
   const TaskTrackerApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeState = ref.watch(themeProvider);
+    
     return MaterialApp(
       title: AppConstants.appName,
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.system,
-      home: const HomePage(),
+      theme: _getTheme(themeState, false),
+      darkTheme: _getTheme(themeState, true),
+      themeMode: themeState.themeMode.themeMode,
+      initialRoute: AppRouter.initialRoute,
+      onGenerateRoute: AppRouter.generateRoute,
     );
+  }
+
+  /// Get appropriate theme based on theme state and brightness
+  ThemeData _getTheme(ThemeState themeState, bool isDark) {
+    switch (themeState.themeMode) {
+      case AppThemeMode.highContrastLight:
+        return AppTheme.highContrastLightTheme;
+      case AppThemeMode.highContrastDark:
+        return AppTheme.highContrastDarkTheme;
+      case AppThemeMode.system:
+      case AppThemeMode.light:
+      case AppThemeMode.dark:
+        return isDark ? AppTheme.darkTheme : AppTheme.lightTheme;
+    }
   }
 }

@@ -11,11 +11,14 @@
   - Verify compilation and basic app launch on both Android and iOS
   - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 1.10_
 
-- [-] 2. Implement core data models and database foundation
+- [x] 2. Implement core data models and database foundation
 
 
 
-  - [-] 2.1 Create core data model classes
+
+
+  - [x] 2.1 Create core data model classes
+
 
     - Implement TaskModel, SubTask, Project, and related enums
     - Add JSON serialization/deserialization methods
@@ -23,36 +26,51 @@
     - Write comprehensive unit tests for all data models
     - _Requirements: 4.1, 4.2, 5.1, 7.1, 7.2, 7.5_
 
-  - [ ] 2.2 Set up local database with Drift/SQLite
+  - [x] 2.2 Set up local database with Drift/SQLite
+
+
     - Define database schema with all required tables
     - Implement database connection and migration logic
     - Create Data Access Objects (DAOs) for CRUD operations
     - Write database integration tests
     - _Requirements: 4.1, 4.2, 4.3, 4.4_
 
-  - [ ] 2.3 Implement repository pattern for data access
+  - [x] 2.3 Implement repository pattern for data access
+
+
     - Create TaskRepository interface and implementation
     - Implement ProjectRepository and TagRepository
     - Add search and filtering capabilities
     - Write repository unit tests with mock database
     - _Requirements: 5.1, 5.2, 5.3, 15.1, 15.2, 15.3_
 
-- [ ] 3. Build basic UI foundation and theme system
-  - [ ] 3.1 Set up Material 3 theme system
+- [x] 3. Build basic UI foundation and theme system
+
+
+
+
+
+  - [x] 3.1 Set up Material 3 theme system
+
+
     - Implement light and dark theme configurations
     - Create custom color schemes and typography
     - Add theme switching functionality
     - Test theme consistency across different screens
     - _Requirements: 13.1, 13.2, 13.3, 13.4, 13.5, 13.6_
 
-  - [ ] 3.2 Create navigation structure and routing
+  - [x] 3.2 Create navigation structure and routing
+
+
     - Set up app routing with named routes
     - Implement bottom navigation or drawer navigation
     - Create basic screen scaffolds (Home, Tasks, Settings)
     - Add navigation state management with Riverpod
     - _Requirements: 12.1, 12.2, 12.3, 12.4_
 
-  - [ ] 3.3 Build core UI components and widgets
+  - [x] 3.3 Build core UI components and widgets
+
+
     - Create reusable task card widget
     - Implement custom buttons, input fields, and dialogs
     - Add loading states and error handling widgets
