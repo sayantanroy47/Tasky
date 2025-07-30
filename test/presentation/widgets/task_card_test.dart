@@ -65,15 +65,18 @@ void main() {
       // Wait for animations to complete
       await tester.pumpAndSettle();
 
-      // Find the AnimatedDefaultTextStyle widget and check its style
-      final animatedTextStyle = tester.widget<AnimatedDefaultTextStyle>(
-        find.byWidgetPredicate((widget) => 
-          widget is AnimatedDefaultTextStyle && 
-          widget.child is Text &&
-          (widget.child as Text).data == 'Test Task'
-        )
+      // Find the Text widget with the task title and check its style
+      final titleTextFinder = find.byWidgetPredicate((widget) => 
+        widget is RichText && 
+        widget.text is TextSpan &&
+        (widget.text as TextSpan).toPlainText().contains('Test Task')
       );
-      expect(animatedTextStyle.style.decoration, TextDecoration.lineThrough);
+      
+      expect(titleTextFinder, findsOneWidget);
+      
+      final richText = tester.widget<RichText>(titleTextFinder);
+      final textSpan = richText.text as TextSpan;
+      expect(textSpan.style?.decoration, TextDecoration.lineThrough);
     });
 
     testWidgets('should display due date when provided', (WidgetTester tester) async {

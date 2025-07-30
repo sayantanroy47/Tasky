@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/theme_selector.dart';
 import '../widgets/app_scaffold.dart';
+import '../widgets/analytics_widgets.dart';
+import '../providers/analytics_providers.dart';
+import '../../services/analytics/analytics_models.dart';
 
 /// Analytics page for viewing productivity metrics and insights
 class AnalyticsPage extends ConsumerWidget {
@@ -45,277 +48,327 @@ class AnalyticsPageBody extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final selectedPeriod = ref.watch(analyticsTimePeriodProvider);
+    
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Time period selector
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      'This Week',
-                      style: Theme.of(context).textTheme.headlineSmall,
-                    ),
-                  ),
-                  SegmentedButton<String>(
-                    segments: const [
-                      ButtonSegment(value: 'week', label: Text('Week')),
-                      ButtonSegment(value: 'month', label: Text('Month')),
-                      ButtonSegment(value: 'year', label: Text('Year')),
-                    ],
-                    selected: {'week'},
-                    onSelectionChanged: (selection) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('${selection.first} analytics coming soon!'),
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
+          TimePeriodSelector(
+            selectedPeriod: selectedPeriod,
+            onPeriodChanged: (period) {
+              ref.read(analyticsTimePeriodProvider.notifier).state = period;
+            },
           ),
           
           const SizedBox(height: 16),
           
           // Key metrics
-          Row(
-            children: [
-              Expanded(
-                child: _MetricCard(
-                  title: 'Completed',
-                  value: '24',
-                  subtitle: 'tasks this week',
-                  icon: Icons.check_circle,
-                  color: Colors.green,
-                  trend: '+12%',
-                  isPositive: true,
+          Consumer(
+            builder: (context, ref, child) {
+              final summaryAsync = ref.watch(analyticsSummaryProvider);
+              final metricsAsync = ref.watch(productivityMetricsProvider);
+              
+              return summaryAsync.when(
+                data: (summary) => metricsAsync.when(
+                  data: (metrics) => Column(
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: AnalyticsMetricCard(
+                              title: 'Completed',
+                              value: '${summary.completedTasks}',
+                              subtitle: 'tasks ${selectedPeriod.displayName.toLowerCase()}',
+                              icon: Icons.check_circle,
+                              color: Colors.green,
+                              trend: _calculateCompletionTrend(metrics),
+                              isPositiveTrend: _isPositiveCompletionTrend(metrics),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: AnalyticsMetricCard(
+                              title: 'Completion Rate',
+                              value: '${(summary.completionRate * 100).round()}%',
+                              subtitle: 'of all tasks',
+                              icon: Icons.trending_up,
+                              color: Colors.blue,
+                              trend: _calculateRateTrend(metrics),
+                              isPositiveTrend: _isPositiveRateTrend(metrics),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: AnalyticsMetricCard(
+                              title: 'Current Streak',
+                              value: '${summary.currentStreak}',
+                              subtitle: 'days active',
+                              icon: Icons.local_fire_department,
+                              color: Colors.orange,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: AnalyticsMetricCard(
+                              title: 'Avg Duration',
+                              value: _formatDuration(summary.averageTaskDuration),
+                              subtitle: 'per task',
+                              icon: Icons.schedule,
+                              color: Colors.purple,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  loading: () => const _LoadingMetrics(),
+                  error: (error, stack) => _ErrorWidget(error: error.toString()),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _MetricCard(
-                  title: 'Productivity',
-                  value: '87%',
-                  subtitle: 'completion rate',
-                  icon: Icons.trending_up,
-                  color: Colors.blue,
-                  trend: '+5%',
-                  isPositive: true,
-                ),
-              ),
-            ],
-          ),
-          
-          const SizedBox(height: 12),
-          
-          Row(
-            children: [
-              Expanded(
-                child: _MetricCard(
-                  title: 'Streak',
-                  value: '7',
-                  subtitle: 'days active',
-                  icon: Icons.local_fire_department,
-                  color: Colors.orange,
-                  trend: '+2 days',
-                  isPositive: true,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _MetricCard(
-                  title: 'Avg Time',
-                  value: '2.5h',
-                  subtitle: 'per task',
-                  icon: Icons.schedule,
-                  color: Colors.purple,
-                  trend: '-15min',
-                  isPositive: true,
-                ),
-              ),
-            ],
+                loading: () => const _LoadingMetrics(),
+                error: (error, stack) => _ErrorWidget(error: error.toString()),
+              );
+            },
           ),
           
           const SizedBox(height: 24),
           
-          // Charts section
-          Text(
-            'Productivity Trends',
-            style: Theme.of(context).textTheme.headlineSmall,
+          // Streak widget
+          Consumer(
+            builder: (context, ref, child) {
+              final streakAsync = ref.watch(streakInfoProvider);
+              return streakAsync.when(
+                data: (streak) => StreakWidget(streakInfo: streak),
+                loading: () => const Card(
+                  child: Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                ),
+                error: (error, stack) => _ErrorWidget(error: error.toString()),
+              );
+            },
           ),
+          
           const SizedBox(height: 16),
           
-          // Placeholder chart
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Daily Task Completion',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  const SizedBox(height: 16),
+          // Daily completion chart
+          Consumer(
+            builder: (context, ref, child) {
+              final dailyStatsAsync = ref.watch(dailyStatsProvider);
+              return dailyStatsAsync.when(
+                data: (dailyStats) {
+                  final values = dailyStats.map((stat) => stat.completedTasks.toDouble()).toList();
+                  final labels = dailyStats.map((stat) => _formatDateLabel(stat.date)).toList();
                   
-                  // Simple bar chart placeholder
-                  SizedBox(
-                    height: 200,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: List.generate(7, (index) {
-                        final height = [60, 80, 45, 90, 70, 85, 95][index];
-                        final day = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][index];
-                        
-                        return Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Container(
-                                  height: height.toDouble(),
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(context).colorScheme.primary,
-                                    borderRadius: const BorderRadius.vertical(
-                                      top: Radius.circular(4),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  day,
-                                  style: Theme.of(context).textTheme.bodySmall,
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      }),
-                    ),
+                  return SimpleBarChart(
+                    values: values,
+                    labels: labels,
+                    title: 'Daily Task Completion',
+                  );
+                },
+                loading: () => const Card(
+                  child: Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Center(child: CircularProgressIndicator()),
                   ),
-                ],
-              ),
-            ),
+                ),
+                error: (error, stack) => _ErrorWidget(error: error.toString()),
+              );
+            },
           ),
           
           const SizedBox(height: 16),
           
           // Category breakdown
-          Text(
-            'Task Categories',
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
-          const SizedBox(height: 16),
-          
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  _CategoryItem(
-                    name: 'Work',
-                    percentage: 45,
-                    color: Colors.blue,
-                    count: 18,
+          Consumer(
+            builder: (context, ref, child) {
+              final categoryAsync = ref.watch(categoryAnalyticsProvider);
+              return categoryAsync.when(
+                data: (categories) => CategoryBreakdownWidget(
+                  categories: categories,
+                  title: 'Task Categories',
+                ),
+                loading: () => const Card(
+                  child: Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Center(child: CircularProgressIndicator()),
                   ),
-                  const SizedBox(height: 12),
-                  _CategoryItem(
-                    name: 'Personal',
-                    percentage: 30,
-                    color: Colors.green,
-                    count: 12,
-                  ),
-                  const SizedBox(height: 12),
-                  _CategoryItem(
-                    name: 'Health',
-                    percentage: 15,
-                    color: Colors.orange,
-                    count: 6,
-                  ),
-                  const SizedBox(height: 12),
-                  _CategoryItem(
-                    name: 'Learning',
-                    percentage: 10,
-                    color: Colors.purple,
-                    count: 4,
-                  ),
-                ],
-              ),
-            ),
+                ),
+                error: (error, stack) => _ErrorWidget(error: error.toString()),
+              );
+            },
           ),
           
           const SizedBox(height: 16),
           
-          // Insights section
-          Text(
-            'Insights',
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
-          const SizedBox(height: 16),
-          
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _InsightItem(
-                    icon: Icons.lightbulb,
-                    title: 'Peak Productivity',
-                    description: 'You\'re most productive between 9 AM - 11 AM',
-                    color: Colors.amber,
+          // Productivity insights
+          Consumer(
+            builder: (context, ref, child) {
+              final metricsAsync = ref.watch(productivityMetricsProvider);
+              final hourlyAsync = ref.watch(hourlyProductivityProvider);
+              final weekdayAsync = ref.watch(weekdayProductivityProvider);
+              
+              return metricsAsync.when(
+                data: (metrics) => hourlyAsync.when(
+                  data: (hourly) => weekdayAsync.when(
+                    data: (weekday) => ProductivityInsightsWidget(
+                      metrics: metrics,
+                      hourlyProductivity: hourly,
+                      weekdayProductivity: weekday,
+                    ),
+                    loading: () => const Card(
+                      child: Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: Center(child: CircularProgressIndicator()),
+                      ),
+                    ),
+                    error: (error, stack) => _ErrorWidget(error: error.toString()),
                   ),
-                  const Divider(),
-                  _InsightItem(
-                    icon: Icons.trending_up,
-                    title: 'Improvement',
-                    description: 'Task completion rate improved by 12% this week',
-                    color: Colors.green,
+                  loading: () => const Card(
+                    child: Padding(
+                      padding: EdgeInsets.all(16.0),
+                      child: Center(child: CircularProgressIndicator()),
+                    ),
                   ),
-                  const Divider(),
-                  _InsightItem(
-                    icon: Icons.schedule,
-                    title: 'Time Management',
-                    description: 'Consider breaking down large tasks into smaller ones',
-                    color: Colors.blue,
+                  error: (error, stack) => _ErrorWidget(error: error.toString()),
+                ),
+                loading: () => const Card(
+                  child: Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Center(child: CircularProgressIndicator()),
                   ),
-                ],
-              ),
-            ),
+                ),
+                error: (error, stack) => _ErrorWidget(error: error.toString()),
+              );
+            },
           ),
         ],
       ),
     );
   }
+
+  String? _calculateCompletionTrend(ProductivityMetrics metrics) {
+    if (metrics.weeklyTrend.length >= 2) {
+      final current = metrics.weeklyTrend.last;
+      final previous = metrics.weeklyTrend[metrics.weeklyTrend.length - 2];
+      final diff = current - previous;
+      if (diff != 0) {
+        return '${diff > 0 ? '+' : ''}$diff';
+      }
+    }
+    return null;
+  }
+
+  bool? _isPositiveCompletionTrend(ProductivityMetrics metrics) {
+    if (metrics.weeklyTrend.length >= 2) {
+      final current = metrics.weeklyTrend.last;
+      final previous = metrics.weeklyTrend[metrics.weeklyTrend.length - 2];
+      return current > previous;
+    }
+    return null;
+  }
+
+  String? _calculateRateTrend(ProductivityMetrics metrics) {
+    final weeklyRate = (metrics.weeklyCompletionRate * 100).round();
+    final monthlyRate = (metrics.monthlyCompletionRate * 100).round();
+    final diff = weeklyRate - monthlyRate;
+    if (diff != 0) {
+      return '${diff > 0 ? '+' : ''}${diff}%';
+    }
+    return null;
+  }
+
+  bool? _isPositiveRateTrend(ProductivityMetrics metrics) {
+    return metrics.weeklyCompletionRate > metrics.monthlyCompletionRate;
+  }
+
+  String _formatDuration(double minutes) {
+    if (minutes < 60) {
+      return '${minutes.round()}m';
+    } else {
+      final hours = minutes / 60;
+      return '${hours.toStringAsFixed(1)}h';
+    }
+  }
+
+  String _formatDateLabel(DateTime date) {
+    final weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    return weekdays[date.weekday - 1];
+  }
 }
 
-/// Metric card widget
-class _MetricCard extends StatelessWidget {
-  final String title;
-  final String value;
-  final String subtitle;
-  final IconData icon;
-  final Color color;
-  final String trend;
-  final bool isPositive;
+/// Loading widget for metrics
+class _LoadingMetrics extends StatelessWidget {
+  const _LoadingMetrics();
 
-  const _MetricCard({
-    required this.title,
-    required this.value,
-    required this.subtitle,
-    required this.icon,
-    required this.color,
-    required this.trend,
-    required this.isPositive,
-  });
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Card(
+                child: Container(
+                  height: 120,
+                  padding: const EdgeInsets.all(16.0),
+                  child: const Center(child: CircularProgressIndicator()),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Card(
+                child: Container(
+                  height: 120,
+                  padding: const EdgeInsets.all(16.0),
+                  child: const Center(child: CircularProgressIndicator()),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: Card(
+                child: Container(
+                  height: 120,
+                  padding: const EdgeInsets.all(16.0),
+                  child: const Center(child: CircularProgressIndicator()),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Card(
+                child: Container(
+                  height: 120,
+                  padding: const EdgeInsets.all(16.0),
+                  child: const Center(child: CircularProgressIndicator()),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+/// Error widget for analytics
+class _ErrorWidget extends StatelessWidget {
+  final String error;
+
+  const _ErrorWidget({required this.error});
 
   @override
   Widget build(BuildContext context) {
@@ -323,48 +376,22 @@ class _MetricCard extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Icon(icon, color: color, size: 20),
-                const SizedBox(width: 8),
-                Text(
-                  title,
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-              ],
+            Icon(
+              Icons.error_outline,
+              color: Theme.of(context).colorScheme.error,
+              size: 48,
             ),
             const SizedBox(height: 8),
             Text(
-              value,
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                color: color,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              subtitle,
-              style: Theme.of(context).textTheme.bodySmall,
+              'Error loading analytics',
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 4),
-            Row(
-              children: [
-                Icon(
-                  isPositive ? Icons.arrow_upward : Icons.arrow_downward,
-                  size: 12,
-                  color: isPositive ? Colors.green : Colors.red,
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  trend,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: isPositive ? Colors.green : Colors.red,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
+            Text(
+              error,
+              style: Theme.of(context).textTheme.bodySmall,
+              textAlign: TextAlign.center,
             ),
           ],
         ),
@@ -373,98 +400,3 @@ class _MetricCard extends StatelessWidget {
   }
 }
 
-/// Category item widget
-class _CategoryItem extends StatelessWidget {
-  final String name;
-  final int percentage;
-  final Color color;
-  final int count;
-
-  const _CategoryItem({
-    required this.name,
-    required this.percentage,
-    required this.color,
-    required this.count,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          width: 12,
-          height: 12,
-          decoration: BoxDecoration(
-            color: color,
-            shape: BoxShape.circle,
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Text(name),
-        ),
-        Text(
-          '$count tasks',
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
-        const SizedBox(width: 16),
-        Text(
-          '$percentage%',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-/// Insight item widget
-class _InsightItem extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String description;
-  final Color color;
-
-  const _InsightItem({
-    required this.icon,
-    required this.title,
-    required this.description,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(icon, color: color, size: 20),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
-                Text(
-                  description,
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}

@@ -42,8 +42,8 @@ class CalendarPage extends ConsumerWidget {
             const SnackBar(content: Text('Schedule task functionality coming soon!')),
           );
         },
-        child: const Icon(Icons.add),
         tooltip: 'Schedule task',
+        child: const Icon(Icons.add),
       ),
     );
   }

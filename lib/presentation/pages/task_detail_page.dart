@@ -7,6 +7,7 @@ import '../widgets/app_scaffold.dart';
 import '../widgets/task_form_dialog.dart';
 import '../widgets/subtask_list.dart';
 import '../widgets/custom_dialogs.dart';
+import '../widgets/dependency_manager.dart';
 
 /// Task detail page showing full task information
 class TaskDetailPage extends ConsumerWidget {
@@ -171,6 +172,16 @@ class _TaskDetailView extends ConsumerWidget {
             
             // Subtasks section
             SubTaskList(task: task),
+            const SizedBox(height: 24),
+            
+            // Dependencies section
+            DependencyManager(
+              taskId: task.id,
+              onChanged: () {
+                // Refresh the task data when dependencies change
+                // This would trigger a rebuild with updated data
+              },
+            ),
             const SizedBox(height: 24),
             
             // Task metadata
@@ -591,7 +602,7 @@ class _StatusChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return Chip(
       label: Text(status.displayName),
-      backgroundColor: status.color.withOpacity(0.2),
+      backgroundColor: status.color.withValues(alpha: 0.2),
       side: BorderSide(color: status.color),
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
     );
@@ -608,7 +619,7 @@ class _PriorityChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return Chip(
       label: Text(priority.displayName),
-      backgroundColor: priority.color.withOpacity(0.2),
+      backgroundColor: priority.color.withValues(alpha: 0.2),
       side: BorderSide(color: priority.color),
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
     );

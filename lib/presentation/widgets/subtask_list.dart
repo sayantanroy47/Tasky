@@ -86,7 +86,7 @@ class _SubTaskListState extends ConsumerState<SubTaskList> {
                   onDelete: () => _deleteSubTask(subTask),
                   onReorder: widget.isEditable ? (newIndex) => _reorderSubTask(index, newIndex) : null,
                 );
-              }).toList(),
+              }),
             
             // Add new subtask section
             if (widget.isEditable) ...[
@@ -157,7 +157,7 @@ class _SubTaskListState extends ConsumerState<SubTaskList> {
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           border: Border.all(
-            color: theme.colorScheme.outline.withOpacity(0.5),
+            color: theme.colorScheme.outline.withValues(alpha: 0.1),
             style: BorderStyle.solid,
           ),
           borderRadius: BorderRadius.circular(8),
@@ -190,7 +190,7 @@ class _SubTaskListState extends ConsumerState<SubTaskList> {
           Icon(
             Icons.checklist,
             size: 48,
-            color: theme.colorScheme.onSurfaceVariant.withOpacity(0.5),
+            color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.1),
           ),
           const SizedBox(height: 12),
           Text(
@@ -203,7 +203,7 @@ class _SubTaskListState extends ConsumerState<SubTaskList> {
           Text(
             'Break down this task into smaller steps',
             style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
+              color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.1),
             ),
             textAlign: TextAlign.center,
           ),
@@ -288,9 +288,9 @@ class _SubTaskListState extends ConsumerState<SubTaskList> {
     // Update sort orders
     final updatedSubTasks = subTasks.asMap().entries.map((entry) {
       return entry.value.copyWith(sortOrder: entry.key);
-    }).toList();
+    });
 
-    final updatedTask = widget.task.copyWith(subTasks: updatedSubTasks);
+    final updatedTask = widget.task.copyWith(subTasks: updatedSubTasks.toList());
     ref.read(taskOperationsProvider).updateTask(updatedTask);
   }
 }
@@ -335,7 +335,7 @@ class _SubTaskItem extends StatelessWidget {
                   Icon(
                     Icons.drag_handle,
                     size: 16,
-                    color: theme.colorScheme.onSurfaceVariant.withOpacity(0.5),
+                    color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.1),
                   ),
                   const SizedBox(width: 8),
                 ],

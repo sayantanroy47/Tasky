@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../domain/entities/project.dart';
+import '../../domain/entities/project.dart' as domain;
 import '../../domain/repositories/project_repository.dart';
 import '../../domain/repositories/task_repository.dart';
 import '../../data/repositories/project_repository_impl.dart';
@@ -32,15 +32,15 @@ final projectServiceProvider = Provider<ProjectService>((ref) {
 });
 
 // State providers
-final projectsProvider = StateNotifierProvider<ProjectsNotifier, AsyncValue<List<Project>>>(
+final projectsProvider = StateNotifierProvider<ProjectsNotifier, AsyncValue<List<domain.Project>>>(
   (ref) => ProjectsNotifier(ref.read(projectServiceProvider)),
 );
 
-final activeProjectsProvider = StateNotifierProvider<ActiveProjectsNotifier, AsyncValue<List<Project>>>(
+final activeProjectsProvider = StateNotifierProvider<ActiveProjectsNotifier, AsyncValue<List<domain.Project>>>(
   (ref) => ActiveProjectsNotifier(ref.read(projectServiceProvider)),
 );
 
-final selectedProjectProvider = StateProvider<Project?>((ref) => null);
+final selectedProjectProvider = StateProvider<domain.Project?>((ref) => null);
 
 final projectStatsProvider = FutureProvider.family<ProjectStats, String>((ref, projectId) async {
   final projectService = ref.read(projectServiceProvider);
@@ -52,7 +52,7 @@ final projectsWithStatsProvider = FutureProvider<List<ProjectWithDetailedStats>>
   return await projectService.getProjectsWithDetailedStats();
 });
 
-final projectsAtRiskProvider = FutureProvider<List<Project>>((ref) async {
+final projectsAtRiskProvider = FutureProvider<List<domain.Project>>((ref) async {
   final projectService = ref.read(projectServiceProvider);
   return await projectService.getProjectsAtRisk();
 });
@@ -63,7 +63,7 @@ final projectFormProvider = StateNotifierProvider<ProjectFormNotifier, ProjectFo
 );
 
 /// Notifier for managing all projects
-class ProjectsNotifier extends StateNotifier<AsyncValue<List<Project>>> {
+class ProjectsNotifier extends StateNotifier<AsyncValue<List<domain.Project>>> {
   final ProjectService _projectService;
 
   ProjectsNotifier(this._projectService) : super(const AsyncValue.loading()) {
@@ -99,7 +99,7 @@ class ProjectsNotifier extends StateNotifier<AsyncValue<List<Project>>> {
     }
   }
 
-  Future<void> updateProject(Project project) async {
+  Future<void> updateProject(domain.Project project) async {
     try {
       await _projectService.updateProject(project);
       await loadProjects();
@@ -137,7 +137,7 @@ class ProjectsNotifier extends StateNotifier<AsyncValue<List<Project>>> {
 }
 
 /// Notifier for managing active projects
-class ActiveProjectsNotifier extends StateNotifier<AsyncValue<List<Project>>> {
+class ActiveProjectsNotifier extends StateNotifier<AsyncValue<List<domain.Project>>> {
   final ProjectService _projectService;
 
   ActiveProjectsNotifier(this._projectService) : super(const AsyncValue.loading()) {
@@ -230,7 +230,7 @@ class ProjectFormNotifier extends StateNotifier<ProjectFormState> {
     state = const ProjectFormState();
   }
 
-  void loadProject(Project project) {
+  void loadProject(domain.Project project) {
     state = ProjectFormState(
       name: project.name,
       description: project.description ?? '',

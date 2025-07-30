@@ -56,7 +56,7 @@ void main() {
       });
 
       testWidgets('should be disabled when loading', (WidgetTester tester) async {
-        bool pressed = false;
+        // bool pressed = false;
         
         await tester.pumpWidget(
           MaterialApp(
@@ -64,7 +64,7 @@ void main() {
               body: PrimaryButton(
                 text: 'Test Button',
                 isLoading: true,
-                onPressed: () => pressed = true,
+                onPressed: () {},
               ),
             ),
           ),

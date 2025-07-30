@@ -205,15 +205,7 @@ class HomePageBody extends ConsumerWidget {
                     ),
                   )),
                   
-                  if (false) // Hide theme selector in production
-                    Column(
-                      children: [
-                        const SizedBox(height: 16),
-                        const Divider(),
-                        const SizedBox(height: 16),
-                        const ThemeSelector(),
-                      ],
-                    ),
+                  // Theme selector hidden in production
                 ],
               ),
             ),

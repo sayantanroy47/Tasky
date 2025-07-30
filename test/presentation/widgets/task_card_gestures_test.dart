@@ -85,12 +85,18 @@ void main() {
         ),
       );
 
-      // Start a drag gesture
-      final gesture = await tester.startGesture(tester.getCenter(find.byType(TaskCard)));
+      // Start a drag gesture on the main card area
+      final cardFinder = find.byType(TaskCard);
+      expect(cardFinder, findsOneWidget);
+      
+      final gesture = await tester.startGesture(tester.getCenter(cardFinder));
+      await tester.pump();
+      
+      // Move right to trigger visual feedback
       await gesture.moveBy(const Offset(50.0, 0.0));
       await tester.pump();
       
-      // The card should show visual feedback (background indicators)
+      // The card should show visual feedback (check icon for incomplete task)
       expect(find.byIcon(Icons.check), findsOneWidget);
       
       await gesture.up();

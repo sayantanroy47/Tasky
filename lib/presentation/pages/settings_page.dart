@@ -103,6 +103,17 @@ class SettingsPageBody extends ConsumerWidget {
                     },
                     contentPadding: EdgeInsets.zero,
                   ),
+                  
+                  ListTile(
+                    leading: const Icon(Icons.mic),
+                    title: const Text('Voice Demo'),
+                    subtitle: const Text('Test voice recognition functionality'),
+                    trailing: const Icon(Icons.arrow_forward_ios),
+                    onTap: () {
+                      Navigator.of(context).pushNamed('/voice-demo');
+                    },
+                    contentPadding: EdgeInsets.zero,
+                  ),
                 ],
               ),
             ),

@@ -4,10 +4,13 @@ import '../providers/navigation_provider.dart';
 import '../../presentation/pages/home_page.dart';
 import '../../presentation/pages/tasks_page.dart';
 import '../../presentation/pages/task_detail_page.dart';
+import '../../presentation/pages/projects_page.dart';
+import '../../presentation/pages/project_detail_page.dart';
 import '../../presentation/pages/calendar_page.dart';
 import '../../presentation/pages/analytics_page.dart';
 import '../../presentation/pages/settings_page.dart';
 import '../../presentation/pages/not_found_page.dart';
+import '../../presentation/pages/voice_demo_page.dart';
 
 /// App router configuration
 class AppRouter {
@@ -18,9 +21,12 @@ class AppRouter {
   static const String home = '/home';
   static const String tasks = '/tasks';
   static const String taskDetail = '/task-detail';
+  static const String projects = '/projects';
+  static const String projectDetail = '/project-detail';
   static const String calendar = '/calendar';
   static const String analytics = '/analytics';
   static const String settings = '/settings';
+  static const String voiceDemo = '/voice-demo';
 
   /// Initial route
   static const String initialRoute = home;
@@ -38,12 +44,22 @@ class AppRouter {
           return _createRoute(TaskDetailPage(taskId: taskId), settings);
         }
         return _createRoute(const NotFoundPage(), settings);
+      case '/projects':
+        return _createRoute(const ProjectsPage(), settings);
+      case '/project-detail':
+        final projectId = settings.arguments as String?;
+        if (projectId != null) {
+          return _createRoute(ProjectDetailPage(projectId: projectId), settings);
+        }
+        return _createRoute(const NotFoundPage(), settings);
       case '/calendar':
         return _createRoute(const CalendarPage(), settings);
       case '/analytics':
         return _createRoute(const AnalyticsPage(), settings);
       case '/settings':
         return _createRoute(const SettingsPage(), settings);
+      case '/voice-demo':
+        return _createRoute(const VoiceDemoPage(), settings);
       default:
         return _createRoute(const NotFoundPage(), settings);
     }
@@ -114,6 +130,7 @@ class AppRouter {
   static List<AppNavigationDestination> get bottomNavigationDestinations => [
     AppNavigationDestination.home,
     AppNavigationDestination.tasks,
+    AppNavigationDestination.projects,
     AppNavigationDestination.calendar,
     AppNavigationDestination.analytics,
   ];

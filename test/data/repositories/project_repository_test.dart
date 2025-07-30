@@ -4,7 +4,7 @@ import 'package:task_tracker_app/services/database/database.dart';
 import 'package:task_tracker_app/data/repositories/project_repository_impl.dart';
 import 'package:task_tracker_app/domain/entities/project.dart' as domain;
 import 'package:task_tracker_app/domain/entities/task_model.dart';
-import 'package:task_tracker_app/domain/entities/task_enums.dart';
+
 import 'package:task_tracker_app/domain/repositories/project_repository.dart';
 
 void main() {

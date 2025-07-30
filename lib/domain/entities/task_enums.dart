@@ -29,6 +29,12 @@ enum TaskStatus {
   /// Returns true if the task is cancelled
   bool get isCancelled => this == TaskStatus.cancelled;
   
+  /// Returns true if the task is pending
+  bool get isPending => this == TaskStatus.pending;
+  
+  /// Returns true if the task is in progress
+  bool get isInProgress => this == TaskStatus.inProgress;
+  
   /// Returns a human-readable display name for the status
   String get displayName {
     switch (this) {

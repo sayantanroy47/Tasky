@@ -296,32 +296,7 @@ class _TextInputDialogState extends State<TextInputDialog> {
     );
   }
 
-  /// Show text input dialog
-  static Future<String?> show(
-    BuildContext context, {
-    required String title,
-    String? hint,
-    String? initialValue,
-    String confirmText = 'OK',
-    String cancelText = 'Cancel',
-    String? Function(String?)? validator,
-    int maxLines = 1,
-  }) {
-    return showDialog<String>(
-      context: context,
-      builder: (context) => TextInputDialog(
-        title: title,
-        hint: hint,
-        initialValue: initialValue,
-        confirmText: confirmText,
-        cancelText: cancelText,
-        validator: validator,
-        maxLines: maxLines,
-        onConfirm: (value) => Navigator.of(context).pop(value),
-        onCancel: () => Navigator.of(context).pop(),
-      ),
-    );
-  }
+
 }
 
 /// Choice dialog with multiple options

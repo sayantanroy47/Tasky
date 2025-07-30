@@ -16,7 +16,7 @@ part 'task_dao.g.dart';
 /// Provides CRUD operations and queries for tasks in the database.
 @DriftAccessor(tables: [Tasks, SubTasks, TaskTags, TaskDependencies])
 class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
-  TaskDao(AppDatabase db) : super(db);
+  TaskDao(super.db);
 
   /// Gets all tasks from the database
   Future<List<TaskModel>> getAllTasks() async {

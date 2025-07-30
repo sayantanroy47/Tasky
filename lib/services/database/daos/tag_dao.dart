@@ -59,7 +59,7 @@ class Tag {
 /// Provides CRUD operations and queries for tags in the database.
 @DriftAccessor(tables: [Tags, TaskTags])
 class TagDao extends DatabaseAccessor<AppDatabase> with _$TagDaoMixin {
-  TagDao(AppDatabase db) : super(db);
+  TagDao(super.db);
 
   /// Gets all tags from the database
   Future<List<Tag>> getAllTags() async {

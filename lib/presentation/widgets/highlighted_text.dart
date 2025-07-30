@@ -32,7 +32,7 @@ class HighlightedText extends StatelessWidget {
 
     final theme = Theme.of(context);
     final defaultHighlightColor = highlightColor ?? 
-        theme.colorScheme.primary.withOpacity(0.3);
+        theme.colorScheme.primary.withValues(alpha: 0.1);
 
     final spans = _buildHighlightedSpans(
       text,

@@ -26,6 +26,11 @@ class AppNavigationDestination {
       route: '/tasks',
     ),
     AppNavigationDestination(
+      label: 'Projects',
+      icon: Icons.folder,
+      route: '/projects',
+    ),
+    AppNavigationDestination(
       label: 'Calendar',
       icon: Icons.calendar_today,
       route: '/calendar',
@@ -53,6 +58,12 @@ class AppNavigationDestination {
     label: 'Tasks',
     icon: Icons.task,
     route: '/tasks',
+  );
+
+  static const AppNavigationDestination projects = AppNavigationDestination(
+    label: 'Projects',
+    icon: Icons.folder,
+    route: '/projects',
   );
 
   static const AppNavigationDestination calendar = AppNavigationDestination(

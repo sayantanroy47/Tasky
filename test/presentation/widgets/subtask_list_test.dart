@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:task_tracker_app/domain/entities/task_model.dart';
 import 'package:task_tracker_app/domain/entities/subtask.dart';
-import 'package:task_tracker_app/domain/entities/task_enums.dart';
+
 import 'package:task_tracker_app/presentation/widgets/subtask_list.dart';
 
 void main() {
