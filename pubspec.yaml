@@ -23,6 +23,8 @@ dependencies:
   uuid: ^4.4.0
   shared_preferences: ^2.2.3
 
+  # Haptic Feedback and Gestures (built into Flutter SDK)
+
   # Database
   drift: ^2.18.0
   sqlite3_flutter_libs: ^0.5.24

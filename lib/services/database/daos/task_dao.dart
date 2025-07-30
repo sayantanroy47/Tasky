@@ -183,14 +183,40 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
     return taskModels;
   }
 
-  /// Searches tasks by title or description
+  /// Searches tasks by title, description, or tags
   Future<List<TaskModel>> searchTasks(String query) async {
-    final taskRows = await (select(tasks)
+    // Search in title and description
+    final titleDescriptionTasks = await (select(tasks)
       ..where((t) => t.title.contains(query) | t.description.contains(query))
     ).get();
     
+    // Search in tags
+    final tagTasks = await (select(tasks).join([
+      innerJoin(taskTags, taskTags.taskId.equalsExp(tasks.id)),
+      innerJoin(tags, tags.id.equalsExp(taskTags.tagId))
+    ])..where(tags.name.contains(query))).get();
+    
+    // Combine results and remove duplicates
+    final allTaskRows = <Task>[];
+    final seenIds = <String>{};
+    
+    for (final taskRow in titleDescriptionTasks) {
+      if (!seenIds.contains(taskRow.id)) {
+        allTaskRows.add(taskRow);
+        seenIds.add(taskRow.id);
+      }
+    }
+    
+    for (final row in tagTasks) {
+      final taskRow = row.readTable(tasks);
+      if (!seenIds.contains(taskRow.id)) {
+        allTaskRows.add(taskRow);
+        seenIds.add(taskRow.id);
+      }
+    }
+    
     final taskModels = <TaskModel>[];
-    for (final taskRow in taskRows) {
+    for (final taskRow in allTaskRows) {
       final taskModel = await _taskRowToModel(taskRow);
       taskModels.add(taskModel);
     }

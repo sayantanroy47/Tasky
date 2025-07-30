@@ -34,7 +34,7 @@ void main() {
       expect(find.text('Test Description'), findsOneWidget);
     });
 
-    testWidgets('should show checkbox with correct state', (WidgetTester tester) async {
+    testWidgets('should show completion indicator with correct state', (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -46,8 +46,8 @@ void main() {
         ),
       );
 
-      final checkbox = tester.widget<Checkbox>(find.byType(Checkbox));
-      expect(checkbox.value, isTrue);
+      // Look for the check icon that appears when completed
+      expect(find.byIcon(Icons.check), findsOneWidget);
     });
 
     testWidgets('should show strikethrough text when completed', (WidgetTester tester) async {
@@ -62,8 +62,18 @@ void main() {
         ),
       );
 
-      final titleText = tester.widget<Text>(find.text('Test Task'));
-      expect(titleText.style?.decoration, TextDecoration.lineThrough);
+      // Wait for animations to complete
+      await tester.pumpAndSettle();
+
+      // Find the AnimatedDefaultTextStyle widget and check its style
+      final animatedTextStyle = tester.widget<AnimatedDefaultTextStyle>(
+        find.byWidgetPredicate((widget) => 
+          widget is AnimatedDefaultTextStyle && 
+          widget.child is Text &&
+          (widget.child as Text).data == 'Test Task'
+        )
+      );
+      expect(animatedTextStyle.style.decoration, TextDecoration.lineThrough);
     });
 
     testWidgets('should display due date when provided', (WidgetTester tester) async {
@@ -133,7 +143,7 @@ void main() {
       expect(tapped, isTrue);
     });
 
-    testWidgets('should call onToggleComplete when checkbox is tapped', (WidgetTester tester) async {
+    testWidgets('should call onToggleComplete when completion indicator is tapped', (WidgetTester tester) async {
       bool toggled = false;
       
       await tester.pumpWidget(
@@ -147,7 +157,15 @@ void main() {
         ),
       );
 
-      await tester.tap(find.byType(Checkbox));
+      // Find the completion indicator (circular container) and tap it
+      final completionIndicator = find.byWidgetPredicate(
+        (widget) => widget is GestureDetector && 
+                    widget.child is AnimatedContainer &&
+                    (widget.child as AnimatedContainer).decoration is BoxDecoration &&
+                    ((widget.child as AnimatedContainer).decoration as BoxDecoration).shape == BoxShape.circle
+      );
+      
+      await tester.tap(completionIndicator);
       expect(toggled, isTrue);
     });
 

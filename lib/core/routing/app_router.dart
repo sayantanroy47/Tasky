@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/navigation_provider.dart';
 import '../../presentation/pages/home_page.dart';
 import '../../presentation/pages/tasks_page.dart';
+import '../../presentation/pages/task_detail_page.dart';
 import '../../presentation/pages/calendar_page.dart';
 import '../../presentation/pages/analytics_page.dart';
 import '../../presentation/pages/settings_page.dart';
@@ -16,6 +17,7 @@ class AppRouter {
   /// Route names
   static const String home = '/home';
   static const String tasks = '/tasks';
+  static const String taskDetail = '/task-detail';
   static const String calendar = '/calendar';
   static const String analytics = '/analytics';
   static const String settings = '/settings';
@@ -30,6 +32,12 @@ class AppRouter {
         return _createRoute(const HomePage(), settings);
       case '/tasks':
         return _createRoute(const TasksPage(), settings);
+      case '/task-detail':
+        final taskId = settings.arguments as String?;
+        if (taskId != null) {
+          return _createRoute(TaskDetailPage(taskId: taskId), settings);
+        }
+        return _createRoute(const NotFoundPage(), settings);
       case '/calendar':
         return _createRoute(const CalendarPage(), settings);
       case '/analytics':

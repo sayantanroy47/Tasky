@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:drift/native.dart';
 import 'package:task_tracker_app/services/database/database.dart';
 import 'package:task_tracker_app/data/repositories/project_repository_impl.dart';
-import 'package:task_tracker_app/domain/entities/project.dart';
+import 'package:task_tracker_app/domain/entities/project.dart' as domain;
 import 'package:task_tracker_app/domain/entities/task_model.dart';
 import 'package:task_tracker_app/domain/entities/task_enums.dart';
 import 'package:task_tracker_app/domain/repositories/project_repository.dart';
@@ -23,7 +23,7 @@ void main() {
 
     group('Basic CRUD Operations', () {
       test('should create and retrieve a project', () async {
-        final project = Project.create(
+        final project = domain.Project.create(
           name: 'Test Project',
           description: 'A test project',
           color: '#FF0000',
@@ -40,7 +40,7 @@ void main() {
       });
 
       test('should update a project', () async {
-        final project = Project.create(name: 'Original Name');
+        final project = domain.Project.create(name: 'Original Name');
         await repository.createProject(project);
 
         final updatedProject = project.update(
@@ -55,7 +55,7 @@ void main() {
       });
 
       test('should delete a project', () async {
-        final project = Project.create(name: 'Project to Delete');
+        final project = domain.Project.create(name: 'Project to Delete');
         await repository.createProject(project);
 
         await repository.deleteProject(project.id);
@@ -65,8 +65,8 @@ void main() {
       });
 
       test('should get all projects', () async {
-        final project1 = Project.create(name: 'Project 1');
-        final project2 = Project.create(name: 'Project 2');
+        final project1 = domain.Project.create(name: 'Project 1');
+        final project2 = domain.Project.create(name: 'Project 2');
 
         await repository.createProject(project1);
         await repository.createProject(project2);
@@ -81,7 +81,7 @@ void main() {
 
     group('Archive Operations', () {
       test('should archive and unarchive a project', () async {
-        final project = Project.create(name: 'Test Project');
+        final project = domain.Project.create(name: 'Test Project');
         await repository.createProject(project);
 
         await repository.archiveProject(project.id);
@@ -94,8 +94,8 @@ void main() {
       });
 
       test('should get only active projects', () async {
-        final activeProject = Project.create(name: 'Active Project');
-        final archivedProject = Project.create(name: 'Archived Project');
+        final activeProject = domain.Project.create(name: 'Active Project');
+        final archivedProject = domain.Project.create(name: 'Archived Project');
 
         await repository.createProject(activeProject);
         await repository.createProject(archivedProject);
@@ -110,7 +110,7 @@ void main() {
 
     group('Project Statistics', () {
       test('should get projects with statistics', () async {
-        final project = Project.create(name: 'Test Project');
+        final project = domain.Project.create(name: 'Test Project');
         await repository.createProject(project);
 
         // Create tasks for the project
@@ -147,7 +147,7 @@ void main() {
       });
 
       test('should calculate completion percentage correctly', () async {
-        final project = Project.create(name: 'Test Project');
+        final project = domain.Project.create(name: 'Test Project');
         await repository.createProject(project);
 
         // Create 2 completed tasks and 1 pending task
@@ -167,7 +167,7 @@ void main() {
       });
 
       test('should handle project with no tasks', () async {
-        final project = Project.create(name: 'Empty Project');
+        final project = domain.Project.create(name: 'Empty Project');
         await repository.createProject(project);
 
         final projectsWithStats = await repository.getProjectsWithStats();
@@ -185,9 +185,9 @@ void main() {
 
     group('Search and Filter Operations', () {
       test('should search projects', () async {
-        final project1 = Project.create(name: 'Mobile App', description: 'iOS and Android');
-        final project2 = Project.create(name: 'Web Portal', description: 'Customer portal');
-        final project3 = Project.create(name: 'API Development', description: 'REST API');
+        final project1 = domain.Project.create(name: 'Mobile App', description: 'iOS and Android');
+        final project2 = domain.Project.create(name: 'Web Portal', description: 'Customer portal');
+        final project3 = domain.Project.create(name: 'API Development', description: 'REST API');
 
         await repository.createProject(project1);
         await repository.createProject(project2);
@@ -203,9 +203,9 @@ void main() {
       });
 
       test('should filter projects with ProjectFilter', () async {
-        final activeProject = Project.create(name: 'Active Project');
-        final archivedProject = Project.create(name: 'Archived Project');
-        final projectWithDeadline = Project.create(
+        final activeProject = domain.Project.create(name: 'Active Project');
+        final archivedProject = domain.Project.create(name: 'Archived Project');
+        final projectWithDeadline = domain.Project.create(
           name: 'Project with Deadline',
           deadline: DateTime.now().add(const Duration(days: 7)),
         );
@@ -236,8 +236,8 @@ void main() {
       });
 
       test('should sort projects with ProjectFilter', () async {
-        final projectB = Project.create(name: 'B Project');
-        final projectA = Project.create(name: 'A Project');
+        final projectB = domain.Project.create(name: 'B Project');
+        final projectA = domain.Project.create(name: 'A Project');
 
         await repository.createProject(projectB);
         await repository.createProject(projectA);
@@ -258,8 +258,8 @@ void main() {
         final nextWeek = now.add(const Duration(days: 7));
         final nextMonth = now.add(const Duration(days: 30));
 
-        final project1 = Project.create(name: 'Project 1', deadline: nextWeek);
-        final project2 = Project.create(name: 'Project 2', deadline: nextMonth);
+        final project1 = domain.Project.create(name: 'Project 1', deadline: nextWeek);
+        final project2 = domain.Project.create(name: 'Project 2', deadline: nextMonth);
 
         await repository.createProject(project1);
         await repository.createProject(project2);
@@ -278,7 +278,7 @@ void main() {
 
     group('Stream Operations', () {
       test('should watch all projects', () async {
-        final project = Project.create(name: 'Watched Project');
+        final project = domain.Project.create(name: 'Watched Project');
         
         // Start watching
         final stream = repository.watchAllProjects();
@@ -293,8 +293,8 @@ void main() {
       });
 
       test('should watch active projects', () async {
-        final activeProject = Project.create(name: 'Active Project');
-        final archivedProject = Project.create(name: 'Archived Project');
+        final activeProject = domain.Project.create(name: 'Active Project');
+        final archivedProject = domain.Project.create(name: 'Archived Project');
         
         // Start watching active projects
         final stream = repository.watchActiveProjects();
@@ -313,7 +313,7 @@ void main() {
       });
 
       test('should watch project by id', () async {
-        final project = Project.create(name: 'Specific Project');
+        final project = domain.Project.create(name: 'Specific Project');
         await repository.createProject(project);
         
         // Start watching specific project
@@ -334,7 +334,7 @@ void main() {
 
     group('Integration with Tasks', () {
       test('should delete project and update task references', () async {
-        final project = Project.create(name: 'Project to Delete');
+        final project = domain.Project.create(name: 'Project to Delete');
         await repository.createProject(project);
 
         final task = TaskModel.create(title: 'Task in Project', projectId: project.id);

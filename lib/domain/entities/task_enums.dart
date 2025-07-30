@@ -3,6 +3,7 @@
 /// This file contains all the enums used throughout the task tracker app
 /// for consistent type safety and validation.
 
+import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 /// Status of a task in its lifecycle
@@ -39,6 +40,20 @@ enum TaskStatus {
         return 'Completed';
       case TaskStatus.cancelled:
         return 'Cancelled';
+    }
+  }
+  
+  /// Returns the color associated with this status
+  Color get color {
+    switch (this) {
+      case TaskStatus.pending:
+        return Colors.orange;
+      case TaskStatus.inProgress:
+        return Colors.blue;
+      case TaskStatus.completed:
+        return Colors.green;
+      case TaskStatus.cancelled:
+        return Colors.red;
     }
   }
 }
@@ -87,6 +102,20 @@ enum TaskPriority {
   
   /// Returns true if this is a high priority task (high or urgent)
   bool get isHighPriority => this == TaskPriority.high || this == TaskPriority.urgent;
+  
+  /// Returns the color associated with this priority
+  Color get color {
+    switch (this) {
+      case TaskPriority.low:
+        return Colors.green;
+      case TaskPriority.medium:
+        return Colors.orange;
+      case TaskPriority.high:
+        return Colors.red;
+      case TaskPriority.urgent:
+        return Colors.purple;
+    }
+  }
 }
 
 /// Type of recurrence pattern for recurring tasks
