@@ -2,9 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/entities/task_enums.dart';
+import '../../domain/entities/subtask.dart';
+import '../../domain/entities/recurrence_pattern.dart';
+import '../../domain/entities/task_template.dart';
 import '../providers/task_providers.dart';
+import '../providers/task_template_providers.dart';
+import '../providers/recurring_task_providers.dart';
 import 'custom_input_fields.dart';
 import 'custom_buttons.dart';
+import 'recurrence_pattern_picker.dart';
+import 'task_template_selector.dart';
 
 /// Dialog for creating or editing tasks
 class TaskFormDialog extends ConsumerStatefulWidget {
@@ -28,6 +35,8 @@ class _TaskFormDialogState extends ConsumerState<TaskFormDialog> {
   TaskPriority _selectedPriority = TaskPriority.medium;
   DateTime? _selectedDueDate;
   List<String> _tags = [];
+  List<SubTask> _subTasks = [];
+  RecurrencePattern? _recurrencePattern;
   bool _isLoading = false;
 
   @override
@@ -44,6 +53,8 @@ class _TaskFormDialogState extends ConsumerState<TaskFormDialog> {
     _selectedPriority = task.priority;
     _selectedDueDate = task.dueDate;
     _tags = List.from(task.tags);
+    _subTasks = List.from(task.subTasks);
+    _recurrencePattern = task.recurrence;
   }
 
   @override
@@ -73,6 +84,14 @@ class _TaskFormDialogState extends ConsumerState<TaskFormDialog> {
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const Spacer(),
+                  if (!widget.isEditing) ...[
+                    IconButton(
+                      onPressed: _showTemplateSelector,
+                      icon: const Icon(Icons.description_outlined),
+                      tooltip: 'Use Template',
+                    ),
+                    const SizedBox(width: 8),
+                  ],
                   IconButton(
                     onPressed: () => Navigator.of(context).pop(),
                     icon: const Icon(Icons.close),
@@ -161,6 +180,35 @@ class _TaskFormDialogState extends ConsumerState<TaskFormDialog> {
                           });
                         },
                       ),
+                      
+                      const SizedBox(height: 16),
+                      
+                      // Recurrence pattern section
+                      RecurrencePatternPicker(
+                        initialPattern: _recurrencePattern,
+                        onPatternChanged: (pattern) {
+                          setState(() {
+                            _recurrencePattern = pattern;
+                          });
+                        },
+                      ),
+                      
+                      const SizedBox(height: 16),
+                      
+                      // Subtasks section
+                      Text(
+                        'Subtasks (Optional)',
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                      const SizedBox(height: 8),
+                      _SubTasksSection(
+                        subTasks: _subTasks,
+                        onSubTasksChanged: (subTasks) {
+                          setState(() {
+                            _subTasks = subTasks;
+                          });
+                        },
+                      ),
                     ],
                   ),
                 ),
@@ -199,10 +247,9 @@ class _TaskFormDialogState extends ConsumerState<TaskFormDialog> {
     });
 
     try {
-      final taskOperations = ref.read(taskOperationsProvider);
-      
       if (widget.isEditing) {
         // Update existing task
+        final taskOperations = ref.read(taskOperationsProvider);
         final updatedTask = widget.task!.copyWith(
           title: _titleController.text.trim(),
           description: _descriptionController.text.trim().isEmpty 
@@ -211,22 +258,48 @@ class _TaskFormDialogState extends ConsumerState<TaskFormDialog> {
           priority: _selectedPriority,
           dueDate: _selectedDueDate,
           tags: _tags,
+          subTasks: _subTasks,
+          recurrence: _recurrencePattern,
         );
         
         await taskOperations.updateTask(updatedTask);
       } else {
-        // Create new task
-        final newTask = TaskModel.create(
-          title: _titleController.text.trim(),
-          description: _descriptionController.text.trim().isEmpty 
-              ? null 
-              : _descriptionController.text.trim(),
-          priority: _selectedPriority,
-          dueDate: _selectedDueDate,
-          tags: _tags,
-        );
-        
-        await taskOperations.createTask(newTask);
+        // Create new task (recurring or regular)
+        if (_recurrencePattern != null) {
+          // Create recurring task
+          final recurringTaskNotifier = ref.read(recurringTaskNotifierProvider.notifier);
+          await recurringTaskNotifier.createRecurringTask(
+            title: _titleController.text.trim(),
+            description: _descriptionController.text.trim().isEmpty 
+                ? null 
+                : _descriptionController.text.trim(),
+            dueDate: _selectedDueDate,
+            recurrence: _recurrencePattern!,
+            priority: _selectedPriority,
+            tags: _tags,
+          );
+        } else {
+          // Create regular task
+          final taskOperations = ref.read(taskOperationsProvider);
+          final newTask = TaskModel.create(
+            title: _titleController.text.trim(),
+            description: _descriptionController.text.trim().isEmpty 
+                ? null 
+                : _descriptionController.text.trim(),
+            priority: _selectedPriority,
+            dueDate: _selectedDueDate,
+            tags: _tags,
+          );
+          
+          // Add subtasks to the new task
+          final taskWithSubTasks = _subTasks.isEmpty 
+              ? newTask 
+              : newTask.copyWith(
+                  subTasks: _subTasks.map((st) => st.copyWith(taskId: newTask.id)).toList(),
+                );
+          
+          await taskOperations.createTask(taskWithSubTasks);
+        }
       }
 
       if (mounted) {
@@ -257,6 +330,32 @@ class _TaskFormDialogState extends ConsumerState<TaskFormDialog> {
         });
       }
     }
+  }
+
+  void _showTemplateSelector() {
+    showDialog(
+      context: context,
+      builder: (context) => TaskTemplateSelector(
+        onTemplateSelected: _applyTemplate,
+      ),
+    );
+  }
+
+  void _applyTemplate(TaskTemplate template) {
+    setState(() {
+      _titleController.text = template.titleTemplate;
+      _descriptionController.text = template.descriptionTemplate ?? '';
+      _selectedPriority = template.priority;
+      _tags = List.from(template.tags);
+      _subTasks = template.subTaskTemplates.map((st) => 
+        st.copyWith(taskId: '') // Will be set when task is created
+      ).toList();
+      _recurrencePattern = template.recurrence;
+    });
+
+    // Increment template usage count
+    ref.read(taskTemplateNotifierProvider.notifier)
+        .incrementTemplateUsage(template.id);
   }
 }
 
@@ -440,5 +539,195 @@ class _TagsSectionState extends State<_TagsSection> {
   void _removeTag(String tag) {
     final updatedTags = widget.tags.where((t) => t != tag).toList();
     widget.onTagsChanged(updatedTags);
+  }
+}
+/// Subtasks section widget for the task form
+class _SubTasksSection extends StatefulWidget {
+  final List<SubTask> subTasks;
+  final ValueChanged<List<SubTask>> onSubTasksChanged;
+
+  const _SubTasksSection({
+    required this.subTasks,
+    required this.onSubTasksChanged,
+  });
+
+  @override
+  State<_SubTasksSection> createState() => _SubTasksSectionState();
+}
+
+class _SubTasksSectionState extends State<_SubTasksSection> {
+  final _subTaskController = TextEditingController();
+
+  @override
+  void dispose() {
+    _subTaskController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Add subtask field
+        Row(
+          children: [
+            Expanded(
+              child: TextField(
+                controller: _subTaskController,
+                decoration: const InputDecoration(
+                  hintText: 'Add a subtask',
+                  border: OutlineInputBorder(),
+                  isDense: true,
+                ),
+                onSubmitted: _addSubTask,
+              ),
+            ),
+            const SizedBox(width: 8),
+            IconButton(
+              onPressed: () => _addSubTask(_subTaskController.text),
+              icon: const Icon(Icons.add),
+            ),
+          ],
+        ),
+        
+        const SizedBox(height: 8),
+        
+        // Subtasks display
+        if (widget.subTasks.isNotEmpty)
+          Column(
+            children: widget.subTasks.asMap().entries.map((entry) {
+              final index = entry.key;
+              final subTask = entry.value;
+              return Container(
+                margin: const EdgeInsets.only(bottom: 4),
+                child: Row(
+                  children: [
+                    // Drag handle for reordering
+                    Icon(
+                      Icons.drag_handle,
+                      size: 16,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.5),
+                    ),
+                    const SizedBox(width: 8),
+                    
+                    // Checkbox
+                    Checkbox(
+                      value: subTask.isCompleted,
+                      onChanged: (value) => _toggleSubTask(index),
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    
+                    // Title
+                    Expanded(
+                      child: Text(
+                        subTask.title,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          decoration: subTask.isCompleted 
+                              ? TextDecoration.lineThrough 
+                              : null,
+                          color: subTask.isCompleted 
+                              ? Theme.of(context).colorScheme.onSurfaceVariant 
+                              : Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                    ),
+                    
+                    // Edit button
+                    IconButton(
+                      onPressed: () => _editSubTask(index),
+                      icon: const Icon(Icons.edit, size: 16),
+                      tooltip: 'Edit subtask',
+                    ),
+                    
+                    // Delete button
+                    IconButton(
+                      onPressed: () => _removeSubTask(index),
+                      icon: const Icon(Icons.delete, size: 16),
+                      tooltip: 'Delete subtask',
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+          ),
+      ],
+    );
+  }
+
+  void _addSubTask(String title) {
+    final trimmedTitle = title.trim();
+    if (trimmedTitle.isNotEmpty) {
+      final newSubTask = SubTask.create(
+        taskId: '', // Will be set when the task is created/updated
+        title: trimmedTitle,
+        sortOrder: widget.subTasks.length,
+      );
+      
+      final updatedSubTasks = [...widget.subTasks, newSubTask];
+      widget.onSubTasksChanged(updatedSubTasks);
+      _subTaskController.clear();
+    }
+  }
+
+  void _removeSubTask(int index) {
+    final updatedSubTasks = List<SubTask>.from(widget.subTasks);
+    updatedSubTasks.removeAt(index);
+    
+    // Update sort orders
+    for (int i = 0; i < updatedSubTasks.length; i++) {
+      updatedSubTasks[i] = updatedSubTasks[i].copyWith(sortOrder: i);
+    }
+    
+    widget.onSubTasksChanged(updatedSubTasks);
+  }
+
+  void _toggleSubTask(int index) {
+    final updatedSubTasks = List<SubTask>.from(widget.subTasks);
+    final subTask = updatedSubTasks[index];
+    
+    updatedSubTasks[index] = subTask.isCompleted 
+        ? subTask.markIncomplete() 
+        : subTask.markCompleted();
+    
+    widget.onSubTasksChanged(updatedSubTasks);
+  }
+
+  void _editSubTask(int index) {
+    final subTask = widget.subTasks[index];
+    final controller = TextEditingController(text: subTask.title);
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Edit Subtask'),
+        content: TextField(
+          controller: controller,
+          decoration: const InputDecoration(
+            labelText: 'Subtask title',
+            border: OutlineInputBorder(),
+          ),
+          autofocus: true,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final newTitle = controller.text.trim();
+              if (newTitle.isNotEmpty) {
+                final updatedSubTasks = List<SubTask>.from(widget.subTasks);
+                updatedSubTasks[index] = subTask.copyWith(title: newTitle);
+                widget.onSubTasksChanged(updatedSubTasks);
+                Navigator.of(context).pop();
+              }
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
   }
 }

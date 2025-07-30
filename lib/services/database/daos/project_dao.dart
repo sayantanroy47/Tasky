@@ -11,7 +11,7 @@ part 'project_dao.g.dart';
 /// Provides CRUD operations and queries for projects in the database.
 @DriftAccessor(tables: [Projects, Tasks])
 class ProjectDao extends DatabaseAccessor<AppDatabase> with _$ProjectDaoMixin {
-  ProjectDao(AppDatabase db) : super(db);
+  ProjectDao(super.db);
 
   /// Gets all projects from the database
   Future<List<domain.Project>> getAllProjects() async {

@@ -9,6 +9,7 @@ import 'tables.dart';
 import 'daos/task_dao.dart';
 import 'daos/project_dao.dart';
 import 'daos/tag_dao.dart';
+import 'daos/task_template_dao.dart';
 
 part 'database.g.dart';
 
@@ -23,20 +24,22 @@ part 'database.g.dart';
   TaskTags,
   Projects,
   TaskDependencies,
+  TaskTemplates,
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
   
   // Constructor for testing with custom executor
-  AppDatabase.forTesting(QueryExecutor executor) : super(executor);
+  AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   // DAOs
   late final TaskDao taskDao = TaskDao(this);
   late final ProjectDao projectDao = ProjectDao(this);
   late final TagDao tagDao = TagDao(this);
+  late final TaskTemplateDao taskTemplateDao = TaskTemplateDao(this);
 
   @override
   MigrationStrategy get migration {
@@ -46,7 +49,10 @@ class AppDatabase extends _$AppDatabase {
       },
       onUpgrade: (Migrator m, int from, int to) async {
         // Handle database migrations here when schema version changes
-        // For now, we're at version 1, so no migrations needed
+        if (from == 1 && to == 2) {
+          // Add TaskTemplates table in version 2
+          await m.createTable(taskTemplates);
+        }
       },
       beforeOpen: (details) async {
         // Enable foreign key constraints
@@ -56,6 +62,7 @@ class AppDatabase extends _$AppDatabase {
   }
 
   /// Closes the database connection
+  @override
   Future<void> close() async {
     await super.close();
   }

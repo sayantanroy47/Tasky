@@ -393,6 +393,8 @@ class _TaskList extends ConsumerWidget {
         priority: task.priority.index,
         dueDate: task.dueDate,
         tags: task.tags,
+        subTasksTotal: task.subTasks.isNotEmpty ? task.subTasks.length : null,
+        subTasksCompleted: task.subTasks.isNotEmpty ? task.subTasks.where((st) => st.isCompleted).length : null,
         searchQuery: searchQuery.isNotEmpty ? searchQuery : null,
         onTap: () => _navigateToTaskDetail(context, task.id),
         onToggleComplete: () => _toggleTaskCompletion(ref, task),

@@ -1,10 +1,10 @@
+import 'package:flutter/material.dart';
+import 'package:json_annotation/json_annotation.dart';
+
 /// Enums for task-related data models
 /// 
 /// This file contains all the enums used throughout the task tracker app
 /// for consistent type safety and validation.
-
-import 'package:flutter/material.dart';
-import 'package:json_annotation/json_annotation.dart';
 
 /// Status of a task in its lifecycle
 enum TaskStatus {

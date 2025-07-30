@@ -122,7 +122,17 @@
 - [-] 5. Build advanced task features
 
 
-  - [-] 5.1 Implement subtasks and checklist functionality
+
+
+
+
+
+
+  - [x] 5.1 Implement subtasks and checklist functionality
+
+
+
+
 
     - Add subtask creation and management UI
     - Implement subtask completion tracking
@@ -130,14 +140,18 @@
     - Add progress indicators for parent tasks
     - _Requirements: 7.1, 7.5_
 
-  - [ ] 5.2 Add recurring tasks and task templates
+  - [x] 5.2 Add recurring tasks and task templates
+
+
+
     - Create recurrence pattern configuration UI
     - Implement recurring task generation logic
     - Add task template creation and management
     - Build template selection and application system
     - _Requirements: 7.2, 7.3_
 
-  - [ ] 5.3 Implement task dependencies and project organization
+  - [-] 5.3 Implement task dependencies and project organization
+
     - Create project management UI and functionality
     - Add task dependency configuration
     - Implement dependency validation and enforcement

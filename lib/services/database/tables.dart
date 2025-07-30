@@ -120,3 +120,41 @@ class TaskDependencies extends Table {
     'FOREIGN KEY (prerequisite_task_id) REFERENCES tasks (id) ON DELETE CASCADE',
   ];
 }
+
+/// TaskTemplates table definition
+/// 
+/// Stores task templates for quick task creation
+class TaskTemplates extends Table {
+  TextColumn get id => text()();
+  TextColumn get name => text()();
+  TextColumn get description => text().nullable()();
+  TextColumn get titleTemplate => text()();
+  TextColumn get descriptionTemplate => text().nullable()();
+  IntColumn get priority => integer()(); // 0=low, 1=medium, 2=high, 3=urgent
+  TextColumn get tags => text()(); // JSON array of strings
+  TextColumn get subTaskTemplates => text()(); // JSON array of subtask objects
+  TextColumn get locationTrigger => text().nullable()();
+  TextColumn get projectId => text().nullable()();
+  IntColumn get estimatedDuration => integer().nullable()(); // in minutes
+  TextColumn get metadata => text()(); // JSON blob
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime().nullable()();
+  IntColumn get usageCount => integer().withDefault(const Constant(0))();
+  BoolColumn get isFavorite => boolean().withDefault(const Constant(false))();
+  TextColumn get category => text().nullable()();
+  
+  // Recurrence pattern fields
+  IntColumn get recurrenceType => integer().nullable()(); // 0=none, 1=daily, 2=weekly, etc.
+  IntColumn get recurrenceInterval => integer().nullable()();
+  TextColumn get recurrenceDaysOfWeek => text().nullable()(); // JSON array of integers
+  DateTimeColumn get recurrenceEndDate => dateTime().nullable()();
+  IntColumn get recurrenceMaxOccurrences => integer().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+
+  @override
+  List<String> get customConstraints => [
+    'FOREIGN KEY (project_id) REFERENCES projects (id) ON DELETE SET NULL',
+  ];
+}

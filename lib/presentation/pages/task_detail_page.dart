@@ -5,7 +5,7 @@ import '../../domain/entities/task_enums.dart';
 import '../providers/task_providers.dart';
 import '../widgets/app_scaffold.dart';
 import '../widgets/task_form_dialog.dart';
-
+import '../widgets/subtask_list.dart';
 import '../widgets/custom_dialogs.dart';
 
 /// Task detail page showing full task information
@@ -170,10 +170,8 @@ class _TaskDetailView extends ConsumerWidget {
             const SizedBox(height: 24),
             
             // Subtasks section
-            if (task.hasSubTasks) ...[
-              _SubTasksSection(task: task),
-              const SizedBox(height: 24),
-            ],
+            SubTaskList(task: task),
+            const SizedBox(height: 24),
             
             // Task metadata
             _TaskMetadata(task: task),
@@ -485,63 +483,7 @@ class _TaskDetails extends StatelessWidget {
   }
 }
 
-/// Subtasks section widget
-class _SubTasksSection extends StatelessWidget {
-  final TaskModel task;
 
-  const _SubTasksSection({required this.task});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(
-                  'Subtasks',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const Spacer(),
-                Text(
-                  '${task.subTasks.where((st) => st.isCompleted).length}/${task.subTasks.length}',
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            
-            // Progress indicator
-            LinearProgressIndicator(
-              value: task.subTaskCompletionPercentage,
-            ),
-            
-            const SizedBox(height: 12),
-            
-            // Subtasks list
-            ...task.subTasks.map((subTask) => CheckboxListTile(
-              title: Text(
-                subTask.title,
-                style: TextStyle(
-                  decoration: subTask.isCompleted 
-                      ? TextDecoration.lineThrough 
-                      : null,
-                ),
-              ),
-              value: subTask.isCompleted,
-              onChanged: null, // TODO: Implement subtask toggle
-              dense: true,
-              contentPadding: EdgeInsets.zero,
-            )),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 /// Task metadata widget
 class _TaskMetadata extends StatelessWidget {

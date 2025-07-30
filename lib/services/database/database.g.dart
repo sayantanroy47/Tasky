@@ -2473,6 +2473,1078 @@ class TaskDependenciesCompanion extends UpdateCompanion<TaskDependency> {
   }
 }
 
+class $TaskTemplatesTable extends TaskTemplates
+    with TableInfo<$TaskTemplatesTable, TaskTemplate> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TaskTemplatesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _descriptionMeta =
+      const VerificationMeta('description');
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+      'description', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _titleTemplateMeta =
+      const VerificationMeta('titleTemplate');
+  @override
+  late final GeneratedColumn<String> titleTemplate = GeneratedColumn<String>(
+      'title_template', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _descriptionTemplateMeta =
+      const VerificationMeta('descriptionTemplate');
+  @override
+  late final GeneratedColumn<String> descriptionTemplate =
+      GeneratedColumn<String>('description_template', aliasedName, true,
+          type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _priorityMeta =
+      const VerificationMeta('priority');
+  @override
+  late final GeneratedColumn<int> priority = GeneratedColumn<int>(
+      'priority', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _tagsMeta = const VerificationMeta('tags');
+  @override
+  late final GeneratedColumn<String> tags = GeneratedColumn<String>(
+      'tags', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _subTaskTemplatesMeta =
+      const VerificationMeta('subTaskTemplates');
+  @override
+  late final GeneratedColumn<String> subTaskTemplates = GeneratedColumn<String>(
+      'sub_task_templates', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _locationTriggerMeta =
+      const VerificationMeta('locationTrigger');
+  @override
+  late final GeneratedColumn<String> locationTrigger = GeneratedColumn<String>(
+      'location_trigger', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _projectIdMeta =
+      const VerificationMeta('projectId');
+  @override
+  late final GeneratedColumn<String> projectId = GeneratedColumn<String>(
+      'project_id', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _estimatedDurationMeta =
+      const VerificationMeta('estimatedDuration');
+  @override
+  late final GeneratedColumn<int> estimatedDuration = GeneratedColumn<int>(
+      'estimated_duration', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _metadataMeta =
+      const VerificationMeta('metadata');
+  @override
+  late final GeneratedColumn<String> metadata = GeneratedColumn<String>(
+      'metadata', aliasedName, false,
+      type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime, requiredDuringInsert: true);
+  static const VerificationMeta _updatedAtMeta =
+      const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+      'updated_at', aliasedName, true,
+      type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  static const VerificationMeta _usageCountMeta =
+      const VerificationMeta('usageCount');
+  @override
+  late final GeneratedColumn<int> usageCount = GeneratedColumn<int>(
+      'usage_count', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultValue: const Constant(0));
+  static const VerificationMeta _isFavoriteMeta =
+      const VerificationMeta('isFavorite');
+  @override
+  late final GeneratedColumn<bool> isFavorite = GeneratedColumn<bool>(
+      'is_favorite', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('CHECK ("is_favorite" IN (0, 1))'),
+      defaultValue: const Constant(false));
+  static const VerificationMeta _categoryMeta =
+      const VerificationMeta('category');
+  @override
+  late final GeneratedColumn<String> category = GeneratedColumn<String>(
+      'category', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _recurrenceTypeMeta =
+      const VerificationMeta('recurrenceType');
+  @override
+  late final GeneratedColumn<int> recurrenceType = GeneratedColumn<int>(
+      'recurrence_type', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _recurrenceIntervalMeta =
+      const VerificationMeta('recurrenceInterval');
+  @override
+  late final GeneratedColumn<int> recurrenceInterval = GeneratedColumn<int>(
+      'recurrence_interval', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
+  static const VerificationMeta _recurrenceDaysOfWeekMeta =
+      const VerificationMeta('recurrenceDaysOfWeek');
+  @override
+  late final GeneratedColumn<String> recurrenceDaysOfWeek =
+      GeneratedColumn<String>('recurrence_days_of_week', aliasedName, true,
+          type: DriftSqlType.string, requiredDuringInsert: false);
+  static const VerificationMeta _recurrenceEndDateMeta =
+      const VerificationMeta('recurrenceEndDate');
+  @override
+  late final GeneratedColumn<DateTime> recurrenceEndDate =
+      GeneratedColumn<DateTime>('recurrence_end_date', aliasedName, true,
+          type: DriftSqlType.dateTime, requiredDuringInsert: false);
+  static const VerificationMeta _recurrenceMaxOccurrencesMeta =
+      const VerificationMeta('recurrenceMaxOccurrences');
+  @override
+  late final GeneratedColumn<int> recurrenceMaxOccurrences =
+      GeneratedColumn<int>('recurrence_max_occurrences', aliasedName, true,
+          type: DriftSqlType.int, requiredDuringInsert: false);
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        name,
+        description,
+        titleTemplate,
+        descriptionTemplate,
+        priority,
+        tags,
+        subTaskTemplates,
+        locationTrigger,
+        projectId,
+        estimatedDuration,
+        metadata,
+        createdAt,
+        updatedAt,
+        usageCount,
+        isFavorite,
+        category,
+        recurrenceType,
+        recurrenceInterval,
+        recurrenceDaysOfWeek,
+        recurrenceEndDate,
+        recurrenceMaxOccurrences
+      ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'task_templates';
+  @override
+  VerificationContext validateIntegrity(Insertable<TaskTemplate> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+          _descriptionMeta,
+          description.isAcceptableOrUnknown(
+              data['description']!, _descriptionMeta));
+    }
+    if (data.containsKey('title_template')) {
+      context.handle(
+          _titleTemplateMeta,
+          titleTemplate.isAcceptableOrUnknown(
+              data['title_template']!, _titleTemplateMeta));
+    } else if (isInserting) {
+      context.missing(_titleTemplateMeta);
+    }
+    if (data.containsKey('description_template')) {
+      context.handle(
+          _descriptionTemplateMeta,
+          descriptionTemplate.isAcceptableOrUnknown(
+              data['description_template']!, _descriptionTemplateMeta));
+    }
+    if (data.containsKey('priority')) {
+      context.handle(_priorityMeta,
+          priority.isAcceptableOrUnknown(data['priority']!, _priorityMeta));
+    } else if (isInserting) {
+      context.missing(_priorityMeta);
+    }
+    if (data.containsKey('tags')) {
+      context.handle(
+          _tagsMeta, tags.isAcceptableOrUnknown(data['tags']!, _tagsMeta));
+    } else if (isInserting) {
+      context.missing(_tagsMeta);
+    }
+    if (data.containsKey('sub_task_templates')) {
+      context.handle(
+          _subTaskTemplatesMeta,
+          subTaskTemplates.isAcceptableOrUnknown(
+              data['sub_task_templates']!, _subTaskTemplatesMeta));
+    } else if (isInserting) {
+      context.missing(_subTaskTemplatesMeta);
+    }
+    if (data.containsKey('location_trigger')) {
+      context.handle(
+          _locationTriggerMeta,
+          locationTrigger.isAcceptableOrUnknown(
+              data['location_trigger']!, _locationTriggerMeta));
+    }
+    if (data.containsKey('project_id')) {
+      context.handle(_projectIdMeta,
+          projectId.isAcceptableOrUnknown(data['project_id']!, _projectIdMeta));
+    }
+    if (data.containsKey('estimated_duration')) {
+      context.handle(
+          _estimatedDurationMeta,
+          estimatedDuration.isAcceptableOrUnknown(
+              data['estimated_duration']!, _estimatedDurationMeta));
+    }
+    if (data.containsKey('metadata')) {
+      context.handle(_metadataMeta,
+          metadata.isAcceptableOrUnknown(data['metadata']!, _metadataMeta));
+    } else if (isInserting) {
+      context.missing(_metadataMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta,
+          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    }
+    if (data.containsKey('usage_count')) {
+      context.handle(
+          _usageCountMeta,
+          usageCount.isAcceptableOrUnknown(
+              data['usage_count']!, _usageCountMeta));
+    }
+    if (data.containsKey('is_favorite')) {
+      context.handle(
+          _isFavoriteMeta,
+          isFavorite.isAcceptableOrUnknown(
+              data['is_favorite']!, _isFavoriteMeta));
+    }
+    if (data.containsKey('category')) {
+      context.handle(_categoryMeta,
+          category.isAcceptableOrUnknown(data['category']!, _categoryMeta));
+    }
+    if (data.containsKey('recurrence_type')) {
+      context.handle(
+          _recurrenceTypeMeta,
+          recurrenceType.isAcceptableOrUnknown(
+              data['recurrence_type']!, _recurrenceTypeMeta));
+    }
+    if (data.containsKey('recurrence_interval')) {
+      context.handle(
+          _recurrenceIntervalMeta,
+          recurrenceInterval.isAcceptableOrUnknown(
+              data['recurrence_interval']!, _recurrenceIntervalMeta));
+    }
+    if (data.containsKey('recurrence_days_of_week')) {
+      context.handle(
+          _recurrenceDaysOfWeekMeta,
+          recurrenceDaysOfWeek.isAcceptableOrUnknown(
+              data['recurrence_days_of_week']!, _recurrenceDaysOfWeekMeta));
+    }
+    if (data.containsKey('recurrence_end_date')) {
+      context.handle(
+          _recurrenceEndDateMeta,
+          recurrenceEndDate.isAcceptableOrUnknown(
+              data['recurrence_end_date']!, _recurrenceEndDateMeta));
+    }
+    if (data.containsKey('recurrence_max_occurrences')) {
+      context.handle(
+          _recurrenceMaxOccurrencesMeta,
+          recurrenceMaxOccurrences.isAcceptableOrUnknown(
+              data['recurrence_max_occurrences']!,
+              _recurrenceMaxOccurrencesMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  TaskTemplate map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TaskTemplate(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      description: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}description']),
+      titleTemplate: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}title_template'])!,
+      descriptionTemplate: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}description_template']),
+      priority: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}priority'])!,
+      tags: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}tags'])!,
+      subTaskTemplates: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}sub_task_templates'])!,
+      locationTrigger: attachedDatabase.typeMapping.read(
+          DriftSqlType.string, data['${effectivePrefix}location_trigger']),
+      projectId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}project_id']),
+      estimatedDuration: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}estimated_duration']),
+      metadata: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}metadata'])!,
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+      updatedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at']),
+      usageCount: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}usage_count'])!,
+      isFavorite: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_favorite'])!,
+      category: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}category']),
+      recurrenceType: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}recurrence_type']),
+      recurrenceInterval: attachedDatabase.typeMapping.read(
+          DriftSqlType.int, data['${effectivePrefix}recurrence_interval']),
+      recurrenceDaysOfWeek: attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}recurrence_days_of_week']),
+      recurrenceEndDate: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}recurrence_end_date']),
+      recurrenceMaxOccurrences: attachedDatabase.typeMapping.read(
+          DriftSqlType.int,
+          data['${effectivePrefix}recurrence_max_occurrences']),
+    );
+  }
+
+  @override
+  $TaskTemplatesTable createAlias(String alias) {
+    return $TaskTemplatesTable(attachedDatabase, alias);
+  }
+}
+
+class TaskTemplate extends DataClass implements Insertable<TaskTemplate> {
+  final String id;
+  final String name;
+  final String? description;
+  final String titleTemplate;
+  final String? descriptionTemplate;
+  final int priority;
+  final String tags;
+  final String subTaskTemplates;
+  final String? locationTrigger;
+  final String? projectId;
+  final int? estimatedDuration;
+  final String metadata;
+  final DateTime createdAt;
+  final DateTime? updatedAt;
+  final int usageCount;
+  final bool isFavorite;
+  final String? category;
+  final int? recurrenceType;
+  final int? recurrenceInterval;
+  final String? recurrenceDaysOfWeek;
+  final DateTime? recurrenceEndDate;
+  final int? recurrenceMaxOccurrences;
+  const TaskTemplate(
+      {required this.id,
+      required this.name,
+      this.description,
+      required this.titleTemplate,
+      this.descriptionTemplate,
+      required this.priority,
+      required this.tags,
+      required this.subTaskTemplates,
+      this.locationTrigger,
+      this.projectId,
+      this.estimatedDuration,
+      required this.metadata,
+      required this.createdAt,
+      this.updatedAt,
+      required this.usageCount,
+      required this.isFavorite,
+      this.category,
+      this.recurrenceType,
+      this.recurrenceInterval,
+      this.recurrenceDaysOfWeek,
+      this.recurrenceEndDate,
+      this.recurrenceMaxOccurrences});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['name'] = Variable<String>(name);
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
+    }
+    map['title_template'] = Variable<String>(titleTemplate);
+    if (!nullToAbsent || descriptionTemplate != null) {
+      map['description_template'] = Variable<String>(descriptionTemplate);
+    }
+    map['priority'] = Variable<int>(priority);
+    map['tags'] = Variable<String>(tags);
+    map['sub_task_templates'] = Variable<String>(subTaskTemplates);
+    if (!nullToAbsent || locationTrigger != null) {
+      map['location_trigger'] = Variable<String>(locationTrigger);
+    }
+    if (!nullToAbsent || projectId != null) {
+      map['project_id'] = Variable<String>(projectId);
+    }
+    if (!nullToAbsent || estimatedDuration != null) {
+      map['estimated_duration'] = Variable<int>(estimatedDuration);
+    }
+    map['metadata'] = Variable<String>(metadata);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    if (!nullToAbsent || updatedAt != null) {
+      map['updated_at'] = Variable<DateTime>(updatedAt);
+    }
+    map['usage_count'] = Variable<int>(usageCount);
+    map['is_favorite'] = Variable<bool>(isFavorite);
+    if (!nullToAbsent || category != null) {
+      map['category'] = Variable<String>(category);
+    }
+    if (!nullToAbsent || recurrenceType != null) {
+      map['recurrence_type'] = Variable<int>(recurrenceType);
+    }
+    if (!nullToAbsent || recurrenceInterval != null) {
+      map['recurrence_interval'] = Variable<int>(recurrenceInterval);
+    }
+    if (!nullToAbsent || recurrenceDaysOfWeek != null) {
+      map['recurrence_days_of_week'] = Variable<String>(recurrenceDaysOfWeek);
+    }
+    if (!nullToAbsent || recurrenceEndDate != null) {
+      map['recurrence_end_date'] = Variable<DateTime>(recurrenceEndDate);
+    }
+    if (!nullToAbsent || recurrenceMaxOccurrences != null) {
+      map['recurrence_max_occurrences'] =
+          Variable<int>(recurrenceMaxOccurrences);
+    }
+    return map;
+  }
+
+  TaskTemplatesCompanion toCompanion(bool nullToAbsent) {
+    return TaskTemplatesCompanion(
+      id: Value(id),
+      name: Value(name),
+      description: description == null && nullToAbsent
+          ? const Value.absent()
+          : Value(description),
+      titleTemplate: Value(titleTemplate),
+      descriptionTemplate: descriptionTemplate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(descriptionTemplate),
+      priority: Value(priority),
+      tags: Value(tags),
+      subTaskTemplates: Value(subTaskTemplates),
+      locationTrigger: locationTrigger == null && nullToAbsent
+          ? const Value.absent()
+          : Value(locationTrigger),
+      projectId: projectId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(projectId),
+      estimatedDuration: estimatedDuration == null && nullToAbsent
+          ? const Value.absent()
+          : Value(estimatedDuration),
+      metadata: Value(metadata),
+      createdAt: Value(createdAt),
+      updatedAt: updatedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(updatedAt),
+      usageCount: Value(usageCount),
+      isFavorite: Value(isFavorite),
+      category: category == null && nullToAbsent
+          ? const Value.absent()
+          : Value(category),
+      recurrenceType: recurrenceType == null && nullToAbsent
+          ? const Value.absent()
+          : Value(recurrenceType),
+      recurrenceInterval: recurrenceInterval == null && nullToAbsent
+          ? const Value.absent()
+          : Value(recurrenceInterval),
+      recurrenceDaysOfWeek: recurrenceDaysOfWeek == null && nullToAbsent
+          ? const Value.absent()
+          : Value(recurrenceDaysOfWeek),
+      recurrenceEndDate: recurrenceEndDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(recurrenceEndDate),
+      recurrenceMaxOccurrences: recurrenceMaxOccurrences == null && nullToAbsent
+          ? const Value.absent()
+          : Value(recurrenceMaxOccurrences),
+    );
+  }
+
+  factory TaskTemplate.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TaskTemplate(
+      id: serializer.fromJson<String>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      description: serializer.fromJson<String?>(json['description']),
+      titleTemplate: serializer.fromJson<String>(json['titleTemplate']),
+      descriptionTemplate:
+          serializer.fromJson<String?>(json['descriptionTemplate']),
+      priority: serializer.fromJson<int>(json['priority']),
+      tags: serializer.fromJson<String>(json['tags']),
+      subTaskTemplates: serializer.fromJson<String>(json['subTaskTemplates']),
+      locationTrigger: serializer.fromJson<String?>(json['locationTrigger']),
+      projectId: serializer.fromJson<String?>(json['projectId']),
+      estimatedDuration: serializer.fromJson<int?>(json['estimatedDuration']),
+      metadata: serializer.fromJson<String>(json['metadata']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
+      usageCount: serializer.fromJson<int>(json['usageCount']),
+      isFavorite: serializer.fromJson<bool>(json['isFavorite']),
+      category: serializer.fromJson<String?>(json['category']),
+      recurrenceType: serializer.fromJson<int?>(json['recurrenceType']),
+      recurrenceInterval: serializer.fromJson<int?>(json['recurrenceInterval']),
+      recurrenceDaysOfWeek:
+          serializer.fromJson<String?>(json['recurrenceDaysOfWeek']),
+      recurrenceEndDate:
+          serializer.fromJson<DateTime?>(json['recurrenceEndDate']),
+      recurrenceMaxOccurrences:
+          serializer.fromJson<int?>(json['recurrenceMaxOccurrences']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'name': serializer.toJson<String>(name),
+      'description': serializer.toJson<String?>(description),
+      'titleTemplate': serializer.toJson<String>(titleTemplate),
+      'descriptionTemplate': serializer.toJson<String?>(descriptionTemplate),
+      'priority': serializer.toJson<int>(priority),
+      'tags': serializer.toJson<String>(tags),
+      'subTaskTemplates': serializer.toJson<String>(subTaskTemplates),
+      'locationTrigger': serializer.toJson<String?>(locationTrigger),
+      'projectId': serializer.toJson<String?>(projectId),
+      'estimatedDuration': serializer.toJson<int?>(estimatedDuration),
+      'metadata': serializer.toJson<String>(metadata),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime?>(updatedAt),
+      'usageCount': serializer.toJson<int>(usageCount),
+      'isFavorite': serializer.toJson<bool>(isFavorite),
+      'category': serializer.toJson<String?>(category),
+      'recurrenceType': serializer.toJson<int?>(recurrenceType),
+      'recurrenceInterval': serializer.toJson<int?>(recurrenceInterval),
+      'recurrenceDaysOfWeek': serializer.toJson<String?>(recurrenceDaysOfWeek),
+      'recurrenceEndDate': serializer.toJson<DateTime?>(recurrenceEndDate),
+      'recurrenceMaxOccurrences':
+          serializer.toJson<int?>(recurrenceMaxOccurrences),
+    };
+  }
+
+  TaskTemplate copyWith(
+          {String? id,
+          String? name,
+          Value<String?> description = const Value.absent(),
+          String? titleTemplate,
+          Value<String?> descriptionTemplate = const Value.absent(),
+          int? priority,
+          String? tags,
+          String? subTaskTemplates,
+          Value<String?> locationTrigger = const Value.absent(),
+          Value<String?> projectId = const Value.absent(),
+          Value<int?> estimatedDuration = const Value.absent(),
+          String? metadata,
+          DateTime? createdAt,
+          Value<DateTime?> updatedAt = const Value.absent(),
+          int? usageCount,
+          bool? isFavorite,
+          Value<String?> category = const Value.absent(),
+          Value<int?> recurrenceType = const Value.absent(),
+          Value<int?> recurrenceInterval = const Value.absent(),
+          Value<String?> recurrenceDaysOfWeek = const Value.absent(),
+          Value<DateTime?> recurrenceEndDate = const Value.absent(),
+          Value<int?> recurrenceMaxOccurrences = const Value.absent()}) =>
+      TaskTemplate(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        description: description.present ? description.value : this.description,
+        titleTemplate: titleTemplate ?? this.titleTemplate,
+        descriptionTemplate: descriptionTemplate.present
+            ? descriptionTemplate.value
+            : this.descriptionTemplate,
+        priority: priority ?? this.priority,
+        tags: tags ?? this.tags,
+        subTaskTemplates: subTaskTemplates ?? this.subTaskTemplates,
+        locationTrigger: locationTrigger.present
+            ? locationTrigger.value
+            : this.locationTrigger,
+        projectId: projectId.present ? projectId.value : this.projectId,
+        estimatedDuration: estimatedDuration.present
+            ? estimatedDuration.value
+            : this.estimatedDuration,
+        metadata: metadata ?? this.metadata,
+        createdAt: createdAt ?? this.createdAt,
+        updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
+        usageCount: usageCount ?? this.usageCount,
+        isFavorite: isFavorite ?? this.isFavorite,
+        category: category.present ? category.value : this.category,
+        recurrenceType:
+            recurrenceType.present ? recurrenceType.value : this.recurrenceType,
+        recurrenceInterval: recurrenceInterval.present
+            ? recurrenceInterval.value
+            : this.recurrenceInterval,
+        recurrenceDaysOfWeek: recurrenceDaysOfWeek.present
+            ? recurrenceDaysOfWeek.value
+            : this.recurrenceDaysOfWeek,
+        recurrenceEndDate: recurrenceEndDate.present
+            ? recurrenceEndDate.value
+            : this.recurrenceEndDate,
+        recurrenceMaxOccurrences: recurrenceMaxOccurrences.present
+            ? recurrenceMaxOccurrences.value
+            : this.recurrenceMaxOccurrences,
+      );
+  TaskTemplate copyWithCompanion(TaskTemplatesCompanion data) {
+    return TaskTemplate(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      description:
+          data.description.present ? data.description.value : this.description,
+      titleTemplate: data.titleTemplate.present
+          ? data.titleTemplate.value
+          : this.titleTemplate,
+      descriptionTemplate: data.descriptionTemplate.present
+          ? data.descriptionTemplate.value
+          : this.descriptionTemplate,
+      priority: data.priority.present ? data.priority.value : this.priority,
+      tags: data.tags.present ? data.tags.value : this.tags,
+      subTaskTemplates: data.subTaskTemplates.present
+          ? data.subTaskTemplates.value
+          : this.subTaskTemplates,
+      locationTrigger: data.locationTrigger.present
+          ? data.locationTrigger.value
+          : this.locationTrigger,
+      projectId: data.projectId.present ? data.projectId.value : this.projectId,
+      estimatedDuration: data.estimatedDuration.present
+          ? data.estimatedDuration.value
+          : this.estimatedDuration,
+      metadata: data.metadata.present ? data.metadata.value : this.metadata,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      usageCount:
+          data.usageCount.present ? data.usageCount.value : this.usageCount,
+      isFavorite:
+          data.isFavorite.present ? data.isFavorite.value : this.isFavorite,
+      category: data.category.present ? data.category.value : this.category,
+      recurrenceType: data.recurrenceType.present
+          ? data.recurrenceType.value
+          : this.recurrenceType,
+      recurrenceInterval: data.recurrenceInterval.present
+          ? data.recurrenceInterval.value
+          : this.recurrenceInterval,
+      recurrenceDaysOfWeek: data.recurrenceDaysOfWeek.present
+          ? data.recurrenceDaysOfWeek.value
+          : this.recurrenceDaysOfWeek,
+      recurrenceEndDate: data.recurrenceEndDate.present
+          ? data.recurrenceEndDate.value
+          : this.recurrenceEndDate,
+      recurrenceMaxOccurrences: data.recurrenceMaxOccurrences.present
+          ? data.recurrenceMaxOccurrences.value
+          : this.recurrenceMaxOccurrences,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TaskTemplate(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('description: $description, ')
+          ..write('titleTemplate: $titleTemplate, ')
+          ..write('descriptionTemplate: $descriptionTemplate, ')
+          ..write('priority: $priority, ')
+          ..write('tags: $tags, ')
+          ..write('subTaskTemplates: $subTaskTemplates, ')
+          ..write('locationTrigger: $locationTrigger, ')
+          ..write('projectId: $projectId, ')
+          ..write('estimatedDuration: $estimatedDuration, ')
+          ..write('metadata: $metadata, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('usageCount: $usageCount, ')
+          ..write('isFavorite: $isFavorite, ')
+          ..write('category: $category, ')
+          ..write('recurrenceType: $recurrenceType, ')
+          ..write('recurrenceInterval: $recurrenceInterval, ')
+          ..write('recurrenceDaysOfWeek: $recurrenceDaysOfWeek, ')
+          ..write('recurrenceEndDate: $recurrenceEndDate, ')
+          ..write('recurrenceMaxOccurrences: $recurrenceMaxOccurrences')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hashAll([
+        id,
+        name,
+        description,
+        titleTemplate,
+        descriptionTemplate,
+        priority,
+        tags,
+        subTaskTemplates,
+        locationTrigger,
+        projectId,
+        estimatedDuration,
+        metadata,
+        createdAt,
+        updatedAt,
+        usageCount,
+        isFavorite,
+        category,
+        recurrenceType,
+        recurrenceInterval,
+        recurrenceDaysOfWeek,
+        recurrenceEndDate,
+        recurrenceMaxOccurrences
+      ]);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TaskTemplate &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.description == this.description &&
+          other.titleTemplate == this.titleTemplate &&
+          other.descriptionTemplate == this.descriptionTemplate &&
+          other.priority == this.priority &&
+          other.tags == this.tags &&
+          other.subTaskTemplates == this.subTaskTemplates &&
+          other.locationTrigger == this.locationTrigger &&
+          other.projectId == this.projectId &&
+          other.estimatedDuration == this.estimatedDuration &&
+          other.metadata == this.metadata &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.usageCount == this.usageCount &&
+          other.isFavorite == this.isFavorite &&
+          other.category == this.category &&
+          other.recurrenceType == this.recurrenceType &&
+          other.recurrenceInterval == this.recurrenceInterval &&
+          other.recurrenceDaysOfWeek == this.recurrenceDaysOfWeek &&
+          other.recurrenceEndDate == this.recurrenceEndDate &&
+          other.recurrenceMaxOccurrences == this.recurrenceMaxOccurrences);
+}
+
+class TaskTemplatesCompanion extends UpdateCompanion<TaskTemplate> {
+  final Value<String> id;
+  final Value<String> name;
+  final Value<String?> description;
+  final Value<String> titleTemplate;
+  final Value<String?> descriptionTemplate;
+  final Value<int> priority;
+  final Value<String> tags;
+  final Value<String> subTaskTemplates;
+  final Value<String?> locationTrigger;
+  final Value<String?> projectId;
+  final Value<int?> estimatedDuration;
+  final Value<String> metadata;
+  final Value<DateTime> createdAt;
+  final Value<DateTime?> updatedAt;
+  final Value<int> usageCount;
+  final Value<bool> isFavorite;
+  final Value<String?> category;
+  final Value<int?> recurrenceType;
+  final Value<int?> recurrenceInterval;
+  final Value<String?> recurrenceDaysOfWeek;
+  final Value<DateTime?> recurrenceEndDate;
+  final Value<int?> recurrenceMaxOccurrences;
+  final Value<int> rowid;
+  const TaskTemplatesCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.description = const Value.absent(),
+    this.titleTemplate = const Value.absent(),
+    this.descriptionTemplate = const Value.absent(),
+    this.priority = const Value.absent(),
+    this.tags = const Value.absent(),
+    this.subTaskTemplates = const Value.absent(),
+    this.locationTrigger = const Value.absent(),
+    this.projectId = const Value.absent(),
+    this.estimatedDuration = const Value.absent(),
+    this.metadata = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.usageCount = const Value.absent(),
+    this.isFavorite = const Value.absent(),
+    this.category = const Value.absent(),
+    this.recurrenceType = const Value.absent(),
+    this.recurrenceInterval = const Value.absent(),
+    this.recurrenceDaysOfWeek = const Value.absent(),
+    this.recurrenceEndDate = const Value.absent(),
+    this.recurrenceMaxOccurrences = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  TaskTemplatesCompanion.insert({
+    required String id,
+    required String name,
+    this.description = const Value.absent(),
+    required String titleTemplate,
+    this.descriptionTemplate = const Value.absent(),
+    required int priority,
+    required String tags,
+    required String subTaskTemplates,
+    this.locationTrigger = const Value.absent(),
+    this.projectId = const Value.absent(),
+    this.estimatedDuration = const Value.absent(),
+    required String metadata,
+    required DateTime createdAt,
+    this.updatedAt = const Value.absent(),
+    this.usageCount = const Value.absent(),
+    this.isFavorite = const Value.absent(),
+    this.category = const Value.absent(),
+    this.recurrenceType = const Value.absent(),
+    this.recurrenceInterval = const Value.absent(),
+    this.recurrenceDaysOfWeek = const Value.absent(),
+    this.recurrenceEndDate = const Value.absent(),
+    this.recurrenceMaxOccurrences = const Value.absent(),
+    this.rowid = const Value.absent(),
+  })  : id = Value(id),
+        name = Value(name),
+        titleTemplate = Value(titleTemplate),
+        priority = Value(priority),
+        tags = Value(tags),
+        subTaskTemplates = Value(subTaskTemplates),
+        metadata = Value(metadata),
+        createdAt = Value(createdAt);
+  static Insertable<TaskTemplate> custom({
+    Expression<String>? id,
+    Expression<String>? name,
+    Expression<String>? description,
+    Expression<String>? titleTemplate,
+    Expression<String>? descriptionTemplate,
+    Expression<int>? priority,
+    Expression<String>? tags,
+    Expression<String>? subTaskTemplates,
+    Expression<String>? locationTrigger,
+    Expression<String>? projectId,
+    Expression<int>? estimatedDuration,
+    Expression<String>? metadata,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? usageCount,
+    Expression<bool>? isFavorite,
+    Expression<String>? category,
+    Expression<int>? recurrenceType,
+    Expression<int>? recurrenceInterval,
+    Expression<String>? recurrenceDaysOfWeek,
+    Expression<DateTime>? recurrenceEndDate,
+    Expression<int>? recurrenceMaxOccurrences,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (description != null) 'description': description,
+      if (titleTemplate != null) 'title_template': titleTemplate,
+      if (descriptionTemplate != null)
+        'description_template': descriptionTemplate,
+      if (priority != null) 'priority': priority,
+      if (tags != null) 'tags': tags,
+      if (subTaskTemplates != null) 'sub_task_templates': subTaskTemplates,
+      if (locationTrigger != null) 'location_trigger': locationTrigger,
+      if (projectId != null) 'project_id': projectId,
+      if (estimatedDuration != null) 'estimated_duration': estimatedDuration,
+      if (metadata != null) 'metadata': metadata,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (usageCount != null) 'usage_count': usageCount,
+      if (isFavorite != null) 'is_favorite': isFavorite,
+      if (category != null) 'category': category,
+      if (recurrenceType != null) 'recurrence_type': recurrenceType,
+      if (recurrenceInterval != null) 'recurrence_interval': recurrenceInterval,
+      if (recurrenceDaysOfWeek != null)
+        'recurrence_days_of_week': recurrenceDaysOfWeek,
+      if (recurrenceEndDate != null) 'recurrence_end_date': recurrenceEndDate,
+      if (recurrenceMaxOccurrences != null)
+        'recurrence_max_occurrences': recurrenceMaxOccurrences,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  TaskTemplatesCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? name,
+      Value<String?>? description,
+      Value<String>? titleTemplate,
+      Value<String?>? descriptionTemplate,
+      Value<int>? priority,
+      Value<String>? tags,
+      Value<String>? subTaskTemplates,
+      Value<String?>? locationTrigger,
+      Value<String?>? projectId,
+      Value<int?>? estimatedDuration,
+      Value<String>? metadata,
+      Value<DateTime>? createdAt,
+      Value<DateTime?>? updatedAt,
+      Value<int>? usageCount,
+      Value<bool>? isFavorite,
+      Value<String?>? category,
+      Value<int?>? recurrenceType,
+      Value<int?>? recurrenceInterval,
+      Value<String?>? recurrenceDaysOfWeek,
+      Value<DateTime?>? recurrenceEndDate,
+      Value<int?>? recurrenceMaxOccurrences,
+      Value<int>? rowid}) {
+    return TaskTemplatesCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      titleTemplate: titleTemplate ?? this.titleTemplate,
+      descriptionTemplate: descriptionTemplate ?? this.descriptionTemplate,
+      priority: priority ?? this.priority,
+      tags: tags ?? this.tags,
+      subTaskTemplates: subTaskTemplates ?? this.subTaskTemplates,
+      locationTrigger: locationTrigger ?? this.locationTrigger,
+      projectId: projectId ?? this.projectId,
+      estimatedDuration: estimatedDuration ?? this.estimatedDuration,
+      metadata: metadata ?? this.metadata,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      usageCount: usageCount ?? this.usageCount,
+      isFavorite: isFavorite ?? this.isFavorite,
+      category: category ?? this.category,
+      recurrenceType: recurrenceType ?? this.recurrenceType,
+      recurrenceInterval: recurrenceInterval ?? this.recurrenceInterval,
+      recurrenceDaysOfWeek: recurrenceDaysOfWeek ?? this.recurrenceDaysOfWeek,
+      recurrenceEndDate: recurrenceEndDate ?? this.recurrenceEndDate,
+      recurrenceMaxOccurrences:
+          recurrenceMaxOccurrences ?? this.recurrenceMaxOccurrences,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (titleTemplate.present) {
+      map['title_template'] = Variable<String>(titleTemplate.value);
+    }
+    if (descriptionTemplate.present) {
+      map['description_template'] = Variable<String>(descriptionTemplate.value);
+    }
+    if (priority.present) {
+      map['priority'] = Variable<int>(priority.value);
+    }
+    if (tags.present) {
+      map['tags'] = Variable<String>(tags.value);
+    }
+    if (subTaskTemplates.present) {
+      map['sub_task_templates'] = Variable<String>(subTaskTemplates.value);
+    }
+    if (locationTrigger.present) {
+      map['location_trigger'] = Variable<String>(locationTrigger.value);
+    }
+    if (projectId.present) {
+      map['project_id'] = Variable<String>(projectId.value);
+    }
+    if (estimatedDuration.present) {
+      map['estimated_duration'] = Variable<int>(estimatedDuration.value);
+    }
+    if (metadata.present) {
+      map['metadata'] = Variable<String>(metadata.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (usageCount.present) {
+      map['usage_count'] = Variable<int>(usageCount.value);
+    }
+    if (isFavorite.present) {
+      map['is_favorite'] = Variable<bool>(isFavorite.value);
+    }
+    if (category.present) {
+      map['category'] = Variable<String>(category.value);
+    }
+    if (recurrenceType.present) {
+      map['recurrence_type'] = Variable<int>(recurrenceType.value);
+    }
+    if (recurrenceInterval.present) {
+      map['recurrence_interval'] = Variable<int>(recurrenceInterval.value);
+    }
+    if (recurrenceDaysOfWeek.present) {
+      map['recurrence_days_of_week'] =
+          Variable<String>(recurrenceDaysOfWeek.value);
+    }
+    if (recurrenceEndDate.present) {
+      map['recurrence_end_date'] = Variable<DateTime>(recurrenceEndDate.value);
+    }
+    if (recurrenceMaxOccurrences.present) {
+      map['recurrence_max_occurrences'] =
+          Variable<int>(recurrenceMaxOccurrences.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TaskTemplatesCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('description: $description, ')
+          ..write('titleTemplate: $titleTemplate, ')
+          ..write('descriptionTemplate: $descriptionTemplate, ')
+          ..write('priority: $priority, ')
+          ..write('tags: $tags, ')
+          ..write('subTaskTemplates: $subTaskTemplates, ')
+          ..write('locationTrigger: $locationTrigger, ')
+          ..write('projectId: $projectId, ')
+          ..write('estimatedDuration: $estimatedDuration, ')
+          ..write('metadata: $metadata, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('usageCount: $usageCount, ')
+          ..write('isFavorite: $isFavorite, ')
+          ..write('category: $category, ')
+          ..write('recurrenceType: $recurrenceType, ')
+          ..write('recurrenceInterval: $recurrenceInterval, ')
+          ..write('recurrenceDaysOfWeek: $recurrenceDaysOfWeek, ')
+          ..write('recurrenceEndDate: $recurrenceEndDate, ')
+          ..write('recurrenceMaxOccurrences: $recurrenceMaxOccurrences, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -2483,12 +3555,20 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $TaskTagsTable taskTags = $TaskTagsTable(this);
   late final $TaskDependenciesTable taskDependencies =
       $TaskDependenciesTable(this);
+  late final $TaskTemplatesTable taskTemplates = $TaskTemplatesTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [projects, tasks, subTasks, tags, taskTags, taskDependencies];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [
+        projects,
+        tasks,
+        subTasks,
+        tags,
+        taskTags,
+        taskDependencies,
+        taskTemplates
+      ];
 }
 
 typedef $$ProjectsTableCreateCompanionBuilder = ProjectsCompanion Function({
@@ -3702,6 +4782,453 @@ typedef $$TaskDependenciesTableProcessedTableManager = ProcessedTableManager<
     ),
     TaskDependency,
     PrefetchHooks Function()>;
+typedef $$TaskTemplatesTableCreateCompanionBuilder = TaskTemplatesCompanion
+    Function({
+  required String id,
+  required String name,
+  Value<String?> description,
+  required String titleTemplate,
+  Value<String?> descriptionTemplate,
+  required int priority,
+  required String tags,
+  required String subTaskTemplates,
+  Value<String?> locationTrigger,
+  Value<String?> projectId,
+  Value<int?> estimatedDuration,
+  required String metadata,
+  required DateTime createdAt,
+  Value<DateTime?> updatedAt,
+  Value<int> usageCount,
+  Value<bool> isFavorite,
+  Value<String?> category,
+  Value<int?> recurrenceType,
+  Value<int?> recurrenceInterval,
+  Value<String?> recurrenceDaysOfWeek,
+  Value<DateTime?> recurrenceEndDate,
+  Value<int?> recurrenceMaxOccurrences,
+  Value<int> rowid,
+});
+typedef $$TaskTemplatesTableUpdateCompanionBuilder = TaskTemplatesCompanion
+    Function({
+  Value<String> id,
+  Value<String> name,
+  Value<String?> description,
+  Value<String> titleTemplate,
+  Value<String?> descriptionTemplate,
+  Value<int> priority,
+  Value<String> tags,
+  Value<String> subTaskTemplates,
+  Value<String?> locationTrigger,
+  Value<String?> projectId,
+  Value<int?> estimatedDuration,
+  Value<String> metadata,
+  Value<DateTime> createdAt,
+  Value<DateTime?> updatedAt,
+  Value<int> usageCount,
+  Value<bool> isFavorite,
+  Value<String?> category,
+  Value<int?> recurrenceType,
+  Value<int?> recurrenceInterval,
+  Value<String?> recurrenceDaysOfWeek,
+  Value<DateTime?> recurrenceEndDate,
+  Value<int?> recurrenceMaxOccurrences,
+  Value<int> rowid,
+});
+
+class $$TaskTemplatesTableFilterComposer
+    extends Composer<_$AppDatabase, $TaskTemplatesTable> {
+  $$TaskTemplatesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get titleTemplate => $composableBuilder(
+      column: $table.titleTemplate, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get descriptionTemplate => $composableBuilder(
+      column: $table.descriptionTemplate,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get priority => $composableBuilder(
+      column: $table.priority, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get tags => $composableBuilder(
+      column: $table.tags, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get subTaskTemplates => $composableBuilder(
+      column: $table.subTaskTemplates,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get locationTrigger => $composableBuilder(
+      column: $table.locationTrigger,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get projectId => $composableBuilder(
+      column: $table.projectId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get estimatedDuration => $composableBuilder(
+      column: $table.estimatedDuration,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get metadata => $composableBuilder(
+      column: $table.metadata, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get usageCount => $composableBuilder(
+      column: $table.usageCount, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get isFavorite => $composableBuilder(
+      column: $table.isFavorite, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get category => $composableBuilder(
+      column: $table.category, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get recurrenceType => $composableBuilder(
+      column: $table.recurrenceType,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get recurrenceInterval => $composableBuilder(
+      column: $table.recurrenceInterval,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get recurrenceDaysOfWeek => $composableBuilder(
+      column: $table.recurrenceDaysOfWeek,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get recurrenceEndDate => $composableBuilder(
+      column: $table.recurrenceEndDate,
+      builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get recurrenceMaxOccurrences => $composableBuilder(
+      column: $table.recurrenceMaxOccurrences,
+      builder: (column) => ColumnFilters(column));
+}
+
+class $$TaskTemplatesTableOrderingComposer
+    extends Composer<_$AppDatabase, $TaskTemplatesTable> {
+  $$TaskTemplatesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get name => $composableBuilder(
+      column: $table.name, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get titleTemplate => $composableBuilder(
+      column: $table.titleTemplate,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get descriptionTemplate => $composableBuilder(
+      column: $table.descriptionTemplate,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get priority => $composableBuilder(
+      column: $table.priority, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get tags => $composableBuilder(
+      column: $table.tags, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get subTaskTemplates => $composableBuilder(
+      column: $table.subTaskTemplates,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get locationTrigger => $composableBuilder(
+      column: $table.locationTrigger,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get projectId => $composableBuilder(
+      column: $table.projectId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get estimatedDuration => $composableBuilder(
+      column: $table.estimatedDuration,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get metadata => $composableBuilder(
+      column: $table.metadata, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+      column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get usageCount => $composableBuilder(
+      column: $table.usageCount, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get isFavorite => $composableBuilder(
+      column: $table.isFavorite, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get category => $composableBuilder(
+      column: $table.category, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get recurrenceType => $composableBuilder(
+      column: $table.recurrenceType,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get recurrenceInterval => $composableBuilder(
+      column: $table.recurrenceInterval,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get recurrenceDaysOfWeek => $composableBuilder(
+      column: $table.recurrenceDaysOfWeek,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get recurrenceEndDate => $composableBuilder(
+      column: $table.recurrenceEndDate,
+      builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get recurrenceMaxOccurrences => $composableBuilder(
+      column: $table.recurrenceMaxOccurrences,
+      builder: (column) => ColumnOrderings(column));
+}
+
+class $$TaskTemplatesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TaskTemplatesTable> {
+  $$TaskTemplatesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+      column: $table.description, builder: (column) => column);
+
+  GeneratedColumn<String> get titleTemplate => $composableBuilder(
+      column: $table.titleTemplate, builder: (column) => column);
+
+  GeneratedColumn<String> get descriptionTemplate => $composableBuilder(
+      column: $table.descriptionTemplate, builder: (column) => column);
+
+  GeneratedColumn<int> get priority =>
+      $composableBuilder(column: $table.priority, builder: (column) => column);
+
+  GeneratedColumn<String> get tags =>
+      $composableBuilder(column: $table.tags, builder: (column) => column);
+
+  GeneratedColumn<String> get subTaskTemplates => $composableBuilder(
+      column: $table.subTaskTemplates, builder: (column) => column);
+
+  GeneratedColumn<String> get locationTrigger => $composableBuilder(
+      column: $table.locationTrigger, builder: (column) => column);
+
+  GeneratedColumn<String> get projectId =>
+      $composableBuilder(column: $table.projectId, builder: (column) => column);
+
+  GeneratedColumn<int> get estimatedDuration => $composableBuilder(
+      column: $table.estimatedDuration, builder: (column) => column);
+
+  GeneratedColumn<String> get metadata =>
+      $composableBuilder(column: $table.metadata, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get usageCount => $composableBuilder(
+      column: $table.usageCount, builder: (column) => column);
+
+  GeneratedColumn<bool> get isFavorite => $composableBuilder(
+      column: $table.isFavorite, builder: (column) => column);
+
+  GeneratedColumn<String> get category =>
+      $composableBuilder(column: $table.category, builder: (column) => column);
+
+  GeneratedColumn<int> get recurrenceType => $composableBuilder(
+      column: $table.recurrenceType, builder: (column) => column);
+
+  GeneratedColumn<int> get recurrenceInterval => $composableBuilder(
+      column: $table.recurrenceInterval, builder: (column) => column);
+
+  GeneratedColumn<String> get recurrenceDaysOfWeek => $composableBuilder(
+      column: $table.recurrenceDaysOfWeek, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get recurrenceEndDate => $composableBuilder(
+      column: $table.recurrenceEndDate, builder: (column) => column);
+
+  GeneratedColumn<int> get recurrenceMaxOccurrences => $composableBuilder(
+      column: $table.recurrenceMaxOccurrences, builder: (column) => column);
+}
+
+class $$TaskTemplatesTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $TaskTemplatesTable,
+    TaskTemplate,
+    $$TaskTemplatesTableFilterComposer,
+    $$TaskTemplatesTableOrderingComposer,
+    $$TaskTemplatesTableAnnotationComposer,
+    $$TaskTemplatesTableCreateCompanionBuilder,
+    $$TaskTemplatesTableUpdateCompanionBuilder,
+    (
+      TaskTemplate,
+      BaseReferences<_$AppDatabase, $TaskTemplatesTable, TaskTemplate>
+    ),
+    TaskTemplate,
+    PrefetchHooks Function()> {
+  $$TaskTemplatesTableTableManager(_$AppDatabase db, $TaskTemplatesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$TaskTemplatesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$TaskTemplatesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$TaskTemplatesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback: ({
+            Value<String> id = const Value.absent(),
+            Value<String> name = const Value.absent(),
+            Value<String?> description = const Value.absent(),
+            Value<String> titleTemplate = const Value.absent(),
+            Value<String?> descriptionTemplate = const Value.absent(),
+            Value<int> priority = const Value.absent(),
+            Value<String> tags = const Value.absent(),
+            Value<String> subTaskTemplates = const Value.absent(),
+            Value<String?> locationTrigger = const Value.absent(),
+            Value<String?> projectId = const Value.absent(),
+            Value<int?> estimatedDuration = const Value.absent(),
+            Value<String> metadata = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<DateTime?> updatedAt = const Value.absent(),
+            Value<int> usageCount = const Value.absent(),
+            Value<bool> isFavorite = const Value.absent(),
+            Value<String?> category = const Value.absent(),
+            Value<int?> recurrenceType = const Value.absent(),
+            Value<int?> recurrenceInterval = const Value.absent(),
+            Value<String?> recurrenceDaysOfWeek = const Value.absent(),
+            Value<DateTime?> recurrenceEndDate = const Value.absent(),
+            Value<int?> recurrenceMaxOccurrences = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              TaskTemplatesCompanion(
+            id: id,
+            name: name,
+            description: description,
+            titleTemplate: titleTemplate,
+            descriptionTemplate: descriptionTemplate,
+            priority: priority,
+            tags: tags,
+            subTaskTemplates: subTaskTemplates,
+            locationTrigger: locationTrigger,
+            projectId: projectId,
+            estimatedDuration: estimatedDuration,
+            metadata: metadata,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+            usageCount: usageCount,
+            isFavorite: isFavorite,
+            category: category,
+            recurrenceType: recurrenceType,
+            recurrenceInterval: recurrenceInterval,
+            recurrenceDaysOfWeek: recurrenceDaysOfWeek,
+            recurrenceEndDate: recurrenceEndDate,
+            recurrenceMaxOccurrences: recurrenceMaxOccurrences,
+            rowid: rowid,
+          ),
+          createCompanionCallback: ({
+            required String id,
+            required String name,
+            Value<String?> description = const Value.absent(),
+            required String titleTemplate,
+            Value<String?> descriptionTemplate = const Value.absent(),
+            required int priority,
+            required String tags,
+            required String subTaskTemplates,
+            Value<String?> locationTrigger = const Value.absent(),
+            Value<String?> projectId = const Value.absent(),
+            Value<int?> estimatedDuration = const Value.absent(),
+            required String metadata,
+            required DateTime createdAt,
+            Value<DateTime?> updatedAt = const Value.absent(),
+            Value<int> usageCount = const Value.absent(),
+            Value<bool> isFavorite = const Value.absent(),
+            Value<String?> category = const Value.absent(),
+            Value<int?> recurrenceType = const Value.absent(),
+            Value<int?> recurrenceInterval = const Value.absent(),
+            Value<String?> recurrenceDaysOfWeek = const Value.absent(),
+            Value<DateTime?> recurrenceEndDate = const Value.absent(),
+            Value<int?> recurrenceMaxOccurrences = const Value.absent(),
+            Value<int> rowid = const Value.absent(),
+          }) =>
+              TaskTemplatesCompanion.insert(
+            id: id,
+            name: name,
+            description: description,
+            titleTemplate: titleTemplate,
+            descriptionTemplate: descriptionTemplate,
+            priority: priority,
+            tags: tags,
+            subTaskTemplates: subTaskTemplates,
+            locationTrigger: locationTrigger,
+            projectId: projectId,
+            estimatedDuration: estimatedDuration,
+            metadata: metadata,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+            usageCount: usageCount,
+            isFavorite: isFavorite,
+            category: category,
+            recurrenceType: recurrenceType,
+            recurrenceInterval: recurrenceInterval,
+            recurrenceDaysOfWeek: recurrenceDaysOfWeek,
+            recurrenceEndDate: recurrenceEndDate,
+            recurrenceMaxOccurrences: recurrenceMaxOccurrences,
+            rowid: rowid,
+          ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ));
+}
+
+typedef $$TaskTemplatesTableProcessedTableManager = ProcessedTableManager<
+    _$AppDatabase,
+    $TaskTemplatesTable,
+    TaskTemplate,
+    $$TaskTemplatesTableFilterComposer,
+    $$TaskTemplatesTableOrderingComposer,
+    $$TaskTemplatesTableAnnotationComposer,
+    $$TaskTemplatesTableCreateCompanionBuilder,
+    $$TaskTemplatesTableUpdateCompanionBuilder,
+    (
+      TaskTemplate,
+      BaseReferences<_$AppDatabase, $TaskTemplatesTable, TaskTemplate>
+    ),
+    TaskTemplate,
+    PrefetchHooks Function()>;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -3717,4 +5244,6 @@ class $AppDatabaseManager {
       $$TaskTagsTableTableManager(_db, _db.taskTags);
   $$TaskDependenciesTableTableManager get taskDependencies =>
       $$TaskDependenciesTableTableManager(_db, _db.taskDependencies);
+  $$TaskTemplatesTableTableManager get taskTemplates =>
+      $$TaskTemplatesTableTableManager(_db, _db.taskTemplates);
 }

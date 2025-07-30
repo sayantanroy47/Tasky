@@ -11,6 +11,8 @@ class TaskCard extends StatefulWidget {
   final int priority;
   final DateTime? dueDate;
   final List<String> tags;
+  final int? subTasksTotal;
+  final int? subTasksCompleted;
   final String? searchQuery;
   final VoidCallback? onTap;
   final VoidCallback? onToggleComplete;
@@ -26,6 +28,8 @@ class TaskCard extends StatefulWidget {
     this.priority = 1,
     this.dueDate,
     this.tags = const [],
+    this.subTasksTotal,
+    this.subTasksCompleted,
     this.searchQuery,
     this.onTap,
     this.onToggleComplete,
@@ -320,6 +324,42 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
                                   ),
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
+                              
+                              // Subtask progress indicator
+                              if (widget.subTasksTotal != null && widget.subTasksTotal! > 0) ...[
+                                const SizedBox(height: 8),
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.checklist,
+                                      size: 14,
+                                      color: theme.colorScheme.onSurfaceVariant,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      '${widget.subTasksCompleted ?? 0}/${widget.subTasksTotal}',
+                                      style: theme.textTheme.bodySmall?.copyWith(
+                                        color: theme.colorScheme.onSurfaceVariant,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: LinearProgressIndicator(
+                                        value: widget.subTasksTotal! > 0 
+                                            ? (widget.subTasksCompleted ?? 0) / widget.subTasksTotal!
+                                            : 0.0,
+                                        backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                                        valueColor: AlwaysStoppedAnimation<Color>(
+                                          theme.colorScheme.primary.withOpacity(
+                                            widget.isCompleted ? 0.5 : 1.0,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ],

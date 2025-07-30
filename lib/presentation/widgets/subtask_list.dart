@@ -1,0 +1,475 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../domain/entities/task_model.dart';
+import '../../domain/entities/subtask.dart';
+import '../providers/task_providers.dart';
+import 'custom_dialogs.dart';
+
+/// Widget for displaying and managing subtasks within a task
+class SubTaskList extends ConsumerStatefulWidget {
+  final TaskModel task;
+  final bool isEditable;
+
+  const SubTaskList({
+    super.key,
+    required this.task,
+    this.isEditable = true,
+  });
+
+  @override
+  ConsumerState<SubTaskList> createState() => _SubTaskListState();
+}
+
+class _SubTaskListState extends ConsumerState<SubTaskList> {
+  final TextEditingController _newSubTaskController = TextEditingController();
+  bool _isAddingSubTask = false;
+
+  @override
+  void dispose() {
+    _newSubTaskController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header with progress
+            Row(
+              children: [
+                Text(
+                  'Subtasks',
+                  style: theme.textTheme.titleMedium,
+                ),
+                const Spacer(),
+                if (widget.task.hasSubTasks)
+                  Text(
+                    '${widget.task.subTasks.where((st) => st.isCompleted).length}/${widget.task.subTasks.length}',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+              ],
+            ),
+            
+            // Progress indicator
+            if (widget.task.hasSubTasks) ...[
+              const SizedBox(height: 8),
+              LinearProgressIndicator(
+                value: widget.task.subTaskCompletionPercentage,
+                backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  theme.colorScheme.primary,
+                ),
+              ),
+            ],
+            
+            const SizedBox(height: 16),
+            
+            // Subtasks list
+            if (widget.task.hasSubTasks)
+              ...widget.task.subTasks.asMap().entries.map((entry) {
+                final index = entry.key;
+                final subTask = entry.value;
+                return _SubTaskItem(
+                  subTask: subTask,
+                  task: widget.task,
+                  isEditable: widget.isEditable,
+                  onToggle: () => _toggleSubTask(subTask),
+                  onEdit: () => _editSubTask(subTask),
+                  onDelete: () => _deleteSubTask(subTask),
+                  onReorder: widget.isEditable ? (newIndex) => _reorderSubTask(index, newIndex) : null,
+                );
+              }).toList(),
+            
+            // Add new subtask section
+            if (widget.isEditable) ...[
+              const SizedBox(height: 8),
+              if (_isAddingSubTask)
+                _buildAddSubTaskForm(theme)
+              else
+                _buildAddSubTaskButton(theme),
+            ],
+            
+            // Empty state
+            if (!widget.task.hasSubTasks && !_isAddingSubTask)
+              _buildEmptyState(theme),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAddSubTaskForm(ThemeData theme) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        children: [
+          TextField(
+            controller: _newSubTaskController,
+            decoration: const InputDecoration(
+              hintText: 'Enter subtask title...',
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.zero,
+            ),
+            autofocus: true,
+            onSubmitted: (_) => _addSubTask(),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              TextButton(
+                onPressed: _cancelAddSubTask,
+                child: const Text('Cancel'),
+              ),
+              const SizedBox(width: 8),
+              ElevatedButton(
+                onPressed: _addSubTask,
+                child: const Text('Add'),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAddSubTaskButton(ThemeData theme) {
+    return InkWell(
+      onTap: () {
+        setState(() {
+          _isAddingSubTask = true;
+        });
+      },
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: theme.colorScheme.outline.withOpacity(0.5),
+            style: BorderStyle.solid,
+          ),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              Icons.add,
+              size: 20,
+              color: theme.colorScheme.primary,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              'Add subtask',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.primary,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(ThemeData theme) {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        children: [
+          Icon(
+            Icons.checklist,
+            size: 48,
+            color: theme.colorScheme.onSurfaceVariant.withOpacity(0.5),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'No subtasks yet',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Break down this task into smaller steps',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _addSubTask() {
+    final title = _newSubTaskController.text.trim();
+    if (title.isEmpty) return;
+
+    final newSubTask = SubTask.create(
+      taskId: widget.task.id,
+      title: title,
+      sortOrder: widget.task.subTasks.length,
+    );
+
+    final updatedTask = widget.task.addSubTask(newSubTask);
+    ref.read(taskOperationsProvider).updateTask(updatedTask);
+
+    _newSubTaskController.clear();
+    setState(() {
+      _isAddingSubTask = false;
+    });
+  }
+
+  void _cancelAddSubTask() {
+    _newSubTaskController.clear();
+    setState(() {
+      _isAddingSubTask = false;
+    });
+  }
+
+  void _toggleSubTask(SubTask subTask) {
+    final updatedSubTask = subTask.isCompleted 
+        ? subTask.markIncomplete() 
+        : subTask.markCompleted();
+    
+    final updatedTask = widget.task.updateSubTask(updatedSubTask);
+    ref.read(taskOperationsProvider).updateTask(updatedTask);
+  }
+
+  void _editSubTask(SubTask subTask) {
+    showDialog(
+      context: context,
+      builder: (context) => _EditSubTaskDialog(
+        subTask: subTask,
+        onSave: (newTitle) {
+          final updatedSubTask = subTask.copyWith(title: newTitle);
+          final updatedTask = widget.task.updateSubTask(updatedSubTask);
+          ref.read(taskOperationsProvider).updateTask(updatedTask);
+        },
+      ),
+    );
+  }
+
+  void _deleteSubTask(SubTask subTask) {
+    showDialog(
+      context: context,
+      builder: (context) => ConfirmationDialog(
+        title: 'Delete Subtask',
+        content: 'Are you sure you want to delete "${subTask.title}"?',
+        confirmText: 'Delete',
+        cancelText: 'Cancel',
+        isDestructive: true,
+        onConfirm: () {
+          final updatedTask = widget.task.removeSubTask(subTask.id);
+          ref.read(taskOperationsProvider).updateTask(updatedTask);
+        },
+      ),
+    );
+  }
+
+  void _reorderSubTask(int oldIndex, int newIndex) {
+    if (oldIndex == newIndex) return;
+
+    final subTasks = List<SubTask>.from(widget.task.subTasks);
+    final subTask = subTasks.removeAt(oldIndex);
+    subTasks.insert(newIndex, subTask);
+
+    // Update sort orders
+    final updatedSubTasks = subTasks.asMap().entries.map((entry) {
+      return entry.value.copyWith(sortOrder: entry.key);
+    }).toList();
+
+    final updatedTask = widget.task.copyWith(subTasks: updatedSubTasks);
+    ref.read(taskOperationsProvider).updateTask(updatedTask);
+  }
+}
+
+/// Individual subtask item widget
+class _SubTaskItem extends StatelessWidget {
+  final SubTask subTask;
+  final TaskModel task;
+  final bool isEditable;
+  final VoidCallback onToggle;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
+  final Function(int)? onReorder;
+
+  const _SubTaskItem({
+    required this.subTask,
+    required this.task,
+    required this.isEditable,
+    required this.onToggle,
+    required this.onEdit,
+    required this.onDelete,
+    this.onReorder,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
+    return Container(
+      margin: const EdgeInsets.only(bottom: 4),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(8),
+          onTap: isEditable ? onToggle : null,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+            child: Row(
+              children: [
+                // Drag handle (if reorderable)
+                if (onReorder != null) ...[
+                  Icon(
+                    Icons.drag_handle,
+                    size: 16,
+                    color: theme.colorScheme.onSurfaceVariant.withOpacity(0.5),
+                  ),
+                  const SizedBox(width: 8),
+                ],
+                
+                // Checkbox
+                Checkbox(
+                  value: subTask.isCompleted,
+                  onChanged: isEditable ? (_) => onToggle() : null,
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+                
+                const SizedBox(width: 8),
+                
+                // Title
+                Expanded(
+                  child: Text(
+                    subTask.title,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      decoration: subTask.isCompleted 
+                          ? TextDecoration.lineThrough 
+                          : null,
+                      color: subTask.isCompleted 
+                          ? theme.colorScheme.onSurfaceVariant 
+                          : theme.colorScheme.onSurface,
+                    ),
+                  ),
+                ),
+                
+                // Actions menu
+                if (isEditable)
+                  PopupMenuButton<String>(
+                    onSelected: (value) {
+                      switch (value) {
+                        case 'edit':
+                          onEdit();
+                          break;
+                        case 'delete':
+                          onDelete();
+                          break;
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      const PopupMenuItem(
+                        value: 'edit',
+                        child: ListTile(
+                          leading: Icon(Icons.edit),
+                          title: Text('Edit'),
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                      ),
+                      const PopupMenuItem(
+                        value: 'delete',
+                        child: ListTile(
+                          leading: Icon(Icons.delete),
+                          title: Text('Delete'),
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                      ),
+                    ],
+                    child: Icon(
+                      Icons.more_vert,
+                      size: 16,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Dialog for editing a subtask
+class _EditSubTaskDialog extends StatefulWidget {
+  final SubTask subTask;
+  final Function(String) onSave;
+
+  const _EditSubTaskDialog({
+    required this.subTask,
+    required this.onSave,
+  });
+
+  @override
+  State<_EditSubTaskDialog> createState() => _EditSubTaskDialogState();
+}
+
+class _EditSubTaskDialogState extends State<_EditSubTaskDialog> {
+  late TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.subTask.title);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Edit Subtask'),
+      content: TextField(
+        controller: _controller,
+        decoration: const InputDecoration(
+          labelText: 'Subtask title',
+          border: OutlineInputBorder(),
+        ),
+        autofocus: true,
+        onSubmitted: (_) => _save(),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(
+          onPressed: _save,
+          child: const Text('Save'),
+        ),
+      ],
+    );
+  }
+
+  void _save() {
+    final title = _controller.text.trim();
+    if (title.isNotEmpty) {
+      widget.onSave(title);
+      Navigator.of(context).pop();
+    }
+  }
+}
