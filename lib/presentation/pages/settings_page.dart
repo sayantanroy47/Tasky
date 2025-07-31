@@ -267,31 +267,12 @@ class SettingsPageBody extends ConsumerWidget {
                   const SizedBox(height: 16),
                   
                   ListTile(
-                    leading: const Icon(Icons.file_download),
-                    title: const Text('Export Data'),
-                    subtitle: const Text('Download your tasks and settings'),
+                    leading: const Icon(Icons.import_export),
+                    title: const Text('Data Export & Import'),
+                    subtitle: const Text('Export, import, and backup your data'),
                     trailing: const Icon(Icons.arrow_forward_ios),
                     onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Export functionality coming soon!'),
-                        ),
-                      );
-                    },
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                  
-                  ListTile(
-                    leading: const Icon(Icons.file_upload),
-                    title: const Text('Import Data'),
-                    subtitle: const Text('Import tasks from backup'),
-                    trailing: const Icon(Icons.arrow_forward_ios),
-                    onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Import functionality coming soon!'),
-                        ),
-                      );
+                      Navigator.of(context).pushNamed('/data-export');
                     },
                     contentPadding: EdgeInsets.zero,
                   ),

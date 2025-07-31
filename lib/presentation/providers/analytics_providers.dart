@@ -100,6 +100,63 @@ final completionRateTrendProvider = FutureProvider.family<List<double>, int>((re
   return await analyticsService.getCompletionRateTrend(dateRange, intervalDays);
 });
 
+/// Advanced analytics providers
+
+/// Productivity patterns provider
+final productivityPatternsProvider = FutureProvider<ProductivityPatterns>((ref) async {
+  final analyticsService = ref.watch(analyticsServiceProvider);
+  final period = ref.watch(analyticsTimePeriodProvider);
+  final customRange = ref.watch(customDateRangeProvider);
+  
+  final dateRange = customRange ?? period.dateRange;
+  return await analyticsService.getProductivityPatterns(dateRange);
+});
+
+/// Peak hours analysis provider
+final peakHoursAnalysisProvider = FutureProvider<PeakHoursAnalysis>((ref) async {
+  final analyticsService = ref.watch(analyticsServiceProvider);
+  final period = ref.watch(analyticsTimePeriodProvider);
+  final customRange = ref.watch(customDateRangeProvider);
+  
+  final dateRange = customRange ?? period.dateRange;
+  return await analyticsService.getPeakHoursAnalysis(dateRange);
+});
+
+/// Advanced category analytics provider
+final advancedCategoryAnalyticsProvider = FutureProvider<AdvancedCategoryAnalytics>((ref) async {
+  final analyticsService = ref.watch(analyticsServiceProvider);
+  final period = ref.watch(analyticsTimePeriodProvider);
+  final customRange = ref.watch(customDateRangeProvider);
+  
+  return await analyticsService.getAdvancedCategoryAnalytics(
+    period,
+    customRange: customRange,
+  );
+});
+
+/// Productivity insights provider
+final productivityInsightsProvider = FutureProvider<ProductivityInsights>((ref) async {
+  final analyticsService = ref.watch(analyticsServiceProvider);
+  final period = ref.watch(analyticsTimePeriodProvider);
+  final customRange = ref.watch(customDateRangeProvider);
+  
+  final dateRange = customRange ?? period.dateRange;
+  return await analyticsService.getProductivityInsights(dateRange);
+});
+
+/// Analytics export provider
+final analyticsExportProvider = FutureProvider.family<String, AnalyticsExportFormat>((ref, format) async {
+  final analyticsService = ref.watch(analyticsServiceProvider);
+  final period = ref.watch(analyticsTimePeriodProvider);
+  final customRange = ref.watch(customDateRangeProvider);
+  
+  return await analyticsService.exportAnalytics(
+    format,
+    period,
+    customRange: customRange,
+  );
+});
+
 /// Provider for refreshing analytics data
 final refreshAnalyticsProvider = Provider<void Function()>((ref) {
   return () {
@@ -111,6 +168,11 @@ final refreshAnalyticsProvider = Provider<void Function()>((ref) {
     ref.invalidate(hourlyProductivityProvider);
     ref.invalidate(weekdayProductivityProvider);
     ref.invalidate(completionRateTrendProvider);
+    ref.invalidate(productivityPatternsProvider);
+    ref.invalidate(peakHoursAnalysisProvider);
+    ref.invalidate(advancedCategoryAnalyticsProvider);
+    ref.invalidate(productivityInsightsProvider);
+    ref.invalidate(analyticsExportProvider);
   };
 });
 

@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'location_models.dart';
 import 'geofencing_manager.dart';
-import '../../domain/entities/task.dart';
+import '../../domain/entities/task_model.dart';
+import '../../domain/entities/task_enums.dart';
 import '../../domain/repositories/task_repository.dart';
 
 class LocationTaskService {
@@ -17,7 +19,7 @@ class LocationTaskService {
   );
 
   /// Create a location-based task
-  Future<Task> createLocationTask({
+  Future<TaskModel> createLocationTask({
     required String title,
     required String description,
     required GeofenceData geofence,
@@ -26,31 +28,28 @@ class LocationTaskService {
     List<String> tags = const [],
   }) async {
     // Create the task
-    final task = Task(
+    final task = TaskModel(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       title: title,
       description: description,
-      isCompleted: false,
+      status: TaskStatus.pending,
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
       dueDate: dueDate,
       priority: priority,
       tags: tags,
       projectId: null,
-      subtasks: [],
+      subTasks: [],
       dependencies: [],
-      isRecurring: false,
-      recurrencePattern: null,
-      templateId: null,
     );
 
     // Save the task
-    final savedTask = await _taskRepository.createTask(task);
+    await _taskRepository.createTask(task);
 
     // Create location trigger
     final locationTrigger = LocationTrigger(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
-      taskId: savedTask.id,
+      taskId: task.id,
       geofence: geofence,
       isEnabled: true,
       createdAt: DateTime.now(),
@@ -59,7 +58,7 @@ class LocationTaskService {
     // Add the location trigger to geofencing manager
     await _geofencingManager.addLocationTrigger(locationTrigger);
 
-    return savedTask;
+    return task;
   }
 
   /// Add location trigger to existing task
@@ -104,7 +103,7 @@ class LocationTaskService {
   }
 
   /// Get all location-based tasks
-  Future<List<Task>> getLocationBasedTasks() async {
+  Future<List<TaskModel>> getLocationBasedTasks() async {
     final allTasks = await _taskRepository.getAllTasks();
     final activeTriggers = _geofencingManager.getActiveTriggers();
     final locationTaskIds = activeTriggers.map((t) => t.taskId).toSet();
@@ -173,7 +172,7 @@ class LocationTaskService {
       totalLocationTriggers: activeTriggers.length,
       activeLocationTriggers: activeTriggers.where((t) => t.isEnabled).length,
       totalLocationTasks: locationTasks.length,
-      completedLocationTasks: locationTasks.where((t) => t.isCompleted).length,
+      completedLocationTasks: locationTasks.where((t) => t.status.isCompleted).length,
     );
   }
 
@@ -190,20 +189,20 @@ class LocationTaskService {
     final double dLat = _degreesToRadians(lat2 - lat1);
     final double dLon = _degreesToRadians(lon2 - lon1);
     
-    final double a = (dLat / 2).sin() * (dLat / 2).sin() +
-        lat1.cos() * lat2.cos() * (dLon / 2).sin() * (dLon / 2).sin();
-    final double c = 2 * a.sqrt().asin();
+    final double a = sin(dLat / 2) * sin(dLat / 2) +
+        cos(lat1) * cos(lat2) * sin(dLon / 2) * sin(dLon / 2);
+    final double c = 2 * asin(sqrt(a));
     
     return earthRadius * c;
   }
 
   double _degreesToRadians(double degrees) {
-    return degrees * (3.14159265359 / 180);
+    return degrees * (pi / 180);
   }
 }
 
 class TaskLocationInfo {
-  final Task task;
+  final TaskModel task;
   final LocationTrigger trigger;
   final double distance;
 

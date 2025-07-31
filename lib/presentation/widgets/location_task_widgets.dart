@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../services/location/location_models.dart';
 import '../../services/location/location_task_service.dart';
-import '../../domain/entities/task.dart';
+import '../../domain/entities/task_model.dart';
+import '../../domain/entities/task_enums.dart';
 import '../providers/location_providers.dart';
 import 'location_widgets.dart';
 

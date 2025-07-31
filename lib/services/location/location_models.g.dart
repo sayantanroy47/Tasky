@@ -71,3 +71,55 @@ Map<String, dynamic> _$LocationTriggerToJson(LocationTrigger instance) =>
       'isEnabled': instance.isEnabled,
       'createdAt': instance.createdAt.toIso8601String(),
     };
+
+GeofenceEvent _$GeofenceEventFromJson(Map<String, dynamic> json) =>
+    GeofenceEvent(
+      geofenceId: json['geofenceId'] as String,
+      type: $enumDecode(_$GeofenceEventTypeEnumMap, json['type']),
+      location: LocationData.fromJson(json['location'] as Map<String, dynamic>),
+      timestamp: DateTime.parse(json['timestamp'] as String),
+    );
+
+Map<String, dynamic> _$GeofenceEventToJson(GeofenceEvent instance) =>
+    <String, dynamic>{
+      'geofenceId': instance.geofenceId,
+      'type': _$GeofenceEventTypeEnumMap[instance.type]!,
+      'location': instance.location,
+      'timestamp': instance.timestamp.toIso8601String(),
+    };
+
+const _$GeofenceEventTypeEnumMap = {
+  GeofenceEventType.enter: 'enter',
+  GeofenceEventType.exit: 'exit',
+};
+
+LocationSettings _$LocationSettingsFromJson(Map<String, dynamic> json) =>
+    LocationSettings(
+      locationEnabled: json['locationEnabled'] as bool? ?? false,
+      geofencingEnabled: json['geofencingEnabled'] as bool? ?? false,
+      locationAccuracy: $enumDecodeNullable(
+              _$LocationAccuracyEnumMap, json['locationAccuracy']) ??
+          LocationAccuracy.medium,
+      backgroundLocationEnabled:
+          json['backgroundLocationEnabled'] as bool? ?? false,
+      locationHistoryEnabled: json['locationHistoryEnabled'] as bool? ?? false,
+      locationUpdateIntervalSeconds:
+          (json['locationUpdateIntervalSeconds'] as num?)?.toInt() ?? 30,
+    );
+
+Map<String, dynamic> _$LocationSettingsToJson(LocationSettings instance) =>
+    <String, dynamic>{
+      'locationEnabled': instance.locationEnabled,
+      'geofencingEnabled': instance.geofencingEnabled,
+      'locationAccuracy': _$LocationAccuracyEnumMap[instance.locationAccuracy]!,
+      'backgroundLocationEnabled': instance.backgroundLocationEnabled,
+      'locationHistoryEnabled': instance.locationHistoryEnabled,
+      'locationUpdateIntervalSeconds': instance.locationUpdateIntervalSeconds,
+    };
+
+const _$LocationAccuracyEnumMap = {
+  LocationAccuracy.low: 'low',
+  LocationAccuracy.medium: 'medium',
+  LocationAccuracy.high: 'high',
+  LocationAccuracy.best: 'best',
+};

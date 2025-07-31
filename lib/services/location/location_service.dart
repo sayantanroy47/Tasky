@@ -51,22 +51,3 @@ abstract class LocationService {
   /// Dispose resources
   void dispose();
 }
-
-class GeofenceEvent {
-  final String geofenceId;
-  final GeofenceEventType type;
-  final LocationData location;
-  final DateTime timestamp;
-
-  const GeofenceEvent({
-    required this.geofenceId,
-    required this.type,
-    required this.location,
-    required this.timestamp,
-  });
-}
-
-enum GeofenceEventType {
-  enter,
-  exit,
-}

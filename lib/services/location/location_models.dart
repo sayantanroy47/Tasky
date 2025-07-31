@@ -182,6 +182,95 @@ enum LocationPermissionStatus {
   unableToDetermine,
 }
 
+enum LocationAccuracy {
+  low,
+  medium,
+  high,
+  best,
+}
+
+@JsonSerializable()
+class GeofenceEvent extends Equatable {
+  final String geofenceId;
+  final GeofenceEventType type;
+  final LocationData location;
+  final DateTime timestamp;
+
+  const GeofenceEvent({
+    required this.geofenceId,
+    required this.type,
+    required this.location,
+    required this.timestamp,
+  });
+
+  factory GeofenceEvent.fromJson(Map<String, dynamic> json) =>
+      _$GeofenceEventFromJson(json);
+
+  Map<String, dynamic> toJson() => _$GeofenceEventToJson(this);
+
+  @override
+  List<Object?> get props => [geofenceId, type, location, timestamp];
+}
+
+enum GeofenceEventType {
+  @JsonValue('enter')
+  enter,
+  @JsonValue('exit')
+  exit,
+}
+
+@JsonSerializable()
+class LocationSettings extends Equatable {
+  final bool locationEnabled;
+  final bool geofencingEnabled;
+  final LocationAccuracy locationAccuracy;
+  final bool backgroundLocationEnabled;
+  final bool locationHistoryEnabled;
+  final int locationUpdateIntervalSeconds;
+
+  const LocationSettings({
+    this.locationEnabled = false,
+    this.geofencingEnabled = false,
+    this.locationAccuracy = LocationAccuracy.medium,
+    this.backgroundLocationEnabled = false,
+    this.locationHistoryEnabled = false,
+    this.locationUpdateIntervalSeconds = 30,
+  });
+
+  factory LocationSettings.fromJson(Map<String, dynamic> json) =>
+      _$LocationSettingsFromJson(json);
+
+  Map<String, dynamic> toJson() => _$LocationSettingsToJson(this);
+
+  @override
+  List<Object?> get props => [
+        locationEnabled,
+        geofencingEnabled,
+        locationAccuracy,
+        backgroundLocationEnabled,
+        locationHistoryEnabled,
+        locationUpdateIntervalSeconds,
+      ];
+
+  LocationSettings copyWith({
+    bool? locationEnabled,
+    bool? geofencingEnabled,
+    LocationAccuracy? locationAccuracy,
+    bool? backgroundLocationEnabled,
+    bool? locationHistoryEnabled,
+    int? locationUpdateIntervalSeconds,
+  }) {
+    return LocationSettings(
+      locationEnabled: locationEnabled ?? this.locationEnabled,
+      geofencingEnabled: geofencingEnabled ?? this.geofencingEnabled,
+      locationAccuracy: locationAccuracy ?? this.locationAccuracy,
+      backgroundLocationEnabled: backgroundLocationEnabled ?? this.backgroundLocationEnabled,
+      locationHistoryEnabled: locationHistoryEnabled ?? this.locationHistoryEnabled,
+      locationUpdateIntervalSeconds: locationUpdateIntervalSeconds ?? this.locationUpdateIntervalSeconds,
+    );
+  }
+}
+
 class LocationServiceException implements Exception {
   final String message;
   final String? code;

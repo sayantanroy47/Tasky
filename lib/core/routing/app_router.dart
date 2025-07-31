@@ -12,6 +12,7 @@ import '../../presentation/pages/settings_page.dart';
 import '../../presentation/pages/not_found_page.dart';
 import '../../presentation/pages/voice_demo_page.dart';
 import '../../presentation/pages/location_settings_page.dart';
+import '../../presentation/pages/data_export_page.dart';
 
 /// App router configuration
 class AppRouter {
@@ -29,6 +30,7 @@ class AppRouter {
   static const String settings = '/settings';
   static const String voiceDemo = '/voice-demo';
   static const String locationSettings = '/location-settings';
+  static const String dataExport = '/data-export';
 
   /// Initial route
   static const String initialRoute = home;
@@ -64,6 +66,8 @@ class AppRouter {
         return _createRoute(const VoiceDemoPage(), settings);
       case '/location-settings':
         return _createRoute(const LocationSettingsPage(), settings);
+      case '/data-export':
+        return _createRoute(const DataExportPage(), settings);
       default:
         return _createRoute(const NotFoundPage(), settings);
     }

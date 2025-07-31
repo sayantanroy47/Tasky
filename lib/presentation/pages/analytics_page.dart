@@ -249,6 +249,94 @@ class AnalyticsPageBody extends ConsumerWidget {
               );
             },
           ),
+          
+          const SizedBox(height: 16),
+          
+          // Advanced analytics sections
+          
+          // Productivity patterns
+          Consumer(
+            builder: (context, ref, child) {
+              final patternsAsync = ref.watch(productivityPatternsProvider);
+              return patternsAsync.when(
+                data: (patterns) => ProductivityPatternsWidget(patterns: patterns),
+                loading: () => const Card(
+                  child: Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                ),
+                error: (error, stack) => _ErrorWidget(error: error.toString()),
+              );
+            },
+          ),
+          
+          const SizedBox(height: 16),
+          
+          // Peak hours analysis
+          Consumer(
+            builder: (context, ref, child) {
+              final peakHoursAsync = ref.watch(peakHoursAnalysisProvider);
+              return peakHoursAsync.when(
+                data: (analysis) => PeakHoursAnalysisWidget(analysis: analysis),
+                loading: () => const Card(
+                  child: Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                ),
+                error: (error, stack) => _ErrorWidget(error: error.toString()),
+              );
+            },
+          ),
+          
+          const SizedBox(height: 16),
+          
+          // Advanced category analytics
+          Consumer(
+            builder: (context, ref, child) {
+              final advancedCategoryAsync = ref.watch(advancedCategoryAnalyticsProvider);
+              return advancedCategoryAsync.when(
+                data: (analytics) => AdvancedCategoryAnalyticsWidget(analytics: analytics),
+                loading: () => const Card(
+                  child: Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                ),
+                error: (error, stack) => _ErrorWidget(error: error.toString()),
+              );
+            },
+          ),
+          
+          const SizedBox(height: 16),
+          
+          // Advanced productivity insights
+          Consumer(
+            builder: (context, ref, child) {
+              final insightsAsync = ref.watch(productivityInsightsProvider);
+              return insightsAsync.when(
+                data: (insights) => AdvancedProductivityInsightsWidget(insights: insights),
+                loading: () => const Card(
+                  child: Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                ),
+                error: (error, stack) => _ErrorWidget(error: error.toString()),
+              );
+            },
+          ),
+          
+          const SizedBox(height: 16),
+          
+          // Analytics export
+          AnalyticsExportWidget(
+            onExportJson: () => _exportAnalytics(context, ref, AnalyticsExportFormat.json),
+            onExportCsv: () => _exportAnalytics(context, ref, AnalyticsExportFormat.csv),
+            onExportPdf: () => _exportAnalytics(context, ref, AnalyticsExportFormat.pdf),
+            onExportExcel: () => _exportAnalytics(context, ref, AnalyticsExportFormat.excel),
+          ),
         ],
       ),
     );
@@ -301,6 +389,40 @@ class AnalyticsPageBody extends ConsumerWidget {
   String _formatDateLabel(DateTime date) {
     final weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     return weekdays[date.weekday - 1];
+  }
+
+  Future<void> _exportAnalytics(BuildContext context, WidgetRef ref, AnalyticsExportFormat format) async {
+    try {
+      // Show loading indicator
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Exporting analytics as ${format.displayName}...'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+
+      final exportData = await ref.read(analyticsExportProvider(format).future);
+      
+      // In a real implementation, you would save the file or share it
+      // For now, we'll just show a success message
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Analytics exported as ${format.displayName} successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Export failed: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 }
 

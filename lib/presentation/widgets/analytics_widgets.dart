@@ -662,3 +662,727 @@ class TimePeriodSelector extends StatelessWidget {
     );
   }
 }
+
+/// Advanced analytics widgets for new features
+
+/// Widget for displaying productivity patterns
+class ProductivityPatternsWidget extends StatelessWidget {
+  final ProductivityPatterns patterns;
+
+  const ProductivityPatternsWidget({
+    super.key,
+    required this.patterns,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Productivity Patterns',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 16),
+            
+            // Consistency score
+            Row(
+              children: [
+                Icon(Icons.trending_up, color: Colors.blue, size: 20),
+                const SizedBox(width: 8),
+                Text(
+                  'Consistency Score: ${(patterns.consistencyScore * 100).round()}%',
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            
+            // Peak hours
+            if (patterns.peaks.isNotEmpty) ...[
+              Text(
+                'Peak Productivity Hours',
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+              const SizedBox(height: 8),
+              ...patterns.peaks.take(3).map((peak) => Padding(
+                padding: const EdgeInsets.only(bottom: 4.0),
+                child: Row(
+                  children: [
+                    Icon(Icons.schedule, color: Colors.orange, size: 16),
+                    const SizedBox(width: 8),
+                    Text(
+                      '${_formatHour(peak.hour)} - ${(peak.efficiency * 100).round()}% efficiency',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
+                ),
+              )),
+              const SizedBox(height: 16),
+            ],
+            
+            // Category efficiency
+            if (patterns.categoryEfficiency.isNotEmpty) ...[
+              Text(
+                'Category Performance',
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+              const SizedBox(height: 8),
+              ...(patterns.categoryEfficiency.entries
+                  .toList()
+                  ..sort((a, b) => b.value.compareTo(a.value)))
+                  .take(3)
+                  .map((entry) => Padding(
+                    padding: const EdgeInsets.only(bottom: 4.0),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 12,
+                          height: 12,
+                          decoration: BoxDecoration(
+                            color: _getCategoryColor(entry.key),
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            entry.key,
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ),
+                        Text(
+                          '${(entry.value * 100).round()}%',
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _formatHour(int hour) {
+    if (hour == 0) return '12 AM';
+    if (hour < 12) return '$hour AM';
+    if (hour == 12) return '12 PM';
+    return '${hour - 12} PM';
+  }
+
+  Color _getCategoryColor(String categoryName) {
+    final colors = [
+      Colors.blue,
+      Colors.green,
+      Colors.orange,
+      Colors.purple,
+      Colors.red,
+      Colors.teal,
+      Colors.indigo,
+      Colors.pink,
+    ];
+    return colors[categoryName.hashCode % colors.length];
+  }
+}
+
+/// Widget for displaying peak hours analysis
+class PeakHoursAnalysisWidget extends StatelessWidget {
+  final PeakHoursAnalysis analysis;
+
+  const PeakHoursAnalysisWidget({
+    super.key,
+    required this.analysis,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Peak Hours Analysis',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 16),
+            
+            // Peak hours
+            Row(
+              children: [
+                Expanded(
+                  child: _MetricCard(
+                    title: 'Peak Hours',
+                    value: analysis.peakHours.take(3).map(_formatHour).join(', '),
+                    icon: Icons.schedule,
+                    color: Colors.green,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _MetricCard(
+                    title: 'Optimal Window',
+                    value: '${_formatHour(analysis.recommendedWorkingWindow.startHour)}-${_formatHour(analysis.recommendedWorkingWindow.endHour)}',
+                    icon: Icons.access_time,
+                    color: Colors.blue,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            
+            // Productivity scores
+            Row(
+              children: [
+                Expanded(
+                  child: _MetricCard(
+                    title: 'Peak Score',
+                    value: '${(analysis.peakProductivityScore * 100).round()}%',
+                    icon: Icons.trending_up,
+                    color: Colors.orange,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _MetricCard(
+                    title: 'Average Score',
+                    value: '${(analysis.averageProductivityScore * 100).round()}%',
+                    icon: Icons.analytics,
+                    color: Colors.purple,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            
+            // Optimization suggestions
+            if (analysis.suggestions.isNotEmpty) ...[
+              Text(
+                'Optimization Suggestions',
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+              const SizedBox(height: 8),
+              ...analysis.suggestions.take(2).map((suggestion) => Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        suggestion.title,
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        suggestion.description,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _formatHour(int hour) {
+    if (hour == 0) return '12 AM';
+    if (hour < 12) return '$hour AM';
+    if (hour == 12) return '12 PM';
+    return '${hour - 12} PM';
+  }
+}
+
+/// Widget for displaying advanced category analytics
+class AdvancedCategoryAnalyticsWidget extends StatelessWidget {
+  final AdvancedCategoryAnalytics analytics;
+
+  const AdvancedCategoryAnalyticsWidget({
+    super.key,
+    required this.analytics,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Advanced Category Analytics',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 16),
+            
+            // Performance ranking
+            if (analytics.ranking.topPerformingCategories.isNotEmpty) ...[
+              Text(
+                'Top Performing Categories',
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+              const SizedBox(height: 8),
+              ...analytics.ranking.topPerformingCategories.take(3).map((categoryId) {
+                final score = analytics.ranking.categoryScores[categoryId] ?? 0.0;
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 4.0),
+                  child: Row(
+                    children: [
+                      Icon(Icons.star, color: Colors.amber, size: 16),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          categoryId,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ),
+                      Text(
+                        '${(score * 100).round()}%',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+              const SizedBox(height: 16),
+            ],
+            
+            // Category insights
+            if (analytics.insights.isNotEmpty) ...[
+              Text(
+                'Category Insights',
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+              const SizedBox(height: 8),
+              ...analytics.insights.take(3).map((insight) => Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        insight.title,
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        insight.description,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Widget for displaying productivity insights and suggestions
+class AdvancedProductivityInsightsWidget extends StatelessWidget {
+  final ProductivityInsights insights;
+
+  const AdvancedProductivityInsightsWidget({
+    super.key,
+    required this.insights,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Productivity Insights & Recommendations',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 16),
+            
+            // Overall productivity score
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: _getScoreColor(insights.overallScore.overall).withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: _getScoreColor(insights.overallScore.overall),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Text(
+                      insights.overallScore.grade,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Overall Productivity Score',
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                        Text(
+                          '${insights.overallScore.overall.round()}/100',
+                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            
+            // Score breakdown
+            Row(
+              children: [
+                Expanded(
+                  child: _ScoreItem(
+                    title: 'Completion',
+                    score: insights.overallScore.completion,
+                    icon: Icons.check_circle,
+                  ),
+                ),
+                Expanded(
+                  child: _ScoreItem(
+                    title: 'Consistency',
+                    score: insights.overallScore.consistency,
+                    icon: Icons.trending_up,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: _ScoreItem(
+                    title: 'Efficiency',
+                    score: insights.overallScore.efficiency,
+                    icon: Icons.speed,
+                  ),
+                ),
+                Expanded(
+                  child: _ScoreItem(
+                    title: 'Time Mgmt',
+                    score: insights.overallScore.timeManagement,
+                    icon: Icons.schedule,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            
+            // Top suggestions
+            if (insights.suggestions.isNotEmpty) ...[
+              Text(
+                'Top Recommendations',
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+              const SizedBox(height: 8),
+              ...insights.suggestions.take(3).map((suggestion) => Padding(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: _getImpactColor(suggestion.impactScore).withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Icon(
+                          _getSuggestionIcon(suggestion.actionType),
+                          color: _getImpactColor(suggestion.impactScore),
+                          size: 16,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              suggestion.title,
+                              style: Theme.of(context).textTheme.titleSmall,
+                            ),
+                            Text(
+                              suggestion.description,
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Color _getScoreColor(double score) {
+    if (score >= 80) return Colors.green;
+    if (score >= 60) return Colors.orange;
+    return Colors.red;
+  }
+
+  Color _getImpactColor(double impact) {
+    if (impact >= 0.7) return Colors.red;
+    if (impact >= 0.5) return Colors.orange;
+    return Colors.blue;
+  }
+
+  IconData _getSuggestionIcon(String actionType) {
+    switch (actionType) {
+      case 'schedule':
+        return Icons.schedule;
+      case 'habit':
+        return Icons.psychology;
+      case 'tool':
+        return Icons.build;
+      default:
+        return Icons.lightbulb;
+    }
+  }
+}
+
+/// Helper widget for metric cards
+class _MetricCard extends StatelessWidget {
+  final String title;
+  final String value;
+  final IconData icon;
+  final Color color;
+
+  const _MetricCard({
+    required this.title,
+    required this.value,
+    required this.icon,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, color: color, size: 16),
+              const SizedBox(width: 4),
+              Expanded(
+                child: Text(
+                  title,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Helper widget for score items
+class _ScoreItem extends StatelessWidget {
+  final String title;
+  final double score;
+  final IconData icon;
+
+  const _ScoreItem({
+    required this.title,
+    required this.score,
+    required this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Icon(icon, size: 20, color: Theme.of(context).colorScheme.primary),
+        const SizedBox(height: 4),
+        Text(
+          title,
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+        Text(
+          '${score.round()}%',
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Widget for analytics export functionality
+class AnalyticsExportWidget extends StatelessWidget {
+  final VoidCallback? onExportJson;
+  final VoidCallback? onExportCsv;
+  final VoidCallback? onExportPdf;
+  final VoidCallback? onExportExcel;
+
+  const AnalyticsExportWidget({
+    super.key,
+    this.onExportJson,
+    this.onExportCsv,
+    this.onExportPdf,
+    this.onExportExcel,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Export Analytics',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: _ExportButton(
+                    label: 'JSON',
+                    icon: Icons.code,
+                    onPressed: onExportJson,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _ExportButton(
+                    label: 'CSV',
+                    icon: Icons.table_chart,
+                    onPressed: onExportCsv,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: _ExportButton(
+                    label: 'PDF',
+                    icon: Icons.picture_as_pdf,
+                    onPressed: onExportPdf,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _ExportButton(
+                    label: 'Excel',
+                    icon: Icons.grid_on,
+                    onPressed: onExportExcel,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Helper widget for export buttons
+class _ExportButton extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final VoidCallback? onPressed;
+
+  const _ExportButton({
+    required this.label,
+    required this.icon,
+    this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return OutlinedButton.icon(
+      onPressed: onPressed,
+      icon: Icon(icon, size: 16),
+      label: Text(label),
+      style: OutlinedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+      ),
+    );
+  }
+}

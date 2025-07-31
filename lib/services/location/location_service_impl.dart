@@ -1,66 +1,66 @@
 import 'dart:async';
 import 'dart:math';
-import 'package:geolocator/geolocator.dart';
+import 'package:geolocator/geolocator.dart' as geo;
 import 'package:geocoding/geocoding.dart';
 import 'location_service.dart';
-import 'location_models.dart';
+import 'location_models.dart' as models;
 
 class LocationServiceImpl implements LocationService {
-  StreamSubscription<Position>? _positionSubscription;
-  final StreamController<GeofenceEvent> _geofenceController = StreamController<GeofenceEvent>.broadcast();
-  final Map<String, GeofenceData> _activeGeofences = {};
-  LocationData? _lastKnownLocation;
+  StreamSubscription<geo.Position>? _positionSubscription;
+  final StreamController<models.GeofenceEvent> _geofenceController = StreamController<models.GeofenceEvent>.broadcast();
+  final Map<String, models.GeofenceData> _activeGeofences = {};
+  models.LocationData? _lastKnownLocation;
 
   @override
   Future<bool> isLocationServiceEnabled() async {
     try {
-      return await Geolocator.isLocationServiceEnabled();
+      return await geo.Geolocator.isLocationServiceEnabled();
     } catch (e) {
-      throw LocationServiceException('Failed to check location service status: $e');
+      throw models.LocationServiceException('Failed to check location service status: $e');
     }
   }
 
   @override
-  Future<LocationPermissionStatus> checkPermission() async {
+  Future<models.LocationPermissionStatus> checkPermission() async {
     try {
-      final permission = await Geolocator.checkPermission();
+      final permission = await geo.Geolocator.checkPermission();
       return _mapPermissionStatus(permission);
     } catch (e) {
-      throw LocationServiceException('Failed to check location permission: $e');
+      throw models.LocationServiceException('Failed to check location permission: $e');
     }
   }
 
   @override
-  Future<LocationPermissionStatus> requestPermission() async {
+  Future<models.LocationPermissionStatus> requestPermission() async {
     try {
-      final permission = await Geolocator.requestPermission();
+      final permission = await geo.Geolocator.requestPermission();
       return _mapPermissionStatus(permission);
     } catch (e) {
-      throw LocationServiceException('Failed to request location permission: $e');
+      throw models.LocationServiceException('Failed to request location permission: $e');
     }
   }
 
   @override
-  Future<LocationData> getCurrentLocation() async {
+  Future<models.LocationData> getCurrentLocation() async {
     try {
       // Check if location services are enabled
       if (!await isLocationServiceEnabled()) {
-        throw const LocationServiceException('Location services are disabled');
+        throw const models.LocationServiceException('Location services are disabled');
       }
 
       // Check permissions
       final permission = await checkPermission();
-      if (permission == LocationPermissionStatus.denied ||
-          permission == LocationPermissionStatus.deniedForever) {
-        throw const LocationServiceException('Location permission denied');
+      if (permission == models.LocationPermissionStatus.denied ||
+          permission == models.LocationPermissionStatus.deniedForever) {
+        throw const models.LocationServiceException('Location permission denied');
       }
 
-      final position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
+      final position = await geo.Geolocator.getCurrentPosition(
+        desiredAccuracy: geo.LocationAccuracy.high,
         timeLimit: const Duration(seconds: 10),
       );
 
-      final locationData = LocationData(
+      final locationData = models.LocationData(
         latitude: position.latitude,
         longitude: position.longitude,
         accuracy: position.accuracy,
@@ -71,20 +71,20 @@ class LocationServiceImpl implements LocationService {
       _lastKnownLocation = locationData;
       return locationData;
     } catch (e) {
-      if (e is LocationServiceException) rethrow;
-      throw LocationServiceException('Failed to get current location: $e');
+      if (e is models.LocationServiceException) rethrow;
+      throw models.LocationServiceException('Failed to get current location: $e');
     }
   }
 
   @override
-  Stream<LocationData> getLocationStream() {
-    return Geolocator.getPositionStream(
-      locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.high,
+  Stream<models.LocationData> getLocationStream() {
+    return geo.Geolocator.getPositionStream(
+      locationSettings: const geo.LocationSettings(
+        accuracy: geo.LocationAccuracy.high,
         distanceFilter: 10, // Update every 10 meters
       ),
     ).map((position) {
-      final locationData = LocationData(
+      final locationData = models.LocationData(
         latitude: position.latitude,
         longitude: position.longitude,
         accuracy: position.accuracy,
@@ -96,7 +96,7 @@ class LocationServiceImpl implements LocationService {
       _checkGeofences(locationData);
       return locationData;
     }).handleError((error) {
-      throw LocationServiceException('Location stream error: $error');
+      throw models.LocationServiceException('Location stream error: $error');
     });
   }
 
@@ -110,17 +110,17 @@ class LocationServiceImpl implements LocationService {
       }
       return null;
     } catch (e) {
-      throw LocationServiceException('Failed to get address from coordinates: $e');
+      throw models.LocationServiceException('Failed to get address from coordinates: $e');
     }
   }
 
   @override
-  Future<LocationData?> getCoordinatesFromAddress(String address) async {
+  Future<models.LocationData?> getCoordinatesFromAddress(String address) async {
     try {
       final locations = await locationFromAddress(address);
       if (locations.isNotEmpty) {
         final location = locations.first;
-        return LocationData(
+        return models.LocationData(
           latitude: location.latitude,
           longitude: location.longitude,
           address: address,
@@ -129,7 +129,7 @@ class LocationServiceImpl implements LocationService {
       }
       return null;
     } catch (e) {
-      throw LocationServiceException('Failed to get coordinates from address: $e');
+      throw models.LocationServiceException('Failed to get coordinates from address: $e');
     }
   }
 
@@ -140,7 +140,7 @@ class LocationServiceImpl implements LocationService {
     double endLatitude,
     double endLongitude,
   ) {
-    return Geolocator.distanceBetween(
+    return geo.Geolocator.distanceBetween(
       startLatitude,
       startLongitude,
       endLatitude,
@@ -149,7 +149,7 @@ class LocationServiceImpl implements LocationService {
   }
 
   @override
-  bool isWithinGeofence(LocationData location, GeofenceData geofence) {
+  bool isWithinGeofence(models.LocationData location, models.GeofenceData geofence) {
     final distance = calculateDistance(
       location.latitude,
       location.longitude,
@@ -160,7 +160,7 @@ class LocationServiceImpl implements LocationService {
   }
 
   @override
-  Future<void> startGeofenceMonitoring(GeofenceData geofence) async {
+  Future<void> startGeofenceMonitoring(models.GeofenceData geofence) async {
     if (!geofence.isActive) return;
 
     _activeGeofences[geofence.id] = geofence;
@@ -182,7 +182,7 @@ class LocationServiceImpl implements LocationService {
   }
 
   @override
-  Stream<GeofenceEvent> getGeofenceEventStream() {
+  Stream<models.GeofenceEvent> getGeofenceEventStream() {
     return _geofenceController.stream;
   }
 
@@ -195,18 +195,18 @@ class LocationServiceImpl implements LocationService {
 
   // Private helper methods
 
-  LocationPermissionStatus _mapPermissionStatus(LocationPermission permission) {
+  models.LocationPermissionStatus _mapPermissionStatus(geo.LocationPermission permission) {
     switch (permission) {
-      case LocationPermission.always:
-        return LocationPermissionStatus.always;
-      case LocationPermission.whileInUse:
-        return LocationPermissionStatus.whileInUse;
-      case LocationPermission.denied:
-        return LocationPermissionStatus.denied;
-      case LocationPermission.deniedForever:
-        return LocationPermissionStatus.deniedForever;
-      case LocationPermission.unableToDetermine:
-        return LocationPermissionStatus.unableToDetermine;
+      case geo.LocationPermission.always:
+        return models.LocationPermissionStatus.always;
+      case geo.LocationPermission.whileInUse:
+        return models.LocationPermissionStatus.whileInUse;
+      case geo.LocationPermission.denied:
+        return models.LocationPermissionStatus.denied;
+      case geo.LocationPermission.deniedForever:
+        return models.LocationPermissionStatus.deniedForever;
+      case geo.LocationPermission.unableToDetermine:
+        return models.LocationPermissionStatus.unableToDetermine;
     }
   }
 
@@ -229,31 +229,31 @@ class LocationServiceImpl implements LocationService {
     return parts.join(', ');
   }
 
-  void _checkGeofences(LocationData location) {
+  void _checkGeofences(models.LocationData location) {
     for (final geofence in _activeGeofences.values) {
       _checkSingleGeofence(location, geofence);
     }
   }
 
-  void _checkSingleGeofence(LocationData location, GeofenceData geofence) {
+  void _checkSingleGeofence(models.LocationData location, models.GeofenceData geofence) {
     final isInside = isWithinGeofence(location, geofence);
     
     // For simplicity, we'll emit events based on current state
     // In a real implementation, you'd track previous state to detect enter/exit
     if (isInside) {
-      if (geofence.type == GeofenceType.enter || geofence.type == GeofenceType.both) {
-        _geofenceController.add(GeofenceEvent(
+      if (geofence.type == models.GeofenceType.enter || geofence.type == models.GeofenceType.both) {
+        _geofenceController.add(models.GeofenceEvent(
           geofenceId: geofence.id,
-          type: GeofenceEventType.enter,
+          type: models.GeofenceEventType.enter,
           location: location,
           timestamp: DateTime.now(),
         ));
       }
     } else {
-      if (geofence.type == GeofenceType.exit || geofence.type == GeofenceType.both) {
-        _geofenceController.add(GeofenceEvent(
+      if (geofence.type == models.GeofenceType.exit || geofence.type == models.GeofenceType.both) {
+        _geofenceController.add(models.GeofenceEvent(
           geofenceId: geofence.id,
-          type: GeofenceEventType.exit,
+          type: models.GeofenceEventType.exit,
           location: location,
           timestamp: DateTime.now(),
         ));

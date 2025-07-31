@@ -359,3 +359,553 @@ class DateRange extends Equatable {
   @override
   List<Object?> get props => [start, end];
 }
+
+/// Productivity patterns analysis
+@JsonSerializable()
+class ProductivityPatterns extends Equatable {
+  final Map<int, double> hourlyEfficiency; // Hour -> completion rate
+  final Map<int, double> weekdayEfficiency; // Weekday -> completion rate
+  final List<ProductivityPeak> peaks;
+  final List<ProductivityTrough> troughs;
+  final double consistencyScore; // 0-1 score for consistency
+  final Map<String, double> categoryEfficiency; // Category -> completion rate
+  final List<ProductivityTrend> trends;
+
+  const ProductivityPatterns({
+    required this.hourlyEfficiency,
+    required this.weekdayEfficiency,
+    required this.peaks,
+    required this.troughs,
+    required this.consistencyScore,
+    required this.categoryEfficiency,
+    required this.trends,
+  });
+
+  factory ProductivityPatterns.fromJson(Map<String, dynamic> json) =>
+      _$ProductivityPatternsFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ProductivityPatternsToJson(this);
+
+  @override
+  List<Object?> get props => [
+        hourlyEfficiency,
+        weekdayEfficiency,
+        peaks,
+        troughs,
+        consistencyScore,
+        categoryEfficiency,
+        trends,
+      ];
+}
+
+/// Peak hours analysis with optimization suggestions
+@JsonSerializable()
+class PeakHoursAnalysis extends Equatable {
+  final List<int> peakHours; // Hours with highest productivity
+  final List<int> lowHours; // Hours with lowest productivity
+  final double peakProductivityScore;
+  final double averageProductivityScore;
+  final List<OptimizationSuggestion> suggestions;
+  final Map<int, TaskTypeDistribution> hourlyTaskTypes;
+  final int optimalWorkingHours;
+  final TimeRange recommendedWorkingWindow;
+
+  const PeakHoursAnalysis({
+    required this.peakHours,
+    required this.lowHours,
+    required this.peakProductivityScore,
+    required this.averageProductivityScore,
+    required this.suggestions,
+    required this.hourlyTaskTypes,
+    required this.optimalWorkingHours,
+    required this.recommendedWorkingWindow,
+  });
+
+  factory PeakHoursAnalysis.fromJson(Map<String, dynamic> json) =>
+      _$PeakHoursAnalysisFromJson(json);
+
+  Map<String, dynamic> toJson() => _$PeakHoursAnalysisToJson(this);
+
+  @override
+  List<Object?> get props => [
+        peakHours,
+        lowHours,
+        peakProductivityScore,
+        averageProductivityScore,
+        suggestions,
+        hourlyTaskTypes,
+        optimalWorkingHours,
+        recommendedWorkingWindow,
+      ];
+}
+
+/// Advanced category analytics with detailed breakdowns
+@JsonSerializable()
+class AdvancedCategoryAnalytics extends Equatable {
+  final List<CategoryAnalytics> categories;
+  final Map<String, CategoryTrend> categoryTrends;
+  final Map<String, List<CategoryCorrelation>> correlations;
+  final CategoryPerformanceRanking ranking;
+  final List<CategoryInsight> insights;
+  final Map<String, Map<int, int>> categoryHourlyDistribution;
+  final Map<String, Map<int, int>> categoryWeekdayDistribution;
+
+  const AdvancedCategoryAnalytics({
+    required this.categories,
+    required this.categoryTrends,
+    required this.correlations,
+    required this.ranking,
+    required this.insights,
+    required this.categoryHourlyDistribution,
+    required this.categoryWeekdayDistribution,
+  });
+
+  factory AdvancedCategoryAnalytics.fromJson(Map<String, dynamic> json) =>
+      _$AdvancedCategoryAnalyticsFromJson(json);
+
+  Map<String, dynamic> toJson() => _$AdvancedCategoryAnalyticsToJson(this);
+
+  @override
+  List<Object?> get props => [
+        categories,
+        categoryTrends,
+        correlations,
+        ranking,
+        insights,
+        categoryHourlyDistribution,
+        categoryWeekdayDistribution,
+      ];
+}
+
+/// Productivity insights and suggestions
+@JsonSerializable()
+class ProductivityInsights extends Equatable {
+  final List<ProductivityInsight> insights;
+  final List<OptimizationSuggestion> suggestions;
+  final ProductivityScore overallScore;
+  final List<ProductivityGoal> recommendedGoals;
+  final Map<String, double> strengthAreas;
+  final Map<String, double> improvementAreas;
+
+  const ProductivityInsights({
+    required this.insights,
+    required this.suggestions,
+    required this.overallScore,
+    required this.recommendedGoals,
+    required this.strengthAreas,
+    required this.improvementAreas,
+  });
+
+  factory ProductivityInsights.fromJson(Map<String, dynamic> json) =>
+      _$ProductivityInsightsFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ProductivityInsightsToJson(this);
+
+  @override
+  List<Object?> get props => [
+        insights,
+        suggestions,
+        overallScore,
+        recommendedGoals,
+        strengthAreas,
+        improvementAreas,
+      ];
+}
+
+/// Supporting models for advanced analytics
+
+@JsonSerializable()
+class ProductivityPeak extends Equatable {
+  final int hour;
+  final double efficiency;
+  final int taskCount;
+  final String description;
+
+  const ProductivityPeak({
+    required this.hour,
+    required this.efficiency,
+    required this.taskCount,
+    required this.description,
+  });
+
+  factory ProductivityPeak.fromJson(Map<String, dynamic> json) =>
+      _$ProductivityPeakFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ProductivityPeakToJson(this);
+
+  @override
+  List<Object?> get props => [hour, efficiency, taskCount, description];
+}
+
+@JsonSerializable()
+class ProductivityTrough extends Equatable {
+  final int hour;
+  final double efficiency;
+  final int taskCount;
+  final String description;
+
+  const ProductivityTrough({
+    required this.hour,
+    required this.efficiency,
+    required this.taskCount,
+    required this.description,
+  });
+
+  factory ProductivityTrough.fromJson(Map<String, dynamic> json) =>
+      _$ProductivityTroughFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ProductivityTroughToJson(this);
+
+  @override
+  List<Object?> get props => [hour, efficiency, taskCount, description];
+}
+
+@JsonSerializable()
+class ProductivityTrend extends Equatable {
+  final String type; // 'improving', 'declining', 'stable'
+  final String category;
+  final double changeRate;
+  final String description;
+
+  const ProductivityTrend({
+    required this.type,
+    required this.category,
+    required this.changeRate,
+    required this.description,
+  });
+
+  factory ProductivityTrend.fromJson(Map<String, dynamic> json) =>
+      _$ProductivityTrendFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ProductivityTrendToJson(this);
+
+  @override
+  List<Object?> get props => [type, category, changeRate, description];
+}
+
+@JsonSerializable()
+class OptimizationSuggestion extends Equatable {
+  final String title;
+  final String description;
+  final String category;
+  final double impactScore; // 0-1 potential impact
+  final String actionType; // 'schedule', 'habit', 'tool', etc.
+  final Map<String, dynamic> metadata;
+
+  const OptimizationSuggestion({
+    required this.title,
+    required this.description,
+    required this.category,
+    required this.impactScore,
+    required this.actionType,
+    required this.metadata,
+  });
+
+  factory OptimizationSuggestion.fromJson(Map<String, dynamic> json) =>
+      _$OptimizationSuggestionFromJson(json);
+
+  Map<String, dynamic> toJson() => _$OptimizationSuggestionToJson(this);
+
+  @override
+  List<Object?> get props => [
+        title,
+        description,
+        category,
+        impactScore,
+        actionType,
+        metadata,
+      ];
+}
+
+@JsonSerializable()
+class TaskTypeDistribution extends Equatable {
+  final Map<String, int> priorityDistribution;
+  final Map<String, int> categoryDistribution;
+  final double averageDuration;
+  final double completionRate;
+
+  const TaskTypeDistribution({
+    required this.priorityDistribution,
+    required this.categoryDistribution,
+    required this.averageDuration,
+    required this.completionRate,
+  });
+
+  factory TaskTypeDistribution.fromJson(Map<String, dynamic> json) =>
+      _$TaskTypeDistributionFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TaskTypeDistributionToJson(this);
+
+  @override
+  List<Object?> get props => [
+        priorityDistribution,
+        categoryDistribution,
+        averageDuration,
+        completionRate,
+      ];
+}
+
+@JsonSerializable()
+class TimeRange extends Equatable {
+  final int startHour;
+  final int endHour;
+  final String description;
+
+  const TimeRange({
+    required this.startHour,
+    required this.endHour,
+    required this.description,
+  });
+
+  factory TimeRange.fromJson(Map<String, dynamic> json) =>
+      _$TimeRangeFromJson(json);
+
+  Map<String, dynamic> toJson() => _$TimeRangeToJson(this);
+
+  @override
+  List<Object?> get props => [startHour, endHour, description];
+}
+
+@JsonSerializable()
+class CategoryTrend extends Equatable {
+  final String categoryId;
+  final List<double> completionRates; // Historical completion rates
+  final String trendDirection; // 'up', 'down', 'stable'
+  final double changeRate;
+
+  const CategoryTrend({
+    required this.categoryId,
+    required this.completionRates,
+    required this.trendDirection,
+    required this.changeRate,
+  });
+
+  factory CategoryTrend.fromJson(Map<String, dynamic> json) =>
+      _$CategoryTrendFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CategoryTrendToJson(this);
+
+  @override
+  List<Object?> get props => [categoryId, completionRates, trendDirection, changeRate];
+}
+
+@JsonSerializable()
+class CategoryCorrelation extends Equatable {
+  final String categoryA;
+  final String categoryB;
+  final double correlationScore; // -1 to 1
+  final String description;
+
+  const CategoryCorrelation({
+    required this.categoryA,
+    required this.categoryB,
+    required this.correlationScore,
+    required this.description,
+  });
+
+  factory CategoryCorrelation.fromJson(Map<String, dynamic> json) =>
+      _$CategoryCorrelationFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CategoryCorrelationToJson(this);
+
+  @override
+  List<Object?> get props => [categoryA, categoryB, correlationScore, description];
+}
+
+@JsonSerializable()
+class CategoryPerformanceRanking extends Equatable {
+  final List<String> topPerformingCategories;
+  final List<String> underperformingCategories;
+  final Map<String, double> categoryScores;
+
+  const CategoryPerformanceRanking({
+    required this.topPerformingCategories,
+    required this.underperformingCategories,
+    required this.categoryScores,
+  });
+
+  factory CategoryPerformanceRanking.fromJson(Map<String, dynamic> json) =>
+      _$CategoryPerformanceRankingFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CategoryPerformanceRankingToJson(this);
+
+  @override
+  List<Object?> get props => [
+        topPerformingCategories,
+        underperformingCategories,
+        categoryScores,
+      ];
+}
+
+@JsonSerializable()
+class CategoryInsight extends Equatable {
+  final String categoryId;
+  final String insightType; // 'peak_time', 'duration_pattern', 'completion_trend'
+  final String title;
+  final String description;
+  final double confidence; // 0-1 confidence score
+
+  const CategoryInsight({
+    required this.categoryId,
+    required this.insightType,
+    required this.title,
+    required this.description,
+    required this.confidence,
+  });
+
+  factory CategoryInsight.fromJson(Map<String, dynamic> json) =>
+      _$CategoryInsightFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CategoryInsightToJson(this);
+
+  @override
+  List<Object?> get props => [
+        categoryId,
+        insightType,
+        title,
+        description,
+        confidence,
+      ];
+}
+
+@JsonSerializable()
+class ProductivityInsight extends Equatable {
+  final String type; // 'pattern', 'trend', 'anomaly', 'opportunity'
+  final String title;
+  final String description;
+  final double confidence;
+  final Map<String, dynamic> data;
+
+  const ProductivityInsight({
+    required this.type,
+    required this.title,
+    required this.description,
+    required this.confidence,
+    required this.data,
+  });
+
+  factory ProductivityInsight.fromJson(Map<String, dynamic> json) =>
+      _$ProductivityInsightFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ProductivityInsightToJson(this);
+
+  @override
+  List<Object?> get props => [type, title, description, confidence, data];
+}
+
+@JsonSerializable()
+class ProductivityScore extends Equatable {
+  final double overall; // 0-100
+  final double consistency;
+  final double efficiency;
+  final double completion;
+  final double timeManagement;
+  final String grade; // A+, A, B+, etc.
+
+  const ProductivityScore({
+    required this.overall,
+    required this.consistency,
+    required this.efficiency,
+    required this.completion,
+    required this.timeManagement,
+    required this.grade,
+  });
+
+  factory ProductivityScore.fromJson(Map<String, dynamic> json) =>
+      _$ProductivityScoreFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ProductivityScoreToJson(this);
+
+  @override
+  List<Object?> get props => [
+        overall,
+        consistency,
+        efficiency,
+        completion,
+        timeManagement,
+        grade,
+      ];
+}
+
+@JsonSerializable()
+class ProductivityGoal extends Equatable {
+  final String title;
+  final String description;
+  final String category;
+  final double targetValue;
+  final String timeframe;
+  final List<String> actionSteps;
+
+  const ProductivityGoal({
+    required this.title,
+    required this.description,
+    required this.category,
+    required this.targetValue,
+    required this.timeframe,
+    required this.actionSteps,
+  });
+
+  factory ProductivityGoal.fromJson(Map<String, dynamic> json) =>
+      _$ProductivityGoalFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ProductivityGoalToJson(this);
+
+  @override
+  List<Object?> get props => [
+        title,
+        description,
+        category,
+        targetValue,
+        timeframe,
+        actionSteps,
+      ];
+}
+
+/// Export format options
+enum AnalyticsExportFormat {
+  json,
+  csv,
+  pdf,
+  excel,
+}
+
+extension AnalyticsExportFormatExtension on AnalyticsExportFormat {
+  String get displayName {
+    switch (this) {
+      case AnalyticsExportFormat.json:
+        return 'JSON';
+      case AnalyticsExportFormat.csv:
+        return 'CSV';
+      case AnalyticsExportFormat.pdf:
+        return 'PDF';
+      case AnalyticsExportFormat.excel:
+        return 'Excel';
+    }
+  }
+
+  String get fileExtension {
+    switch (this) {
+      case AnalyticsExportFormat.json:
+        return '.json';
+      case AnalyticsExportFormat.csv:
+        return '.csv';
+      case AnalyticsExportFormat.pdf:
+        return '.pdf';
+      case AnalyticsExportFormat.excel:
+        return '.xlsx';
+    }
+  }
+
+  String get mimeType {
+    switch (this) {
+      case AnalyticsExportFormat.json:
+        return 'application/json';
+      case AnalyticsExportFormat.csv:
+        return 'text/csv';
+      case AnalyticsExportFormat.pdf:
+        return 'application/pdf';
+      case AnalyticsExportFormat.excel:
+        return 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+    }
+  }
+}

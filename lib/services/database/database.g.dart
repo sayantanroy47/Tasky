@@ -3594,130 +3594,22 @@ typedef $$ProjectsTableUpdateCompanionBuilder = ProjectsCompanion Function({
   Value<int> rowid,
 });
 
-class $$ProjectsTableFilterComposer
-    extends Composer<_$AppDatabase, $ProjectsTable> {
-  $$ProjectsTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<String> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get name => $composableBuilder(
-      column: $table.name, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get description => $composableBuilder(
-      column: $table.description, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get color => $composableBuilder(
-      column: $table.color, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<DateTime> get createdAt => $composableBuilder(
-      column: $table.createdAt, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
-      column: $table.updatedAt, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<bool> get isArchived => $composableBuilder(
-      column: $table.isArchived, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<DateTime> get deadline => $composableBuilder(
-      column: $table.deadline, builder: (column) => ColumnFilters(column));
-}
-
-class $$ProjectsTableOrderingComposer
-    extends Composer<_$AppDatabase, $ProjectsTable> {
-  $$ProjectsTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<String> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get name => $composableBuilder(
-      column: $table.name, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get description => $composableBuilder(
-      column: $table.description, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get color => $composableBuilder(
-      column: $table.color, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
-      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
-      column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<bool> get isArchived => $composableBuilder(
-      column: $table.isArchived, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<DateTime> get deadline => $composableBuilder(
-      column: $table.deadline, builder: (column) => ColumnOrderings(column));
-}
-
-class $$ProjectsTableAnnotationComposer
-    extends Composer<_$AppDatabase, $ProjectsTable> {
-  $$ProjectsTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<String> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get name =>
-      $composableBuilder(column: $table.name, builder: (column) => column);
-
-  GeneratedColumn<String> get description => $composableBuilder(
-      column: $table.description, builder: (column) => column);
-
-  GeneratedColumn<String> get color =>
-      $composableBuilder(column: $table.color, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get createdAt =>
-      $composableBuilder(column: $table.createdAt, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get updatedAt =>
-      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
-
-  GeneratedColumn<bool> get isArchived => $composableBuilder(
-      column: $table.isArchived, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get deadline =>
-      $composableBuilder(column: $table.deadline, builder: (column) => column);
-}
-
 class $$ProjectsTableTableManager extends RootTableManager<
     _$AppDatabase,
     $ProjectsTable,
     Project,
     $$ProjectsTableFilterComposer,
     $$ProjectsTableOrderingComposer,
-    $$ProjectsTableAnnotationComposer,
     $$ProjectsTableCreateCompanionBuilder,
-    $$ProjectsTableUpdateCompanionBuilder,
-    (Project, BaseReferences<_$AppDatabase, $ProjectsTable, Project>),
-    Project,
-    PrefetchHooks Function()> {
+    $$ProjectsTableUpdateCompanionBuilder> {
   $$ProjectsTableTableManager(_$AppDatabase db, $ProjectsTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          createFilteringComposer: () =>
-              $$ProjectsTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$ProjectsTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$ProjectsTableAnnotationComposer($db: db, $table: table),
+          filteringComposer:
+              $$ProjectsTableFilterComposer(ComposerState(db, table)),
+          orderingComposer:
+              $$ProjectsTableOrderingComposer(ComposerState(db, table)),
           updateCompanionCallback: ({
             Value<String> id = const Value.absent(),
             Value<String> name = const Value.absent(),
@@ -3762,25 +3654,97 @@ class $$ProjectsTableTableManager extends RootTableManager<
             deadline: deadline,
             rowid: rowid,
           ),
-          withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
-              .toList(),
-          prefetchHooksCallback: null,
         ));
 }
 
-typedef $$ProjectsTableProcessedTableManager = ProcessedTableManager<
-    _$AppDatabase,
-    $ProjectsTable,
-    Project,
-    $$ProjectsTableFilterComposer,
-    $$ProjectsTableOrderingComposer,
-    $$ProjectsTableAnnotationComposer,
-    $$ProjectsTableCreateCompanionBuilder,
-    $$ProjectsTableUpdateCompanionBuilder,
-    (Project, BaseReferences<_$AppDatabase, $ProjectsTable, Project>),
-    Project,
-    PrefetchHooks Function()>;
+class $$ProjectsTableFilterComposer
+    extends FilterComposer<_$AppDatabase, $ProjectsTable> {
+  $$ProjectsTableFilterComposer(super.$state);
+  ColumnFilters<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get name => $state.composableBuilder(
+      column: $state.table.name,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get description => $state.composableBuilder(
+      column: $state.table.description,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get color => $state.composableBuilder(
+      column: $state.table.color,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get createdAt => $state.composableBuilder(
+      column: $state.table.createdAt,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get updatedAt => $state.composableBuilder(
+      column: $state.table.updatedAt,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<bool> get isArchived => $state.composableBuilder(
+      column: $state.table.isArchived,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get deadline => $state.composableBuilder(
+      column: $state.table.deadline,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+}
+
+class $$ProjectsTableOrderingComposer
+    extends OrderingComposer<_$AppDatabase, $ProjectsTable> {
+  $$ProjectsTableOrderingComposer(super.$state);
+  ColumnOrderings<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get name => $state.composableBuilder(
+      column: $state.table.name,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get description => $state.composableBuilder(
+      column: $state.table.description,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get color => $state.composableBuilder(
+      column: $state.table.color,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get createdAt => $state.composableBuilder(
+      column: $state.table.createdAt,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get updatedAt => $state.composableBuilder(
+      column: $state.table.updatedAt,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<bool> get isArchived => $state.composableBuilder(
+      column: $state.table.isArchived,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get deadline => $state.composableBuilder(
+      column: $state.table.deadline,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+}
+
 typedef $$TasksTableCreateCompanionBuilder = TasksCompanion Function({
   required String id,
   required String title,
@@ -3828,253 +3792,22 @@ typedef $$TasksTableUpdateCompanionBuilder = TasksCompanion Function({
   Value<int> rowid,
 });
 
-class $$TasksTableFilterComposer extends Composer<_$AppDatabase, $TasksTable> {
-  $$TasksTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<String> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get title => $composableBuilder(
-      column: $table.title, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get description => $composableBuilder(
-      column: $table.description, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<DateTime> get createdAt => $composableBuilder(
-      column: $table.createdAt, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
-      column: $table.updatedAt, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<DateTime> get dueDate => $composableBuilder(
-      column: $table.dueDate, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<DateTime> get completedAt => $composableBuilder(
-      column: $table.completedAt, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<int> get priority => $composableBuilder(
-      column: $table.priority, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<int> get status => $composableBuilder(
-      column: $table.status, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get locationTrigger => $composableBuilder(
-      column: $table.locationTrigger,
-      builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get projectId => $composableBuilder(
-      column: $table.projectId, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get metadata => $composableBuilder(
-      column: $table.metadata, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<bool> get isPinned => $composableBuilder(
-      column: $table.isPinned, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<int> get estimatedDuration => $composableBuilder(
-      column: $table.estimatedDuration,
-      builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<int> get actualDuration => $composableBuilder(
-      column: $table.actualDuration,
-      builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<int> get recurrenceType => $composableBuilder(
-      column: $table.recurrenceType,
-      builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<int> get recurrenceInterval => $composableBuilder(
-      column: $table.recurrenceInterval,
-      builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get recurrenceDaysOfWeek => $composableBuilder(
-      column: $table.recurrenceDaysOfWeek,
-      builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<DateTime> get recurrenceEndDate => $composableBuilder(
-      column: $table.recurrenceEndDate,
-      builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<int> get recurrenceMaxOccurrences => $composableBuilder(
-      column: $table.recurrenceMaxOccurrences,
-      builder: (column) => ColumnFilters(column));
-}
-
-class $$TasksTableOrderingComposer
-    extends Composer<_$AppDatabase, $TasksTable> {
-  $$TasksTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<String> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get title => $composableBuilder(
-      column: $table.title, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get description => $composableBuilder(
-      column: $table.description, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
-      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
-      column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<DateTime> get dueDate => $composableBuilder(
-      column: $table.dueDate, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<DateTime> get completedAt => $composableBuilder(
-      column: $table.completedAt, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<int> get priority => $composableBuilder(
-      column: $table.priority, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<int> get status => $composableBuilder(
-      column: $table.status, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get locationTrigger => $composableBuilder(
-      column: $table.locationTrigger,
-      builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get projectId => $composableBuilder(
-      column: $table.projectId, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get metadata => $composableBuilder(
-      column: $table.metadata, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<bool> get isPinned => $composableBuilder(
-      column: $table.isPinned, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<int> get estimatedDuration => $composableBuilder(
-      column: $table.estimatedDuration,
-      builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<int> get actualDuration => $composableBuilder(
-      column: $table.actualDuration,
-      builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<int> get recurrenceType => $composableBuilder(
-      column: $table.recurrenceType,
-      builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<int> get recurrenceInterval => $composableBuilder(
-      column: $table.recurrenceInterval,
-      builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get recurrenceDaysOfWeek => $composableBuilder(
-      column: $table.recurrenceDaysOfWeek,
-      builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<DateTime> get recurrenceEndDate => $composableBuilder(
-      column: $table.recurrenceEndDate,
-      builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<int> get recurrenceMaxOccurrences => $composableBuilder(
-      column: $table.recurrenceMaxOccurrences,
-      builder: (column) => ColumnOrderings(column));
-}
-
-class $$TasksTableAnnotationComposer
-    extends Composer<_$AppDatabase, $TasksTable> {
-  $$TasksTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<String> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get title =>
-      $composableBuilder(column: $table.title, builder: (column) => column);
-
-  GeneratedColumn<String> get description => $composableBuilder(
-      column: $table.description, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get createdAt =>
-      $composableBuilder(column: $table.createdAt, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get updatedAt =>
-      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get dueDate =>
-      $composableBuilder(column: $table.dueDate, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get completedAt => $composableBuilder(
-      column: $table.completedAt, builder: (column) => column);
-
-  GeneratedColumn<int> get priority =>
-      $composableBuilder(column: $table.priority, builder: (column) => column);
-
-  GeneratedColumn<int> get status =>
-      $composableBuilder(column: $table.status, builder: (column) => column);
-
-  GeneratedColumn<String> get locationTrigger => $composableBuilder(
-      column: $table.locationTrigger, builder: (column) => column);
-
-  GeneratedColumn<String> get projectId =>
-      $composableBuilder(column: $table.projectId, builder: (column) => column);
-
-  GeneratedColumn<String> get metadata =>
-      $composableBuilder(column: $table.metadata, builder: (column) => column);
-
-  GeneratedColumn<bool> get isPinned =>
-      $composableBuilder(column: $table.isPinned, builder: (column) => column);
-
-  GeneratedColumn<int> get estimatedDuration => $composableBuilder(
-      column: $table.estimatedDuration, builder: (column) => column);
-
-  GeneratedColumn<int> get actualDuration => $composableBuilder(
-      column: $table.actualDuration, builder: (column) => column);
-
-  GeneratedColumn<int> get recurrenceType => $composableBuilder(
-      column: $table.recurrenceType, builder: (column) => column);
-
-  GeneratedColumn<int> get recurrenceInterval => $composableBuilder(
-      column: $table.recurrenceInterval, builder: (column) => column);
-
-  GeneratedColumn<String> get recurrenceDaysOfWeek => $composableBuilder(
-      column: $table.recurrenceDaysOfWeek, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get recurrenceEndDate => $composableBuilder(
-      column: $table.recurrenceEndDate, builder: (column) => column);
-
-  GeneratedColumn<int> get recurrenceMaxOccurrences => $composableBuilder(
-      column: $table.recurrenceMaxOccurrences, builder: (column) => column);
-}
-
 class $$TasksTableTableManager extends RootTableManager<
     _$AppDatabase,
     $TasksTable,
     Task,
     $$TasksTableFilterComposer,
     $$TasksTableOrderingComposer,
-    $$TasksTableAnnotationComposer,
     $$TasksTableCreateCompanionBuilder,
-    $$TasksTableUpdateCompanionBuilder,
-    (Task, BaseReferences<_$AppDatabase, $TasksTable, Task>),
-    Task,
-    PrefetchHooks Function()> {
+    $$TasksTableUpdateCompanionBuilder> {
   $$TasksTableTableManager(_$AppDatabase db, $TasksTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          createFilteringComposer: () =>
-              $$TasksTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$TasksTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$TasksTableAnnotationComposer($db: db, $table: table),
+          filteringComposer:
+              $$TasksTableFilterComposer(ComposerState(db, table)),
+          orderingComposer:
+              $$TasksTableOrderingComposer(ComposerState(db, table)),
           updateCompanionCallback: ({
             Value<String> id = const Value.absent(),
             Value<String> title = const Value.absent(),
@@ -4167,25 +3900,217 @@ class $$TasksTableTableManager extends RootTableManager<
             recurrenceMaxOccurrences: recurrenceMaxOccurrences,
             rowid: rowid,
           ),
-          withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
-              .toList(),
-          prefetchHooksCallback: null,
         ));
 }
 
-typedef $$TasksTableProcessedTableManager = ProcessedTableManager<
-    _$AppDatabase,
-    $TasksTable,
-    Task,
-    $$TasksTableFilterComposer,
-    $$TasksTableOrderingComposer,
-    $$TasksTableAnnotationComposer,
-    $$TasksTableCreateCompanionBuilder,
-    $$TasksTableUpdateCompanionBuilder,
-    (Task, BaseReferences<_$AppDatabase, $TasksTable, Task>),
-    Task,
-    PrefetchHooks Function()>;
+class $$TasksTableFilterComposer
+    extends FilterComposer<_$AppDatabase, $TasksTable> {
+  $$TasksTableFilterComposer(super.$state);
+  ColumnFilters<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get title => $state.composableBuilder(
+      column: $state.table.title,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get description => $state.composableBuilder(
+      column: $state.table.description,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get createdAt => $state.composableBuilder(
+      column: $state.table.createdAt,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get updatedAt => $state.composableBuilder(
+      column: $state.table.updatedAt,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get dueDate => $state.composableBuilder(
+      column: $state.table.dueDate,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get completedAt => $state.composableBuilder(
+      column: $state.table.completedAt,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<int> get priority => $state.composableBuilder(
+      column: $state.table.priority,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<int> get status => $state.composableBuilder(
+      column: $state.table.status,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get locationTrigger => $state.composableBuilder(
+      column: $state.table.locationTrigger,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get projectId => $state.composableBuilder(
+      column: $state.table.projectId,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get metadata => $state.composableBuilder(
+      column: $state.table.metadata,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<bool> get isPinned => $state.composableBuilder(
+      column: $state.table.isPinned,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<int> get estimatedDuration => $state.composableBuilder(
+      column: $state.table.estimatedDuration,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<int> get actualDuration => $state.composableBuilder(
+      column: $state.table.actualDuration,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<int> get recurrenceType => $state.composableBuilder(
+      column: $state.table.recurrenceType,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<int> get recurrenceInterval => $state.composableBuilder(
+      column: $state.table.recurrenceInterval,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get recurrenceDaysOfWeek => $state.composableBuilder(
+      column: $state.table.recurrenceDaysOfWeek,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get recurrenceEndDate => $state.composableBuilder(
+      column: $state.table.recurrenceEndDate,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<int> get recurrenceMaxOccurrences => $state.composableBuilder(
+      column: $state.table.recurrenceMaxOccurrences,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+}
+
+class $$TasksTableOrderingComposer
+    extends OrderingComposer<_$AppDatabase, $TasksTable> {
+  $$TasksTableOrderingComposer(super.$state);
+  ColumnOrderings<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get title => $state.composableBuilder(
+      column: $state.table.title,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get description => $state.composableBuilder(
+      column: $state.table.description,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get createdAt => $state.composableBuilder(
+      column: $state.table.createdAt,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get updatedAt => $state.composableBuilder(
+      column: $state.table.updatedAt,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get dueDate => $state.composableBuilder(
+      column: $state.table.dueDate,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get completedAt => $state.composableBuilder(
+      column: $state.table.completedAt,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<int> get priority => $state.composableBuilder(
+      column: $state.table.priority,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<int> get status => $state.composableBuilder(
+      column: $state.table.status,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get locationTrigger => $state.composableBuilder(
+      column: $state.table.locationTrigger,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get projectId => $state.composableBuilder(
+      column: $state.table.projectId,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get metadata => $state.composableBuilder(
+      column: $state.table.metadata,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<bool> get isPinned => $state.composableBuilder(
+      column: $state.table.isPinned,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<int> get estimatedDuration => $state.composableBuilder(
+      column: $state.table.estimatedDuration,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<int> get actualDuration => $state.composableBuilder(
+      column: $state.table.actualDuration,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<int> get recurrenceType => $state.composableBuilder(
+      column: $state.table.recurrenceType,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<int> get recurrenceInterval => $state.composableBuilder(
+      column: $state.table.recurrenceInterval,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get recurrenceDaysOfWeek => $state.composableBuilder(
+      column: $state.table.recurrenceDaysOfWeek,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get recurrenceEndDate => $state.composableBuilder(
+      column: $state.table.recurrenceEndDate,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<int> get recurrenceMaxOccurrences => $state.composableBuilder(
+      column: $state.table.recurrenceMaxOccurrences,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+}
+
 typedef $$SubTasksTableCreateCompanionBuilder = SubTasksCompanion Function({
   required String id,
   required String taskId,
@@ -4207,121 +4132,22 @@ typedef $$SubTasksTableUpdateCompanionBuilder = SubTasksCompanion Function({
   Value<int> rowid,
 });
 
-class $$SubTasksTableFilterComposer
-    extends Composer<_$AppDatabase, $SubTasksTable> {
-  $$SubTasksTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<String> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get taskId => $composableBuilder(
-      column: $table.taskId, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get title => $composableBuilder(
-      column: $table.title, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<bool> get isCompleted => $composableBuilder(
-      column: $table.isCompleted, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<DateTime> get completedAt => $composableBuilder(
-      column: $table.completedAt, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<int> get sortOrder => $composableBuilder(
-      column: $table.sortOrder, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<DateTime> get createdAt => $composableBuilder(
-      column: $table.createdAt, builder: (column) => ColumnFilters(column));
-}
-
-class $$SubTasksTableOrderingComposer
-    extends Composer<_$AppDatabase, $SubTasksTable> {
-  $$SubTasksTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<String> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get taskId => $composableBuilder(
-      column: $table.taskId, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get title => $composableBuilder(
-      column: $table.title, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<bool> get isCompleted => $composableBuilder(
-      column: $table.isCompleted, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<DateTime> get completedAt => $composableBuilder(
-      column: $table.completedAt, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<int> get sortOrder => $composableBuilder(
-      column: $table.sortOrder, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
-      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
-}
-
-class $$SubTasksTableAnnotationComposer
-    extends Composer<_$AppDatabase, $SubTasksTable> {
-  $$SubTasksTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<String> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get taskId =>
-      $composableBuilder(column: $table.taskId, builder: (column) => column);
-
-  GeneratedColumn<String> get title =>
-      $composableBuilder(column: $table.title, builder: (column) => column);
-
-  GeneratedColumn<bool> get isCompleted => $composableBuilder(
-      column: $table.isCompleted, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get completedAt => $composableBuilder(
-      column: $table.completedAt, builder: (column) => column);
-
-  GeneratedColumn<int> get sortOrder =>
-      $composableBuilder(column: $table.sortOrder, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get createdAt =>
-      $composableBuilder(column: $table.createdAt, builder: (column) => column);
-}
-
 class $$SubTasksTableTableManager extends RootTableManager<
     _$AppDatabase,
     $SubTasksTable,
     SubTask,
     $$SubTasksTableFilterComposer,
     $$SubTasksTableOrderingComposer,
-    $$SubTasksTableAnnotationComposer,
     $$SubTasksTableCreateCompanionBuilder,
-    $$SubTasksTableUpdateCompanionBuilder,
-    (SubTask, BaseReferences<_$AppDatabase, $SubTasksTable, SubTask>),
-    SubTask,
-    PrefetchHooks Function()> {
+    $$SubTasksTableUpdateCompanionBuilder> {
   $$SubTasksTableTableManager(_$AppDatabase db, $SubTasksTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          createFilteringComposer: () =>
-              $$SubTasksTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$SubTasksTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$SubTasksTableAnnotationComposer($db: db, $table: table),
+          filteringComposer:
+              $$SubTasksTableFilterComposer(ComposerState(db, table)),
+          orderingComposer:
+              $$SubTasksTableOrderingComposer(ComposerState(db, table)),
           updateCompanionCallback: ({
             Value<String> id = const Value.absent(),
             Value<String> taskId = const Value.absent(),
@@ -4362,25 +4188,87 @@ class $$SubTasksTableTableManager extends RootTableManager<
             createdAt: createdAt,
             rowid: rowid,
           ),
-          withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
-              .toList(),
-          prefetchHooksCallback: null,
         ));
 }
 
-typedef $$SubTasksTableProcessedTableManager = ProcessedTableManager<
-    _$AppDatabase,
-    $SubTasksTable,
-    SubTask,
-    $$SubTasksTableFilterComposer,
-    $$SubTasksTableOrderingComposer,
-    $$SubTasksTableAnnotationComposer,
-    $$SubTasksTableCreateCompanionBuilder,
-    $$SubTasksTableUpdateCompanionBuilder,
-    (SubTask, BaseReferences<_$AppDatabase, $SubTasksTable, SubTask>),
-    SubTask,
-    PrefetchHooks Function()>;
+class $$SubTasksTableFilterComposer
+    extends FilterComposer<_$AppDatabase, $SubTasksTable> {
+  $$SubTasksTableFilterComposer(super.$state);
+  ColumnFilters<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get taskId => $state.composableBuilder(
+      column: $state.table.taskId,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get title => $state.composableBuilder(
+      column: $state.table.title,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<bool> get isCompleted => $state.composableBuilder(
+      column: $state.table.isCompleted,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get completedAt => $state.composableBuilder(
+      column: $state.table.completedAt,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<int> get sortOrder => $state.composableBuilder(
+      column: $state.table.sortOrder,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get createdAt => $state.composableBuilder(
+      column: $state.table.createdAt,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+}
+
+class $$SubTasksTableOrderingComposer
+    extends OrderingComposer<_$AppDatabase, $SubTasksTable> {
+  $$SubTasksTableOrderingComposer(super.$state);
+  ColumnOrderings<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get taskId => $state.composableBuilder(
+      column: $state.table.taskId,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get title => $state.composableBuilder(
+      column: $state.table.title,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<bool> get isCompleted => $state.composableBuilder(
+      column: $state.table.isCompleted,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get completedAt => $state.composableBuilder(
+      column: $state.table.completedAt,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<int> get sortOrder => $state.composableBuilder(
+      column: $state.table.sortOrder,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get createdAt => $state.composableBuilder(
+      column: $state.table.createdAt,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+}
+
 typedef $$TagsTableCreateCompanionBuilder = TagsCompanion Function({
   required String id,
   required String name,
@@ -4396,92 +4284,22 @@ typedef $$TagsTableUpdateCompanionBuilder = TagsCompanion Function({
   Value<int> rowid,
 });
 
-class $$TagsTableFilterComposer extends Composer<_$AppDatabase, $TagsTable> {
-  $$TagsTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<String> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get name => $composableBuilder(
-      column: $table.name, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get color => $composableBuilder(
-      column: $table.color, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<DateTime> get createdAt => $composableBuilder(
-      column: $table.createdAt, builder: (column) => ColumnFilters(column));
-}
-
-class $$TagsTableOrderingComposer extends Composer<_$AppDatabase, $TagsTable> {
-  $$TagsTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<String> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get name => $composableBuilder(
-      column: $table.name, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get color => $composableBuilder(
-      column: $table.color, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
-      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
-}
-
-class $$TagsTableAnnotationComposer
-    extends Composer<_$AppDatabase, $TagsTable> {
-  $$TagsTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<String> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get name =>
-      $composableBuilder(column: $table.name, builder: (column) => column);
-
-  GeneratedColumn<String> get color =>
-      $composableBuilder(column: $table.color, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get createdAt =>
-      $composableBuilder(column: $table.createdAt, builder: (column) => column);
-}
-
 class $$TagsTableTableManager extends RootTableManager<
     _$AppDatabase,
     $TagsTable,
     Tag,
     $$TagsTableFilterComposer,
     $$TagsTableOrderingComposer,
-    $$TagsTableAnnotationComposer,
     $$TagsTableCreateCompanionBuilder,
-    $$TagsTableUpdateCompanionBuilder,
-    (Tag, BaseReferences<_$AppDatabase, $TagsTable, Tag>),
-    Tag,
-    PrefetchHooks Function()> {
+    $$TagsTableUpdateCompanionBuilder> {
   $$TagsTableTableManager(_$AppDatabase db, $TagsTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          createFilteringComposer: () =>
-              $$TagsTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$TagsTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$TagsTableAnnotationComposer($db: db, $table: table),
+          filteringComposer:
+              $$TagsTableFilterComposer(ComposerState(db, table)),
+          orderingComposer:
+              $$TagsTableOrderingComposer(ComposerState(db, table)),
           updateCompanionCallback: ({
             Value<String> id = const Value.absent(),
             Value<String> name = const Value.absent(),
@@ -4510,25 +4328,57 @@ class $$TagsTableTableManager extends RootTableManager<
             createdAt: createdAt,
             rowid: rowid,
           ),
-          withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
-              .toList(),
-          prefetchHooksCallback: null,
         ));
 }
 
-typedef $$TagsTableProcessedTableManager = ProcessedTableManager<
-    _$AppDatabase,
-    $TagsTable,
-    Tag,
-    $$TagsTableFilterComposer,
-    $$TagsTableOrderingComposer,
-    $$TagsTableAnnotationComposer,
-    $$TagsTableCreateCompanionBuilder,
-    $$TagsTableUpdateCompanionBuilder,
-    (Tag, BaseReferences<_$AppDatabase, $TagsTable, Tag>),
-    Tag,
-    PrefetchHooks Function()>;
+class $$TagsTableFilterComposer
+    extends FilterComposer<_$AppDatabase, $TagsTable> {
+  $$TagsTableFilterComposer(super.$state);
+  ColumnFilters<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get name => $state.composableBuilder(
+      column: $state.table.name,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get color => $state.composableBuilder(
+      column: $state.table.color,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get createdAt => $state.composableBuilder(
+      column: $state.table.createdAt,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+}
+
+class $$TagsTableOrderingComposer
+    extends OrderingComposer<_$AppDatabase, $TagsTable> {
+  $$TagsTableOrderingComposer(super.$state);
+  ColumnOrderings<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get name => $state.composableBuilder(
+      column: $state.table.name,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get color => $state.composableBuilder(
+      column: $state.table.color,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get createdAt => $state.composableBuilder(
+      column: $state.table.createdAt,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+}
+
 typedef $$TaskTagsTableCreateCompanionBuilder = TaskTagsCompanion Function({
   required String taskId,
   required String tagId,
@@ -4540,76 +4390,22 @@ typedef $$TaskTagsTableUpdateCompanionBuilder = TaskTagsCompanion Function({
   Value<int> rowid,
 });
 
-class $$TaskTagsTableFilterComposer
-    extends Composer<_$AppDatabase, $TaskTagsTable> {
-  $$TaskTagsTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<String> get taskId => $composableBuilder(
-      column: $table.taskId, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get tagId => $composableBuilder(
-      column: $table.tagId, builder: (column) => ColumnFilters(column));
-}
-
-class $$TaskTagsTableOrderingComposer
-    extends Composer<_$AppDatabase, $TaskTagsTable> {
-  $$TaskTagsTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<String> get taskId => $composableBuilder(
-      column: $table.taskId, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get tagId => $composableBuilder(
-      column: $table.tagId, builder: (column) => ColumnOrderings(column));
-}
-
-class $$TaskTagsTableAnnotationComposer
-    extends Composer<_$AppDatabase, $TaskTagsTable> {
-  $$TaskTagsTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<String> get taskId =>
-      $composableBuilder(column: $table.taskId, builder: (column) => column);
-
-  GeneratedColumn<String> get tagId =>
-      $composableBuilder(column: $table.tagId, builder: (column) => column);
-}
-
 class $$TaskTagsTableTableManager extends RootTableManager<
     _$AppDatabase,
     $TaskTagsTable,
     TaskTag,
     $$TaskTagsTableFilterComposer,
     $$TaskTagsTableOrderingComposer,
-    $$TaskTagsTableAnnotationComposer,
     $$TaskTagsTableCreateCompanionBuilder,
-    $$TaskTagsTableUpdateCompanionBuilder,
-    (TaskTag, BaseReferences<_$AppDatabase, $TaskTagsTable, TaskTag>),
-    TaskTag,
-    PrefetchHooks Function()> {
+    $$TaskTagsTableUpdateCompanionBuilder> {
   $$TaskTagsTableTableManager(_$AppDatabase db, $TaskTagsTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          createFilteringComposer: () =>
-              $$TaskTagsTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$TaskTagsTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$TaskTagsTableAnnotationComposer($db: db, $table: table),
+          filteringComposer:
+              $$TaskTagsTableFilterComposer(ComposerState(db, table)),
+          orderingComposer:
+              $$TaskTagsTableOrderingComposer(ComposerState(db, table)),
           updateCompanionCallback: ({
             Value<String> taskId = const Value.absent(),
             Value<String> tagId = const Value.absent(),
@@ -4630,25 +4426,37 @@ class $$TaskTagsTableTableManager extends RootTableManager<
             tagId: tagId,
             rowid: rowid,
           ),
-          withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
-              .toList(),
-          prefetchHooksCallback: null,
         ));
 }
 
-typedef $$TaskTagsTableProcessedTableManager = ProcessedTableManager<
-    _$AppDatabase,
-    $TaskTagsTable,
-    TaskTag,
-    $$TaskTagsTableFilterComposer,
-    $$TaskTagsTableOrderingComposer,
-    $$TaskTagsTableAnnotationComposer,
-    $$TaskTagsTableCreateCompanionBuilder,
-    $$TaskTagsTableUpdateCompanionBuilder,
-    (TaskTag, BaseReferences<_$AppDatabase, $TaskTagsTable, TaskTag>),
-    TaskTag,
-    PrefetchHooks Function()>;
+class $$TaskTagsTableFilterComposer
+    extends FilterComposer<_$AppDatabase, $TaskTagsTable> {
+  $$TaskTagsTableFilterComposer(super.$state);
+  ColumnFilters<String> get taskId => $state.composableBuilder(
+      column: $state.table.taskId,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get tagId => $state.composableBuilder(
+      column: $state.table.tagId,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+}
+
+class $$TaskTagsTableOrderingComposer
+    extends OrderingComposer<_$AppDatabase, $TaskTagsTable> {
+  $$TaskTagsTableOrderingComposer(super.$state);
+  ColumnOrderings<String> get taskId => $state.composableBuilder(
+      column: $state.table.taskId,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get tagId => $state.composableBuilder(
+      column: $state.table.tagId,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+}
+
 typedef $$TaskDependenciesTableCreateCompanionBuilder
     = TaskDependenciesCompanion Function({
   required String dependentTaskId,
@@ -4662,84 +4470,23 @@ typedef $$TaskDependenciesTableUpdateCompanionBuilder
   Value<int> rowid,
 });
 
-class $$TaskDependenciesTableFilterComposer
-    extends Composer<_$AppDatabase, $TaskDependenciesTable> {
-  $$TaskDependenciesTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<String> get dependentTaskId => $composableBuilder(
-      column: $table.dependentTaskId,
-      builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get prerequisiteTaskId => $composableBuilder(
-      column: $table.prerequisiteTaskId,
-      builder: (column) => ColumnFilters(column));
-}
-
-class $$TaskDependenciesTableOrderingComposer
-    extends Composer<_$AppDatabase, $TaskDependenciesTable> {
-  $$TaskDependenciesTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<String> get dependentTaskId => $composableBuilder(
-      column: $table.dependentTaskId,
-      builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get prerequisiteTaskId => $composableBuilder(
-      column: $table.prerequisiteTaskId,
-      builder: (column) => ColumnOrderings(column));
-}
-
-class $$TaskDependenciesTableAnnotationComposer
-    extends Composer<_$AppDatabase, $TaskDependenciesTable> {
-  $$TaskDependenciesTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<String> get dependentTaskId => $composableBuilder(
-      column: $table.dependentTaskId, builder: (column) => column);
-
-  GeneratedColumn<String> get prerequisiteTaskId => $composableBuilder(
-      column: $table.prerequisiteTaskId, builder: (column) => column);
-}
-
 class $$TaskDependenciesTableTableManager extends RootTableManager<
     _$AppDatabase,
     $TaskDependenciesTable,
     TaskDependency,
     $$TaskDependenciesTableFilterComposer,
     $$TaskDependenciesTableOrderingComposer,
-    $$TaskDependenciesTableAnnotationComposer,
     $$TaskDependenciesTableCreateCompanionBuilder,
-    $$TaskDependenciesTableUpdateCompanionBuilder,
-    (
-      TaskDependency,
-      BaseReferences<_$AppDatabase, $TaskDependenciesTable, TaskDependency>
-    ),
-    TaskDependency,
-    PrefetchHooks Function()> {
+    $$TaskDependenciesTableUpdateCompanionBuilder> {
   $$TaskDependenciesTableTableManager(
       _$AppDatabase db, $TaskDependenciesTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          createFilteringComposer: () =>
-              $$TaskDependenciesTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$TaskDependenciesTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$TaskDependenciesTableAnnotationComposer($db: db, $table: table),
+          filteringComposer:
+              $$TaskDependenciesTableFilterComposer(ComposerState(db, table)),
+          orderingComposer:
+              $$TaskDependenciesTableOrderingComposer(ComposerState(db, table)),
           updateCompanionCallback: ({
             Value<String> dependentTaskId = const Value.absent(),
             Value<String> prerequisiteTaskId = const Value.absent(),
@@ -4760,28 +4507,37 @@ class $$TaskDependenciesTableTableManager extends RootTableManager<
             prerequisiteTaskId: prerequisiteTaskId,
             rowid: rowid,
           ),
-          withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
-              .toList(),
-          prefetchHooksCallback: null,
         ));
 }
 
-typedef $$TaskDependenciesTableProcessedTableManager = ProcessedTableManager<
-    _$AppDatabase,
-    $TaskDependenciesTable,
-    TaskDependency,
-    $$TaskDependenciesTableFilterComposer,
-    $$TaskDependenciesTableOrderingComposer,
-    $$TaskDependenciesTableAnnotationComposer,
-    $$TaskDependenciesTableCreateCompanionBuilder,
-    $$TaskDependenciesTableUpdateCompanionBuilder,
-    (
-      TaskDependency,
-      BaseReferences<_$AppDatabase, $TaskDependenciesTable, TaskDependency>
-    ),
-    TaskDependency,
-    PrefetchHooks Function()>;
+class $$TaskDependenciesTableFilterComposer
+    extends FilterComposer<_$AppDatabase, $TaskDependenciesTable> {
+  $$TaskDependenciesTableFilterComposer(super.$state);
+  ColumnFilters<String> get dependentTaskId => $state.composableBuilder(
+      column: $state.table.dependentTaskId,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get prerequisiteTaskId => $state.composableBuilder(
+      column: $state.table.prerequisiteTaskId,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+}
+
+class $$TaskDependenciesTableOrderingComposer
+    extends OrderingComposer<_$AppDatabase, $TaskDependenciesTable> {
+  $$TaskDependenciesTableOrderingComposer(super.$state);
+  ColumnOrderings<String> get dependentTaskId => $state.composableBuilder(
+      column: $state.table.dependentTaskId,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get prerequisiteTaskId => $state.composableBuilder(
+      column: $state.table.prerequisiteTaskId,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+}
+
 typedef $$TaskTemplatesTableCreateCompanionBuilder = TaskTemplatesCompanion
     Function({
   required String id,
@@ -4835,278 +4591,22 @@ typedef $$TaskTemplatesTableUpdateCompanionBuilder = TaskTemplatesCompanion
   Value<int> rowid,
 });
 
-class $$TaskTemplatesTableFilterComposer
-    extends Composer<_$AppDatabase, $TaskTemplatesTable> {
-  $$TaskTemplatesTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<String> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get name => $composableBuilder(
-      column: $table.name, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get description => $composableBuilder(
-      column: $table.description, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get titleTemplate => $composableBuilder(
-      column: $table.titleTemplate, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get descriptionTemplate => $composableBuilder(
-      column: $table.descriptionTemplate,
-      builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<int> get priority => $composableBuilder(
-      column: $table.priority, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get tags => $composableBuilder(
-      column: $table.tags, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get subTaskTemplates => $composableBuilder(
-      column: $table.subTaskTemplates,
-      builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get locationTrigger => $composableBuilder(
-      column: $table.locationTrigger,
-      builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get projectId => $composableBuilder(
-      column: $table.projectId, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<int> get estimatedDuration => $composableBuilder(
-      column: $table.estimatedDuration,
-      builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get metadata => $composableBuilder(
-      column: $table.metadata, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<DateTime> get createdAt => $composableBuilder(
-      column: $table.createdAt, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
-      column: $table.updatedAt, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<int> get usageCount => $composableBuilder(
-      column: $table.usageCount, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<bool> get isFavorite => $composableBuilder(
-      column: $table.isFavorite, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get category => $composableBuilder(
-      column: $table.category, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<int> get recurrenceType => $composableBuilder(
-      column: $table.recurrenceType,
-      builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<int> get recurrenceInterval => $composableBuilder(
-      column: $table.recurrenceInterval,
-      builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get recurrenceDaysOfWeek => $composableBuilder(
-      column: $table.recurrenceDaysOfWeek,
-      builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<DateTime> get recurrenceEndDate => $composableBuilder(
-      column: $table.recurrenceEndDate,
-      builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<int> get recurrenceMaxOccurrences => $composableBuilder(
-      column: $table.recurrenceMaxOccurrences,
-      builder: (column) => ColumnFilters(column));
-}
-
-class $$TaskTemplatesTableOrderingComposer
-    extends Composer<_$AppDatabase, $TaskTemplatesTable> {
-  $$TaskTemplatesTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<String> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get name => $composableBuilder(
-      column: $table.name, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get description => $composableBuilder(
-      column: $table.description, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get titleTemplate => $composableBuilder(
-      column: $table.titleTemplate,
-      builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get descriptionTemplate => $composableBuilder(
-      column: $table.descriptionTemplate,
-      builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<int> get priority => $composableBuilder(
-      column: $table.priority, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get tags => $composableBuilder(
-      column: $table.tags, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get subTaskTemplates => $composableBuilder(
-      column: $table.subTaskTemplates,
-      builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get locationTrigger => $composableBuilder(
-      column: $table.locationTrigger,
-      builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get projectId => $composableBuilder(
-      column: $table.projectId, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<int> get estimatedDuration => $composableBuilder(
-      column: $table.estimatedDuration,
-      builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get metadata => $composableBuilder(
-      column: $table.metadata, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
-      column: $table.createdAt, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
-      column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<int> get usageCount => $composableBuilder(
-      column: $table.usageCount, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<bool> get isFavorite => $composableBuilder(
-      column: $table.isFavorite, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get category => $composableBuilder(
-      column: $table.category, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<int> get recurrenceType => $composableBuilder(
-      column: $table.recurrenceType,
-      builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<int> get recurrenceInterval => $composableBuilder(
-      column: $table.recurrenceInterval,
-      builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get recurrenceDaysOfWeek => $composableBuilder(
-      column: $table.recurrenceDaysOfWeek,
-      builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<DateTime> get recurrenceEndDate => $composableBuilder(
-      column: $table.recurrenceEndDate,
-      builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<int> get recurrenceMaxOccurrences => $composableBuilder(
-      column: $table.recurrenceMaxOccurrences,
-      builder: (column) => ColumnOrderings(column));
-}
-
-class $$TaskTemplatesTableAnnotationComposer
-    extends Composer<_$AppDatabase, $TaskTemplatesTable> {
-  $$TaskTemplatesTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<String> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get name =>
-      $composableBuilder(column: $table.name, builder: (column) => column);
-
-  GeneratedColumn<String> get description => $composableBuilder(
-      column: $table.description, builder: (column) => column);
-
-  GeneratedColumn<String> get titleTemplate => $composableBuilder(
-      column: $table.titleTemplate, builder: (column) => column);
-
-  GeneratedColumn<String> get descriptionTemplate => $composableBuilder(
-      column: $table.descriptionTemplate, builder: (column) => column);
-
-  GeneratedColumn<int> get priority =>
-      $composableBuilder(column: $table.priority, builder: (column) => column);
-
-  GeneratedColumn<String> get tags =>
-      $composableBuilder(column: $table.tags, builder: (column) => column);
-
-  GeneratedColumn<String> get subTaskTemplates => $composableBuilder(
-      column: $table.subTaskTemplates, builder: (column) => column);
-
-  GeneratedColumn<String> get locationTrigger => $composableBuilder(
-      column: $table.locationTrigger, builder: (column) => column);
-
-  GeneratedColumn<String> get projectId =>
-      $composableBuilder(column: $table.projectId, builder: (column) => column);
-
-  GeneratedColumn<int> get estimatedDuration => $composableBuilder(
-      column: $table.estimatedDuration, builder: (column) => column);
-
-  GeneratedColumn<String> get metadata =>
-      $composableBuilder(column: $table.metadata, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get createdAt =>
-      $composableBuilder(column: $table.createdAt, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get updatedAt =>
-      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
-
-  GeneratedColumn<int> get usageCount => $composableBuilder(
-      column: $table.usageCount, builder: (column) => column);
-
-  GeneratedColumn<bool> get isFavorite => $composableBuilder(
-      column: $table.isFavorite, builder: (column) => column);
-
-  GeneratedColumn<String> get category =>
-      $composableBuilder(column: $table.category, builder: (column) => column);
-
-  GeneratedColumn<int> get recurrenceType => $composableBuilder(
-      column: $table.recurrenceType, builder: (column) => column);
-
-  GeneratedColumn<int> get recurrenceInterval => $composableBuilder(
-      column: $table.recurrenceInterval, builder: (column) => column);
-
-  GeneratedColumn<String> get recurrenceDaysOfWeek => $composableBuilder(
-      column: $table.recurrenceDaysOfWeek, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get recurrenceEndDate => $composableBuilder(
-      column: $table.recurrenceEndDate, builder: (column) => column);
-
-  GeneratedColumn<int> get recurrenceMaxOccurrences => $composableBuilder(
-      column: $table.recurrenceMaxOccurrences, builder: (column) => column);
-}
-
 class $$TaskTemplatesTableTableManager extends RootTableManager<
     _$AppDatabase,
     $TaskTemplatesTable,
     TaskTemplate,
     $$TaskTemplatesTableFilterComposer,
     $$TaskTemplatesTableOrderingComposer,
-    $$TaskTemplatesTableAnnotationComposer,
     $$TaskTemplatesTableCreateCompanionBuilder,
-    $$TaskTemplatesTableUpdateCompanionBuilder,
-    (
-      TaskTemplate,
-      BaseReferences<_$AppDatabase, $TaskTemplatesTable, TaskTemplate>
-    ),
-    TaskTemplate,
-    PrefetchHooks Function()> {
+    $$TaskTemplatesTableUpdateCompanionBuilder> {
   $$TaskTemplatesTableTableManager(_$AppDatabase db, $TaskTemplatesTable table)
       : super(TableManagerState(
           db: db,
           table: table,
-          createFilteringComposer: () =>
-              $$TaskTemplatesTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$TaskTemplatesTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$TaskTemplatesTableAnnotationComposer($db: db, $table: table),
+          filteringComposer:
+              $$TaskTemplatesTableFilterComposer(ComposerState(db, table)),
+          orderingComposer:
+              $$TaskTemplatesTableOrderingComposer(ComposerState(db, table)),
           updateCompanionCallback: ({
             Value<String> id = const Value.absent(),
             Value<String> name = const Value.absent(),
@@ -5207,28 +4707,236 @@ class $$TaskTemplatesTableTableManager extends RootTableManager<
             recurrenceMaxOccurrences: recurrenceMaxOccurrences,
             rowid: rowid,
           ),
-          withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
-              .toList(),
-          prefetchHooksCallback: null,
         ));
 }
 
-typedef $$TaskTemplatesTableProcessedTableManager = ProcessedTableManager<
-    _$AppDatabase,
-    $TaskTemplatesTable,
-    TaskTemplate,
-    $$TaskTemplatesTableFilterComposer,
-    $$TaskTemplatesTableOrderingComposer,
-    $$TaskTemplatesTableAnnotationComposer,
-    $$TaskTemplatesTableCreateCompanionBuilder,
-    $$TaskTemplatesTableUpdateCompanionBuilder,
-    (
-      TaskTemplate,
-      BaseReferences<_$AppDatabase, $TaskTemplatesTable, TaskTemplate>
-    ),
-    TaskTemplate,
-    PrefetchHooks Function()>;
+class $$TaskTemplatesTableFilterComposer
+    extends FilterComposer<_$AppDatabase, $TaskTemplatesTable> {
+  $$TaskTemplatesTableFilterComposer(super.$state);
+  ColumnFilters<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get name => $state.composableBuilder(
+      column: $state.table.name,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get description => $state.composableBuilder(
+      column: $state.table.description,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get titleTemplate => $state.composableBuilder(
+      column: $state.table.titleTemplate,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get descriptionTemplate => $state.composableBuilder(
+      column: $state.table.descriptionTemplate,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<int> get priority => $state.composableBuilder(
+      column: $state.table.priority,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get tags => $state.composableBuilder(
+      column: $state.table.tags,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get subTaskTemplates => $state.composableBuilder(
+      column: $state.table.subTaskTemplates,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get locationTrigger => $state.composableBuilder(
+      column: $state.table.locationTrigger,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get projectId => $state.composableBuilder(
+      column: $state.table.projectId,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<int> get estimatedDuration => $state.composableBuilder(
+      column: $state.table.estimatedDuration,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get metadata => $state.composableBuilder(
+      column: $state.table.metadata,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get createdAt => $state.composableBuilder(
+      column: $state.table.createdAt,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get updatedAt => $state.composableBuilder(
+      column: $state.table.updatedAt,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<int> get usageCount => $state.composableBuilder(
+      column: $state.table.usageCount,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<bool> get isFavorite => $state.composableBuilder(
+      column: $state.table.isFavorite,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get category => $state.composableBuilder(
+      column: $state.table.category,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<int> get recurrenceType => $state.composableBuilder(
+      column: $state.table.recurrenceType,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<int> get recurrenceInterval => $state.composableBuilder(
+      column: $state.table.recurrenceInterval,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get recurrenceDaysOfWeek => $state.composableBuilder(
+      column: $state.table.recurrenceDaysOfWeek,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get recurrenceEndDate => $state.composableBuilder(
+      column: $state.table.recurrenceEndDate,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<int> get recurrenceMaxOccurrences => $state.composableBuilder(
+      column: $state.table.recurrenceMaxOccurrences,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+}
+
+class $$TaskTemplatesTableOrderingComposer
+    extends OrderingComposer<_$AppDatabase, $TaskTemplatesTable> {
+  $$TaskTemplatesTableOrderingComposer(super.$state);
+  ColumnOrderings<String> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get name => $state.composableBuilder(
+      column: $state.table.name,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get description => $state.composableBuilder(
+      column: $state.table.description,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get titleTemplate => $state.composableBuilder(
+      column: $state.table.titleTemplate,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get descriptionTemplate => $state.composableBuilder(
+      column: $state.table.descriptionTemplate,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<int> get priority => $state.composableBuilder(
+      column: $state.table.priority,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get tags => $state.composableBuilder(
+      column: $state.table.tags,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get subTaskTemplates => $state.composableBuilder(
+      column: $state.table.subTaskTemplates,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get locationTrigger => $state.composableBuilder(
+      column: $state.table.locationTrigger,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get projectId => $state.composableBuilder(
+      column: $state.table.projectId,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<int> get estimatedDuration => $state.composableBuilder(
+      column: $state.table.estimatedDuration,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get metadata => $state.composableBuilder(
+      column: $state.table.metadata,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get createdAt => $state.composableBuilder(
+      column: $state.table.createdAt,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get updatedAt => $state.composableBuilder(
+      column: $state.table.updatedAt,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<int> get usageCount => $state.composableBuilder(
+      column: $state.table.usageCount,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<bool> get isFavorite => $state.composableBuilder(
+      column: $state.table.isFavorite,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get category => $state.composableBuilder(
+      column: $state.table.category,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<int> get recurrenceType => $state.composableBuilder(
+      column: $state.table.recurrenceType,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<int> get recurrenceInterval => $state.composableBuilder(
+      column: $state.table.recurrenceInterval,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get recurrenceDaysOfWeek => $state.composableBuilder(
+      column: $state.table.recurrenceDaysOfWeek,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get recurrenceEndDate => $state.composableBuilder(
+      column: $state.table.recurrenceEndDate,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<int> get recurrenceMaxOccurrences => $state.composableBuilder(
+      column: $state.table.recurrenceMaxOccurrences,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+}
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;

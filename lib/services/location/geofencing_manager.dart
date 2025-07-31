@@ -1,23 +1,26 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'location_service.dart';
-import 'location_models.dart';
+import 'location_models.dart' as models;
 import '../notification/notification_service.dart';
-import '../../domain/entities/task.dart';
+import '../../domain/entities/task_model.dart';
+import '../../domain/repositories/task_repository.dart';
 
 class GeofencingManager {
   final LocationService _locationService;
   final NotificationService _notificationService;
+  final TaskRepository _taskRepository;
   final Ref _ref;
   
-  StreamSubscription<GeofenceEvent>? _geofenceSubscription;
-  StreamSubscription<LocationData>? _locationSubscription;
-  final Map<String, LocationTrigger> _activeTriggers = {};
+  StreamSubscription<models.GeofenceEvent>? _geofenceSubscription;
+  StreamSubscription<models.LocationData>? _locationSubscription;
+  final Map<String, models.LocationTrigger> _activeTriggers = {};
   final Map<String, bool> _geofenceStates = {}; // Track enter/exit states
 
   GeofencingManager(
     this._locationService,
     this._notificationService,
+    this._taskRepository,
     this._ref,
   );
 
@@ -41,7 +44,7 @@ class GeofencingManager {
   }
 
   /// Add a location trigger
-  Future<void> addLocationTrigger(LocationTrigger trigger) async {
+  Future<void> addLocationTrigger(models.LocationTrigger trigger) async {
     if (!trigger.isEnabled) return;
 
     _activeTriggers[trigger.id] = trigger;
@@ -63,7 +66,7 @@ class GeofencingManager {
   }
 
   /// Update a location trigger
-  Future<void> updateLocationTrigger(LocationTrigger trigger) async {
+  Future<void> updateLocationTrigger(models.LocationTrigger trigger) async {
     await removeLocationTrigger(trigger.id);
     if (trigger.isEnabled) {
       await addLocationTrigger(trigger);
@@ -71,12 +74,12 @@ class GeofencingManager {
   }
 
   /// Get all active triggers
-  List<LocationTrigger> getActiveTriggers() {
+  List<models.LocationTrigger> getActiveTriggers() {
     return _activeTriggers.values.toList();
   }
 
   /// Get triggers for a specific task
-  List<LocationTrigger> getTriggersForTask(String taskId) {
+  List<models.LocationTrigger> getTriggersForTask(String taskId) {
     return _activeTriggers.values
         .where((trigger) => trigger.taskId == taskId)
         .toList();
@@ -93,7 +96,7 @@ class GeofencingManager {
 
   // Private methods
 
-  void _handleGeofenceEvent(GeofenceEvent event) async {
+  void _handleGeofenceEvent(models.GeofenceEvent event) async {
     final trigger = _activeTriggers.values
         .where((t) => t.geofence.id == event.geofenceId)
         .firstOrNull;
@@ -101,7 +104,7 @@ class GeofencingManager {
     if (trigger == null) return;
 
     final previousState = _geofenceStates[event.geofenceId] ?? false;
-    final currentState = event.type == GeofenceEventType.enter;
+    final currentState = event.type == models.GeofenceEventType.enter;
 
     // Only trigger if state actually changed
     if (previousState != currentState) {
@@ -116,7 +119,7 @@ class GeofencingManager {
     }
   }
 
-  void _handleLocationUpdate(LocationData location) {
+  void _handleLocationUpdate(models.LocationData location) {
     // Check all active geofences against current location
     for (final trigger in _activeTriggers.values) {
       final isInside = _locationService.isWithinGeofence(location, trigger.geofence);
@@ -125,11 +128,11 @@ class GeofencingManager {
       if (isInside != previousState) {
         _geofenceStates[trigger.geofence.id] = isInside;
         
-        final eventType = isInside ? GeofenceEventType.enter : GeofenceEventType.exit;
+        final eventType = isInside ? models.GeofenceEventType.enter : models.GeofenceEventType.exit;
         final shouldTrigger = _shouldTriggerForEvent(trigger.geofence.type, eventType);
         
         if (shouldTrigger) {
-          final event = GeofenceEvent(
+          final event = models.GeofenceEvent(
             geofenceId: trigger.geofence.id,
             type: eventType,
             location: location,
@@ -142,31 +145,36 @@ class GeofencingManager {
     }
   }
 
-  bool _shouldTriggerForEvent(GeofenceType geofenceType, GeofenceEventType eventType) {
+  bool _shouldTriggerForEvent(models.GeofenceType geofenceType, models.GeofenceEventType eventType) {
     switch (geofenceType) {
-      case GeofenceType.enter:
-        return eventType == GeofenceEventType.enter;
-      case GeofenceType.exit:
-        return eventType == GeofenceEventType.exit;
-      case GeofenceType.both:
+      case models.GeofenceType.enter:
+        return eventType == models.GeofenceEventType.enter;
+      case models.GeofenceType.exit:
+        return eventType == models.GeofenceEventType.exit;
+      case models.GeofenceType.both:
         return true;
     }
   }
 
-  Future<void> _sendLocationNotification(LocationTrigger trigger, GeofenceEvent event) async {
+  Future<void> _sendLocationNotification(models.LocationTrigger trigger, models.GeofenceEvent event) async {
     try {
-      // Get task details (this would typically come from a task repository)
-      final taskTitle = 'Location Reminder'; // Placeholder
+      // Get task details from repository
+      final task = await _taskRepository.getTaskById(trigger.taskId);
+      final taskTitle = task?.title ?? 'Unknown Task';
       
-      final eventTypeText = event.type == GeofenceEventType.enter ? 'entered' : 'left';
+      final eventTypeText = event.type == models.GeofenceEventType.enter ? 'entered' : 'left';
       final title = 'Location Reminder';
       final body = 'You have $eventTypeText ${trigger.geofence.name}. Don\'t forget about your task: $taskTitle';
 
-      await _notificationService.showNotification(
-        id: trigger.id.hashCode,
+      await _notificationService.showImmediateNotification(
         title: title,
         body: body,
-        payload: 'location_trigger:${trigger.id}',
+        taskId: trigger.taskId,
+        payload: {
+          'type': 'location_trigger',
+          'triggerId': trigger.id,
+          'taskId': trigger.taskId,
+        },
       );
     } catch (e) {
       print('Error sending location notification: $e');
