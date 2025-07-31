@@ -245,17 +245,17 @@ void main() {
 
   group('ProductivityInsightsWidget', () {
     testWidgets('should display productivity insights', (tester) async {
-      const metrics = ProductivityMetrics(
+      final metrics = ProductivityMetrics(
         weeklyCompletionRate: 0.8,
         monthlyCompletionRate: 0.7,
         tasksCompletedThisWeek: 20,
         tasksCompletedThisMonth: 80,
         currentStreak: 5,
         longestStreak: 10,
-        weeklyTrend: [5, 6, 4, 8, 7, 9, 6],
+        weeklyTrend: const [5, 6, 4, 8, 7, 9, 6],
         monthlyTrend: List.filled(30, 3),
-        hourlyProductivity: {9: 10, 14: 8, 19: 5},
-        weekdayProductivity: {1: 15, 2: 12, 3: 18, 4: 10, 5: 8, 6: 5, 7: 3},
+        hourlyProductivity: const {9: 10, 14: 8, 19: 5},
+        weekdayProductivity: const {1: 15, 2: 12, 3: 18, 4: 10, 5: 8, 6: 5, 7: 3},
         averageTasksPerDay: 3.5,
         averageCompletionTime: 45.0,
       );

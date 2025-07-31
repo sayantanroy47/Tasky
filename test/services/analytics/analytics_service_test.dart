@@ -293,19 +293,22 @@ void main() {
         final now = DateTime.now();
         final dateRange = DateRange(
           start: now.subtract(const Duration(days: 7)),
-          end: now,
+          end: now.add(const Duration(days: 1)),
         );
 
         final tasks = [
           TaskModel.create(title: 'Morning Task').copyWith(
+            createdAt: now.subtract(const Duration(days: 1)),
             status: TaskStatus.completed,
             completedAt: DateTime(now.year, now.month, now.day, 9, 0),
           ),
           TaskModel.create(title: 'Afternoon Task').copyWith(
+            createdAt: now.subtract(const Duration(days: 1)),
             status: TaskStatus.completed,
             completedAt: DateTime(now.year, now.month, now.day, 14, 0),
           ),
           TaskModel.create(title: 'Another Morning Task').copyWith(
+            createdAt: now.subtract(const Duration(days: 1)),
             status: TaskStatus.completed,
             completedAt: DateTime(now.year, now.month, now.day, 9, 30),
           ),

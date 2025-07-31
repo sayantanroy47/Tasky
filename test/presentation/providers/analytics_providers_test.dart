@@ -141,17 +141,17 @@ void main() {
 
     group('productivityMetricsProvider', () {
       test('should call analytics service correctly', () async {
-        const mockMetrics = ProductivityMetrics(
+        final mockMetrics = ProductivityMetrics(
           weeklyCompletionRate: 0.8,
           monthlyCompletionRate: 0.75,
           tasksCompletedThisWeek: 20,
           tasksCompletedThisMonth: 80,
           currentStreak: 5,
           longestStreak: 12,
-          weeklyTrend: [3, 4, 2, 5, 6, 4, 3],
+          weeklyTrend: const [3, 4, 2, 5, 6, 4, 3],
           monthlyTrend: List.filled(30, 3),
-          hourlyProductivity: {9: 10, 14: 8, 19: 5},
-          weekdayProductivity: {1: 15, 2: 12, 3: 18, 4: 10, 5: 8, 6: 5, 7: 3},
+          hourlyProductivity: const {9: 10, 14: 8, 19: 5},
+          weekdayProductivity: const {1: 15, 2: 12, 3: 18, 4: 10, 5: 8, 6: 5, 7: 3},
           averageTasksPerDay: 3.2,
           averageCompletionTime: 45.5,
         );

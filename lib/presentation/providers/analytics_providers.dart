@@ -123,7 +123,7 @@ class AnalyticsNotifier extends StateNotifier<AnalyticsState> {
   void setTimePeriod(AnalyticsTimePeriod period) {
     state = state.copyWith(
       timePeriod: period,
-      customDateRange: period == AnalyticsTimePeriod.custom ? state.customDateRange : null,
+      clearCustomDateRange: period != AnalyticsTimePeriod.custom,
     );
   }
 
@@ -153,7 +153,7 @@ class AnalyticsNotifier extends StateNotifier<AnalyticsState> {
   }
 
   void clearError() {
-    state = state.copyWith(error: null);
+    state = state.copyWith(clearError: true);
   }
 }
 
@@ -178,18 +178,20 @@ class AnalyticsState {
   AnalyticsState copyWith({
     AnalyticsTimePeriod? timePeriod,
     DateRange? customDateRange,
+    bool clearCustomDateRange = false,
     String? selectedMetric,
     bool? showTrends,
     bool? isRefreshing,
     String? error,
+    bool clearError = false,
   }) {
     return AnalyticsState(
       timePeriod: timePeriod ?? this.timePeriod,
-      customDateRange: customDateRange ?? this.customDateRange,
+      customDateRange: clearCustomDateRange ? null : (customDateRange ?? this.customDateRange),
       selectedMetric: selectedMetric ?? this.selectedMetric,
       showTrends: showTrends ?? this.showTrends,
       isRefreshing: isRefreshing ?? this.isRefreshing,
-      error: error ?? this.error,
+      error: clearError ? null : (error ?? this.error),
     );
   }
 }
