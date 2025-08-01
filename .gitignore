@@ -43,3 +43,19 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Additional build and generated files
+/android/build/
+/windows/flutter/generated_*
+*.g.dart
+*.mocks.dart
+pubspec_deps.json
+nul
+
+# IDE and editor files
+.claude/
+.kiro/
+
+# Temporary files
+*.tmp
+*.temp

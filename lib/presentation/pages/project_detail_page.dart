@@ -173,10 +173,10 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: _parseColor(project.color).withValues(alpha: 0.1),
+        color: _parseColor(project.color).withOpacity( 0.1),
         border: Border(
           bottom: BorderSide(
-            color: theme.colorScheme.outline.withValues(alpha: 0.1),
+            color: theme.colorScheme.outline.withOpacity( 0.1),
           ),
         ),
       ),
@@ -286,7 +286,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.error.withValues(alpha: 0.1),
+                      color: theme.colorScheme.error.withOpacity( 0.1),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
@@ -397,9 +397,9 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
+        color: color.withOpacity( 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withValues(alpha: 0.1)),
+        border: Border.all(color: color.withOpacity( 0.1)),
       ),
       child: Column(
         children: [

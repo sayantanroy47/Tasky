@@ -205,10 +205,10 @@ class ProjectSelector extends ConsumerWidget {
                 child: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: _parseColor(project.color).withValues(alpha: 0.1),
+                    color: _parseColor(project.color).withOpacity( 0.1),
                     borderRadius: BorderRadius.circular(6),
                     border: Border.all(
-                      color: _parseColor(project.color).withValues(alpha: 0.3),
+                      color: _parseColor(project.color).withOpacity( 0.3),
                     ),
                   ),
                   child: Row(
@@ -227,7 +227,7 @@ class ProjectSelector extends ConsumerWidget {
                           project.name,
                           style: TextStyle(
                             fontSize: 12,
-                            color: _parseColor(project.color).withValues(alpha: 0.1),
+                            color: _parseColor(project.color).withOpacity( 0.1),
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -237,7 +237,7 @@ class ProjectSelector extends ConsumerWidget {
                           'Due ${_formatDate(project.deadline!)}',
                           style: TextStyle(
                             fontSize: 10,
-                            color: _parseColor(project.color).withValues(alpha: 0.1),
+                            color: _parseColor(project.color).withOpacity( 0.1),
                           ),
                         ),
                     ],
@@ -308,12 +308,12 @@ class CompactProjectSelector extends ConsumerWidget {
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
               color: selectedProject != null
-                  ? _parseColor(selectedProject.color).withValues(alpha: 0.1)
-                  : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.1),
+                  ? _parseColor(selectedProject.color).withOpacity( 0.1)
+                  : theme.colorScheme.surfaceContainerHighest.withOpacity( 0.1),
               borderRadius: BorderRadius.circular(12),
               border: selectedProject != null
                   ? Border.all(
-                      color: _parseColor(selectedProject.color).withValues(alpha: 0.1),
+                      color: _parseColor(selectedProject.color).withOpacity( 0.1),
                     )
                   : null,
             ),
@@ -418,7 +418,7 @@ class CompactProjectSelector extends ConsumerWidget {
       loading: () => Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.1),
+          color: theme.colorScheme.surfaceContainerHighest.withOpacity( 0.1),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
@@ -446,7 +446,7 @@ class CompactProjectSelector extends ConsumerWidget {
       error: (_, __) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
-          color: theme.colorScheme.errorContainer.withValues(alpha: 0.1),
+          color: theme.colorScheme.errorContainer.withOpacity( 0.1),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(

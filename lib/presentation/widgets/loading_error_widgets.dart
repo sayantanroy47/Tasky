@@ -253,7 +253,7 @@ class _ShimmerListItemState extends State<ShimmerListItem>
                   height: 20,
                   decoration: BoxDecoration(
                     color: theme.colorScheme.surfaceContainerHighest
-                        .withValues(alpha: 0.1),
+                        .withOpacity( 0.1),
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
@@ -270,7 +270,7 @@ class _ShimmerListItemState extends State<ShimmerListItem>
                         width: double.infinity,
                         decoration: BoxDecoration(
                           color: theme.colorScheme.surfaceContainerHighest
-                              .withValues(alpha: 0.1),
+                              .withOpacity( 0.1),
                           borderRadius: BorderRadius.circular(4),
                         ),
                       ),
@@ -282,7 +282,7 @@ class _ShimmerListItemState extends State<ShimmerListItem>
                         width: MediaQuery.of(context).size.width * 0.6,
                         decoration: BoxDecoration(
                           color: theme.colorScheme.surfaceContainerHighest
-                              .withValues(alpha: 0.1),
+                              .withOpacity( 0.1),
                           borderRadius: BorderRadius.circular(4),
                         ),
                       ),
@@ -296,7 +296,7 @@ class _ShimmerListItemState extends State<ShimmerListItem>
                   height: 24,
                   decoration: BoxDecoration(
                     color: theme.colorScheme.surfaceContainerHighest
-                        .withValues(alpha: 0.1),
+                        .withOpacity( 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),

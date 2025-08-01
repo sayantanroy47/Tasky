@@ -69,7 +69,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> {
                   data: (canComplete) => Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: canComplete ? Colors.green.withValues(alpha: 0.1) : Colors.orange.withValues(alpha: 0.1),
+                      color: canComplete ? Colors.green.withOpacity( 0.1) : Colors.orange.withOpacity( 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
@@ -216,7 +216,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        border: Border.all(color: theme.colorScheme.outline.withValues(alpha: 0.1)),
+        border: Border.all(color: theme.colorScheme.outline.withOpacity( 0.1)),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -266,7 +266,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
-                color: _getPriorityColor(task.priority).withValues(alpha: 0.1),
+                color: _getPriorityColor(task.priority).withOpacity( 0.1),
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Text(
@@ -299,7 +299,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.1),
+        color: theme.colorScheme.surfaceContainerHighest.withOpacity( 0.1),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -540,7 +540,7 @@ class _AddDependencyDialogState extends ConsumerState<AddDependencyDialog> {
                             ? Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                 decoration: BoxDecoration(
-                                  color: _getPriorityColor(task.priority).withValues(alpha: 0.1),
+                                  color: _getPriorityColor(task.priority).withOpacity( 0.1),
                                   borderRadius: BorderRadius.circular(4),
                                 ),
                                 child: Text(

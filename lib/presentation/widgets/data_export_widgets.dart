@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:file_picker/file_picker.dart';
+// import 'package:file_picker/file_picker.dart';
 
 import '../../services/data_export/data_export_models.dart';
 import '../providers/data_export_providers.dart';
@@ -300,19 +300,29 @@ class FilePickerWidget extends ConsumerWidget {
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: () async {
-                  final result = await FilePicker.platform.pickFiles(
-                    type: FileType.custom,
-                    allowedExtensions: allowedExtensions,
-                    allowMultiple: false,
-                  );
-
-                  if (result != null && result.files.isNotEmpty) {
-                    final filePath = result.files.first.path;
-                    if (filePath != null) {
-                      ref.read(selectedImportFileProvider.notifier).state = filePath;
-                      onFileSelected(filePath);
-                    }
+                  // File picker not available in stub mode
+                  // final result = await FilePicker.platform.pickFiles(
+                  //   type: FileType.custom,
+                  //   allowedExtensions: allowedExtensions,
+                  //   allowMultiple: false,
+                  // );
+                  
+                  // Show a message that file picker is not available
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('File picker not available in current build'),
+                      ),
+                    );
                   }
+                  
+                  // if (result != null && result.files.isNotEmpty) {
+                  //   final filePath = result.files.first.path;
+                  //   if (filePath != null) {
+                  //     ref.read(selectedImportFileProvider.notifier).state = filePath;
+                  //     onFileSelected(filePath);
+                  //   }
+                  // }
                 },
                 icon: const Icon(Icons.folder_open),
                 label: Text(selectedFile == null ? 'Select File' : 'Change File'),

@@ -68,7 +68,7 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
           if (_searchQuery.isNotEmpty)
             Container(
               padding: const EdgeInsets.all(16),
-              color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.1),
+              color: theme.colorScheme.surfaceContainerHighest.withOpacity( 0.1),
               child: Row(
                 children: [
                   Icon(
@@ -232,9 +232,9 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
                 padding: const EdgeInsets.all(16),
                 margin: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.orange.withValues(alpha: 0.1),
+                  color: Colors.orange.withOpacity( 0.1),
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.orange.withValues(alpha: 0.1)),
+                  border: Border.all(color: Colors.orange.withOpacity( 0.1)),
                 ),
                 child: Row(
                   children: [

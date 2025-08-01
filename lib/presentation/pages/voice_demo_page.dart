@@ -246,8 +246,8 @@ class _VoiceDemoPageState extends ConsumerState<VoiceDemoPage> {
                         padding: const EdgeInsets.all(12.0),
                         decoration: BoxDecoration(
                           color: _lastValidationResult!.isValid 
-                              ? Colors.green.withValues(alpha: 0.1)
-                              : Colors.orange.withValues(alpha: 0.1),
+                              ? Colors.green.withOpacity( 0.1)
+                              : Colors.orange.withOpacity( 0.1),
                           borderRadius: BorderRadius.circular(8.0),
                           border: Border.all(
                             color: _lastValidationResult!.isValid 

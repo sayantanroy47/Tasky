@@ -381,8 +381,8 @@ class _PrioritySelector extends StatelessWidget {
               label: Text(priority.displayName),
               selected: isSelected,
               onSelected: (_) => onPriorityChanged(priority),
-              backgroundColor: priority.color.withValues(alpha: 0.1),
-              selectedColor: priority.color.withValues(alpha: 0.1),
+              backgroundColor: priority.color.withOpacity( 0.1),
+              selectedColor: priority.color.withOpacity( 0.1),
               checkmarkColor: priority.color,
             ),
           ),
@@ -607,7 +607,7 @@ class _SubTasksSectionState extends State<_SubTasksSection> {
                     Icon(
                       Icons.drag_handle,
                       size: 16,
-                      color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.1),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity( 0.1),
                     ),
                     const SizedBox(width: 8),
                     

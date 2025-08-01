@@ -116,7 +116,7 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget>
         borderRadius: BorderRadius.circular(16.0),
         boxShadow: [
           BoxShadow(
-            color: colorScheme.shadow.withValues(alpha: 0.1),
+            color: colorScheme.shadow.withOpacity( 0.1),
             blurRadius: 8.0,
             offset: const Offset(0, 2),
           ),
@@ -205,10 +205,10 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget>
       width: double.infinity,
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
-        color: theme.colorScheme.primaryContainer.withValues(alpha: 0.1),
+        color: theme.colorScheme.primaryContainer.withOpacity( 0.1),
         borderRadius: BorderRadius.circular(12.0),
         border: Border.all(
-          color: theme.colorScheme.outline.withValues(alpha: 0.1),
+          color: theme.colorScheme.outline.withOpacity( 0.1),
         ),
       ),
       child: Column(
@@ -217,7 +217,7 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget>
           Text(
             'Transcription:',
             style: theme.textTheme.labelMedium?.copyWith(
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
+              color: theme.colorScheme.onSurface.withOpacity( 0.1),
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -238,10 +238,10 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget>
       width: double.infinity,
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
-        color: theme.colorScheme.errorContainer.withValues(alpha: 0.1),
+        color: theme.colorScheme.errorContainer.withOpacity( 0.1),
         borderRadius: BorderRadius.circular(12.0),
         border: Border.all(
-          color: theme.colorScheme.error.withValues(alpha: 0.1),
+          color: theme.colorScheme.error.withOpacity( 0.1),
         ),
       ),
       child: Row(
@@ -362,14 +362,14 @@ class VoiceVisualizerPainter extends CustomPainter {
 
   void _drawIdleIndicator(Canvas canvas, Offset center, double baseRadius) {
     final paint = Paint()
-      ..color = onSurfaceColor.withValues(alpha: 0.1)
+      ..color = onSurfaceColor.withOpacity( 0.1)
       ..style = PaintingStyle.fill;
 
     canvas.drawCircle(center, baseRadius, paint);
 
     // Microphone icon representation
     final micPaint = Paint()
-      ..color = onSurfaceColor.withValues(alpha: 0.1)
+      ..color = onSurfaceColor.withOpacity( 0.1)
       ..style = PaintingStyle.fill;
 
     canvas.drawCircle(center, baseRadius * 0.4, micPaint);
@@ -378,7 +378,7 @@ class VoiceVisualizerPainter extends CustomPainter {
   void _drawRecordingIndicator(Canvas canvas, Offset center, double baseRadius) {
     // Pulsing outer circle
     final outerPaint = Paint()
-      ..color = primaryColor.withValues(alpha: 0.1)
+      ..color = primaryColor.withOpacity( 0.1)
       ..style = PaintingStyle.fill;
 
     canvas.drawCircle(center, baseRadius * pulseValue, outerPaint);
@@ -386,7 +386,7 @@ class VoiceVisualizerPainter extends CustomPainter {
     // Sound level visualization
     final soundRadius = baseRadius * (0.6 + soundLevel * 0.4);
     final soundPaint = Paint()
-      ..color = primaryColor.withValues(alpha: 0.1)
+      ..color = primaryColor.withOpacity( 0.1)
       ..style = PaintingStyle.fill;
 
     canvas.drawCircle(center, soundRadius, soundPaint);
@@ -404,7 +404,7 @@ class VoiceVisualizerPainter extends CustomPainter {
 
   void _drawProcessingIndicator(Canvas canvas, Offset center, double baseRadius) {
     final paint = Paint()
-      ..color = primaryColor.withValues(alpha: 0.1)
+      ..color = primaryColor.withOpacity( 0.1)
       ..style = PaintingStyle.fill;
 
     canvas.drawCircle(center, baseRadius, paint);
@@ -427,7 +427,7 @@ class VoiceVisualizerPainter extends CustomPainter {
 
   void _drawWaveAnimation(Canvas canvas, Offset center, double baseRadius) {
     final wavePaint = Paint()
-      ..color = primaryColor.withValues(alpha: 0.1)
+      ..color = primaryColor.withOpacity( 0.1)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.0;
 

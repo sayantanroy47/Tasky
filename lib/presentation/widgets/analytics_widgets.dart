@@ -451,7 +451,7 @@ class InsightItem extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.1),
+            color: color.withOpacity( 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(icon, color: color, size: 20),
@@ -1036,7 +1036,7 @@ class AdvancedProductivityInsightsWidget extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: _getScoreColor(insights.overallScore.overall).withValues(alpha: 0.1),
+                color: _getScoreColor(insights.overallScore.overall).withOpacity( 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -1139,7 +1139,7 @@ class AdvancedProductivityInsightsWidget extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(
-                          color: _getImpactColor(suggestion.impactScore).withValues(alpha: 0.2),
+                          color: _getImpactColor(suggestion.impactScore).withOpacity( 0.2),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Icon(
@@ -1222,7 +1222,7 @@ class _MetricCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
+        color: color.withOpacity( 0.1),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(

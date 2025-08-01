@@ -217,3 +217,61 @@ class DataImportException implements Exception {
   @override
   String toString() => 'DataImportException: $message';
 }
+
+class ExportResult {
+  final bool success;
+  final String message;
+  final String? filePath;
+  final int fileSize;
+  final DateTime? exportedAt;
+  final Map<String, dynamic> metadata;
+
+  const ExportResult({
+    required this.success,
+    required this.message,
+    this.filePath,
+    this.fileSize = 0,
+    this.exportedAt,
+    this.metadata = const {},
+  });
+}
+
+class ImportResultData {
+  final bool success;
+  final String message;
+  final int importedCount;
+  final int skippedCount;
+  final List<String> errors;
+  final DateTime? importedAt;
+  final Map<String, dynamic> metadata;
+
+  const ImportResultData({
+    required this.success,
+    required this.message,
+    this.importedCount = 0,
+    this.skippedCount = 0,
+    this.errors = const [],
+    this.importedAt,
+    this.metadata = const {},
+  });
+}
+
+class ExportOptions {
+  final bool includeCompleted;
+  final bool includeArchived;
+  final bool includeSubtasks;
+  final bool includeDependencies;
+  final List<String> selectedFields;
+  final DateTime? dateFrom;
+  final DateTime? dateTo;
+
+  const ExportOptions({
+    this.includeCompleted = true,
+    this.includeArchived = false,
+    this.includeSubtasks = true,
+    this.includeDependencies = true,
+    this.selectedFields = const [],
+    this.dateFrom,
+    this.dateTo,
+  });
+}

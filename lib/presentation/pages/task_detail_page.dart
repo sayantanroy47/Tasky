@@ -602,7 +602,7 @@ class _StatusChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return Chip(
       label: Text(status.displayName),
-      backgroundColor: status.color.withValues(alpha: 0.2),
+      backgroundColor: status.color.withOpacity( 0.2),
       side: BorderSide(color: status.color),
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
     );
@@ -619,7 +619,7 @@ class _PriorityChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return Chip(
       label: Text(priority.displayName),
-      backgroundColor: priority.color.withValues(alpha: 0.2),
+      backgroundColor: priority.color.withOpacity( 0.2),
       side: BorderSide(color: priority.color),
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
     );

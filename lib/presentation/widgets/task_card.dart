@@ -170,12 +170,12 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
           gradient: LinearGradient(
             colors: _dragExtent > 0
                 ? [
-                    theme.colorScheme.primary.withValues(alpha: 0.1),
-                    theme.colorScheme.primary.withValues(alpha: 0.1),
+                    theme.colorScheme.primary.withOpacity( 0.1),
+                    theme.colorScheme.primary.withOpacity( 0.1),
                   ]
                 : [
-                    theme.colorScheme.error.withValues(alpha: 0.1),
-                    theme.colorScheme.error.withValues(alpha: 0.1),
+                    theme.colorScheme.error.withOpacity( 0.1),
+                    theme.colorScheme.error.withOpacity( 0.1),
                   ],
           ),
         ),
@@ -281,7 +281,7 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
                           width: 4,
                           height: 24,
                           decoration: BoxDecoration(
-                            color: priorityColor.withValues(alpha: 0.1),
+                            color: priorityColor.withOpacity( 0.1),
                             borderRadius: BorderRadius.circular(2),
                           ),
                         ),
@@ -313,7 +313,7 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
                                   text: widget.description!,
                                   searchQuery: widget.searchQuery,
                                   style: theme.textTheme.bodyMedium!.copyWith(
-                                    color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.1),
+                                    color: theme.colorScheme.onSurfaceVariant.withOpacity( 0.1),
                                     decoration: widget.isCompleted 
                                         ? TextDecoration.lineThrough 
                                         : null,
@@ -349,7 +349,7 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
                                             : 0.0,
                                         backgroundColor: theme.colorScheme.surfaceContainerHighest,
                                         valueColor: AlwaysStoppedAnimation<Color>(
-                                          theme.colorScheme.primary.withValues(alpha: 0.1),
+                                          theme.colorScheme.primary.withOpacity( 0.1),
                                         ),
                                       ),
                                     ),
@@ -581,9 +581,9 @@ class _TagChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
+        color: color.withOpacity( 0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withValues(alpha: 0.1)),
+        border: Border.all(color: color.withOpacity( 0.1)),
       ),
       child: Text(
         label,
