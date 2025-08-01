@@ -46,7 +46,7 @@ app.*.map.json
 
 # Additional build and generated files
 /android/build/
-/windows/flutter/generated_*
+/windows/flutter/
 *.g.dart
 *.mocks.dart
 pubspec_deps.json
