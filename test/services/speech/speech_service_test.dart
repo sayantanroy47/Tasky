@@ -1,11 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/annotations.dart';
-import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:task_tracker_app/services/speech/speech_service.dart';
 import 'package:task_tracker_app/services/speech/speech_service_impl.dart';
 
-// Generate mocks
-@GenerateMocks([stt.SpeechToText])
+// Note: Mock generation disabled until speech_to_text dependency is enabled
 
 void main() {
   group('SpeechServiceImpl', () {
