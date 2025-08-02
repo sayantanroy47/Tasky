@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'task_enums.dart';
+import '../models/enums.dart';
 
 part 'recurrence_pattern.g.dart';
 
@@ -300,7 +300,6 @@ class RecurrencePattern extends Equatable {
     ];
     return dayNames[day - 1];
   }
-
   @override
   List<Object?> get props => [
         type,
@@ -309,7 +308,6 @@ class RecurrencePattern extends Equatable {
         endDate,
         maxOccurrences,
       ];
-
   @override
   String toString() {
     return 'RecurrencePattern(type: $type, interval: $interval, '

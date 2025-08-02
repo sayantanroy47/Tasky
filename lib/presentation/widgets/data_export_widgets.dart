@@ -6,9 +6,7 @@ import '../../services/data_export/data_export_models.dart';
 import '../providers/data_export_providers.dart';
 
 class ExportFormatSelector extends ConsumerWidget {
-  const ExportFormatSelector({super.key});
-
-  @override
+  const ExportFormatSelector({super.key});  @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedFormat = ref.watch(selectedExportFormatProvider);
 
@@ -66,9 +64,7 @@ class ExportFormatSelector extends ConsumerWidget {
 }
 
 class ExportProgressIndicator extends ConsumerWidget {
-  const ExportProgressIndicator({super.key});
-
-  @override
+  const ExportProgressIndicator({super.key});  @override
   Widget build(BuildContext context, WidgetRef ref) {
     final progress = ref.watch(exportProgressProvider);
     final isExporting = ref.watch(isExportingProvider);
@@ -90,7 +86,7 @@ class ExportProgressIndicator extends ConsumerWidget {
             const SizedBox(height: 12),
             LinearProgressIndicator(
               value: progress.progress,
-              backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+              backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
             ),
             const SizedBox(height: 8),
             Text(
@@ -110,9 +106,7 @@ class ExportProgressIndicator extends ConsumerWidget {
 }
 
 class ImportProgressIndicator extends ConsumerWidget {
-  const ImportProgressIndicator({super.key});
-
-  @override
+  const ImportProgressIndicator({super.key});  @override
   Widget build(BuildContext context, WidgetRef ref) {
     final progress = ref.watch(importProgressProvider);
     final isImporting = ref.watch(isImportingProvider);
@@ -134,7 +128,7 @@ class ImportProgressIndicator extends ConsumerWidget {
             const SizedBox(height: 12),
             LinearProgressIndicator(
               value: progress.progress,
-              backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+              backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
             ),
             const SizedBox(height: 8),
             Text(
@@ -163,9 +157,7 @@ class ImportProgressIndicator extends ConsumerWidget {
 }
 
 class ImportOptionsWidget extends ConsumerWidget {
-  const ImportOptionsWidget({super.key});
-
-  @override
+  const ImportOptionsWidget({super.key});  @override
   Widget build(BuildContext context, WidgetRef ref) {
     final options = ref.watch(importOptionsProvider);
 
@@ -239,9 +231,7 @@ class FilePickerWidget extends ConsumerWidget {
     this.subtitle,
     required this.allowedExtensions,
     required this.onFileSelected,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedFile = ref.watch(selectedImportFileProvider);
 
@@ -267,7 +257,7 @@ class FilePickerWidget extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceVariant,
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
@@ -341,9 +331,7 @@ class ImportValidationWidget extends ConsumerWidget {
   const ImportValidationWidget({
     super.key,
     required this.validationResult,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Card(
       child: Padding(
@@ -376,7 +364,7 @@ class ImportValidationWidget extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceVariant,
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Column(
@@ -487,9 +475,7 @@ class ImportValidationWidget extends ConsumerWidget {
 }
 
 class BackupListWidget extends ConsumerWidget {
-  const BackupListWidget({super.key});
-
-  @override
+  const BackupListWidget({super.key});  @override
   Widget build(BuildContext context, WidgetRef ref) {
     final backupsAsync = ref.watch(backupNotifierProvider);
 
@@ -560,9 +546,7 @@ class BackupListWidget extends ConsumerWidget {
 class BackupListItem extends ConsumerWidget {
   final BackupMetadata backup;
 
-  const BackupListItem({super.key, required this.backup});
-
-  @override
+  const BackupListItem({super.key, required this.backup});  @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Card(
       child: ListTile(
@@ -646,7 +630,7 @@ class BackupListItem extends ConsumerWidget {
 
     if (confirmed == true) {
       try {
-        final backupPath = 'backup_${backup.id}.json'; // This should be the full path
+        const backupPath = 'backup_${backup.id}.json'; // This should be the full path
         await ref.read(backupNotifierProvider.notifier).restoreBackup(backupPath);
         
         if (context.mounted) {

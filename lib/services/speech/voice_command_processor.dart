@@ -646,7 +646,7 @@ class VoiceCommandProcessor {
 
   /// Formats task details for display
   String _formatTaskDetails(TaskModel task) {
-    final buffer = StringBuffer();
+    const buffer = StringBuffer();
     buffer.writeln('Task: ${task.title}');
     
     if (task.description != null && task.description!.isNotEmpty) {

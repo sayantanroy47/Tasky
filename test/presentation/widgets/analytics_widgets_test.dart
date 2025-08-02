@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:task_tracker_app/presentation/widgets/analytics_widgets.dart';
 import 'package:task_tracker_app/services/analytics/analytics_models.dart';
@@ -9,7 +8,7 @@ void main() {
   group('AnalyticsMetricCard', () {
     testWidgets('should display metric information correctly', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: AnalyticsMetricCard(
               title: 'Completed Tasks',
@@ -34,7 +33,7 @@ void main() {
 
     testWidgets('should handle negative trend correctly', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: AnalyticsMetricCard(
               title: 'Productivity',
@@ -55,7 +54,7 @@ void main() {
 
     testWidgets('should handle no trend correctly', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: AnalyticsMetricCard(
               title: 'Total Tasks',
@@ -100,7 +99,7 @@ void main() {
   group('SimpleBarChart', () {
     testWidgets('should display chart with correct data', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: SimpleBarChart(
               values: [10, 20, 15, 25, 30],
@@ -121,7 +120,7 @@ void main() {
 
     testWidgets('should handle empty data', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: SimpleBarChart(
               values: [],
@@ -137,7 +136,7 @@ void main() {
 
     testWidgets('should use custom color when provided', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: SimpleBarChart(
               values: [10, 20],
@@ -200,7 +199,7 @@ void main() {
 
     testWidgets('should handle empty categories', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: CategoryBreakdownWidget(
               categories: [],
@@ -339,7 +338,7 @@ void main() {
       );
 
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: StreakWidget(streakInfo: streakInfo),
           ),
@@ -421,7 +420,7 @@ void main() {
   group('CategoryItem', () {
     testWidgets('should display category information correctly', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: CategoryItem(
               name: 'Work Tasks',
@@ -444,7 +443,7 @@ void main() {
   group('InsightItem', () {
     testWidgets('should display insight information correctly', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: InsightItem(
               icon: Icons.lightbulb,

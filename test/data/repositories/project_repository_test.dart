@@ -216,20 +216,20 @@ void main() {
         await repository.archiveProject(archivedProject.id);
 
         // Filter by archived status
-        final filter1 = ProjectFilter(isArchived: false);
+        const filter1 = ProjectFilter(isArchived: false);
         final activeProjects = await repository.getProjectsWithFilter(filter1);
         expect(activeProjects.length, 2);
         expect(activeProjects.any((p) => p.name == 'Active Project'), true);
         expect(activeProjects.any((p) => p.name == 'Project with Deadline'), true);
 
         // Filter by deadline presence
-        final filter2 = ProjectFilter(hasDeadline: true);
+        const filter2 = ProjectFilter(hasDeadline: true);
         final projectsWithDeadline = await repository.getProjectsWithFilter(filter2);
         expect(projectsWithDeadline.length, 1);
         expect(projectsWithDeadline.first.name, 'Project with Deadline');
 
         // Search filter
-        final filter3 = ProjectFilter(searchQuery: 'Active');
+        const filter3 = ProjectFilter(searchQuery: 'Active');
         final searchResults = await repository.getProjectsWithFilter(filter3);
         expect(searchResults.length, 1);
         expect(searchResults.first.name, 'Active Project');
@@ -243,7 +243,7 @@ void main() {
         await repository.createProject(projectA);
 
         // Sort by name ascending
-        final filter = ProjectFilter(
+        const filter = ProjectFilter(
           sortBy: ProjectSortBy.name,
           sortAscending: true,
         );

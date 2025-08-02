@@ -22,7 +22,6 @@ class TaskFormDialog extends ConsumerStatefulWidget {
     super.key,
     this.task,
   }) : isEditing = task != null;
-
   @override
   ConsumerState<TaskFormDialog> createState() => _TaskFormDialogState();
 }
@@ -38,7 +37,6 @@ class _TaskFormDialogState extends ConsumerState<TaskFormDialog> {
   List<SubTask> _subTasks = [];
   RecurrencePattern? _recurrencePattern;
   bool _isLoading = false;
-
   @override
   void initState() {
     super.initState();
@@ -56,14 +54,12 @@ class _TaskFormDialogState extends ConsumerState<TaskFormDialog> {
     _subTasks = List.from(task.subTasks);
     _recurrencePattern = task.recurrence;
   }
-
   @override
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
     super.dispose();
   }
-
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -368,7 +364,6 @@ class _PrioritySelector extends StatelessWidget {
     required this.selectedPriority,
     required this.onPriorityChanged,
   });
-
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -401,7 +396,6 @@ class _DueDateSelector extends StatelessWidget {
     required this.selectedDate,
     required this.onDateChanged,
   });
-
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -467,20 +461,17 @@ class _TagsSection extends StatefulWidget {
     required this.tags,
     required this.onTagsChanged,
   });
-
   @override
   State<_TagsSection> createState() => _TagsSectionState();
 }
 
 class _TagsSectionState extends State<_TagsSection> {
   final _tagController = TextEditingController();
-
   @override
   void dispose() {
     _tagController.dispose();
     super.dispose();
   }
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -550,20 +541,17 @@ class _SubTasksSection extends StatefulWidget {
     required this.subTasks,
     required this.onSubTasksChanged,
   });
-
   @override
   State<_SubTasksSection> createState() => _SubTasksSectionState();
 }
 
 class _SubTasksSectionState extends State<_SubTasksSection> {
   final _subTaskController = TextEditingController();
-
   @override
   void dispose() {
     _subTaskController.dispose();
     super.dispose();
   }
-
   @override
   Widget build(BuildContext context) {
     return Column(

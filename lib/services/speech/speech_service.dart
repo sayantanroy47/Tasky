@@ -76,9 +76,7 @@ class SpeechRecognitionResult {
     required this.finalResult,
     required this.confidence,
     this.alternativeText,
-  });
-
-  @override
+  });  @override
   String toString() {
     return 'SpeechRecognitionResult(words: $recognizedWords, final: $finalResult, confidence: $confidence)';
   }
@@ -94,9 +92,7 @@ class SpeechRecognitionException implements Exception {
     this.message, {
     this.errorType,
     this.originalError,
-  });
-
-  @override
+  });  @override
   String toString() {
     return 'SpeechRecognitionException: $message${errorType != null ? ' (Type: $errorType)' : ''}';
   }

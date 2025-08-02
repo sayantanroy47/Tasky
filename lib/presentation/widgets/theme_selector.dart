@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/providers/theme_provider.dart';
+import '../../domain/models/enums.dart';
 
 /// Widget for selecting app theme mode
 class ThemeSelector extends ConsumerWidget {
   const ThemeSelector({super.key});
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeState = ref.watch(themeProvider);
@@ -106,7 +106,6 @@ class ThemeSelector extends ConsumerWidget {
 /// Simple theme toggle button for quick access
 class ThemeToggleButton extends ConsumerWidget {
   const ThemeToggleButton({super.key});
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeNotifier = ref.read(themeProvider.notifier);

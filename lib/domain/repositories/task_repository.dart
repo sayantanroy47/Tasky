@@ -1,5 +1,5 @@
 import '../entities/task_model.dart';
-import '../entities/task_enums.dart';
+import '../models/enums.dart';
 
 /// Abstract repository interface for task operations
 /// 
@@ -33,6 +33,9 @@ abstract class TaskRepository {
 
   /// Gets tasks that are overdue
   Future<List<TaskModel>> getOverdueTasks();
+
+  /// Gets tasks within a date range
+  Future<List<TaskModel>> getTasksByDateRange(DateTime startDate, DateTime endDate);
 
   /// Gets tasks that belong to a specific project
   Future<List<TaskModel>> getTasksByProject(String projectId);

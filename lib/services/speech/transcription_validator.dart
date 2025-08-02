@@ -53,7 +53,7 @@ class TranscriptionValidator {
     
     // Check for empty or whitespace-only text
     if (result.text.trim().isEmpty) {
-      issues.add(ValidationIssue(
+      issues.add(const ValidationIssue(
         type: ValidationIssueType.emptyText,
         message: 'Transcribed text is empty or contains only whitespace',
         severity: ValidationSeverity.critical,
@@ -116,7 +116,7 @@ class TranscriptionValidator {
     
     // Check for repeated characters or words
     if (_hasExcessiveRepetition(text)) {
-      issues.add(ValidationIssue(
+      issues.add(const ValidationIssue(
         type: ValidationIssueType.suspiciousPattern,
         message: 'Text contains excessive repetition',
         severity: ValidationSeverity.warning,
@@ -144,7 +144,7 @@ class TranscriptionValidator {
     
     // Check for non-linguistic content
     if (_containsNonLinguisticContent(text)) {
-      issues.add(ValidationIssue(
+      issues.add(const ValidationIssue(
         type: ValidationIssueType.suspiciousPattern,
         message: 'Text appears to contain non-linguistic content',
         severity: ValidationSeverity.warning,
@@ -280,9 +280,7 @@ class TranscriptionValidationResult {
     if (infoCount > 0) parts.add('$infoCount info');
     
     return parts.join(', ');
-  }
-
-  @override
+  }  @override
   String toString() {
     return 'TranscriptionValidationResult(valid: $isValid, confidence: ${confidence.toStringAsFixed(2)}, issues: ${issues.length})';
   }
@@ -298,9 +296,7 @@ class ValidationIssue {
     required this.type,
     required this.message,
     required this.severity,
-  });
-
-  @override
+  });  @override
   String toString() {
     return 'ValidationIssue(${severity.name}: $message)';
   }

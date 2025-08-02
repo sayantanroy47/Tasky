@@ -14,7 +14,7 @@ void main() {
         description: 'A test project',
         color: '#2196F3',
         createdAt: testDate,
-        taskIds: ['task-1', 'task-2'],
+        taskIds: const ['task-1', 'task-2'],
       );
     });
 

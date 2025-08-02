@@ -1,7 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
-import 'package:task_tracker_app/domain/entities/task_enums.dart';
 import 'package:task_tracker_app/services/ai/ai_task_parser.dart';
 import 'package:task_tracker_app/services/ai/composite_ai_task_parser.dart';
 import 'package:task_tracker_app/services/ai/openai_task_parser.dart';
@@ -18,9 +17,9 @@ void main() {
   late CompositeAITaskParser parser;
 
   setUp(() {
-    mockOpenAI = MockOpenAITaskParser();
-    mockClaude = MockClaudeTaskParser();
-    mockLocal = MockLocalTaskParser();
+    mockOpenAI = const MockOpenAITaskParser();
+    mockClaude = const MockClaudeTaskParser();
+    mockLocal = const MockLocalTaskParser();
   });
 
   group('CompositeAITaskParser', () {

@@ -102,7 +102,6 @@ class AppNavigationDestination {
       orElse: () => home,
     );
   }
-
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
@@ -111,10 +110,8 @@ class AppNavigationDestination {
         other.icon == icon &&
         other.route == route;
   }
-
   @override
   int get hashCode => Object.hash(label, icon, route);
-
   @override
   String toString() => 'AppNavigationDestination(label: $label, route: $route)';
 }
@@ -142,7 +139,6 @@ class NavigationState {
       canPop: canPop ?? this.canPop,
     );
   }
-
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
@@ -151,7 +147,6 @@ class NavigationState {
         other.selectedIndex == selectedIndex &&
         other.canPop == canPop;
   }
-
   @override
   int get hashCode => Object.hash(currentDestination, selectedIndex, canPop);
 }
@@ -193,7 +188,7 @@ class NavigationNotifier extends StateNotifier<NavigationState> {
 
   /// Reset to home
   void resetToHome() {
-    state = const NavigationState(
+    state = NavigationState(
       currentDestination: AppNavigationDestination.home,
       selectedIndex: 0,
       canPop: false,

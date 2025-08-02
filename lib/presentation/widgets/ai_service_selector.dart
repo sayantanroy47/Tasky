@@ -7,7 +7,6 @@ import '../../services/ai/composite_ai_task_parser.dart';
 /// Widget for selecting AI service provider
 class AIServiceSelector extends ConsumerWidget {
   const AIServiceSelector({super.key});
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final config = ref.watch(aiParsingConfigProvider);
@@ -115,7 +114,7 @@ class AIServiceSelector extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceVariant,
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
@@ -209,7 +208,6 @@ class APIConfigDialog extends StatefulWidget {
     super.key,
     required this.serviceType,
   });
-
   @override
   State<APIConfigDialog> createState() => _APIConfigDialogState();
 }
@@ -219,7 +217,6 @@ class _APIConfigDialogState extends State<APIConfigDialog> {
   final _baseUrlController = TextEditingController();
   bool _obscureApiKey = true;
   bool _isTestingConnection = false;
-
   @override
   void initState() {
     super.initState();
@@ -230,7 +227,6 @@ class _APIConfigDialogState extends State<APIConfigDialog> {
     // Load current API key and base URL from preferences
     // This would be implemented with SharedPreferences
   }
-
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -288,7 +284,7 @@ class _APIConfigDialogState extends State<APIConfigDialog> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceVariant,
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
@@ -409,7 +405,6 @@ class _APIConfigDialogState extends State<APIConfigDialog> {
       ),
     );
   }
-
   @override
   void dispose() {
     _apiKeyController.dispose();

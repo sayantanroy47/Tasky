@@ -27,9 +27,7 @@ class VoiceRecordingWidget extends StatefulWidget {
     this.transcriptionText,
     this.soundLevel,
     this.errorMessage,
-  });
-
-  @override
+  });  @override
   State<VoiceRecordingWidget> createState() => _VoiceRecordingWidgetState();
 }
 
@@ -38,9 +36,7 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget>
   late AnimationController _pulseController;
   late AnimationController _waveController;
   late Animation<double> _pulseAnimation;
-  late Animation<double> _waveAnimation;
-
-  @override
+  late Animation<double> _waveAnimation;  @override
   void initState() {
     super.initState();
     _setupAnimations();
@@ -72,9 +68,7 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget>
       parent: _waveController,
       curve: Curves.linear,
     ));
-  }
-
-  @override
+  }  @override
   void didUpdateWidget(VoiceRecordingWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
     
@@ -95,16 +89,12 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget>
     _waveController.stop();
     _pulseController.reset();
     _waveController.reset();
-  }
-
-  @override
+  }  @override
   void dispose() {
     _pulseController.dispose();
     _waveController.dispose();
     super.dispose();
-  }
-
-  @override
+  }  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
@@ -344,9 +334,7 @@ class VoiceVisualizerPainter extends CustomPainter {
     required this.primaryColor,
     required this.surfaceColor,
     required this.onSurfaceColor,
-  });
-
-  @override
+  });  @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
     final baseRadius = size.width / 4;
@@ -436,9 +424,7 @@ class VoiceVisualizerPainter extends CustomPainter {
           (1.0 + math.sin(waveValue + i * math.pi / 3) * 0.1);
       canvas.drawCircle(center, waveRadius, wavePaint);
     }
-  }
-
-  @override
+  }  @override
   bool shouldRepaint(VoiceVisualizerPainter oldDelegate) {
     return oldDelegate.isRecording != isRecording ||
         oldDelegate.isProcessing != isProcessing ||

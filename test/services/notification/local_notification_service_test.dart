@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
@@ -17,7 +18,7 @@ void main() {
     late TaskModel testTask;
 
     setUp(() {
-      notificationService = LocalNotificationService();
+      notificationService = const LocalNotificationService();
       testTask = TaskModel.create(
         title: 'Test Task',
         description: 'Test task description',

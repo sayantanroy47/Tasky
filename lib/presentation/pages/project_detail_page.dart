@@ -18,29 +18,21 @@ class ProjectDetailPage extends ConsumerStatefulWidget {
   const ProjectDetailPage({
     super.key,
     required this.projectId,
-  });
-
-  @override
+  });  @override
   ConsumerState<ProjectDetailPage> createState() => _ProjectDetailPageState();
 }
 
 class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
     with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-
-  @override
+  late TabController _tabController;  @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-  }
-
-  @override
+  }  @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
-  }
-
-  @override
+  }  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final projectsAsync = ref.watch(projectsProvider);

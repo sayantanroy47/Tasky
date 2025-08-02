@@ -38,8 +38,6 @@ class Tag extends Equatable {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
-  }
-
-  @override
+  }  @override
   List<Object?> get props => [id, name, color, createdAt, updatedAt];
 }

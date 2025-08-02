@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:math';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'location_models.dart';
 import 'geofencing_manager.dart';
 import '../../domain/entities/task_model.dart';
@@ -10,12 +9,11 @@ import '../../domain/repositories/task_repository.dart';
 class LocationTaskService {
   final TaskRepository _taskRepository;
   final GeofencingManager _geofencingManager;
-  final Ref _ref;
+
 
   LocationTaskService(
     this._taskRepository,
     this._geofencingManager,
-    this._ref,
   );
 
   /// Create a location-based task
@@ -39,8 +37,8 @@ class LocationTaskService {
       priority: priority,
       tags: tags,
       projectId: null,
-      subTasks: [],
-      dependencies: [],
+      subTasks: const [],
+      dependencies: const [],
     );
 
     // Save the task

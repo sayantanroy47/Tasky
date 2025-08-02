@@ -24,7 +24,7 @@ void main() {
       });
 
       test('should create failure result', () {
-        final error = TranscriptionError(
+        const error = TranscriptionError(
           message: 'Network error',
           type: TranscriptionErrorType.networkError,
         );
@@ -43,10 +43,10 @@ void main() {
 
     group('TranscriptionSegment', () {
       test('should create segment with timing information', () {
-        final segment = TranscriptionSegment(
+        const segment = TranscriptionSegment(
           text: 'Hello',
-          startTime: const Duration(seconds: 1),
-          endTime: const Duration(seconds: 2),
+          startTime: Duration(seconds: 1),
+          endTime: Duration(seconds: 2),
           confidence: 0.9,
         );
 
@@ -80,7 +80,7 @@ void main() {
         expect(config.prompt, isNull);
         expect(config.enableTimestamps, isFalse);
         expect(config.maxRetries, equals(3));
-        expect(config.timeout, equals(Duration(seconds: 30)));
+        expect(config.timeout, equals(const Duration(seconds: 30)));
       });
 
       test('should create config with custom values', () {
@@ -98,7 +98,7 @@ void main() {
         expect(config.prompt, equals('Task creation'));
         expect(config.enableTimestamps, isTrue);
         expect(config.maxRetries, equals(5));
-        expect(config.timeout, equals(Duration(seconds: 60)));
+        expect(config.timeout, equals(const Duration(seconds: 60)));
       });
     });
   });
@@ -107,7 +107,7 @@ void main() {
     late LocalTranscriptionService service;
 
     setUp(() {
-      service = LocalTranscriptionService();
+      service = const LocalTranscriptionService();
     });
 
     tearDown(() async {
@@ -155,7 +155,7 @@ void main() {
     late LocalTranscriptionService localService;
 
     setUp(() {
-      localService = LocalTranscriptionService();
+      localService = const LocalTranscriptionService();
       service = CompositeTranscriptionService(
         localService: localService,
         preference: TranscriptionPreference.localOnly,

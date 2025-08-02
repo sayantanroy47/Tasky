@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/task_model.dart';
-import '../../domain/entities/task_enums.dart';
+import '../../domain/models/enums.dart';
 import '../../domain/repositories/task_repository.dart';
 import '../../core/routing/app_router.dart';
 import '../providers/task_providers.dart';
@@ -14,7 +14,6 @@ import '../widgets/custom_dialogs.dart';
 
 class TasksPage extends ConsumerWidget {
   const TasksPage({super.key});
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return AppScaffold(
@@ -54,7 +53,6 @@ class TasksPage extends ConsumerWidget {
 
 class TasksPageBody extends ConsumerWidget {
   const TasksPageBody({super.key});
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final searchQuery = ref.watch(searchQueryProvider);
@@ -96,14 +94,12 @@ class _SearchBar extends ConsumerStatefulWidget {
 
 class _SearchBarState extends ConsumerState<_SearchBar> {
   final _searchController = TextEditingController();
-
   @override
   void initState() {
     super.initState();
     _searchController.text = ref.read(searchQueryProvider);
     _searchController.addListener(_onSearchChanged);
   }
-
   @override
   void dispose() {
     _searchController.removeListener(_onSearchChanged);
@@ -114,7 +110,6 @@ class _SearchBarState extends ConsumerState<_SearchBar> {
   void _onSearchChanged() {
     ref.read(searchQueryProvider.notifier).state = _searchController.text.trim();
   }
-
   @override
   Widget build(BuildContext context) {
     final searchQuery = ref.watch(searchQueryProvider);
@@ -271,7 +266,6 @@ class _SmartFilterChip extends StatelessWidget {
     required this.isSelected,
     required this.onTap,
   });
-
   @override
   Widget build(BuildContext context) {
     return FilterChip(
@@ -293,7 +287,6 @@ class _ActiveFiltersIndicator extends StatelessWidget {
     required this.searchQuery,
     required this.onClearFilters,
   });
-
   @override
   Widget build(BuildContext context) {
     final activeFilters = <String>[];
@@ -447,7 +440,6 @@ class _TaskList extends ConsumerWidget {
 
 class _EmptyTaskList extends StatelessWidget {
   const _EmptyTaskList();
-
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -483,13 +475,11 @@ class _FilterDialog extends ConsumerStatefulWidget {
 
 class _FilterDialogState extends ConsumerState<_FilterDialog> {
   late TaskFilter _currentFilter;
-
   @override
   void initState() {
     super.initState();
     _currentFilter = ref.read(taskFilterProvider);
   }
-
   @override
   Widget build(BuildContext context) {
     return AlertDialog(

@@ -388,17 +388,13 @@ class ProjectProgressPoint {
 /// Exception thrown when a project is not found
 class ProjectNotFoundException implements Exception {
   final String message;
-  const ProjectNotFoundException(this.message);
-  
-  @override
+  const ProjectNotFoundException(this.message);  @override
   String toString() => 'ProjectNotFoundException: $message';
 }
 
 /// Exception thrown when a task is not found
 class TaskNotFoundException implements Exception {
   final String message;
-  const TaskNotFoundException(this.message);
-  
-  @override
+  const TaskNotFoundException(this.message);  @override
   String toString() => 'TaskNotFoundException: $message';
 }

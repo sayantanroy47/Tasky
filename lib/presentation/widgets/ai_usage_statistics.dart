@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../services/ai/ai_task_parsing_service.dart';
 
 /// Widget displaying AI usage statistics and insights
 class AIUsageStatistics extends ConsumerWidget {
-  const AIUsageStatistics({super.key});
-
-  @override
+  const AIUsageStatistics({super.key});  @override
   Widget build(BuildContext context, WidgetRef ref) {
     // In a real implementation, this would watch a provider that fetches usage stats
     final mockStats = _getMockUsageStats();
@@ -85,7 +82,7 @@ class AIUsageStatistics extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceVariant,
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
@@ -230,9 +227,7 @@ class _StatCard extends StatelessWidget {
     required this.value,
     required this.icon,
     required this.color,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(12),
@@ -273,9 +268,7 @@ class _StatCard extends StatelessWidget {
 
 /// Dialog showing detailed usage statistics
 class DetailedStatsDialog extends StatelessWidget {
-  const DetailedStatsDialog({super.key});
-
-  @override
+  const DetailedStatsDialog({super.key});  @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text('Detailed Statistics'),
@@ -288,10 +281,10 @@ class DetailedStatsDialog extends StatelessWidget {
               context,
               'Parsing Performance',
               [
-                _StatRow('Total tasks parsed', '127'),
-                _StatRow('Successful parses', '119'),
-                _StatRow('Failed parses', '8'),
-                _StatRow('Average confidence', '87%'),
+                const _StatRow('Total tasks parsed', '127'),
+                const _StatRow('Successful parses', '119'),
+                const _StatRow('Failed parses', '8'),
+                const _StatRow('Average confidence', '87%'),
               ],
             ),
             const SizedBox(height: 16),
@@ -299,10 +292,10 @@ class DetailedStatsDialog extends StatelessWidget {
               context,
               'Feature Usage',
               [
-                _StatRow('Tags suggested', '342'),
-                _StatRow('Due dates extracted', '89'),
-                _StatRow('Priorities detected', '76'),
-                _StatRow('Subtasks created', '203'),
+                const _StatRow('Tags suggested', '342'),
+                const _StatRow('Due dates extracted', '89'),
+                const _StatRow('Priorities detected', '76'),
+                const _StatRow('Subtasks created', '203'),
               ],
             ),
             const SizedBox(height: 16),
@@ -310,10 +303,10 @@ class DetailedStatsDialog extends StatelessWidget {
               context,
               'Time Analysis',
               [
-                _StatRow('Total time saved', '45 minutes'),
-                _StatRow('Average per task', '21 seconds'),
-                _StatRow('Most active day', 'Tuesday'),
-                _StatRow('Peak usage hour', '2-3 PM'),
+                const _StatRow('Total time saved', '45 minutes'),
+                const _StatRow('Average per task', '21 seconds'),
+                const _StatRow('Most active day', 'Tuesday'),
+                const _StatRow('Peak usage hour', '2-3 PM'),
               ],
             ),
           ],

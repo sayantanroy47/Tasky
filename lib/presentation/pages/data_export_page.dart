@@ -7,7 +7,6 @@ import '../widgets/data_export_widgets.dart';
 
 class DataExportPage extends ConsumerStatefulWidget {
   const DataExportPage({super.key});
-
   @override
   ConsumerState<DataExportPage> createState() => _DataExportPageState();
 }
@@ -16,19 +15,16 @@ class _DataExportPageState extends ConsumerState<DataExportPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   ImportValidationResult? _validationResult;
-
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
   }
-
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
   }
-
   @override
   Widget build(BuildContext context) {
     // Listen to export/import states for showing snackbars
@@ -105,7 +101,7 @@ class _DataExportPageState extends ConsumerState<DataExportPage>
 
   Widget _buildExportTab() {
     final isExporting = ref.watch(isExportingProvider);
-    final selectedFormat = ref.watch(selectedExportFormatProvider);
+    ref.watch(selectedExportFormatProvider);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
@@ -195,7 +191,7 @@ class _DataExportPageState extends ConsumerState<DataExportPage>
           FilePickerWidget(
             title: 'Select Import File',
             subtitle: 'Choose a JSON file exported from Task Tracker',
-            allowedExtensions: ['json'],
+            allowedExtensions: const ['json'],
             onFileSelected: (filePath) async {
               if (filePath != null) {
                 await _validateImportFile(filePath);

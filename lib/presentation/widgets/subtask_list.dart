@@ -15,7 +15,6 @@ class SubTaskList extends ConsumerStatefulWidget {
     required this.task,
     this.isEditable = true,
   });
-
   @override
   ConsumerState<SubTaskList> createState() => _SubTaskListState();
 }
@@ -23,13 +22,11 @@ class SubTaskList extends ConsumerStatefulWidget {
 class _SubTaskListState extends ConsumerState<SubTaskList> {
   final TextEditingController _newSubTaskController = TextEditingController();
   bool _isAddingSubTask = false;
-
   @override
   void dispose() {
     _newSubTaskController.dispose();
     super.dispose();
   }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -314,7 +311,6 @@ class _SubTaskItem extends StatelessWidget {
     required this.onDelete,
     this.onReorder,
   });
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -419,26 +415,22 @@ class _EditSubTaskDialog extends StatefulWidget {
     required this.subTask,
     required this.onSave,
   });
-
   @override
   State<_EditSubTaskDialog> createState() => _EditSubTaskDialogState();
 }
 
 class _EditSubTaskDialogState extends State<_EditSubTaskDialog> {
   late TextEditingController _controller;
-
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController(text: widget.subTask.title);
   }
-
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
   }
-
   @override
   Widget build(BuildContext context) {
     return AlertDialog(

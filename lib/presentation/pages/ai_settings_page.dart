@@ -2,21 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../services/ai/ai_task_parsing_service.dart';
-import '../../services/ai/composite_ai_task_parser.dart';
 import '../widgets/ai_service_selector.dart';
 import '../widgets/ai_privacy_controls.dart';
 import '../widgets/ai_usage_statistics.dart';
 
 /// Settings page for AI task parsing configuration and privacy controls
 class AISettingsPage extends ConsumerStatefulWidget {
-  const AISettingsPage({super.key});
-
-  @override
+  const AISettingsPage({super.key});  @override
   ConsumerState<AISettingsPage> createState() => _AISettingsPageState();
 }
 
-class _AISettingsPageState extends ConsumerState<AISettingsPage> {
-  @override
+class _AISettingsPageState extends ConsumerState<AISettingsPage> {  @override
   Widget build(BuildContext context) {
     final config = ref.watch(aiParsingConfigProvider);
     final configNotifier = ref.read(aiParsingConfigProvider.notifier);

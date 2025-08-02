@@ -24,9 +24,7 @@ class Tag {
       color: color ?? this.color,
       createdAt: createdAt ?? this.createdAt,
     );
-  }
-
-  @override
+  }  @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     return other is Tag &&
@@ -34,14 +32,10 @@ class Tag {
         other.name == name &&
         other.color == color &&
         other.createdAt == createdAt;
-  }
-
-  @override
+  }  @override
   int get hashCode {
     return id.hashCode ^ name.hashCode ^ color.hashCode ^ createdAt.hashCode;
-  }
-
-  @override
+  }  @override
   String toString() {
     return 'Tag(id: $id, name: $name, color: $color, createdAt: $createdAt)';
   }
@@ -113,20 +107,14 @@ class TagWithUsage {
   const TagWithUsage({
     required this.tag,
     required this.usageCount,
-  });
-
-  @override
+  });  @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     return other is TagWithUsage &&
         other.tag == tag &&
         other.usageCount == usageCount;
-  }
-
-  @override
-  int get hashCode => tag.hashCode ^ usageCount.hashCode;
-
-  @override
+  }  @override
+  int get hashCode => tag.hashCode ^ usageCount.hashCode;  @override
   String toString() {
     return 'TagWithUsage(tag: $tag, usageCount: $usageCount)';
   }

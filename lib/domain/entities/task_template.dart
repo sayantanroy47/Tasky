@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:uuid/uuid.dart';
 
-import 'task_enums.dart';
+import '../models/enums.dart';
 import 'subtask.dart';
 import 'recurrence_pattern.dart';
 import 'task_model.dart';
@@ -307,7 +307,6 @@ class TaskTemplate extends Equatable {
 
   /// Returns true if this template has a category
   bool get hasCategory => category != null && category!.isNotEmpty;
-
   @override
   List<Object?> get props => [
         id,
@@ -329,7 +328,6 @@ class TaskTemplate extends Equatable {
         isFavorite,
         category,
       ];
-
   @override
   String toString() {
     return 'TaskTemplate(id: $id, name: $name, titleTemplate: $titleTemplate, '

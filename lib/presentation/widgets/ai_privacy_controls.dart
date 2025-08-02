@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../services/ai/ai_task_parsing_service.dart';
 
 /// Widget for AI privacy controls and data management
 class AIPrivacyControls extends ConsumerWidget {
-  const AIPrivacyControls({super.key});
-
-  @override
+  const AIPrivacyControls({super.key});  @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final config = ref.watch(aiParsingConfigProvider);
-
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -85,7 +80,7 @@ class AIPrivacyControls extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceVariant,
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Column(
@@ -200,16 +195,12 @@ class AIPrivacyControls extends ConsumerWidget {
 
 /// Dialog for configuring data retention settings
 class DataRetentionDialog extends StatefulWidget {
-  const DataRetentionDialog({super.key});
-
-  @override
+  const DataRetentionDialog({super.key});  @override
   State<DataRetentionDialog> createState() => _DataRetentionDialogState();
 }
 
 class _DataRetentionDialogState extends State<DataRetentionDialog> {
-  int _selectedDays = 30; // Default retention period
-
-  @override
+  int _selectedDays = 30; // Default retention period  @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text('Data Retention Settings'),
@@ -276,7 +267,7 @@ class _DataRetentionDialogState extends State<DataRetentionDialog> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceVariant,
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Row(

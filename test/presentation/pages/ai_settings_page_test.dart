@@ -9,9 +9,9 @@ void main() {
   group('AISettingsPage', () {
     testWidgets('should display AI settings page with main sections', (tester) async {
       await tester.pumpWidget(
-        ProviderScope(
+        const ProviderScope(
           child: MaterialApp(
-            home: const AISettingsPage(),
+            home: AISettingsPage(),
           ),
         ),
       );
@@ -29,9 +29,9 @@ void main() {
 
     testWidgets('should show AI parsing toggle switch', (tester) async {
       await tester.pumpWidget(
-        ProviderScope(
+        const ProviderScope(
           child: MaterialApp(
-            home: const AISettingsPage(),
+            home: AISettingsPage(),
           ),
         ),
       );
@@ -48,8 +48,8 @@ void main() {
             aiParsingConfigProvider.overrideWith((ref) => 
               AIParsingConfigNotifier()..setEnabled(true)),
           ],
-          child: MaterialApp(
-            home: const AISettingsPage(),
+          child: const MaterialApp(
+            home: AISettingsPage(),
           ),
         ),
       );
@@ -64,9 +64,9 @@ void main() {
 
     testWidgets('should show help dialog when help is tapped', (tester) async {
       await tester.pumpWidget(
-        ProviderScope(
+        const ProviderScope(
           child: MaterialApp(
-            home: const AISettingsPage(),
+            home: AISettingsPage(),
           ),
         ),
       );
@@ -82,9 +82,9 @@ void main() {
 
     testWidgets('should show privacy dialog when privacy is tapped', (tester) async {
       await tester.pumpWidget(
-        ProviderScope(
+        const ProviderScope(
           child: MaterialApp(
-            home: const AISettingsPage(),
+            home: AISettingsPage(),
           ),
         ),
       );
@@ -100,9 +100,9 @@ void main() {
 
     testWidgets('should toggle AI parsing when switch is tapped', (tester) async {
       await tester.pumpWidget(
-        ProviderScope(
+        const ProviderScope(
           child: MaterialApp(
-            home: const AISettingsPage(),
+            home: AISettingsPage(),
           ),
         ),
       );
@@ -123,8 +123,8 @@ void main() {
             aiParsingConfigProvider.overrideWith((ref) => 
               AIParsingConfigNotifier()..setEnabled(false)),
           ],
-          child: MaterialApp(
-            home: const AISettingsPage(),
+          child: const MaterialApp(
+            home: AISettingsPage(),
           ),
         ),
       );
@@ -141,9 +141,9 @@ void main() {
 
     testWidgets('should show confidence score setting', (tester) async {
       await tester.pumpWidget(
-        ProviderScope(
+        const ProviderScope(
           child: MaterialApp(
-            home: const AISettingsPage(),
+            home: AISettingsPage(),
           ),
         ),
       );
@@ -155,9 +155,9 @@ void main() {
 
     testWidgets('should display all main card sections', (tester) async {
       await tester.pumpWidget(
-        ProviderScope(
+        const ProviderScope(
           child: MaterialApp(
-            home: const AISettingsPage(),
+            home: AISettingsPage(),
           ),
         ),
       );
@@ -220,14 +220,14 @@ void main() {
 
   group('AIParsingConfigNotifier', () {
     test('should start with default config', () {
-      final notifier = AIParsingConfigNotifier();
+      const notifier = AIParsingConfigNotifier();
       
       expect(notifier.state.enabled, isFalse);
       expect(notifier.state.serviceType, equals(AIServiceType.local));
     });
 
     test('should update enabled state', () {
-      final notifier = AIParsingConfigNotifier();
+      const notifier = AIParsingConfigNotifier();
       
       notifier.setEnabled(true);
       expect(notifier.state.enabled, isTrue);
@@ -237,7 +237,7 @@ void main() {
     });
 
     test('should update service type', () {
-      final notifier = AIParsingConfigNotifier();
+      const notifier = AIParsingConfigNotifier();
       
       notifier.setServiceType(AIServiceType.openai);
       expect(notifier.state.serviceType, equals(AIServiceType.openai));
@@ -247,7 +247,7 @@ void main() {
     });
 
     test('should update auto-apply settings', () {
-      final notifier = AIParsingConfigNotifier();
+      const notifier = AIParsingConfigNotifier();
       
       notifier.setAutoApplyTags(false);
       expect(notifier.state.autoApplyTags, isFalse);
@@ -260,7 +260,7 @@ void main() {
     });
 
     test('should update show confidence setting', () {
-      final notifier = AIParsingConfigNotifier();
+      const notifier = AIParsingConfigNotifier();
       
       notifier.setShowConfidence(false);
       expect(notifier.state.showConfidence, isFalse);

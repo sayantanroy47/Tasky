@@ -72,9 +72,7 @@ class TranscriptionResult {
       error: error,
       isSuccess: false,
     );
-  }
-
-  @override
+  }  @override
   String toString() {
     return 'TranscriptionResult(text: $text, confidence: $confidence, success: $isSuccess)';
   }
@@ -92,9 +90,7 @@ class TranscriptionSegment {
     required this.startTime,
     required this.endTime,
     required this.confidence,
-  });
-
-  @override
+  });  @override
   String toString() {
     return 'TranscriptionSegment(text: $text, start: ${startTime.inMilliseconds}ms, end: ${endTime.inMilliseconds}ms)';
   }
@@ -112,9 +108,7 @@ class TranscriptionError {
     required this.type,
     this.originalError,
     this.statusCode,
-  });
-
-  @override
+  });  @override
   String toString() {
     return 'TranscriptionError(type: $type, message: $message)';
   }
@@ -143,9 +137,7 @@ class TranscriptionException implements Exception {
     this.message, {
     required this.type,
     this.originalError,
-  });
-
-  @override
+  });  @override
   String toString() {
     return 'TranscriptionException: $message (Type: $type)';
   }

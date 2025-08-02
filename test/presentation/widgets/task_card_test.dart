@@ -6,7 +6,7 @@ void main() {
   group('TaskCard Widget Tests', () {
     testWidgets('should display task title', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: TaskCard(
               title: 'Test Task',
@@ -20,7 +20,7 @@ void main() {
 
     testWidgets('should display task description when provided', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: TaskCard(
               title: 'Test Task',
@@ -36,7 +36,7 @@ void main() {
 
     testWidgets('should show completion indicator with correct state', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: TaskCard(
               title: 'Test Task',
@@ -52,7 +52,7 @@ void main() {
 
     testWidgets('should show strikethrough text when completed', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: TaskCard(
               title: 'Test Task',
@@ -99,7 +99,7 @@ void main() {
 
     testWidgets('should display tags when provided', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: TaskCard(
               title: 'Test Task',
@@ -115,7 +115,7 @@ void main() {
 
     testWidgets('should show more tags indicator when more than 3 tags', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: TaskCard(
               title: 'Test Task',
@@ -174,7 +174,7 @@ void main() {
 
     testWidgets('should show popup menu when actions are enabled', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: TaskCard(
               title: 'Test Task',
@@ -191,7 +191,7 @@ void main() {
 
     testWidgets('should not show popup menu when actions are disabled', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: TaskCard(
               title: 'Test Task',
@@ -206,7 +206,7 @@ void main() {
 
     testWidgets('should show priority indicator with correct color', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: TaskCard(
               title: 'Test Task',

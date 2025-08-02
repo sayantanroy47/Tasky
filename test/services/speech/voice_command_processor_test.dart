@@ -17,7 +17,7 @@ void main() {
     late MockTaskRepository mockRepository;
 
     setUp(() {
-      mockRepository = MockTaskRepository();
+      mockRepository = const MockTaskRepository();
       processor = VoiceCommandProcessor(taskRepository: mockRepository);
     });
 
@@ -297,7 +297,7 @@ void main() {
           timestamp: DateTime.now(),
           taskTitle: 'project report',
           subtaskTitle: 'review draft',
-          parameters: {
+          parameters: const {
             'taskTitle': 'project report',
             'subtaskTitle': 'review draft',
           },
@@ -365,7 +365,7 @@ void main() {
           originalText: 'pin important task',
           timestamp: DateTime.now(),
           taskTitle: 'important task',
-          parameters: {'taskTitle': 'important task'},
+          parameters: const {'taskTitle': 'important task'},
         );
 
         when(mockRepository.searchTasks('important task'))

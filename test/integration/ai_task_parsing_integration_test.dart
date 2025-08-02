@@ -15,7 +15,7 @@ void main() {
       prefs = await SharedPreferences.getInstance();
       
       final parser = CompositeAITaskParser(
-        localParser: LocalTaskParser(),
+        localParser: const LocalTaskParser(),
         preferredService: AIServiceType.local,
         enableAI: false, // Use local parsing for integration tests
       );
@@ -197,7 +197,7 @@ void main() {
       });
 
       test('should handle very long text', () async {
-        final longText = 'A' * 1000;
+        const longText = 'A' * 1000;
         final task = await service.createTaskFromText(longText);
         
         expect(task.title, isNotEmpty);

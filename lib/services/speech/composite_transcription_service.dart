@@ -23,24 +23,16 @@ class CompositeTranscriptionService implements TranscriptionService {
   }) : _localService = localService,
        _cloudService = cloudService,
        _preference = preference,
-       _config = config ?? const TranscriptionConfig();
-
-  @override
-  bool get isAvailable => _isAvailable;
-
-  @override
-  bool get isInitialized => _isInitialized;
-
-  @override
+       _config = config ?? const TranscriptionConfig();  @override
+  bool get isAvailable => _isAvailable;  @override
+  bool get isInitialized => _isInitialized;  @override
   List<String> get supportedFormats {
     final localFormats = _localService.supportedFormats;
     final cloudFormats = _cloudService?.supportedFormats ?? <String>[];
     
     // Return union of supported formats
     return {...localFormats, ...cloudFormats}.toList();
-  }
-
-  @override
+  }  @override
   Future<bool> initialize() async {
     try {
       bool localAvailable = false;
@@ -77,9 +69,7 @@ class CompositeTranscriptionService implements TranscriptionService {
         originalError: e,
       );
     }
-  }
-
-  @override
+  }  @override
   Future<TranscriptionResult> transcribeAudioFile(String audioFilePath) async {
     if (!_isInitialized || !_isAvailable) {
       throw const TranscriptionException(
@@ -100,9 +90,7 @@ class CompositeTranscriptionService implements TranscriptionService {
       final audioData = await file.readAsBytes();
       return transcribeAudioData(audioData);
     });
-  }
-
-  @override
+  }  @override
   Future<TranscriptionResult> transcribeAudioData(List<int> audioData) async {
     if (!_isInitialized || !_isAvailable) {
       throw const TranscriptionException(
@@ -114,9 +102,7 @@ class CompositeTranscriptionService implements TranscriptionService {
     return _transcribeWithFallback(() async {
       return _transcribeAudioDataInternal(audioData);
     });
-  }
-
-  @override
+  }  @override
   Future<void> dispose() async {
     await _localService.dispose();
     await _cloudService?.dispose();

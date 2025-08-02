@@ -36,9 +36,7 @@ class TaskCard extends StatefulWidget {
     this.onEdit,
     this.onDelete,
     this.showActions = true,
-  });
-
-  @override
+  });  @override
   State<TaskCard> createState() => _TaskCardState();
 }
 
@@ -52,9 +50,7 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
   bool _isDragging = false;
   double _dragExtent = 0.0;
   static const double _swipeThreshold = 0.4;
-  static const double _maxSlideExtent = 100.0;
-
-  @override
+  static const double _maxSlideExtent = 100.0;  @override
   void initState() {
     super.initState();
     
@@ -95,9 +91,7 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
     if (widget.isCompleted) {
       _completionController.value = 1.0;
     }
-  }
-
-  @override
+  }  @override
   void didUpdateWidget(TaskCard oldWidget) {
     super.didUpdateWidget(oldWidget);
     
@@ -109,17 +103,13 @@ class _TaskCardState extends State<TaskCard> with TickerProviderStateMixin {
         _completionController.reverse();
       }
     }
-  }
-
-  @override
+  }  @override
   void dispose() {
     _slideController.dispose();
     _scaleController.dispose();
     _completionController.dispose();
     super.dispose();
-  }
-
-  @override
+  }  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final priorityColor = AppColors.getPriorityColor(widget.priority);
@@ -574,9 +564,7 @@ class _TagChip extends StatelessWidget {
   const _TagChip({
     required this.label,
     required this.color,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),

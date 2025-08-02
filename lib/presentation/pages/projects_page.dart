@@ -11,30 +11,22 @@ import '../widgets/project_form_dialog.dart';
 /// Displays all projects with their statistics, allows creating,
 /// editing, and managing projects.
 class ProjectsPage extends ConsumerStatefulWidget {
-  const ProjectsPage({super.key});
-
-  @override
+  const ProjectsPage({super.key});  @override
   ConsumerState<ProjectsPage> createState() => _ProjectsPageState();
 }
 
 class _ProjectsPageState extends ConsumerState<ProjectsPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  String _searchQuery = '';
-
-  @override
+  String _searchQuery = '';  @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-  }
-
-  @override
+  }  @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
-  }
-
-  @override
+  }  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     
@@ -238,7 +230,7 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
                 ),
                 child: Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.warning,
                       color: Colors.orange,
                     ),

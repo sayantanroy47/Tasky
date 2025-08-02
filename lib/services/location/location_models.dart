@@ -24,9 +24,7 @@ class LocationData extends Equatable {
   factory LocationData.fromJson(Map<String, dynamic> json) =>
       _$LocationDataFromJson(json);
 
-  Map<String, dynamic> toJson() => _$LocationDataToJson(this);
-
-  @override
+  Map<String, dynamic> toJson() => _$LocationDataToJson(this);  @override
   List<Object?> get props => [
         latitude,
         longitude,
@@ -80,9 +78,7 @@ class GeofenceData extends Equatable {
   factory GeofenceData.fromJson(Map<String, dynamic> json) =>
       _$GeofenceDataFromJson(json);
 
-  Map<String, dynamic> toJson() => _$GeofenceDataToJson(this);
-
-  @override
+  Map<String, dynamic> toJson() => _$GeofenceDataToJson(this);  @override
   List<Object?> get props => [
         id,
         name,
@@ -145,9 +141,7 @@ class LocationTrigger extends Equatable {
   factory LocationTrigger.fromJson(Map<String, dynamic> json) =>
       _$LocationTriggerFromJson(json);
 
-  Map<String, dynamic> toJson() => _$LocationTriggerToJson(this);
-
-  @override
+  Map<String, dynamic> toJson() => _$LocationTriggerToJson(this);  @override
   List<Object?> get props => [
         id,
         taskId,
@@ -206,9 +200,7 @@ class GeofenceEvent extends Equatable {
   factory GeofenceEvent.fromJson(Map<String, dynamic> json) =>
       _$GeofenceEventFromJson(json);
 
-  Map<String, dynamic> toJson() => _$GeofenceEventToJson(this);
-
-  @override
+  Map<String, dynamic> toJson() => _$GeofenceEventToJson(this);  @override
   List<Object?> get props => [geofenceId, type, location, timestamp];
 }
 
@@ -240,9 +232,7 @@ class LocationSettings extends Equatable {
   factory LocationSettings.fromJson(Map<String, dynamic> json) =>
       _$LocationSettingsFromJson(json);
 
-  Map<String, dynamic> toJson() => _$LocationSettingsToJson(this);
-
-  @override
+  Map<String, dynamic> toJson() => _$LocationSettingsToJson(this);  @override
   List<Object?> get props => [
         locationEnabled,
         geofencingEnabled,
@@ -275,8 +265,6 @@ class LocationServiceException implements Exception {
   final String message;
   final String? code;
 
-  const LocationServiceException(this.message, [this.code]);
-
-  @override
+  const LocationServiceException(this.message, [this.code]);  @override
   String toString() => 'LocationServiceException: $message${code != null ? ' ($code)' : ''}';
 }

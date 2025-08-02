@@ -1,7 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../domain/repositories/task_repository.dart';
-import '../../domain/repositories/project_repository.dart';
 import '../../domain/repositories/tag_repository.dart';
 import '../../data/repositories/tag_repository_impl.dart';
 import '../../services/data_export/data_export_service.dart';
@@ -234,23 +232,23 @@ final importErrorProvider = Provider<String?>((ref) {
 
 // Export progress percentage
 final exportProgressPercentageProvider = Provider<double>((ref) {
-  final progress = ref.watch(exportProgressProvider);
-  return progress?.progress ?? 0.0;
+  final exportState = ref.watch(dataExportNotifierProvider);
+  return exportState.isLoading ? 0.5 : (exportState.hasValue ? 1.0 : 0.0);
 });
 
 // Import progress percentage
 final importProgressPercentageProvider = Provider<double>((ref) {
-  final progress = ref.watch(importProgressProvider);
-  return progress?.progress ?? 0.0;
+  final importState = ref.watch(dataImportNotifierProvider);
+  return importState.isLoading ? 0.5 : (importState.hasValue ? 1.0 : 0.0);
 });
 
 // Current operation text
 final currentExportOperationProvider = Provider<String>((ref) {
-  final progress = ref.watch(exportProgressProvider);
-  return progress?.currentOperation ?? '';
+  final exportState = ref.watch(dataExportNotifierProvider);
+  return exportState.isLoading ? 'Exporting...' : '';
 });
 
 final currentImportOperationProvider = Provider<String>((ref) {
-  final progress = ref.watch(importProgressProvider);
-  return progress?.currentOperation ?? '';
+  final importState = ref.watch(dataImportNotifierProvider);
+  return importState.isLoading ? 'Importing...' : '';
 });

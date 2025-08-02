@@ -23,18 +23,10 @@ class OpenAITranscriptionService implements TranscriptionService {
     TranscriptionConfig? config,
   }) : _apiKey = apiKey,
        _baseUrl = baseUrl ?? _defaultBaseUrl,
-       _config = config ?? const TranscriptionConfig();
-
-  @override
-  bool get isAvailable => _isAvailable;
-
-  @override
-  bool get isInitialized => _isInitialized;
-
-  @override
-  List<String> get supportedFormats => _supportedFormats;
-
-  @override
+       _config = config ?? const TranscriptionConfig();  @override
+  bool get isAvailable => _isAvailable;  @override
+  bool get isInitialized => _isInitialized;  @override
+  List<String> get supportedFormats => _supportedFormats;  @override
   Future<bool> initialize() async {
     try {
       // Test API connectivity and authentication
@@ -67,9 +59,7 @@ class OpenAITranscriptionService implements TranscriptionService {
         originalError: e,
       );
     }
-  }
-
-  @override
+  }  @override
   Future<TranscriptionResult> transcribeAudioFile(String audioFilePath) async {
     if (!_isInitialized || !_isAvailable) {
       throw const TranscriptionException(
@@ -97,9 +87,7 @@ class OpenAITranscriptionService implements TranscriptionService {
 
     final audioData = await file.readAsBytes();
     return _transcribeAudioDataWithFileName(audioData, fileName: audioFilePath.split('/').last);
-  }
-
-  @override
+  }  @override
   Future<TranscriptionResult> transcribeAudioData(List<int> audioData) async {
     return _transcribeAudioDataWithFileName(audioData, fileName: 'audio.wav');
   }
@@ -209,9 +197,7 @@ class OpenAITranscriptionService implements TranscriptionService {
         processingTime: stopwatch.elapsed,
       );
     }
-  }
-
-  @override
+  }  @override
   Future<void> dispose() async {
     _isInitialized = false;
     _isAvailable = false;

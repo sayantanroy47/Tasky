@@ -13,30 +13,22 @@ class TaskTemplateSelector extends ConsumerStatefulWidget {
   const TaskTemplateSelector({
     super.key,
     required this.onTemplateSelected,
-  });
-
-  @override
+  });  @override
   ConsumerState<TaskTemplateSelector> createState() => _TaskTemplateSelectorState();
 }
 
 class _TaskTemplateSelectorState extends ConsumerState<TaskTemplateSelector>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  String _searchQuery = '';
-
-  @override
+  String _searchQuery = '';  @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-  }
-
-  @override
+  }  @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
-  }
-
-  @override
+  }  @override
   Widget build(BuildContext context) {
     return Dialog(
       child: Container(
@@ -377,9 +369,7 @@ class TaskTemplateFormDialog extends StatefulWidget {
     super.key,
     this.initialTemplate,
     required this.onTemplateSaved,
-  });
-
-  @override
+  });  @override
   State<TaskTemplateFormDialog> createState() => _TaskTemplateFormDialogState();
 }
 
@@ -394,9 +384,7 @@ class _TaskTemplateFormDialogState extends State<TaskTemplateFormDialog> {
   TaskPriority _priority = TaskPriority.medium;
   List<String> _tags = [];
   RecurrencePattern? _recurrence;
-  int? _estimatedDuration;
-
-  @override
+  int? _estimatedDuration;  @override
   void initState() {
     super.initState();
     
@@ -413,9 +401,7 @@ class _TaskTemplateFormDialogState extends State<TaskTemplateFormDialog> {
       _recurrence = template.recurrence;
       _estimatedDuration = template.estimatedDuration;
     }
-  }
-
-  @override
+  }  @override
   void dispose() {
     _nameController.dispose();
     _descriptionController.dispose();
@@ -423,9 +409,7 @@ class _TaskTemplateFormDialogState extends State<TaskTemplateFormDialog> {
     _descriptionTemplateController.dispose();
     _categoryController.dispose();
     super.dispose();
-  }
-
-  @override
+  }  @override
   Widget build(BuildContext context) {
     return Dialog(
       child: Container(

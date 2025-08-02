@@ -6,9 +6,7 @@ import '../../services/notification/notification_models.dart';
 
 /// Page for viewing notification history and statistics
 class NotificationHistoryPage extends ConsumerWidget {
-  const NotificationHistoryPage({super.key});
-
-  @override
+  const NotificationHistoryPage({super.key});  @override
   Widget build(BuildContext context, WidgetRef ref) {
     final scheduledNotificationsAsync = ref.watch(scheduledNotificationsProvider);
 

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../services/analytics/analytics_models.dart';
 
 /// Collection of reusable widgets for analytics display
@@ -25,9 +24,7 @@ class AnalyticsMetricCard extends StatelessWidget {
     this.trend,
     this.isPositiveTrend,
     this.onTap,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context) {
     return Card(
       child: InkWell(
@@ -122,9 +119,7 @@ class SimpleBarChart extends StatelessWidget {
     required this.title,
     this.barColor,
     this.height = 200,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context) {
     final maxValue = values.isNotEmpty ? values.reduce((a, b) => a > b ? a : b) : 1.0;
     final color = barColor ?? Theme.of(context).colorScheme.primary;
@@ -193,9 +188,7 @@ class CategoryBreakdownWidget extends StatelessWidget {
     super.key,
     required this.categories,
     required this.title,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context) {
     final totalTasks = categories.fold<int>(0, (sum, cat) => sum + cat.totalTasks);
 
@@ -261,9 +254,7 @@ class CategoryItem extends StatelessWidget {
     required this.color,
     required this.count,
     required this.completionRate,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context) {
     return Row(
       children: [
@@ -324,9 +315,7 @@ class ProductivityInsightsWidget extends StatelessWidget {
     required this.metrics,
     required this.hourlyProductivity,
     required this.weekdayProductivity,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context) {
     final insights = _generateInsights();
 
@@ -442,9 +431,7 @@ class InsightItem extends StatelessWidget {
     required this.title,
     required this.description,
     required this.color,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context) {
     return Row(
       children: [
@@ -486,9 +473,7 @@ class StreakWidget extends StatelessWidget {
   const StreakWidget({
     super.key,
     required this.streakInfo,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
@@ -575,9 +560,7 @@ class _StreakMetric extends StatelessWidget {
     required this.value,
     required this.subtitle,
     required this.isActive,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -625,9 +608,7 @@ class TimePeriodSelector extends StatelessWidget {
     super.key,
     required this.selectedPeriod,
     required this.onPeriodChanged,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
@@ -672,9 +653,7 @@ class ProductivityPatternsWidget extends StatelessWidget {
   const ProductivityPatternsWidget({
     super.key,
     required this.patterns,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
@@ -691,7 +670,7 @@ class ProductivityPatternsWidget extends StatelessWidget {
             // Consistency score
             Row(
               children: [
-                Icon(Icons.trending_up, color: Colors.blue, size: 20),
+                const Icon(Icons.trending_up, color: Colors.blue, size: 20),
                 const SizedBox(width: 8),
                 Text(
                   'Consistency Score: ${(patterns.consistencyScore * 100).round()}%',
@@ -712,7 +691,7 @@ class ProductivityPatternsWidget extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 4.0),
                 child: Row(
                   children: [
-                    Icon(Icons.schedule, color: Colors.orange, size: 16),
+                    const Icon(Icons.schedule, color: Colors.orange, size: 16),
                     const SizedBox(width: 8),
                     Text(
                       '${_formatHour(peak.hour)} - ${(peak.efficiency * 100).round()}% efficiency',
@@ -799,9 +778,7 @@ class PeakHoursAnalysisWidget extends StatelessWidget {
   const PeakHoursAnalysisWidget({
     super.key,
     required this.analysis,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
@@ -918,9 +895,7 @@ class AdvancedCategoryAnalyticsWidget extends StatelessWidget {
   const AdvancedCategoryAnalyticsWidget({
     super.key,
     required this.analytics,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
@@ -947,7 +922,7 @@ class AdvancedCategoryAnalyticsWidget extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: 4.0),
                   child: Row(
                     children: [
-                      Icon(Icons.star, color: Colors.amber, size: 16),
+                      const Icon(Icons.star, color: Colors.amber, size: 16),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
@@ -1016,9 +991,7 @@ class AdvancedProductivityInsightsWidget extends StatelessWidget {
   const AdvancedProductivityInsightsWidget({
     super.key,
     required this.insights,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
@@ -1215,9 +1188,7 @@ class _MetricCard extends StatelessWidget {
     required this.value,
     required this.icon,
     required this.color,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(12),
@@ -1265,9 +1236,7 @@ class _ScoreItem extends StatelessWidget {
     required this.title,
     required this.score,
     required this.icon,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context) {
     return Column(
       children: [
@@ -1301,9 +1270,7 @@ class AnalyticsExportWidget extends StatelessWidget {
     this.onExportCsv,
     this.onExportPdf,
     this.onExportExcel,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
@@ -1372,9 +1339,7 @@ class _ExportButton extends StatelessWidget {
     required this.label,
     required this.icon,
     this.onPressed,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context) {
     return OutlinedButton.icon(
       onPressed: onPressed,

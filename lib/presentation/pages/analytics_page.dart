@@ -9,7 +9,6 @@ import '../../services/analytics/analytics_models.dart';
 /// Analytics page for viewing productivity metrics and insights
 class AnalyticsPage extends ConsumerWidget {
   const AnalyticsPage({super.key});
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return AppScaffold(
@@ -45,7 +44,6 @@ class AnalyticsPage extends ConsumerWidget {
 /// Analytics page body content
 class AnalyticsPageBody extends ConsumerWidget {
   const AnalyticsPageBody({super.key});
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedPeriod = ref.watch(analyticsTimePeriodProvider);
@@ -368,7 +366,7 @@ class AnalyticsPageBody extends ConsumerWidget {
     final monthlyRate = (metrics.monthlyCompletionRate * 100).round();
     final diff = weeklyRate - monthlyRate;
     if (diff != 0) {
-      return '${diff > 0 ? '+' : ''}${diff}%';
+      return '${diff > 0 ? '+' : ''}$diff%';
     }
     return null;
   }
@@ -401,7 +399,7 @@ class AnalyticsPageBody extends ConsumerWidget {
         ),
       );
 
-      final exportData = await ref.read(analyticsExportProvider(format).future);
+      await ref.read(analyticsExportProvider(format).future);
       
       // In a real implementation, you would save the file or share it
       // For now, we'll just show a success message
@@ -429,7 +427,6 @@ class AnalyticsPageBody extends ConsumerWidget {
 /// Loading widget for metrics
 class _LoadingMetrics extends StatelessWidget {
   const _LoadingMetrics();
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -491,7 +488,6 @@ class _ErrorWidget extends StatelessWidget {
   final String error;
 
   const _ErrorWidget({required this.error});
-
   @override
   Widget build(BuildContext context) {
     return Card(

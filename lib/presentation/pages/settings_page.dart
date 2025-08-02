@@ -5,9 +5,7 @@ import '../widgets/app_scaffold.dart';
 
 /// Settings page for app configuration and preferences
 class SettingsPage extends ConsumerWidget {
-  const SettingsPage({super.key});
-
-  @override
+  const SettingsPage({super.key});  @override
   Widget build(BuildContext context, WidgetRef ref) {
     return AppScaffold(
       title: 'Settings',
@@ -31,9 +29,7 @@ class SettingsPage extends ConsumerWidget {
 
 /// Settings page body content
 class SettingsPageBody extends ConsumerWidget {
-  const SettingsPageBody({super.key});
-
-  @override
+  const SettingsPageBody({super.key});  @override
   Widget build(BuildContext context, WidgetRef ref) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
@@ -278,8 +274,30 @@ class SettingsPageBody extends ConsumerWidget {
                   ),
                   
                   ListTile(
-                    leading: Icon(Icons.delete_forever, color: Colors.red),
-                    title: Text(
+                    leading: const Icon(Icons.integration_instructions),
+                    title: const Text('External App Integration'),
+                    subtitle: const Text('Share intents, widgets, and shortcuts'),
+                    trailing: const Icon(Icons.arrow_forward_ios),
+                    onTap: () {
+                      Navigator.of(context).pushNamed('/integration-settings');
+                    },
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                  
+                  ListTile(
+                    leading: const Icon(Icons.share),
+                    title: const Text('Task Sharing & Collaboration'),
+                    subtitle: const Text('Share tasks and collaborate with others'),
+                    trailing: const Icon(Icons.arrow_forward_ios),
+                    onTap: () {
+                      Navigator.of(context).pushNamed('/task-sharing');
+                    },
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                  
+                  ListTile(
+                    leading: const Icon(Icons.delete_forever, color: Colors.red),
+                    title: const Text(
                       'Clear All Data',
                       style: TextStyle(color: Colors.red),
                     ),
@@ -310,10 +328,10 @@ class SettingsPageBody extends ConsumerWidget {
                   ),
                   const SizedBox(height: 16),
                   
-                  ListTile(
-                    leading: const Icon(Icons.info),
-                    title: const Text('App Version'),
-                    subtitle: const Text('1.0.0+1'),
+                  const ListTile(
+                    leading: Icon(Icons.info),
+                    title: Text('App Version'),
+                    subtitle: Text('1.0.0+1'),
                     contentPadding: EdgeInsets.zero,
                   ),
                   

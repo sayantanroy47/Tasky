@@ -5,9 +5,7 @@ import '../widgets/app_scaffold.dart';
 
 /// Calendar page for viewing tasks in calendar format
 class CalendarPage extends ConsumerWidget {
-  const CalendarPage({super.key});
-
-  @override
+  const CalendarPage({super.key});  @override
   Widget build(BuildContext context, WidgetRef ref) {
     return AppScaffold(
       title: 'Calendar',
@@ -51,9 +49,7 @@ class CalendarPage extends ConsumerWidget {
 
 /// Calendar page body content
 class CalendarPageBody extends ConsumerWidget {
-  const CalendarPageBody({super.key});
-
-  @override
+  const CalendarPageBody({super.key});  @override
   Widget build(BuildContext context, WidgetRef ref) {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
@@ -78,7 +74,7 @@ class CalendarPageBody extends ConsumerWidget {
                       ButtonSegment(value: 'week', label: Text('Week')),
                       ButtonSegment(value: 'day', label: Text('Day')),
                     ],
-                    selected: {'month'},
+                    selected: const {'month'},
                     onSelectionChanged: (selection) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(

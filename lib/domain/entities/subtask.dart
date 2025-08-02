@@ -119,9 +119,7 @@ class SubTask extends Equatable {
     }
     
     return sortOrder >= 0;
-  }
-
-  @override
+  }  @override
   List<Object?> get props => [
         id,
         taskId,
@@ -130,9 +128,7 @@ class SubTask extends Equatable {
         completedAt,
         sortOrder,
         createdAt,
-      ];
-
-  @override
+      ];  @override
   String toString() {
     return 'SubTask(id: $id, taskId: $taskId, title: $title, '
            'isCompleted: $isCompleted, sortOrder: $sortOrder)';

@@ -6,7 +6,7 @@ void main() {
   group('TaskCard Subtask Tests', () {
     testWidgets('should display subtask progress when task has subtasks', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: TaskCard(
               title: 'Test Task',
@@ -25,7 +25,7 @@ void main() {
 
     testWidgets('should not display subtask progress when task has no subtasks', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: TaskCard(
               title: 'Test Task',
@@ -41,7 +41,7 @@ void main() {
 
     testWidgets('should show correct progress indicator value', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: TaskCard(
               title: 'Test Task',
@@ -62,7 +62,7 @@ void main() {
 
     testWidgets('should show 100% progress when all subtasks completed', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: TaskCard(
               title: 'Test Task',
@@ -83,7 +83,7 @@ void main() {
 
     testWidgets('should show 0% progress when no subtasks completed', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: TaskCard(
               title: 'Test Task',
@@ -104,7 +104,7 @@ void main() {
 
     testWidgets('should handle null subtask completed count', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: TaskCard(
               title: 'Test Task',
@@ -127,7 +127,7 @@ void main() {
 
     testWidgets('should show dimmed progress indicator for completed tasks', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: TaskCard(
               title: 'Test Task',

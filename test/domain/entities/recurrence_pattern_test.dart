@@ -15,7 +15,7 @@ void main() {
         final pattern = RecurrencePattern(
           type: RecurrenceType.daily,
           interval: 2,
-          daysOfWeek: [1, 3, 5],
+          daysOfWeek: const [1, 3, 5],
           endDate: testDate.add(const Duration(days: 30)),
           maxOccurrences: 10,
         );
@@ -28,7 +28,7 @@ void main() {
       });
 
       test('should create RecurrencePattern with default interval', () {
-        final pattern = RecurrencePattern(type: RecurrenceType.weekly);
+        const pattern = RecurrencePattern(type: RecurrenceType.weekly);
         expect(pattern.interval, 1);
       });
     });
@@ -51,7 +51,7 @@ void main() {
       test('weekly should create weekly recurrence pattern', () {
         final pattern = RecurrencePattern.weekly(
           interval: 2,
-          daysOfWeek: [1, 3, 5],
+          daysOfWeek: const [1, 3, 5],
           endDate: testDate,
           maxOccurrences: 5,
         );
@@ -66,7 +66,7 @@ void main() {
       test('monthly should create monthly recurrence pattern', () {
         final pattern = RecurrencePattern.monthly(
           interval: 3,
-          daysOfMonth: [1, 15],
+          daysOfMonth: const [1, 15],
           endDate: testDate,
           maxOccurrences: 5,
         );
@@ -98,7 +98,7 @@ void main() {
         final pattern = RecurrencePattern(
           type: RecurrenceType.weekly,
           interval: 2,
-          daysOfWeek: [1, 3, 5],
+          daysOfWeek: const [1, 3, 5],
           endDate: testDate,
           maxOccurrences: 10,
         );
@@ -165,7 +165,7 @@ void main() {
 
     group('getNextOccurrence', () {
       test('should return null for none type', () {
-        final pattern = RecurrencePattern(type: RecurrenceType.none);
+        const pattern = RecurrencePattern(type: RecurrenceType.none);
         final next = pattern.getNextOccurrence(testDate);
         expect(next, isNull);
       });
@@ -197,14 +197,14 @@ void main() {
 
       test('should calculate next weekly occurrence with specific days', () {
         // Test date is Monday (weekday 1), pattern includes Wednesday (weekday 3)
-        final pattern = RecurrencePattern.weekly(daysOfWeek: [1, 3, 5]);
+        final pattern = RecurrencePattern.weekly(daysOfWeek: const [1, 3, 5]);
         final next = pattern.getNextOccurrence(testDate);
         expect(next, testDate.add(const Duration(days: 2))); // Next Wednesday
       });
 
       test('should calculate next weekly occurrence when no more days in current week', () {
         // Test date is Monday (weekday 1), pattern only includes Monday
-        final pattern = RecurrencePattern.weekly(daysOfWeek: [1], interval: 2);
+        final pattern = RecurrencePattern.weekly(daysOfWeek: const [1], interval: 2);
         final next = pattern.getNextOccurrence(testDate);
         expect(next, testDate.add(const Duration(days: 14))); // Next occurrence in 2 weeks
       });
@@ -224,7 +224,7 @@ void main() {
       });
 
       test('should return null for custom type', () {
-        final pattern = RecurrencePattern(type: RecurrenceType.custom);
+        const pattern = RecurrencePattern(type: RecurrenceType.custom);
         final next = pattern.getNextOccurrence(testDate);
         expect(next, isNull);
       });
@@ -237,22 +237,22 @@ void main() {
       });
 
       test('should return false for zero interval', () {
-        final pattern = RecurrencePattern(type: RecurrenceType.daily, interval: 0);
+        const pattern = RecurrencePattern(type: RecurrenceType.daily, interval: 0);
         expect(pattern.isValid(), false);
       });
 
       test('should return false for negative interval', () {
-        final pattern = RecurrencePattern(type: RecurrenceType.daily, interval: -1);
+        const pattern = RecurrencePattern(type: RecurrenceType.daily, interval: -1);
         expect(pattern.isValid(), false);
       });
 
       test('should return false for invalid weekly days', () {
-        final pattern = RecurrencePattern.weekly(daysOfWeek: [0, 8]);
+        final pattern = RecurrencePattern.weekly(daysOfWeek: const [0, 8]);
         expect(pattern.isValid(), false);
       });
 
       test('should return false for invalid monthly days', () {
-        final pattern = RecurrencePattern.monthly(daysOfMonth: [0, 32]);
+        final pattern = RecurrencePattern.monthly(daysOfMonth: const [0, 32]);
         expect(pattern.isValid(), false);
       });
 
@@ -269,7 +269,7 @@ void main() {
 
     group('getDescription', () {
       test('should return correct description for none', () {
-        final pattern = RecurrencePattern(type: RecurrenceType.none);
+        const pattern = RecurrencePattern(type: RecurrenceType.none);
         expect(pattern.getDescription(), 'No recurrence');
       });
 
@@ -288,10 +288,10 @@ void main() {
         final pattern2 = RecurrencePattern.weekly(interval: 2);
         expect(pattern2.getDescription(), 'Every 2 weeks');
 
-        final pattern3 = RecurrencePattern.weekly(daysOfWeek: [1, 3, 5]);
+        final pattern3 = RecurrencePattern.weekly(daysOfWeek: const [1, 3, 5]);
         expect(pattern3.getDescription(), 'Weekly on Monday, Wednesday, Friday');
 
-        final pattern4 = RecurrencePattern.weekly(interval: 2, daysOfWeek: [1, 5]);
+        final pattern4 = RecurrencePattern.weekly(interval: 2, daysOfWeek: const [1, 5]);
         expect(pattern4.getDescription(), 'Every 2 weeks on Monday, Friday');
       });
 
@@ -312,7 +312,7 @@ void main() {
       });
 
       test('should return correct description for custom', () {
-        final pattern = RecurrencePattern(type: RecurrenceType.custom);
+        const pattern = RecurrencePattern(type: RecurrenceType.custom);
         expect(pattern.getDescription(), 'Custom recurrence');
       });
     });
@@ -321,14 +321,14 @@ void main() {
       test('should be equal when all properties match', () {
         final pattern1 = RecurrencePattern.weekly(
           interval: 2,
-          daysOfWeek: [1, 3, 5],
+          daysOfWeek: const [1, 3, 5],
           endDate: testDate,
           maxOccurrences: 10,
         );
 
         final pattern2 = RecurrencePattern.weekly(
           interval: 2,
-          daysOfWeek: [1, 3, 5],
+          daysOfWeek: const [1, 3, 5],
           endDate: testDate,
           maxOccurrences: 10,
         );
@@ -349,7 +349,7 @@ void main() {
       test('should return formatted string representation', () {
         final pattern = RecurrencePattern.weekly(
           interval: 2,
-          daysOfWeek: [1, 3, 5],
+          daysOfWeek: const [1, 3, 5],
           endDate: testDate,
           maxOccurrences: 10,
         );

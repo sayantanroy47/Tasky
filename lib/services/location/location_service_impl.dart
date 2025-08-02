@@ -5,58 +5,39 @@ import 'location_models.dart';
 
 /// Stub implementation of LocationService when geolocator is not available
 class LocationServiceImpl implements LocationService {
-  StreamSubscription<LocationData>? _positionSubscription;
-
-  @override
+  StreamSubscription<LocationData>? _positionSubscription;  @override
   Future<bool> isLocationServiceEnabled() async {
     return false; // Always false for stub
-  }
-
-  @override
+  }  @override
   Future<LocationPermissionStatus> checkPermission() async {
     return LocationPermissionStatus.denied;
-  }
-
-  @override
+  }  @override
   Future<LocationPermissionStatus> requestPermission() async {
     return LocationPermissionStatus.denied;
-  }
-
-  @override
+  }  @override
   Future<LocationData> getCurrentLocation() async {
     throw Exception('Location service not available in stub mode');
-  }
-
-  @override
+  }  @override
   Stream<LocationData> getLocationStream() {
-    return Stream.empty(); // Empty stream
-  }
-
-  @override
+    return const Stream.empty(); // Empty stream
+  }  @override
   Future<String?> getAddressFromCoordinates(double latitude, double longitude) async {
     return null; // No address available
-  }
-
-  @override
-  Future<double> getDistanceBetween(
+  }  Future<double> getDistanceBetween(
     double startLatitude,
     double startLongitude,
     double endLatitude,
     double endLongitude,
   ) async {
     return 0.0; // Return 0 distance
-  }
-
-  @override
+  }  @override
   void dispose() {
     _positionSubscription?.cancel();
     _positionSubscription = null;
-  }
-
-  @override
+  }  @override
   noSuchMethod(Invocation invocation) {
     if (kDebugMode) {
-      print('Stub: LocationService method ${invocation.memberName} called');
+      // print('Stub: LocationService method ${invocation.memberName} called');
     }
     
     // Return appropriate default values based on return type
@@ -70,7 +51,7 @@ class LocationServiceImpl implements LocationService {
     } else if (returnType.contains('Future<void>')) {
       return Future.value();
     } else if (returnType.contains('Stream<')) {
-      return Stream.empty();
+      return const Stream.empty();
     } else if (returnType.contains('double')) {
       return 0.0;
     } else if (returnType.contains('bool')) {

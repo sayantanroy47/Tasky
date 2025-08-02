@@ -170,6 +170,21 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
     return taskModels;
   }
 
+  /// Gets tasks within a date range
+  Future<List<TaskModel>> getTasksByDateRange(DateTime startDate, DateTime endDate) async {
+    final taskRows = await (select(tasks)
+      ..where((t) => t.dueDate.isBiggerOrEqualValue(startDate) & t.dueDate.isSmallerOrEqualValue(endDate))
+    ).get();
+    
+    final taskModels = <TaskModel>[];
+    for (final taskRow in taskRows) {
+      final taskModel = await _taskRowToModel(taskRow);
+      taskModels.add(taskModel);
+    }
+
+    return taskModels;
+  }
+
   /// Gets tasks by project ID
   Future<List<TaskModel>> getTasksByProject(String projectId) async {
     final taskRows = await (select(tasks)..where((t) => t.projectId.equals(projectId))).get();

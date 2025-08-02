@@ -17,7 +17,7 @@ void main() {
     late MockTaskRepository mockTaskRepository;
 
     setUp(() {
-      mockTaskRepository = MockTaskRepository();
+      mockTaskRepository = const MockTaskRepository();
       analyticsService = AnalyticsServiceImpl(mockTaskRepository);
     });
 
@@ -47,7 +47,7 @@ void main() {
           TaskModel.create(
             title: 'Task 1',
             priority: TaskPriority.high,
-            tags: ['work'],
+            tags: const ['work'],
           ).copyWith(
             status: TaskStatus.completed,
             completedAt: now,
@@ -56,14 +56,14 @@ void main() {
           TaskModel.create(
             title: 'Task 2',
             priority: TaskPriority.medium,
-            tags: ['personal'],
+            tags: const ['personal'],
           ).copyWith(
             status: TaskStatus.pending,
           ),
           TaskModel.create(
             title: 'Task 3',
             priority: TaskPriority.low,
-            tags: ['work'],
+            tags: const ['work'],
           ).copyWith(
             status: TaskStatus.cancelled,
           ),
@@ -206,14 +206,14 @@ void main() {
       test('should return category analytics correctly', () async {
         // Arrange
         final tasks = [
-          TaskModel.create(title: 'Work Task 1', tags: ['work']).copyWith(
+          TaskModel.create(title: 'Work Task 1', tags: const ['work']).copyWith(
             status: TaskStatus.completed,
             actualDuration: 60,
           ),
-          TaskModel.create(title: 'Work Task 2', tags: ['work']).copyWith(
+          TaskModel.create(title: 'Work Task 2', tags: const ['work']).copyWith(
             status: TaskStatus.pending,
           ),
-          TaskModel.create(title: 'Personal Task', tags: ['personal']).copyWith(
+          TaskModel.create(title: 'Personal Task', tags: const ['personal']).copyWith(
             status: TaskStatus.completed,
             actualDuration: 30,
           ),

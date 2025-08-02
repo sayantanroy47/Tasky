@@ -15,11 +15,9 @@ class PrimaryButton extends StatelessWidget {
     this.icon,
     this.isLoading = false,
     this.isExpanded = false,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context) {
-    Widget button = icon != null
+    final Widget button = icon != null
         ? FilledButton.icon(
             onPressed: isLoading ? null : onPressed,
             icon: isLoading 
@@ -61,11 +59,9 @@ class SecondaryButton extends StatelessWidget {
     this.icon,
     this.isLoading = false,
     this.isExpanded = false,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context) {
-    Widget button = icon != null
+    final Widget button = icon != null
         ? OutlinedButton.icon(
             onPressed: isLoading ? null : onPressed,
             icon: isLoading 
@@ -105,9 +101,7 @@ class CustomTextButton extends StatelessWidget {
     this.onPressed,
     this.icon,
     this.isLoading = false,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context) {
     return icon != null
         ? TextButton.icon(
@@ -147,9 +141,7 @@ class VoiceActionButton extends StatelessWidget {
     this.isListening = false,
     this.isProcessing = false,
     this.tooltip,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     
@@ -200,11 +192,9 @@ class DestructiveButton extends StatelessWidget {
     this.icon,
     this.isLoading = false,
     this.isExpanded = false,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context) {
-    Widget button = icon != null
+    final Widget button = icon != null
         ? FilledButton.icon(
             onPressed: isLoading ? null : onPressed,
             icon: isLoading 

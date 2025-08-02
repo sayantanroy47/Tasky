@@ -1,0 +1,597 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:local_auth/local_auth.dart';
+import '../widgets/enhanced_ux_widgets.dart';
+import '../../services/security_service.dart';
+
+/// Screen for managing security and privacy settings
+class SecuritySettingsScreen extends ConsumerWidget {
+  const SecuritySettingsScreen({super.key});  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final securitySettings = ref.watch(securitySettingsProvider);
+    
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Security & Privacy'),
+      ),
+      body: securitySettings.when(
+        data: (settings) => _buildSecuritySettings(context, ref, settings),
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, _) => Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.error_outline,
+                size: 64,
+                color: Theme.of(context).colorScheme.error,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Failed to load security settings',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                error.toString(),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              EnhancedButton(
+                onPressed: () => ref.read(securitySettingsProvider.notifier).refresh(),
+                child: const Text('Retry'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSecuritySettings(
+    BuildContext context,
+    WidgetRef ref,
+    SecuritySettings settings,
+  ) {
+    return ResponsiveWidget(
+      builder: (context, config) {
+        return ListView(
+          padding: config.padding,
+          children: [
+            // App Lock Section
+            _buildSectionHeader(context, 'App Lock'),
+            EnhancedCard(
+              child: Column(
+                children: [
+                  SwitchListTile(
+                    secondary: const Icon(Icons.lock),
+                    title: const Text('App Lock'),
+                    subtitle: Text(settings.appLockEnabled 
+                        ? 'App is protected with PIN/biometrics'
+                        : 'App is not protected'),
+                    value: settings.appLockEnabled,
+                    onChanged: (value) => _toggleAppLock(context, ref, value, settings),
+                  ),
+                  
+                  if (settings.appLockEnabled) ...[
+                    const Divider(),
+                    
+                    // Biometric Authentication
+                    if (settings.biometricAvailable)
+                      SwitchListTile(
+                        secondary: Icon(_getBiometricIcon(settings.availableBiometrics)),
+                        title: Text('${_getBiometricName(settings.availableBiometrics)} Authentication'),
+                        subtitle: Text(settings.biometricEnabled
+                            ? 'Use biometrics to unlock the app'
+                            : 'Use PIN only'),
+                        value: settings.biometricEnabled,
+                        onChanged: (value) => _toggleBiometric(context, ref, value),
+                      ),
+                    
+                    if (settings.biometricAvailable) const Divider(),
+                    
+                    // Change PIN
+                    ListTile(
+                      leading: const Icon(Icons.pin),
+                      title: const Text('Change PIN'),
+                      subtitle: const Text('Update your security PIN'),
+                      trailing: const Icon(Icons.arrow_forward_ios),
+                      onTap: () => _changePIN(context),
+                    ),
+                    
+                    const Divider(),
+                    
+                    // Lock Timeout
+                    ListTile(
+                      leading: const Icon(Icons.timer),
+                      title: const Text('Auto-lock Timeout'),
+                      subtitle: Text('Lock app after ${_formatDuration(settings.lockTimeout)} of inactivity'),
+                      trailing: const Icon(Icons.arrow_forward_ios),
+                      onTap: () => _showLockTimeoutDialog(context, ref, settings),
+                    ),
+                    
+                    const Divider(),
+                    
+                    // Max Attempts
+                    ListTile(
+                      leading: const Icon(Icons.security),
+                      title: const Text('Maximum Attempts'),
+                      subtitle: Text('Lock app after ${settings.maxAttempts} failed attempts'),
+                      trailing: const Icon(Icons.arrow_forward_ios),
+                      onTap: () => _showMaxAttemptsDialog(context, ref, settings),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            
+            const SizedBox(height: 24),
+            
+            // Data Protection Section
+            _buildSectionHeader(context, 'Data Protection'),
+            EnhancedCard(
+              child: Column(
+                children: [
+                  ListTile(
+                    leading: const Icon(Icons.lock),
+                    title: const Text('Local Data Encryption'),
+                    subtitle: const Text('Your data is encrypted on this device'),
+                    trailing: Icon(
+                      Icons.check_circle,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                  
+                  const Divider(),
+                  
+                  ListTile(
+                    leading: const Icon(Icons.cloud_off),
+                    title: const Text('Offline-First'),
+                    subtitle: const Text('Your data stays on your device by default'),
+                    trailing: Icon(
+                      Icons.check_circle,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                  
+                  const Divider(),
+                  
+                  ListTile(
+                    leading: const Icon(Icons.delete_forever),
+                    title: const Text('Secure Data Deletion'),
+                    subtitle: const Text('Deleted data is securely wiped'),
+                    trailing: Icon(
+                      Icons.check_circle,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            
+            const SizedBox(height: 24),
+            
+            // Privacy Section
+            _buildSectionHeader(context, 'Privacy'),
+            EnhancedCard(
+              child: Column(
+                children: [
+                  ListTile(
+                    leading: const Icon(Icons.analytics),
+                    title: const Text('Analytics'),
+                    subtitle: const Text('No analytics or tracking data is collected'),
+                    trailing: Icon(
+                      Icons.check_circle,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                  
+                  const Divider(),
+                  
+                  ListTile(
+                    leading: const Icon(Icons.location_off),
+                    title: const Text('Location Privacy'),
+                    subtitle: const Text('Location data is processed locally only'),
+                    trailing: Icon(
+                      Icons.check_circle,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                  
+                  const Divider(),
+                  
+                  ListTile(
+                    leading: const Icon(Icons.mic_off),
+                    title: const Text('Voice Privacy'),
+                    subtitle: const Text('Voice data can be processed locally'),
+                    trailing: Icon(
+                      Icons.check_circle,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            
+            const SizedBox(height: 24),
+            
+            // Security Actions Section
+            _buildSectionHeader(context, 'Security Actions'),
+            EnhancedCard(
+              child: Column(
+                children: [
+                  ListTile(
+                    leading: Icon(
+                      Icons.security,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    title: const Text('Security Checkup'),
+                    subtitle: const Text('Review your security settings'),
+                    trailing: const Icon(Icons.arrow_forward_ios),
+                    onTap: () => _showSecurityCheckup(context, settings),
+                  ),
+                  
+                  const Divider(),
+                  
+                  ListTile(
+                    leading: Icon(
+                      Icons.help_outline,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    title: const Text('Security Tips'),
+                    subtitle: const Text('Learn how to keep your data safe'),
+                    trailing: const Icon(Icons.arrow_forward_ios),
+                    onTap: () => _showSecurityTips(context),
+                  ),
+                  
+                  if (settings.appLockEnabled) ...[
+                    const Divider(),
+                    
+                    ListTile(
+                      leading: Icon(
+                        Icons.lock_open,
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                      title: const Text('Disable App Lock'),
+                      subtitle: const Text('Remove PIN and biometric protection'),
+                      trailing: const Icon(Icons.arrow_forward_ios),
+                      onTap: () => _showDisableAppLockDialog(context, ref),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            
+            const SizedBox(height: 32),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildSectionHeader(BuildContext context, String title) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12.0),
+      child: Text(
+        title,
+        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+          fontWeight: FontWeight.w600,
+          color: Theme.of(context).colorScheme.primary,
+        ),
+      ),
+    );
+  }
+
+  void _toggleAppLock(
+    BuildContext context,
+    WidgetRef ref,
+    bool enabled,
+    SecuritySettings settings,
+  ) {
+    if (enabled) {
+      // Navigate to PIN setup
+      Navigator.of(context).pushNamed('/setup-pin');
+    } else {
+      _showDisableAppLockDialog(context, ref);
+    }
+  }
+
+  void _toggleBiometric(BuildContext context, WidgetRef ref, bool enabled) async {
+    if (enabled) {
+      // Test biometric authentication first
+      final securityService = ref.read(securityServiceProvider);
+      final success = await securityService.authenticateWithBiometrics(
+        reason: 'Authenticate to enable biometric unlock',
+      );
+      
+      if (success) {
+        await ref.read(securitySettingsProvider.notifier).setBiometricEnabled(true);
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Biometric authentication enabled')),
+          );
+        }
+      } else if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Biometric authentication failed')),
+        );
+      }
+    } else {
+      await ref.read(securitySettingsProvider.notifier).setBiometricEnabled(false);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Biometric authentication disabled')),
+        );
+      }
+    }
+  }
+
+  void _changePIN(BuildContext context) {
+    Navigator.of(context).pushNamed('/setup-pin', arguments: {'isChangingPin': true});
+  }
+
+  void _showLockTimeoutDialog(
+    BuildContext context,
+    WidgetRef ref,
+    SecuritySettings settings,
+  ) {
+    final timeouts = [
+      const Duration(minutes: 1),
+      const Duration(minutes: 5),
+      const Duration(minutes: 15),
+      const Duration(minutes: 30),
+      const Duration(hours: 1),
+      const Duration(hours: 4),
+    ];
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Auto-lock Timeout'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: timeouts.map((timeout) {
+            return RadioListTile<Duration>(
+              title: Text(_formatDuration(timeout)),
+              value: timeout,
+              groupValue: settings.lockTimeout,
+              onChanged: (value) async {
+                if (value != null) {
+                  await ref.read(securitySettingsProvider.notifier)
+                      .setLockTimeout(value);
+                  if (context.mounted) {
+                    Navigator.of(context).pop();
+                  }
+                }
+              },
+            );
+          }).toList(),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showMaxAttemptsDialog(
+    BuildContext context,
+    WidgetRef ref,
+    SecuritySettings settings,
+  ) {
+    final attempts = [3, 5, 10, 15];
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Maximum Attempts'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: attempts.map((attempt) {
+            return RadioListTile<int>(
+              title: Text('$attempt attempts'),
+              value: attempt,
+              groupValue: settings.maxAttempts,
+              onChanged: (value) async {
+                if (value != null) {
+                  await ref.read(securitySettingsProvider.notifier)
+                      .setMaxAttempts(value);
+                  if (context.mounted) {
+                    Navigator.of(context).pop();
+                  }
+                }
+              },
+            );
+          }).toList(),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDisableAppLockDialog(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Disable App Lock'),
+        content: const Text(
+          'This will remove PIN and biometric protection from your app. Your tasks will no longer be secured. Are you sure?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              await ref.read(securitySettingsProvider.notifier).disableAppLock();
+              if (context.mounted) {
+                Navigator.of(context).pop();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('App lock disabled')),
+                );
+              }
+            },
+            style: TextButton.styleFrom(
+              foregroundColor: Theme.of(context).colorScheme.error,
+            ),
+            child: const Text('Disable'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showSecurityCheckup(BuildContext context, SecuritySettings settings) {
+    final recommendations = <String>[];
+    
+    if (!settings.appLockEnabled) {
+      recommendations.add('Enable app lock to protect your tasks');
+    }
+    
+    if (settings.appLockEnabled && settings.biometricAvailable && !settings.biometricEnabled) {
+      recommendations.add('Enable biometric authentication for faster access');
+    }
+    
+    if (settings.lockTimeout.inMinutes > 30) {
+      recommendations.add('Consider a shorter auto-lock timeout for better security');
+    }
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Security Checkup'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (recommendations.isEmpty) ...[
+                Row(
+                  children: [
+                    Icon(
+                      Icons.check_circle,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    const SizedBox(width: 8),
+                    const Expanded(
+                      child: Text('Your security settings look good!'),
+                    ),
+                  ],
+                ),
+              ] else ...[
+                const Text('Recommendations:'),
+                const SizedBox(height: 8),
+                ...recommendations.map((rec) => Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(
+                        Icons.info_outline,
+                        size: 16,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(child: Text(rec)),
+                    ],
+                  ),
+                )),
+              ],
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showSecurityTips(BuildContext context) {
+    final tips = [
+      'Use a unique PIN that others cannot easily guess',
+      'Enable biometric authentication for convenience and security',
+      'Keep your app updated to get the latest security features',
+      'Be cautious when using the app in public spaces',
+      'Regularly review your security settings',
+      'Use cloud sync only if you trust the service provider',
+    ];
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Security Tips'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: tips.map((tip) => Padding(
+              padding: const EdgeInsets.only(bottom: 12.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.lightbulb_outline,
+                    size: 16,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(child: Text(tip)),
+                ],
+              ),
+            )).toList(),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Got it'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatDuration(Duration duration) {
+    if (duration.inHours > 0) {
+      return '${duration.inHours} hour${duration.inHours > 1 ? 's' : ''}';
+    } else {
+      return '${duration.inMinutes} minute${duration.inMinutes > 1 ? 's' : ''}';
+    }
+  }
+
+  IconData _getBiometricIcon(List<BiometricType> types) {
+    if (types.contains(BiometricType.face)) {
+      return Icons.face;
+    } else if (types.contains(BiometricType.fingerprint)) {
+      return Icons.fingerprint;
+    } else {
+      return Icons.security;
+    }
+  }
+
+  String _getBiometricName(List<BiometricType> types) {
+    if (types.contains(BiometricType.face)) {
+      return 'Face ID';
+    } else if (types.contains(BiometricType.fingerprint)) {
+      return 'Fingerprint';
+    } else {
+      return 'Biometric';
+    }
+  }
+}

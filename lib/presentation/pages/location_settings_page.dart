@@ -5,9 +5,7 @@ import '../widgets/location_widgets.dart';
 import '../../services/location/location_models.dart';
 
 class LocationSettingsPage extends ConsumerWidget {
-  const LocationSettingsPage({super.key});
-
-  @override
+  const LocationSettingsPage({super.key});  @override
   Widget build(BuildContext context, WidgetRef ref) {
     final locationSettings = ref.watch(locationSettingsProvider);
     final locationPermission = ref.watch(locationPermissionProvider);

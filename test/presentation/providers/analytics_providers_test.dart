@@ -18,8 +18,8 @@ void main() {
     late ProviderContainer container;
 
     setUp(() {
-      mockAnalyticsService = MockAnalyticsService();
-      mockDatabase = MockAppDatabase();
+      mockAnalyticsService = const MockAnalyticsService();
+      mockDatabase = const MockAppDatabase();
       
       container = ProviderContainer(
         overrides: [

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/task_model.dart';
-import '../../domain/entities/task_enums.dart';
+import '../../domain/models/enums.dart';
 import '../providers/task_providers.dart';
 import '../widgets/app_scaffold.dart';
 import '../widgets/task_form_dialog.dart';
@@ -17,7 +17,6 @@ class TaskDetailPage extends ConsumerWidget {
     super.key,
     required this.taskId,
   });
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return FutureBuilder<TaskModel?>(
@@ -109,7 +108,6 @@ class _TaskDetailView extends ConsumerWidget {
   final TaskModel task;
 
   const _TaskDetailView({required this.task});
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return AppScaffold(
@@ -270,7 +268,6 @@ class _TaskHeader extends ConsumerWidget {
   final TaskModel task;
 
   const _TaskHeader({required this.task});
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Card(
@@ -352,7 +349,6 @@ class _TaskStatusActions extends ConsumerWidget {
   final TaskModel task;
 
   const _TaskStatusActions({required this.task});
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final taskOperations = ref.read(taskOperationsProvider);
@@ -413,7 +409,6 @@ class _TaskDetails extends StatelessWidget {
   final TaskModel task;
 
   const _TaskDetails({required this.task});
-
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -501,7 +496,6 @@ class _TaskMetadata extends StatelessWidget {
   final TaskModel task;
 
   const _TaskMetadata({required this.task});
-
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -561,7 +555,6 @@ class _DetailRow extends StatelessWidget {
     this.child,
     this.valueColor,
   });
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -597,7 +590,6 @@ class _StatusChip extends StatelessWidget {
   final TaskStatus status;
 
   const _StatusChip({required this.status});
-
   @override
   Widget build(BuildContext context) {
     return Chip(
@@ -614,7 +606,6 @@ class _PriorityChip extends StatelessWidget {
   final TaskPriority priority;
 
   const _PriorityChip({required this.priority});
-
   @override
   Widget build(BuildContext context) {
     return Chip(

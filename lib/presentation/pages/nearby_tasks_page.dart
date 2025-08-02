@@ -6,17 +6,13 @@ import '../providers/location_providers.dart';
 import '../../services/location/location_task_service.dart';
 
 class NearbyTasksPage extends ConsumerStatefulWidget {
-  const NearbyTasksPage({super.key});
-
-  @override
+  const NearbyTasksPage({super.key});  @override
   ConsumerState<NearbyTasksPage> createState() => _NearbyTasksPageState();
 }
 
 class _NearbyTasksPageState extends ConsumerState<NearbyTasksPage> {
   double _radiusInMeters = 1000;
-  bool _showOnlyActiveTriggers = false;
-
-  @override
+  bool _showOnlyActiveTriggers = false;  @override
   Widget build(BuildContext context) {
     final locationSettings = ref.watch(locationSettingsProvider);
 

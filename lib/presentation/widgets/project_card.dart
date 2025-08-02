@@ -23,9 +23,7 @@ class ProjectCard extends ConsumerWidget {
     this.onEdit,
     this.onDelete,
     this.showActions = true,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final projectStatsAsync = ref.watch(projectStatsProvider(project.id));

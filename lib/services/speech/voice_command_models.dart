@@ -317,9 +317,7 @@ class VoiceCommand extends Equatable {
       case VoiceCommandType.unknown:
         return false;
     }
-  }
-
-  @override
+  }  @override
   List<Object?> get props => [
         type,
         confidence,
@@ -336,9 +334,7 @@ class VoiceCommand extends Equatable {
         subtaskTitle,
         searchQuery,
         errorMessage,
-      ];
-
-  @override
+      ];  @override
   String toString() {
     return 'VoiceCommand(type: $type, confidence: $confidence, '
            'originalText: "$originalText", taskTitle: $taskTitle, '
@@ -394,9 +390,7 @@ class VoiceCommandResult extends Equatable {
       errorCode: errorCode,
       timestamp: DateTime.now(),
     );
-  }
-
-  @override
+  }  @override
   List<Object?> get props => [
         success,
         message,
@@ -404,9 +398,7 @@ class VoiceCommandResult extends Equatable {
         data,
         errorCode,
         timestamp,
-      ];
-
-  @override
+      ];  @override
   String toString() {
     return 'VoiceCommandResult(success: $success, message: "$message", '
            'command: ${command.type})';

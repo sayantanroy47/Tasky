@@ -2,26 +2,16 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:geocoding/geocoding.dart';
 import 'package:task_tracker_app/services/location/location_service_impl.dart';
 import 'package:task_tracker_app/services/location/location_models.dart';
 
 // Generate mocks
 @GenerateMocks([])
-class MockPosition extends Mock implements Position {
-  @override
-  double get latitude => 37.7749;
-  
-  @override
-  double get longitude => -122.4194;
-  
-  @override
-  double get accuracy => 5.0;
-  
-  @override
-  double get altitude => 10.0;
-  
-  @override
+class MockPosition extends Mock implements Position {  @override
+  double get latitude => 37.7749;  @override
+  double get longitude => -122.4194;  @override
+  double get accuracy => 5.0;  @override
+  double get altitude => 10.0;  @override
   DateTime? get timestamp => DateTime(2024, 1, 1, 12, 0, 0);
 }
 
@@ -30,7 +20,7 @@ void main() {
     late LocationServiceImpl locationService;
 
     setUp(() {
-      locationService = LocationServiceImpl();
+      locationService = const LocationServiceImpl();
     });
 
     tearDown(() {

@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
 import '../../domain/entities/task_model.dart';
-import '../../domain/entities/task_enums.dart';
 import '../../domain/repositories/task_repository.dart';
 import 'analytics_models.dart';
 
@@ -80,7 +79,6 @@ class AnalyticsServiceImpl implements AnalyticsService {
   final TaskRepository _taskRepository;
 
   const AnalyticsServiceImpl(this._taskRepository);
-
   @override
   Future<AnalyticsSummary> getAnalyticsSummary(
     AnalyticsTimePeriod period, {
@@ -154,7 +152,6 @@ class AnalyticsServiceImpl implements AnalyticsService {
       dailyStats: dailyStats,
     );
   }
-
   @override
   Future<ProductivityMetrics> getProductivityMetrics() async {
     final now = DateTime.now();
@@ -217,7 +214,6 @@ class AnalyticsServiceImpl implements AnalyticsService {
       averageCompletionTime: averageCompletionTime,
     );
   }
-
   @override
   Future<StreakInfo> getStreakInfo() async {
     final allTasks = await _taskRepository.getAllTasks();
@@ -326,7 +322,6 @@ class AnalyticsServiceImpl implements AnalyticsService {
       completionDates: completionDates,
     );
   }
-
   @override
   Future<List<CategoryAnalytics>> getCategoryAnalytics(
     AnalyticsTimePeriod period, {
@@ -392,7 +387,6 @@ class AnalyticsServiceImpl implements AnalyticsService {
 
     return categoryAnalytics;
   }
-
   @override
   Future<List<DailyStats>> getDailyStats(DateRange dateRange) async {
     final tasks = await _getTasksInDateRange(dateRange);
@@ -409,8 +403,8 @@ class AnalyticsServiceImpl implements AnalyticsService {
         createdTasks: 0,
         completionRate: 0.0,
         totalDuration: 0.0,
-        tasksByPriority: {},
-        tasksByTag: {},
+        tasksByPriority: const {},
+        tasksByTag: const {},
       );
       currentDate = currentDate.add(const Duration(days: 1));
     }
@@ -436,11 +430,7 @@ class AnalyticsServiceImpl implements AnalyticsService {
             ..[task.priority.displayName] = 
                 (existing.tasksByPriority[task.priority.displayName] ?? 0) + 1,
           tasksByTag: Map.from(existing.tasksByTag)
-            ..addAll(Map.fromIterable(
-              task.tags,
-              key: (tag) => tag,
-              value: (tag) => (existing.tasksByTag[tag] ?? 0) + 1,
-            )),
+            ..addAll({for (final tag in task.tags) tag: (existing.tasksByTag[tag] ?? 0) + 1}),
         );
       }
 
@@ -489,7 +479,6 @@ class AnalyticsServiceImpl implements AnalyticsService {
 
     return dailyStatsMap.values.toList()..sort((a, b) => a.date.compareTo(b.date));
   }
-
   @override
   Future<Map<int, int>> getHourlyProductivity(DateRange dateRange) async {
     final tasks = await _getTasksInDateRange(dateRange);
@@ -510,7 +499,6 @@ class AnalyticsServiceImpl implements AnalyticsService {
 
     return hourlyProductivity;
   }
-
   @override
   Future<Map<int, int>> getWeekdayProductivity(DateRange dateRange) async {
     final tasks = await _getTasksInDateRange(dateRange);
@@ -531,7 +519,6 @@ class AnalyticsServiceImpl implements AnalyticsService {
 
     return weekdayProductivity;
   }
-
   @override
   Future<List<double>> getCompletionRateTrend(
     DateRange dateRange,
@@ -557,26 +544,21 @@ class AnalyticsServiceImpl implements AnalyticsService {
 
     return trends;
   }
-
   @override
   Future<void> updateStreakOnTaskCompletion(DateTime completionDate) async {
     // This method would typically update a separate streak tracking table
     // For now, we'll rely on recalculating from task data
     // In a production app, you might want to maintain streak data separately for performance
   }
-
   @override
   Future<void> recalculateAnalytics() async {
     // This method would recalculate all cached analytics data
     // For now, since we calculate on-demand, this is a no-op
     // In a production app, you might cache analytics data for performance
   }
-
   @override
   Future<ProductivityPatterns> getProductivityPatterns(DateRange dateRange) async {
     final tasks = await _getTasksInDateRange(dateRange);
-    final completedTasks = tasks.where((t) => t.status.isCompleted && t.completedAt != null).toList();
-
     // Calculate hourly efficiency
     final hourlyEfficiency = <int, double>{};
     final hourlyTaskCounts = <int, int>{};
@@ -702,18 +684,16 @@ class AnalyticsServiceImpl implements AnalyticsService {
       trends: trends,
     );
   }
-
   @override
   Future<PeakHoursAnalysis> getPeakHoursAnalysis(DateRange dateRange) async {
     final tasks = await _getTasksInDateRange(dateRange);
-    final completedTasks = tasks.where((t) => t.status.isCompleted && t.completedAt != null).toList();
-
     // Calculate hourly productivity scores
     final hourlyScores = <int, double>{};
     final hourlyTaskTypes = <int, TaskTypeDistribution>{};
     
     for (int hour = 0; hour < 24; hour++) {
       final hourTasks = tasks.where((t) => t.createdAt.hour == hour).toList();
+      final completedTasks = tasks.where((t) => t.status.isCompleted && t.completedAt != null).toList();
       final hourCompleted = completedTasks.where((t) => t.completedAt!.hour == hour).toList();
       
       final completionRate = hourTasks.isNotEmpty ? hourCompleted.length / hourTasks.length : 0.0;
@@ -783,7 +763,6 @@ class AnalyticsServiceImpl implements AnalyticsService {
       recommendedWorkingWindow: recommendedWorkingWindow,
     );
   }
-
   @override
   Future<AdvancedCategoryAnalytics> getAdvancedCategoryAnalytics(
     AnalyticsTimePeriod period, {
@@ -830,7 +809,6 @@ class AnalyticsServiceImpl implements AnalyticsService {
       categoryWeekdayDistribution: categoryWeekdayDistribution,
     );
   }
-
   @override
   Future<String> exportAnalytics(
     AnalyticsExportFormat format,
@@ -853,7 +831,6 @@ class AnalyticsServiceImpl implements AnalyticsService {
         return _exportToExcel(summary, metrics, patterns);
     }
   }
-
   @override
   Future<ProductivityInsights> getProductivityInsights(DateRange dateRange) async {
     final patterns = await getProductivityPatterns(dateRange);
@@ -1008,7 +985,6 @@ class AnalyticsServiceImpl implements AnalyticsService {
     final weeklyCompletionRates = <double>[];
     for (final range in weekRanges) {
       final tasks = await _getTasksInDateRange(range);
-      final completedTasks = tasks.where((t) => t.status.isCompleted).length;
       final rate = tasks.isNotEmpty ? completedTasks / tasks.length : 0.0;
       weeklyCompletionRates.add(rate);
     }
@@ -1128,7 +1104,6 @@ class AnalyticsServiceImpl implements AnalyticsService {
       
       final tasks = await _getTasksInDateRange(intervalRange);
       final categoryTasks = tasks.where((t) => t.tags.contains(categoryId) || (categoryId == 'Uncategorized' && t.tags.isEmpty)).toList();
-      final completedTasks = categoryTasks.where((t) => t.status.isCompleted).length;
       final rate = categoryTasks.isNotEmpty ? completedTasks / categoryTasks.length : 0.0;
       
       completionRates.add(rate);
@@ -1315,7 +1290,7 @@ class AnalyticsServiceImpl implements AnalyticsService {
   }
 
   String _exportToCsv(AnalyticsSummary summary, ProductivityMetrics metrics, ProductivityPatterns patterns) {
-    final buffer = StringBuffer();
+    const buffer = StringBuffer();
     
     // Header
     buffer.writeln('Metric,Value,Period');
@@ -1358,8 +1333,9 @@ class AnalyticsServiceImpl implements AnalyticsService {
     final overall = (completion * 0.4) + (consistency * 0.2) + (efficiency * 0.2) + (timeManagement * 0.2);
     
     String grade;
-    if (overall >= 90) grade = 'A+';
-    else if (overall >= 85) grade = 'A';
+    if (overall >= 90) {
+      grade = 'A+';
+    } else if (overall >= 85) grade = 'A';
     else if (overall >= 80) grade = 'A-';
     else if (overall >= 75) grade = 'B+';
     else if (overall >= 70) grade = 'B';
@@ -1391,7 +1367,7 @@ class AnalyticsServiceImpl implements AnalyticsService {
         : 0.0;
     
     if (avgCompletionRate < 0.8) {
-      goals.add(ProductivityGoal(
+      goals.add(const ProductivityGoal(
         title: 'Improve Task Completion Rate',
         description: 'Increase your overall task completion rate to 80%',
         category: 'completion',
@@ -1407,7 +1383,7 @@ class AnalyticsServiceImpl implements AnalyticsService {
     
     // Consistency goal
     if (patterns.consistencyScore < 0.7) {
-      goals.add(ProductivityGoal(
+      goals.add(const ProductivityGoal(
         title: 'Improve Productivity Consistency',
         description: 'Maintain more consistent productivity throughout the day',
         category: 'consistency',
@@ -1423,7 +1399,7 @@ class AnalyticsServiceImpl implements AnalyticsService {
     
     // Peak hours utilization goal
     if (peakAnalysis.peakProductivityScore < 0.6) {
-      goals.add(ProductivityGoal(
+      goals.add(const ProductivityGoal(
         title: 'Optimize Peak Hours Usage',
         description: 'Better utilize your most productive hours',
         category: 'scheduling',

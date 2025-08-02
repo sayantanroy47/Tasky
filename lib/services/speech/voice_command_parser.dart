@@ -587,7 +587,7 @@ class VoiceCommandParser {
     }
     
     // Check if we extracted additional structured information
-    bool hasAdditionalInfo = _extractPriority(originalText) != null ||
+    final bool hasAdditionalInfo = _extractPriority(originalText) != null ||
                             _extractDueDate(originalText) != null ||
                             _extractTags(originalText).isNotEmpty;
     

@@ -6,9 +6,7 @@ import '../../services/notification/notification_models.dart' as models;
 
 /// Page for configuring notification settings
 class NotificationSettingsPage extends ConsumerWidget {
-  const NotificationSettingsPage({super.key});
-
-  @override
+  const NotificationSettingsPage({super.key});  @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settingsAsync = ref.watch(notificationSettingsProvider);
     final permissionsAsync = ref.watch(notificationPermissionsProvider);

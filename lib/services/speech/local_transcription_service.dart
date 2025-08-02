@@ -17,18 +17,10 @@ class LocalTranscriptionService implements TranscriptionService {
 
   LocalTranscriptionService({
     TranscriptionConfig? config,
-  }) : _config = config ?? const TranscriptionConfig();
-
-  @override
-  bool get isAvailable => _isAvailable;
-
-  @override
-  bool get isInitialized => _isInitialized;
-
-  @override
-  List<String> get supportedFormats => _supportedFormats;
-
-  @override
+  }) : _config = config ?? const TranscriptionConfig();  @override
+  bool get isAvailable => _isAvailable;  @override
+  bool get isInitialized => _isInitialized;  @override
+  List<String> get supportedFormats => _supportedFormats;  @override
   Future<bool> initialize() async {
     try {
       // Simulate initialization of local Whisper.cpp engine
@@ -52,9 +44,7 @@ class LocalTranscriptionService implements TranscriptionService {
         originalError: e,
       );
     }
-  }
-
-  @override
+  }  @override
   Future<TranscriptionResult> transcribeAudioFile(String audioFilePath) async {
     if (!_isInitialized || !_isAvailable) {
       throw const TranscriptionException(
@@ -82,9 +72,7 @@ class LocalTranscriptionService implements TranscriptionService {
 
     final audioData = await file.readAsBytes();
     return transcribeAudioData(audioData);
-  }
-
-  @override
+  }  @override
   Future<TranscriptionResult> transcribeAudioData(List<int> audioData) async {
     if (!_isInitialized || !_isAvailable) {
       throw const TranscriptionException(
@@ -124,9 +112,7 @@ class LocalTranscriptionService implements TranscriptionService {
         processingTime: stopwatch.elapsed,
       );
     }
-  }
-
-  @override
+  }  @override
   Future<void> dispose() async {
     _isInitialized = false;
     _isAvailable = false;
@@ -173,7 +159,7 @@ class LocalTranscriptionService implements TranscriptionService {
       'Create a reminder to pay the electricity bill',
     ];
     
-    final random = Random();
+    const random = Random();
     final selectedText = sampleTexts[random.nextInt(sampleTexts.length)];
     final confidence = 0.7 + (random.nextDouble() * 0.25); // 0.7 to 0.95
     

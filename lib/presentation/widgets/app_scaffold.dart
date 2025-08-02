@@ -21,7 +21,6 @@ class AppScaffold extends ConsumerWidget {
     this.showBottomNavigation = true,
     this.bottom,
   });
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedIndex = ref.watch(selectedIndexProvider);
@@ -38,14 +37,9 @@ class AppScaffold extends ConsumerWidget {
           ? NavigationBar(
               selectedIndex: selectedIndex,
               onDestinationSelected: (index) {
-                AppRouter.navigateToIndex(context, index, ref);
+                AppRouter.navigateToIndex(index);
               },
-              destinations: AppRouter.bottomNavigationDestinations
-                  .map((destination) => NavigationDestination(
-                        icon: Icon(destination.icon),
-                        label: destination.label,
-                      ))
-                  .toList(),
+              destinations: AppRouter.bottomNavigationDestinations,
             )
           : null,
     );

@@ -18,9 +18,9 @@ void main() {
     late MockRef mockRef;
 
     setUp(() {
-      mockLocationService = MockLocationService();
-      mockNotificationService = MockNotificationService();
-      mockRef = MockRef();
+      mockLocationService = const MockLocationService();
+      mockNotificationService = const MockNotificationService();
+      mockRef = const MockRef();
 
       geofencingManager = GeofencingManager(
         mockLocationService,
@@ -30,9 +30,9 @@ void main() {
 
       // Setup default mock behaviors
       when(mockLocationService.getGeofenceEventStream())
-          .thenAnswer((_) => Stream.empty());
+          .thenAnswer((_) => const Stream.empty());
       when(mockLocationService.getLocationStream())
-          .thenAnswer((_) => Stream.empty());
+          .thenAnswer((_) => const Stream.empty());
     });
 
     tearDown(() {

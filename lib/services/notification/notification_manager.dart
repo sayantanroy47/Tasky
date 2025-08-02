@@ -53,8 +53,6 @@ class NotificationManager {
 
     // Cancel existing notifications for this task
     await _notificationService.cancelTaskNotifications(task.id);
-
-    final settings = await _notificationService.getSettings();
     if (!settings.enabled) return;
 
     // Schedule default reminder
@@ -95,7 +93,6 @@ class NotificationManager {
 
   /// Schedule daily summary notification
   Future<void> scheduleDailySummary() async {
-    final settings = await _notificationService.getSettings();
     if (!settings.enabled || !settings.dailySummary) return;
 
     final now = DateTime.now();
@@ -177,7 +174,6 @@ class NotificationManager {
 
   /// Schedule enhanced daily summary with detailed task breakdown
   Future<void> scheduleEnhancedDailySummary() async {
-    final settings = await _notificationService.getSettings();
     if (!settings.enabled || !settings.dailySummary) return;
 
     final now = DateTime.now();
@@ -279,9 +275,6 @@ class NotificationManager {
     // Cancel existing timers
     _dailySummaryTimer?.cancel();
     _overdueCheckTimer?.cancel();
-
-    final settings = await _notificationService.getSettings();
-    
     // Setup daily summary timer
     if (settings.enabled && settings.dailySummary) {
       _dailySummaryTimer = Timer.periodic(const Duration(days: 1), (timer) {
@@ -395,10 +388,8 @@ class NotificationManager {
     required List<TaskModel> overdueTasks,
     required List<TaskModel> upcomingTasks,
   }) async {
-    final notificationId = DateTime.now().millisecondsSinceEpoch.remainder(100000);
-    
-    String title = 'Daily Task Summary';
-    String body = _buildDailySummaryBody(todayTasks, overdueTasks, upcomingTasks);
+    const String title = 'Daily Task Summary';
+    final String body = _buildDailySummaryBody(todayTasks, overdueTasks, upcomingTasks);
     
     final payload = {
       'type': NotificationType.dailySummary.name,
@@ -420,7 +411,7 @@ class NotificationManager {
     List<TaskModel> overdueTasks,
     List<TaskModel> upcomingTasks,
   ) {
-    final buffer = StringBuffer();
+    const buffer = StringBuffer();
     
     if (overdueTasks.isNotEmpty) {
       buffer.write('⚠️ ${overdueTasks.length} overdue task${overdueTasks.length == 1 ? '' : 's'}');

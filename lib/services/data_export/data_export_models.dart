@@ -197,9 +197,7 @@ class DataExportException implements Exception {
     this.message, {
     this.code,
     this.originalError,
-  });
-
-  @override
+  });  @override
   String toString() => 'DataExportException: $message';
 }
 
@@ -212,9 +210,7 @@ class DataImportException implements Exception {
     this.message, {
     this.code,
     this.originalError,
-  });
-
-  @override
+  });  @override
   String toString() => 'DataImportException: $message';
 }
 

@@ -17,9 +17,7 @@ class HighlightedText extends StatelessWidget {
     this.highlightColor,
     this.maxLines = 1,
     this.overflow = TextOverflow.ellipsis,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context) {
     if (searchQuery == null || searchQuery!.isEmpty) {
       return Text(

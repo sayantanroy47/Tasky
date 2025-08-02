@@ -45,9 +45,7 @@ class AnalyticsSummary extends Equatable {
   factory AnalyticsSummary.fromJson(Map<String, dynamic> json) =>
       _$AnalyticsSummaryFromJson(json);
 
-  Map<String, dynamic> toJson() => _$AnalyticsSummaryToJson(this);
-
-  @override
+  Map<String, dynamic> toJson() => _$AnalyticsSummaryToJson(this);  @override
   List<Object?> get props => [
         startDate,
         endDate,
@@ -93,9 +91,7 @@ class DailyStats extends Equatable {
   factory DailyStats.fromJson(Map<String, dynamic> json) =>
       _$DailyStatsFromJson(json);
 
-  Map<String, dynamic> toJson() => _$DailyStatsToJson(this);
-
-  @override
+  Map<String, dynamic> toJson() => _$DailyStatsToJson(this);  @override
   List<Object?> get props => [
         date,
         totalTasks,
@@ -142,9 +138,7 @@ class ProductivityMetrics extends Equatable {
   factory ProductivityMetrics.fromJson(Map<String, dynamic> json) =>
       _$ProductivityMetricsFromJson(json);
 
-  Map<String, dynamic> toJson() => _$ProductivityMetricsToJson(this);
-
-  @override
+  Map<String, dynamic> toJson() => _$ProductivityMetricsToJson(this);  @override
   List<Object?> get props => [
         weeklyCompletionRate,
         monthlyCompletionRate,
@@ -199,9 +193,7 @@ class StreakInfo extends Equatable {
     );
     return lastCompletion.isAtSameMomentAs(today) ||
         lastCompletion.isAtSameMomentAs(yesterday);
-  }
-
-  @override
+  }  @override
   List<Object?> get props => [
         currentStreak,
         longestStreak,
@@ -239,9 +231,7 @@ class CategoryAnalytics extends Equatable {
   factory CategoryAnalytics.fromJson(Map<String, dynamic> json) =>
       _$CategoryAnalyticsFromJson(json);
 
-  Map<String, dynamic> toJson() => _$CategoryAnalyticsToJson(this);
-
-  @override
+  Map<String, dynamic> toJson() => _$CategoryAnalyticsToJson(this);  @override
   List<Object?> get props => [
         categoryName,
         categoryId,
@@ -354,9 +344,7 @@ class DateRange extends Equatable {
 
   bool contains(DateTime date) {
     return date.isAfter(start) && date.isBefore(end);
-  }
-
-  @override
+  }  @override
   List<Object?> get props => [start, end];
 }
 
@@ -384,9 +372,7 @@ class ProductivityPatterns extends Equatable {
   factory ProductivityPatterns.fromJson(Map<String, dynamic> json) =>
       _$ProductivityPatternsFromJson(json);
 
-  Map<String, dynamic> toJson() => _$ProductivityPatternsToJson(this);
-
-  @override
+  Map<String, dynamic> toJson() => _$ProductivityPatternsToJson(this);  @override
   List<Object?> get props => [
         hourlyEfficiency,
         weekdayEfficiency,
@@ -424,9 +410,7 @@ class PeakHoursAnalysis extends Equatable {
   factory PeakHoursAnalysis.fromJson(Map<String, dynamic> json) =>
       _$PeakHoursAnalysisFromJson(json);
 
-  Map<String, dynamic> toJson() => _$PeakHoursAnalysisToJson(this);
-
-  @override
+  Map<String, dynamic> toJson() => _$PeakHoursAnalysisToJson(this);  @override
   List<Object?> get props => [
         peakHours,
         lowHours,
@@ -463,9 +447,7 @@ class AdvancedCategoryAnalytics extends Equatable {
   factory AdvancedCategoryAnalytics.fromJson(Map<String, dynamic> json) =>
       _$AdvancedCategoryAnalyticsFromJson(json);
 
-  Map<String, dynamic> toJson() => _$AdvancedCategoryAnalyticsToJson(this);
-
-  @override
+  Map<String, dynamic> toJson() => _$AdvancedCategoryAnalyticsToJson(this);  @override
   List<Object?> get props => [
         categories,
         categoryTrends,
@@ -499,9 +481,7 @@ class ProductivityInsights extends Equatable {
   factory ProductivityInsights.fromJson(Map<String, dynamic> json) =>
       _$ProductivityInsightsFromJson(json);
 
-  Map<String, dynamic> toJson() => _$ProductivityInsightsToJson(this);
-
-  @override
+  Map<String, dynamic> toJson() => _$ProductivityInsightsToJson(this);  @override
   List<Object?> get props => [
         insights,
         suggestions,
@@ -531,9 +511,7 @@ class ProductivityPeak extends Equatable {
   factory ProductivityPeak.fromJson(Map<String, dynamic> json) =>
       _$ProductivityPeakFromJson(json);
 
-  Map<String, dynamic> toJson() => _$ProductivityPeakToJson(this);
-
-  @override
+  Map<String, dynamic> toJson() => _$ProductivityPeakToJson(this);  @override
   List<Object?> get props => [hour, efficiency, taskCount, description];
 }
 
@@ -554,9 +532,7 @@ class ProductivityTrough extends Equatable {
   factory ProductivityTrough.fromJson(Map<String, dynamic> json) =>
       _$ProductivityTroughFromJson(json);
 
-  Map<String, dynamic> toJson() => _$ProductivityTroughToJson(this);
-
-  @override
+  Map<String, dynamic> toJson() => _$ProductivityTroughToJson(this);  @override
   List<Object?> get props => [hour, efficiency, taskCount, description];
 }
 
@@ -577,9 +553,7 @@ class ProductivityTrend extends Equatable {
   factory ProductivityTrend.fromJson(Map<String, dynamic> json) =>
       _$ProductivityTrendFromJson(json);
 
-  Map<String, dynamic> toJson() => _$ProductivityTrendToJson(this);
-
-  @override
+  Map<String, dynamic> toJson() => _$ProductivityTrendToJson(this);  @override
   List<Object?> get props => [type, category, changeRate, description];
 }
 
@@ -604,9 +578,7 @@ class OptimizationSuggestion extends Equatable {
   factory OptimizationSuggestion.fromJson(Map<String, dynamic> json) =>
       _$OptimizationSuggestionFromJson(json);
 
-  Map<String, dynamic> toJson() => _$OptimizationSuggestionToJson(this);
-
-  @override
+  Map<String, dynamic> toJson() => _$OptimizationSuggestionToJson(this);  @override
   List<Object?> get props => [
         title,
         description,
@@ -634,9 +606,7 @@ class TaskTypeDistribution extends Equatable {
   factory TaskTypeDistribution.fromJson(Map<String, dynamic> json) =>
       _$TaskTypeDistributionFromJson(json);
 
-  Map<String, dynamic> toJson() => _$TaskTypeDistributionToJson(this);
-
-  @override
+  Map<String, dynamic> toJson() => _$TaskTypeDistributionToJson(this);  @override
   List<Object?> get props => [
         priorityDistribution,
         categoryDistribution,
@@ -660,9 +630,7 @@ class TimeRange extends Equatable {
   factory TimeRange.fromJson(Map<String, dynamic> json) =>
       _$TimeRangeFromJson(json);
 
-  Map<String, dynamic> toJson() => _$TimeRangeToJson(this);
-
-  @override
+  Map<String, dynamic> toJson() => _$TimeRangeToJson(this);  @override
   List<Object?> get props => [startHour, endHour, description];
 }
 
@@ -683,9 +651,7 @@ class CategoryTrend extends Equatable {
   factory CategoryTrend.fromJson(Map<String, dynamic> json) =>
       _$CategoryTrendFromJson(json);
 
-  Map<String, dynamic> toJson() => _$CategoryTrendToJson(this);
-
-  @override
+  Map<String, dynamic> toJson() => _$CategoryTrendToJson(this);  @override
   List<Object?> get props => [categoryId, completionRates, trendDirection, changeRate];
 }
 
@@ -706,9 +672,7 @@ class CategoryCorrelation extends Equatable {
   factory CategoryCorrelation.fromJson(Map<String, dynamic> json) =>
       _$CategoryCorrelationFromJson(json);
 
-  Map<String, dynamic> toJson() => _$CategoryCorrelationToJson(this);
-
-  @override
+  Map<String, dynamic> toJson() => _$CategoryCorrelationToJson(this);  @override
   List<Object?> get props => [categoryA, categoryB, correlationScore, description];
 }
 
@@ -727,9 +691,7 @@ class CategoryPerformanceRanking extends Equatable {
   factory CategoryPerformanceRanking.fromJson(Map<String, dynamic> json) =>
       _$CategoryPerformanceRankingFromJson(json);
 
-  Map<String, dynamic> toJson() => _$CategoryPerformanceRankingToJson(this);
-
-  @override
+  Map<String, dynamic> toJson() => _$CategoryPerformanceRankingToJson(this);  @override
   List<Object?> get props => [
         topPerformingCategories,
         underperformingCategories,
@@ -756,9 +718,7 @@ class CategoryInsight extends Equatable {
   factory CategoryInsight.fromJson(Map<String, dynamic> json) =>
       _$CategoryInsightFromJson(json);
 
-  Map<String, dynamic> toJson() => _$CategoryInsightToJson(this);
-
-  @override
+  Map<String, dynamic> toJson() => _$CategoryInsightToJson(this);  @override
   List<Object?> get props => [
         categoryId,
         insightType,
@@ -787,9 +747,7 @@ class ProductivityInsight extends Equatable {
   factory ProductivityInsight.fromJson(Map<String, dynamic> json) =>
       _$ProductivityInsightFromJson(json);
 
-  Map<String, dynamic> toJson() => _$ProductivityInsightToJson(this);
-
-  @override
+  Map<String, dynamic> toJson() => _$ProductivityInsightToJson(this);  @override
   List<Object?> get props => [type, title, description, confidence, data];
 }
 
@@ -814,9 +772,7 @@ class ProductivityScore extends Equatable {
   factory ProductivityScore.fromJson(Map<String, dynamic> json) =>
       _$ProductivityScoreFromJson(json);
 
-  Map<String, dynamic> toJson() => _$ProductivityScoreToJson(this);
-
-  @override
+  Map<String, dynamic> toJson() => _$ProductivityScoreToJson(this);  @override
   List<Object?> get props => [
         overall,
         consistency,
@@ -848,9 +804,7 @@ class ProductivityGoal extends Equatable {
   factory ProductivityGoal.fromJson(Map<String, dynamic> json) =>
       _$ProductivityGoalFromJson(json);
 
-  Map<String, dynamic> toJson() => _$ProductivityGoalToJson(this);
-
-  @override
+  Map<String, dynamic> toJson() => _$ProductivityGoalToJson(this);  @override
   List<Object?> get props => [
         title,
         description,

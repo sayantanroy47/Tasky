@@ -4,7 +4,7 @@ import 'package:json_annotation/json_annotation.dart';
 part 'notification_models.g.dart';
 
 /// Types of notifications that can be sent
-enum NotificationType {
+enum NotificationTypeModel {
   @JsonValue('task_reminder')
   taskReminder,
   
@@ -22,15 +22,15 @@ enum NotificationType {
 
   String get displayName {
     switch (this) {
-      case NotificationType.taskReminder:
+      case NotificationTypeModel.taskReminder:
         return 'Task Reminder';
-      case NotificationType.dailySummary:
+      case NotificationTypeModel.dailySummary:
         return 'Daily Summary';
-      case NotificationType.overdueTask:
+      case NotificationTypeModel.overdueTask:
         return 'Overdue Task';
-      case NotificationType.taskCompleted:
+      case NotificationTypeModel.taskCompleted:
         return 'Task Completed';
-      case NotificationType.locationReminder:
+      case NotificationTypeModel.locationReminder:
         return 'Location Reminder';
     }
   }
@@ -152,7 +152,6 @@ class NotificationSettings extends Equatable {
       showBadges: showBadges ?? this.showBadges,
     );
   }
-
   @override
   List<Object?> get props => [
         enabled,
@@ -180,7 +179,7 @@ class ScheduledNotification extends Equatable {
   final String taskId;
   
   /// Type of notification
-  final NotificationType type;
+  final NotificationTypeModel type;
   
   /// When the notification should be sent
   final DateTime scheduledTime;
@@ -220,7 +219,7 @@ class ScheduledNotification extends Equatable {
   ScheduledNotification copyWith({
     int? id,
     String? taskId,
-    NotificationType? type,
+    NotificationTypeModel? type,
     DateTime? scheduledTime,
     String? title,
     String? body,
@@ -240,7 +239,6 @@ class ScheduledNotification extends Equatable {
       createdAt: createdAt ?? this.createdAt,
     );
   }
-
   @override
   List<Object?> get props => [
         id,
@@ -275,16 +273,13 @@ class NotificationTime {
       'minute': minute,
     };
   }
-
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     return other is NotificationTime && other.hour == hour && other.minute == minute;
   }
-
   @override
   int get hashCode => hour.hashCode ^ minute.hashCode;
-
   @override
   String toString() => 'NotificationTime(${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')})';
 }
@@ -302,7 +297,7 @@ class NotificationHistoryEntry extends Equatable {
   final String taskId;
   
   /// Type of notification
-  final NotificationType type;
+  final NotificationTypeModel type;
   
   /// Action taken on the notification
   final NotificationAction? action;
@@ -336,7 +331,7 @@ class NotificationHistoryEntry extends Equatable {
     String? id,
     int? notificationId,
     String? taskId,
-    NotificationType? type,
+    NotificationTypeModel? type,
     NotificationAction? action,
     DateTime? sentAt,
     DateTime? actionAt,
@@ -353,7 +348,6 @@ class NotificationHistoryEntry extends Equatable {
       metadata: metadata ?? this.metadata,
     );
   }
-
   @override
   List<Object?> get props => [
         id,
@@ -386,7 +380,7 @@ class NotificationStats extends Equatable {
   final int actedUponNotifications;
   
   /// Most common notification type
-  final NotificationType? mostCommonType;
+  final NotificationTypeModel? mostCommonType;
   
   /// Average response time to notifications (in minutes)
   final double? averageResponseTime;
@@ -412,7 +406,7 @@ class NotificationStats extends Equatable {
     int? pendingNotifications,
     int? sentNotifications,
     int? actedUponNotifications,
-    NotificationType? mostCommonType,
+    NotificationTypeModel? mostCommonType,
     double? averageResponseTime,
   }) {
     return NotificationStats(
@@ -425,7 +419,6 @@ class NotificationStats extends Equatable {
       averageResponseTime: averageResponseTime ?? this.averageResponseTime,
     );
   }
-
   @override
   List<Object?> get props => [
         totalScheduled,

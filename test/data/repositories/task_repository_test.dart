@@ -152,7 +152,7 @@ void main() {
           name: 'Test Project',
           color: '#FF0000',
           createdAt: DateTime.now(),
-          taskIds: [],
+          taskIds: const [],
         );
         await database.projectDao.createProject(project);
 
@@ -193,25 +193,25 @@ void main() {
         await repository.createTask(task2);
 
         // Filter by status
-        final filter1 = TaskFilter(status: TaskStatus.pending);
+        const filter1 = TaskFilter(status: TaskStatus.pending);
         final pendingTasks = await repository.getTasksWithFilter(filter1);
         expect(pendingTasks.length, 1);
         expect(pendingTasks.first.title, 'Important Task');
 
         // Filter by priority
-        final filter2 = TaskFilter(priority: TaskPriority.high);
+        const filter2 = TaskFilter(priority: TaskPriority.high);
         final highPriorityTasks = await repository.getTasksWithFilter(filter2);
         expect(highPriorityTasks.length, 1);
         expect(highPriorityTasks.first.title, 'Important Task');
 
         // Filter by pinned status
-        final filter3 = TaskFilter(isPinned: true);
+        const filter3 = TaskFilter(isPinned: true);
         final pinnedTasks = await repository.getTasksWithFilter(filter3);
         expect(pinnedTasks.length, 1);
         expect(pinnedTasks.first.title, 'Important Task');
 
         // Search filter
-        final filter4 = TaskFilter(searchQuery: 'Important');
+        const filter4 = TaskFilter(searchQuery: 'Important');
         final searchResults = await repository.getTasksWithFilter(filter4);
         expect(searchResults.length, 1);
         expect(searchResults.first.title, 'Important Task');
@@ -225,7 +225,7 @@ void main() {
         await repository.createTask(task2);
 
         // Sort by title ascending
-        final filter1 = TaskFilter(
+        const filter1 = TaskFilter(
           sortBy: TaskSortBy.title,
           sortAscending: true,
         );
@@ -234,7 +234,7 @@ void main() {
         expect(sortedByTitle.last.title, 'B Task');
 
         // Sort by priority descending
-        final filter2 = TaskFilter(
+        const filter2 = TaskFilter(
           sortBy: TaskSortBy.priority,
           sortAscending: false,
         );
@@ -293,7 +293,7 @@ void main() {
 
         final task = TaskModel.create(
           title: 'Tagged Task',
-          tags: ['tag-1', 'tag-2'],
+          tags: const ['tag-1', 'tag-2'],
         );
 
         await repository.createTask(task);
@@ -358,7 +358,7 @@ void main() {
           name: 'Test Project',
           color: '#FF0000',
           createdAt: DateTime.now(),
-          taskIds: [],
+          taskIds: const [],
         );
         await database.projectDao.createProject(project);
 

@@ -16,7 +16,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Create speech service instance
-      final speechService = SpeechServiceImpl();
+      const speechService = SpeechServiceImpl();
 
       // Test basic properties
       expect(speechService.isInitialized, false);
@@ -33,7 +33,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Create audio manager instance
-      final audioManager = AudioManager();
+      const audioManager = AudioManager();
 
       // Test file size formatting
       expect(audioManager.formatFileSize(1024), '1.0 KB');

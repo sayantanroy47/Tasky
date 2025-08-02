@@ -30,18 +30,14 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
   
   // Constructor for testing with custom executor
-  AppDatabase.forTesting(super.executor);
-
-  @override
+  AppDatabase.forTesting(super.executor);  @override
   int get schemaVersion => 2;
 
   // DAOs
   late final TaskDao taskDao = TaskDao(this);
   late final ProjectDao projectDao = ProjectDao(this);
   late final TagDao tagDao = TagDao(this);
-  late final TaskTemplateDao taskTemplateDao = TaskTemplateDao(this);
-
-  @override
+  late final TaskTemplateDao taskTemplateDao = TaskTemplateDao(this);  @override
   MigrationStrategy get migration {
     return MigrationStrategy(
       onCreate: (Migrator m) async {
@@ -61,8 +57,7 @@ class AppDatabase extends _$AppDatabase {
     );
   }
 
-  /// Closes the database connection
-  @override
+  /// Closes the database connection  @override
   Future<void> close() async {
     await super.close();
   }

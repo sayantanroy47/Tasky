@@ -81,7 +81,7 @@ class VoiceCommandCustomization {
     for (final command in _customCommands.values) {
       for (final pattern in command.patterns) {
         if (_calculateSimilarity(lowerTranscription, pattern.toLowerCase()) > 0.7) {
-          suggestions.add('Did you mean: "${pattern}"?');
+          suggestions.add('Did you mean: "$pattern"?');
         }
       }
     }

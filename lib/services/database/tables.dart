@@ -25,12 +25,8 @@ class Tasks extends Table {
   IntColumn get recurrenceInterval => integer().nullable()();
   TextColumn get recurrenceDaysOfWeek => text().nullable()(); // JSON array of integers
   DateTimeColumn get recurrenceEndDate => dateTime().nullable()();
-  IntColumn get recurrenceMaxOccurrences => integer().nullable()();
-
-  @override
-  Set<Column> get primaryKey => {id};
-
-  @override
+  IntColumn get recurrenceMaxOccurrences => integer().nullable()();  @override
+  Set<Column> get primaryKey => {id};  @override
   List<String> get customConstraints => [
     'FOREIGN KEY (project_id) REFERENCES projects (id) ON DELETE SET NULL',
   ];
@@ -46,12 +42,8 @@ class SubTasks extends Table {
   BoolColumn get isCompleted => boolean().withDefault(const Constant(false))();
   DateTimeColumn get completedAt => dateTime().nullable()();
   IntColumn get sortOrder => integer().withDefault(const Constant(0))();
-  DateTimeColumn get createdAt => dateTime()();
-
-  @override
-  Set<Column> get primaryKey => {id};
-
-  @override
+  DateTimeColumn get createdAt => dateTime()();  @override
+  Set<Column> get primaryKey => {id};  @override
   List<String> get customConstraints => [
     'FOREIGN KEY (task_id) REFERENCES tasks (id) ON DELETE CASCADE',
   ];
@@ -64,9 +56,7 @@ class Tags extends Table {
   TextColumn get id => text()();
   TextColumn get name => text().unique()();
   TextColumn get color => text().nullable()();
-  DateTimeColumn get createdAt => dateTime()();
-
-  @override
+  DateTimeColumn get createdAt => dateTime()();  @override
   Set<Column> get primaryKey => {id};
 }
 
@@ -75,12 +65,8 @@ class Tags extends Table {
 /// Junction table for many-to-many relationship between tasks and tags
 class TaskTags extends Table {
   TextColumn get taskId => text()();
-  TextColumn get tagId => text()();
-
-  @override
-  Set<Column> get primaryKey => {taskId, tagId};
-
-  @override
+  TextColumn get tagId => text()();  @override
+  Set<Column> get primaryKey => {taskId, tagId};  @override
   List<String> get customConstraints => [
     'FOREIGN KEY (task_id) REFERENCES tasks (id) ON DELETE CASCADE',
     'FOREIGN KEY (tag_id) REFERENCES tags (id) ON DELETE CASCADE',
@@ -98,9 +84,7 @@ class Projects extends Table {
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime().nullable()();
   BoolColumn get isArchived => boolean().withDefault(const Constant(false))();
-  DateTimeColumn get deadline => dateTime().nullable()();
-
-  @override
+  DateTimeColumn get deadline => dateTime().nullable()();  @override
   Set<Column> get primaryKey => {id};
 }
 
@@ -109,12 +93,8 @@ class Projects extends Table {
 /// Stores task dependency relationships (which tasks depend on which other tasks)
 class TaskDependencies extends Table {
   TextColumn get dependentTaskId => text()();
-  TextColumn get prerequisiteTaskId => text()();
-
-  @override
-  Set<Column> get primaryKey => {dependentTaskId, prerequisiteTaskId};
-
-  @override
+  TextColumn get prerequisiteTaskId => text()();  @override
+  Set<Column> get primaryKey => {dependentTaskId, prerequisiteTaskId};  @override
   List<String> get customConstraints => [
     'FOREIGN KEY (dependent_task_id) REFERENCES tasks (id) ON DELETE CASCADE',
     'FOREIGN KEY (prerequisite_task_id) REFERENCES tasks (id) ON DELETE CASCADE',
@@ -148,12 +128,8 @@ class TaskTemplates extends Table {
   IntColumn get recurrenceInterval => integer().nullable()();
   TextColumn get recurrenceDaysOfWeek => text().nullable()(); // JSON array of integers
   DateTimeColumn get recurrenceEndDate => dateTime().nullable()();
-  IntColumn get recurrenceMaxOccurrences => integer().nullable()();
-
-  @override
-  Set<Column> get primaryKey => {id};
-
-  @override
+  IntColumn get recurrenceMaxOccurrences => integer().nullable()();  @override
+  Set<Column> get primaryKey => {id};  @override
   List<String> get customConstraints => [
     'FOREIGN KEY (project_id) REFERENCES projects (id) ON DELETE SET NULL',
   ];

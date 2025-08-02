@@ -19,23 +19,18 @@ class DependencyManager extends ConsumerStatefulWidget {
     super.key,
     required this.taskId,
     this.onChanged,
-  });
-
-  @override
+  });  @override
   ConsumerState<DependencyManager> createState() => _DependencyManagerState();
 }
 
-class _DependencyManagerState extends ConsumerState<DependencyManager> {
-  @override
+class _DependencyManagerState extends ConsumerState<DependencyManager> {  @override
   void initState() {
     super.initState();
     // Load dependencies when widget is created
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(dependencyManagerProvider.notifier).selectTask(widget.taskId);
     });
-  }
-
-  @override
+  }  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final dependencyState = ref.watch(dependencyManagerProvider);
@@ -449,17 +444,13 @@ class AddDependencyDialog extends ConsumerStatefulWidget {
     required this.taskId,
     required this.isPrerequisite,
     this.onAdded,
-  });
-
-  @override
+  });  @override
   ConsumerState<AddDependencyDialog> createState() => _AddDependencyDialogState();
 }
 
 class _AddDependencyDialogState extends ConsumerState<AddDependencyDialog> {
   String _searchQuery = '';
-  TaskModel? _selectedTask;
-
-  @override
+  TaskModel? _selectedTask;  @override
   Widget build(BuildContext context) {
     final allTasksAsync = ref.watch(tasksProvider);
 

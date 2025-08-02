@@ -130,7 +130,7 @@ void main() {
     late ProviderContainer container;
 
     setUp(() {
-      mockSpeechService = MockSpeechService();
+      mockSpeechService = const MockSpeechService();
       container = ProviderContainer(
         overrides: [
           speechServiceProvider.overrideWithValue(mockSpeechService),
@@ -267,7 +267,7 @@ void main() {
     late ProviderContainer container;
 
     setUp(() {
-      container = ProviderContainer();
+      container = const ProviderContainer();
     });
 
     tearDown(() {

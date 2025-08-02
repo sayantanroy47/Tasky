@@ -67,9 +67,7 @@ class ParsedTaskData {
       confidence: confidence ?? this.confidence,
       metadata: metadata ?? this.metadata,
     );
-  }
-
-  @override
+  }  @override
   String toString() {
     return 'ParsedTaskData(title: $title, priority: $priority, '
            'dueDate: $dueDate, tags: ${suggestedTags.length}, '
@@ -83,8 +81,6 @@ class AIParsingException implements Exception {
   final String? code;
   final dynamic originalError;
   
-  const AIParsingException(this.message, {this.code, this.originalError});
-  
-  @override
+  const AIParsingException(this.message, {this.code, this.originalError});  @override
   String toString() => 'AIParsingException: $message';
 }

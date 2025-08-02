@@ -28,13 +28,13 @@ void main() {
         dueDate: testDate.add(const Duration(days: 1)),
         priority: TaskPriority.high,
         status: TaskStatus.pending,
-        tags: ['work', 'urgent'],
+        tags: const ['work', 'urgent'],
         subTasks: [testSubTask],
         locationTrigger: 'Office',
         recurrence: testRecurrence,
         projectId: 'project-1',
-        dependencies: ['task-0'],
-        metadata: {'key': 'value'},
+        dependencies: const ['task-0'],
+        metadata: const {'key': 'value'},
         isPinned: true,
         estimatedDuration: 60,
       );
@@ -93,12 +93,12 @@ void main() {
           description: 'Description',
           dueDate: testDate,
           priority: TaskPriority.urgent,
-          tags: ['tag1', 'tag2'],
+          tags: const ['tag1', 'tag2'],
           locationTrigger: 'Home',
           recurrence: testRecurrence,
           projectId: 'project-1',
-          dependencies: ['dep-1'],
-          metadata: {'meta': 'data'},
+          dependencies: const ['dep-1'],
+          metadata: const {'meta': 'data'},
           isPinned: true,
           estimatedDuration: 120,
         );
@@ -407,7 +407,7 @@ void main() {
       });
 
       test('should return false for invalid recurrence pattern', () {
-        final invalidRecurrence = RecurrencePattern(
+        const invalidRecurrence = RecurrencePattern(
           type: RecurrenceType.daily,
           interval: 0, // Invalid interval
         );
@@ -535,7 +535,7 @@ void main() {
           id: testTask.id,
           title: testTask.title,
           createdAt: testTask.createdAt,
-          recurrence: RecurrencePattern(type: RecurrenceType.none),
+          recurrence: const RecurrencePattern(type: RecurrenceType.none),
         );
         expect(noneRecurrenceTask.isRecurring, false);
       });

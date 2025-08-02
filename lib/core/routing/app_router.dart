@@ -1,151 +1,256 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/navigation_provider.dart';
-import '../../presentation/pages/home_page.dart';
-import '../../presentation/pages/tasks_page.dart';
-import '../../presentation/pages/task_detail_page.dart';
-import '../../presentation/pages/projects_page.dart';
-import '../../presentation/pages/project_detail_page.dart';
-import '../../presentation/pages/calendar_page.dart';
-import '../../presentation/pages/analytics_page.dart';
-import '../../presentation/pages/settings_page.dart';
-import '../../presentation/pages/not_found_page.dart';
-import '../../presentation/pages/voice_demo_page.dart';
-import '../../presentation/pages/location_settings_page.dart';
-import '../../presentation/pages/data_export_page.dart';
 
-/// App router configuration
+/// Application router
 class AppRouter {
-  // Private constructor to prevent instantiation
-  AppRouter._();
-
-  /// Route names
-  static const String home = '/home';
+  static const String initialRoute = '/';
+  static const String home = '/';
   static const String tasks = '/tasks';
-  static const String taskDetail = '/task-detail';
-  static const String projects = '/projects';
-  static const String projectDetail = '/project-detail';
-  static const String calendar = '/calendar';
-  static const String analytics = '/analytics';
   static const String settings = '/settings';
-  static const String voiceDemo = '/voice-demo';
-  static const String locationSettings = '/location-settings';
-  static const String dataExport = '/data-export';
+  static const String performance = '/performance';
 
-  /// Initial route
-  static const String initialRoute = home;
+  /// Current navigation index
+  int _currentIndex = 0;
 
-  /// Generate routes
-  static Route<dynamic> generateRoute(RouteSettings settings) {
-    switch (settings.name) {
-      case '/home':
-        return _createRoute(const HomePage(), settings);
-      case '/tasks':
-        return _createRoute(const TasksPage(), settings);
-      case '/task-detail':
-        final taskId = settings.arguments as String?;
-        if (taskId != null) {
-          return _createRoute(TaskDetailPage(taskId: taskId), settings);
-        }
-        return _createRoute(const NotFoundPage(), settings);
-      case '/projects':
-        return _createRoute(const ProjectsPage(), settings);
-      case '/project-detail':
-        final projectId = settings.arguments as String?;
-        if (projectId != null) {
-          return _createRoute(ProjectDetailPage(projectId: projectId), settings);
-        }
-        return _createRoute(const NotFoundPage(), settings);
-      case '/calendar':
-        return _createRoute(const CalendarPage(), settings);
-      case '/analytics':
-        return _createRoute(const AnalyticsPage(), settings);
-      case '/settings':
-        return _createRoute(const SettingsPage(), settings);
-      case '/voice-demo':
-        return _createRoute(const VoiceDemoPage(), settings);
-      case '/location-settings':
-        return _createRoute(const LocationSettingsPage(), settings);
-      case '/data-export':
-        return _createRoute(const DataExportPage(), settings);
-      default:
-        return _createRoute(const NotFoundPage(), settings);
-    }
+  /// Get current navigation index
+  int get currentIndex => _currentIndex;
+
+  /// Navigate to index
+  static void navigateToIndex(int index) {
+    // This would need to be implemented with proper navigation logic
+    // For now, just a placeholder
   }
 
-  /// Create route with consistent transition
-  static Route<dynamic> _createRoute(Widget page, RouteSettings settings) {
-    return PageRouteBuilder(
-      settings: settings,
-      pageBuilder: (context, animation, secondaryAnimation) => page,
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        // Slide transition from right to left
-        const begin = Offset(1.0, 0.0);
-        const end = Offset.zero;
-        const curve = Curves.easeInOut;
-
-        final tween = Tween(begin: begin, end: end).chain(
-          CurveTween(curve: curve),
-        );
-
-        return SlideTransition(
-          position: animation.drive(tween),
-          child: child,
-        );
-      },
-      transitionDuration: const Duration(milliseconds: 300),
-      reverseTransitionDuration: const Duration(milliseconds: 300),
-    );
+  /// Navigate to route
+  static void navigateToRoute(BuildContext context, String route, {Object? arguments}) {
+    Navigator.pushNamed(context, route, arguments: arguments);
   }
 
-  /// Navigate to route with provider update
-  static void navigateToRoute(
-    BuildContext context,
-    String routeName,
-    WidgetRef ref,
-  ) {
-    // Update navigation provider
-    ref.read(navigationProvider.notifier).navigateToRoute(routeName);
-    
-    // Navigate using Navigator
-    Navigator.of(context).pushReplacementNamed(routeName);
-  }
+  /// Calendar route getter
+  static String get calendar => '/calendar';
 
-  /// Navigate to destination with provider update
-  static void navigateToDestination(
-    BuildContext context,
-    AppNavigationDestination destination,
-    WidgetRef ref,
-  ) {
-    // Update navigation provider
-    ref.read(navigationProvider.notifier).navigateToDestination(destination);
-    
-    // Navigate using Navigator
-    Navigator.of(context).pushReplacementNamed(destination.route);
-  }
+  /// Analytics route getter
+  static String get analytics => '/analytics';
 
-  /// Navigate to index with provider update
-  static void navigateToIndex(
-    BuildContext context,
-    int index,
-    WidgetRef ref,
-  ) {
-    final destination = AppNavigationDestination.fromIndex(index);
-    navigateToDestination(context, destination, ref);
-  }
+  /// Task detail route getter
+  static String get taskDetail => '/task-detail';
 
-  /// Get all navigation destinations for bottom navigation
-  static List<AppNavigationDestination> get bottomNavigationDestinations => [
-    AppNavigationDestination.home,
-    AppNavigationDestination.tasks,
-    AppNavigationDestination.projects,
-    AppNavigationDestination.calendar,
-    AppNavigationDestination.analytics,
+  /// Bottom navigation destinations
+  static List<NavigationDestination> get bottomNavigationDestinations => [
+    const NavigationDestination(
+      icon: Icon(Icons.home),
+      label: 'Home',
+    ),
+    const NavigationDestination(
+      icon: Icon(Icons.task_alt),
+      label: 'Tasks',
+    ),
+    const NavigationDestination(
+      icon: Icon(Icons.settings),
+      label: 'Settings',
+    ),
+    const NavigationDestination(
+      icon: Icon(Icons.speed),
+      label: 'Performance',
+    ),
   ];
 
-  /// Check if route exists
-  static bool isValidRoute(String route) {
-    return AppNavigationDestination.values
-        .any((destination) => destination.route == route);
+  /// Generate route
+  static Route<dynamic> generateRoute(RouteSettings settings) {
+    switch (settings.name) {
+      case home:
+        return MaterialPageRoute(
+          builder: (_) => const HomeScreen(),
+          settings: settings,
+        );
+      case '/tasks':
+        return MaterialPageRoute(
+          builder: (_) => const TasksScreen(),
+          settings: settings,
+        );
+      case '/settings':
+        return MaterialPageRoute(
+          builder: (_) => const SettingsScreen(),
+          settings: settings,
+        );
+      case '/performance':
+        return MaterialPageRoute(
+          builder: (_) => const PerformanceScreen(),
+          settings: settings,
+        );
+      default:
+        return MaterialPageRoute(
+          builder: (_) => const NotFoundScreen(),
+          settings: settings,
+        );
+    }
+  }
+}
+
+/// Home screen placeholder
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Task Tracker'),
+      ),
+      body: const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.task_alt,
+              size: 64,
+              color: Colors.blue,
+            ),
+            SizedBox(height: 16),
+            Text(
+              'Welcome to Task Tracker',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 8),
+            Text(
+              'Your voice-driven task management app',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey,
+              ),
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushNamed(context, AppRouter.tasks);
+        },
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+/// Tasks screen placeholder
+class TasksScreen extends StatelessWidget {
+  const TasksScreen({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Tasks'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              Navigator.pushNamed(context, AppRouter.settings);
+            },
+          ),
+        ],
+      ),
+      body: const Center(
+        child: Text('Tasks will be displayed here'),
+      ),
+    );
+  }
+}
+
+/// Settings screen placeholder
+class SettingsScreen extends StatelessWidget {
+  const SettingsScreen({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Settings'),
+      ),
+      body: ListView(
+        children: [
+          ListTile(
+            leading: const Icon(Icons.speed),
+            title: const Text('Performance'),
+            subtitle: const Text('View performance metrics'),
+            onTap: () {
+              Navigator.pushNamed(context, AppRouter.performance);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.palette),
+            title: const Text('Theme'),
+            subtitle: const Text('Change app appearance'),
+            onTap: () {
+              // Theme settings would go here
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.privacy_tip),
+            title: const Text('Privacy'),
+            subtitle: const Text('Privacy and security settings'),
+            onTap: () {
+              // Privacy settings would go here
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Performance screen placeholder
+class PerformanceScreen extends StatelessWidget {
+  const PerformanceScreen({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Performance'),
+      ),
+      body: const Center(
+        child: Text('Performance metrics will be displayed here'),
+      ),
+    );
+  }
+}
+
+/// Not found screen
+class NotFoundScreen extends StatelessWidget {
+  const NotFoundScreen({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Page Not Found'),
+      ),
+      body: const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.error_outline,
+              size: 64,
+              color: Colors.red,
+            ),
+            SizedBox(height: 16),
+            Text(
+              'Page Not Found',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 8),
+            Text(
+              'The requested page could not be found.',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

@@ -17,7 +17,6 @@ class ProjectFormDialog extends ConsumerStatefulWidget {
     this.project,
     this.onSuccess,
   });
-
   @override
   ConsumerState<ProjectFormDialog> createState() => _ProjectFormDialogState();
 }
@@ -42,7 +41,6 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> {
     '#607D8B', // Blue Grey
     '#E91E63', // Pink
   ];
-
   @override
   void initState() {
     super.initState();
@@ -54,14 +52,12 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> {
       _selectedDeadline = widget.project!.deadline;
     }
   }
-
   @override
   void dispose() {
     _nameController.dispose();
     _descriptionController.dispose();
     super.dispose();
   }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);

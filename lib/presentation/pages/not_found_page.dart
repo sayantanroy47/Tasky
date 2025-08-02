@@ -6,7 +6,6 @@ import '../../core/routing/app_router.dart';
 /// 404 Not Found page for invalid routes
 class NotFoundPage extends ConsumerWidget {
   const NotFoundPage({super.key});
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return AppScaffold(
@@ -51,7 +50,6 @@ class NotFoundPage extends ConsumerWidget {
                   AppRouter.navigateToRoute(
                     context,
                     AppRouter.home,
-                    ref,
                   );
                 },
                 icon: const Icon(Icons.home),
@@ -66,7 +64,6 @@ class NotFoundPage extends ConsumerWidget {
                     AppRouter.navigateToRoute(
                       context,
                       AppRouter.home,
-                      ref,
                     );
                   }
                 },

@@ -24,9 +24,9 @@ void main() {
       // For now, we'll test the notification settings page directly
       
       await tester.pumpWidget(
-        ProviderScope(
+        const ProviderScope(
           child: MaterialApp(
-            home: const NotificationSettingsPage(),
+            home: NotificationSettingsPage(),
           ),
         ),
       );
@@ -72,9 +72,9 @@ void main() {
 
     testWidgets('should display notification history and statistics', (tester) async {
       await tester.pumpWidget(
-        ProviderScope(
+        const ProviderScope(
           child: MaterialApp(
-            home: const NotificationHistoryPage(),
+            home: NotificationHistoryPage(),
           ),
         ),
       );
@@ -100,9 +100,9 @@ void main() {
 
     testWidgets('should handle notification permissions correctly', (tester) async {
       await tester.pumpWidget(
-        ProviderScope(
+        const ProviderScope(
           child: MaterialApp(
-            home: const NotificationSettingsPage(),
+            home: NotificationSettingsPage(),
           ),
         ),
       );
@@ -124,9 +124,9 @@ void main() {
 
     testWidgets('should configure quiet hours correctly', (tester) async {
       await tester.pumpWidget(
-        ProviderScope(
+        const ProviderScope(
           child: MaterialApp(
-            home: const NotificationSettingsPage(),
+            home: NotificationSettingsPage(),
           ),
         ),
       );

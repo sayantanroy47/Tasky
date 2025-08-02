@@ -246,7 +246,6 @@ class SpeechRecognitionNotifier extends StateNotifier<SpeechRecognitionState> {
     _soundLevelTimer?.cancel();
     _soundLevelTimer = null;
   }
-
   @override
   void dispose() {
     _stopSoundLevelMonitoring();

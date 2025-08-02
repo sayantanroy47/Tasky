@@ -11,9 +11,7 @@ class LoadingWidget extends StatelessWidget {
     this.message,
     this.size,
     this.color,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context) {
     return Center(
       child: Column(
@@ -52,9 +50,7 @@ class InlineLoadingWidget extends StatelessWidget {
     super.key,
     this.size = 16,
     this.color,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: size,
@@ -80,9 +76,7 @@ class ErrorWidget extends StatelessWidget {
     this.details,
     this.onRetry,
     this.icon = Icons.error_outline,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     
@@ -145,9 +139,7 @@ class EmptyStateWidget extends StatelessWidget {
     this.icon = Icons.inbox_outlined,
     this.actionText,
     this.onAction,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     
@@ -203,18 +195,14 @@ class ShimmerListItem extends StatefulWidget {
     super.key,
     this.height = 80,
     this.margin = const EdgeInsets.only(bottom: 8),
-  });
-
-  @override
+  });  @override
   State<ShimmerListItem> createState() => _ShimmerListItemState();
 }
 
 class _ShimmerListItemState extends State<ShimmerListItem>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
-  late Animation<double> _animation;
-
-  @override
+  late Animation<double> _animation;  @override
   void initState() {
     super.initState();
     _animationController = AnimationController(
@@ -225,15 +213,11 @@ class _ShimmerListItemState extends State<ShimmerListItem>
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
     _animationController.repeat(reverse: true);
-  }
-
-  @override
+  }  @override
   void dispose() {
     _animationController.dispose();
     super.dispose();
-  }
-
-  @override
+  }  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     
@@ -318,9 +302,7 @@ class ShimmerList extends StatelessWidget {
     super.key,
     this.itemCount = 5,
     this.itemHeight = 80,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context) {
     return ListView.builder(
       itemCount: itemCount,
@@ -338,9 +320,7 @@ class NetworkErrorWidget extends StatelessWidget {
   const NetworkErrorWidget({
     super.key,
     this.onRetry,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context) {
     return ErrorWidget(
       message: 'No Internet Connection',

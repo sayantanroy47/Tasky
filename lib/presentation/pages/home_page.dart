@@ -7,7 +7,6 @@ import '../../core/routing/app_router.dart';
 /// Home page - main dashboard of the app
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return AppScaffold(
@@ -27,7 +26,7 @@ class HomePage extends ConsumerWidget {
         IconButton(
           icon: const Icon(Icons.settings),
           onPressed: () {
-            AppRouter.navigateToRoute(context, AppRouter.settings, ref);
+            AppRouter.navigateToRoute(context, AppRouter.settings);
           },
           tooltip: 'Settings',
         ),
@@ -51,7 +50,6 @@ class HomePage extends ConsumerWidget {
 /// Home page body content
 class HomePageBody extends ConsumerWidget {
   const HomePageBody({super.key});
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return SingleChildScrollView(
@@ -86,7 +84,7 @@ class HomePageBody extends ConsumerWidget {
                   const SizedBox(height: 24),
                   FilledButton.icon(
                     onPressed: () {
-                      AppRouter.navigateToRoute(context, AppRouter.tasks, ref);
+                      AppRouter.navigateToRoute(context, AppRouter.tasks);
                     },
                     icon: const Icon(Icons.add),
                     label: const Text('Create Your First Task'),
@@ -108,7 +106,7 @@ class HomePageBody extends ConsumerWidget {
                   icon: Icons.pending_actions,
                   color: Theme.of(context).colorScheme.primary,
                   onTap: () {
-                    AppRouter.navigateToRoute(context, AppRouter.tasks, ref);
+                    AppRouter.navigateToRoute(context, AppRouter.tasks);
                   },
                 ),
               ),
@@ -120,7 +118,7 @@ class HomePageBody extends ConsumerWidget {
                   icon: Icons.today,
                   color: Theme.of(context).colorScheme.secondary,
                   onTap: () {
-                    AppRouter.navigateToRoute(context, AppRouter.calendar, ref);
+                    AppRouter.navigateToRoute(context, AppRouter.calendar);
                   },
                 ),
               ),
@@ -132,7 +130,7 @@ class HomePageBody extends ConsumerWidget {
                   icon: Icons.check_circle,
                   color: Theme.of(context).colorScheme.tertiary,
                   onTap: () {
-                    AppRouter.navigateToRoute(context, AppRouter.analytics, ref);
+                    AppRouter.navigateToRoute(context, AppRouter.analytics);
                   },
                 ),
               ),
@@ -158,7 +156,7 @@ class HomePageBody extends ConsumerWidget {
                       ),
                       TextButton(
                         onPressed: () {
-                          AppRouter.navigateToRoute(context, AppRouter.tasks, ref);
+                          AppRouter.navigateToRoute(context, AppRouter.tasks);
                         },
                         child: const Text('View All'),
                       ),
@@ -282,7 +280,6 @@ class _QuickStatCard extends StatelessWidget {
     required this.color,
     required this.onTap,
   });
-
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -329,7 +326,6 @@ class _QuickActionButton extends StatelessWidget {
     required this.label,
     required this.onPressed,
   });
-
   @override
   Widget build(BuildContext context) {
     return OutlinedButton.icon(

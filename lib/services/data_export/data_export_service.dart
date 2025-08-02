@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
@@ -88,169 +86,141 @@ class DataExportServiceImpl implements DataExportService {
     dynamic taskRepository,
     dynamic projectRepository,
     dynamic tagRepository,
-  });
-  @override
+  });  @override
   Future<ExportResult> exportTasks(
     List<TaskModel> tasks, {
     ExportFormat format = ExportFormat.csv,
     ExportOptions? options,
   }) async {
     if (kDebugMode) {
-      print('Stub: Would export ${tasks.length} tasks in $format format');
+      // print('Stub: Would export ${tasks.length} tasks in $format format');
     }
     
-    return ExportResult(
+    return const ExportResult(
       success: false,
       message: 'Export not available in stub mode',
       filePath: null,
       fileSize: 0,
     );
-  }
-
-  @override
+  }  @override
   Future<ExportResult> exportProjects(
     List<Project> projects, {
     ExportFormat format = ExportFormat.csv,
     ExportOptions? options,
   }) async {
     if (kDebugMode) {
-      print('Stub: Would export ${projects.length} projects in $format format');
+      // print('Stub: Would export ${projects.length} projects in $format format');
     }
     
-    return ExportResult(
+    return const ExportResult(
       success: false,
       message: 'Export not available in stub mode',
       filePath: null,
       fileSize: 0,
     );
-  }
-
-  @override
+  }  @override
   Future<ExportResult> exportFullBackup({
     ExportOptions? options,
   }) async {
     if (kDebugMode) {
-      print('Stub: Would export full backup');
+      // print('Stub: Would export full backup');
     }
     
-    return ExportResult(
+    return const ExportResult(
       success: false,
       message: 'Export not available in stub mode',
       filePath: null,
       fileSize: 0,
     );
-  }
-
-  @override
+  }  @override
   Future<ImportResultData> importTasks(
     String filePath, {
     ImportOptions? options,
   }) async {
     if (kDebugMode) {
-      print('Stub: Would import tasks from $filePath');
+      // print('Stub: Would import tasks from $filePath');
     }
     
-    return ImportResultData(
+    return const ImportResultData(
       success: false,
       message: 'Import not available in stub mode',
       importedCount: 0,
       skippedCount: 0,
       errors: ['Import not available in stub mode'],
     );
-  }
-
-  @override
+  }  @override
   Future<ImportResultData> importProjects(
     String filePath, {
     ImportOptions? options,
   }) async {
     if (kDebugMode) {
-      print('Stub: Would import projects from $filePath');
+      // print('Stub: Would import projects from $filePath');
     }
     
-    return ImportResultData(
+    return const ImportResultData(
       success: false,
       message: 'Import not available in stub mode',
       importedCount: 0,
       skippedCount: 0,
       errors: ['Import not available in stub mode'],
     );
-  }
-
-  @override
+  }  @override
   Future<ImportResultData> importFullBackup(
     String filePath, {
     ImportOptions? options,
   }) async {
     if (kDebugMode) {
-      print('Stub: Would import full backup from $filePath');
+      // print('Stub: Would import full backup from $filePath');
     }
     
-    return ImportResultData(
+    return const ImportResultData(
       success: false,
       message: 'Import not available in stub mode',
       importedCount: 0,
       skippedCount: 0,
       errors: ['Import not available in stub mode'],
     );
-  }
-
-  @override
+  }  @override
   Future<bool> shareFile(String filePath, {String? subject}) async {
     if (kDebugMode) {
-      print('Stub: Would share file $filePath');
+      // print('Stub: Would share file $filePath');
     }
     return false;
-  }
-
-  @override
+  }  @override
   Future<String?> pickImportFile({
     List<String>? allowedExtensions,
   }) async {
     if (kDebugMode) {
-      print('Stub: Would pick import file');
+      // print('Stub: Would pick import file');
     }
     return null;
-  }
-
-  @override
+  }  @override
   Future<List<ExportFormat>> getSupportedFormats() async {
     return [ExportFormat.csv, ExportFormat.json]; // Return basic formats
-  }
-
-  @override
+  }  @override
   Future<bool> hasStoragePermission() async {
     return false; // Always false for stub
-  }
-
-  @override
+  }  @override
   Future<bool> requestStoragePermission() async {
     return false; // Always false for stub
-  }
-
-  @override
+  }  @override
   Future<String> getExportDirectory() async {
     final directory = await getApplicationDocumentsDirectory();
     return path.join(directory.path, 'exports');
-  }
-
-  @override
+  }  @override
   Future<void> cleanupOldExports({int maxAgeInDays = 30}) async {
     if (kDebugMode) {
-      print('Stub: Would cleanup exports older than $maxAgeInDays days');
+      // print('Stub: Would cleanup exports older than $maxAgeInDays days');
     }
   }
 
-  // Additional methods called by providers
-  @override
+  // Additional methods called by providers  @override
   Future<bool> requestStoragePermissions() async {
     if (kDebugMode) {
-      print('Stub: Would request storage permissions');
+      // print('Stub: Would request storage permissions');
     }
     return false;
-  }
-
-  @override
+  }  @override
   Stream<ExportProgress> exportData({
     required ExportFormat format,
     String? filePath,
@@ -258,33 +228,29 @@ class DataExportServiceImpl implements DataExportService {
     List<String>? projectIds,
   }) async* {
     if (kDebugMode) {
-      print('Stub: Would export data to ${filePath ?? 'default path'} in $format format');
+      // print('Stub: Would export data to ${filePath ?? 'default path'} in $format format');
     }
-    yield ExportProgress(
+    yield const ExportProgress(
       totalItems: 0,
       processedItems: 0,
       currentOperation: 'Export not available',
       progress: 0.0,
     );
-  }
-
-  @override
+  }  @override
   Future<void> shareData({
     required ExportFormat format,
     List<String>? taskIds,
     List<String>? projectIds,
   }) async {
     if (kDebugMode) {
-      print('Stub: Would share data in $format format');
+      // print('Stub: Would share data in $format format');
     }
-  }
-
-  @override
+  }  @override
   Future<ImportValidationResult> validateImportFile(String filePath) async {
     if (kDebugMode) {
-      print('Stub: Would validate import file $filePath');
+      // print('Stub: Would validate import file $filePath');
     }
-    return ImportValidationResult(
+    return const ImportValidationResult(
       isValid: false,
       errors: ['Import validation not available in stub mode'],
       warnings: [],
@@ -292,51 +258,41 @@ class DataExportServiceImpl implements DataExportService {
       projectCount: 0,
       tagCount: 0,
     );
-  }
-
-  @override
+  }  @override
   Stream<ImportProgress> importData({
     required String filePath,
     ImportOptions? options,
   }) async* {
     if (kDebugMode) {
-      print('Stub: Would import data from $filePath');
+      // print('Stub: Would import data from $filePath');
     }
-    yield ImportProgress(
+    yield const ImportProgress(
       totalItems: 0,
       processedItems: 0,
       currentOperation: 'Import not available',
       progress: 0.0,
     );
-  }
-
-  @override
+  }  @override
   Future<List<BackupMetadata>> getAvailableBackups() async {
     if (kDebugMode) {
-      print('Stub: Would get available backups');
+      // print('Stub: Would get available backups');
     }
     return [];
-  }
-
-  @override
+  }  @override
   Future<String> createBackup() async {
     if (kDebugMode) {
-      print('Stub: Would create backup');
+      // print('Stub: Would create backup');
     }
     return '';
-  }
-
-  @override
+  }  @override
   Future<void> restoreBackup(String backupPath) async {
     if (kDebugMode) {
-      print('Stub: Would restore backup from $backupPath');
+      // print('Stub: Would restore backup from $backupPath');
     }
-  }
-
-  @override
+  }  @override
   Future<void> deleteBackup(String backupId) async {
     if (kDebugMode) {
-      print('Stub: Would delete backup $backupId');
+      // print('Stub: Would delete backup $backupId');
     }
   }
 }

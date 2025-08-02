@@ -7,27 +7,21 @@ import '../../services/speech/transcription_validator.dart';
 
 /// Demo page to showcase voice recording functionality
 class VoiceDemoPage extends ConsumerStatefulWidget {
-  const VoiceDemoPage({super.key});
-
-  @override
+  const VoiceDemoPage({super.key});  @override
   ConsumerState<VoiceDemoPage> createState() => _VoiceDemoPageState();
 }
 
 class _VoiceDemoPageState extends ConsumerState<VoiceDemoPage> {
   TranscriptionResult? _lastTranscriptionResult;
   TranscriptionValidationResult? _lastValidationResult;
-  bool _isTranscribing = false;
-
-  @override
+  bool _isTranscribing = false;  @override
   void initState() {
     super.initState();
     // Initialize speech recognition when the page loads
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(speechRecognitionProvider.notifier).initialize();
     });
-  }
-
-  @override
+  }  @override
   Widget build(BuildContext context) {
     final speechState = ref.watch(speechRecognitionProvider);
     final speechNotifier = ref.read(speechRecognitionProvider.notifier);

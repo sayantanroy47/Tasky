@@ -4,11 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/entities/task_enums.dart';
 import '../../domain/entities/subtask.dart';
-import 'ai_task_parser.dart';
 import 'composite_ai_task_parser.dart';
-import 'openai_task_parser.dart';
-import 'claude_task_parser.dart';
-import 'local_task_parser.dart';
 
 /// Service for managing AI-powered task parsing with configuration
 class AITaskParsingService {
@@ -165,15 +161,7 @@ class AITaskParsingService {
   }
 
   /// Records AI usage for statistics
-  Future<void> _recordUsage(bool successful) async {
-    final totalParses = (_prefs.getInt('ai_total_parses') ?? 0) + 1;
-    await _prefs.setInt('ai_total_parses', totalParses);
-
-    if (successful) {
-      final successfulParses = (_prefs.getInt('ai_successful_parses') ?? 0) + 1;
-      await _prefs.setInt('ai_successful_parses', successfulParses);
-    }
-
+  Future<void> _recordUsage() async {
     await _prefs.setString('ai_last_used', DateTime.now().toIso8601String());
   }
 
@@ -208,7 +196,7 @@ final aiTaskParsingServiceProvider = Provider<AITaskParsingService>((ref) {
 
 /// Provider for AI parsing configuration
 final aiParsingConfigProvider = StateNotifierProvider<AIParsingConfigNotifier, AIParsingConfig>((ref) {
-  return AIParsingConfigNotifier();
+  return const AIParsingConfigNotifier();
 });
 
 /// Configuration state for AI parsing

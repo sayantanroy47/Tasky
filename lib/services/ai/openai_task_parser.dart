@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:http/http.dart' as http;
 
 import '../../domain/entities/task_enums.dart';
@@ -20,15 +19,9 @@ class OpenAITaskParser implements AITaskParser {
   })  : _apiKey = apiKey,
         _baseUrl = baseUrl,
         _model = model,
-        _httpClient = httpClient ?? http.Client();
-
-  @override
-  bool get isAvailable => _apiKey.isNotEmpty;
-
-  @override
-  String get serviceName => 'OpenAI GPT-4o';
-
-  @override
+        _httpClient = httpClient ?? http.Client();  @override
+  bool get isAvailable => _apiKey.isNotEmpty;  @override
+  String get serviceName => 'OpenAI GPT-4o';  @override
   Future<ParsedTaskData> parseTaskFromText(String text) async {
     if (!isAvailable) {
       throw const AIParsingException('OpenAI API key not configured');
@@ -44,9 +37,7 @@ class OpenAITaskParser implements AITaskParser {
         originalError: e,
       );
     }
-  }
-
-  @override
+  }  @override
   Future<List<String>> suggestTags(String taskText) async {
     if (!isAvailable) return [];
 
@@ -58,9 +49,7 @@ class OpenAITaskParser implements AITaskParser {
       // Fail silently for tag suggestions
       return [];
     }
-  }
-
-  @override
+  }  @override
   Future<DateTime?> extractDueDate(String text) async {
     if (!isAvailable) return null;
 
@@ -72,9 +61,7 @@ class OpenAITaskParser implements AITaskParser {
       // Fail silently for date extraction
       return null;
     }
-  }
-
-  @override
+  }  @override
   Future<TaskPriority> determinePriority(String text) async {
     if (!isAvailable) return TaskPriority.medium;
 
@@ -86,9 +73,7 @@ class OpenAITaskParser implements AITaskParser {
       // Fail silently and return default priority
       return TaskPriority.medium;
     }
-  }
-
-  @override
+  }  @override
   Future<List<String>> extractSubtasks(String text) async {
     if (!isAvailable) return [];
 

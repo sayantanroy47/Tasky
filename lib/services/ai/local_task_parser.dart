@@ -3,14 +3,9 @@ import 'ai_task_parser.dart';
 
 /// Local implementation of task parsing using keyword matching and regex
 /// This serves as a fallback when AI services are disabled or unavailable
-class LocalTaskParser implements AITaskParser {
-  @override
-  bool get isAvailable => true;
-
-  @override
-  String get serviceName => 'Local Parser';
-
-  @override
+class LocalTaskParser implements AITaskParser {  @override
+  bool get isAvailable => true;  @override
+  String get serviceName => 'Local Parser';  @override
   Future<ParsedTaskData> parseTaskFromText(String text) async {
     final title = _extractTitle(text);
     final description = _extractDescription(text, title);
@@ -29,9 +24,7 @@ class LocalTaskParser implements AITaskParser {
       confidence: 0.7,
       metadata: {'source': 'local', 'method': 'keyword_matching'},
     );
-  }
-
-  @override
+  }  @override
   Future<List<String>> suggestTags(String taskText) async {
     final tags = <String>[];
     final lowerText = taskText.toLowerCase();
@@ -74,9 +67,7 @@ class LocalTaskParser implements AITaskParser {
     }
 
     return tags.take(5).toList();
-  }
-
-  @override
+  }  @override
   Future<DateTime?> extractDueDate(String text) async {
     final lowerText = text.toLowerCase();
     final now = DateTime.now();
@@ -166,9 +157,7 @@ class LocalTaskParser implements AITaskParser {
     }
 
     return null;
-  }
-
-  @override
+  }  @override
   Future<TaskPriority> determinePriority(String text) async {
     final lowerText = text.toLowerCase();
 
@@ -194,9 +183,7 @@ class LocalTaskParser implements AITaskParser {
     }
 
     return TaskPriority.medium;
-  }
-
-  @override
+  }  @override
   Future<List<String>> extractSubtasks(String text) async {
     final subtasks = <String>[];
 

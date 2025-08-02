@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../services/location/location_models.dart';
 import '../../services/location/location_task_service.dart';
-import '../../domain/entities/task_model.dart';
-import '../../domain/entities/task_enums.dart';
-import '../providers/location_providers.dart';
+import '../../domain/models/enums.dart';
 import 'location_widgets.dart';
 
 class LocationTaskCard extends ConsumerWidget {
@@ -17,9 +15,7 @@ class LocationTaskCard extends ConsumerWidget {
     required this.taskLocationInfo,
     this.onTap,
     this.onLocationTriggerToggle,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context, WidgetRef ref) {
     final task = taskLocationInfo.task;
     final trigger = taskLocationInfo.trigger;
@@ -175,6 +171,10 @@ class LocationTaskCard extends ConsumerWidget {
         color = Colors.red;
         label = 'High';
         break;
+      case TaskPriority.urgent:
+        color = Colors.red.shade800;
+        label = 'Urgent';
+        break;
     }
 
     return Chip(
@@ -250,9 +250,7 @@ class NearbyTasksList extends ConsumerWidget {
     this.radiusInMeters = 1000,
     this.onTaskTap,
     this.onLocationToggle,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context, WidgetRef ref) {
     return LocationPermissionWidget(
       child: CurrentLocationWidget(
@@ -343,9 +341,7 @@ class NearbyTasksList extends ConsumerWidget {
 }
 
 class LocationStatisticsWidget extends ConsumerWidget {
-  const LocationStatisticsWidget({super.key});
-
-  @override
+  const LocationStatisticsWidget({super.key});  @override
   Widget build(BuildContext context, WidgetRef ref) {
     return FutureBuilder<LocationStatistics>(
       future: _getLocationStatistics(),

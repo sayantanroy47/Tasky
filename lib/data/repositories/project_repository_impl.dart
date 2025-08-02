@@ -1,5 +1,5 @@
 import '../../domain/entities/project.dart' as domain;
-import '../../domain/entities/task_enums.dart';
+import '../../domain/models/enums.dart';
 import '../../domain/repositories/project_repository.dart';
 import '../../services/database/database.dart';
 
@@ -11,47 +11,38 @@ class ProjectRepositoryImpl implements ProjectRepository {
   final AppDatabase _database;
 
   const ProjectRepositoryImpl(this._database);
-
   @override
   Future<List<domain.Project>> getAllProjects() async {
     return await _database.projectDao.getAllProjects();
   }
-
   @override
   Future<List<domain.Project>> getActiveProjects() async {
     return await _database.projectDao.getActiveProjects();
   }
-
   @override
   Future<domain.Project?> getProjectById(String id) async {
     return await _database.projectDao.getProjectById(id);
   }
-
   @override
   Future<void> createProject(domain.Project project) async {
     await _database.projectDao.createProject(project);
   }
-
   @override
   Future<void> updateProject(domain.Project project) async {
     await _database.projectDao.updateProject(project);
   }
-
   @override
   Future<void> deleteProject(String id) async {
     await _database.projectDao.deleteProject(id);
   }
-
   @override
   Future<void> archiveProject(String id) async {
     await _database.projectDao.archiveProject(id);
   }
-
   @override
   Future<void> unarchiveProject(String id) async {
     await _database.projectDao.unarchiveProject(id);
   }
-
   @override
   Future<List<ProjectWithStats>> getProjectsWithStats() async {
     final projects = await getAllProjects();
@@ -76,12 +67,10 @@ class ProjectRepositoryImpl implements ProjectRepository {
 
     return projectStats;
   }
-
   @override
   Future<List<domain.Project>> searchProjects(String query) async {
     return await _database.projectDao.searchProjects(query);
   }
-
   @override
   Future<List<domain.Project>> getProjectsWithFilter(ProjectFilter filter) async {
     // Start with all projects
@@ -161,17 +150,14 @@ class ProjectRepositoryImpl implements ProjectRepository {
 
     return projects;
   }
-
   @override
   Stream<List<domain.Project>> watchAllProjects() {
     return _database.projectDao.watchAllProjects();
   }
-
   @override
   Stream<List<domain.Project>> watchActiveProjects() {
     return _database.projectDao.watchActiveProjects();
   }
-
   @override
   Stream<domain.Project?> watchProjectById(String id) {
     return watchAllProjects().map((projects) {

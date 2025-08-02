@@ -7,25 +7,15 @@ import 'transcription_service.dart';
 class SpeechServiceImpl implements SpeechService {
   bool _isInitialized = false;
   bool _isListening = false;
-  bool _isAvailable = false;
-
-  @override
+  bool _isAvailable = false;  @override
   Future<bool> initialize() async {
     _isInitialized = true;
     _isAvailable = false; // Always false for stub
     return _isAvailable;
-  }
-
-  @override
-  bool get isInitialized => _isInitialized;
-
-  @override
-  bool get isListening => _isListening;
-
-  @override
-  bool get isAvailable => _isAvailable;
-
-  @override
+  }  @override
+  bool get isInitialized => _isInitialized;  @override
+  bool get isListening => _isListening;  @override
+  bool get isAvailable => _isAvailable;  @override
   Future<void> startListening({
     required Function(String) onResult,
     required Function(String) onError,
@@ -39,37 +29,25 @@ class SpeechServiceImpl implements SpeechService {
     }
     
     _isListening = true;
-  }
-
-  @override
+  }  @override
   Future<void> stopListening() async {
     _isListening = false;
-  }
-
-  @override
+  }  @override
   Future<void> cancel() async {
     _isListening = false;
-  }
-
-  @override
+  }  @override
   Future<bool> hasPermission() async {
     return false; // Always false for stub
-  }
-
-  @override
+  }  @override
   Future<bool> requestPermission() async {
     return false; // Always false for stub
-  }
-
-  @override
+  }  @override
   Future<void> dispose() async {
     // No-op for stub
-  }
-
-  @override
+  }  @override
   noSuchMethod(Invocation invocation) {
     if (kDebugMode) {
-      print('Stub: SpeechService method ${invocation.memberName} called');
+      // print('Stub: SpeechService method ${invocation.memberName} called');
     }
     
     // Return appropriate default values based on return type
@@ -79,14 +57,14 @@ class SpeechServiceImpl implements SpeechService {
     } else if (returnType.contains('Future<List<String>>')) {
       return Future.value(['en_US']);
     } else if (returnType.contains('Future<TranscriptionResult>')) {
-      return Future.value(TranscriptionResult(
+      return Future.value(const TranscriptionResult(
         text: '',
         confidence: 0.0,
         processingTime: Duration.zero,
         isSuccess: false,
       ));
     } else if (returnType.contains('TranscriptionConfig')) {
-      return TranscriptionConfig();
+      return const TranscriptionConfig();
     } else if (returnType.contains('Future<void>')) {
       return Future.value();
     }

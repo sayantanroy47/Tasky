@@ -53,7 +53,6 @@ final geofencingManagerProvider = Provider<GeofencingManager>((ref) {
     locationService,
     notificationService,
     taskRepository,
-    ref,
   );
 });
 
@@ -65,7 +64,6 @@ final locationTaskServiceProvider = Provider<LocationTaskService>((ref) {
   return LocationTaskService(
     taskRepository,
     geofencingManager,
-    ref,
   );
 });
 

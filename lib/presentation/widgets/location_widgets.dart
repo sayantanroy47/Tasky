@@ -12,7 +12,6 @@ class LocationPermissionWidget extends ConsumerWidget {
     required this.child,
     this.permissionDeniedWidget,
   });
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final permissionAsync = ref.watch(locationPermissionProvider);
@@ -83,7 +82,6 @@ class CurrentLocationWidget extends ConsumerWidget {
     this.loadingWidget,
     this.errorWidget,
   });
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final locationAsync = ref.watch(currentLocationProvider);
@@ -121,7 +119,6 @@ class LocationStreamWidget extends ConsumerWidget {
     this.loadingWidget,
     this.errorWidget,
   });
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final locationStream = ref.watch(locationStreamProvider);
@@ -152,7 +149,6 @@ class GeofenceConfigWidget extends ConsumerStatefulWidget {
     required this.onGeofenceCreated,
     this.initialGeofence,
   });
-
   @override
   ConsumerState<GeofenceConfigWidget> createState() => _GeofenceConfigWidgetState();
 }
@@ -166,7 +162,6 @@ class _GeofenceConfigWidgetState extends ConsumerState<GeofenceConfigWidget> {
   GeofenceType _selectedType = GeofenceType.enter;
   LocationData? _selectedLocation;
   bool _isLoadingLocation = false;
-
   @override
   void initState() {
     super.initState();
@@ -181,7 +176,6 @@ class _GeofenceConfigWidgetState extends ConsumerState<GeofenceConfigWidget> {
       );
     }
   }
-
   @override
   void dispose() {
     _nameController.dispose();
@@ -189,7 +183,6 @@ class _GeofenceConfigWidgetState extends ConsumerState<GeofenceConfigWidget> {
     _addressController.dispose();
     super.dispose();
   }
-
   @override
   Widget build(BuildContext context) {
     return Card(

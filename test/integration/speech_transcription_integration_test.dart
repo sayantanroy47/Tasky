@@ -72,21 +72,21 @@ void main() {
           final validation = TranscriptionValidator.validateResult(result);
           expect(validation, isA<TranscriptionValidationResult>());
           
-          print('Transcription result: ${result.text}');
-          print('Confidence: ${result.confidence}');
-          print('Processing time: ${result.processingTime}');
-          print('Validation: ${validation.isValid ? 'Valid' : 'Invalid'}');
+          // print('Transcription result: ${result.text}');
+          // print('Confidence: ${result.confidence}');
+          // print('Processing time: ${result.processingTime}');
+          // print('Validation: ${validation.isValid ? 'Valid' : 'Invalid'}');
           
           if (validation.issues.isNotEmpty) {
-            print('Issues: ${validation.issuesSummary}');
+            // print('Issues: ${validation.issuesSummary}');
           }
         } else {
-          print('Transcription failed: ${result.error?.message}');
+          // print('Transcription failed: ${result.error?.message}');
           expect(result.error, isNotNull);
         }
       } catch (e) {
         // Transcription might fail in test environment, which is acceptable
-        print('Transcription service not available in test environment: $e');
+        // print('Transcription service not available in test environment: $e');
         expect(e, isA<SpeechRecognitionException>());
       }
     });
@@ -145,17 +145,17 @@ void main() {
         expect(validation, isA<TranscriptionValidationResult>());
         expect(validation.originalResult, equals(testResult));
         
-        print('Test case: "${testResult.text}"');
-        print('Valid: ${validation.isValid}');
-        print('Confidence: ${validation.confidence}');
-        print('Issues: ${validation.issues.length}');
+        // print('Test case: "${testResult.text}"');
+        // print('Valid: ${validation.isValid}');
+        // print('Confidence: ${validation.confidence}');
+        // print('Issues: ${validation.issues.length}');
         
         if (validation.issues.isNotEmpty) {
           for (final issue in validation.issues) {
-            print('  - ${issue.severity.name}: ${issue.message}');
+            // print('  - ${issue.severity.name}: ${issue.message}');
           }
         }
-        print('---');
+        // print('---');
       }
     });
 
@@ -190,8 +190,8 @@ void main() {
       expect(bestResult.confidence, equals(0.95));
       expect(bestResult.isSuccess, isTrue);
       
-      print('Selected best result: "${bestResult.text}"');
-      print('Confidence: ${bestResult.confidence}');
+      // print('Selected best result: "${bestResult.text}"');
+      // print('Confidence: ${bestResult.confidence}');
     });
 
     testWidgets('should handle permission requirements', (tester) async {
@@ -199,7 +199,7 @@ void main() {
       
       if (!hasPermission) {
         final permissionGranted = await speechService.requestPermission();
-        print('Microphone permission granted: $permissionGranted');
+        // print('Microphone permission granted: $permissionGranted');
         
         // In a real app, we would handle permission denial
         if (!permissionGranted) {
@@ -216,18 +216,18 @@ void main() {
       
       // Test service availability
       if (speechService.isAvailable) {
-        print('Speech service is available');
+        // print('Speech service is available');
         
         // Test getting available locales
         try {
           final locales = await speechService.getAvailableLocales();
           expect(locales, isA<List<String>>());
-          print('Available locales: ${locales.take(5).join(', ')}');
+          // print('Available locales: ${locales.take(5).join(', ')}');
         } catch (e) {
-          print('Could not get locales: $e');
+          // print('Could not get locales: $e');
         }
       } else {
-        print('Speech service is not available on this device');
+        // print('Speech service is not available on this device');
       }
     });
   });

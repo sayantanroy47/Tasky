@@ -240,19 +240,19 @@ void main() {
         await repository.addTagToTask(task1.id, tag2.id);
 
         // Filter by minimum usage count
-        final filter1 = domain.TagFilter(minUsageCount: 2);
+        const filter1 = domain.TagFilter(minUsageCount: 2);
         final popularTags = await repository.getTagsWithFilter(filter1);
         expect(popularTags.length, 1);
         expect(popularTags.first.name, 'popular');
 
         // Filter by color presence
-        final filter2 = domain.TagFilter(hasColor: true);
+        const filter2 = domain.TagFilter(hasColor: true);
         final coloredTags = await repository.getTagsWithFilter(filter2);
         expect(coloredTags.length, 1);
         expect(coloredTags.first.name, 'popular');
 
         // Search filter
-        final filter3 = domain.TagFilter(searchQuery: 'pop');
+        const filter3 = domain.TagFilter(searchQuery: 'pop');
         final searchResults = await repository.getTagsWithFilter(filter3);
         expect(searchResults.length, 1);
         expect(searchResults.first.name, 'popular');
@@ -266,7 +266,7 @@ void main() {
         await repository.createTag(tagA);
 
         // Sort by name ascending
-        final filter = domain.TagFilter(
+        const filter = domain.TagFilter(
           sortBy: domain.TagSortBy.name,
           sortAscending: true,
         );
@@ -293,7 +293,7 @@ void main() {
         await repository.addTagToTask(task1.id, tag2.id);
 
         // Sort by usage count descending
-        final filter = domain.TagFilter(
+        const filter = domain.TagFilter(
           sortBy: domain.TagSortBy.usageCount,
           sortAscending: false,
         );

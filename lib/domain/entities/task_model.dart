@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:uuid/uuid.dart';
 
-import 'task_enums.dart';
+import '../models/enums.dart';
 import 'subtask.dart';
 import 'recurrence_pattern.dart';
 
@@ -383,6 +383,9 @@ class TaskModel extends Equatable {
   /// Returns true if this task has subtasks
   bool get hasSubTasks => subTasks.isNotEmpty;
 
+  /// Returns true if this task is completed
+  bool get isCompleted => status.isCompleted;
+
   /// Returns the completion percentage of subtasks (0.0 to 1.0)
   double get subTaskCompletionPercentage {
     if (subTasks.isEmpty) return 0.0;
@@ -442,7 +445,6 @@ class TaskModel extends Equatable {
       estimatedDuration: estimatedDuration,
     );
   }
-
   @override
   List<Object?> get props => [
         id,
@@ -465,7 +467,6 @@ class TaskModel extends Equatable {
         estimatedDuration,
         actualDuration,
       ];
-
   @override
   String toString() {
     return 'TaskModel(id: $id, title: $title, status: $status, '

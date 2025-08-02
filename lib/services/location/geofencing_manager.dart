@@ -1,17 +1,14 @@
 import 'dart:async';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'location_service.dart';
 import 'location_models.dart' as models;
 import '../notification/notification_service.dart';
-import '../../domain/entities/task_model.dart';
+
 import '../../domain/repositories/task_repository.dart';
 
 class GeofencingManager {
   final LocationService _locationService;
   final NotificationService _notificationService;
   final TaskRepository _taskRepository;
-  final Ref _ref;
-  
   StreamSubscription<models.GeofenceEvent>? _geofenceSubscription;
   StreamSubscription<models.LocationData>? _locationSubscription;
   final Map<String, models.LocationTrigger> _activeTriggers = {};
@@ -21,7 +18,6 @@ class GeofencingManager {
     this._locationService,
     this._notificationService,
     this._taskRepository,
-    this._ref,
   );
 
   /// Initialize geofencing manager
@@ -30,7 +26,7 @@ class GeofencingManager {
     _geofenceSubscription = _locationService.getGeofenceEventStream().listen(
       _handleGeofenceEvent,
       onError: (error) {
-        print('Geofence event error: $error');
+        // print('Geofence event error: $error');
       },
     );
 
@@ -38,7 +34,7 @@ class GeofencingManager {
     _locationSubscription = _locationService.getLocationStream().listen(
       _handleLocationUpdate,
       onError: (error) {
-        print('Location update error: $error');
+        // print('Location update error: $error');
       },
     );
   }
@@ -163,8 +159,8 @@ class GeofencingManager {
       final taskTitle = task?.title ?? 'Unknown Task';
       
       final eventTypeText = event.type == models.GeofenceEventType.enter ? 'entered' : 'left';
-      final title = 'Location Reminder';
-      final body = 'You have $eventTypeText ${trigger.geofence.name}. Don\'t forget about your task: $taskTitle';
+      const title = 'Location Reminder';
+      const body = 'You have $eventTypeText ${trigger.geofence.name}. Don\'t forget about your task: $taskTitle';
 
       await _notificationService.showImmediateNotification(
         title: title,
@@ -177,7 +173,7 @@ class GeofencingManager {
         },
       );
     } catch (e) {
-      print('Error sending location notification: $e');
+      // print('Error sending location notification: $e');
     }
   }
 }

@@ -23,18 +23,12 @@ class CompositeAITaskParser implements AITaskParser {
         _claudeParser = claudeParser,
         _localParser = localParser ?? LocalTaskParser(),
         _preferredService = preferredService,
-        _enableAI = enableAI;
-
-  @override
-  bool get isAvailable => _enableAI ? _getPreferredParser()?.isAvailable ?? true : true;
-
-  @override
+        _enableAI = enableAI;  @override
+  bool get isAvailable => _enableAI ? _getPreferredParser()?.isAvailable ?? true : true;  @override
   String get serviceName {
     if (!_enableAI) return _localParser.serviceName;
     return _getPreferredParser()?.serviceName ?? _localParser.serviceName;
-  }
-
-  @override
+  }  @override
   Future<ParsedTaskData> parseTaskFromText(String text) async {
     if (!_enableAI) {
       return _localParser.parseTaskFromText(text);
@@ -59,9 +53,7 @@ class CompositeAITaskParser implements AITaskParser {
 
     // Use local parser as final fallback
     return _localParser.parseTaskFromText(text);
-  }
-
-  @override
+  }  @override
   Future<List<String>> suggestTags(String taskText) async {
     if (!_enableAI) {
       return _localParser.suggestTags(taskText);
@@ -83,9 +75,7 @@ class CompositeAITaskParser implements AITaskParser {
     }
 
     return _localParser.suggestTags(taskText);
-  }
-
-  @override
+  }  @override
   Future<DateTime?> extractDueDate(String text) async {
     if (!_enableAI) {
       return _localParser.extractDueDate(text);
@@ -103,9 +93,7 @@ class CompositeAITaskParser implements AITaskParser {
 
     // Always try local parser as fallback
     return _localParser.extractDueDate(text);
-  }
-
-  @override
+  }  @override
   Future<TaskPriority> determinePriority(String text) async {
     if (!_enableAI) {
       return _localParser.determinePriority(text);
@@ -122,9 +110,7 @@ class CompositeAITaskParser implements AITaskParser {
     }
 
     return _localParser.determinePriority(text);
-  }
-
-  @override
+  }  @override
   Future<List<String>> extractSubtasks(String text) async {
     if (!_enableAI) {
       return _localParser.extractSubtasks(text);

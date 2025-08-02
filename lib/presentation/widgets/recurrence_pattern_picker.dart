@@ -11,9 +11,7 @@ class RecurrencePatternPicker extends StatefulWidget {
     super.key,
     this.initialPattern,
     required this.onPatternChanged,
-  });
-
-  @override
+  });  @override
   State<RecurrencePatternPicker> createState() => _RecurrencePatternPickerState();
 }
 
@@ -22,9 +20,7 @@ class _RecurrencePatternPickerState extends State<RecurrencePatternPicker> {
   int _interval = 1;
   List<int> _selectedDays = [];
   DateTime? _endDate;
-  int? _maxOccurrences;
-
-  @override
+  int? _maxOccurrences;  @override
   void initState() {
     super.initState();
     if (widget.initialPattern != null) {
@@ -34,9 +30,7 @@ class _RecurrencePatternPickerState extends State<RecurrencePatternPicker> {
       _endDate = widget.initialPattern!.endDate;
       _maxOccurrences = widget.initialPattern!.maxOccurrences;
     }
-  }
-
-  @override
+  }  @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

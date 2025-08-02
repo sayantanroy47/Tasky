@@ -20,9 +20,7 @@ class ConfirmationDialog extends StatelessWidget {
     this.onConfirm,
     this.onCancel,
     this.isDestructive = false,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(title),
@@ -92,9 +90,7 @@ class LoadingDialog extends StatelessWidget {
     this.message,
     this.canCancel = false,
     this.onCancel,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(title),
@@ -161,9 +157,7 @@ class InfoDialog extends StatelessWidget {
     this.buttonText = 'OK',
     this.onPressed,
     this.icon,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Row(
@@ -233,23 +227,17 @@ class TextInputDialog extends StatefulWidget {
     this.onCancel,
     this.validator,
     this.maxLines = 1,
-  });
-
-  @override
+  });  @override
   State<TextInputDialog> createState() => _TextInputDialogState();
 }
 
 class _TextInputDialogState extends State<TextInputDialog> {
   late TextEditingController _controller;
-  final _formKey = GlobalKey<FormState>();
-
-  @override
+  final _formKey = GlobalKey<FormState>();  @override
   void initState() {
     super.initState();
     _controller = TextEditingController(text: widget.initialValue);
-  }
-
-  @override
+  }  @override
   void dispose() {
     _controller.dispose();
     super.dispose();
@@ -260,9 +248,7 @@ class _TextInputDialogState extends State<TextInputDialog> {
       Navigator.of(context).pop();
       widget.onConfirm?.call(_controller.text);
     }
-  }
-
-  @override
+  }  @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(widget.title),
@@ -314,9 +300,7 @@ class ChoiceDialog<T> extends StatelessWidget {
     this.onSelected,
     this.onCancel,
     this.cancelText = 'Cancel',
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(title),
@@ -392,9 +376,7 @@ class CustomBottomSheet extends StatelessWidget {
     required this.child,
     this.isScrollControlled = false,
     this.isDismissible = true,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(

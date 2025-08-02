@@ -44,9 +44,7 @@ class CustomTextField extends StatelessWidget {
     this.enabled = true,
     this.focusNode,
     this.validator,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context) {
     return TextFormField(
       controller: controller,
@@ -89,18 +87,14 @@ class SearchField extends StatefulWidget {
     this.onClear,
     this.controller,
     this.focusNode,
-  });
-
-  @override
+  });  @override
   State<SearchField> createState() => _SearchFieldState();
 }
 
 class _SearchFieldState extends State<SearchField> {
   late TextEditingController _controller;
   late FocusNode _focusNode;
-  bool _showClearButton = false;
-
-  @override
+  bool _showClearButton = false;  @override
   void initState() {
     super.initState();
     _controller = widget.controller ?? TextEditingController();
@@ -108,9 +102,7 @@ class _SearchFieldState extends State<SearchField> {
     
     _controller.addListener(_onTextChanged);
     _showClearButton = _controller.text.isNotEmpty;
-  }
-
-  @override
+  }  @override
   void dispose() {
     if (widget.controller == null) {
       _controller.dispose();
@@ -135,9 +127,7 @@ class _SearchFieldState extends State<SearchField> {
     _controller.clear();
     widget.onClear?.call();
     widget.onChanged?.call('');
-  }
-
-  @override
+  }  @override
   Widget build(BuildContext context) {
     return TextField(
       controller: _controller,
@@ -175,9 +165,7 @@ class DatePickerField extends StatelessWidget {
     this.lastDate,
     this.errorText,
     this.enabled = true,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context) {
     return CustomTextField(
       label: label,
@@ -224,9 +212,7 @@ class TimePickerField extends StatelessWidget {
     this.onTimeSelected,
     this.errorText,
     this.enabled = true,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context) {
     return CustomTextField(
       label: label,
@@ -275,9 +261,7 @@ class CustomDropdownField<T> extends StatelessWidget {
     this.onChanged,
     this.errorText,
     this.enabled = true,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<T>(
       value: value,
@@ -307,17 +291,13 @@ class TagInputField extends StatefulWidget {
     this.label,
     this.hint,
     this.maxTags,
-  });
-
-  @override
+  });  @override
   State<TagInputField> createState() => _TagInputFieldState();
 }
 
 class _TagInputFieldState extends State<TagInputField> {
-  final TextEditingController _controller = TextEditingController();
-  final FocusNode _focusNode = FocusNode();
-
-  @override
+  final TextEditingController _controller = const TextEditingController();
+  final FocusNode _focusNode = const FocusNode();  @override
   void dispose() {
     _controller.dispose();
     _focusNode.dispose();
@@ -338,9 +318,7 @@ class _TagInputFieldState extends State<TagInputField> {
   void _removeTag(String tag) {
     final newTags = widget.tags.where((t) => t != tag).toList();
     widget.onTagsChanged?.call(newTags);
-  }
-
-  @override
+  }  @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

@@ -20,9 +20,7 @@ class ProjectSelector extends ConsumerWidget {
     required this.onProjectChanged,
     this.label = 'Project',
     this.hint = 'Select a project (optional)',
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final activeProjectsAsync = ref.watch(activeProjectsProvider);
@@ -285,9 +283,7 @@ class CompactProjectSelector extends ConsumerWidget {
     super.key,
     required this.selectedProjectId,
     required this.onProjectChanged,
-  });
-
-  @override
+  });  @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final activeProjectsAsync = ref.watch(activeProjectsProvider);

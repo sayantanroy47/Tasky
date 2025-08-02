@@ -1,10 +1,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../../domain/entities/task_model.dart';
+
 import 'notification_service.dart';
-import 'notification_models.dart';
 
 /// Stub class for PendingNotificationRequest
 class PendingNotificationRequest {
@@ -27,12 +24,10 @@ class LocalNotificationService implements NotificationService {
   Future<bool> initialize() async {
     return false; // Always false for stub
   }
-
   @override
   Future<bool> requestPermissions() async {
     return false; // Always false for stub
   }
-
   @override
   Future<bool> get hasPermissions async {
     return false; // Always false for stub
@@ -41,11 +36,10 @@ class LocalNotificationService implements NotificationService {
   void dispose() {
     // No-op for stub
   }
-
   @override
   noSuchMethod(Invocation invocation) {
     if (kDebugMode) {
-      print('Stub: NotificationService method ${invocation.memberName} called');
+      // print('Stub: NotificationService method ${invocation.memberName} called');
     }
     
     // Return appropriate default values based on return type
@@ -59,7 +53,7 @@ class LocalNotificationService implements NotificationService {
     } else if (returnType.contains('Future<void>')) {
       return Future.value();
     } else if (returnType.contains('Stream<')) {
-      return Stream.empty();
+      return const Stream.empty();
     } else if (returnType.contains('Future<DateTime?>')) {
       return Future.value(null);
     }

@@ -21,7 +21,7 @@ void main() {
     });
 
     setUp(() {
-      audioManager = AudioManager();
+      audioManager = const AudioManager();
     });
 
     group('directory management', () {
