@@ -424,3 +424,42 @@ class SyncConflict {
   });
 }
 
+/// Task filter for querying tasks
+class TaskFilter {
+  final TaskStatus? status;
+  final TaskPriority? priority;
+  final List<String>? tags;
+  final String? projectId;
+  final DateTime? dueDateFrom;
+  final DateTime? dueDateTo;
+  final bool? isOverdue;
+  final bool? isPinned;
+  final String? searchQuery;
+  final TaskSortBy sortBy;
+  final bool sortAscending;
+
+  const TaskFilter({
+    this.status,
+    this.priority,
+    this.tags,
+    this.projectId,
+    this.dueDateFrom,
+    this.dueDateTo,
+    this.isOverdue,
+    this.isPinned,
+    this.searchQuery,
+    this.sortBy = TaskSortBy.createdAt,
+    this.sortAscending = true,
+  });
+}
+
+/// Task sorting options
+enum TaskSortBy {
+  createdAt,
+  updatedAt,
+  dueDate,
+  priority,
+  title,
+  status,
+}
+

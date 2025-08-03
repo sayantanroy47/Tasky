@@ -78,7 +78,7 @@ const _$TaskPriorityEnumMap = {
 
 const _$TaskStatusEnumMap = {
   TaskStatus.pending: 'pending',
-  TaskStatus.inProgress: 'in_progress',
+  TaskStatus.inProgress: 'inProgress',
   TaskStatus.completed: 'completed',
   TaskStatus.cancelled: 'cancelled',
 };

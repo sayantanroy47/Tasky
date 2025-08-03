@@ -56,7 +56,7 @@ ScheduledNotification _$ScheduledNotificationFromJson(
     ScheduledNotification(
       id: (json['id'] as num).toInt(),
       taskId: json['taskId'] as String,
-      type: $enumDecode(_$NotificationTypeEnumMap, json['type']),
+      type: $enumDecode(_$NotificationTypeModelEnumMap, json['type']),
       scheduledTime: DateTime.parse(json['scheduledTime'] as String),
       title: json['title'] as String,
       body: json['body'] as String,
@@ -70,7 +70,7 @@ Map<String, dynamic> _$ScheduledNotificationToJson(
     <String, dynamic>{
       'id': instance.id,
       'taskId': instance.taskId,
-      'type': _$NotificationTypeEnumMap[instance.type]!,
+      'type': _$NotificationTypeModelEnumMap[instance.type]!,
       'scheduledTime': instance.scheduledTime.toIso8601String(),
       'title': instance.title,
       'body': instance.body,
@@ -79,12 +79,12 @@ Map<String, dynamic> _$ScheduledNotificationToJson(
       'createdAt': instance.createdAt.toIso8601String(),
     };
 
-const _$NotificationTypeEnumMap = {
-  NotificationType.taskReminder: 'task_reminder',
-  NotificationType.dailySummary: 'daily_summary',
-  NotificationType.overdueTask: 'overdue_task',
-  NotificationType.taskCompleted: 'task_completed',
-  NotificationType.locationReminder: 'location_reminder',
+const _$NotificationTypeModelEnumMap = {
+  NotificationTypeModel.taskReminder: 'task_reminder',
+  NotificationTypeModel.dailySummary: 'daily_summary',
+  NotificationTypeModel.overdueTask: 'overdue_task',
+  NotificationTypeModel.taskCompleted: 'task_completed',
+  NotificationTypeModel.locationReminder: 'location_reminder',
 };
 
 NotificationHistoryEntry _$NotificationHistoryEntryFromJson(
@@ -93,7 +93,7 @@ NotificationHistoryEntry _$NotificationHistoryEntryFromJson(
       id: json['id'] as String,
       notificationId: (json['notificationId'] as num).toInt(),
       taskId: json['taskId'] as String,
-      type: $enumDecode(_$NotificationTypeEnumMap, json['type']),
+      type: $enumDecode(_$NotificationTypeModelEnumMap, json['type']),
       action: $enumDecodeNullable(_$NotificationActionEnumMap, json['action']),
       sentAt: DateTime.parse(json['sentAt'] as String),
       actionAt: json['actionAt'] == null
@@ -108,7 +108,7 @@ Map<String, dynamic> _$NotificationHistoryEntryToJson(
       'id': instance.id,
       'notificationId': instance.notificationId,
       'taskId': instance.taskId,
-      'type': _$NotificationTypeEnumMap[instance.type]!,
+      'type': _$NotificationTypeModelEnumMap[instance.type]!,
       'action': _$NotificationActionEnumMap[instance.action],
       'sentAt': instance.sentAt.toIso8601String(),
       'actionAt': instance.actionAt?.toIso8601String(),
@@ -131,7 +131,7 @@ NotificationStats _$NotificationStatsFromJson(Map<String, dynamic> json) =>
       actedUponNotifications:
           (json['actedUponNotifications'] as num?)?.toInt() ?? 0,
       mostCommonType: $enumDecodeNullable(
-          _$NotificationTypeEnumMap, json['mostCommonType']),
+          _$NotificationTypeModelEnumMap, json['mostCommonType']),
       averageResponseTime: (json['averageResponseTime'] as num?)?.toDouble(),
     );
 
@@ -142,6 +142,6 @@ Map<String, dynamic> _$NotificationStatsToJson(NotificationStats instance) =>
       'pendingNotifications': instance.pendingNotifications,
       'sentNotifications': instance.sentNotifications,
       'actedUponNotifications': instance.actedUponNotifications,
-      'mostCommonType': _$NotificationTypeEnumMap[instance.mostCommonType],
+      'mostCommonType': _$NotificationTypeModelEnumMap[instance.mostCommonType],
       'averageResponseTime': instance.averageResponseTime,
     };

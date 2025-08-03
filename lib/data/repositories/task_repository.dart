@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/task_model.dart';
+import '../../domain/models/enums.dart';
 
 /// Task repository interface
 abstract class TaskRepository {
@@ -10,6 +11,18 @@ abstract class TaskRepository {
   Future<void> deleteTask(String id);
   Stream<List<TaskModel>> watchTasks();
   Future<List<TaskModel>> searchTasks(String query);
+  Future<List<TaskModel>> getTasksByIds(List<String> ids);
+  Future<List<TaskModel>> getTasksWithDependency(String taskId);
+  Future<List<TaskModel>> getTasksByProject(String projectId);
+  Future<List<TaskModel>> getTasksByStatus(TaskStatus status);
+  Future<List<TaskModel>> getTasksByPriority(TaskPriority priority);
+  Future<List<TaskModel>> getTasksDueToday();
+  Future<List<TaskModel>> getOverdueTasks();
+  Future<List<TaskModel>> getTasksByDateRange(DateTime startDate, DateTime endDate);
+  Future<List<TaskModel>> getTasksWithFilter(TaskFilter filter);
+  Stream<List<TaskModel>> watchAllTasks();
+  Stream<List<TaskModel>> watchTasksByStatus(TaskStatus status);
+  Stream<List<TaskModel>> watchTasksByProject(String projectId);
 }
 
 /// Simple in-memory task repository implementation
@@ -52,6 +65,84 @@ class InMemoryTaskRepository implements TaskRepository {
       task.title.toLowerCase().contains(query.toLowerCase()) ||
       (task.description?.toLowerCase().contains(query.toLowerCase()) ?? false)
     ).toList();
+  }
+
+  @override
+  Future<List<TaskModel>> getTasksByIds(List<String> ids) async {
+    return _tasks.where((task) => ids.contains(task.id)).toList();
+  }
+
+  @override
+  Future<List<TaskModel>> getTasksWithDependency(String taskId) async {
+    return _tasks.where((task) => task.dependencies.contains(taskId)).toList();
+  }
+
+  @override
+  Future<List<TaskModel>> getTasksByProject(String projectId) async {
+    return _tasks.where((task) => task.projectId == projectId).toList();
+  }
+
+  @override
+  Future<List<TaskModel>> getTasksByStatus(TaskStatus status) async {
+    return _tasks.where((task) => task.status == status).toList();
+  }
+
+  @override
+  Future<List<TaskModel>> getTasksByPriority(TaskPriority priority) async {
+    return _tasks.where((task) => task.priority == priority).toList();
+  }
+
+  @override
+  Future<List<TaskModel>> getTasksDueToday() async {
+    return _tasks.where((task) => task.isDueToday).toList();
+  }
+
+  @override
+  Future<List<TaskModel>> getOverdueTasks() async {
+    return _tasks.where((task) => task.isOverdue).toList();
+  }
+
+  @override
+  Future<List<TaskModel>> getTasksByDateRange(DateTime startDate, DateTime endDate) async {
+    return _tasks.where((task) => 
+      task.dueDate != null && 
+      task.dueDate!.isAfter(startDate) && 
+      task.dueDate!.isBefore(endDate)
+    ).toList();
+  }
+
+  @override
+  Future<List<TaskModel>> getTasksWithFilter(TaskFilter filter) async {
+    var filteredTasks = List<TaskModel>.from(_tasks);
+    
+    if (filter.status != null) {
+      filteredTasks = filteredTasks.where((task) => task.status == filter.status).toList();
+    }
+    
+    if (filter.priority != null) {
+      filteredTasks = filteredTasks.where((task) => task.priority == filter.priority).toList();
+    }
+    
+    if (filter.projectId != null) {
+      filteredTasks = filteredTasks.where((task) => task.projectId == filter.projectId).toList();
+    }
+    
+    return filteredTasks;
+  }
+
+  @override
+  Stream<List<TaskModel>> watchAllTasks() async* {
+    yield List.from(_tasks);
+  }
+
+  @override
+  Stream<List<TaskModel>> watchTasksByStatus(TaskStatus status) async* {
+    yield _tasks.where((task) => task.status == status).toList();
+  }
+
+  @override
+  Stream<List<TaskModel>> watchTasksByProject(String projectId) async* {
+    yield _tasks.where((task) => task.projectId == projectId).toList();
   }
 }
 

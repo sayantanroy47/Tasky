@@ -10,8 +10,6 @@ import 'package:task_tracker_app/domain/repositories/task_repository.dart';
 @GenerateMocks([LocationService, NotificationService, TaskRepository])
 import 'geofencing_manager_test.mocks.dart';
 
-class MockTaskRepository extends Mock implements TaskRepository {}
-
 void main() {
   group('GeofencingManager', () {
     late GeofencingManager geofencingManager;
