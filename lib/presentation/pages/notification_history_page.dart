@@ -6,7 +6,8 @@ import '../../services/notification/notification_models.dart';
 
 /// Page for viewing notification history and statistics
 class NotificationHistoryPage extends ConsumerWidget {
-  const NotificationHistoryPage({super.key});  @override
+  const NotificationHistoryPage({super.key});
+  @override
   Widget build(BuildContext context, WidgetRef ref) {
     final scheduledNotificationsAsync = ref.watch(scheduledNotificationsProvider);
 
@@ -72,7 +73,7 @@ class NotificationHistoryPage extends ConsumerWidget {
     
     final sentNotifications = notifications.where((n) => n.sent).length;
     
-    final typeStats = <NotificationType, int>{};
+    final typeStats = <NotificationTypeModel, int>{};
     for (final notification in notifications) {
       typeStats[notification.type] = (typeStats[notification.type] ?? 0) + 1;
     }
@@ -373,17 +374,17 @@ class NotificationHistoryPage extends ConsumerWidget {
     );
   }
 
-  IconData _getNotificationTypeIcon(NotificationType type) {
+  IconData _getNotificationTypeIcon(NotificationTypeModel type) {
     switch (type) {
-      case NotificationType.taskReminder:
+      case NotificationTypeModel.taskReminder:
         return Icons.alarm;
-      case NotificationType.dailySummary:
+      case NotificationTypeModel.dailySummary:
         return Icons.summarize;
-      case NotificationType.overdueTask:
+      case NotificationTypeModel.overdueTask:
         return Icons.warning;
-      case NotificationType.taskCompleted:
+      case NotificationTypeModel.taskCompleted:
         return Icons.check_circle;
-      case NotificationType.locationReminder:
+      case NotificationTypeModel.locationReminder:
         return Icons.location_on;
     }
   }

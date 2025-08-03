@@ -17,7 +17,7 @@ void main() {
     late MockTaskRepository mockTaskRepository;
 
     setUp(() {
-      mockTaskRepository = const MockTaskRepository();
+      mockTaskRepository = MockTaskRepository();
       analyticsService = AnalyticsServiceImpl(mockTaskRepository);
     });
 

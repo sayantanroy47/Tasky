@@ -109,7 +109,7 @@ class DataImportNotifier extends StateNotifier<AsyncValue<ImportResult?>> {
     state = const AsyncValue.loading();
     
     try {
-      await for (final progress in _dataExportService.importData(
+      await for (final _ in _dataExportService.importData(
         filePath: filePath,
         options: options,
       )) {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../services/offline_data_service.dart';
+import '../../domain/models/enums.dart' as enums;
 
 /// Widget to display offline/sync status
 class OfflineStatusWidget extends ConsumerWidget {
@@ -285,7 +286,7 @@ class SyncStatusDialog extends ConsumerWidget {
     );
   }
 
-  Widget _buildSyncQueueSection(BuildContext context, SyncQueueStatus status) {
+  Widget _buildSyncQueueSection(BuildContext context, OfflineStatus status) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -298,10 +299,10 @@ class SyncStatusDialog extends ConsumerWidget {
           children: [
             const Icon(Icons.queue, color: Colors.orange),
             const SizedBox(width: 8),
-            Text('${status.pendingOperations} operations waiting to sync'),
+            Text('${status.pendingOperationsCount} operations waiting to sync'),
           ],
         ),
-        if (status.isProcessing) ...[
+        if (status.isSyncing) ...[
           const SizedBox(height: 8),
           const Row(
             children: [
@@ -319,7 +320,7 @@ class SyncStatusDialog extends ConsumerWidget {
     );
   }
 
-  Widget _buildLastSyncSection(BuildContext context, SyncQueueStatus status) {
+  Widget _buildLastSyncSection(BuildContext context, OfflineStatus status) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -328,27 +329,15 @@ class SyncStatusDialog extends ConsumerWidget {
           style: Theme.of(context).textTheme.titleSmall,
         ),
         const SizedBox(height: 8),
-        if (status.lastSuccessfulSync != null) ...[
+        if (status.lastSyncTime != null) ...[
           Row(
             children: [
               const Icon(Icons.check_circle, color: Colors.green),
               const SizedBox(width: 8),
-              Text('Last successful: ${_formatDateTime(status.lastSuccessfulSync!)}'),
+              Text('Last sync: ${_formatDateTime(status.lastSyncTime!)}'),
             ],
           ),
-        ],
-        if (status.lastSyncAttempt != null && 
-            status.lastSyncAttempt != status.lastSuccessfulSync) ...[
-          const SizedBox(height: 4),
-          Row(
-            children: [
-              const Icon(Icons.error, color: Colors.red),
-              const SizedBox(width: 8),
-              Text('Last attempt: ${_formatDateTime(status.lastSyncAttempt!)}'),
-            ],
-          ),
-        ],
-        if (status.lastSuccessfulSync == null && status.lastSyncAttempt == null) ...[
+        ] else ...[
           const Row(
             children: [
               Icon(Icons.info, color: Colors.grey),
@@ -487,7 +476,7 @@ class AppBarWithSyncStatus extends ConsumerWidget implements PreferredSizeWidget
 
 /// Bottom sheet for conflict resolution
 class ConflictResolutionSheet extends ConsumerWidget {
-  final List<SyncConflict> conflicts;
+  final List<enums.SyncConflict> conflicts;
 
   const ConflictResolutionSheet({
     super.key,
@@ -567,7 +556,7 @@ class ConflictResolutionSheet extends ConsumerWidget {
     );
   }
 
-  Widget _buildConflictItem(BuildContext context, WidgetRef ref, SyncConflict conflict) {
+  Widget _buildConflictItem(BuildContext context, WidgetRef ref, enums.SyncConflict conflict) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Padding(
@@ -595,7 +584,7 @@ class ConflictResolutionSheet extends ConsumerWidget {
                     context, 
                     ref, 
                     conflict, 
-                    ConflictResolutionStrategy.useLocal,
+                    enums.ConflictResolutionStrategy.useLocal,
                   ),
                   child: const Text('Use Local'),
                 ),
@@ -604,7 +593,7 @@ class ConflictResolutionSheet extends ConsumerWidget {
                     context, 
                     ref, 
                     conflict, 
-                    ConflictResolutionStrategy.useRemote,
+                    enums.ConflictResolutionStrategy.useRemote,
                   ),
                   child: const Text('Use Remote'),
                 ),
@@ -613,7 +602,7 @@ class ConflictResolutionSheet extends ConsumerWidget {
                     context, 
                     ref, 
                     conflict, 
-                    ConflictResolutionStrategy.merge,
+                    enums.ConflictResolutionStrategy.merge,
                   ),
                   child: const Text('Merge'),
                 ),
@@ -628,8 +617,8 @@ class ConflictResolutionSheet extends ConsumerWidget {
   Future<void> _resolveConflict(
     BuildContext context,
     WidgetRef ref,
-    SyncConflict conflict,
-    ConflictResolutionStrategy strategy,
+    enums.SyncConflict conflict,
+    enums.ConflictResolutionStrategy strategy,
   ) async {
     final offlineService = ref.read(offlineDataServiceProvider);
     

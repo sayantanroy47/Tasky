@@ -17,9 +17,9 @@ void main() {
   late CompositeAITaskParser parser;
 
   setUp(() {
-    mockOpenAI = const MockOpenAITaskParser();
-    mockClaude = const MockClaudeTaskParser();
-    mockLocal = const MockLocalTaskParser();
+    mockOpenAI = MockOpenAITaskParser();
+    mockClaude = MockClaudeTaskParser();
+    mockLocal = MockLocalTaskParser();
   });
 
   group('CompositeAITaskParser', () {

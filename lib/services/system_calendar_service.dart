@@ -11,14 +11,14 @@ final local = tz.local;
 
 /// Service for integrating with system calendar
 class SystemCalendarService {
-  final DeviceCalendarPlugin _deviceCalendarPlugin = const DeviceCalendarPlugin();
+  final DeviceCalendarPlugin _deviceCalendarPlugin = DeviceCalendarPlugin();
   List<Calendar>? _availableCalendars;
   String? _selectedCalendarId;
 
   /// Initialize the service and request permissions
   Future<bool> initialize() async {
     try {
-      final permissionStatus = await Permission.calendar.request();
+      final permissionStatus = await Permission.calendarFullAccess.request();
       if (permissionStatus.isGranted) {
         await _loadAvailableCalendars();
         return true;
@@ -38,12 +38,14 @@ class SystemCalendarService {
         _availableCalendars = calendarsResult.data!;
         
         // Select the first writable calendar as default
-        _selectedCalendarId = _availableCalendars
-            ?.firstWhere(
-              (calendar) => !calendar.isReadOnly,
-              orElse: () => _availableCalendars!.first,
-            )
-            .id;
+        if (_availableCalendars != null && _availableCalendars!.isNotEmpty) {
+          _selectedCalendarId = _availableCalendars!
+              .firstWhere(
+                (calendar) => calendar.isReadOnly != true,
+                orElse: () => _availableCalendars!.first,
+              )
+              .id;
+        }
       }
     } catch (e) {
       // print('Error loading calendars: $e');
@@ -65,13 +67,13 @@ class SystemCalendarService {
 
   /// Check if calendar permissions are granted
   Future<bool> hasCalendarPermission() async {
-    final status = await Permission.calendar.status;
+    final status = await Permission.calendarFullAccess.status;
     return status.isGranted;
   }
 
   /// Request calendar permissions
   Future<bool> requestCalendarPermission() async {
-    final status = await Permission.calendar.request();
+    final status = await Permission.calendarFullAccess.request();
     return status.isGranted;
   }
 
@@ -250,7 +252,7 @@ class SystemCalendarService {
       } else {
         return SystemCalendarResult(
           success: false,
-          error: result.errors.join(', ') ?? 'Unknown error',
+          error: result.errors.isNotEmpty ? result.errors.join(', ') : 'Unknown error',
         );
       }
     } catch (e) {
@@ -427,7 +429,7 @@ class CalendarSyncStatus {
 
 /// Provider for system calendar service
 final systemCalendarServiceProvider = Provider<SystemCalendarService>((ref) {
-  return const SystemCalendarService();
+  return SystemCalendarService();
 });
 
 /// Provider for calendar sync status

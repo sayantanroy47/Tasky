@@ -17,9 +17,9 @@ void main() {
     late MockPrivacyService mockPrivacyService;
 
     setUp(() {
-      mockPerformanceService = const MockPerformanceService();
-      mockErrorRecoveryService = const MockErrorRecoveryService();
-      mockPrivacyService = const MockPrivacyService();
+      mockPerformanceService = MockPerformanceService();
+      mockErrorRecoveryService = MockErrorRecoveryService();
+      mockPrivacyService = MockPrivacyService();
       
       systemIntegrationService = SystemIntegrationService(
         mockPerformanceService,
@@ -46,12 +46,12 @@ void main() {
           )
         );
         when(mockErrorRecoveryService.performHealthCheck()).thenAnswer((_) async => 
-          const AppHealthStatus(
+          AppHealthStatus(
             level: HealthLevel.healthy,
             message: 'All good',
             crashCount: 0,
             errorCount: 0,
-            lastChecked: null,
+            lastChecked: DateTime.now(),
           )
         );
         when(mockPrivacyService.getPrivacySettings()).thenAnswer((_) async => 
@@ -97,12 +97,12 @@ void main() {
           )
         );
         when(mockErrorRecoveryService.performHealthCheck()).thenAnswer((_) async => 
-          const AppHealthStatus(
+          AppHealthStatus(
             level: HealthLevel.healthy,
             message: 'All good',
             crashCount: 0,
             errorCount: 0,
-            lastChecked: null,
+            lastChecked: DateTime.now(),
           )
         );
         when(mockPrivacyService.getPrivacySettings()).thenAnswer((_) async => 
@@ -122,12 +122,12 @@ void main() {
         // Arrange
         when(mockPerformanceService.getPerformanceStats()).thenThrow(Exception('Performance service failed'));
         when(mockErrorRecoveryService.performHealthCheck()).thenAnswer((_) async => 
-          const AppHealthStatus(
+          AppHealthStatus(
             level: HealthLevel.critical,
             message: 'Critical issues',
             crashCount: 5,
             errorCount: 20,
-            lastChecked: null,
+            lastChecked: DateTime.now(),
           )
         );
         when(mockPrivacyService.getPrivacySettings()).thenAnswer((_) async => 
@@ -219,10 +219,10 @@ void main() {
         when(mockPrivacyService.recordConsent(any)).thenAnswer((_) async {});
         when(mockPrivacyService.hasConsent(any)).thenAnswer((_) async => false);
         when(mockPrivacyService.getComplianceStatus()).thenAnswer((_) async => 
-          const PrivacyComplianceStatus(
+          PrivacyComplianceStatus(
             isCompliant: true,
             issues: [],
-            lastChecked: null,
+            lastChecked: DateTime.now(),
           )
         );
 
@@ -357,12 +357,12 @@ void main() {
           )
         );
         when(mockErrorRecoveryService.performHealthCheck()).thenAnswer((_) async => 
-          const AppHealthStatus(
+          AppHealthStatus(
             level: HealthLevel.healthy,
             message: 'All good',
             crashCount: 0,
             errorCount: 0,
-            lastChecked: null,
+            lastChecked: DateTime.now(),
           )
         );
         when(mockPrivacyService.getPrivacySettings()).thenAnswer((_) async => 

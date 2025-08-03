@@ -524,7 +524,7 @@ class PrivacySettingsScreen extends ConsumerWidget {
           context: context,
           builder: (context) => AlertDialog(
             title: const Text('Data Export'),
-            content: const SingleChildScrollView(
+            content: SingleChildScrollView(
               child: Text(
                 'Your data has been exported. In a real app, this would be saved to a file.\n\nData size: ${jsonString.length} characters',
               ),

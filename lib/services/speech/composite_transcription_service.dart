@@ -23,16 +23,20 @@ class CompositeTranscriptionService implements TranscriptionService {
   }) : _localService = localService,
        _cloudService = cloudService,
        _preference = preference,
-       _config = config ?? const TranscriptionConfig();  @override
-  bool get isAvailable => _isAvailable;  @override
-  bool get isInitialized => _isInitialized;  @override
+       _config = config ?? const TranscriptionConfig();
+  @override
+  bool get isAvailable => _isAvailable;
+  @override
+  bool get isInitialized => _isInitialized;
+  @override
   List<String> get supportedFormats {
     final localFormats = _localService.supportedFormats;
     final cloudFormats = _cloudService?.supportedFormats ?? <String>[];
     
     // Return union of supported formats
     return {...localFormats, ...cloudFormats}.toList();
-  }  @override
+  }
+  @override
   Future<bool> initialize() async {
     try {
       bool localAvailable = false;
@@ -49,7 +53,7 @@ class CompositeTranscriptionService implements TranscriptionService {
       // Initialize cloud service if available
       if (_cloudService != null) {
         try {
-          cloudAvailable = await _cloudService.initialize();
+          cloudAvailable = await _cloudService!.initialize();
         } catch (e) {
           // Cloud service initialization failed, continue with local only
           debugPrint('Cloud transcription service initialization failed: $e');
@@ -69,7 +73,8 @@ class CompositeTranscriptionService implements TranscriptionService {
         originalError: e,
       );
     }
-  }  @override
+  }
+  @override
   Future<TranscriptionResult> transcribeAudioFile(String audioFilePath) async {
     if (!_isInitialized || !_isAvailable) {
       throw const TranscriptionException(
@@ -90,7 +95,8 @@ class CompositeTranscriptionService implements TranscriptionService {
       final audioData = await file.readAsBytes();
       return transcribeAudioData(audioData);
     });
-  }  @override
+  }
+  @override
   Future<TranscriptionResult> transcribeAudioData(List<int> audioData) async {
     if (!_isInitialized || !_isAvailable) {
       throw const TranscriptionException(
@@ -102,7 +108,8 @@ class CompositeTranscriptionService implements TranscriptionService {
     return _transcribeWithFallback(() async {
       return _transcribeAudioDataInternal(audioData);
     });
-  }  @override
+  }
+  @override
   Future<void> dispose() async {
     await _localService.dispose();
     await _cloudService?.dispose();
@@ -192,14 +199,14 @@ class CompositeTranscriptionService implements TranscriptionService {
   }
 
   Future<TranscriptionResult> _transcribeCloud(List<int> audioData) async {
-    if (_cloudService == null || !_cloudService.isAvailable) {
+    if (_cloudService == null || !_cloudService!.isAvailable) {
       throw const TranscriptionException(
         'Cloud transcription service not available',
         type: TranscriptionErrorType.serviceUnavailable,
       );
     }
     
-    return _cloudService.transcribeAudioData(audioData);
+    return _cloudService!.transcribeAudioData(audioData);
   }
 
   Future<TranscriptionResult> _transcribeLocalFirst(List<int> audioData) async {
@@ -217,8 +224,8 @@ class CompositeTranscriptionService implements TranscriptionService {
     }
     
     // Fallback to cloud
-    if (_cloudService != null && _cloudService.isAvailable) {
-      return _cloudService.transcribeAudioData(audioData);
+    if (_cloudService != null && _cloudService!.isAvailable) {
+      return _cloudService!.transcribeAudioData(audioData);
     }
     
     throw const TranscriptionException(
@@ -229,9 +236,9 @@ class CompositeTranscriptionService implements TranscriptionService {
 
   Future<TranscriptionResult> _transcribeCloudFirst(List<int> audioData) async {
     // Try cloud first
-    if (_cloudService != null && _cloudService.isAvailable) {
+    if (_cloudService != null && _cloudService!.isAvailable) {
       try {
-        final result = await _cloudService.transcribeAudioData(audioData);
+        final result = await _cloudService!.transcribeAudioData(audioData);
         if (result.isSuccess && _isResultAcceptable(result)) {
           return result;
         }
@@ -259,8 +266,8 @@ class CompositeTranscriptionService implements TranscriptionService {
       futures.add(_localService.transcribeAudioData(audioData));
     }
     
-    if (_cloudService != null && _cloudService.isAvailable) {
-      futures.add(_cloudService.transcribeAudioData(audioData));
+    if (_cloudService != null && _cloudService!.isAvailable) {
+      futures.add(_cloudService!.transcribeAudioData(audioData));
     }
     
     if (futures.isEmpty) {
@@ -299,9 +306,9 @@ class CompositeTranscriptionService implements TranscriptionService {
       }
     }
     
-    if (_cloudService != null && _cloudService.isAvailable) {
+    if (_cloudService != null && _cloudService!.isAvailable) {
       try {
-        final result = await _cloudService.transcribeAudioData(audioData);
+        final result = await _cloudService!.transcribeAudioData(audioData);
         results.add(result);
       } catch (e) {
         // Continue with other services

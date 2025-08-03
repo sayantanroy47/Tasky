@@ -25,7 +25,7 @@ class AudioManager {
   Future<String> createTempAudioFilePath() async {
     final audioDir = await getAudioDirectory();
     final timestamp = DateTime.now().millisecondsSinceEpoch;
-    const fileName = '$_tempAudioPrefix$timestamp$_audioExtension';
+    final fileName = '$_tempAudioPrefix$timestamp$_audioExtension';
     return path.join(audioDir.path, fileName);
   }
 

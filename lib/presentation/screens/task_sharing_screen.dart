@@ -509,7 +509,7 @@ class _TaskSharingScreenState extends ConsumerState<TaskSharingScreen> {
       final jsonString = const JsonEncoder.withIndent('  ').convert(exportData);
       
       // In a real implementation, save to file or share
-      Clipboard.setData(const ClipboardData(text: jsonString));
+      Clipboard.setData(ClipboardData(text: jsonString));
       _showSuccessSnackBar('Shared list data copied to clipboard!');
     } catch (e) {
       _showErrorSnackBar('Failed to export shared list: $e');

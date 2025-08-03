@@ -411,13 +411,13 @@ class AccessibilitySettingsScreen extends ConsumerWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Accessibility Feedback'),
-        content: const Column(
+        content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
+            const Text(
               'Help us improve accessibility by sharing your feedback:',
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             AccessibleTextField(
               controller: feedbackController,
               labelText: 'Your feedback',

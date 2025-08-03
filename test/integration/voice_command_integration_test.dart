@@ -18,8 +18,8 @@ void main() {
     late MockTaskRepository mockTaskRepository;
 
     setUp(() async {
-      mockSpeechService = const MockSpeechService();
-      mockTaskRepository = const MockTaskRepository();
+      mockSpeechService = MockSpeechService();
+      mockTaskRepository = MockTaskRepository();
       
       service = VoiceCommandService(
         speechService: mockSpeechService,

@@ -158,7 +158,11 @@ enum NotificationType {
   overdue,
   dailySummary,
   locationBased,
-  collaboration;
+  collaboration,
+  taskReminder,
+  overdueTask,
+  taskCompleted,
+  locationReminder;
 
   /// Get display name
   String get displayName {
@@ -173,6 +177,14 @@ enum NotificationType {
         return 'Location Based';
       case NotificationType.collaboration:
         return 'Collaboration';
+      case NotificationType.taskReminder:
+        return 'Task Reminder';
+      case NotificationType.overdueTask:
+        return 'Overdue Task';
+      case NotificationType.taskCompleted:
+        return 'Task Completed';
+      case NotificationType.locationReminder:
+        return 'Location Reminder';
     }
   }
 }
@@ -275,5 +287,140 @@ enum ExportFormat {
         return '.pdf';
     }
   }
+}
+
+/// Offline status
+enum OfflineStatus {
+  online,
+  offline,
+  syncing,
+  error;
+
+  /// Get display name
+  String get displayName {
+    switch (this) {
+      case OfflineStatus.online:
+        return 'Online';
+      case OfflineStatus.offline:
+        return 'Offline';
+      case OfflineStatus.syncing:
+        return 'Syncing';
+      case OfflineStatus.error:
+        return 'Error';
+    }
+  }
+}
+
+/// Sync queue status
+enum SyncQueueStatus {
+  pending,
+  syncing,
+  completed,
+  failed;
+
+  /// Get display name
+  String get displayName {
+    switch (this) {
+      case SyncQueueStatus.pending:
+        return 'Pending';
+      case SyncQueueStatus.syncing:
+        return 'Syncing';
+      case SyncQueueStatus.completed:
+        return 'Completed';
+      case SyncQueueStatus.failed:
+        return 'Failed';
+    }
+  }
+}
+
+
+
+/// Transcription result class
+class TranscriptionResult {
+  final String text;
+  final double confidence;
+  final bool isComplete;
+  final Map<String, dynamic>? metadata;
+
+  const TranscriptionResult({
+    required this.text,
+    required this.confidence,
+    this.isComplete = true,
+    this.metadata,
+  });
+}
+
+/// Transcription config class
+class TranscriptionConfig {
+  final String language;
+  final bool enablePunctuation;
+  final bool enableWordTimestamps;
+  final double confidenceThreshold;
+
+  const TranscriptionConfig({
+    this.language = 'en-US',
+    this.enablePunctuation = true,
+    this.enableWordTimestamps = false,
+    this.confidenceThreshold = 0.5,
+  });
+}
+
+/// Entity type enum
+enum EntityType {
+  task,
+  event,
+  project,
+  note;
+
+  String get displayName {
+    switch (this) {
+      case EntityType.task:
+        return 'Task';
+      case EntityType.event:
+        return 'Event';
+      case EntityType.project:
+        return 'Project';
+      case EntityType.note:
+        return 'Note';
+    }
+  }
+}
+
+/// Conflict resolution strategies
+enum ConflictResolutionStrategy {
+  useLocal,
+  useRemote,
+  merge,
+  askUser,
+  createBoth,
+}
+
+/// Enhanced sync conflict class
+class SyncConflict {
+  final String id;
+  final String type;
+  final Map<String, dynamic> localData;
+  final Map<String, dynamic> remoteData;
+  final DateTime timestamp;
+  final String entityId;
+  final EntityType entityType;
+  final Map<String, dynamic> localEntity;
+  final Map<String, dynamic> remoteEntity;
+  final DateTime localModified;
+  final DateTime remoteModified;
+
+  const SyncConflict({
+    required this.id,
+    required this.type,
+    required this.localData,
+    required this.remoteData,
+    required this.timestamp,
+    required this.entityId,
+    required this.entityType,
+    required this.localEntity,
+    required this.remoteEntity,
+    required this.localModified,
+    required this.remoteModified,
+  });
 }
 

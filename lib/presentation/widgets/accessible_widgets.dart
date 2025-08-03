@@ -633,8 +633,6 @@ class AccessibleFocusTraversalGroup extends StatelessWidget {
 
 /// Accessible dismissible with proper semantics
 class AccessibleDismissible extends ConsumerWidget {
-  @override
-  final Key key;
   final Widget child;
   final DismissDirectionCallback? onDismissed;
   final DismissDirection direction;
@@ -642,13 +640,13 @@ class AccessibleDismissible extends ConsumerWidget {
   final String? dismissLabel;
 
   const AccessibleDismissible({
-    required this.key,
+    super.key,
     required this.child,
     this.onDismissed,
     this.direction = DismissDirection.horizontal,
     this.semanticLabel,
     this.dismissLabel,
-  }) : super(key: key);
+  });
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Semantics(
@@ -662,7 +660,7 @@ class AccessibleDismissible extends ConsumerWidget {
           },
       },
       child: Dismissible(
-        key: key,
+        key: key ?? ValueKey(child.hashCode),
         onDismissed: onDismissed,
         direction: direction,
         child: child,

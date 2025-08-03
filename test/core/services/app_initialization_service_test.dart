@@ -17,9 +17,9 @@ void main() {
     late MockPrivacyService mockPrivacyService;
 
     setUp(() {
-      mockErrorRecoveryService = const MockErrorRecoveryService();
-      mockPerformanceService = const MockPerformanceService();
-      mockPrivacyService = const MockPrivacyService();
+      mockErrorRecoveryService = MockErrorRecoveryService();
+      mockPerformanceService = MockPerformanceService();
+      mockPrivacyService = MockPrivacyService();
       
       initService = AppInitializationService(
         mockErrorRecoveryService,
@@ -36,12 +36,12 @@ void main() {
         when(mockPrivacyService.initializePrivacyDefaults()).thenAnswer((_) async {});
         when(mockErrorRecoveryService.restoreAppState()).thenAnswer((_) async => null);
         when(mockErrorRecoveryService.performHealthCheck()).thenAnswer((_) async => 
-          const AppHealthStatus(
+          AppHealthStatus(
             level: HealthLevel.healthy,
             message: 'All good',
             crashCount: 0,
             errorCount: 0,
-            lastChecked: null,
+            lastChecked: DateTime.now(),
           )
         );
 
@@ -62,12 +62,12 @@ void main() {
         when(mockPrivacyService.initializePrivacyDefaults()).thenAnswer((_) async {});
         when(mockErrorRecoveryService.restoreAppState()).thenAnswer((_) async => null);
         when(mockErrorRecoveryService.performHealthCheck()).thenAnswer((_) async => 
-          const AppHealthStatus(
+          AppHealthStatus(
             level: HealthLevel.healthy,
             message: 'All good',
             crashCount: 0,
             errorCount: 0,
-            lastChecked: null,
+            lastChecked: DateTime.now(),
           )
         );
 
@@ -87,12 +87,12 @@ void main() {
         when(mockPrivacyService.initializePrivacyDefaults()).thenAnswer((_) async {});
         when(mockErrorRecoveryService.restoreAppState()).thenAnswer((_) async => restoredState);
         when(mockErrorRecoveryService.performHealthCheck()).thenAnswer((_) async => 
-          const AppHealthStatus(
+          AppHealthStatus(
             level: HealthLevel.healthy,
             message: 'All good',
             crashCount: 0,
             errorCount: 0,
-            lastChecked: null,
+            lastChecked: DateTime.now(),
           )
         );
 
@@ -110,12 +110,12 @@ void main() {
         when(mockPrivacyService.initializePrivacyDefaults()).thenAnswer((_) async {});
         when(mockErrorRecoveryService.restoreAppState()).thenAnswer((_) async => null);
         when(mockErrorRecoveryService.performHealthCheck()).thenAnswer((_) async => 
-          const AppHealthStatus(
+          AppHealthStatus(
             level: HealthLevel.critical,
             message: 'Critical issues detected',
             crashCount: 5,
             errorCount: 20,
-            lastChecked: null,
+            lastChecked: DateTime.now(),
           )
         );
         when(mockErrorRecoveryService.clearOldReports()).thenAnswer((_) async {});
@@ -155,12 +155,12 @@ void main() {
         when(mockErrorRecoveryService.restoreAppState()).thenThrow(Exception('Recovery failed'));
         when(mockErrorRecoveryService.recordError(any, any, any)).thenAnswer((_) async {});
         when(mockErrorRecoveryService.performHealthCheck()).thenAnswer((_) async => 
-          const AppHealthStatus(
+          AppHealthStatus(
             level: HealthLevel.healthy,
             message: 'All good',
             crashCount: 0,
             errorCount: 0,
-            lastChecked: null,
+            lastChecked: DateTime.now(),
           )
         );
 
@@ -183,12 +183,12 @@ void main() {
         when(mockPrivacyService.initializePrivacyDefaults()).thenAnswer((_) async {});
         when(mockErrorRecoveryService.restoreAppState()).thenAnswer((_) async => null);
         when(mockErrorRecoveryService.performHealthCheck()).thenAnswer((_) async => 
-          const AppHealthStatus(
+          AppHealthStatus(
             level: HealthLevel.critical,
             message: 'Critical issues detected',
             crashCount: 5,
             errorCount: 20,
-            lastChecked: null,
+            lastChecked: DateTime.now(),
           )
         );
         when(mockErrorRecoveryService.clearOldReports()).thenThrow(Exception('Cleanup failed'));
@@ -226,12 +226,12 @@ void main() {
         });
         when(mockErrorRecoveryService.performHealthCheck()).thenAnswer((_) async {
           callOrder.add('health_check');
-          return const AppHealthStatus(
+          return AppHealthStatus(
             level: HealthLevel.healthy,
             message: 'All good',
             crashCount: 0,
             errorCount: 0,
-            lastChecked: null,
+            lastChecked: DateTime.now(),
           );
         });
 

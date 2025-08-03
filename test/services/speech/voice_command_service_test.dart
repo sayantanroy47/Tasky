@@ -18,9 +18,9 @@ void main() {
     late MockVoiceCommandCustomization mockCustomization;
 
     setUp(() {
-      mockSpeechService = const MockSpeechService();
-      mockTaskRepository = const MockTaskRepository();
-      mockCustomization = const MockVoiceCommandCustomization();
+      mockSpeechService = MockSpeechService();
+      mockTaskRepository = MockTaskRepository();
+      mockCustomization = MockVoiceCommandCustomization();
       
       service = VoiceCommandService(
         speechService: mockSpeechService,

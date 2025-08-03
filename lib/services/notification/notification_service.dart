@@ -75,7 +75,7 @@ abstract class NotificationService {
     required String title,
     required String body,
     String? taskId,
-    NotificationType type = NotificationType.taskReminder,
+    NotificationTypeModel type = NotificationTypeModel.taskReminder,
     Map<String, dynamic>? payload,
   });
 

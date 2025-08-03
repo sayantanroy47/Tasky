@@ -1,31 +1,33 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:task_tracker_app/services/location/geofencing_manager.dart';
 import 'package:task_tracker_app/services/location/location_service.dart';
 import 'package:task_tracker_app/services/location/location_models.dart';
 import 'package:task_tracker_app/services/notification/notification_service.dart';
+import 'package:task_tracker_app/domain/repositories/task_repository.dart';
 
-@GenerateMocks([LocationService, NotificationService, Ref])
+@GenerateMocks([LocationService, NotificationService, TaskRepository])
 import 'geofencing_manager_test.mocks.dart';
+
+class MockTaskRepository extends Mock implements TaskRepository {}
 
 void main() {
   group('GeofencingManager', () {
     late GeofencingManager geofencingManager;
     late MockLocationService mockLocationService;
     late MockNotificationService mockNotificationService;
-    late MockRef mockRef;
+    late MockTaskRepository mockTaskRepository;
 
     setUp(() {
-      mockLocationService = const MockLocationService();
-      mockNotificationService = const MockNotificationService();
-      mockRef = const MockRef();
+      mockLocationService = MockLocationService();
+      mockNotificationService = MockNotificationService();
+      mockTaskRepository = MockTaskRepository();
 
       geofencingManager = GeofencingManager(
         mockLocationService,
         mockNotificationService,
-        mockRef,
+        mockTaskRepository,
       );
 
       // Setup default mock behaviors

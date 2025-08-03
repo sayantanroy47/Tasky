@@ -340,7 +340,7 @@ class SystemAccessibilityInfo {
 
 /// Provider for accessibility service
 final accessibilityServiceProvider = Provider<AccessibilityService>((ref) {
-  return const AccessibilityService();
+  return AccessibilityService();
 });
 
 /// Provider for accessibility settings

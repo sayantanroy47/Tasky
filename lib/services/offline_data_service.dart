@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import '../domain/entities/task_model.dart';
+import '../domain/models/enums.dart';
 import '../data/repositories/task_repository.dart';
 
 /// Service for managing offline-first data operations
@@ -54,37 +55,37 @@ class OfflineDataService {
   /// Create task with offline support
   Future<TaskModel> createTaskOffline(TaskModel task) async {
     // Save locally first
-    final savedTask = await _taskRepository.createTask(task);
+    await _taskRepository.createTask(task);
     
     // Add to sync queue
     _addToSyncQueue(SyncOperation(
       id: _generateOperationId(),
       type: SyncOperationType.create,
       entityType: EntityType.task,
-      entityId: savedTask.id,
-      data: savedTask.toJson(),
+      entityId: task.id,
+      data: task.toJson(),
       timestamp: DateTime.now(),
     ));
 
-    return savedTask;
+    return task;
   }
 
   /// Update task with offline support
   Future<TaskModel> updateTaskOffline(TaskModel task) async {
     // Save locally first
-    final updatedTask = await _taskRepository.updateTask(task);
+    await _taskRepository.updateTask(task);
     
     // Add to sync queue
     _addToSyncQueue(SyncOperation(
       id: _generateOperationId(),
       type: SyncOperationType.update,
       entityType: EntityType.task,
-      entityId: updatedTask.id,
-      data: updatedTask.toJson(),
+      entityId: task.id,
+      data: task.toJson(),
       timestamp: DateTime.now(),
     ));
 
-    return updatedTask;
+    return task;
   }
 
   /// Delete task with offline support
@@ -271,6 +272,13 @@ class OfflineDataService {
           return await _resolveWithMerge(conflict);
         case ConflictResolutionStrategy.createBoth:
           return await _resolveWithBoth(conflict);
+        case ConflictResolutionStrategy.askUser:
+          // This should be handled by the UI layer
+          return const ConflictResolutionResult(
+            success: false,
+            error: 'User interaction required',
+            action: 'ask_user',
+          );
       }
     } catch (e) {
       return ConflictResolutionResult(
@@ -391,21 +399,9 @@ enum SyncOperationType {
   delete,
 }
 
-/// Entity types for sync operations
-enum EntityType {
-  task,
-  calendarEvent,
-  project,
-  tag,
-}
 
-/// Conflict resolution strategies
-enum ConflictResolutionStrategy {
-  useLocal,
-  useRemote,
-  merge,
-  createBoth,
-}
+
+
 
 /// Sync operation data structure
 class SyncOperation {
@@ -480,24 +476,7 @@ class FullSyncResult {
   });
 }
 
-/// Sync conflict data structure
-class SyncConflict {
-  final String entityId;
-  final EntityType entityType;
-  final Map<String, dynamic> localEntity;
-  final Map<String, dynamic> remoteEntity;
-  final DateTime localModified;
-  final DateTime remoteModified;
 
-  const SyncConflict({
-    required this.entityId,
-    required this.entityType,
-    required this.localEntity,
-    required this.remoteEntity,
-    required this.localModified,
-    required this.remoteModified,
-  });
-}
 
 /// Conflict resolution result
 class ConflictResolutionResult {

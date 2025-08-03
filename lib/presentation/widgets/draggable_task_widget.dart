@@ -100,7 +100,7 @@ class CalendarDropTarget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return DragTarget<TaskDragData>(
-      onWillAcceptWithDetails: (details) => details.data != null,
+      onWillAcceptWithDetails: (details) => true,
       onAcceptWithDetails: (details) => _handleTaskDrop(context, ref, details.data),
       builder: (context, candidateData, rejectedData) {
         final isHovering = candidateData.isNotEmpty;

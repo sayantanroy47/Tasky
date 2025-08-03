@@ -141,7 +141,7 @@ class ExternalAppService {
         );
         await intent.launch();
       } else if (Platform.isIOS) {
-        const url = 'whatsapp://send?text=${Uri.encodeComponent(text)}';
+        final url = 'whatsapp://send?text=${Uri.encodeComponent(text)}';
         if (await canLaunchUrl(Uri.parse(url))) {
           await launchUrl(Uri.parse(url));
         } else {
@@ -221,7 +221,7 @@ class ExternalAppService {
 
   /// Format a task for sharing
   String _formatTaskForSharing(TaskModel task) {
-    const buffer = StringBuffer();
+    final buffer = StringBuffer();
     
     buffer.writeln('📋 ${task.title}');
     

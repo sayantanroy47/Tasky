@@ -498,7 +498,7 @@ class _CalendarIntegrationScreenState extends ConsumerState<CalendarIntegrationS
       ),
     );
 
-    if (confirmed == true) {
+    if (confirmed == true && mounted) {
       // Reset sync data
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Sync data reset')),

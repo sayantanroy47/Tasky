@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../services/cloud_sync_service.dart';
+import '../../domain/models/enums.dart';
 
 /// Screen for managing cloud synchronization settings
 class CloudSyncScreen extends ConsumerStatefulWidget {
@@ -574,7 +575,7 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
       ),
     );
 
-    if (confirmed == true) {
+    if (confirmed == true && mounted) {
       // Reset sync data
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Sync data reset')),

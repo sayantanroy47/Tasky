@@ -545,8 +545,8 @@ class EventDetailsDialog extends ConsumerWidget {
   }
 
   String _formatDateTime(DateTime dateTime) {
-    const date = '${dateTime.day}/${dateTime.month}/${dateTime.year}';
-    const time = '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+    final date = '${dateTime.day}/${dateTime.month}/${dateTime.year}';
+    final time = '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
     return '$date $time';
   }
 
@@ -653,9 +653,10 @@ class _TaskSchedulingWidgetState extends ConsumerState<TaskSchedulingWidget> {
         ),
         ElevatedButton(
           onPressed: () async {
+            final navigator = Navigator.of(context);
             await _scheduleTask(calendarNotifier);
             if (mounted) {
-              Navigator.of(context).pop();
+              navigator.pop();
               widget.onScheduled?.call();
             }
           },

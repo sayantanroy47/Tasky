@@ -188,7 +188,7 @@ class NavigationNotifier extends StateNotifier<NavigationState> {
 
   /// Reset to home
   void resetToHome() {
-    state = NavigationState(
+    state = const NavigationState(
       currentDestination: AppNavigationDestination.home,
       selectedIndex: 0,
       canPop: false,

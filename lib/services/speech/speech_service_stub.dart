@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'speech_service.dart';
+import 'transcription_service.dart';
 
 /// Stub implementation of SpeechService when speech_to_text is not available
 class SpeechServiceStub implements SpeechService {
@@ -62,8 +63,8 @@ class SpeechServiceStub implements SpeechService {
     return const TranscriptionResult(
       text: '',
       confidence: 0.0,
+      processingTime: Duration.zero,
       isSuccess: false,
-      error: 'Transcription not available in stub mode',
     );
   }
 
@@ -72,8 +73,8 @@ class SpeechServiceStub implements SpeechService {
     return const TranscriptionResult(
       text: '',
       confidence: 0.0,
+      processingTime: Duration.zero,
       isSuccess: false,
-      error: 'Transcription not available in stub mode',
     );
   }
 

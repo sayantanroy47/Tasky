@@ -532,14 +532,14 @@ class CollaborationService {
       
       // Add user as viewer by default
       await addCollaborator(
-        taskListId: sharedList.id,
+        taskListId: sharedList?.id ?? '',
         userId: userId,
         userName: userName,
         permission: CollaborationPermission.view,
-        requesterId: sharedList.ownerId, // Auto-approve for public lists
+        requesterId: sharedList?.ownerId ?? '', // Auto-approve for public lists
       );
 
-      return getSharedTaskList(sharedList.id)!;
+      return getSharedTaskList(sharedList?.id ?? '')!;
     } catch (e) {
       debugPrint('Error joining shared task list: $e');
       rethrow;

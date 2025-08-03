@@ -7,7 +7,7 @@ import 'conflict_detection_service.dart';
 /// Service for managing calendar events and scheduling
 class CalendarService {
   final List<CalendarEvent> _events = [];
-  final ConflictDetectionService _conflictDetectionService = const ConflictDetectionService();
+  final ConflictDetectionService _conflictDetectionService = ConflictDetectionService();
 
   /// Get all calendar events
   List<CalendarEvent> getAllEvents() {
@@ -249,5 +249,5 @@ class TimeSlot {
 
 /// Provider for calendar service
 final calendarServiceProvider = Provider<CalendarService>((ref) {
-  return const CalendarService();
+  return CalendarService();
 });

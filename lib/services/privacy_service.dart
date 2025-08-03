@@ -9,6 +9,12 @@ class PrivacyService {
   static const String _consentRecordsKey = 'consent_records';
   static const String _dataRetentionKey = 'data_retention';
   static const String _dataProcessingLogKey = 'data_processing_log';
+  
+  PrivacySettings? _cachedSettings;
+  List<ConsentRecord>? _cachedConsents;
+  
+  PrivacySettings get settings => _cachedSettings ?? PrivacySettings.defaultSettings();
+  List<ConsentRecord> get consents => _cachedConsents ?? [];
 
   /// Get current privacy settings
   Future<PrivacySettings> getPrivacySettings() async {
@@ -334,6 +340,8 @@ class PrivacySettings {
   final bool cloudSyncEnabled;
   final bool shareUsageData;
   final bool personalizedAds;
+  final int logRetentionDays;
+  final int consentRetentionDays;
 
   const PrivacySettings({
     required this.dataMinimization,
@@ -346,6 +354,8 @@ class PrivacySettings {
     required this.cloudSyncEnabled,
     required this.shareUsageData,
     required this.personalizedAds,
+    this.logRetentionDays = 90,
+    this.consentRetentionDays = 365,
   });
 
   factory PrivacySettings.defaultSettings() {
@@ -360,6 +370,8 @@ class PrivacySettings {
       cloudSyncEnabled: false,
       shareUsageData: false,
       personalizedAds: false,
+      logRetentionDays: 90,
+      consentRetentionDays: 365,
     );
   }
 
@@ -639,7 +651,7 @@ enum DataType {
 
 /// Providers
 final privacyServiceProvider = Provider<PrivacyService>((ref) {
-  return const PrivacyService();
+  return PrivacyService();
 });
 
 final privacySettingsProvider = StateNotifierProvider<PrivacySettingsNotifier, AsyncValue<PrivacySettings>>((ref) {
@@ -660,6 +672,7 @@ class PrivacySettingsNotifier extends StateNotifier<AsyncValue<PrivacySettings>>
 
   Future<void> _loadSettings() async {
     try {
+      final settings = await _privacyService.getPrivacySettings();
       state = AsyncValue.data(settings);
     } catch (error, stackTrace) {
       state = AsyncValue.error(error, stackTrace);
@@ -686,6 +699,7 @@ class DataRetentionSettingsNotifier extends StateNotifier<AsyncValue<DataRetenti
 
   Future<void> _loadSettings() async {
     try {
+      final settings = await _privacyService.getDataRetentionSettings();
       state = AsyncValue.data(settings);
     } catch (error, stackTrace) {
       state = AsyncValue.error(error, stackTrace);

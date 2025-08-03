@@ -6,7 +6,7 @@ void main() {
   late LocalTaskParser parser;
 
   setUp(() {
-    parser = const LocalTaskParser();
+    parser = LocalTaskParser();
   });
 
   group('LocalTaskParser', () {
@@ -158,7 +158,7 @@ void main() {
       test('should extract date formats', () async {
         final now = DateTime.now();
         final nextYear = now.year + 1;
-        const text = 'Due on 12/25/$nextYear';
+        final text = 'Due on 12/25/$nextYear';
         final date = await parser.extractDueDate(text);
 
         expect(date, isNotNull);

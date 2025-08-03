@@ -9,7 +9,7 @@ class AppRouter {
   static const String performance = '/performance';
 
   /// Current navigation index
-  int _currentIndex = 0;
+  final int _currentIndex = 0;
 
   /// Get current navigation index
   int get currentIndex => _currentIndex;

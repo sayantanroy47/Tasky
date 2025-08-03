@@ -18,7 +18,7 @@ class SecurityService {
   static const String _lastFailedAttemptKey = 'last_failed_attempt';
   static const String _lockoutUntilKey = 'lockout_until';
 
-  final LocalAuthentication _localAuth = const LocalAuthentication();
+  final LocalAuthentication _localAuth = LocalAuthentication();
 
   /// Check if device supports biometric authentication
   Future<bool> isBiometricAvailable() async {
@@ -46,16 +46,7 @@ class SecurityService {
   }) async {
     try {
       final isAuthenticated = await _localAuth.authenticate(
-        localizedFallbackTitle: 'Use PIN instead',
-        authMessages: const [
-          AndroidAuthMessages(
-            signInTitle: 'Biometric authentication required',
-            cancelButton: 'No thanks',
-          ),
-          IOSAuthMessages(
-            cancelButton: 'No thanks',
-          ),
-        ],
+        localizedReason: reason,
         options: const AuthenticationOptions(
           biometricOnly: false,
           stickyAuth: true,
@@ -342,7 +333,7 @@ enum AuthenticationState {
 
 /// Providers for security service
 final securityServiceProvider = Provider<SecurityService>((ref) {
-  return const SecurityService();
+  return SecurityService();
 });
 
 final securitySettingsProvider = StateNotifierProvider<SecuritySettingsNotifier, AsyncValue<SecuritySettings>>((ref) {

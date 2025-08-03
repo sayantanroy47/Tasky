@@ -161,9 +161,9 @@ class AITaskParsingService {
   }
 
   /// Records AI usage for statistics
-  Future<void> _recordUsage() async {
-    await _prefs.setString('ai_last_used', DateTime.now().toIso8601String());
-  }
+  // Future<void> _recordUsage() async {
+  //   await _prefs.setString('ai_last_used', DateTime.now().toIso8601String());
+  // }
 
   /// Basic title extraction fallback
   String _extractBasicTitle(String text) {
@@ -196,7 +196,7 @@ final aiTaskParsingServiceProvider = Provider<AITaskParsingService>((ref) {
 
 /// Provider for AI parsing configuration
 final aiParsingConfigProvider = StateNotifierProvider<AIParsingConfigNotifier, AIParsingConfig>((ref) {
-  return const AIParsingConfigNotifier();
+  return AIParsingConfigNotifier();
 });
 
 /// Configuration state for AI parsing

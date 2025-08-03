@@ -1,10 +1,10 @@
 import 'dart:async';
-
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 import '../../../domain/entities/task_model.dart';
 import '../../../domain/entities/task_enums.dart';
 import '../../../domain/repositories/task_repository.dart';
+import '../../../domain/models/enums.dart';
 import 'notification_service.dart';
 import 'notification_models.dart';
 import 'local_notification_service.dart';
@@ -14,6 +14,7 @@ import 'local_notification_service.dart';
 class NotificationManager {
   final NotificationService _notificationService;
   final TaskRepository _taskRepository;
+  NotificationSettings settings;
   
   Timer? _dailySummaryTimer;
   Timer? _overdueCheckTimer;
@@ -22,6 +23,7 @@ class NotificationManager {
   NotificationManager({
     NotificationService? notificationService,
     required TaskRepository taskRepository,
+    this.settings = const NotificationSettings(),
   }) : _notificationService = notificationService ?? LocalNotificationService(),
         _taskRepository = taskRepository {
     _setupEventHandling();
@@ -117,8 +119,9 @@ class NotificationManager {
   }
 
   /// Update notification settings
-  Future<void> updateSettings(NotificationSettings settings) async {
-    await _notificationService.updateSettings(settings);
+  Future<void> updateSettings(NotificationSettings newSettings) async {
+    settings = newSettings;
+    await _notificationService.updateSettings(newSettings);
     
     // Reschedule all notifications with new settings
     await _notificationService.rescheduleAllNotifications();
@@ -129,7 +132,7 @@ class NotificationManager {
 
   /// Get current notification settings
   Future<NotificationSettings> getSettings() async {
-    return await _notificationService.getSettings();
+    return settings;
   }
 
   /// Get all scheduled notifications
@@ -142,7 +145,7 @@ class NotificationManager {
     await _notificationService.showImmediateNotification(
       title: 'Test Notification',
       body: 'This is a test notification from Task Tracker',
-      type: NotificationType.taskReminder,
+      type: NotificationTypeModel.taskReminder,
     );
   }
 
@@ -317,7 +320,7 @@ class NotificationManager {
         // Check if we've already sent an overdue notification for this task
         final existingNotifications = await _notificationService.getTaskNotifications(task.id);
         final hasOverdueNotification = existingNotifications.any(
-          (n) => n.type == NotificationType.overdueTask && n.sent
+          (n) => n.type == NotificationTypeModel.overdueTask && n.sent
         );
 
         if (!hasOverdueNotification) {
@@ -355,7 +358,7 @@ class NotificationManager {
           title: 'Task Completed',
           body: '${task.title} has been marked as completed',
           taskId: taskId,
-          type: NotificationType.taskCompleted,
+          type: NotificationTypeModel.taskCompleted,
         );
       }
     } catch (e) {
@@ -392,7 +395,7 @@ class NotificationManager {
     final String body = _buildDailySummaryBody(todayTasks, overdueTasks, upcomingTasks);
     
     final payload = {
-      'type': NotificationType.dailySummary.name,
+      'type': NotificationTypeModel.dailySummary.name,
       'todayCount': todayTasks.length,
       'overdueCount': overdueTasks.length,
       'upcomingCount': upcomingTasks.length,
@@ -401,7 +404,7 @@ class NotificationManager {
     await _notificationService.showImmediateNotification(
       title: title,
       body: body,
-      type: NotificationType.dailySummary,
+      type: NotificationTypeModel.dailySummary,
       payload: payload,
     );
   }
@@ -411,7 +414,7 @@ class NotificationManager {
     List<TaskModel> overdueTasks,
     List<TaskModel> upcomingTasks,
   ) {
-    const buffer = StringBuffer();
+    final buffer = StringBuffer();
     
     if (overdueTasks.isNotEmpty) {
       buffer.write('⚠️ ${overdueTasks.length} overdue task${overdueTasks.length == 1 ? '' : 's'}');

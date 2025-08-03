@@ -160,7 +160,7 @@ class GeofencingManager {
       
       final eventTypeText = event.type == models.GeofenceEventType.enter ? 'entered' : 'left';
       const title = 'Location Reminder';
-      const body = 'You have $eventTypeText ${trigger.geofence.name}. Don\'t forget about your task: $taskTitle';
+      final body = 'You have $eventTypeText ${trigger.geofence.name}. Don\'t forget about your task: $taskTitle';
 
       await _notificationService.showImmediateNotification(
         title: title,

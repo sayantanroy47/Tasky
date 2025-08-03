@@ -70,7 +70,7 @@ class PerformanceService {
   /// Record memory usage metric
   void recordMemoryUsage() {
     if (kDebugMode) {
-      final info = developer.Service.getIsolateId(Isolate.current);
+      final info = Isolate.current.debugName ?? 'main';
       // In production, we'd use platform-specific memory monitoring
       final metric = PerformanceMetric(
         operation: 'memory_usage',
@@ -351,23 +351,27 @@ class PerformantListView<T> extends StatefulWidget {
     this.shrinkWrap = false,
     this.physics,
     this.cacheExtent,
-  });  @override
+  });
+  @override
   State<PerformantListView<T>> createState() => _PerformantListViewState<T>();
 }
 
 class _PerformantListViewState<T> extends State<PerformantListView<T>> {
   late ScrollController _controller;
-  final Map<int, Widget> _cachedWidgets = {};  @override
+  final Map<int, Widget> _cachedWidgets = {};
+  @override
   void initState() {
     super.initState();
     _controller = widget.controller ?? ScrollController();
-  }  @override
+  }
+  @override
   void dispose() {
     if (widget.controller == null) {
       _controller.dispose();
     }
     super.dispose();
-  }  @override
+  }
+  @override
   Widget build(BuildContext context) {
     return ListView.builder(
       controller: _controller,
@@ -435,23 +439,27 @@ class PerformanceMonitor extends StatefulWidget {
     super.key,
     required this.child,
     this.operationName,
-  });  @override
+  });
+  @override
   State<PerformanceMonitor> createState() => _PerformanceMonitorState();
 }
 
 class _PerformanceMonitorState extends State<PerformanceMonitor> {
   late final PerformanceService _performanceService;
-  late final String _operationName;  @override
+  late final String _operationName;
+  @override
   void initState() {
     super.initState();
-    _performanceService = const PerformanceService();
+    _performanceService = PerformanceService();
     _operationName = widget.operationName ?? 'widget_build_${widget.runtimeType}';
     _performanceService.startTimer(_operationName);
-  }  @override
+  }
+  @override
   void dispose() {
     _performanceService.stopTimer(_operationName);
     super.dispose();
-  }  @override
+  }
+  @override
   Widget build(BuildContext context) {
     return widget.child;
   }
@@ -459,7 +467,7 @@ class _PerformanceMonitorState extends State<PerformanceMonitor> {
 
 /// Providers
 final performanceServiceProvider = Provider<PerformanceService>((ref) {
-  final service = const PerformanceService();
+  final service = PerformanceService();
   ref.onDispose(() => service.dispose());
   return service;
 });

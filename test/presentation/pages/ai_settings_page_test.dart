@@ -220,14 +220,14 @@ void main() {
 
   group('AIParsingConfigNotifier', () {
     test('should start with default config', () {
-      const notifier = AIParsingConfigNotifier();
+      final notifier = AIParsingConfigNotifier();
       
       expect(notifier.state.enabled, isFalse);
       expect(notifier.state.serviceType, equals(AIServiceType.local));
     });
 
     test('should update enabled state', () {
-      const notifier = AIParsingConfigNotifier();
+      final notifier = AIParsingConfigNotifier();
       
       notifier.setEnabled(true);
       expect(notifier.state.enabled, isTrue);
@@ -237,7 +237,7 @@ void main() {
     });
 
     test('should update service type', () {
-      const notifier = AIParsingConfigNotifier();
+      final notifier = AIParsingConfigNotifier();
       
       notifier.setServiceType(AIServiceType.openai);
       expect(notifier.state.serviceType, equals(AIServiceType.openai));
@@ -247,7 +247,7 @@ void main() {
     });
 
     test('should update auto-apply settings', () {
-      const notifier = AIParsingConfigNotifier();
+      final notifier = AIParsingConfigNotifier();
       
       notifier.setAutoApplyTags(false);
       expect(notifier.state.autoApplyTags, isFalse);
@@ -260,7 +260,7 @@ void main() {
     });
 
     test('should update show confidence setting', () {
-      const notifier = AIParsingConfigNotifier();
+      final notifier = AIParsingConfigNotifier();
       
       notifier.setShowConfidence(false);
       expect(notifier.state.showConfidence, isFalse);

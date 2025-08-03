@@ -14,9 +14,9 @@ class IntegrationService {
   factory IntegrationService() => _instance;
   IntegrationService._internal();
 
-  final ShareIntentService _shareIntentService = const ShareIntentService();
-  final ExternalAppService _externalAppService = const ExternalAppService();
-  final WidgetService _widgetService = const WidgetService();
+  final ShareIntentService _shareIntentService = ShareIntentService();
+  final ExternalAppService _externalAppService = ExternalAppService();
+  final WidgetService _widgetService = WidgetService();
 
   TaskRepository? _taskRepository;
   bool _isInitialized = false;
@@ -214,7 +214,7 @@ class IntegrationService {
 
   /// Format task for sharing
   String _formatTaskForSharing(TaskModel task) {
-    const buffer = StringBuffer();
+    final buffer = StringBuffer();
     
     buffer.writeln('📋 ${task.title}');
     
@@ -272,7 +272,16 @@ class IntegrationService {
   }
 
   /// Check if source app is a messaging app
-
+  bool _isFromMessagingApp(String? sourceApp) {
+    if (sourceApp == null) return false;
+    
+    final messagingApps = [
+      'whatsapp', 'messenger', 'telegram', 'discord', 
+      'slack', 'teams', 'messages', 'sms'
+    ];
+    
+    return messagingApps.any((app) => sourceApp.toLowerCase().contains(app));
+  }
 
   /// Get app tag from package name
   String _getAppTag(String sourceApp) {
@@ -303,13 +312,13 @@ class IntegrationService {
 
 /// Provider for IntegrationService
 final integrationServiceProvider = Provider<IntegrationService>((ref) {
-  return const IntegrationService();
+  return IntegrationService();
 });
 
 /// Provider for handling shared content
 final sharedContentHandlerProvider = Provider<SharedContentHandler>((ref) {
   final integrationService = ref.read(integrationServiceProvider);
-  // final taskRepository = ref.read(taskRepositoryProvider);
+  final taskRepository = ref.read(taskRepositoryProvider);
   
   return SharedContentHandler(integrationService, taskRepository);
 });

@@ -558,8 +558,10 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
       _userNameController.clear();
       
       // Refresh the screen
-      Navigator.of(context).pop();
-      _showSuccessSnackBar('Collaborator added successfully!');
+      if (mounted) {
+        Navigator.of(context).pop();
+        _showSuccessSnackBar('Collaborator added successfully!');
+      }
     } catch (e) {
       _showErrorSnackBar('Failed to add collaborator: $e');
     }
@@ -591,8 +593,10 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
         requesterId: 'current_user_id',
       );
 
-      Navigator.of(context).pop();
-      _showSuccessSnackBar('Permission updated successfully!');
+      if (mounted) {
+        Navigator.of(context).pop();
+        _showSuccessSnackBar('Permission updated successfully!');
+      }
     } catch (e) {
       _showErrorSnackBar('Failed to update permission: $e');
     }
@@ -611,7 +615,8 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
           ),
           TextButton(
             onPressed: () async {
-              Navigator.of(context).pop();
+              final navigator = Navigator.of(context);
+              navigator.pop();
               try {
                 await _collaborationService.removeCollaborator(
                   taskListId: widget.sharedList.id,
@@ -619,10 +624,14 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
                   requesterId: 'current_user_id',
                 );
 
-                Navigator.of(context).pop();
-                _showSuccessSnackBar('Collaborator removed successfully!');
+                if (mounted) {
+                  navigator.pop();
+                  _showSuccessSnackBar('Collaborator removed successfully!');
+                }
               } catch (e) {
-                _showErrorSnackBar('Failed to remove collaborator: $e');
+                if (mounted) {
+                  _showErrorSnackBar('Failed to remove collaborator: $e');
+                }
               }
             },
             child: const Text('Remove', style: TextStyle(color: Colors.red)),

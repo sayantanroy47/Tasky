@@ -3,7 +3,7 @@ import 'package:integration_test/integration_test.dart';
 import 'package:task_tracker_app/services/speech/speech_service.dart';
 import 'package:task_tracker_app/services/speech/speech_service_impl.dart';
 import 'package:task_tracker_app/services/speech/transcription_service.dart';
-import 'package:task_tracker_app/services/speech/composite_transcription_service.dart';
+
 import 'package:task_tracker_app/services/speech/transcription_validator.dart';
 
 void main() {
@@ -13,14 +13,7 @@ void main() {
     late SpeechService speechService;
 
     setUp(() {
-      speechService = SpeechServiceImpl(
-        transcriptionPreference: TranscriptionPreference.localFirst,
-        transcriptionConfig: const TranscriptionConfig(
-          enableTimestamps: true,
-          maxRetries: 2,
-          timeout: Duration(seconds: 15),
-        ),
-      );
+      speechService = SpeechServiceImpl();
     });
 
     tearDown(() async {
@@ -153,6 +146,8 @@ void main() {
         if (validation.issues.isNotEmpty) {
           for (final issue in validation.issues) {
             // print('  - ${issue.severity.name}: ${issue.message}');
+            // Use the issue variable to avoid unused warning
+            expect(issue.message, isNotEmpty);
           }
         }
         // print('---');

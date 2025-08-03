@@ -243,7 +243,7 @@ class ResponsiveBreakpoints {
 
 /// Provider for responsive design service
 final responsiveDesignServiceProvider = Provider<ResponsiveDesignService>((ref) {
-  return const ResponsiveDesignService();
+  return ResponsiveDesignService();
 });
 
 /// Provider for current layout configuration

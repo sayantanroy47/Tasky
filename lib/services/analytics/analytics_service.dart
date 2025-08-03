@@ -985,7 +985,8 @@ class AnalyticsServiceImpl implements AnalyticsService {
     final weeklyCompletionRates = <double>[];
     for (final range in weekRanges) {
       final tasks = await _getTasksInDateRange(range);
-      final rate = tasks.isNotEmpty ? completedTasks / tasks.length : 0.0;
+      final completedTasksInRange = tasks.where((t) => t.status.isCompleted).length;
+      final rate = tasks.isNotEmpty ? completedTasksInRange / tasks.length : 0.0;
       weeklyCompletionRates.add(rate);
     }
     
@@ -1104,7 +1105,8 @@ class AnalyticsServiceImpl implements AnalyticsService {
       
       final tasks = await _getTasksInDateRange(intervalRange);
       final categoryTasks = tasks.where((t) => t.tags.contains(categoryId) || (categoryId == 'Uncategorized' && t.tags.isEmpty)).toList();
-      final rate = categoryTasks.isNotEmpty ? completedTasks / categoryTasks.length : 0.0;
+      final completedTasksInCategory = categoryTasks.where((t) => t.status.isCompleted).length;
+      final rate = categoryTasks.isNotEmpty ? completedTasksInCategory / categoryTasks.length : 0.0;
       
       completionRates.add(rate);
       currentStart = intervalEnd;
@@ -1290,7 +1292,7 @@ class AnalyticsServiceImpl implements AnalyticsService {
   }
 
   String _exportToCsv(AnalyticsSummary summary, ProductivityMetrics metrics, ProductivityPatterns patterns) {
-    const buffer = StringBuffer();
+    final buffer = StringBuffer();
     
     // Header
     buffer.writeln('Metric,Value,Period');
@@ -1335,15 +1337,25 @@ class AnalyticsServiceImpl implements AnalyticsService {
     String grade;
     if (overall >= 90) {
       grade = 'A+';
-    } else if (overall >= 85) grade = 'A';
-    else if (overall >= 80) grade = 'A-';
-    else if (overall >= 75) grade = 'B+';
-    else if (overall >= 70) grade = 'B';
-    else if (overall >= 65) grade = 'B-';
-    else if (overall >= 60) grade = 'C+';
-    else if (overall >= 55) grade = 'C';
-    else if (overall >= 50) grade = 'C-';
-    else grade = 'D';
+    } else if (overall >= 85) {
+      grade = 'A';
+    } else if (overall >= 80) {
+      grade = 'A-';
+    } else if (overall >= 75) {
+      grade = 'B+';
+    } else if (overall >= 70) {
+      grade = 'B';
+    } else if (overall >= 65) {
+      grade = 'B-';
+    } else if (overall >= 60) {
+      grade = 'C+';
+    } else if (overall >= 55) {
+      grade = 'C';
+    } else if (overall >= 50) {
+      grade = 'C-';
+    } else {
+      grade = 'D';
+    }
     
     return ProductivityScore(
       overall: overall,

@@ -497,7 +497,7 @@ class _ErrorBoundaryState extends State<ErrorBoundary> {
 
 /// Providers
 final errorRecoveryServiceProvider = Provider<ErrorRecoveryService>((ref) {
-  final service = const ErrorRecoveryService();
+  final service = ErrorRecoveryService();
   ref.onDispose(() => service.dispose());
   return service;
 });

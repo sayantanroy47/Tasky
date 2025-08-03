@@ -29,7 +29,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            performanceStatsProvider.overrideWith((ref) => AsyncValue.data(stats)),
+            performanceStatsProvider.overrideWith((ref) => stats),
           ],
           child: const MaterialApp(
             home: PerformanceDashboardScreen(),

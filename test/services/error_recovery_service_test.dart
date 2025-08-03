@@ -4,16 +4,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:task_tracker_app/services/error_recovery_service.dart';
 
 @GenerateMocks([SharedPreferences])
-import 'error_recovery_service_test.mocks.dart';
+
 
 void main() {
   group('ErrorRecoveryService', () {
     late ErrorRecoveryService errorRecoveryService;
-    late MockSharedPreferences mockPrefs;
 
     setUp(() {
-      mockPrefs = const MockSharedPreferences();
-      errorRecoveryService = const ErrorRecoveryService();
+      errorRecoveryService = ErrorRecoveryService();
       
       // Mock SharedPreferences
       SharedPreferences.setMockInitialValues({});
@@ -174,7 +172,6 @@ void main() {
       });
 
       test('should use exponential backoff', () async {
-        final delays = <Duration>[];
         int attemptCount = 0;
         
         try {

@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../services/notification/notification_manager.dart';
+import '../../services/notification/notification_manager.dart' as manager;
 import '../../services/notification/notification_models.dart';
 import '../../services/notification/notification_service.dart';
 import '../../services/notification/local_notification_service.dart';
@@ -12,11 +12,11 @@ final notificationServiceProvider = Provider<NotificationService>((ref) {
 });
 
 /// Provider for the notification manager
-final notificationManagerProvider = Provider<NotificationManager>((ref) {
+final notificationManagerProvider = Provider<manager.NotificationManager>((ref) {
   final taskRepository = ref.read(taskRepositoryProvider);
   final notificationService = ref.read(notificationServiceProvider);
   
-  return NotificationManager(
+  return manager.NotificationManager(
     notificationService: notificationService,
     taskRepository: taskRepository,
   );
@@ -42,7 +42,7 @@ final notificationPermissionsProvider = StateNotifierProvider<NotificationPermis
 
 /// State notifier for notification settings
 class NotificationSettingsNotifier extends StateNotifier<AsyncValue<NotificationSettings>> {
-  final NotificationManager _notificationManager;
+  final manager.NotificationManager _notificationManager;
 
   NotificationSettingsNotifier(this._notificationManager) : super(const AsyncValue.loading()) {
     _loadSettings();
@@ -123,7 +123,7 @@ class NotificationSettingsNotifier extends StateNotifier<AsyncValue<Notification
 
 /// State notifier for scheduled notifications
 class ScheduledNotificationsNotifier extends StateNotifier<AsyncValue<List<ScheduledNotification>>> {
-  final NotificationManager _notificationManager;
+  final manager.NotificationManager _notificationManager;
 
   ScheduledNotificationsNotifier(this._notificationManager) : super(const AsyncValue.loading()) {
     _loadScheduledNotifications();
@@ -154,7 +154,7 @@ class ScheduledNotificationsNotifier extends StateNotifier<AsyncValue<List<Sched
 
 /// State notifier for notification permissions
 class NotificationPermissionsNotifier extends StateNotifier<AsyncValue<bool>> {
-  final NotificationManager _notificationManager;
+  final manager.NotificationManager _notificationManager;
 
   NotificationPermissionsNotifier(this._notificationManager) : super(const AsyncValue.loading()) {
     _checkPermissions();

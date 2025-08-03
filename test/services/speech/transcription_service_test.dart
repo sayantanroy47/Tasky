@@ -107,7 +107,7 @@ void main() {
     late LocalTranscriptionService service;
 
     setUp(() {
-      service = const LocalTranscriptionService();
+      service = LocalTranscriptionService();
     });
 
     tearDown(() async {
@@ -155,7 +155,7 @@ void main() {
     late LocalTranscriptionService localService;
 
     setUp(() {
-      localService = const LocalTranscriptionService();
+      localService = LocalTranscriptionService();
       service = CompositeTranscriptionService(
         localService: localService,
         preference: TranscriptionPreference.localOnly,

@@ -330,7 +330,7 @@ enum HapticFeedbackType {
 
 /// Providers for gesture customization
 final gestureCustomizationServiceProvider = Provider<GestureCustomizationService>((ref) {
-  return const GestureCustomizationService();
+  return GestureCustomizationService();
 });
 
 final gestureSettingsProvider = StateNotifierProvider<GestureSettingsNotifier, GestureSettings>((ref) {

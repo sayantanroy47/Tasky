@@ -80,7 +80,7 @@ class _OptimizedListViewState<T> extends State<OptimizedListView<T>> {
     
     // Debounce scroll end detection
     Future.delayed(const Duration(milliseconds: 100), () {
-      if (_isScrolling && _controller.position.activity?.isScrolling == false) {
+      if (_isScrolling && !_controller.position.isScrollingNotifier.value) {
         _isScrolling = false;
         _performanceService.stopTimer('list_scroll_${widget.performanceTag ?? 'default'}');
       }
@@ -400,7 +400,7 @@ class LazyLoadingWrapper extends StatefulWidget {
 }
 
 class _LazyLoadingWrapperState extends State<LazyLoadingWrapper> {
-  final ScrollController _controller = const ScrollController();
+  final ScrollController _controller = ScrollController();
   @override
   void initState() {
     super.initState();

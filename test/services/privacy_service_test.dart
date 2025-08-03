@@ -8,7 +8,7 @@ void main() {
     late PrivacyService privacyService;
 
     setUp(() {
-      privacyService = const PrivacyService();
+      privacyService = PrivacyService();
       SharedPreferences.setMockInitialValues({});
     });
 

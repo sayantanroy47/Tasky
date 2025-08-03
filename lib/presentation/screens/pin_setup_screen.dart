@@ -11,7 +11,8 @@ class PinSetupScreen extends ConsumerStatefulWidget {
   const PinSetupScreen({
     super.key,
     this.isChangingPin = false,
-  });  @override
+  });
+  @override
   ConsumerState<PinSetupScreen> createState() => _PinSetupScreenState();
 }
 
@@ -23,13 +24,15 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
   PinSetupStep _currentStep = PinSetupStep.enterPin;
   String? _errorMessage;
   bool _isProcessing = false;
-  String? _oldPin;  @override
+  String? _oldPin;
+  @override
   void initState() {
     super.initState();
     if (widget.isChangingPin) {
       _currentStep = PinSetupStep.enterOldPin;
     }
-  }  @override
+  }
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -438,10 +441,15 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
     final securityService = ref.read(securityServiceProvider);
     final isBiometricAvailable = await securityService.isBiometricAvailable();
     
-    if (!isBiometricAvailable || !mounted) {
-      Navigator.of(context).pop();
+    if (!isBiometricAvailable) {
       return;
     }
+    
+    if (!mounted) {
+      return;
+    }
+    
+    Navigator.of(context).pop();
     
     showDialog(
       context: context,

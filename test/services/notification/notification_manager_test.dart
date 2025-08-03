@@ -46,7 +46,7 @@ void main() {
         final notification = ScheduledNotification(
           id: 123,
           taskId: testTask.id,
-          type: NotificationType.taskReminder,
+          type: NotificationTypeModel.taskReminder,
           scheduledTime: scheduledTime,
           title: 'Test Notification',
           body: 'Test body',
@@ -55,16 +55,16 @@ void main() {
 
         expect(notification.id, equals(123));
         expect(notification.taskId, equals(testTask.id));
-        expect(notification.type, equals(NotificationType.taskReminder));
+        expect(notification.type, equals(NotificationTypeModel.taskReminder));
         expect(notification.sent, isFalse);
       });
     });
 
     group('notification types', () {
       test('should have correct display names', () {
-        expect(NotificationType.taskReminder.displayName, equals('Task Reminder'));
-        expect(NotificationType.dailySummary.displayName, equals('Daily Summary'));
-        expect(NotificationType.overdueTask.displayName, equals('Overdue Task'));
+        expect(NotificationTypeModel.taskReminder.displayName, equals('Task Reminder'));
+        expect(NotificationTypeModel.dailySummary.displayName, equals('Daily Summary'));
+        expect(NotificationTypeModel.overdueTask.displayName, equals('Overdue Task'));
       });
 
       test('should have correct action display names', () {
@@ -84,9 +84,9 @@ void main() {
       });
 
       test('should serialize and deserialize correctly', () {
-        const originalTime = TimeOfDay(hour: 9, minute: 15);
+        const originalTime = NotificationTime(hour: 9, minute: 15);
         final json = originalTime.toJson();
-        final deserializedTime = TimeOfDay.fromJson(json);
+        final deserializedTime = NotificationTime.fromJson(json);
 
         expect(deserializedTime.hour, equals(originalTime.hour));
         expect(deserializedTime.minute, equals(originalTime.minute));

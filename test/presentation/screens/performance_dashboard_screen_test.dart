@@ -14,7 +14,7 @@ void main() {
     late MockPerformanceService mockPerformanceService;
 
     setUp(() {
-      mockPerformanceService = const MockPerformanceService();
+      mockPerformanceService = MockPerformanceService();
     });
 
     testWidgets('should display loading indicator while loading stats', (WidgetTester tester) async {

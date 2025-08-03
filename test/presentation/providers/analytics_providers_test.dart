@@ -14,12 +14,10 @@ import 'analytics_providers_test.mocks.dart';
 void main() {
   group('Analytics Providers', () {
     late MockAnalyticsService mockAnalyticsService;
-    late MockAppDatabase mockDatabase;
     late ProviderContainer container;
 
     setUp(() {
-      mockAnalyticsService = const MockAnalyticsService();
-      mockDatabase = const MockAppDatabase();
+      mockAnalyticsService = MockAnalyticsService();
       
       container = ProviderContainer(
         overrides: [

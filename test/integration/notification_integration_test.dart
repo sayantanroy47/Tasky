@@ -167,11 +167,11 @@ void main() {
 
     testWidgets('should handle notification types correctly', (tester) async {
       // Test notification type display names
-      expect(NotificationType.taskReminder.displayName, equals('Task Reminder'));
-      expect(NotificationType.dailySummary.displayName, equals('Daily Summary'));
-      expect(NotificationType.overdueTask.displayName, equals('Overdue Task'));
-      expect(NotificationType.taskCompleted.displayName, equals('Task Completed'));
-      expect(NotificationType.locationReminder.displayName, equals('Location Reminder'));
+      expect(NotificationTypeModel.taskReminder.displayName, equals('Task Reminder'));
+      expect(NotificationTypeModel.dailySummary.displayName, equals('Daily Summary'));
+      expect(NotificationTypeModel.overdueTask.displayName, equals('Overdue Task'));
+      expect(NotificationTypeModel.taskCompleted.displayName, equals('Task Completed'));
+      expect(NotificationTypeModel.locationReminder.displayName, equals('Location Reminder'));
 
       // Test notification action display names
       expect(NotificationAction.complete.displayName, equals('Complete'));
@@ -210,7 +210,7 @@ void main() {
       final notification = ScheduledNotification(
         id: 123,
         taskId: testTask.id,
-        type: NotificationType.taskReminder,
+        type: NotificationTypeModel.taskReminder,
         scheduledTime: scheduledTime,
         title: 'Test Notification',
         body: 'Test notification body',
@@ -219,7 +219,7 @@ void main() {
 
       expect(notification.id, equals(123));
       expect(notification.taskId, equals(testTask.id));
-      expect(notification.type, equals(NotificationType.taskReminder));
+      expect(notification.type, equals(NotificationTypeModel.taskReminder));
       expect(notification.sent, isFalse);
       expect(notification.payload, isEmpty);
 

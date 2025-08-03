@@ -15,7 +15,8 @@ class LocationTaskCard extends ConsumerWidget {
     required this.taskLocationInfo,
     this.onTap,
     this.onLocationTriggerToggle,
-  });  @override
+  });
+  @override
   Widget build(BuildContext context, WidgetRef ref) {
     final task = taskLocationInfo.task;
     final trigger = taskLocationInfo.trigger;
@@ -50,10 +51,10 @@ class LocationTaskCard extends ConsumerWidget {
                 ],
               ),
               
-              if (task.description.isNotEmpty) ...[
+              if (task.description?.isNotEmpty == true) ...[
                 const SizedBox(height: 8),
                 Text(
-                  task.description,
+                  task.description!,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Colors.grey[600],
                   ),
@@ -250,7 +251,8 @@ class NearbyTasksList extends ConsumerWidget {
     this.radiusInMeters = 1000,
     this.onTaskTap,
     this.onLocationToggle,
-  });  @override
+  });
+  @override
   Widget build(BuildContext context, WidgetRef ref) {
     return LocationPermissionWidget(
       child: CurrentLocationWidget(
@@ -341,7 +343,8 @@ class NearbyTasksList extends ConsumerWidget {
 }
 
 class LocationStatisticsWidget extends ConsumerWidget {
-  const LocationStatisticsWidget({super.key});  @override
+  const LocationStatisticsWidget({super.key});
+  @override
   Widget build(BuildContext context, WidgetRef ref) {
     return FutureBuilder<LocationStatistics>(
       future: _getLocationStatistics(),

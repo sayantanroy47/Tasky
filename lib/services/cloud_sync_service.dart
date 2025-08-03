@@ -1,7 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' hide Provider;
 import '../domain/entities/task_model.dart';
 import '../domain/entities/calendar_event.dart';
+import '../domain/models/enums.dart' as enums;
 import 'offline_data_service.dart';
 
 /// Service for cloud synchronization using Supabase
@@ -167,7 +168,7 @@ class CloudSyncService {
           .toList();
 
       // Process each cloud task
-      final conflicts = <SyncConflict>[];
+      final conflicts = <enums.SyncConflict>[];
       final syncedTasks = <String>[];
 
       for (final cloudTask in cloudTasks) {
@@ -306,7 +307,7 @@ class CloudSyncService {
 
     try {
       final results = <String, CloudSyncResult>{};
-      final allConflicts = <SyncConflict>[];
+      final allConflicts = <enums.SyncConflict>[];
 
       // Get local data
       final localTasks = await _getAllLocalTasks();
@@ -542,15 +543,20 @@ class CloudSyncService {
   }
 
   /// Detect conflicts between local and cloud tasks
-  SyncConflict? _detectTaskConflict(TaskModel localTask, TaskModel cloudTask) {
+  enums.SyncConflict? _detectTaskConflict(TaskModel localTask, TaskModel cloudTask) {
     // Simple conflict detection based on update time
     if (localTask.updatedAt != null && 
         cloudTask.updatedAt != null &&
         localTask.updatedAt!.isAfter(cloudTask.updatedAt!)) {
       
-      return SyncConflict(
+      return enums.SyncConflict(
+        id: '${localTask.id}_conflict_${DateTime.now().millisecondsSinceEpoch}',
+        type: 'task_conflict',
+        localData: localTask.toJson(),
+        remoteData: cloudTask.toJson(),
+        timestamp: DateTime.now(),
         entityId: localTask.id,
-        entityType: EntityType.task,
+        entityType: enums.EntityType.task,
         localEntity: localTask.toJson(),
         remoteEntity: cloudTask.toJson(),
         localModified: localTask.updatedAt!,
@@ -582,7 +588,7 @@ class CloudSyncResult {
   final bool success;
   final int syncedCount;
   final List<String> errors;
-  final List<SyncConflict> conflicts;
+  final List<enums.SyncConflict> conflicts;
   final String? message;
   final String? error;
 
@@ -600,7 +606,7 @@ class CloudSyncResult {
 class FullCloudSyncResult {
   final bool success;
   final int totalSynced;
-  final List<SyncConflict> conflicts;
+  final List<enums.SyncConflict> conflicts;
   final Map<String, CloudSyncResult> results;
   final String? message;
   final String? error;

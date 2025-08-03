@@ -17,7 +17,7 @@ void main() {
     late MockTaskRepository mockRepository;
 
     setUp(() {
-      mockRepository = const MockTaskRepository();
+      mockRepository = MockTaskRepository();
       processor = VoiceCommandProcessor(taskRepository: mockRepository);
     });
 

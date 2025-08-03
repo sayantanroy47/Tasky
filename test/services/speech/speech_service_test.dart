@@ -15,7 +15,7 @@ void main() {
 
     setUp(() {
       // mockSpeechToText = const MockSpeechToText();
-      speechService = const SpeechServiceImpl();
+      speechService = SpeechServiceImpl();
       // Note: In a real test, we'd need to inject the mock
     });
 

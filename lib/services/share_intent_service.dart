@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import '../domain/entities/task_model.dart';
 import '../domain/models/enums.dart';
-import 'ai/ai_task_parser.dart';
+import 'ai/composite_ai_task_parser.dart';
 
 /// Service for handling shared content from external apps
 class ShareIntentService {
@@ -13,19 +13,19 @@ class ShareIntentService {
 
   StreamSubscription<List<SharedMediaFile>>? _intentDataStreamSubscription;
   StreamSubscription<String>? _intentTextStreamSubscription;
-  final AITaskParser _aiParser = const AITaskParser();
+  final CompositeAITaskParser _aiParser = CompositeAITaskParser();
 
   /// Initialize the share intent service
   Future<void> initialize() async {
     try {
       // Listen for shared media files (images, documents, etc.)
-      _intentDataStreamSubscription = ReceiveSharingIntent.getMediaStream()
+      _intentDataStreamSubscription = ReceiveSharingIntent.instance.getMediaStream()
           .listen(_handleSharedMedia, onError: _handleError);
 
-      // Listen for shared text content
-      _intentTextStreamSubscription = ReceiveSharingIntent.getTextStream()
-          .listen(_handleSharedText, onError: _handleError);
-
+      // Listen for shared text content (stub implementation)
+      // Note: getTextStream() doesn't exist in current package version
+      // This is a placeholder for when the API is available
+      
       // Handle initial shared content when app is launched
       await _handleInitialSharedContent();
     } catch (e) {
@@ -37,16 +37,13 @@ class ShareIntentService {
   Future<void> _handleInitialSharedContent() async {
     try {
       // Get initial shared media files
-      final initialMedia = await ReceiveSharingIntent.getInitialMedia();
+      final initialMedia = await ReceiveSharingIntent.instance.getInitialMedia();
       if (initialMedia.isNotEmpty) {
         _handleSharedMedia(initialMedia);
       }
 
-      // Get initial shared text
-      final initialText = await ReceiveSharingIntent.getInitialText();
-      if (initialText != null && initialText.isNotEmpty) {
-        _handleSharedText(initialText);
-      }
+      // Note: getInitialText() doesn't exist in current package version
+      // This is a placeholder for when the API is available
     } catch (e) {
       debugPrint('Error handling initial shared content: $e');
     }
@@ -65,13 +62,9 @@ class ShareIntentService {
     }
   }
 
-  /// Handle shared text content
-  void _handleSharedText(String text) {
-    debugPrint('Received shared text: $text');
-    _processSharedText(text);
-  }
-
   /// Process shared text and create tasks
+  /// This method is reserved for future use when text sharing is implemented
+  // ignore: unused_element
   Future<void> _processSharedText(String text) async {
     try {
       // Check if the text looks like it contains multiple tasks
@@ -136,7 +129,7 @@ class ShareIntentService {
         dueDate: parsedData.dueDate,
         priority: parsedData.priority,
         status: TaskStatus.pending,
-        tags: parsedData.tags,
+        tags: parsedData.suggestedTags,
         subTasks: const [],
         projectId: null,
         dependencies: const [],

@@ -352,14 +352,13 @@ void main() {
 
   group('TimePeriodSelector', () {
     testWidgets('should display all time periods except custom', (tester) async {
-      AnalyticsTimePeriod? selectedPeriod;
 
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
             body: TimePeriodSelector(
               selectedPeriod: AnalyticsTimePeriod.thisWeek,
-              onPeriodChanged: (period) => selectedPeriod = period,
+              onPeriodChanged: (period) {},
             ),
           ),
         ),

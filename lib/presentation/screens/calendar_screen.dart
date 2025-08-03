@@ -508,9 +508,9 @@ class _CreateEventDialogState extends ConsumerState<CreateEventDialog> {
           onPressed: () => Navigator.of(context).pop(),
           child: const Text('Cancel'),
         ),
-        const ElevatedButton(
+        ElevatedButton(
           onPressed: _titleController.text.isEmpty ? null : () => _createEvent(),
-          child: Text('Create'),
+          child: const Text('Create'),
         ),
       ],
     );

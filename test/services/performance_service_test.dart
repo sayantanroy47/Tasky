@@ -4,16 +4,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:task_tracker_app/services/performance_service.dart';
 
 @GenerateMocks([SharedPreferences])
-import 'performance_service_test.mocks.dart';
+
 
 void main() {
   group('PerformanceService', () {
     late PerformanceService performanceService;
-    late MockSharedPreferences mockPrefs;
 
     setUp(() {
-      mockPrefs = const MockSharedPreferences();
-      performanceService = const PerformanceService();
+      performanceService = PerformanceService();
       
       // Mock SharedPreferences
       SharedPreferences.setMockInitialValues({});

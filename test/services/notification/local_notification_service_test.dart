@@ -18,7 +18,7 @@ void main() {
     late TaskModel testTask;
 
     setUp(() {
-      notificationService = const LocalNotificationService();
+      notificationService = LocalNotificationService();
       testTask = TaskModel.create(
         title: 'Test Task',
         description: 'Test task description',
@@ -92,7 +92,7 @@ void main() {
         final notification = ScheduledNotification(
           id: 123,
           taskId: testTask.id,
-          type: NotificationType.taskReminder,
+          type: NotificationTypeModel.taskReminder,
           scheduledTime: scheduledTime,
           title: 'Test Notification',
           body: 'Test notification body',
@@ -101,7 +101,7 @@ void main() {
 
         expect(notification.id, equals(123));
         expect(notification.taskId, equals(testTask.id));
-        expect(notification.type, equals(NotificationType.taskReminder));
+        expect(notification.type, equals(NotificationTypeModel.taskReminder));
         expect(notification.scheduledTime, equals(scheduledTime));
         expect(notification.title, equals('Test Notification'));
         expect(notification.body, equals('Test notification body'));
@@ -113,7 +113,7 @@ void main() {
         final originalNotification = ScheduledNotification(
           id: 123,
           taskId: testTask.id,
-          type: NotificationType.taskReminder,
+          type: NotificationTypeModel.taskReminder,
           scheduledTime: DateTime.now(),
           title: 'Original Title',
           body: 'Original Body',
@@ -135,11 +135,11 @@ void main() {
 
     group('notification types', () {
       test('should have correct display names for notification types', () {
-        expect(NotificationType.taskReminder.displayName, equals('Task Reminder'));
-        expect(NotificationType.dailySummary.displayName, equals('Daily Summary'));
-        expect(NotificationType.overdueTask.displayName, equals('Overdue Task'));
-        expect(NotificationType.taskCompleted.displayName, equals('Task Completed'));
-        expect(NotificationType.locationReminder.displayName, equals('Location Reminder'));
+        expect(NotificationTypeModel.taskReminder.displayName, equals('Task Reminder'));
+        expect(NotificationTypeModel.dailySummary.displayName, equals('Daily Summary'));
+        expect(NotificationTypeModel.overdueTask.displayName, equals('Overdue Task'));
+        expect(NotificationTypeModel.taskCompleted.displayName, equals('Task Completed'));
+        expect(NotificationTypeModel.locationReminder.displayName, equals('Location Reminder'));
       });
 
       test('should have correct display names for notification actions', () {
@@ -158,10 +158,10 @@ void main() {
         expect(time.minute, equals(30));
       });
 
-      test('should serialize and deserialize time of day', () {
-        const originalTime = TimeOfDay(hour: 9, minute: 15);
+      test('should serialize and deserialize notification time', () {
+        const originalTime = NotificationTime(hour: 9, minute: 15);
         final json = originalTime.toJson();
-        final deserializedTime = TimeOfDay.fromJson(json);
+        final deserializedTime = NotificationTime.fromJson(json);
 
         expect(deserializedTime.hour, equals(originalTime.hour));
         expect(deserializedTime.minute, equals(originalTime.minute));
