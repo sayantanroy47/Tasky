@@ -338,7 +338,9 @@
     - Build change tracking and notifications
     - _Requirements: 17.1, 17.2, 17.3, 17.4, 17.5, 17.6_
 
-- [ ] 13. Add calendar integration and advanced scheduling
+- [x] 13. Add calendar integration and advanced scheduling
+
+
   - [x] 13.1 Implement calendar views and time-based scheduling
 
 
@@ -349,6 +351,7 @@
     - Build conflict detection for overlapping tasks
     - _Requirements: 16.1, 16.2, 16.3, 16.4_
 
+
   - [x] 13.2 Integrate with system calendar
 
 
@@ -356,6 +359,10 @@
     - Implement calendar event creation from tasks
     - Build two-way synchronization system
     - Create calendar integration settings
+
+
+
+
     - _Requirements: 16.5, 16.6_
 
 - [ ] 14. Implement offline-first architecture and cloud sync

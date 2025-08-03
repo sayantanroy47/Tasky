@@ -10,6 +10,11 @@ import 'core/routing/app_router.dart';
 import 'presentation/widgets/app_initialization_wrapper.dart';
 import 'services/performance_service.dart';
 
+/// Performance service provider
+final performanceServiceProvider = Provider<PerformanceService>((ref) {
+  return PerformanceService();
+});
+
 void main() async {
   // Start performance monitoring early
   final performanceService = PerformanceService();

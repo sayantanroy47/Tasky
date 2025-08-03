@@ -59,6 +59,8 @@ class TaskRepositoryImpl implements TaskRepository {
   Future<List<TaskModel>> searchTasks(String query) async {
     return await _database.taskDao.searchTasks(query);
   }
+
+
   @override
   Future<List<TaskModel>> getTasksWithFilter(TaskFilter filter) async {
     // Start with all tasks

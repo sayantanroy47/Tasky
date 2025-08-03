@@ -5,9 +5,13 @@ import '../../domain/repositories/task_repository.dart';
 import '../../data/repositories/task_repository_impl.dart';
 import '../../services/database/database.dart';
 
+/// Global database instance
+AppDatabase? _databaseInstance;
+
 /// Provider for the database instance
 final databaseProvider = Provider<AppDatabase>((ref) {
-  return AppDatabase();
+  _databaseInstance ??= AppDatabase();
+  return _databaseInstance!;
 });
 
 /// Provider for the task repository

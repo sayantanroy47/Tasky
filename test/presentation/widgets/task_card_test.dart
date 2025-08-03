@@ -172,36 +172,18 @@ void main() {
       expect(toggled, isTrue);
     });
 
-    testWidgets('should show popup menu when actions are enabled', (WidgetTester tester) async {
+    testWidgets('should show popup menu by default', (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
             body: TaskCard(
               title: 'Test Task',
-              showActions: true,
             ),
           ),
         ),
       );
 
-      expect(find.byWidgetPredicate((widget) => 
-        widget.runtimeType.toString().contains('PopupMenuButton')
-      ), findsOneWidget);
-    });
-
-    testWidgets('should not show popup menu when actions are disabled', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        const MaterialApp(
-          home: Scaffold(
-            body: TaskCard(
-              title: 'Test Task',
-              showActions: false,
-            ),
-          ),
-        ),
-      );
-
-      expect(find.byType(PopupMenuButton), findsNothing);
+      expect(find.byType(PopupMenuButton), findsOneWidget);
     });
 
     testWidgets('should show priority indicator with correct color', (WidgetTester tester) async {

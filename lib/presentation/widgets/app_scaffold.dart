@@ -37,7 +37,8 @@ class AppScaffold extends ConsumerWidget {
           ? NavigationBar(
               selectedIndex: selectedIndex,
               onDestinationSelected: (index) {
-                AppRouter.navigateToIndex(index);
+                AppRouter.navigateToIndexWithContext(context, index);
+                ref.read(navigationProvider.notifier).navigateToIndex(index);
               },
               destinations: AppRouter.bottomNavigationDestinations,
             )

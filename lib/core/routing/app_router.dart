@@ -1,4 +1,16 @@
 import 'package:flutter/material.dart';
+import '../../presentation/pages/home_page.dart';
+import '../../presentation/pages/tasks_page.dart';
+import '../../presentation/pages/settings_page.dart';
+import '../../presentation/pages/calendar_page.dart';
+import '../../presentation/pages/analytics_page.dart';
+import '../../presentation/pages/projects_page.dart';
+import '../../presentation/pages/task_detail_page.dart';
+import '../../presentation/pages/voice_demo_page.dart';
+import '../../presentation/pages/data_export_page.dart';
+import '../../presentation/screens/performance_dashboard_screen.dart';
+import '../../presentation/screens/integration_settings_screen.dart';
+import '../../presentation/screens/task_sharing_screen.dart';
 
 /// Application router
 class AppRouter {
@@ -16,8 +28,35 @@ class AppRouter {
 
   /// Navigate to index
   static void navigateToIndex(int index) {
-    // This would need to be implemented with proper navigation logic
-    // For now, just a placeholder
+    // This method should be called with a BuildContext
+    // For now, we'll handle navigation through the navigation provider
+  }
+
+  /// Navigate to index with context
+  static void navigateToIndexWithContext(BuildContext context, int index) {
+    String route;
+    switch (index) {
+      case 0:
+        route = home;
+        break;
+      case 1:
+        route = tasks;
+        break;
+      case 2:
+        route = settings;
+        break;
+      case 3:
+        route = performance;
+        break;
+      default:
+        route = home;
+    }
+    
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      route,
+      (route) => false,
+    );
   }
 
   /// Navigate to route
@@ -59,22 +98,64 @@ class AppRouter {
     switch (settings.name) {
       case home:
         return MaterialPageRoute(
-          builder: (_) => const HomeScreen(),
+          builder: (_) => const HomePage(),
           settings: settings,
         );
       case '/tasks':
         return MaterialPageRoute(
-          builder: (_) => const TasksScreen(),
+          builder: (_) => const TasksPage(),
           settings: settings,
         );
       case '/settings':
         return MaterialPageRoute(
-          builder: (_) => const SettingsScreen(),
+          builder: (_) => const SettingsPage(),
           settings: settings,
         );
       case '/performance':
         return MaterialPageRoute(
-          builder: (_) => const PerformanceScreen(),
+          builder: (_) => const PerformanceDashboardScreen(),
+          settings: settings,
+        );
+      case '/calendar':
+        return MaterialPageRoute(
+          builder: (_) => const CalendarPage(),
+          settings: settings,
+        );
+      case '/analytics':
+        return MaterialPageRoute(
+          builder: (_) => const AnalyticsPage(),
+          settings: settings,
+        );
+      case '/projects':
+        return MaterialPageRoute(
+          builder: (_) => const ProjectsPage(),
+          settings: settings,
+        );
+      case '/task-detail':
+        return MaterialPageRoute(
+          builder: (_) => TaskDetailPage(
+            taskId: settings.arguments as String? ?? '',
+          ),
+          settings: settings,
+        );
+      case '/voice-demo':
+        return MaterialPageRoute(
+          builder: (_) => const VoiceDemoPage(),
+          settings: settings,
+        );
+      case '/data-export':
+        return MaterialPageRoute(
+          builder: (_) => const DataExportPage(),
+          settings: settings,
+        );
+      case '/integration-settings':
+        return MaterialPageRoute(
+          builder: (_) => const IntegrationSettingsScreen(),
+          settings: settings,
+        );
+      case '/task-sharing':
+        return MaterialPageRoute(
+          builder: (_) => const TaskSharingScreen(),
           settings: settings,
         );
       default:
@@ -86,133 +167,7 @@ class AppRouter {
   }
 }
 
-/// Home screen placeholder
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Task Tracker'),
-      ),
-      body: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.task_alt,
-              size: 64,
-              color: Colors.blue,
-            ),
-            SizedBox(height: 16),
-            Text(
-              'Welcome to Task Tracker',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Your voice-driven task management app',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey,
-              ),
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, AppRouter.tasks);
-        },
-        child: const Icon(Icons.add),
-      ),
-    );
-  }
-}
 
-/// Tasks screen placeholder
-class TasksScreen extends StatelessWidget {
-  const TasksScreen({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Tasks'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () {
-              Navigator.pushNamed(context, AppRouter.settings);
-            },
-          ),
-        ],
-      ),
-      body: const Center(
-        child: Text('Tasks will be displayed here'),
-      ),
-    );
-  }
-}
-
-/// Settings screen placeholder
-class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Settings'),
-      ),
-      body: ListView(
-        children: [
-          ListTile(
-            leading: const Icon(Icons.speed),
-            title: const Text('Performance'),
-            subtitle: const Text('View performance metrics'),
-            onTap: () {
-              Navigator.pushNamed(context, AppRouter.performance);
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.palette),
-            title: const Text('Theme'),
-            subtitle: const Text('Change app appearance'),
-            onTap: () {
-              // Theme settings would go here
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.privacy_tip),
-            title: const Text('Privacy'),
-            subtitle: const Text('Privacy and security settings'),
-            onTap: () {
-              // Privacy settings would go here
-            },
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Performance screen placeholder
-class PerformanceScreen extends StatelessWidget {
-  const PerformanceScreen({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Performance'),
-      ),
-      body: const Center(
-        child: Text('Performance metrics will be displayed here'),
-      ),
-    );
-  }
-}
 
 /// Not found screen
 class NotFoundScreen extends StatelessWidget {
