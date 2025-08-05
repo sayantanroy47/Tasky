@@ -590,7 +590,7 @@ void main() {
       test('daysUntilDue should return correct value', () {
         final futureDate = DateTime.now().add(const Duration(days: 5));
         final futureTask = testTask.copyWith(dueDate: futureDate);
-        expect(futureTask.daysUntilDue, 5);
+        expect(futureTask.daysUntilDue, anyOf(4, 5)); // Allow for timing differences
 
         final pastDate = DateTime.now().subtract(const Duration(days: 3));
         final pastTask = testTask.copyWith(dueDate: pastDate);

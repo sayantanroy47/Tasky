@@ -4,24 +4,22 @@ import 'package:task_tracker_app/core/providers/navigation_provider.dart';
 void main() {
   group('AppNavigationDestination Tests', () {
     test('should have correct predefined destinations', () {
-      expect(AppNavigationDestination.home.label, 'Home');
-      expect(AppNavigationDestination.home.route, '/home');
-      expect(AppNavigationDestination.tasks.label, 'Tasks');
-      expect(AppNavigationDestination.tasks.route, '/tasks');
-      expect(AppNavigationDestination.calendar.label, 'Calendar');
-      expect(AppNavigationDestination.calendar.route, '/calendar');
-      expect(AppNavigationDestination.analytics.label, 'Analytics');
-      expect(AppNavigationDestination.analytics.route, '/analytics');
-      expect(AppNavigationDestination.settings.label, 'Settings');
-      expect(AppNavigationDestination.settings.route, '/settings');
+      expect(AppNavigationDestination.values.length, 4);
+      expect(AppNavigationDestination.values[0].label, 'Home');
+      expect(AppNavigationDestination.values[0].route, '/');
+      expect(AppNavigationDestination.values[1].label, 'Tasks');
+      expect(AppNavigationDestination.values[1].route, '/tasks');
+      expect(AppNavigationDestination.values[2].label, 'Settings');
+      expect(AppNavigationDestination.values[2].route, '/settings');
+      expect(AppNavigationDestination.values[3].label, 'Performance');
+      expect(AppNavigationDestination.values[3].route, '/performance');
     });
 
     test('should return correct destination by index', () {
       expect(AppNavigationDestination.fromIndex(0), AppNavigationDestination.home);
       expect(AppNavigationDestination.fromIndex(1), AppNavigationDestination.tasks);
-      expect(AppNavigationDestination.fromIndex(2), AppNavigationDestination.calendar);
-      expect(AppNavigationDestination.fromIndex(3), AppNavigationDestination.analytics);
-      expect(AppNavigationDestination.fromIndex(4), AppNavigationDestination.settings);
+      expect(AppNavigationDestination.fromIndex(2), AppNavigationDestination.settings);
+      expect(AppNavigationDestination.fromIndex(3), AppNavigationDestination.performance);
     });
 
     test('should return home for invalid index', () {
@@ -30,11 +28,10 @@ void main() {
     });
 
     test('should return correct destination by route', () {
-      expect(AppNavigationDestination.fromRoute('/home'), AppNavigationDestination.home);
+      expect(AppNavigationDestination.fromRoute('/'), AppNavigationDestination.home);
       expect(AppNavigationDestination.fromRoute('/tasks'), AppNavigationDestination.tasks);
-      expect(AppNavigationDestination.fromRoute('/calendar'), AppNavigationDestination.calendar);
-      expect(AppNavigationDestination.fromRoute('/analytics'), AppNavigationDestination.analytics);
       expect(AppNavigationDestination.fromRoute('/settings'), AppNavigationDestination.settings);
+      expect(AppNavigationDestination.fromRoute('/performance'), AppNavigationDestination.performance);
     });
 
     test('should return home for invalid route', () {
@@ -45,18 +42,16 @@ void main() {
     test('should have correct index property', () {
       expect(AppNavigationDestination.home.index, 0);
       expect(AppNavigationDestination.tasks.index, 1);
-      expect(AppNavigationDestination.calendar.index, 2);
-      expect(AppNavigationDestination.analytics.index, 3);
-      expect(AppNavigationDestination.settings.index, 4);
+      expect(AppNavigationDestination.settings.index, 2);
+      expect(AppNavigationDestination.performance.index, 3);
     });
 
     test('should have correct values list', () {
-      expect(AppNavigationDestination.values.length, 5);
+      expect(AppNavigationDestination.values.length, 4);
       expect(AppNavigationDestination.values[0], AppNavigationDestination.home);
       expect(AppNavigationDestination.values[1], AppNavigationDestination.tasks);
-      expect(AppNavigationDestination.values[2], AppNavigationDestination.calendar);
-      expect(AppNavigationDestination.values[3], AppNavigationDestination.analytics);
-      expect(AppNavigationDestination.values[4], AppNavigationDestination.settings);
+      expect(AppNavigationDestination.values[2], AppNavigationDestination.settings);
+      expect(AppNavigationDestination.values[3], AppNavigationDestination.performance);
     });
   });
 
@@ -84,12 +79,12 @@ void main() {
     test('should copy with new values', () {
       const originalState = NavigationState();
       final newState = originalState.copyWith(
-        currentDestination: AppNavigationDestination.calendar,
+        currentDestination: AppNavigationDestination.settings,
         selectedIndex: 2,
         canPop: true,
       );
       
-      expect(newState.currentDestination, AppNavigationDestination.calendar);
+      expect(newState.currentDestination, AppNavigationDestination.settings);
       expect(newState.selectedIndex, 2);
       expect(newState.canPop, true);
       

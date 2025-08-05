@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../domain/models/enums.dart';
+import '../../domain/entities/task_audio_metadata.dart';
 import 'highlighted_text.dart';
+import 'audio_playback_widget.dart';
 
 /// A card widget that displays task information
 class TaskCard extends StatelessWidget {
@@ -18,6 +20,9 @@ class TaskCard extends StatelessWidget {
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
   final bool isPinned;
+  final String? audioFilePath;
+  final Duration? audioDuration;
+  final TaskType taskType;
 
   const TaskCard({
     super.key,
@@ -35,6 +40,9 @@ class TaskCard extends StatelessWidget {
     this.onEdit,
     this.onDelete,
     this.isPinned = false,
+    this.audioFilePath,
+    this.audioDuration,
+    this.taskType = TaskType.text,
   });
 
   @override
@@ -177,6 +185,37 @@ class TaskCard extends StatelessWidget {
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                 ),
+                          ],
+                          
+                          // Audio playback widget for voice tasks
+                          if (audioFilePath != null) ...[
+                            const SizedBox(height: 8),
+                            AudioPlaybackWidget(
+                              audioFilePath: audioFilePath!,
+                              audioDuration: audioDuration,
+                              isCompact: true,
+                            ),
+                          ],
+                          
+                          // Task type indicator
+                          if (taskType != TaskType.text) ...[
+                            const SizedBox(height: 4),
+                            Row(
+                              children: [
+                                Text(
+                                  taskType.icon,
+                                  style: const TextStyle(fontSize: 12),
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  taskType.displayName,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ],
                         ],
                       ),

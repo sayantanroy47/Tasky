@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
-import '../providers/task_providers.dart';
+import '../providers/task_provider.dart';
 
 /// Dialog for creating or editing tasks
 class TaskFormDialog extends ConsumerStatefulWidget {

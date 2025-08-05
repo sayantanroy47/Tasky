@@ -18,14 +18,14 @@ void main() {
         ),
       );
 
-      // Perform a right swipe gesture
-      await tester.drag(find.byType(TaskCard), const Offset(200.0, 0.0));
+      // Perform a right swipe gesture on the Dismissible widget
+      await tester.drag(find.byType(Dismissible), const Offset(400.0, 0.0));
       await tester.pumpAndSettle();
       
       expect(toggled, isTrue);
     });
 
-    testWidgets('should trigger onDelete when swiped left', (WidgetTester tester) async {
+    testWidgets('should show delete confirmation when swiped left', (WidgetTester tester) async {
       bool deleted = false;
       
       await tester.pumpWidget(
@@ -39,8 +39,16 @@ void main() {
         ),
       );
 
-      // Perform a left swipe gesture
-      await tester.drag(find.byType(TaskCard), const Offset(-200.0, 0.0));
+      // Perform a left swipe gesture on the Dismissible widget
+      await tester.drag(find.byType(Dismissible), const Offset(-400.0, 0.0));
+      await tester.pumpAndSettle();
+      
+      // Should show delete confirmation dialog
+      expect(find.text('Delete Task'), findsOneWidget);
+      expect(find.text('Are you sure you want to delete "Test Task"?'), findsOneWidget);
+      
+      // Tap confirm to trigger onDelete
+      await tester.tap(find.text('Delete'));
       await tester.pumpAndSettle();
       
       expect(deleted, isTrue);
@@ -138,16 +146,18 @@ void main() {
         ),
       );
 
-      // Initially not completed
-      expect(find.byIcon(Icons.check), findsNothing);
+      // Initially not completed - checkbox should be unchecked
+      final initialCheckbox = tester.widget<Checkbox>(find.byType(Checkbox));
+      expect(initialCheckbox.value, isFalse);
       
       // Toggle completion
       await tester.tap(find.text('Toggle'));
       await tester.pump(); // Start animation
       
-      // Should find the check icon after animation starts
+      // Should find the checkbox checked after animation completes
       await tester.pumpAndSettle(); // Complete animation
-      expect(find.byIcon(Icons.check), findsOneWidget);
+      final completedCheckbox = tester.widget<Checkbox>(find.byType(Checkbox));
+      expect(completedCheckbox.value, isTrue);
     });
   });
 }

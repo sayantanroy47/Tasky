@@ -20,7 +20,6 @@ void main() {
       expect(find.text('Test Task'), findsOneWidget);
       expect(find.text('2/3'), findsOneWidget);
       expect(find.byIcon(Icons.checklist), findsOneWidget);
-      expect(find.byType(LinearProgressIndicator), findsOneWidget);
     });
 
     testWidgets('should not display subtask progress when task has no subtasks', (WidgetTester tester) async {
@@ -36,10 +35,9 @@ void main() {
 
       expect(find.text('Test Task'), findsOneWidget);
       expect(find.byIcon(Icons.checklist), findsNothing);
-      expect(find.byType(LinearProgressIndicator), findsNothing);
     });
 
-    testWidgets('should show correct progress indicator value', (WidgetTester tester) async {
+    testWidgets('should show correct progress text value', (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
@@ -52,15 +50,12 @@ void main() {
         ),
       );
 
-      final progressIndicator = tester.widget<LinearProgressIndicator>(
-        find.byType(LinearProgressIndicator),
-      );
-
-      // Should show 75% completion (3 out of 4 subtasks completed)
-      expect(progressIndicator.value, equals(0.75));
+      // Should show 3 out of 4 subtasks completed
+      expect(find.text('3/4'), findsOneWidget);
+      expect(find.byIcon(Icons.checklist), findsOneWidget);
     });
 
-    testWidgets('should show 100% progress when all subtasks completed', (WidgetTester tester) async {
+    testWidgets('should show all subtasks completed', (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
@@ -73,15 +68,12 @@ void main() {
         ),
       );
 
-      final progressIndicator = tester.widget<LinearProgressIndicator>(
-        find.byType(LinearProgressIndicator),
-      );
-
-      // Should show 100% completion
-      expect(progressIndicator.value, equals(1.0));
+      // Should show all subtasks completed
+      expect(find.text('2/2'), findsOneWidget);
+      expect(find.byIcon(Icons.checklist), findsOneWidget);
     });
 
-    testWidgets('should show 0% progress when no subtasks completed', (WidgetTester tester) async {
+    testWidgets('should show zero progress when no subtasks completed', (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
@@ -94,12 +86,9 @@ void main() {
         ),
       );
 
-      final progressIndicator = tester.widget<LinearProgressIndicator>(
-        find.byType(LinearProgressIndicator),
-      );
-
-      // Should show 0% completion
-      expect(progressIndicator.value, equals(0.0));
+      // Should show 0 out of 3 subtasks completed
+      expect(find.text('0/3'), findsOneWidget);
+      expect(find.byIcon(Icons.checklist), findsOneWidget);
     });
 
     testWidgets('should handle null subtask completed count', (WidgetTester tester) async {
@@ -115,17 +104,12 @@ void main() {
         ),
       );
 
+      // Should show 0 when completed count is null
       expect(find.text('0/3'), findsOneWidget);
-      
-      final progressIndicator = tester.widget<LinearProgressIndicator>(
-        find.byType(LinearProgressIndicator),
-      );
-
-      // Should show 0% completion when completed count is null
-      expect(progressIndicator.value, equals(0.0));
+      expect(find.byIcon(Icons.checklist), findsOneWidget);
     });
 
-    testWidgets('should show dimmed progress indicator for completed tasks', (WidgetTester tester) async {
+    testWidgets('should show subtask progress for completed tasks', (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
@@ -139,12 +123,9 @@ void main() {
         ),
       );
 
-      final progressIndicator = tester.widget<LinearProgressIndicator>(
-        find.byType(LinearProgressIndicator),
-      );
-
-      // The progress indicator should have reduced opacity for completed tasks
-      expect(progressIndicator.valueColor, isA<AlwaysStoppedAnimation<Color>>());
+      // Should still show subtask progress even when task is completed
+      expect(find.text('2/2'), findsOneWidget);
+      expect(find.byIcon(Icons.checklist), findsOneWidget);
     });
   });
 }

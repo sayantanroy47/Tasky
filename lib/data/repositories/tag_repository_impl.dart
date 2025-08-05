@@ -1,4 +1,5 @@
-import '../../domain/repositories/tag_repository.dart' as repo;
+import '../../domain/repositories/tag_repository.dart';
+import '../../domain/entities/tag.dart' as entity;
 import '../../services/database/database.dart';
 import '../../services/database/daos/tag_dao.dart' as dao;
 
@@ -6,64 +7,76 @@ import '../../services/database/daos/tag_dao.dart' as dao;
 /// 
 /// This implementation uses the Drift/SQLite database through the TagDao
 /// to provide all tag-related operations.
-class TagRepositoryImpl implements repo.TagRepository {
+class TagRepositoryImpl implements TagRepository {
   final AppDatabase _database;
 
-  const TagRepositoryImpl(this._database);  @override
-  Future<List<repo.Tag>> getAllTags() async {
+  const TagRepositoryImpl(this._database);
+  @override
+  Future<List<entity.Tag>> getAllTags() async {
     final daoTags = await _database.tagDao.getAllTags();
     return daoTags.map(_daoTagToRepositoryTag).toList();
-  }  @override
-  Future<repo.Tag?> getTagById(String id) async {
+  }
+  @override
+  Future<entity.Tag?> getTagById(String id) async {
     final daoTag = await _database.tagDao.getTagById(id);
     return daoTag != null ? _daoTagToRepositoryTag(daoTag) : null;
-  }  @override
-  Future<repo.Tag?> getTagByName(String name) async {
+  }
+  @override
+  Future<entity.Tag?> getTagByName(String name) async {
     final daoTag = await _database.tagDao.getTagByName(name);
     return daoTag != null ? _daoTagToRepositoryTag(daoTag) : null;
-  }  @override
-  Future<void> createTag(repo.Tag tag) async {
+  }
+  @override
+  Future<void> createTag(entity.Tag tag) async {
     final daoTag = _repositoryTagToDaoTag(tag);
     await _database.tagDao.createTag(daoTag);
-  }  @override
-  Future<void> updateTag(repo.Tag tag) async {
+  }
+  @override
+  Future<void> updateTag(entity.Tag tag) async {
     final daoTag = _repositoryTagToDaoTag(tag);
     await _database.tagDao.updateTag(daoTag);
-  }  @override
+  }
+  @override
   Future<void> deleteTag(String id) async {
     await _database.tagDao.deleteTag(id);
-  }  @override
-  Future<List<repo.Tag>> getTagsForTask(String taskId) async {
+  }
+  @override
+  Future<List<entity.Tag>> getTagsForTask(String taskId) async {
     final daoTags = await _database.tagDao.getTagsForTask(taskId);
     return daoTags.map(_daoTagToRepositoryTag).toList();
-  }  @override
-  Future<List<repo.TagWithUsage>> getTagsWithUsage() async {
+  }
+  @override
+  Future<List<TagWithUsage>> getTagsWithUsage() async {
     final daoTagsWithUsage = await _database.tagDao.getTagsWithUsageCounts();
     return daoTagsWithUsage.map((daoTagWithUsage) {
-      return repo.TagWithUsage(
+      return TagWithUsage(
         tag: _daoTagToRepositoryTag(daoTagWithUsage.tag),
         usageCount: daoTagWithUsage.usageCount,
       );
     }).toList();
-  }  @override
-  Future<List<repo.TagWithUsage>> getMostUsedTags({int limit = 10}) async {
+  }
+  @override
+  Future<List<TagWithUsage>> getMostUsedTags({int limit = 10}) async {
     final daoTagsWithUsage = await _database.tagDao.getMostUsedTags(limit: limit);
     return daoTagsWithUsage.map((daoTagWithUsage) {
-      return repo.TagWithUsage(
+      return TagWithUsage(
         tag: _daoTagToRepositoryTag(daoTagWithUsage.tag),
         usageCount: daoTagWithUsage.usageCount,
       );
     }).toList();
-  }  @override
-  Future<List<repo.Tag>> getUnusedTags() async {
+  }
+  @override
+  Future<List<entity.Tag>> getUnusedTags() async {
     final daoTags = await _database.tagDao.getUnusedTags();
     return daoTags.map(_daoTagToRepositoryTag).toList();
-  }  @override
-  Future<List<repo.Tag>> searchTags(String query) async {
+  }
+  @override
+  Future<List<entity.Tag>> searchTags(String query) async {
     final daoTags = await _database.tagDao.searchTags(query);
     return daoTags.map(_daoTagToRepositoryTag).toList();
-  }  @override
-  Future<List<repo.Tag>> getTagsWithFilter(repo.TagFilter filter) async {
+  }
+  @override
+  Future<List<entity.Tag>> getTagsWithFilter(TagFilter filter) async {
     // Start with all tags
     var tagsWithUsage = await getTagsWithUsage();
 
@@ -102,13 +115,13 @@ class TagRepositoryImpl implements repo.TagRepository {
       int comparison = 0;
       
       switch (filter.sortBy) {
-        case repo.TagSortBy.name:
+        case TagSortBy.name:
           comparison = a.tag.name.toLowerCase().compareTo(b.tag.name.toLowerCase());
           break;
-        case repo.TagSortBy.createdAt:
+        case TagSortBy.createdAt:
           comparison = a.tag.createdAt.compareTo(b.tag.createdAt);
           break;
-        case repo.TagSortBy.usageCount:
+        case TagSortBy.usageCount:
           comparison = a.usageCount.compareTo(b.usageCount);
           break;
       }
@@ -117,24 +130,29 @@ class TagRepositoryImpl implements repo.TagRepository {
     });
 
     return tagsWithUsage.map((tagWithUsage) => tagWithUsage.tag).toList();
-  }  @override
+  }
+  @override
   Future<void> addTagToTask(String taskId, String tagId) async {
     await _database.tagDao.addTagToTask(taskId, tagId);
-  }  @override
+  }
+  @override
   Future<void> removeTagFromTask(String taskId, String tagId) async {
     await _database.tagDao.removeTagFromTask(taskId, tagId);
-  }  @override
-  Stream<List<repo.Tag>> watchAllTags() {
+  }
+  @override
+  Stream<List<entity.Tag>> watchAllTags() {
     return _database.tagDao.watchAllTags().map((daoTags) {
       return daoTags.map(_daoTagToRepositoryTag).toList();
     });
-  }  @override
-  Stream<List<repo.Tag>> watchTagsForTask(String taskId) {
+  }
+  @override
+  Stream<List<entity.Tag>> watchTagsForTask(String taskId) {
     return _database.tagDao.watchTagsForTask(taskId).map((daoTags) {
       return daoTags.map(_daoTagToRepositoryTag).toList();
     });
-  }  @override
-  Stream<repo.Tag?> watchTagById(String id) {
+  }
+  @override
+  Stream<entity.Tag?> watchTagById(String id) {
     return watchAllTags().map((tags) {
       try {
         return tags.firstWhere((tag) => tag.id == id);
@@ -145,8 +163,8 @@ class TagRepositoryImpl implements repo.TagRepository {
   }
 
   /// Converts a DAO Tag to a Repository Tag
-  repo.Tag _daoTagToRepositoryTag(dao.Tag daoTag) {
-    return repo.Tag(
+  entity.Tag _daoTagToRepositoryTag(dao.Tag daoTag) {
+    return entity.Tag(
       id: daoTag.id,
       name: daoTag.name,
       color: daoTag.color,
@@ -155,7 +173,7 @@ class TagRepositoryImpl implements repo.TagRepository {
   }
 
   /// Converts a Repository Tag to a DAO Tag
-  dao.Tag _repositoryTagToDaoTag(repo.Tag repositoryTag) {
+  dao.Tag _repositoryTagToDaoTag(entity.Tag repositoryTag) {
     return dao.Tag(
       id: repositoryTag.id,
       name: repositoryTag.name,

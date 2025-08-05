@@ -46,8 +46,12 @@ void main() {
         ),
       );
 
-      // Look for the check icon that appears when completed
-      expect(find.byIcon(Icons.check), findsOneWidget);
+      // Look for the checkbox that appears as completion indicator
+      expect(find.byType(Checkbox), findsOneWidget);
+      
+      // Verify the checkbox is checked
+      final checkbox = tester.widget<Checkbox>(find.byType(Checkbox));
+      expect(checkbox.value, isTrue);
     });
 
     testWidgets('should show strikethrough text when completed', (WidgetTester tester) async {
@@ -93,7 +97,8 @@ void main() {
         ),
       );
 
-      expect(find.text('Tomorrow'), findsOneWidget);
+      // Look for text that contains "Tomorrow" since it includes time
+      expect(find.textContaining('Tomorrow'), findsOneWidget);
       expect(find.byIcon(Icons.schedule), findsOneWidget);
     });
 
@@ -160,15 +165,8 @@ void main() {
         ),
       );
 
-      // Find the completion indicator (circular container) and tap it
-      final completionIndicator = find.byWidgetPredicate(
-        (widget) => widget is GestureDetector && 
-                    widget.child is AnimatedContainer &&
-                    (widget.child as AnimatedContainer).decoration is BoxDecoration &&
-                    ((widget.child as AnimatedContainer).decoration as BoxDecoration).shape == BoxShape.circle
-      );
-      
-      await tester.tap(completionIndicator);
+      // Find and tap the checkbox
+      await tester.tap(find.byType(Checkbox));
       expect(toggled, isTrue);
     });
 
@@ -183,7 +181,7 @@ void main() {
         ),
       );
 
-      expect(find.byType(PopupMenuButton), findsOneWidget);
+      expect(find.byType(PopupMenuButton<String>), findsOneWidget);
     });
 
     testWidgets('should show priority indicator with correct color', (WidgetTester tester) async {

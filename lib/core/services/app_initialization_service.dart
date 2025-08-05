@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../services/error_recovery_service.dart';
 import '../../services/performance_service.dart';
@@ -5,6 +6,7 @@ import '../../services/privacy_service.dart';
 import '../../services/database/database.dart';
 import '../../services/share_intent_service.dart';
 import '../../presentation/providers/task_providers.dart';
+import '../../main.dart' show navigatorKey;
 
 /// Service for handling app initialization with error recovery
 class AppInitializationService {
@@ -152,7 +154,19 @@ final appInitializationProvider = FutureProvider<void>((ref) async {
   final performanceService = ref.read(performanceServiceProvider);
   final privacyService = ref.read(privacyServiceProvider);
   final database = ref.read(databaseProvider);
+  final taskRepository = ref.read(taskRepositoryProvider);
   final shareIntentService = ShareIntentService();
+  
+  // Connect repository to share intent service
+  shareIntentService.setTaskRepository(taskRepository);
+  
+  // Set context for dialog display (will be available after app builds)
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    final context = navigatorKey.currentContext;
+    if (context != null) {
+      shareIntentService.setContext(context);
+    }
+  });
   
   final initService = AppInitializationService(
     errorRecoveryService,

@@ -1,7 +1,6 @@
 import '../entities/task_model.dart';
 import '../entities/subtask.dart';
 import '../repositories/task_repository.dart';
-import '../../core/errors/app_exceptions.dart';
 
 /// Custom exceptions for use cases
 class ValidationException implements Exception {
@@ -37,7 +36,7 @@ class TaskUseCases {
   }) async {
     // Validate input
     if (title.trim().isEmpty) {
-      throw ValidationException('Task title cannot be empty');
+      throw const ValidationException('Task title cannot be empty');
     }
 
     // Create task
@@ -51,7 +50,7 @@ class TaskUseCases {
 
     // Validate task
     if (!task.isValid()) {
-      throw ValidationException('Invalid task data');
+      throw const ValidationException('Invalid task data');
     }
 
     // Save to repository
@@ -63,13 +62,13 @@ class TaskUseCases {
   Future<TaskModel> updateTask(TaskModel task) async {
     // Validate task
     if (!task.isValid()) {
-      throw ValidationException('Invalid task data');
+      throw const ValidationException('Invalid task data');
     }
 
     // Check if task exists
     final existingTask = await _taskRepository.getTaskById(task.id);
     if (existingTask == null) {
-      throw NotFoundException('Task not found');
+      throw const NotFoundException('Task not found');
     }
 
     // Update with current timestamp
@@ -83,11 +82,11 @@ class TaskUseCases {
   Future<TaskModel> completeTask(String taskId) async {
     final task = await _taskRepository.getTaskById(taskId);
     if (task == null) {
-      throw NotFoundException('Task not found');
+      throw const NotFoundException('Task not found');
     }
 
     if (task.isCompleted) {
-      throw ValidationException('Task is already completed');
+      throw const ValidationException('Task is already completed');
     }
 
     // Check if all dependencies are completed
@@ -121,7 +120,7 @@ class TaskUseCases {
   Future<void> deleteTask(String taskId) async {
     final task = await _taskRepository.getTaskById(taskId);
     if (task == null) {
-      throw NotFoundException('Task not found');
+      throw const NotFoundException('Task not found');
     }
 
     // Check if other tasks depend on this task
@@ -218,11 +217,11 @@ class TaskUseCases {
   Future<TaskModel> addSubTask(String taskId, String subTaskTitle) async {
     final task = await _taskRepository.getTaskById(taskId);
     if (task == null) {
-      throw NotFoundException('Task not found');
+      throw const NotFoundException('Task not found');
     }
 
     if (subTaskTitle.trim().isEmpty) {
-      throw ValidationException('Subtask title cannot be empty');
+      throw const ValidationException('Subtask title cannot be empty');
     }
 
     final subTask = SubTask.create(
@@ -241,12 +240,12 @@ class TaskUseCases {
   Future<TaskModel> toggleSubTask(String taskId, String subTaskId) async {
     final task = await _taskRepository.getTaskById(taskId);
     if (task == null) {
-      throw NotFoundException('Task not found');
+      throw const NotFoundException('Task not found');
     }
 
     final subTaskIndex = task.subTasks.indexWhere((st) => st.id == subTaskId);
     if (subTaskIndex == -1) {
-      throw NotFoundException('Subtask not found');
+      throw const NotFoundException('Subtask not found');
     }
 
     final subTask = task.subTasks[subTaskIndex];

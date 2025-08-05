@@ -10,6 +10,9 @@ import 'core/routing/app_router.dart';
 import 'presentation/widgets/app_initialization_wrapper.dart';
 import 'services/performance_service.dart';
 
+/// Global navigator key for accessing context from services
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 /// Performance service provider
 final performanceServiceProvider = Provider<PerformanceService>((ref) {
   return PerformanceService();
@@ -93,6 +96,7 @@ class TaskTrackerApp extends ConsumerWidget {
     return AppInitializationWrapper(
       child: MaterialApp(
         title: AppConstants.appName,
+        navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
         theme: _getTheme(themeState, false),
         darkTheme: _getTheme(themeState, true),

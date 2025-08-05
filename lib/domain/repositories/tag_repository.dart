@@ -1,45 +1,4 @@
-/// Simple Tag model for repository operations
-class Tag {
-  final String id;
-  final String name;
-  final String? color;
-  final DateTime createdAt;
-
-  const Tag({
-    required this.id,
-    required this.name,
-    this.color,
-    required this.createdAt,
-  });
-
-  Tag copyWith({
-    String? id,
-    String? name,
-    String? color,
-    DateTime? createdAt,
-  }) {
-    return Tag(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      color: color ?? this.color,
-      createdAt: createdAt ?? this.createdAt,
-    );
-  }  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    return other is Tag &&
-        other.id == id &&
-        other.name == name &&
-        other.color == color &&
-        other.createdAt == createdAt;
-  }  @override
-  int get hashCode {
-    return id.hashCode ^ name.hashCode ^ color.hashCode ^ createdAt.hashCode;
-  }  @override
-  String toString() {
-    return 'Tag(id: $id, name: $name, color: $color, createdAt: $createdAt)';
-  }
-}
+import '../entities/tag.dart';
 
 /// Abstract repository interface for tag operations
 /// 
@@ -107,14 +66,17 @@ class TagWithUsage {
   const TagWithUsage({
     required this.tag,
     required this.usageCount,
-  });  @override
+  });
+  @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     return other is TagWithUsage &&
         other.tag == tag &&
         other.usageCount == usageCount;
-  }  @override
-  int get hashCode => tag.hashCode ^ usageCount.hashCode;  @override
+  }
+  @override
+  int get hashCode => tag.hashCode ^ usageCount.hashCode;
+  @override
   String toString() {
     return 'TagWithUsage(tag: $tag, usageCount: $usageCount)';
   }

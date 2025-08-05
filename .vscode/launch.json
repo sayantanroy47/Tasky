@@ -1,0 +1,36 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "task_tracker_app (Debug)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart",
+            "args": [
+                "--hot"
+            ],
+            "flutterMode": "debug"
+        },
+        {
+            "name": "task_tracker_app (Profile)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "task_tracker_app (Release)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart",
+            "flutterMode": "release"
+        },
+        {
+            "name": "Integration Tests",
+            "request": "launch",
+            "type": "dart",
+            "program": "integration_test/app_test.dart",
+            "flutterMode": "debug"
+        }
+    ]
+}

@@ -1,2 +1,26 @@
 {
+    "dart.flutterSdkPath": "C:\\src\\flutter",
+    "dart.debugExternalPackageLibraries": false,
+    "dart.debugSdkLibraries": false,
+    "dart.analysisExcludedFolders": [
+        "build/**",
+        ".dart_tool/**"
+    ],
+    "dart.lineLength": 120,
+    "dart.insertArgumentPlaceholders": false,
+    "dart.enableSnippets": true,
+    "dart.hotReloadOnSave": "always",
+    "dart.previewLsp": true,
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll": true,
+        "source.organizeImports": true
+    },
+    "files.associations": {
+        "*.dart": "dart"
+    },
+    "flutter.experiments": {
+        "custom-embedder": true
+    }
 }

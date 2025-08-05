@@ -13,75 +13,53 @@ class AppNavigationDestination {
     required this.route,
   });
 
-  /// All available destinations
+  /// All available destinations - aligned with AppRouter and bottom navigation
   static const List<AppNavigationDestination> values = [
     AppNavigationDestination(
       label: 'Home',
       icon: Icons.home,
-      route: '/home',
+      route: '/',
     ),
     AppNavigationDestination(
       label: 'Tasks',
-      icon: Icons.task,
+      icon: Icons.task_alt,
       route: '/tasks',
-    ),
-    AppNavigationDestination(
-      label: 'Projects',
-      icon: Icons.folder,
-      route: '/projects',
-    ),
-    AppNavigationDestination(
-      label: 'Calendar',
-      icon: Icons.calendar_today,
-      route: '/calendar',
-    ),
-    AppNavigationDestination(
-      label: 'Analytics',
-      icon: Icons.analytics,
-      route: '/analytics',
     ),
     AppNavigationDestination(
       label: 'Settings',
       icon: Icons.settings,
       route: '/settings',
     ),
+    AppNavigationDestination(
+      label: 'Performance',
+      icon: Icons.speed,
+      route: '/performance',
+    ),
   ];
 
-  /// Predefined destinations
+  /// Predefined destinations - aligned with AppRouter
   static const AppNavigationDestination home = AppNavigationDestination(
     label: 'Home',
     icon: Icons.home,
-    route: '/home',
+    route: '/',
   );
 
   static const AppNavigationDestination tasks = AppNavigationDestination(
     label: 'Tasks',
-    icon: Icons.task,
+    icon: Icons.task_alt,
     route: '/tasks',
-  );
-
-  static const AppNavigationDestination projects = AppNavigationDestination(
-    label: 'Projects',
-    icon: Icons.folder,
-    route: '/projects',
-  );
-
-  static const AppNavigationDestination calendar = AppNavigationDestination(
-    label: 'Calendar',
-    icon: Icons.calendar_today,
-    route: '/calendar',
-  );
-
-  static const AppNavigationDestination analytics = AppNavigationDestination(
-    label: 'Analytics',
-    icon: Icons.analytics,
-    route: '/analytics',
   );
 
   static const AppNavigationDestination settings = AppNavigationDestination(
     label: 'Settings',
     icon: Icons.settings,
     route: '/settings',
+  );
+
+  static const AppNavigationDestination performance = AppNavigationDestination(
+    label: 'Performance',
+    icon: Icons.speed,
+    route: '/performance',
   );
 
   /// Get index of this destination

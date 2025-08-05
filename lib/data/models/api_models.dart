@@ -1,7 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
 import '../../domain/entities/task_model.dart';
-import '../../domain/entities/project.dart';
-import '../../domain/entities/tag.dart';
 
 part 'api_models.g.dart';
 

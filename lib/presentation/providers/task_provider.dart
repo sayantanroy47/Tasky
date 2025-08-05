@@ -2,130 +2,229 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
 import '../../domain/repositories/task_repository.dart';
+import '../../data/repositories/task_repository_impl.dart';
+import '../../services/database/database.dart';
+import '../../services/task/recurring_task_service.dart';
+import '../../services/task/task_dependency_service.dart';
+import '../../services/notification/notification_service.dart';
+import '../../services/notification/local_notification_service.dart';
+
+/// Singleton database provider to prevent multiple instances
+final databaseProvider = Provider<AppDatabase>((ref) {
+  // Keep alive to ensure singleton behavior
+  ref.keepAlive();
+  
+  final database = AppDatabase();
+  
+  // Proper cleanup on disposal
+  ref.onDispose(() async {
+    await database.close();
+  });
+  
+  return database;
+});
 
 /// Provider for task repository
 final taskRepositoryProvider = Provider<TaskRepository>((ref) {
-  throw UnimplementedError('TaskRepository provider not implemented');
+  final database = ref.watch(databaseProvider);
+  return TaskRepositoryImpl(database);
 });
 
 /// Provider for all tasks
-final tasksProvider = FutureProvider<List<TaskModel>>((ref) async {
-  final repository = ref.read(taskRepositoryProvider);
-  return repository.getAllTasks();
-});
-
-/// Provider for tasks by status
-final tasksByStatusProvider = FutureProvider.family<List<TaskModel>, TaskStatus>((ref, status) async {
-  final repository = ref.read(taskRepositoryProvider);
-  return repository.getTasksByStatus(status);
-});
-
-/// Provider for tasks by priority
-final tasksByPriorityProvider = FutureProvider.family<List<TaskModel>, TaskPriority>((ref, priority) async {
-  final repository = ref.read(taskRepositoryProvider);
-  return repository.getTasksByPriority(priority);
+final tasksProvider = StreamProvider<List<TaskModel>>((ref) {
+  final repository = ref.watch(taskRepositoryProvider);
+  return repository.watchAllTasks();
 });
 
 /// Provider for pending tasks
-final pendingTasksProvider = FutureProvider<List<TaskModel>>((ref) async {
-  final repository = ref.read(taskRepositoryProvider);
-  return repository.getTasksByStatus(TaskStatus.pending);
+final pendingTasksProvider = StreamProvider<List<TaskModel>>((ref) {
+  final repository = ref.watch(taskRepositoryProvider);
+  return repository.watchTasksByStatus(TaskStatus.pending);
 });
 
 /// Provider for completed tasks
-final completedTasksProvider = FutureProvider<List<TaskModel>>((ref) async {
-  final repository = ref.read(taskRepositoryProvider);
-  return repository.getTasksByStatus(TaskStatus.completed);
-});
-
-/// Provider for overdue tasks
-final overdueTasksProvider = FutureProvider<List<TaskModel>>((ref) async {
-  final repository = ref.read(taskRepositoryProvider);
-  return repository.getOverdueTasks();
+final completedTasksProvider = StreamProvider<List<TaskModel>>((ref) {
+  final repository = ref.watch(taskRepositoryProvider);
+  return repository.watchTasksByStatus(TaskStatus.completed);
 });
 
 /// Provider for today's tasks
 final todayTasksProvider = FutureProvider<List<TaskModel>>((ref) async {
-  final repository = ref.read(taskRepositoryProvider);
-  final now = DateTime.now();
-  final today = DateTime(now.year, now.month, now.day);
-  final tomorrow = today.add(const Duration(days: 1));
-  return repository.getTasksByDateRange(today, tomorrow);
+  final repository = ref.watch(taskRepositoryProvider);
+  return repository.getTasksDueToday();
 });
 
-/// Provider for task search
-final taskSearchProvider = FutureProvider.family<List<TaskModel>, String>((ref, query) async {
-  final repository = ref.read(taskRepositoryProvider);
+/// Provider for overdue tasks
+final overdueTasksProvider = FutureProvider<List<TaskModel>>((ref) async {
+  final repository = ref.watch(taskRepositoryProvider);
+  return repository.getOverdueTasks();
+});
+
+/// Provider for task filter state
+final taskFilterProvider = StateProvider<TaskFilter>((ref) {
+  return const TaskFilter();
+});
+
+/// Provider for filtered tasks
+final filteredTasksProvider = FutureProvider<List<TaskModel>>((ref) async {
+  final repository = ref.watch(taskRepositoryProvider);
+  final filter = ref.watch(taskFilterProvider);
+  
+  if (!filter.hasFilters) {
+    return repository.getAllTasks();
+  }
+  
+  return repository.getTasksWithFilter(filter);
+});
+
+/// Provider for search query
+final searchQueryProvider = StateProvider<String>((ref) => '');
+
+/// Provider for searched tasks
+final searchedTasksProvider = FutureProvider<List<TaskModel>>((ref) async {
+  final repository = ref.watch(taskRepositoryProvider);
+  final query = ref.watch(searchQueryProvider);
+  
+  if (query.isEmpty) {
+    return repository.getAllTasks();
+  }
+  
   return repository.searchTasks(query);
 });
 
-/// State notifier for managing task operations
-class TaskNotifier extends StateNotifier<AsyncValue<List<TaskModel>>> {
-  TaskNotifier(this._repository) : super(const AsyncValue.loading()) {
-    _loadTasks();
-  }
+/// Recurring task service provider
+final recurringTaskServiceProvider = Provider<RecurringTaskService>((ref) {
+  final repository = ref.watch(taskRepositoryProvider);
+  return RecurringTaskService(repository);
+});
 
+/// Task dependency service provider
+final taskDependencyServiceProvider = Provider<TaskDependencyService>((ref) {
+  final repository = ref.watch(taskRepositoryProvider);
+  return TaskDependencyService(repository);
+});
+
+/// Notification service provider
+final notificationServiceProvider = Provider<NotificationService>((ref) {
+  final repository = ref.watch(taskRepositoryProvider);
+  return LocalNotificationService(repository);
+});
+
+/// Task operations provider
+final taskOperationsProvider = Provider<TaskOperations>((ref) {
+  final repository = ref.watch(taskRepositoryProvider);
+  final recurringService = ref.watch(recurringTaskServiceProvider);
+  final dependencyService = ref.watch(taskDependencyServiceProvider);
+  return TaskOperations(repository, recurringService, dependencyService);
+});
+
+/// Task operations class for CRUD operations
+class TaskOperations {
   final TaskRepository _repository;
-
-  Future<void> _loadTasks() async {
-    try {
-      final tasks = await _repository.getAllTasks();
-      state = AsyncValue.data(tasks);
-    } catch (error, stackTrace) {
-      state = AsyncValue.error(error, stackTrace);
-    }
+  final RecurringTaskService _recurringService;
+  final TaskDependencyService _dependencyService;
+  
+  TaskOperations(this._repository, this._recurringService, this._dependencyService);
+  
+  Future<void> createTask(TaskModel task) async {
+    await _repository.createTask(task);
   }
-
-  Future<void> addTask(TaskModel task) async {
-    try {
-      await _repository.createTask(task);
-      await _loadTasks();
-    } catch (error, stackTrace) {
-      state = AsyncValue.error(error, stackTrace);
-    }
-  }
-
+  
   Future<void> updateTask(TaskModel task) async {
-    try {
-      await _repository.updateTask(task);
-      await _loadTasks();
-    } catch (error, stackTrace) {
-      state = AsyncValue.error(error, stackTrace);
-    }
+    await _repository.updateTask(task);
   }
-
-  Future<void> deleteTask(String taskId) async {
-    try {
-      await _repository.deleteTask(taskId);
-      await _loadTasks();
-    } catch (error, stackTrace) {
-      state = AsyncValue.error(error, stackTrace);
-    }
+  
+  Future<void> deleteTask(String id) async {
+    await _repository.deleteTask(id);
   }
-
-  Future<void> toggleTaskStatus(String taskId) async {
-    try {
-      final task = await _repository.getTaskById(taskId);
-      if (task != null) {
-        final newStatus = task.status == TaskStatus.completed 
-            ? TaskStatus.pending 
-            : TaskStatus.completed;
-        final updatedTask = task.copyWith(status: newStatus);
-        await _repository.updateTask(updatedTask);
-        await _loadTasks();
+  
+  Future<void> toggleTaskCompletion(TaskModel task) async {
+    if (task.status != TaskStatus.completed) {
+      // Validate dependencies before marking as completed
+      final validation = await _dependencyService.validateTaskCompletion(task);
+      if (!validation.isValid) {
+        throw Exception(validation.errorMessage ?? 'Task dependencies not completed');
       }
-    } catch (error, stackTrace) {
-      state = AsyncValue.error(error, stackTrace);
+    }
+    
+    final updatedTask = task.status == TaskStatus.completed
+        ? task.resetToPending()
+        : task.markCompleted();
+    await _repository.updateTask(updatedTask);
+    
+    // If the task was completed
+    if (updatedTask.status == TaskStatus.completed) {
+      // Handle dependent tasks
+      await _dependencyService.onTaskCompleted(updatedTask);
+      
+      // If recurring, generate next instance
+      if (task.isRecurring) {
+        final nextTask = await _recurringService.generateNextRecurringTask(updatedTask);
+        if (nextTask != null) {
+          await _repository.createTask(nextTask);
+        }
+      }
     }
   }
-
-  void refresh() {
-    _loadTasks();
+  
+  Future<void> markTaskInProgress(TaskModel task) async {
+    final updatedTask = task.markInProgress();
+    await _repository.updateTask(updatedTask);
+  }
+  
+  Future<void> cancelTask(TaskModel task) async {
+    final updatedTask = task.markCancelled();
+    await _repository.updateTask(updatedTask);
+  }
+  
+  Future<void> pinTask(TaskModel task) async {
+    final updatedTask = task.togglePin();
+    await _repository.updateTask(updatedTask);
+  }
+  
+  /// Processes all completed recurring tasks and generates next instances
+  Future<List<TaskModel>> processRecurringTasks() async {
+    return await _recurringService.processCompletedRecurringTasks();
+  }
+  
+  /// Stops a recurring task series
+  Future<void> stopRecurringTask(TaskModel task) async {
+    await _recurringService.stopRecurringTaskSeries(task);
+  }
+  
+  /// Gets future instances of a recurring task
+  Future<List<TaskModel>> getFutureRecurringInstances(TaskModel task) async {
+    return await _recurringService.getFutureRecurringInstances(task);
+  }
+  
+  /// Deletes all future recurring instances
+  Future<void> deleteFutureRecurringInstances(TaskModel task) async {
+    await _recurringService.deleteFutureRecurringInstances(task);
+  }
+  
+  /// Adds a dependency between two tasks
+  Future<void> addTaskDependency(String dependentTaskId, String prerequisiteTaskId) async {
+    final result = await _dependencyService.addDependency(dependentTaskId, prerequisiteTaskId);
+    if (!result.isSuccess) {
+      throw Exception(result.errorMessage ?? 'Failed to add dependency');
+    }
+  }
+  
+  /// Removes a dependency between two tasks
+  Future<void> removeTaskDependency(String dependentTaskId, String prerequisiteTaskId) async {
+    final result = await _dependencyService.removeDependency(dependentTaskId, prerequisiteTaskId);
+    if (!result.isSuccess) {
+      throw Exception(result.errorMessage ?? 'Failed to remove dependency');
+    }
+  }
+  
+  /// Gets tasks that are ready to be worked on
+  Future<List<TaskModel>> getReadyTasks() async {
+    return await _dependencyService.getReadyTasks();
+  }
+  
+  /// Gets tasks that are blocked by dependencies
+  Future<List<TaskModel>> getBlockedTasks() async {
+    return await _dependencyService.getBlockedTasks();
   }
 }
-
-/// Provider for task notifier
-final taskNotifierProvider = StateNotifierProvider<TaskNotifier, AsyncValue<List<TaskModel>>>((ref) {
-  final repository = ref.read(taskRepositoryProvider);
-  return TaskNotifier(repository);
-});

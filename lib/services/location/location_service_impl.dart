@@ -2,9 +2,54 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'location_service.dart';
 import 'location_models.dart';
+import 'real_location_service.dart';
 
-/// Stub implementation of LocationService when geolocator is not available
+/// Main location service implementation - delegates to real or stub based on availability
 class LocationServiceImpl implements LocationService {
+  static LocationService? _instance;
+  late final LocationService _delegate;
+
+  LocationServiceImpl() {
+    try {
+      // Try to use real location service
+      _delegate = RealLocationService();
+    } catch (e) {
+      if (kDebugMode) {
+        print('Real location service not available, using stub: $e');
+      }
+      _delegate = _StubLocationService();
+    }
+  }
+
+  factory LocationServiceImpl.getInstance() {
+    return _instance ??= LocationServiceImpl();
+  }
+
+  @override
+  Future<bool> isLocationServiceEnabled() => _delegate.isLocationServiceEnabled();
+
+  @override
+  Future<LocationPermissionStatus> checkPermission() => _delegate.checkPermission();
+
+  @override
+  Future<LocationPermissionStatus> requestPermission() => _delegate.requestPermission();
+
+  @override
+  Future<LocationData> getCurrentLocation() => _delegate.getCurrentLocation();
+
+  @override
+  Stream<LocationData> getLocationStream() => _delegate.getLocationStream();
+
+  @override
+  Future<String?> getAddressFromCoordinates(double latitude, double longitude) =>
+      _delegate.getAddressFromCoordinates(latitude, longitude);
+
+  @override
+  void dispose() => _delegate.dispose();
+}
+
+/// Stub implementation fallback when geolocator is not available
+class _StubLocationService implements LocationService {
   StreamSubscription<LocationData>? _positionSubscription;  @override
   Future<bool> isLocationServiceEnabled() async {
     return false; // Always false for stub

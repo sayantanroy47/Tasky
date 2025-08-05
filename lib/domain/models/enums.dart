@@ -451,6 +451,48 @@ class TaskFilter {
     this.sortBy = TaskSortBy.createdAt,
     this.sortAscending = true,
   });
+
+  /// Creates a copy of this filter with updated fields
+  TaskFilter copyWith({
+    TaskStatus? status,
+    TaskPriority? priority,
+    List<String>? tags,
+    String? projectId,
+    DateTime? dueDateFrom,
+    DateTime? dueDateTo,
+    bool? isOverdue,
+    bool? isPinned,
+    String? searchQuery,
+    TaskSortBy? sortBy,
+    bool? sortAscending,
+  }) {
+    return TaskFilter(
+      status: status ?? this.status,
+      priority: priority ?? this.priority,
+      tags: tags ?? this.tags,
+      projectId: projectId ?? this.projectId,
+      dueDateFrom: dueDateFrom ?? this.dueDateFrom,
+      dueDateTo: dueDateTo ?? this.dueDateTo,
+      isOverdue: isOverdue ?? this.isOverdue,
+      isPinned: isPinned ?? this.isPinned,
+      searchQuery: searchQuery ?? this.searchQuery,
+      sortBy: sortBy ?? this.sortBy,
+      sortAscending: sortAscending ?? this.sortAscending,
+    );
+  }
+
+  /// Returns true if any filter is applied
+  bool get hasFilters {
+    return status != null ||
+        priority != null ||
+        tags != null ||
+        projectId != null ||
+        dueDateFrom != null ||
+        dueDateTo != null ||
+        isOverdue != null ||
+        isPinned != null ||
+        (searchQuery != null && searchQuery!.isNotEmpty);
+  }
 }
 
 /// Task sorting options
@@ -460,6 +502,24 @@ enum TaskSortBy {
   dueDate,
   priority,
   title,
-  status,
+  status;
+
+  /// Get display name for sort option
+  String get displayName {
+    switch (this) {
+      case TaskSortBy.createdAt:
+        return 'Created Date';
+      case TaskSortBy.updatedAt:
+        return 'Updated Date';
+      case TaskSortBy.dueDate:
+        return 'Due Date';
+      case TaskSortBy.priority:
+        return 'Priority';
+      case TaskSortBy.title:
+        return 'Title';
+      case TaskSortBy.status:
+        return 'Status';
+    }
+  }
 }
 

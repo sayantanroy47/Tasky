@@ -1,63 +1,660 @@
+import 'dart:io';
 import 'dart:async';
-import 'package:flutter/foundation.dart';
-
+import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
+import '../../domain/entities/task_model.dart';
+import '../../domain/models/enums.dart';
+import '../../domain/repositories/task_repository.dart';
 import 'notification_service.dart';
+import 'notification_models.dart';
 
-/// Stub class for PendingNotificationRequest
-class PendingNotificationRequest {
-  final int id;
-  final String? title;
-  final String? body;
-  final String? payload;
-
-  PendingNotificationRequest({
-    required this.id,
-    this.title,
-    this.body,
-    this.payload,
-  });
-}
-
-/// Stub implementation of NotificationService when flutter_local_notifications is not available
+/// Local notification service implementation using flutter_local_notifications
 class LocalNotificationService implements NotificationService {
+  static const String _channelId = 'task_reminders';
+  static const String _channelName = 'Task Reminders';
+  static const String _channelDescription = 'Notifications for task reminders and updates';
+  
+  final FlutterLocalNotificationsPlugin _notificationsPlugin;
+  final TaskRepository _taskRepository;
+  final StreamController<NotificationEvent> _eventController;
+  
+  NotificationSettings _settings = const NotificationSettings();
+  
+  LocalNotificationService(this._taskRepository) 
+      : _notificationsPlugin = FlutterLocalNotificationsPlugin(),
+        _eventController = StreamController<NotificationEvent>.broadcast();
+  
+  @override
+  Stream<NotificationEvent> get notificationEvents => _eventController.stream;
+  
   @override
   Future<bool> initialize() async {
-    return false; // Always false for stub
+    try {
+      // Initialize timezone data
+      tz.initializeTimeZones();
+      
+      // Android initialization settings
+      const androidInitializationSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+      
+      // iOS initialization settings
+      const iosInitializationSettings = DarwinInitializationSettings(
+        requestAlertPermission: true,
+        requestBadgePermission: true,
+        requestSoundPermission: true,
+      );
+      
+      // Combined initialization settings
+      const initializationSettings = InitializationSettings(
+        android: androidInitializationSettings,
+        iOS: iosInitializationSettings,
+      );
+      
+      // Initialize with settings and callback
+      final initialized = await _notificationsPlugin.initialize(
+        initializationSettings,
+        onDidReceiveNotificationResponse: _onNotificationTapped,
+      );
+      
+      if (initialized ?? false) {
+        await _createNotificationChannel();
+        return true;
+      }
+      
+      return false;
+    } catch (e) {
+      print('Error initializing notifications: $e');
+      return false;
+    }
   }
+  
+  /// Creates the notification channel for Android
+  Future<void> _createNotificationChannel() async {
+    if (Platform.isAndroid) {
+      const androidNotificationChannel = AndroidNotificationChannel(
+        _channelId,
+        _channelName,
+        description: _channelDescription,
+        importance: Importance.high,
+        enableVibration: true,
+        playSound: true,
+      );
+      
+      await _notificationsPlugin
+          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+          ?.createNotificationChannel(androidNotificationChannel);
+    }
+  }
+  
   @override
   Future<bool> requestPermissions() async {
-    return false; // Always false for stub
+    if (Platform.isAndroid) {
+      final androidImplementation = _notificationsPlugin
+          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+      
+      final granted = await androidImplementation?.requestNotificationsPermission();
+      return granted ?? false;
+    } else if (Platform.isIOS) {
+      final iosImplementation = _notificationsPlugin
+          .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>();
+      
+      final granted = await iosImplementation?.requestPermissions(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+      return granted ?? false;
+    }
+    
+    return true; // Other platforms assume granted
   }
+  
   @override
   Future<bool> get hasPermissions async {
-    return false; // Always false for stub
+    if (Platform.isAndroid) {
+      final androidImplementation = _notificationsPlugin
+          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+      
+      return await androidImplementation?.areNotificationsEnabled() ?? false;
+    }
+    
+    return true; // Assume enabled for other platforms
   }
-
-  void dispose() {
-    // No-op for stub
-  }
+  
   @override
-  noSuchMethod(Invocation invocation) {
-    if (kDebugMode) {
-      // print('Stub: NotificationService method ${invocation.memberName} called');
+  Future<int?> scheduleTaskReminder({
+    required TaskModel task,
+    required DateTime scheduledTime,
+    Duration? customReminder,
+  }) async {
+    if (scheduledTime.isBefore(DateTime.now())) {
+      return null; // Don't schedule notifications in the past
     }
     
-    // Return appropriate default values based on return type
-    final returnType = invocation.memberName.toString();
-    if (returnType.contains('Future<bool>')) {
-      return Future.value(false);
-    } else if (returnType.contains('Future<int?>')) {
-      return Future.value(null);
-    } else if (returnType.contains('Future<List<')) {
-      return Future.value([]);
-    } else if (returnType.contains('Future<void>')) {
-      return Future.value();
-    } else if (returnType.contains('Stream<')) {
-      return const Stream.empty();
-    } else if (returnType.contains('Future<DateTime?>')) {
-      return Future.value(null);
+    if (!_settings.enabled) {
+      return null; // Notifications disabled
     }
     
-    return super.noSuchMethod(invocation);
+    final notificationId = _generateNotificationId(task.id, 'reminder');
+    
+    final androidDetails = AndroidNotificationDetails(
+      _channelId,
+      _channelName,
+      channelDescription: _channelDescription,
+      importance: Importance.high,
+      priority: Priority.high,
+      icon: '@mipmap/ic_launcher',
+      actions: _settings.enabled ? [
+        const AndroidNotificationAction(
+          'complete',
+          'Complete',
+          titleColor: Color(0xFF008000),
+        ),
+        const AndroidNotificationAction(
+          'snooze',
+          'Snooze 15min',
+          titleColor: Color(0xFFFFA500),
+        ),
+        const AndroidNotificationAction(
+          'reschedule',
+          'Reschedule',
+          titleColor: Color(0xFF007BFF),
+        ),
+      ] : null,
+    );
+    
+    const iosDetails = DarwinNotificationDetails(
+      categoryIdentifier: 'task_reminder',
+      interruptionLevel: InterruptionLevel.timeSensitive,
+    );
+    
+    final notificationDetails = NotificationDetails(
+      android: androidDetails,
+      iOS: iosDetails,
+    );
+    
+    final scheduledDate = tz.TZDateTime.from(scheduledTime, tz.local);
+    
+    try {
+      await _notificationsPlugin.zonedSchedule(
+        notificationId,
+        _getTaskReminderTitle(task),
+        _getTaskReminderBody(task),
+        scheduledDate,
+        notificationDetails,
+        payload: '${task.id}|reminder',
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+      );
+      
+      return notificationId;
+    } catch (e) {
+      print('Error scheduling task reminder: $e');
+      return null;
+    }
+  }
+  
+  @override
+  Future<List<int>> scheduleMultipleReminders({
+    required TaskModel task,
+    required List<Duration> reminderIntervals,
+  }) async {
+    if (task.dueDate == null) return [];
+    
+    final scheduledIds = <int>[];
+    
+    for (final interval in reminderIntervals) {
+      final reminderTime = task.dueDate!.subtract(interval);
+      final id = await scheduleTaskReminder(
+        task: task,
+        scheduledTime: reminderTime,
+        customReminder: interval,
+      );
+      
+      if (id != null) {
+        scheduledIds.add(id);
+      }
+    }
+    
+    return scheduledIds;
+  }
+  
+  @override
+  Future<int?> scheduleDailySummary({
+    required DateTime scheduledTime,
+    required List<TaskModel> tasks,
+  }) async {
+    if (!_settings.dailySummary) {
+      return null;
+    }
+    
+    const notificationId = 999999; // Fixed ID for daily summary
+    
+    final androidDetails = AndroidNotificationDetails(
+      _channelId,
+      _channelName,
+      channelDescription: _channelDescription,
+      importance: Importance.defaultImportance,
+      priority: Priority.defaultPriority,
+      icon: '@mipmap/ic_launcher',
+    );
+    
+    const iosDetails = DarwinNotificationDetails(
+      categoryIdentifier: 'daily_summary',
+    );
+    
+    final notificationDetails = NotificationDetails(
+      android: androidDetails,
+      iOS: iosDetails,
+    );
+    
+    final scheduledDate = tz.TZDateTime.from(scheduledTime, tz.local);
+    
+    // Calculate task counts
+    final todayTasks = tasks.where((t) => _isDueToday(t)).toList();
+    final overdueTasks = tasks.where((t) => _isOverdue(t)).toList();
+    final completedToday = tasks.where((t) => 
+      t.status == TaskStatus.completed &&
+      t.completedAt != null &&
+      _isToday(t.completedAt!)
+    ).length;
+    
+    final title = 'Daily Task Summary';
+    final body = 'Today: $completedToday completed, ${todayTasks.length - completedToday} remaining, ${overdueTasks.length} overdue';
+    
+    try {
+      await _notificationsPlugin.zonedSchedule(
+        notificationId,
+        title,
+        body,
+        scheduledDate,
+        notificationDetails,
+        payload: 'daily_summary|summary',
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+        matchDateTimeComponents: DateTimeComponents.time, // Repeat daily
+      );
+      
+      return notificationId;
+    } catch (e) {
+      print('Error scheduling daily summary: $e');
+      return null;
+    }
+  }
+  
+  @override
+  Future<int?> scheduleOverdueNotification({
+    required TaskModel task,
+  }) async {
+    if (!_settings.overdueNotifications) {
+      return null;
+    }
+    
+    final notificationId = _generateNotificationId(task.id, 'overdue');
+    
+    final androidDetails = AndroidNotificationDetails(
+      _channelId,
+      _channelName,
+      channelDescription: _channelDescription,
+      importance: Importance.high,
+      priority: Priority.high,
+      icon: '@mipmap/ic_launcher',
+      color: const Color.fromARGB(255, 255, 0, 0),
+    );
+    
+    const iosDetails = DarwinNotificationDetails(
+      categoryIdentifier: 'overdue_task',
+      interruptionLevel: InterruptionLevel.timeSensitive,
+    );
+    
+    final notificationDetails = NotificationDetails(
+      android: androidDetails,
+      iOS: iosDetails,
+    );
+    
+    try {
+      await _notificationsPlugin.show(
+        notificationId,
+        'Task Overdue',
+        task.title,
+        notificationDetails,
+        payload: '${task.id}|overdue',
+      );
+      
+      return notificationId;
+    } catch (e) {
+      print('Error scheduling overdue notification: $e');
+      return null;
+    }
+  }
+  
+  @override
+  Future<void> cancelNotification(int notificationId) async {
+    await _notificationsPlugin.cancel(notificationId);
+  }
+  
+  @override
+  Future<void> cancelTaskNotifications(String taskId) async {
+    final pendingNotifications = await _notificationsPlugin.pendingNotificationRequests();
+    
+    for (final notification in pendingNotifications) {
+      if (notification.payload?.startsWith(taskId) == true) {
+        await cancelNotification(notification.id);
+      }
+    }
+  }
+  
+  @override
+  Future<void> cancelAllNotifications() async {
+    await _notificationsPlugin.cancelAll();
+  }
+  
+  @override
+  Future<List<ScheduledNotification>> getScheduledNotifications() async {
+    final pendingNotifications = await _notificationsPlugin.pendingNotificationRequests();
+    
+    return pendingNotifications.map((notification) {
+      final payloadParts = notification.payload?.split('|') ?? [];
+      final taskId = payloadParts.isNotEmpty ? payloadParts[0] : null;
+      final type = payloadParts.length > 1 ? payloadParts[1] : 'unknown';
+      
+      return ScheduledNotification(
+        id: notification.id,
+        taskId: taskId ?? '',
+        title: notification.title ?? '',
+        body: notification.body ?? '',
+        type: _parseNotificationType(type),
+        scheduledTime: DateTime.now(),
+        createdAt: DateTime.now(),
+      );
+    }).cast<ScheduledNotification>().toList();
+  }
+  
+  @override
+  Future<List<ScheduledNotification>> getTaskNotifications(String taskId) async {
+    final allNotifications = await getScheduledNotifications();
+    return allNotifications.where((n) => n.taskId == taskId).toList();
+  }
+  
+  @override
+  Future<void> handleNotificationAction({
+    required String taskId,
+    required NotificationAction action,
+    Map<String, dynamic>? payload,
+  }) async {
+    _eventController.add(NotificationEvent(
+      type: 'action',
+      taskId: taskId,
+      action: action,
+      payload: payload,
+    ));
+    
+    switch (action) {
+      case NotificationAction.complete:
+        await _markTaskCompleted(taskId);
+        break;
+      case NotificationAction.snooze:
+        await _snoozeTaskReminder(taskId);
+        break;
+      case NotificationAction.view:
+        await _rescheduleTask(taskId);
+        break;
+      case NotificationAction.dismiss:
+        // Just dismiss, no action needed
+        break;
+    }
+  }
+  
+  @override
+  Future<void> updateSettings(NotificationSettings settings) async {
+    _settings = settings;
+    // You might want to persist settings here
+  }
+  
+  @override
+  Future<NotificationSettings> getSettings() async {
+    return _settings;
+  }
+  
+  @override
+  Future<void> showImmediateNotification({
+    required String title,
+    required String body,
+    String? taskId,
+    NotificationTypeModel type = NotificationTypeModel.taskReminder,
+    Map<String, dynamic>? payload,
+  }) async {
+    final notificationId = DateTime.now().millisecondsSinceEpoch;
+    
+    final androidDetails = AndroidNotificationDetails(
+      _channelId,
+      _channelName,
+      channelDescription: _channelDescription,
+      importance: Importance.high,
+      priority: Priority.high,
+      icon: '@mipmap/ic_launcher',
+    );
+    
+    const iosDetails = DarwinNotificationDetails(
+      categoryIdentifier: 'immediate',
+    );
+    
+    final notificationDetails = NotificationDetails(
+      android: androidDetails,
+      iOS: iosDetails,
+    );
+    
+    final payloadString = taskId != null ? '$taskId|${type.name}' : type.name;
+    
+    await _notificationsPlugin.show(
+      notificationId,
+      title,
+      body,
+      notificationDetails,
+      payload: payloadString,
+    );
+  }
+  
+  @override
+  Future<void> rescheduleAllNotifications() async {
+    // This would require rebuilding all notifications based on current tasks and settings
+    // For now, just cancel all and let the app reschedule as needed
+    await cancelAllNotifications();
+  }
+  
+  @override
+  Future<bool> shouldSendNotification(DateTime scheduledTime) async {
+    // Check quiet hours
+    if (_settings.quietHoursStart != null && _settings.quietHoursEnd != null) {
+      final hour = scheduledTime.hour;
+      if (hour >= _settings.quietHoursStart!.hour || hour < _settings.quietHoursEnd!.hour) {
+        return false;
+      }
+    }
+    
+    // Check do not disturb (platform specific)
+    // This would require platform channels to check system DND status
+    
+    return true;
+  }
+  
+  @override
+  Future<DateTime?> getNextNotificationTime(String taskId) async {
+    final notifications = await getTaskNotifications(taskId);
+    if (notifications.isEmpty) return null;
+    
+    // Return the earliest scheduled time
+    return notifications
+        .map((n) => n.scheduledTime)
+        .where((time) => time.isAfter(DateTime.now()))
+        .reduce((a, b) => a.isBefore(b) ? a : b);
+  }
+  
+  // Private helper methods
+  
+  /// Handles notification tap events
+  void _onNotificationTapped(NotificationResponse response) {
+    final payload = response.payload;
+    if (payload != null) {
+      final parts = payload.split('|');
+      if (parts.isNotEmpty) {
+        final taskId = parts[0];
+        final actionId = response.actionId;
+        
+        if (actionId != null) {
+          final action = _parseNotificationAction(actionId);
+          handleNotificationAction(taskId: taskId, action: action);
+        } else {
+          // Default tap action
+          _eventController.add(NotificationEvent(
+            type: 'tap',
+            taskId: taskId,
+            payload: {'payload': payload},
+          ));
+        }
+      }
+    }
+  }
+  
+  /// Generates a unique notification ID for a task and type
+  int _generateNotificationId(String taskId, String type) {
+    return '${taskId}_$type'.hashCode.abs();
+  }
+  
+  /// Gets the title for a task reminder notification
+  String _getTaskReminderTitle(TaskModel task) {
+    final priorityEmoji = _getPriorityEmoji(task.priority);
+    return '$priorityEmoji Task Reminder';
+  }
+  
+  /// Gets the body for a task reminder notification
+  String _getTaskReminderBody(TaskModel task) {
+    var body = task.title;
+    
+    if (task.dueDate != null) {
+      final dueTime = _formatTime(task.dueDate!);
+      body += ' (Due $dueTime)';
+    }
+    
+    return body;
+  }
+  
+  /// Gets emoji for task priority
+  String _getPriorityEmoji(TaskPriority priority) {
+    switch (priority) {
+      case TaskPriority.urgent:
+        return '🔴';
+      case TaskPriority.high:
+        return '🟠';
+      case TaskPriority.medium:
+        return '🟡';
+      case TaskPriority.low:
+        return '🟢';
+    }
+  }
+  
+  /// Formats time for notification display
+  String _formatTime(DateTime dateTime) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final taskDate = DateTime(dateTime.year, dateTime.month, dateTime.day);
+    
+    if (taskDate == today) {
+      return 'today at ${_formatTimeOfDay(dateTime)}';
+    } else if (taskDate == today.add(const Duration(days: 1))) {
+      return 'tomorrow at ${_formatTimeOfDay(dateTime)}';
+    } else {
+      return '${dateTime.month}/${dateTime.day} at ${_formatTimeOfDay(dateTime)}';
+    }
+  }
+  
+  /// Formats time of day
+  String _formatTimeOfDay(DateTime dateTime) {
+    final hour = dateTime.hour;
+    final minute = dateTime.minute.toString().padLeft(2, '0');
+    final period = hour >= 12 ? 'PM' : 'AM';
+    final displayHour = hour > 12 ? hour - 12 : (hour == 0 ? 12 : hour);
+    
+    return '$displayHour:$minute $period';
+  }
+  
+  /// Checks if a date is today
+  bool _isToday(DateTime date) {
+    final now = DateTime.now();
+    return date.year == now.year && 
+           date.month == now.month && 
+           date.day == now.day;
+  }
+  
+  /// Checks if a task is due today
+  bool _isDueToday(TaskModel task) {
+    return task.dueDate != null && _isToday(task.dueDate!);
+  }
+  
+  /// Checks if a task is overdue
+  bool _isOverdue(TaskModel task) {
+    return task.dueDate != null && 
+           task.dueDate!.isBefore(DateTime.now()) &&
+           task.status != TaskStatus.completed;
+  }
+  
+  /// Parses notification type from string
+  NotificationTypeModel _parseNotificationType(String type) {
+    switch (type) {
+      case 'reminder':
+        return NotificationTypeModel.taskReminder;
+      case 'overdue':
+        return NotificationTypeModel.overdueTask;
+      case 'summary':
+        return NotificationTypeModel.dailySummary;
+      default:
+        return NotificationTypeModel.taskReminder;
+    }
+  }
+  
+  /// Parses notification action from string
+  NotificationAction _parseNotificationAction(String actionId) {
+    switch (actionId) {
+      case 'complete':
+        return NotificationAction.complete;
+      case 'snooze':
+        return NotificationAction.snooze;
+      case 'reschedule':
+        return NotificationAction.view;
+      default:
+        return NotificationAction.dismiss;
+    }
+  }
+  
+  // Action handlers (these would integrate with your app's operations)
+  
+  Future<void> _markTaskCompleted(String taskId) async {
+    _eventController.add(NotificationEvent(
+      type: 'task_completion_requested',
+      taskId: taskId,
+    ));
+  }
+  
+  Future<void> _snoozeTaskReminder(String taskId) async {
+    final task = await _taskRepository.getTaskById(taskId);
+    if (task != null) {
+      final newReminderTime = DateTime.now().add(const Duration(minutes: 15));
+      await scheduleTaskReminder(
+        task: task,
+        scheduledTime: newReminderTime,
+      );
+    }
+  }
+  
+  Future<void> _rescheduleTask(String taskId) async {
+    _eventController.add(NotificationEvent(
+      type: 'task_reschedule_requested',
+      taskId: taskId,
+    ));
+  }
+  
+  void dispose() {
+    _eventController.close();
   }
 }

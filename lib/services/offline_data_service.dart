@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import '../domain/entities/task_model.dart';
-import '../domain/entities/subtask.dart';
 import '../domain/models/enums.dart';
 import '../data/repositories/task_repository.dart';
 

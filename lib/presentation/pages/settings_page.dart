@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/theme_selector.dart';
 import '../widgets/app_scaffold.dart';
+import '../../services/share_intent_service.dart';
 
 /// Settings page for app configuration and preferences
 class SettingsPage extends ConsumerWidget {
@@ -170,6 +171,84 @@ class SettingsPageBody extends ConsumerWidget {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('Quiet hours settings coming soon!'),
+                        ),
+                      );
+                    },
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          
+          const SizedBox(height: 16),
+          
+          // Message Integration settings
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Message Integration',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                  const SizedBox(height: 16),
+                  
+                  SwitchListTile(
+                    title: const Text('Auto Task Creation'),
+                    subtitle: const Text('Create tasks from shared messages'),
+                    value: true,
+                    onChanged: (value) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            'Auto task creation ${value ? 'enabled' : 'disabled'}',
+                          ),
+                        ),
+                      );
+                    },
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                  
+                  ListTile(
+                    title: const Text('Trusted Contacts'),
+                    subtitle: const Text('Wife 💕 (1 contact)'), 
+                    trailing: const Icon(Icons.arrow_forward_ios),
+                    onTap: () {
+                      _showTrustedContactsDialog(context);
+                    },
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                  
+                  ListTile(
+                    title: const Text('Default Priority'),
+                    subtitle: const Text('Medium'),
+                    trailing: const Icon(Icons.arrow_forward_ios),
+                    onTap: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Priority settings coming soon!'),
+                        ),
+                      );
+                    },
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                  
+                  ListTile(
+                    title: const Text('Test Message Flow'),
+                    subtitle: const Text('Test wife message to task creation'),
+                    leading: const Icon(Icons.science),
+                    trailing: const Icon(Icons.play_arrow),
+                    onTap: () async {
+                      final shareService = ShareIntentService();
+                      await shareService.testWifeMessage(
+                        'Can you pick up milk on your way home?'
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Test message processed! Check for new task.'),
                         ),
                       );
                     },
@@ -415,6 +494,73 @@ class SettingsPageBody extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+
+  /// Show trusted contacts management dialog
+  void _showTrustedContactsDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Trusted Contacts'),
+          content: SizedBox(
+            width: double.maxFinite,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Messages from these contacts will be processed for task creation:',
+                  style: TextStyle(fontSize: 14),
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey.shade300),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.favorite, color: Colors.red, size: 20),
+                      const SizedBox(width: 8),
+                      const Expanded(child: Text('Wife 💕')),
+                      IconButton(
+                        icon: const Icon(Icons.delete, size: 18),
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Cannot remove wife! 😄'),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+                OutlinedButton.icon(
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Add contact functionality coming soon!'),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.add),
+                  label: const Text('Add Contact'),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Close'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

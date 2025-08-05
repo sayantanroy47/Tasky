@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/task_model.dart';
+import '../../domain/entities/task_audio_metadata.dart';
 import '../../domain/models/enums.dart';
-import '../../domain/repositories/task_repository.dart';
 import '../../core/routing/app_router.dart';
-import '../providers/task_providers.dart';
+import '../providers/task_provider.dart';
 import '../widgets/theme_selector.dart';
 import '../widgets/app_scaffold.dart';
 import '../widgets/task_card.dart';
@@ -389,6 +389,9 @@ class _TaskList extends ConsumerWidget {
         subTasksTotal: task.subTasks.isNotEmpty ? task.subTasks.length : null,
         subTasksCompleted: task.subTasks.isNotEmpty ? task.subTasks.where((st) => st.isCompleted).length : null,
         searchQuery: searchQuery.isNotEmpty ? searchQuery : null,
+        audioFilePath: TaskAudioMetadata.getAudioFilePath(task),
+        audioDuration: TaskAudioMetadata.getAudioDuration(task),
+        taskType: TaskAudioMetadata.getTaskType(task),
         onTap: () => _navigateToTaskDetail(context, task.id),
         onToggleComplete: () => _toggleTaskCompletion(ref, task),
         onEdit: () => _editTask(context, task),

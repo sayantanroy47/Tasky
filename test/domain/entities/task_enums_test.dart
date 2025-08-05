@@ -80,7 +80,7 @@ void main() {
     });
 
     test('should return correct display names', () {
-      expect(RecurrenceType.none.displayName, 'No Recurrence');
+      expect(RecurrenceType.none.displayName, 'None');
       expect(RecurrenceType.daily.displayName, 'Daily');
       expect(RecurrenceType.weekly.displayName, 'Weekly');
       expect(RecurrenceType.monthly.displayName, 'Monthly');

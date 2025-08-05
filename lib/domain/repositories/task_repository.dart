@@ -54,105 +54,12 @@ abstract class TaskRepository {
 
   /// Watches tasks for a specific project (returns a stream)
   Stream<List<TaskModel>> watchTasksByProject(String projectId);
+
+  /// Gets multiple tasks by their IDs
+  Future<List<TaskModel>> getTasksByIds(List<String> ids);
+
+  /// Gets tasks that have a specific task as a dependency
+  Future<List<TaskModel>> getTasksWithDependency(String dependencyId);
 }
 
-/// Filter options for advanced task querying
-class TaskFilter {
-  final TaskStatus? status;
-  final TaskPriority? priority;
-  final List<String>? tags;
-  final String? projectId;
-  final DateTime? dueDateFrom;
-  final DateTime? dueDateTo;
-  final bool? isOverdue;
-  final bool? isPinned;
-  final String? searchQuery;
-  final TaskSortBy sortBy;
-  final bool sortAscending;
 
-  const TaskFilter({
-    this.status,
-    this.priority,
-    this.tags,
-    this.projectId,
-    this.dueDateFrom,
-    this.dueDateTo,
-    this.isOverdue,
-    this.isPinned,
-    this.searchQuery,
-    this.sortBy = TaskSortBy.createdAt,
-    this.sortAscending = false,
-  });
-
-  /// Creates a copy of this filter with updated fields
-  TaskFilter copyWith({
-    TaskStatus? status,
-    TaskPriority? priority,
-    List<String>? tags,
-    String? projectId,
-    DateTime? dueDateFrom,
-    DateTime? dueDateTo,
-    bool? isOverdue,
-    bool? isPinned,
-    String? searchQuery,
-    TaskSortBy? sortBy,
-    bool? sortAscending,
-  }) {
-    return TaskFilter(
-      status: status ?? this.status,
-      priority: priority ?? this.priority,
-      tags: tags ?? this.tags,
-      projectId: projectId ?? this.projectId,
-      dueDateFrom: dueDateFrom ?? this.dueDateFrom,
-      dueDateTo: dueDateTo ?? this.dueDateTo,
-      isOverdue: isOverdue ?? this.isOverdue,
-      isPinned: isPinned ?? this.isPinned,
-      searchQuery: searchQuery ?? this.searchQuery,
-      sortBy: sortBy ?? this.sortBy,
-      sortAscending: sortAscending ?? this.sortAscending,
-    );
-  }
-
-  /// Returns true if any filter is applied
-  bool get hasFilters {
-    return status != null ||
-        priority != null ||
-        tags != null ||
-        projectId != null ||
-        dueDateFrom != null ||
-        dueDateTo != null ||
-        isOverdue != null ||
-        isPinned != null ||
-        (searchQuery != null && searchQuery!.isNotEmpty);
-  }
-}
-
-/// Sorting options for tasks
-enum TaskSortBy {
-  createdAt,
-  updatedAt,
-  dueDate,
-  priority,
-  title,
-  status,
-}
-
-/// Extension to get display names for sort options
-extension TaskSortByExtension on TaskSortBy {
-  String get displayName {
-    switch (this) {
-      case TaskSortBy.createdAt:
-        return 'Created Date';
-      case TaskSortBy.updatedAt:
-        return 'Updated Date';
-      case TaskSortBy.dueDate:
-        return 'Due Date';
-      case TaskSortBy.priority:
-        return 'Priority';
-      case TaskSortBy.title:
-        return 'Title';
-      case TaskSortBy.status:
-        return 'Status';
-    }
-  }
-}

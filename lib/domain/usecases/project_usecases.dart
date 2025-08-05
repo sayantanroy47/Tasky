@@ -1,7 +1,6 @@
 import '../entities/project.dart';
 import '../repositories/project_repository.dart';
 import '../repositories/task_repository.dart';
-import '../../core/errors/app_exceptions.dart';
 
 /// Custom exceptions for use cases
 class ValidationException implements Exception {
@@ -34,7 +33,7 @@ class ProjectUseCases {
   }) async {
     // Validate input
     if (name.trim().isEmpty) {
-      throw ValidationException('Project name cannot be empty');
+      throw const ValidationException('Project name cannot be empty');
     }
 
     // Check for duplicate names
@@ -44,7 +43,7 @@ class ProjectUseCases {
     );
     
     if (duplicateName) {
-      throw ValidationException('A project with this name already exists');
+      throw const ValidationException('A project with this name already exists');
     }
 
     // Create project
@@ -57,7 +56,7 @@ class ProjectUseCases {
 
     // Validate project
     if (!project.isValid()) {
-      throw ValidationException('Invalid project data');
+      throw const ValidationException('Invalid project data');
     }
 
     await _projectRepository.createProject(project);
@@ -68,13 +67,13 @@ class ProjectUseCases {
   Future<Project> updateProject(Project project) async {
     // Validate project
     if (!project.isValid()) {
-      throw ValidationException('Invalid project data');
+      throw const ValidationException('Invalid project data');
     }
 
     // Check if project exists
     final existingProject = await _projectRepository.getProjectById(project.id);
     if (existingProject == null) {
-      throw NotFoundException('Project not found');
+      throw const NotFoundException('Project not found');
     }
 
     // Check for duplicate names (excluding current project)
@@ -86,7 +85,7 @@ class ProjectUseCases {
     );
     
     if (duplicateName) {
-      throw ValidationException('A project with this name already exists');
+      throw const ValidationException('A project with this name already exists');
     }
 
     final updatedProject = project.copyWith(updatedAt: DateTime.now());
@@ -98,7 +97,7 @@ class ProjectUseCases {
   Future<void> deleteProject(String projectId, {bool deleteAssociatedTasks = false}) async {
     final project = await _projectRepository.getProjectById(projectId);
     if (project == null) {
-      throw NotFoundException('Project not found');
+      throw const NotFoundException('Project not found');
     }
 
     // Get tasks associated with this project
@@ -131,11 +130,11 @@ class ProjectUseCases {
   Future<Project> archiveProject(String projectId) async {
     final project = await _projectRepository.getProjectById(projectId);
     if (project == null) {
-      throw NotFoundException('Project not found');
+      throw const NotFoundException('Project not found');
     }
 
     if (project.isArchived) {
-      throw ValidationException('Project is already archived');
+      throw const ValidationException('Project is already archived');
     }
 
     final archivedProject = project.archive();
@@ -147,11 +146,11 @@ class ProjectUseCases {
   Future<Project> unarchiveProject(String projectId) async {
     final project = await _projectRepository.getProjectById(projectId);
     if (project == null) {
-      throw NotFoundException('Project not found');
+      throw const NotFoundException('Project not found');
     }
 
     if (!project.isArchived) {
-      throw ValidationException('Project is not archived');
+      throw const ValidationException('Project is not archived');
     }
 
     final unarchivedProject = project.unarchive();
@@ -163,7 +162,7 @@ class ProjectUseCases {
   Future<ProjectStatistics> getProjectStatistics(String projectId) async {
     final project = await _projectRepository.getProjectById(projectId);
     if (project == null) {
-      throw NotFoundException('Project not found');
+      throw const NotFoundException('Project not found');
     }
 
     final tasks = await _taskRepository.getTasksByProject(projectId);
@@ -203,12 +202,12 @@ class ProjectUseCases {
   Future<Project> addTaskToProject(String projectId, String taskId) async {
     final project = await _projectRepository.getProjectById(projectId);
     if (project == null) {
-      throw NotFoundException('Project not found');
+      throw const NotFoundException('Project not found');
     }
 
     final task = await _taskRepository.getTaskById(taskId);
     if (task == null) {
-      throw NotFoundException('Task not found');
+      throw const NotFoundException('Task not found');
     }
 
     // Update task with project ID
@@ -226,7 +225,7 @@ class ProjectUseCases {
   Future<Project> removeTaskFromProject(String projectId, String taskId) async {
     final project = await _projectRepository.getProjectById(projectId);
     if (project == null) {
-      throw NotFoundException('Project not found');
+      throw const NotFoundException('Project not found');
     }
 
     final task = await _taskRepository.getTaskById(taskId);

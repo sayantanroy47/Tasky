@@ -5,6 +5,7 @@ import 'package:path_provider/path_provider.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/entities/project.dart';
 import 'data_export_models.dart';
+import 'real_data_export_service.dart';
 
 /// Service interface for data export functionality
 abstract class DataExportService {
@@ -79,14 +80,152 @@ abstract class DataExportService {
   Future<void> deleteBackup(String backupId);
 }
 
-/// Stub implementation of DataExportService when export packages are not available
+/// Factory implementation that delegates to real or stub based on availability
 class DataExportServiceImpl implements DataExportService {
-  // Accept constructor parameters but don't use them in stub
+  late final DataExportService _delegate;
+
   DataExportServiceImpl({
     dynamic taskRepository,
     dynamic projectRepository,
     dynamic tagRepository,
-  });  @override
+  }) {
+    try {
+      // Try to use real data export service
+      _delegate = RealDataExportService(
+        taskRepository: taskRepository,
+        projectRepository: projectRepository,
+        tagRepository: tagRepository,
+      );
+    } catch (e) {
+      if (kDebugMode) {
+        print('Real data export service not available, using stub: $e');
+      }
+      _delegate = _StubDataExportService();
+    }
+  }
+
+  @override
+  Future<ExportResult> exportTasks(
+    List<TaskModel> tasks, {
+    ExportFormat format = ExportFormat.csv,
+    ExportOptions? options,
+  }) => _delegate.exportTasks(tasks, format: format, options: options);
+
+  @override
+  Future<ExportResult> exportProjects(
+    List<Project> projects, {
+    ExportFormat format = ExportFormat.csv,
+    ExportOptions? options,
+  }) => _delegate.exportProjects(projects, format: format, options: options);
+
+  @override
+  Future<ExportResult> exportFullBackup({
+    ExportOptions? options,
+  }) => _delegate.exportFullBackup(options: options);
+
+  @override
+  Future<ImportResultData> importTasks(
+    String filePath, {
+    ImportOptions? options,
+  }) => _delegate.importTasks(filePath, options: options);
+
+  @override
+  Future<ImportResultData> importProjects(
+    String filePath, {
+    ImportOptions? options,
+  }) => _delegate.importProjects(filePath, options: options);
+
+  @override
+  Future<ImportResultData> importFullBackup(
+    String filePath, {
+    ImportOptions? options,
+  }) => _delegate.importFullBackup(filePath, options: options);
+
+  @override
+  Future<bool> shareFile(String filePath, {String? subject}) =>
+      _delegate.shareFile(filePath, subject: subject);
+
+  @override
+  Future<String?> pickImportFile({
+    List<String>? allowedExtensions,
+  }) => _delegate.pickImportFile(allowedExtensions: allowedExtensions);
+
+  @override
+  Future<List<ExportFormat>> getSupportedFormats() =>
+      _delegate.getSupportedFormats();
+
+  @override
+  Future<bool> hasStoragePermission() => _delegate.hasStoragePermission();
+
+  @override
+  Future<bool> requestStoragePermission() => _delegate.requestStoragePermission();
+
+  @override
+  Future<String> getExportDirectory() => _delegate.getExportDirectory();
+
+  @override
+  Future<void> cleanupOldExports({int maxAgeInDays = 30}) =>
+      _delegate.cleanupOldExports(maxAgeInDays: maxAgeInDays);
+
+  @override
+  Future<bool> requestStoragePermissions() =>
+      _delegate.requestStoragePermissions();
+
+  @override
+  Stream<ExportProgress> exportData({
+    required ExportFormat format,
+    String? filePath,
+    List<String>? taskIds,
+    List<String>? projectIds,
+  }) => _delegate.exportData(
+        format: format,
+        filePath: filePath,
+        taskIds: taskIds,
+        projectIds: projectIds,
+      );
+
+  @override
+  Future<void> shareData({
+    required ExportFormat format,
+    List<String>? taskIds,
+    List<String>? projectIds,
+  }) => _delegate.shareData(
+        format: format,
+        taskIds: taskIds,
+        projectIds: projectIds,
+      );
+
+  @override
+  Future<ImportValidationResult> validateImportFile(String filePath) =>
+      _delegate.validateImportFile(filePath);
+
+  @override
+  Stream<ImportProgress> importData({
+    required String filePath,
+    ImportOptions? options,
+  }) => _delegate.importData(
+        filePath: filePath,
+        options: options,
+      );
+
+  @override
+  Future<List<BackupMetadata>> getAvailableBackups() =>
+      _delegate.getAvailableBackups();
+
+  @override
+  Future<String> createBackup() => _delegate.createBackup();
+
+  @override
+  Future<void> restoreBackup(String backupPath) =>
+      _delegate.restoreBackup(backupPath);
+
+  @override
+  Future<void> deleteBackup(String backupId) =>
+      _delegate.deleteBackup(backupId);
+}
+
+/// Stub implementation fallback when export packages are not available
+class _StubDataExportService implements DataExportService {  @override
   Future<ExportResult> exportTasks(
     List<TaskModel> tasks, {
     ExportFormat format = ExportFormat.csv,

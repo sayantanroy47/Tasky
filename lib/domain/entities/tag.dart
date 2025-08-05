@@ -20,6 +20,19 @@ class Tag extends Equatable {
     this.updatedAt,
   });
 
+  /// Creates a new tag with generated ID and current timestamp
+  factory Tag.create({
+    required String name,
+    String? color,
+  }) {
+    return Tag(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      name: name,
+      color: color,
+      createdAt: DateTime.now(),
+    );
+  }
+
   factory Tag.fromJson(Map<String, dynamic> json) => _$TagFromJson(json);
 
   Map<String, dynamic> toJson() => _$TagToJson(this);
@@ -38,6 +51,7 @@ class Tag extends Equatable {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
-  }  @override
+  }
+  @override
   List<Object?> get props => [id, name, color, createdAt, updatedAt];
 }

@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/theme_selector.dart';
 import '../widgets/app_scaffold.dart';
+import '../widgets/voice_task_creation_dialog.dart';
+import '../providers/task_provider.dart';
+import '../../domain/entities/task_model.dart';
+import '../../domain/models/enums.dart';
 import '../../core/routing/app_router.dart';
 
 /// Home page - main dashboard of the app
@@ -34,9 +38,9 @@ class HomePage extends ConsumerWidget {
       body: const HomePageBody(),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          // TODO: Navigate to add task
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Voice task creation coming soon!')),
+          showDialog(
+            context: context,
+            builder: (context) => const VoiceTaskCreationDialog(),
           );
         },
         icon: const Icon(Icons.mic),
@@ -97,117 +101,12 @@ class HomePageBody extends ConsumerWidget {
           const SizedBox(height: 16),
           
           // Quick stats cards
-          Row(
-            children: [
-              Expanded(
-                child: _QuickStatCard(
-                  title: 'Pending',
-                  count: 12,
-                  icon: Icons.pending_actions,
-                  color: Theme.of(context).colorScheme.primary,
-                  onTap: () {
-                    AppRouter.navigateToRoute(context, AppRouter.tasks);
-                  },
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _QuickStatCard(
-                  title: 'Today',
-                  count: 5,
-                  icon: Icons.today,
-                  color: Theme.of(context).colorScheme.secondary,
-                  onTap: () {
-                    AppRouter.navigateToRoute(context, AppRouter.calendar);
-                  },
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: _QuickStatCard(
-                  title: 'Completed',
-                  count: 8,
-                  icon: Icons.check_circle,
-                  color: Theme.of(context).colorScheme.tertiary,
-                  onTap: () {
-                    AppRouter.navigateToRoute(context, AppRouter.analytics);
-                  },
-                ),
-              ),
-            ],
-          ),
+          _QuickStatsSection(),
           
           const SizedBox(height: 16),
           
           // Recent tasks section
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          'Recent Tasks',
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          AppRouter.navigateToRoute(context, AppRouter.tasks);
-                        },
-                        child: const Text('View All'),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  
-                  // Sample recent tasks
-                  ...List.generate(3, (index) => Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
-                    child: ListTile(
-                      leading: Checkbox(
-                        value: index == 0,
-                        onChanged: (value) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                value == true 
-                                  ? 'Task completed!' 
-                                  : 'Task marked as pending',
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                      title: Text(
-                        'Sample Task ${index + 1}',
-                        style: TextStyle(
-                          decoration: index == 0 
-                            ? TextDecoration.lineThrough 
-                            : null,
-                        ),
-                      ),
-                      subtitle: Text('Due ${index + 1} day${index == 0 ? '' : 's'} ago'),
-                      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                      onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Task details coming soon!'),
-                          ),
-                        );
-                      },
-                      contentPadding: EdgeInsets.zero,
-                    ),
-                  )),
-                  
-                  // Theme selector hidden in production
-                ],
-              ),
-            ),
-          ),
+          _RecentTasksSection(),
           
           const SizedBox(height: 16),
           
@@ -231,10 +130,9 @@ class HomePageBody extends ConsumerWidget {
                           icon: Icons.mic,
                           label: 'Voice Task',
                           onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Voice task creation coming soon!'),
-                              ),
+                            showDialog(
+                              context: context,
+                              builder: (context) => const VoiceTaskCreationDialog(),
                             );
                           },
                         ),
@@ -245,10 +143,9 @@ class HomePageBody extends ConsumerWidget {
                           icon: Icons.add,
                           label: 'Quick Add',
                           onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Quick add coming soon!'),
-                              ),
+                            showDialog(
+                              context: context,
+                              builder: (context) => const VoiceTaskCreationDialog(),
                             );
                           },
                         ),
@@ -312,6 +209,258 @@ class _QuickStatCard extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+/// Quick stats section showing real task counts
+class _QuickStatsSection extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final pendingTasks = ref.watch(pendingTasksProvider);
+    final completedTasks = ref.watch(completedTasksProvider);
+    final todayTasks = ref.watch(todayTasksProvider);
+
+    return Row(
+      children: [
+        Expanded(
+          child: pendingTasks.when(
+            data: (tasks) => _QuickStatCard(
+              title: 'Pending',
+              count: tasks.length,
+              icon: Icons.pending_actions,
+              color: Theme.of(context).colorScheme.primary,
+              onTap: () {
+                AppRouter.navigateToRoute(context, AppRouter.tasks);
+              },
+            ),
+            loading: () => _QuickStatCard(
+              title: 'Pending',
+              count: 0,
+              icon: Icons.pending_actions,
+              color: Theme.of(context).colorScheme.primary,
+              onTap: () {
+                AppRouter.navigateToRoute(context, AppRouter.tasks);
+              },
+            ),
+            error: (_, __) => _QuickStatCard(
+              title: 'Pending',
+              count: 0,
+              icon: Icons.pending_actions,
+              color: Theme.of(context).colorScheme.primary,
+              onTap: () {
+                AppRouter.navigateToRoute(context, AppRouter.tasks);
+              },
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: todayTasks.when(
+            data: (tasks) => _QuickStatCard(
+              title: 'Today',
+              count: tasks.length,
+              icon: Icons.today,
+              color: Theme.of(context).colorScheme.secondary,
+              onTap: () {
+                AppRouter.navigateToRoute(context, AppRouter.calendar);
+              },
+            ),
+            loading: () => _QuickStatCard(
+              title: 'Today',
+              count: 0,
+              icon: Icons.today,
+              color: Theme.of(context).colorScheme.secondary,
+              onTap: () {
+                AppRouter.navigateToRoute(context, AppRouter.calendar);
+              },
+            ),
+            error: (_, __) => _QuickStatCard(
+              title: 'Today',
+              count: 0,
+              icon: Icons.today,
+              color: Theme.of(context).colorScheme.secondary,
+              onTap: () {
+                AppRouter.navigateToRoute(context, AppRouter.calendar);
+              },
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: completedTasks.when(
+            data: (tasks) => _QuickStatCard(
+              title: 'Completed',
+              count: tasks.length,
+              icon: Icons.check_circle,
+              color: Theme.of(context).colorScheme.tertiary,
+              onTap: () {
+                AppRouter.navigateToRoute(context, AppRouter.analytics);
+              },
+            ),
+            loading: () => _QuickStatCard(
+              title: 'Completed',
+              count: 0,
+              icon: Icons.check_circle,
+              color: Theme.of(context).colorScheme.tertiary,
+              onTap: () {
+                AppRouter.navigateToRoute(context, AppRouter.analytics);
+              },
+            ),
+            error: (_, __) => _QuickStatCard(
+              title: 'Completed',
+              count: 0,
+              icon: Icons.check_circle,
+              color: Theme.of(context).colorScheme.tertiary,
+              onTap: () {
+                AppRouter.navigateToRoute(context, AppRouter.analytics);
+              },
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Recent tasks section showing actual tasks from database
+class _RecentTasksSection extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final allTasks = ref.watch(tasksProvider);
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    'Recent Tasks',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {
+                    AppRouter.navigateToRoute(context, AppRouter.tasks);
+                  },
+                  child: const Text('View All'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            
+            allTasks.when(
+              data: (tasks) {
+                if (tasks.isEmpty) {
+                  return Center(
+                    child: Column(
+                      children: [
+                        Icon(
+                          Icons.task_outlined,
+                          size: 48,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'No tasks yet',
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Create your first task to get started!',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                
+                // Show last 3 tasks, sorted by most recent
+                final recentTasks = tasks.take(3).toList();
+                
+                return Column(
+                  children: recentTasks.map((task) => Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: ListTile(
+                      leading: Checkbox(
+                        value: task.status == TaskStatus.completed,
+                        onChanged: (value) {
+                          ref.read(taskOperationsProvider).toggleTaskCompletion(task);
+                        },
+                      ),
+                      title: Text(
+                        task.title,
+                        style: TextStyle(
+                          decoration: task.status == TaskStatus.completed 
+                            ? TextDecoration.lineThrough 
+                            : null,
+                        ),
+                      ),
+                      subtitle: task.dueDate != null 
+                        ? Text('Due ${_formatDueDate(task.dueDate!)}')
+                        : null,
+                      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                      onTap: () {
+                        Navigator.of(context).pushNamed(
+                          AppRouter.taskDetail,
+                          arguments: task.id,
+                        );
+                      },
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  )).toList(),
+                );
+              },
+              loading: () => const Center(
+                child: CircularProgressIndicator(),
+              ),
+              error: (error, stack) => Center(
+                child: Column(
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      size: 48,
+                      color: Theme.of(context).colorScheme.error,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Failed to load tasks',
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                    TextButton(
+                      onPressed: () => ref.refresh(tasksProvider),
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _formatDueDate(DateTime dueDate) {
+    final now = DateTime.now();
+    final difference = dueDate.difference(now).inDays;
+    
+    if (difference == 0) {
+      return 'Today';
+    } else if (difference == 1) {
+      return 'Tomorrow';
+    } else if (difference == -1) {
+      return 'Yesterday';
+    } else if (difference > 1) {
+      return 'In $difference days';
+    } else {
+      return '${-difference} days ago';
+    }
   }
 }
 

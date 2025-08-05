@@ -169,4 +169,16 @@ class TaskRepositoryImpl implements TaskRepository {
       return tasks.where((task) => task.projectId == projectId).toList();
     });
   }
+
+  @override
+  Future<List<TaskModel>> getTasksByIds(List<String> ids) async {
+    final tasks = await getAllTasks();
+    return tasks.where((task) => ids.contains(task.id)).toList();
+  }
+
+  @override
+  Future<List<TaskModel>> getTasksWithDependency(String dependencyId) async {
+    final tasks = await getAllTasks();
+    return tasks.where((task) => task.dependencies.contains(dependencyId)).toList();
+  }
 }

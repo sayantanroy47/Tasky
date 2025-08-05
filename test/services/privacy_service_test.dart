@@ -196,7 +196,10 @@ void main() {
         await privacyService.logDataProcessing(log);
         final logs = await privacyService.getDataProcessingLogs();
 
-        expect(logs, contains(log));
+        expect(logs, isNotEmpty);
+        expect(logs.first.activity, log.activity);
+        expect(logs.first.purpose, log.purpose);
+        expect(logs.first.success, log.success);
       });
 
       test('should limit log storage to prevent bloat', () async {

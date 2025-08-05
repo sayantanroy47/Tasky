@@ -62,7 +62,8 @@ void main() {
         expect(settings.enabled, isTrue);
         expect(settings.defaultReminder, equals(const Duration(hours: 1)));
         expect(settings.dailySummary, isTrue);
-        expect(settings.dailySummaryTime, equals(const TimeOfDay(hour: 8, minute: 0)));
+        expect(settings.dailySummaryTime.hour, equals(8));
+        expect(settings.dailySummaryTime.minute, equals(0));
         expect(settings.overdueNotifications, isTrue);
         expect(settings.respectDoNotDisturb, isTrue);
         expect(settings.vibrate, isTrue);

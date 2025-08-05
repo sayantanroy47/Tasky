@@ -95,13 +95,13 @@ class SyncServiceImpl {
       // Check connectivity
       final connectivityResult = await _connectivity.checkConnectivity();
       if (connectivityResult == ConnectivityResult.none) {
-        throw NetworkException('No internet connection');
+        throw const NetworkException('No internet connection');
       }
 
       // Check authentication
       final user = _supabaseClient.auth.currentUser;
       if (user == null) {
-        throw AuthenticationException('User not authenticated');
+        throw const AuthenticationException('User not authenticated');
       }
 
       // Get local data
@@ -164,13 +164,13 @@ class SyncServiceImpl {
       // Check connectivity
       final connectivityResult = await _connectivity.checkConnectivity();
       if (connectivityResult == ConnectivityResult.none) {
-        throw NetworkException('No internet connection');
+        throw const NetworkException('No internet connection');
       }
 
       // Check authentication
       final user = _supabaseClient.auth.currentUser;
       if (user == null) {
-        throw AuthenticationException('User not authenticated');
+        throw const AuthenticationException('User not authenticated');
       }
 
       // Get server data

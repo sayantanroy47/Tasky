@@ -3,12 +3,13 @@ import 'package:drift/native.dart';
 import 'package:task_tracker_app/services/database/database.dart';
 import 'package:task_tracker_app/data/repositories/tag_repository_impl.dart';
 import 'package:task_tracker_app/domain/entities/task_model.dart';
-import 'package:task_tracker_app/domain/repositories/tag_repository.dart' as domain;
+import 'package:task_tracker_app/domain/entities/tag.dart' as entity;
+import 'package:task_tracker_app/domain/repositories/tag_repository.dart';
 
 void main() {
   group('TagRepositoryImpl', () {
     late AppDatabase database;
-    late domain.TagRepository repository;
+    late TagRepository repository;
 
     setUp(() async {
       database = AppDatabase.forTesting(NativeDatabase.memory());
@@ -21,7 +22,7 @@ void main() {
 
     group('Basic CRUD Operations', () {
       test('should create and retrieve a tag', () async {
-        final tag = domain.Tag(
+        final tag = entity.Tag(
           id: 'tag-1',
           name: 'urgent',
           color: '#FF0000',
@@ -38,7 +39,7 @@ void main() {
       });
 
       test('should get tag by name', () async {
-        final tag = domain.Tag(
+        final tag = entity.Tag(
           id: 'tag-1',
           name: 'work',
           createdAt: DateTime.now(),
@@ -52,7 +53,7 @@ void main() {
       });
 
       test('should update a tag', () async {
-        final tag = domain.Tag(
+        final tag = entity.Tag(
           id: 'tag-1',
           name: 'original',
           createdAt: DateTime.now(),
@@ -72,7 +73,7 @@ void main() {
       });
 
       test('should delete a tag', () async {
-        final tag = domain.Tag(
+        final tag = entity.Tag(
           id: 'tag-1',
           name: 'to-delete',
           createdAt: DateTime.now(),
@@ -86,8 +87,8 @@ void main() {
       });
 
       test('should get all tags', () async {
-        final tag1 = domain.Tag(id: 'tag-1', name: 'work', createdAt: DateTime.now());
-        final tag2 = domain.Tag(id: 'tag-2', name: 'personal', createdAt: DateTime.now());
+        final tag1 = entity.Tag(id: 'tag-1', name: 'work', createdAt: DateTime.now());
+        final tag2 = entity.Tag(id: 'tag-2', name: 'personal', createdAt: DateTime.now());
 
         await repository.createTag(tag1);
         await repository.createTag(tag2);
@@ -102,7 +103,7 @@ void main() {
 
     group('Task-Tag Relationships', () {
       test('should add and remove tags from tasks', () async {
-        final tag = domain.Tag(id: 'tag-1', name: 'work', createdAt: DateTime.now());
+        final tag = entity.Tag(id: 'tag-1', name: 'work', createdAt: DateTime.now());
         final task = TaskModel.create(title: 'Test Task');
 
         await repository.createTag(tag);
@@ -119,8 +120,8 @@ void main() {
       });
 
       test('should get tags for a specific task', () async {
-        final tag1 = domain.Tag(id: 'tag-1', name: 'work', createdAt: DateTime.now());
-        final tag2 = domain.Tag(id: 'tag-2', name: 'urgent', createdAt: DateTime.now());
+        final tag1 = entity.Tag(id: 'tag-1', name: 'work', createdAt: DateTime.now());
+        final tag2 = entity.Tag(id: 'tag-2', name: 'urgent', createdAt: DateTime.now());
         final task = TaskModel.create(title: 'Test Task');
 
         await repository.createTag(tag1);
@@ -139,8 +140,8 @@ void main() {
 
     group('Tag Usage Statistics', () {
       test('should get tags with usage counts', () async {
-        final tag1 = domain.Tag(id: 'tag-1', name: 'work', createdAt: DateTime.now());
-        final tag2 = domain.Tag(id: 'tag-2', name: 'personal', createdAt: DateTime.now());
+        final tag1 = entity.Tag(id: 'tag-1', name: 'work', createdAt: DateTime.now());
+        final tag2 = entity.Tag(id: 'tag-2', name: 'personal', createdAt: DateTime.now());
         final task1 = TaskModel.create(title: 'Task 1');
         final task2 = TaskModel.create(title: 'Task 2');
 
@@ -163,8 +164,8 @@ void main() {
       });
 
       test('should get most used tags', () async {
-        final tag1 = domain.Tag(id: 'tag-1', name: 'popular', createdAt: DateTime.now());
-        final tag2 = domain.Tag(id: 'tag-2', name: 'rare', createdAt: DateTime.now());
+        final tag1 = entity.Tag(id: 'tag-1', name: 'popular', createdAt: DateTime.now());
+        final tag2 = entity.Tag(id: 'tag-2', name: 'rare', createdAt: DateTime.now());
         final task1 = TaskModel.create(title: 'Task 1');
         final task2 = TaskModel.create(title: 'Task 2');
         final task3 = TaskModel.create(title: 'Task 3');
@@ -190,8 +191,8 @@ void main() {
       });
 
       test('should get unused tags', () async {
-        final usedTag = domain.Tag(id: 'tag-1', name: 'used', createdAt: DateTime.now());
-        final unusedTag = domain.Tag(id: 'tag-2', name: 'unused', createdAt: DateTime.now());
+        final usedTag = entity.Tag(id: 'tag-1', name: 'used', createdAt: DateTime.now());
+        final unusedTag = entity.Tag(id: 'tag-2', name: 'unused', createdAt: DateTime.now());
         final task = TaskModel.create(title: 'Test Task');
 
         await repository.createTag(usedTag);
@@ -208,9 +209,9 @@ void main() {
 
     group('Search and Filter Operations', () {
       test('should search tags', () async {
-        final tag1 = domain.Tag(id: 'tag-1', name: 'work-related', createdAt: DateTime.now());
-        final tag2 = domain.Tag(id: 'tag-2', name: 'personal', createdAt: DateTime.now());
-        final tag3 = domain.Tag(id: 'tag-3', name: 'homework', createdAt: DateTime.now());
+        final tag1 = entity.Tag(id: 'tag-1', name: 'work-related', createdAt: DateTime.now());
+        final tag2 = entity.Tag(id: 'tag-2', name: 'personal', createdAt: DateTime.now());
+        final tag3 = entity.Tag(id: 'tag-3', name: 'homework', createdAt: DateTime.now());
 
         await repository.createTag(tag1);
         await repository.createTag(tag2);
@@ -224,8 +225,8 @@ void main() {
       });
 
       test('should filter tags with TagFilter', () async {
-        final tag1 = domain.Tag(id: 'tag-1', name: 'popular', color: '#FF0000', createdAt: DateTime.now());
-        final tag2 = domain.Tag(id: 'tag-2', name: 'rare', createdAt: DateTime.now());
+        final tag1 = entity.Tag(id: 'tag-1', name: 'popular', color: '#FF0000', createdAt: DateTime.now());
+        final tag2 = entity.Tag(id: 'tag-2', name: 'rare', createdAt: DateTime.now());
         final task1 = TaskModel.create(title: 'Task 1');
         final task2 = TaskModel.create(title: 'Task 2');
 
@@ -240,34 +241,34 @@ void main() {
         await repository.addTagToTask(task1.id, tag2.id);
 
         // Filter by minimum usage count
-        const filter1 = domain.TagFilter(minUsageCount: 2);
+        const filter1 = TagFilter(minUsageCount: 2);
         final popularTags = await repository.getTagsWithFilter(filter1);
         expect(popularTags.length, 1);
         expect(popularTags.first.name, 'popular');
 
         // Filter by color presence
-        const filter2 = domain.TagFilter(hasColor: true);
+        const filter2 = TagFilter(hasColor: true);
         final coloredTags = await repository.getTagsWithFilter(filter2);
         expect(coloredTags.length, 1);
         expect(coloredTags.first.name, 'popular');
 
         // Search filter
-        const filter3 = domain.TagFilter(searchQuery: 'pop');
+        const filter3 = TagFilter(searchQuery: 'pop');
         final searchResults = await repository.getTagsWithFilter(filter3);
         expect(searchResults.length, 1);
         expect(searchResults.first.name, 'popular');
       });
 
       test('should sort tags with TagFilter', () async {
-        final tagB = domain.Tag(id: 'tag-1', name: 'B Tag', createdAt: DateTime.now());
-        final tagA = domain.Tag(id: 'tag-2', name: 'A Tag', createdAt: DateTime.now());
+        final tagB = entity.Tag(id: 'tag-1', name: 'B Tag', createdAt: DateTime.now());
+        final tagA = entity.Tag(id: 'tag-2', name: 'A Tag', createdAt: DateTime.now());
 
         await repository.createTag(tagB);
         await repository.createTag(tagA);
 
         // Sort by name ascending
-        const filter = domain.TagFilter(
-          sortBy: domain.TagSortBy.name,
+        const filter = TagFilter(
+          sortBy: TagSortBy.name,
           sortAscending: true,
         );
         final sortedTags = await repository.getTagsWithFilter(filter);
@@ -277,8 +278,8 @@ void main() {
       });
 
       test('should sort by usage count', () async {
-        final tag1 = domain.Tag(id: 'tag-1', name: 'Popular', createdAt: DateTime.now());
-        final tag2 = domain.Tag(id: 'tag-2', name: 'Rare', createdAt: DateTime.now());
+        final tag1 = entity.Tag(id: 'tag-1', name: 'Popular', createdAt: DateTime.now());
+        final tag2 = entity.Tag(id: 'tag-2', name: 'Rare', createdAt: DateTime.now());
         final task1 = TaskModel.create(title: 'Task 1');
         final task2 = TaskModel.create(title: 'Task 2');
 
@@ -293,8 +294,8 @@ void main() {
         await repository.addTagToTask(task1.id, tag2.id);
 
         // Sort by usage count descending
-        const filter = domain.TagFilter(
-          sortBy: domain.TagSortBy.usageCount,
+        const filter = TagFilter(
+          sortBy: TagSortBy.usageCount,
           sortAscending: false,
         );
         final sortedTags = await repository.getTagsWithFilter(filter);
@@ -306,7 +307,7 @@ void main() {
 
     group('Stream Operations', () {
       test('should watch all tags', () async {
-        final tag = domain.Tag(id: 'tag-1', name: 'Watched Tag', createdAt: DateTime.now());
+        final tag = entity.Tag(id: 'tag-1', name: 'Watched Tag', createdAt: DateTime.now());
         
         // Start watching
         final stream = repository.watchAllTags();
@@ -321,7 +322,7 @@ void main() {
       });
 
       test('should watch tags for a specific task', () async {
-        final tag = domain.Tag(id: 'tag-1', name: 'Task Tag', createdAt: DateTime.now());
+        final tag = entity.Tag(id: 'tag-1', name: 'Task Tag', createdAt: DateTime.now());
         final task = TaskModel.create(title: 'Test Task');
         
         await repository.createTag(tag);
@@ -342,7 +343,7 @@ void main() {
       });
 
       test('should watch tag by id', () async {
-        final tag = domain.Tag(id: 'tag-1', name: 'Specific Tag', createdAt: DateTime.now());
+        final tag = entity.Tag(id: 'tag-1', name: 'Specific Tag', createdAt: DateTime.now());
         await repository.createTag(tag);
         
         // Start watching specific tag
@@ -363,8 +364,8 @@ void main() {
 
     group('Edge Cases', () {
       test('should handle duplicate tag names gracefully', () async {
-        final tag1 = domain.Tag(id: 'tag-1', name: 'duplicate', createdAt: DateTime.now());
-        final tag2 = domain.Tag(id: 'tag-2', name: 'duplicate', createdAt: DateTime.now());
+        final tag1 = entity.Tag(id: 'tag-1', name: 'duplicate', createdAt: DateTime.now());
+        final tag2 = entity.Tag(id: 'tag-2', name: 'duplicate', createdAt: DateTime.now());
 
         await repository.createTag(tag1);
         
@@ -373,7 +374,7 @@ void main() {
       });
 
       test('should handle empty search queries', () async {
-        final tag = domain.Tag(id: 'tag-1', name: 'test', createdAt: DateTime.now());
+        final tag = entity.Tag(id: 'tag-1', name: 'test', createdAt: DateTime.now());
         await repository.createTag(tag);
 
         final results = await repository.searchTags('');
