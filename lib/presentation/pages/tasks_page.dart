@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../widgets/standardized_app_bar.dart';
+import '../../core/theme/typography_constants.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/entities/task_audio_metadata.dart';
 import '../../domain/models/enums.dart';
 import '../../core/routing/app_router.dart';
 import '../providers/task_provider.dart';
-import '../widgets/theme_selector.dart';
+import '../widgets/simple_theme_toggle.dart';
 import '../widgets/app_scaffold.dart';
-import '../widgets/task_card.dart';
+import '../widgets/advanced_task_card.dart';
 import '../widgets/task_form_dialog.dart';
 import '../widgets/loading_error_widgets.dart' as loading_widgets;
 import '../widgets/custom_dialogs.dart';
@@ -16,23 +18,20 @@ class TasksPage extends ConsumerWidget {
   const TasksPage({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return AppScaffold(
-      title: 'Tasks',
-      actions: [
-        const ThemeToggleButton(),
-        IconButton(
-          icon: const Icon(Icons.filter_list),
-          onPressed: () => _showFilterDialog(context, ref),
-          tooltip: 'Filter tasks',
-        ),
-      ],
-      body: const TasksPageBody(),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showAddTaskDialog(context),
-        icon: const Icon(Icons.add),
-        label: const Text('Add Task'),
-        tooltip: 'Create new task',
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      appBar: StandardizedAppBar(
+        title: 'Tasks',
+        actions: [
+          const ThemeToggleButton(),
+          IconButton(
+            icon: const Icon(Icons.filter_list),
+            onPressed: () => _showFilterDialog(context, ref),
+            tooltip: 'Filter tasks',
+          ),
+        ],
       ),
+      body: const TasksPageBody(),
     );
   }
 
@@ -129,7 +128,7 @@ class _SearchBarState extends ConsumerState<_SearchBar> {
               )
             : null,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
         ),
         filled: true,
         fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
@@ -379,23 +378,16 @@ class _TaskList extends ConsumerWidget {
     final searchQuery = ref.watch(searchQueryProvider);
 
     return Column(
-      children: tasks.map((task) => TaskCard(
-        title: task.title,
-        description: task.description,
-        isCompleted: task.status == TaskStatus.completed,
-        priority: task.priority.index,
-        dueDate: task.dueDate,
-        tags: task.tags,
-        subTasksTotal: task.subTasks.isNotEmpty ? task.subTasks.length : null,
-        subTasksCompleted: task.subTasks.isNotEmpty ? task.subTasks.where((st) => st.isCompleted).length : null,
-        searchQuery: searchQuery.isNotEmpty ? searchQuery : null,
-        audioFilePath: TaskAudioMetadata.getAudioFilePath(task),
-        audioDuration: TaskAudioMetadata.getAudioDuration(task),
-        taskType: TaskAudioMetadata.getTaskType(task),
+      children: tasks.map((task) => AdvancedTaskCard(
+        task: task,
         onTap: () => _navigateToTaskDetail(context, task.id),
-        onToggleComplete: () => _toggleTaskCompletion(ref, task),
         onEdit: () => _editTask(context, task),
         onDelete: () => _deleteTask(context, ref, task),
+        showActions: true,
+        showProgress: true,
+        showSubtasks: task.subTasks.isNotEmpty,
+        style: TaskCardStyle.elevated,
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       )).toList(),
     );
   }

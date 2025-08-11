@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../widgets/standardized_app_bar.dart';
+import '../../core/theme/typography_constants.dart';
 
 import '../../domain/entities/project.dart';
 import '../providers/project_providers.dart';
@@ -31,8 +33,8 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
     final theme = Theme.of(context);
     
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Projects'),
+      appBar: StandardizedAppBar(
+        title: 'Projects',
         bottom: TabBar(
           controller: _tabController,
           tabs: const [
@@ -100,11 +102,6 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
             ),
           ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _createProject,
-        tooltip: 'Create Project',
-        child: const Icon(Icons.add),
       ),
     );
   }
@@ -225,7 +222,7 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
                 margin: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.orange.withOpacity( 0.1),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                   border: Border.all(color: Colors.orange.withOpacity( 0.1)),
                 ),
                 child: Row(

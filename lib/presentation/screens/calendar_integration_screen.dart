@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:device_calendar/device_calendar.dart';
+import '../widgets/standardized_app_bar.dart';
 import '../../services/system_calendar_service.dart';
 
 /// Screen for managing calendar integration settings
@@ -33,8 +34,8 @@ class _CalendarIntegrationScreenState extends ConsumerState<CalendarIntegrationS
     final availableCalendars = ref.watch(availableCalendarsProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Calendar Integration'),
+      appBar: StandardizedAppBar(
+        title: 'Calendar Integration',
         actions: [
           IconButton(
             onPressed: _isSyncing ? null : _performSync,

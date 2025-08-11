@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../core/theme/typography_constants.dart';
 
 /// Widget that provides voice recording UI with visual feedback
 class VoiceRecordingWidget extends StatefulWidget {
@@ -103,7 +104,7 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget>
       padding: const EdgeInsets.all(24.0),
       decoration: BoxDecoration(
         color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(16.0),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
         boxShadow: [
           BoxShadow(
             color: colorScheme.shadow.withOpacity( 0.1),
@@ -196,7 +197,7 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget>
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         color: theme.colorScheme.primaryContainer.withOpacity( 0.1),
-        borderRadius: BorderRadius.circular(12.0),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
         border: Border.all(
           color: theme.colorScheme.outline.withOpacity( 0.1),
         ),
@@ -229,7 +230,7 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget>
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         color: theme.colorScheme.errorContainer.withOpacity( 0.1),
-        borderRadius: BorderRadius.circular(12.0),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
         border: Border.all(
           color: theme.colorScheme.error.withOpacity( 0.1),
         ),

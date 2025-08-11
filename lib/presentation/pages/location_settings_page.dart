@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/location_providers.dart';
+import '../widgets/glassmorphism_container.dart';
+import '../../core/theme/typography_constants.dart';
 import '../widgets/location_widgets.dart';
+import '../widgets/standardized_app_bar.dart';
 import '../../services/location/location_models.dart';
 
 class LocationSettingsPage extends ConsumerWidget {
@@ -12,17 +15,17 @@ class LocationSettingsPage extends ConsumerWidget {
     final locationServiceEnabled = ref.watch(locationServiceEnabledProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Location Settings'),
+      appBar: const StandardizedAppBar(
+        title: 'Location Settings',
       ),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
           // Location Service Status
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
+          GlassmorphismContainer(
+            borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+            padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
+            child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
@@ -53,15 +56,14 @@ class LocationSettingsPage extends ConsumerWidget {
                   ),
                 ],
               ),
-            ),
           ),
           const SizedBox(height: 16),
 
           // Location Features
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
+          GlassmorphismContainer(
+            borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+            padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
+            child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
@@ -89,15 +91,14 @@ class LocationSettingsPage extends ConsumerWidget {
                   ),
                 ],
               ),
-            ),
           ),
           const SizedBox(height: 16),
 
           // Location Accuracy
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
+          GlassmorphismContainer(
+            borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+            padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
+            child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
@@ -132,16 +133,15 @@ class LocationSettingsPage extends ConsumerWidget {
                   ),
                 ],
               ),
-            ),
           ),
           const SizedBox(height: 16),
 
           // Current Location
           if (locationSettings.locationEnabled)
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
+            GlassmorphismContainer(
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+              padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
+              child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
@@ -167,15 +167,14 @@ class LocationSettingsPage extends ConsumerWidget {
                     ),
                   ],
                 ),
-              ),
             ),
           const SizedBox(height: 16),
 
           // Location Triggers
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
+          GlassmorphismContainer(
+            borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+            padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
+            child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
@@ -212,15 +211,14 @@ class LocationSettingsPage extends ConsumerWidget {
                   ),
                 ],
               ),
-            ),
           ),
           const SizedBox(height: 16),
 
           // Actions
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
+          GlassmorphismContainer(
+            borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+            padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
+            child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
@@ -248,7 +246,6 @@ class LocationSettingsPage extends ConsumerWidget {
                   ),
                 ],
               ),
-            ),
           ),
         ],
       ),

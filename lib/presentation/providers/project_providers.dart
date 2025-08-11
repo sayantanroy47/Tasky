@@ -1,28 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/entities/project.dart' as domain;
-import '../../domain/repositories/project_repository.dart';
-import '../../domain/repositories/task_repository.dart';
-import '../../data/repositories/project_repository_impl.dart';
-import '../../data/repositories/task_repository_impl.dart';
-import '../../services/database/database.dart';
 import '../../services/project_service.dart';
-
-// Database provider
-final databaseProvider = Provider<AppDatabase>((ref) {
-  return AppDatabase();
-});
-
-// Repository providers
-final projectRepositoryProvider = Provider<ProjectRepository>((ref) {
-  final database = ref.read(databaseProvider);
-  return ProjectRepositoryImpl(database);
-});
-
-final taskRepositoryProvider = Provider<TaskRepository>((ref) {
-  final database = ref.read(databaseProvider);
-  return TaskRepositoryImpl(database);
-});
+import '../../core/providers/core_providers.dart';
 
 // Service provider
 final projectServiceProvider = Provider<ProjectService>((ref) {

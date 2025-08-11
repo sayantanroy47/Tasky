@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/speech_providers.dart';
+import '../widgets/glassmorphism_container.dart';
+import '../../core/theme/typography_constants.dart';
 import '../widgets/voice_recording_widget.dart';
+import '../widgets/standardized_app_bar.dart';
 import '../../services/speech/transcription_service.dart';
 import '../../services/speech/transcription_validator.dart';
 
@@ -27,9 +30,8 @@ class _VoiceDemoPageState extends ConsumerState<VoiceDemoPage> {
     final speechNotifier = ref.read(speechRecognitionProvider.notifier);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Voice Recording Demo'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+      appBar: const StandardizedAppBar(
+        title: 'Voice Recording Demo',
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -37,10 +39,10 @@ class _VoiceDemoPageState extends ConsumerState<VoiceDemoPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Status information
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
+            GlassmorphismContainer(
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+              padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
+              child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
@@ -58,7 +60,6 @@ class _VoiceDemoPageState extends ConsumerState<VoiceDemoPage> {
                     ],
                   ],
                 ),
-              ),
             ),
             
             const SizedBox(height: 16.0),
@@ -104,10 +105,10 @@ class _VoiceDemoPageState extends ConsumerState<VoiceDemoPage> {
             
             // Available locales
             if (speechState.availableLocales.isNotEmpty) ...[
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
+              GlassmorphismContainer(
+                borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
+                child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
@@ -133,16 +134,15 @@ class _VoiceDemoPageState extends ConsumerState<VoiceDemoPage> {
                     ],
                   ),
                 ),
-              ),
             ],
             
             const SizedBox(height: 16.0),
             
             // Transcription testing section
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
+            GlassmorphismContainer(
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+              padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
+              child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
@@ -178,7 +178,7 @@ class _VoiceDemoPageState extends ConsumerState<VoiceDemoPage> {
                         padding: const EdgeInsets.all(12.0),
                         decoration: BoxDecoration(
                           color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                          borderRadius: BorderRadius.circular(8.0),
+                          borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -242,7 +242,7 @@ class _VoiceDemoPageState extends ConsumerState<VoiceDemoPage> {
                           color: _lastValidationResult!.isValid 
                               ? Colors.green.withOpacity( 0.1)
                               : Colors.orange.withOpacity( 0.1),
-                          borderRadius: BorderRadius.circular(8.0),
+                          borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                           border: Border.all(
                             color: _lastValidationResult!.isValid 
                                 ? Colors.green 
@@ -313,7 +313,6 @@ class _VoiceDemoPageState extends ConsumerState<VoiceDemoPage> {
                     ],
                   ],
                 ),
-              ),
             ),
             
             const Spacer(),

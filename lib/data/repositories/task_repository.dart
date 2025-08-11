@@ -1,4 +1,3 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
 
@@ -146,7 +145,3 @@ class InMemoryTaskRepository implements TaskRepository {
   }
 }
 
-/// Task repository provider
-final taskRepositoryProvider = Provider<TaskRepository>((ref) {
-  return InMemoryTaskRepository();
-});

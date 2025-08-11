@@ -4,20 +4,21 @@ import '../../domain/repositories/tag_repository.dart';
 import '../../data/repositories/tag_repository_impl.dart';
 import '../../services/data_export/data_export_service.dart';
 import '../../services/data_export/data_export_models.dart';
+import '../../core/providers/core_providers.dart';
 import 'task_providers.dart' as task_providers;
 import 'project_providers.dart' as project_providers;
 
 // Tag repository provider
 final tagRepositoryProvider = Provider<TagRepository>((ref) {
-  final database = ref.watch(task_providers.databaseProvider);
+  final database = ref.watch(databaseProvider);
   return TagRepositoryImpl(database);
 });
 
 // Service provider
 final dataExportServiceProvider = Provider<DataExportService>((ref) {
   return DataExportServiceImpl(
-    taskRepository: ref.read(task_providers.taskRepositoryProvider),
-    projectRepository: ref.read(project_providers.projectRepositoryProvider),
+    taskRepository: ref.read(taskRepositoryProvider),
+    projectRepository: ref.read(projectRepositoryProvider),
     tagRepository: ref.read(tagRepositoryProvider),
   );
 });

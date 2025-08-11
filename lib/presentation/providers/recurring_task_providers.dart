@@ -2,7 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
 import '../../domain/entities/recurrence_pattern.dart';
-import '../../services/recurring_task_service.dart';
+import '../../services/task/recurring_task_service.dart';
 import 'task_providers.dart';
 
 /// Provider for RecurringTaskService

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/theme/typography_constants.dart';
 import '../../services/accessibility_service.dart';
 
 /// Accessible button with proper semantics and haptic feedback
@@ -283,7 +284,7 @@ class AccessibleCard extends ConsumerWidget {
             onTap!();
           },
           focusNode: focusNode,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
           child: Padding(
             padding: padding ?? const EdgeInsets.all(16),
             child: child,

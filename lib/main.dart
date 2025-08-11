@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'core/theme/app_theme.dart';
 import 'core/constants/app_constants.dart';
-import 'core/providers/theme_provider.dart';
-import 'domain/models/enums.dart';
 import 'core/routing/app_router.dart';
+import 'core/providers/enhanced_theme_provider.dart';
 import 'presentation/widgets/app_initialization_wrapper.dart';
 import 'services/performance_service.dart';
+import 'services/share_intent_service.dart';
+import 'services/widget_service.dart';
 
 /// Global navigator key for accessing context from services
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -18,6 +18,11 @@ final performanceServiceProvider = Provider<PerformanceService>((ref) {
   return PerformanceService();
 });
 
+/// Share intent service provider
+final shareIntentServiceProvider = Provider<ShareIntentService>((ref) {
+  return ShareIntentService();
+});
+
 void main() async {
   // Start performance monitoring early
   final performanceService = PerformanceService();
@@ -25,8 +30,18 @@ void main() async {
   
   WidgetsFlutterBinding.ensureInitialized();
   
+  // Initialize services early
+  final shareIntentService = ShareIntentService();
+  final widgetService = WidgetService();
+  
   // Performance optimizations
   await _performStartupOptimizations(performanceService);
+  
+  // Initialize share intent service
+  await shareIntentService.initialize();
+  
+  // Initialize widget service
+  await widgetService.initialize();
   
   performanceService.stopTimer('app_startup_total');
   
@@ -34,6 +49,7 @@ void main() async {
     ProviderScope(
       overrides: [
         performanceServiceProvider.overrideWithValue(performanceService),
+        shareIntentServiceProvider.overrideWithValue(shareIntentService),
       ],
       child: const TaskTrackerApp(),
     ),
@@ -50,12 +66,6 @@ Future<void> _performStartupOptimizations(PerformanceService performanceService)
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
-    
-    // Optimize system UI
-    await SystemChrome.setEnabledSystemUIMode(
-      SystemUiMode.edgeToEdge,
-      overlays: [SystemUiOverlay.top],
-    );
     
     // Set system UI overlay style
     SystemChrome.setSystemUIOverlayStyle(
@@ -89,35 +99,23 @@ Future<void> _performStartupOptimizations(PerformanceService performanceService)
 
 class TaskTrackerApp extends ConsumerWidget {
   const TaskTrackerApp({super.key});
+  
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeState = ref.watch(themeProvider);
+    final themeState = ref.watch(enhancedThemeProvider);
+    final themeMode = ref.watch(themeModeProvider);
     
     return AppInitializationWrapper(
       child: MaterialApp(
         title: AppConstants.appName,
         navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
-        theme: _getTheme(themeState, false),
-        darkTheme: _getTheme(themeState, true),
-        themeMode: themeState.themeMode.themeMode,
+        theme: themeState.flutterTheme ?? ThemeData.light(useMaterial3: true),
+        darkTheme: themeState.darkFlutterTheme ?? ThemeData.dark(useMaterial3: true),
+        themeMode: themeMode,
         initialRoute: AppRouter.initialRoute,
         onGenerateRoute: AppRouter.generateRoute,
       ),
     );
-  }
-
-  /// Get appropriate theme based on theme state and brightness
-  ThemeData _getTheme(ThemeState themeState, bool isDark) {
-    switch (themeState.themeMode) {
-      case AppThemeMode.highContrastLight:
-        return AppTheme.highContrastLightTheme;
-      case AppThemeMode.highContrastDark:
-        return AppTheme.highContrastDarkTheme;
-      case AppThemeMode.system:
-      case AppThemeMode.light:
-      case AppThemeMode.dark:
-        return isDark ? AppTheme.darkTheme : AppTheme.lightTheme;
-    }
   }
 }

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../widgets/standardized_app_bar.dart';
 
 import '../providers/notification_providers.dart';
 import '../../services/notification/notification_models.dart' as models;
+import '../../core/theme/typography_constants.dart';
 
 /// Page for configuring notification settings
 class NotificationSettingsPage extends ConsumerWidget {
@@ -12,10 +14,7 @@ class NotificationSettingsPage extends ConsumerWidget {
     final permissionsAsync = ref.watch(notificationPermissionsProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Notification Settings'),
-        elevation: 0,
-      ),
+      appBar: const StandardizedAppBar(title: 'Notification Settings'),
       body: settingsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(
@@ -90,7 +89,7 @@ class NotificationSettingsPage extends ConsumerWidget {
           children: [
             const Text(
               'Permissions',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             permissionsAsync.when(
@@ -137,7 +136,7 @@ class NotificationSettingsPage extends ConsumerWidget {
           children: [
             const Text(
               'General',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             SwitchListTile(
@@ -181,7 +180,7 @@ class NotificationSettingsPage extends ConsumerWidget {
           children: [
             const Text(
               'Task Reminders',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             ListTile(
@@ -210,7 +209,7 @@ class NotificationSettingsPage extends ConsumerWidget {
           children: [
             const Text(
               'Daily Summary',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             SwitchListTile(
@@ -251,7 +250,7 @@ class NotificationSettingsPage extends ConsumerWidget {
           children: [
             const Text(
               'Quiet Hours',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             if (hasQuietHours) ...[
@@ -312,7 +311,7 @@ class NotificationSettingsPage extends ConsumerWidget {
           children: [
             const Text(
               'Advanced',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             SwitchListTile(
@@ -341,7 +340,7 @@ class NotificationSettingsPage extends ConsumerWidget {
           children: [
             const Text(
               'Test',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             SizedBox(

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../widgets/standardized_app_bar.dart';
 
 import '../providers/notification_providers.dart';
 import '../../services/notification/notification_models.dart';
+import '../../core/theme/typography_constants.dart';
 
 /// Page for viewing notification history and statistics
 class NotificationHistoryPage extends ConsumerWidget {
@@ -12,9 +14,8 @@ class NotificationHistoryPage extends ConsumerWidget {
     final scheduledNotificationsAsync = ref.watch(scheduledNotificationsProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Notification History'),
-        elevation: 0,
+      appBar: StandardizedAppBar(
+        title: 'Notification History',
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -90,7 +91,7 @@ class NotificationHistoryPage extends ConsumerWidget {
           children: [
             const Text(
               'Notification Statistics',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             Row(
@@ -150,7 +151,7 @@ class NotificationHistoryPage extends ConsumerWidget {
                     'Most common: ${mostCommonType.displayName}',
                     style: TextStyle(
                       color: Colors.grey[600],
-                      fontSize: 14,
+                      fontSize: TypographyConstants.bodyMedium,
                     ),
                   ),
                 ],
@@ -170,7 +171,7 @@ class NotificationHistoryPage extends ConsumerWidget {
         Text(
           value,
           style: const TextStyle(
-            fontSize: 24,
+            fontSize: TypographyConstants.displaySmall,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -178,7 +179,7 @@ class NotificationHistoryPage extends ConsumerWidget {
           label,
           style: TextStyle(
             color: Colors.grey[600],
-            fontSize: 12,
+            fontSize: TypographyConstants.bodySmall,
           ),
         ),
       ],
@@ -201,7 +202,7 @@ class NotificationHistoryPage extends ConsumerWidget {
               Text(
                 'No notifications scheduled',
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: TypographyConstants.bodyLarge,
                   color: Colors.grey[600],
                 ),
               ),
@@ -223,7 +224,7 @@ class NotificationHistoryPage extends ConsumerWidget {
             padding: EdgeInsets.all(16),
             child: Text(
               'Scheduled Notifications',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.bold),
             ),
           ),
           ListView.separated(
@@ -295,7 +296,7 @@ class NotificationHistoryPage extends ConsumerWidget {
               Text(
                 _formatDateTime(notification.scheduledTime, isToday),
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: TypographyConstants.bodySmall,
                   color: Colors.grey[500],
                 ),
               ),
@@ -310,7 +311,7 @@ class NotificationHistoryPage extends ConsumerWidget {
                 Text(
                   'Sent',
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: TypographyConstants.bodySmall,
                     color: Colors.green[600],
                   ),
                 ),
@@ -325,7 +326,7 @@ class NotificationHistoryPage extends ConsumerWidget {
                 Text(
                   'Missed',
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: TypographyConstants.bodySmall,
                     color: Colors.red[600],
                   ),
                 ),

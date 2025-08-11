@@ -89,48 +89,89 @@ class OpenAITaskParser implements AITaskParser {
 
   /// Makes an API call to OpenAI
   Future<String> _makeAPICall(String prompt) async {
-    final uri = Uri.parse('$_baseUrl/chat/completions');
-    
-    final body = jsonEncode({
-      'model': _model,
-      'messages': [
-        {
-          'role': 'system',
-          'content': 'You are a helpful assistant that parses natural language into structured task data. Always respond with valid JSON.',
-        },
-        {
-          'role': 'user',
-          'content': prompt,
-        },
-      ],
-      'temperature': 0.1,
-      'max_tokens': 500,
-    });
+    try {
+      final uri = Uri.parse('$_baseUrl/chat/completions');
+      
+      final body = jsonEncode({
+        'model': _model,
+        'messages': [
+          {
+            'role': 'system',
+            'content': 'You are a helpful assistant that parses natural language into structured task data. Always respond with valid JSON.',
+          },
+          {
+            'role': 'user',
+            'content': prompt,
+          },
+        ],
+        'temperature': 0.1,
+        'max_tokens': 500,
+      });
 
-    final response = await _httpClient.post(
-      uri,
-      headers: {
-        'Authorization': 'Bearer $_apiKey',
-        'Content-Type': 'application/json',
-      },
-      body: body,
-    );
+      final response = await _httpClient.post(
+        uri,
+        headers: {
+          'Authorization': 'Bearer $_apiKey',
+          'Content-Type': 'application/json',
+        },
+        body: body,
+      ).timeout(
+        const Duration(seconds: 30),
+        onTimeout: () => throw AIParsingException(
+          'OpenAI API request timed out after 30 seconds',
+          code: 'TIMEOUT',
+        ),
+      );
 
-    if (response.statusCode != 200) {
+      if (response.statusCode != 200) {
+        String errorMessage = 'OpenAI API request failed with status ${response.statusCode}';
+        try {
+          final errorData = jsonDecode(response.body);
+          if (errorData['error']?['message'] != null) {
+            errorMessage += ': ${errorData['error']['message']}';
+          }
+        } catch (_) {
+          // Ignore JSON parsing errors for error response
+        }
+        
+        throw AIParsingException(
+          errorMessage,
+          code: response.statusCode.toString(),
+        );
+      }
+
+      if (response.body.isEmpty) {
+        throw const AIParsingException('Empty response from OpenAI API');
+      }
+
+      late final Map<String, dynamic> responseData;
+      try {
+        responseData = jsonDecode(response.body);
+      } catch (e) {
+        throw AIParsingException(
+          'Invalid JSON response from OpenAI API: $e',
+          code: 'INVALID_JSON',
+        );
+      }
+      
+      final content = responseData['choices']?[0]?['message']?['content'];
+      
+      if (content == null || content.toString().trim().isEmpty) {
+        throw const AIParsingException('Invalid or empty response content from OpenAI API');
+      }
+
+      return content.toString();
+    } on AIParsingException {
+      // Re-throw AIParsingException as-is
+      rethrow;
+    } catch (e) {
+      // Catch all other exceptions (network errors, etc.)
       throw AIParsingException(
-        'OpenAI API request failed with status ${response.statusCode}',
-        code: response.statusCode.toString(),
+        'Network or system error during OpenAI API call: ${e.toString()}',
+        originalError: e,
+        code: 'NETWORK_ERROR',
       );
     }
-
-    final responseData = jsonDecode(response.body);
-    final content = responseData['choices']?[0]?['message']?['content'];
-    
-    if (content == null) {
-      throw const AIParsingException('Invalid response from OpenAI API');
-    }
-
-    return content.toString();
   }
 
   /// Builds the prompt for comprehensive task parsing

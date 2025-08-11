@@ -8,6 +8,7 @@ import '../../../domain/entities/task_model.dart';
 import '../../../domain/entities/task_enums.dart';
 import '../../../domain/entities/subtask.dart' as domain;
 import '../../../domain/entities/recurrence_pattern.dart';
+import '../../../domain/models/enums.dart';
 
 part 'task_dao.g.dart';
 
@@ -103,8 +104,11 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
 
   /// Deletes a task from the database
   Future<void> deleteTask(String id) async {
-    await (delete(tasks)..where((t) => t.id.equals(id))).go();
-    // Subtasks, tags, and dependencies will be deleted automatically due to CASCADE
+    await db.transaction(() async {
+      // Delete the task and related data
+      await (delete(tasks)..where((t) => t.id.equals(id))).go();
+      // Subtasks, tags, and dependencies will be deleted automatically due to CASCADE
+    });
   }
 
   /// Gets tasks by status
@@ -487,5 +491,380 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
       default:
         return RecurrenceType.none;
     }
+  }
+
+  /// Bulk delete tasks by IDs
+  Future<void> deleteTasks(List<String> taskIds) async {
+    if (taskIds.isEmpty) return;
+    
+    await db.transaction(() async {
+      for (final id in taskIds) {
+        await (delete(tasks)..where((t) => t.id.equals(id))).go();
+      }
+    });
+  }
+  
+  /// Bulk update task status
+  Future<void> updateTasksStatus(List<String> taskIds, TaskStatus status) async {
+    if (taskIds.isEmpty) return;
+    
+    final statusValue = _taskStatusToInt(status);
+    final now = DateTime.now();
+    
+    await db.transaction(() async {
+      for (final id in taskIds) {
+        final updates = TasksCompanion(
+          status: Value(statusValue),
+          updatedAt: Value(now),
+        );
+        
+        // If marking as completed, set completedAt
+        if (status == TaskStatus.completed) {
+          await (update(tasks)..where((t) => t.id.equals(id)))
+              .write(updates.copyWith(completedAt: Value(now)));
+        } else {
+          await (update(tasks)..where((t) => t.id.equals(id)))
+              .write(updates);
+        }
+      }
+    });
+  }
+  
+  /// Bulk update task priority
+  Future<void> updateTasksPriority(List<String> taskIds, TaskPriority priority) async {
+    if (taskIds.isEmpty) return;
+    
+    final priorityValue = _taskPriorityToInt(priority);
+    final now = DateTime.now();
+    
+    await db.transaction(() async {
+      for (final id in taskIds) {
+        await (update(tasks)..where((t) => t.id.equals(id)))
+            .write(TasksCompanion(
+              priority: Value(priorityValue),
+              updatedAt: Value(now),
+            ));
+      }
+    });
+  }
+  
+  /// Bulk assign tasks to a project
+  Future<void> assignTasksToProject(List<String> taskIds, String? projectId) async {
+    if (taskIds.isEmpty) return;
+    
+    final now = DateTime.now();
+    
+    await db.transaction(() async {
+      for (final id in taskIds) {
+        await (update(tasks)..where((t) => t.id.equals(id)))
+            .write(TasksCompanion(
+              projectId: Value(projectId),
+              updatedAt: Value(now),
+            ));
+      }
+    });
+  }
+
+  /// Optimized method to get tasks by multiple IDs
+  Future<List<TaskModel>> getTasksByIds(List<String> ids) async {
+    if (ids.isEmpty) return [];
+    
+    final taskRows = await (select(tasks)..where((t) => t.id.isIn(ids))).get();
+    final taskModels = <TaskModel>[];
+
+    for (final taskRow in taskRows) {
+      final taskModel = await _taskRowToModel(taskRow);
+      taskModels.add(taskModel);
+    }
+
+    return taskModels;
+  }
+
+  /// Optimized method to get tasks with a specific dependency
+  Future<List<TaskModel>> getTasksWithDependency(String dependencyId) async {
+    // Use JOIN to efficiently find tasks with the specific dependency
+    final taskRows = await (select(tasks).join([
+      innerJoin(taskDependencies, taskDependencies.dependentTaskId.equalsExp(tasks.id))
+    ])..where(taskDependencies.prerequisiteTaskId.equals(dependencyId))).get();
+    
+    final taskModels = <TaskModel>[];
+    for (final row in taskRows) {
+      final taskRow = row.readTable(tasks);
+      final taskModel = await _taskRowToModel(taskRow);
+      taskModels.add(taskModel);
+    }
+
+    return taskModels;
+  }
+
+  /// Optimized database-level filtering with proper query building
+  Future<List<TaskModel>> getTasksWithFilter(TaskFilter filter) async {
+    var query = select(tasks);
+
+    // Apply database-level filters
+    if (filter.status != null) {
+      query = query..where((t) => t.status.equals(_taskStatusToInt(filter.status!)));
+    }
+
+    if (filter.priority != null) {
+      query = query..where((t) => t.priority.equals(_taskPriorityToInt(filter.priority!)));
+    }
+
+    if (filter.projectId != null) {
+      query = query..where((t) => t.projectId.equals(filter.projectId!));
+    }
+
+    if (filter.dueDateFrom != null) {
+      query = query..where((t) => t.dueDate.isBiggerOrEqualValue(filter.dueDateFrom!));
+    }
+
+    if (filter.dueDateTo != null) {
+      query = query..where((t) => t.dueDate.isSmallerOrEqualValue(filter.dueDateTo!));
+    }
+
+    if (filter.isOverdue == true) {
+      final now = DateTime.now();
+      query = query..where((t) => 
+        t.dueDate.isSmallerThanValue(now) & 
+        t.status.isNotValue(_taskStatusToInt(TaskStatus.completed))
+      );
+    } else if (filter.isOverdue == false) {
+      final now = DateTime.now();
+      query = query..where((t) => 
+        t.dueDate.isBiggerOrEqualValue(now) |
+        t.dueDate.isNull() |
+        t.status.equals(_taskStatusToInt(TaskStatus.completed))
+      );
+    }
+
+    if (filter.isPinned != null) {
+      query = query..where((t) => t.isPinned.equals(filter.isPinned!));
+    }
+
+    // Apply database-level search if provided
+    if (filter.searchQuery != null && filter.searchQuery!.isNotEmpty) {
+      query = query..where((t) => 
+        t.title.contains(filter.searchQuery!) |
+        t.description.contains(filter.searchQuery!)
+      );
+    }
+
+    // Apply sorting at database level
+    switch (filter.sortBy) {
+      case TaskSortBy.createdAt:
+        query = filter.sortAscending 
+          ? (query..orderBy([((t) => OrderingTerm.asc(t.createdAt))]))
+          : (query..orderBy([((t) => OrderingTerm.desc(t.createdAt))]));
+        break;
+      case TaskSortBy.updatedAt:
+        query = filter.sortAscending 
+          ? (query..orderBy([((t) => OrderingTerm.asc(t.updatedAt))]))
+          : (query..orderBy([((t) => OrderingTerm.desc(t.updatedAt))]));
+        break;
+      case TaskSortBy.dueDate:
+        query = filter.sortAscending 
+          ? (query..orderBy([((t) => OrderingTerm.asc(t.dueDate))]))
+          : (query..orderBy([((t) => OrderingTerm.desc(t.dueDate))]));
+        break;
+      case TaskSortBy.priority:
+        query = filter.sortAscending 
+          ? (query..orderBy([((t) => OrderingTerm.asc(t.priority))]))
+          : (query..orderBy([((t) => OrderingTerm.desc(t.priority))]));
+        break;
+      case TaskSortBy.title:
+        query = filter.sortAscending 
+          ? (query..orderBy([((t) => OrderingTerm.asc(t.title))]))
+          : (query..orderBy([((t) => OrderingTerm.desc(t.title))]));
+        break;
+      case TaskSortBy.status:
+        query = filter.sortAscending 
+          ? (query..orderBy([((t) => OrderingTerm.asc(t.status))]))
+          : (query..orderBy([((t) => OrderingTerm.desc(t.status))]));
+        break;
+    }
+
+    final taskRows = await query.get();
+    final taskModels = <TaskModel>[];
+
+    for (final taskRow in taskRows) {
+      final taskModel = await _taskRowToModel(taskRow);
+      taskModels.add(taskModel);
+    }
+
+    // Apply tag filtering in memory only if needed (since it requires JOIN logic)
+    var filteredTasks = taskModels;
+    if (filter.tags != null && filter.tags!.isNotEmpty) {
+      filteredTasks = taskModels.where((task) {
+        return filter.tags!.any((tagId) => task.tags.contains(tagId));
+      }).toList();
+    }
+
+    return filteredTasks;
+  }
+
+  /// Database-level pagination for better performance
+  Future<List<TaskModel>> getTasksWithFilterAndPagination(
+    TaskFilter filter, {
+    int page = 0,
+    int pageSize = 20,
+  }) async {
+    var query = select(tasks);
+
+    // Apply the same filters as getTasksWithFilter
+    if (filter.status != null) {
+      query = query..where((t) => t.status.equals(_taskStatusToInt(filter.status!)));
+    }
+
+    if (filter.priority != null) {
+      query = query..where((t) => t.priority.equals(_taskPriorityToInt(filter.priority!)));
+    }
+
+    if (filter.projectId != null) {
+      query = query..where((t) => t.projectId.equals(filter.projectId!));
+    }
+
+    if (filter.dueDateFrom != null) {
+      query = query..where((t) => t.dueDate.isBiggerOrEqualValue(filter.dueDateFrom!));
+    }
+
+    if (filter.dueDateTo != null) {
+      query = query..where((t) => t.dueDate.isSmallerOrEqualValue(filter.dueDateTo!));
+    }
+
+    if (filter.isOverdue == true) {
+      final now = DateTime.now();
+      query = query..where((t) => 
+        t.dueDate.isSmallerThanValue(now) & 
+        t.status.isNotValue(_taskStatusToInt(TaskStatus.completed))
+      );
+    } else if (filter.isOverdue == false) {
+      final now = DateTime.now();
+      query = query..where((t) => 
+        t.dueDate.isBiggerOrEqualValue(now) |
+        t.dueDate.isNull() |
+        t.status.equals(_taskStatusToInt(TaskStatus.completed))
+      );
+    }
+
+    if (filter.isPinned != null) {
+      query = query..where((t) => t.isPinned.equals(filter.isPinned!));
+    }
+
+    if (filter.searchQuery != null && filter.searchQuery!.isNotEmpty) {
+      query = query..where((t) => 
+        t.title.contains(filter.searchQuery!) |
+        t.description.contains(filter.searchQuery!)
+      );
+    }
+
+    // Apply sorting at database level
+    switch (filter.sortBy) {
+      case TaskSortBy.createdAt:
+        query = filter.sortAscending 
+          ? (query..orderBy([((t) => OrderingTerm.asc(t.createdAt))]))
+          : (query..orderBy([((t) => OrderingTerm.desc(t.createdAt))]));
+        break;
+      case TaskSortBy.updatedAt:
+        query = filter.sortAscending 
+          ? (query..orderBy([((t) => OrderingTerm.asc(t.updatedAt))]))
+          : (query..orderBy([((t) => OrderingTerm.desc(t.updatedAt))]));
+        break;
+      case TaskSortBy.dueDate:
+        query = filter.sortAscending 
+          ? (query..orderBy([((t) => OrderingTerm.asc(t.dueDate))]))
+          : (query..orderBy([((t) => OrderingTerm.desc(t.dueDate))]));
+        break;
+      case TaskSortBy.priority:
+        query = filter.sortAscending 
+          ? (query..orderBy([((t) => OrderingTerm.asc(t.priority))]))
+          : (query..orderBy([((t) => OrderingTerm.desc(t.priority))]));
+        break;
+      case TaskSortBy.title:
+        query = filter.sortAscending 
+          ? (query..orderBy([((t) => OrderingTerm.asc(t.title))]))
+          : (query..orderBy([((t) => OrderingTerm.desc(t.title))]));
+        break;
+      case TaskSortBy.status:
+        query = filter.sortAscending 
+          ? (query..orderBy([((t) => OrderingTerm.asc(t.status))]))
+          : (query..orderBy([((t) => OrderingTerm.desc(t.status))]));
+        break;
+    }
+
+    // Apply pagination at database level for maximum efficiency
+    query = query..limit(pageSize, offset: page * pageSize);
+
+    final taskRows = await query.get();
+    final taskModels = <TaskModel>[];
+
+    for (final taskRow in taskRows) {
+      final taskModel = await _taskRowToModel(taskRow);
+      taskModels.add(taskModel);
+    }
+
+    // Apply tag filtering in memory only if needed
+    var filteredTasks = taskModels;
+    if (filter.tags != null && filter.tags!.isNotEmpty) {
+      filteredTasks = taskModels.where((task) {
+        return filter.tags!.any((tagId) => task.tags.contains(tagId));
+      }).toList();
+    }
+
+    return filteredTasks;
+  }
+
+  /// Get count of filtered tasks for pagination info
+  Future<int> getTasksWithFilterCount(TaskFilter filter) async {
+    var query = selectOnly(tasks)..addColumns([tasks.id.count()]);
+
+    // Apply the same filters as getTasksWithFilter
+    if (filter.status != null) {
+      query = query..where(tasks.status.equals(_taskStatusToInt(filter.status!)));
+    }
+
+    if (filter.priority != null) {
+      query = query..where(tasks.priority.equals(_taskPriorityToInt(filter.priority!)));
+    }
+
+    if (filter.projectId != null) {
+      query = query..where(tasks.projectId.equals(filter.projectId!));
+    }
+
+    if (filter.dueDateFrom != null) {
+      query = query..where(tasks.dueDate.isBiggerOrEqualValue(filter.dueDateFrom!));
+    }
+
+    if (filter.dueDateTo != null) {
+      query = query..where(tasks.dueDate.isSmallerOrEqualValue(filter.dueDateTo!));
+    }
+
+    if (filter.isOverdue == true) {
+      final now = DateTime.now();
+      query = query..where(
+        tasks.dueDate.isSmallerThanValue(now) & 
+        tasks.status.isNotValue(_taskStatusToInt(TaskStatus.completed))
+      );
+    } else if (filter.isOverdue == false) {
+      final now = DateTime.now();
+      query = query..where(
+        tasks.dueDate.isBiggerOrEqualValue(now) |
+        tasks.dueDate.isNull() |
+        tasks.status.equals(_taskStatusToInt(TaskStatus.completed))
+      );
+    }
+
+    if (filter.isPinned != null) {
+      query = query..where(tasks.isPinned.equals(filter.isPinned!));
+    }
+
+    if (filter.searchQuery != null && filter.searchQuery!.isNotEmpty) {
+      query = query..where(
+        tasks.title.contains(filter.searchQuery!) |
+        tasks.description.contains(filter.searchQuery!)
+      );
+    }
+
+    final result = await query.getSingle();
+    return result.read(tasks.id.count()) ?? 0;
   }
 }

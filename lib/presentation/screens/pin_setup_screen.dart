@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/theme/typography_constants.dart';
 import '../widgets/enhanced_ux_widgets.dart';
+import '../widgets/standardized_app_bar.dart';
 import '../../services/security_service.dart';
 
 /// Screen for setting up or changing PIN
@@ -35,10 +37,8 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.isChangingPin ? 'Change PIN' : 'Set up PIN'),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+      appBar: StandardizedAppBar(
+        title: widget.isChangingPin ? 'Change PIN' : 'Set up PIN',
       ),
       body: SafeArea(
         child: Padding(
@@ -102,7 +102,7 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
           width: 32,
           height: 4,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(2),
+            borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
             color: isCompleted
                 ? Theme.of(context).colorScheme.primary
                 : isActive

@@ -1,4 +1,5 @@
 import '../../domain/entities/task_enums.dart';
+import '../../domain/models/ai_service_type.dart';
 import 'ai_task_parser.dart';
 import 'openai_task_parser.dart';
 import 'claude_task_parser.dart';
@@ -191,30 +192,4 @@ class CompositeAITaskParser implements AITaskParser {
 }
 
 /// Enum for different AI service types
-enum AIServiceType {
-  openai,
-  claude,
-  local;
-
-  String get displayName {
-    switch (this) {
-      case AIServiceType.openai:
-        return 'OpenAI GPT-4o';
-      case AIServiceType.claude:
-        return 'Claude 3';
-      case AIServiceType.local:
-        return 'Local Processing';
-    }
-  }
-
-  String get description {
-    switch (this) {
-      case AIServiceType.openai:
-        return 'Advanced AI parsing using OpenAI\'s GPT-4o model';
-      case AIServiceType.claude:
-        return 'Advanced AI parsing using Anthropic\'s Claude 3 model';
-      case AIServiceType.local:
-        return 'Privacy-focused local parsing using keyword matching';
-    }
-  }
-}
+// AIServiceType enum moved to domain/models/ai_service_type.dart

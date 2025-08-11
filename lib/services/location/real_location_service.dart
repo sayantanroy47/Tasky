@@ -1,19 +1,19 @@
 import 'dart:async';
-import 'package:geolocator/geolocator.dart';
+import 'package:geolocator/geolocator.dart' as geolocator;
 import 'package:geocoding/geocoding.dart';
 import 'package:flutter/foundation.dart';
 import 'location_service.dart';
-import 'location_models.dart';
+import 'location_models.dart' as models;
 
 /// Real implementation of LocationService using geolocator
 class RealLocationService implements LocationService {
-  StreamSubscription<Position>? _positionSubscription;
-  StreamController<LocationData>? _locationController;
+  StreamSubscription<geolocator.Position>? _positionSubscription;
+  StreamController<models.LocationData>? _locationController;
 
   @override
   Future<bool> isLocationServiceEnabled() async {
     try {
-      return await Geolocator.isLocationServiceEnabled();
+      return await geolocator.Geolocator.isLocationServiceEnabled();
     } catch (e) {
       if (kDebugMode) {
         print('Error checking location service: $e');
@@ -25,7 +25,7 @@ class RealLocationService implements LocationService {
   @override
   Future<LocationPermissionStatus> checkPermission() async {
     try {
-      final permission = await Geolocator.checkPermission();
+      final permission = await geolocator.Geolocator.checkPermission();
       return _mapGeolocatorPermission(permission);
     } catch (e) {
       if (kDebugMode) {
@@ -38,7 +38,7 @@ class RealLocationService implements LocationService {
   @override
   Future<LocationPermissionStatus> requestPermission() async {
     try {
-      final permission = await Geolocator.requestPermission();
+      final permission = await geolocator.Geolocator.requestPermission();
       return _mapGeolocatorPermission(permission);
     } catch (e) {
       if (kDebugMode) {
@@ -49,7 +49,7 @@ class RealLocationService implements LocationService {
   }
 
   @override
-  Future<LocationData> getCurrentLocation() async {
+  Future<models.LocationData> getCurrentLocation() async {
     try {
       // Check if location services are enabled
       final serviceEnabled = await isLocationServiceEnabled();
@@ -71,12 +71,12 @@ class RealLocationService implements LocationService {
       }
 
       // Get current position
-      final position = await Geolocator.getCurrentPosition(
+      final position = await geolocator.Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
         timeLimit: const Duration(seconds: 10),
       );
 
-      return LocationData(
+      return models.LocationData(
         latitude: position.latitude,
         longitude: position.longitude,
         accuracy: position.accuracy,
@@ -94,10 +94,10 @@ class RealLocationService implements LocationService {
   }
 
   @override
-  Stream<LocationData> getLocationStream() {
+  Stream<models.LocationData> getLocationStream() {
     try {
       _locationController?.close();
-      _locationController = StreamController<LocationData>.broadcast();
+      _locationController = StreamController<models.LocationData>.broadcast();
 
       // Configure location settings
       const locationSettings = LocationSettings(
@@ -106,11 +106,11 @@ class RealLocationService implements LocationService {
       );
 
       _positionSubscription?.cancel();
-      _positionSubscription = Geolocator.getPositionStream(
+      _positionSubscription = geolocator.Geolocator.getPositionStream(
         locationSettings: locationSettings,
       ).listen(
         (Position position) {
-          final locationData = LocationData(
+          final locationData = models.LocationData(
             latitude: position.latitude,
             longitude: position.longitude,
             accuracy: position.accuracy,
@@ -171,7 +171,7 @@ class RealLocationService implements LocationService {
     double endLongitude,
   ) async {
     try {
-      return Geolocator.distanceBetween(
+      return geolocator.Geolocator.distanceBetween(
         startLatitude,
         startLongitude,
         endLatitude,
@@ -193,7 +193,7 @@ class RealLocationService implements LocationService {
     double endLongitude,
   ) async {
     try {
-      return Geolocator.bearingBetween(
+      return geolocator.Geolocator.bearingBetween(
         startLatitude,
         startLongitude,
         endLatitude,
@@ -232,13 +232,13 @@ class RealLocationService implements LocationService {
   }
 
   /// Get coordinates from address string
-  Future<LocationData?> getCoordinatesFromAddress(String address) async {
+  Future<models.LocationData?> getCoordinatesFromAddress(String address) async {
     try {
       final locations = await locationFromAddress(address);
       
       if (locations.isNotEmpty) {
         final location = locations.first;
-        return LocationData(
+        return models.LocationData(
           latitude: location.latitude,
           longitude: location.longitude,
           timestamp: DateTime.now(),
@@ -257,7 +257,7 @@ class RealLocationService implements LocationService {
   /// Open device settings for location permissions
   Future<bool> openLocationSettings() async {
     try {
-      return await Geolocator.openLocationSettings();
+      return await geolocator.Geolocator.openLocationSettings();
     } catch (e) {
       if (kDebugMode) {
         print('Error opening location settings: $e');
@@ -269,7 +269,7 @@ class RealLocationService implements LocationService {
   /// Open app settings for permissions
   Future<bool> openAppSettings() async {
     try {
-      return await Geolocator.openAppSettings();
+      return await geolocator.Geolocator.openAppSettings();
     } catch (e) {
       if (kDebugMode) {
         print('Error opening app settings: $e');
@@ -307,7 +307,7 @@ class RealLocationService implements LocationService {
 class EnhancedLocationService extends RealLocationService {
   final Map<String, GeofenceRegion> _geofences = {};
   Timer? _geofenceTimer;
-  LocationData? _lastKnownLocation;
+  models.LocationData? _lastKnownLocation;
 
   /// Add a geofence region
   void addGeofence(GeofenceRegion region) {
@@ -353,9 +353,9 @@ class EnhancedLocationService extends RealLocationService {
     _geofenceTimer = null;
   }
 
-  void _checkGeofences(LocationData currentLocation) {
+  void _checkGeofences(models.LocationData currentLocation) {
     for (final geofence in _geofences.values) {
-      final distance = Geolocator.distanceBetween(
+      final distance = geolocator.Geolocator.distanceBetween(
         currentLocation.latitude,
         currentLocation.longitude,
         geofence.latitude,
@@ -421,7 +421,7 @@ enum GeofenceEventType { enter, exit }
 class GeofenceEvent {
   final GeofenceEventType type;
   final GeofenceRegion region;
-  final LocationData location;
+  final models.LocationData location;
   final DateTime timestamp;
 
   const GeofenceEvent({

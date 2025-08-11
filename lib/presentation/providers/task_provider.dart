@@ -2,33 +2,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
 import '../../domain/repositories/task_repository.dart';
-import '../../data/repositories/task_repository_impl.dart';
-import '../../services/database/database.dart';
 import '../../services/task/recurring_task_service.dart';
 import '../../services/task/task_dependency_service.dart';
 import '../../services/notification/notification_service.dart';
 import '../../services/notification/local_notification_service.dart';
-
-/// Singleton database provider to prevent multiple instances
-final databaseProvider = Provider<AppDatabase>((ref) {
-  // Keep alive to ensure singleton behavior
-  ref.keepAlive();
-  
-  final database = AppDatabase();
-  
-  // Proper cleanup on disposal
-  ref.onDispose(() async {
-    await database.close();
-  });
-  
-  return database;
-});
-
-/// Provider for task repository
-final taskRepositoryProvider = Provider<TaskRepository>((ref) {
-  final database = ref.watch(databaseProvider);
-  return TaskRepositoryImpl(database);
-});
+import '../../core/providers/core_providers.dart';
 
 /// Provider for all tasks
 final tasksProvider = StreamProvider<List<TaskModel>>((ref) {
@@ -95,7 +73,8 @@ final searchedTasksProvider = FutureProvider<List<TaskModel>>((ref) async {
 /// Recurring task service provider
 final recurringTaskServiceProvider = Provider<RecurringTaskService>((ref) {
   final repository = ref.watch(taskRepositoryProvider);
-  return RecurringTaskService(repository);
+  final database = ref.watch(databaseProvider);
+  return RecurringTaskService(repository, database);
 });
 
 /// Task dependency service provider

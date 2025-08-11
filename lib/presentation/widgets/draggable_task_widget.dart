@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/theme/typography_constants.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/entities/calendar_event.dart';
 import '../../domain/models/enums.dart';
@@ -30,13 +31,13 @@ class DraggableTaskWidget extends ConsumerWidget {
       ),
       feedback: Material(
         elevation: 8,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
         child: Container(
           width: 300,
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
             border: Border.all(
               color: Theme.of(context).primaryColor,
               width: 2,
@@ -114,7 +115,7 @@ class CalendarDropTarget extends ConsumerWidget {
                     width: 2,
                   )
                 : null,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
             color: isHovering
                 ? Theme.of(context).primaryColor.withOpacity(0.1)
                 : null,

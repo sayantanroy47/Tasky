@@ -60,6 +60,20 @@ abstract class TaskRepository {
 
   /// Gets tasks that have a specific task as a dependency
   Future<List<TaskModel>> getTasksWithDependency(String dependencyId);
+
+  // Bulk Operations
+  
+  /// Bulk delete multiple tasks by their IDs
+  Future<void> deleteTasks(List<String> taskIds);
+  
+  /// Bulk update task status for multiple tasks
+  Future<void> updateTasksStatus(List<String> taskIds, TaskStatus status);
+  
+  /// Bulk update task priority for multiple tasks
+  Future<void> updateTasksPriority(List<String> taskIds, TaskPriority priority);
+  
+  /// Bulk assign tasks to a project
+  Future<void> assignTasksToProject(List<String> taskIds, String? projectId);
 }
 
 

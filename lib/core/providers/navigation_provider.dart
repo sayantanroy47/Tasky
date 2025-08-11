@@ -21,19 +21,19 @@ class AppNavigationDestination {
       route: '/',
     ),
     AppNavigationDestination(
-      label: 'Tasks',
-      icon: Icons.task_alt,
-      route: '/tasks',
+      label: 'Calendar',
+      icon: Icons.calendar_today,
+      route: '/calendar',
     ),
     AppNavigationDestination(
-      label: 'Settings',
-      icon: Icons.settings,
+      label: 'Analytics',
+      icon: Icons.analytics,
+      route: '/analytics',
+    ),
+    AppNavigationDestination(
+      label: 'Menu',
+      icon: Icons.menu,
       route: '/settings',
-    ),
-    AppNavigationDestination(
-      label: 'Performance',
-      icon: Icons.speed,
-      route: '/performance',
     ),
   ];
 
@@ -44,22 +44,22 @@ class AppNavigationDestination {
     route: '/',
   );
 
-  static const AppNavigationDestination tasks = AppNavigationDestination(
-    label: 'Tasks',
-    icon: Icons.task_alt,
-    route: '/tasks',
+  static const AppNavigationDestination calendar = AppNavigationDestination(
+    label: 'Calendar',
+    icon: Icons.calendar_today,
+    route: '/calendar',
   );
 
-  static const AppNavigationDestination settings = AppNavigationDestination(
-    label: 'Settings',
-    icon: Icons.settings,
+  static const AppNavigationDestination analytics = AppNavigationDestination(
+    label: 'Analytics',
+    icon: Icons.analytics,
+    route: '/analytics',
+  );
+
+  static const AppNavigationDestination menu = AppNavigationDestination(
+    label: 'Menu',
+    icon: Icons.menu,
     route: '/settings',
-  );
-
-  static const AppNavigationDestination performance = AppNavigationDestination(
-    label: 'Performance',
-    icon: Icons.speed,
-    route: '/performance',
   );
 
   /// Get index of this destination

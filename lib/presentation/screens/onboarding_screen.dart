@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/theme/typography_constants.dart';
 import '../widgets/enhanced_ux_widgets.dart';
 
 
@@ -222,7 +223,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                         width: _currentPage == index ? 24 : 8,
                         height: 8,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(4),
+                          borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                           color: _currentPage == index
                               ? Theme.of(context).colorScheme.primary
                               : Theme.of(context).colorScheme.surfaceContainerHighest,

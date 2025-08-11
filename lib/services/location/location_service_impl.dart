@@ -21,8 +21,8 @@ class LocationServiceImpl implements LocationService {
     }
   }
 
-  factory LocationServiceImpl.getInstance() {
-    return _instance ??= LocationServiceImpl();
+  static LocationServiceImpl getInstance() {
+    return _instance ??= LocationServiceImpl() as LocationServiceImpl;
   }
 
   @override
@@ -43,6 +43,34 @@ class LocationServiceImpl implements LocationService {
   @override
   Future<String?> getAddressFromCoordinates(double latitude, double longitude) =>
       _delegate.getAddressFromCoordinates(latitude, longitude);
+
+  @override
+  Future<LocationData?> getCoordinatesFromAddress(String address) =>
+      _delegate.getCoordinatesFromAddress(address);
+
+  @override
+  double calculateDistance(double startLatitude, double startLongitude, double endLatitude, double endLongitude) =>
+      _delegate.calculateDistance(startLatitude, startLongitude, endLatitude, endLongitude);
+
+  @override
+  bool isWithinGeofence(LocationData location, GeofenceData geofence) =>
+      _delegate.isWithinGeofence(location, geofence);
+
+  @override
+  Future<void> startGeofenceMonitoring(GeofenceData geofence) =>
+      _delegate.startGeofenceMonitoring(geofence);
+
+  @override
+  Future<void> stopGeofenceMonitoring(String geofenceId) =>
+      _delegate.stopGeofenceMonitoring(geofenceId);
+
+  @override
+  Future<void> stopAllGeofenceMonitoring() =>
+      _delegate.stopAllGeofenceMonitoring();
+
+  @override
+  Stream<GeofenceEvent> getGeofenceEventStream() =>
+      _delegate.getGeofenceEventStream();
 
   @override
   void dispose() => _delegate.dispose();

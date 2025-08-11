@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/theme/typography_constants.dart';
 import '../../services/offline_data_service.dart';
 import '../../domain/models/enums.dart' as enums;
+import 'standardized_app_bar.dart';
 
 /// Widget to display offline/sync status
 class OfflineStatusWidget extends ConsumerWidget {
@@ -29,7 +31,7 @@ class OfflineStatusWidget extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: status.statusColor.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
         border: Border.all(color: status.statusColor, width: 1),
       ),
       child: Row(
@@ -446,8 +448,8 @@ class AppBarWithSyncStatus extends ConsumerWidget implements PreferredSizeWidget
   });
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return AppBar(
-      title: Text(title),
+    return StandardizedAppBar(
+      title: title,
       leading: leading,
       automaticallyImplyLeading: automaticallyImplyLeading,
       actions: [
@@ -492,7 +494,7 @@ class ConflictResolutionSheet extends ConsumerWidget {
         return Container(
           decoration: const BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+            borderRadius: BorderRadius.vertical(top: Radius.circular(TypographyConstants.radiusStandard)),
           ),
           child: Column(
             children: [
@@ -503,7 +505,7 @@ class ConflictResolutionSheet extends ConsumerWidget {
                 margin: const EdgeInsets.symmetric(vertical: 8),
                 decoration: BoxDecoration(
                   color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                 ),
               ),
               

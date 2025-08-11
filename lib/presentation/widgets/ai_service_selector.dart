@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/theme/typography_constants.dart';
 
 import '../../services/ai/ai_task_parsing_service.dart';
 import '../../services/ai/composite_ai_task_parser.dart';
+import '../../services/security/api_key_manager.dart';
 
 /// Widget for selecting AI service provider
 class AIServiceSelector extends ConsumerWidget {
@@ -100,50 +102,65 @@ class AIServiceSelector extends ConsumerWidget {
                 ],
               ),
               const SizedBox(height: 16),
-              ListTile(
-                leading: const Icon(Icons.settings),
-                title: Text('Configure ${config.serviceType.displayName} API'),
-                subtitle: const Text('Set up API key and preferences'),
-                trailing: const Icon(Icons.arrow_forward_ios),
-                onTap: () => _showAPIConfigDialog(context, config.serviceType),
+              FutureBuilder<bool>(
+                future: _hasApiKey(config.serviceType),
+                builder: (context, snapshot) {
+                  final hasKey = snapshot.data ?? false;
+                  return ListTile(
+                    leading: Icon(
+                      hasKey ? Icons.check_circle : Icons.settings,
+                      color: hasKey ? Colors.green : null,
+                    ),
+                    title: Text('Configure ${config.serviceType.displayName} API'),
+                    subtitle: Text(hasKey ? 'API key configured' : 'Set up API key and preferences'),
+                    trailing: const Icon(Icons.arrow_forward_ios),
+                    onTap: () => _showAPIConfigDialog(context, config.serviceType),
+                  );
+                },
               ),
             ],
             
             // Service Status
             const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    _getStatusIcon(config.serviceType),
-                    color: _getStatusColor(context, config.serviceType),
-                    size: 20,
+            FutureBuilder<bool>(
+              future: _hasApiKey(config.serviceType),
+              builder: (context, snapshot) {
+                final hasKey = snapshot.data ?? false;
+                return Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                   ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          _getStatusTitle(config.serviceType),
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w500,
-                          ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        _getStatusIcon(config.serviceType, hasKey),
+                        color: _getStatusColor(context, config.serviceType, hasKey),
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              _getStatusTitle(config.serviceType, hasKey),
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            Text(
+                              _getStatusDescription(config.serviceType, hasKey),
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                          ],
                         ),
-                        Text(
-                          _getStatusDescription(config.serviceType),
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                );
+              },
             ),
           ],
         ),
@@ -158,44 +175,99 @@ class AIServiceSelector extends ConsumerWidget {
     );
   }
 
-  IconData _getStatusIcon(AIServiceType serviceType) {
+  IconData _getStatusIcon(AIServiceType serviceType, [bool hasKey = false]) {
     switch (serviceType) {
       case AIServiceType.local:
         return Icons.check_circle;
       case AIServiceType.openai:
       case AIServiceType.claude:
-        return Icons.warning; // Would be check_circle if API key is configured
+        return hasKey ? Icons.check_circle : Icons.warning;
     }
   }
 
-  Color _getStatusColor(BuildContext context, AIServiceType serviceType) {
+  Color _getStatusColor(BuildContext context, AIServiceType serviceType, [bool hasKey = false]) {
     switch (serviceType) {
       case AIServiceType.local:
         return Colors.green;
       case AIServiceType.openai:
       case AIServiceType.claude:
-        return Colors.orange; // Would be green if API key is configured
+        return hasKey ? Colors.green : Colors.orange;
     }
   }
 
-  String _getStatusTitle(AIServiceType serviceType) {
+  String _getStatusTitle(AIServiceType serviceType, [bool hasKey = false]) {
     switch (serviceType) {
       case AIServiceType.local:
         return 'Ready';
       case AIServiceType.openai:
       case AIServiceType.claude:
-        return 'API Key Required';
+        return hasKey ? 'Ready' : 'API Key Required';
     }
   }
 
-  String _getStatusDescription(AIServiceType serviceType) {
+  String _getStatusDescription(AIServiceType serviceType, [bool hasKey = false]) {
     switch (serviceType) {
       case AIServiceType.local:
         return 'Local processing is available and ready to use';
       case AIServiceType.openai:
-        return 'Configure your OpenAI API key to enable advanced parsing';
+        return hasKey 
+          ? 'OpenAI API key is configured and ready to use'
+          : 'Configure your OpenAI API key to enable advanced parsing';
       case AIServiceType.claude:
-        return 'Configure your Anthropic API key to enable Claude parsing';
+        return hasKey
+          ? 'Claude API key is configured and ready to use' 
+          : 'Configure your Anthropic API key to enable Claude parsing';
+    }
+  }
+
+  Future<bool> _hasApiKey(AIServiceType serviceType) async {
+    switch (serviceType) {
+      case AIServiceType.openai:
+        return await APIKeyManager.hasOpenAIApiKey();
+      case AIServiceType.claude:
+        return await APIKeyManager.hasClaudeApiKey();
+      case AIServiceType.local:
+        return true;
+    }
+  }
+
+  Future<String?> _getCurrentApiKey() async {
+    switch (widget.serviceType) {
+      case AIServiceType.openai:
+        return await APIKeyManager.getOpenAIApiKey();
+      case AIServiceType.claude:
+        return await APIKeyManager.getClaudeApiKey();
+      case AIServiceType.local:
+        return null;
+    }
+  }
+
+  Future<void> _clearApiKey() async {
+    try {
+      switch (widget.serviceType) {
+        case AIServiceType.openai:
+          await APIKeyManager.setOpenAIApiKey('');
+          await APIKeyManager.setOpenAIBaseUrl(null);
+          break;
+        case AIServiceType.claude:
+          await APIKeyManager.setClaudeApiKey('');
+          await APIKeyManager.setClaudeBaseUrl(null);
+          break;
+        case AIServiceType.local:
+          break;
+      }
+      
+      if (mounted) {
+        setState(() {
+          _apiKeyController.clear();
+          _baseUrlController.clear();
+        });
+        _showSnackBar('API key cleared successfully!', isError: false);
+      }
+    } catch (e) {
+      if (mounted) {
+        _showSnackBar('Failed to clear API key: ${e.toString()}');
+      }
     }
   }
 }
@@ -223,9 +295,37 @@ class _APIConfigDialogState extends State<APIConfigDialog> {
     _loadCurrentSettings();
   }
 
-  void _loadCurrentSettings() {
-    // Load current API key and base URL from preferences
-    // This would be implemented with SharedPreferences
+  void _loadCurrentSettings() async {
+    try {
+      // Load current API key and base URL from secure storage
+      String? apiKey;
+      String? baseUrl;
+      
+      switch (widget.serviceType) {
+        case AIServiceType.openai:
+          apiKey = await APIKeyManager.getOpenAIApiKey();
+          baseUrl = await APIKeyManager.getOpenAIBaseUrl();
+          break;
+        case AIServiceType.claude:
+          apiKey = await APIKeyManager.getClaudeApiKey();
+          baseUrl = await APIKeyManager.getClaudeBaseUrl();
+          break;
+        case AIServiceType.local:
+          // No API key needed for local processing
+          break;
+      }
+      
+      if (mounted) {
+        setState(() {
+          _apiKeyController.text = apiKey ?? '';
+          _baseUrlController.text = baseUrl ?? '';
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        _showSnackBar('Failed to load current settings: ${e.toString()}');
+      }
+    }
   }
   @override
   Widget build(BuildContext context) {
@@ -243,22 +343,43 @@ class _APIConfigDialogState extends State<APIConfigDialog> {
             const SizedBox(height: 16),
             
             // API Key Field
-            TextField(
-              controller: _apiKeyController,
-              obscureText: _obscureApiKey,
-              decoration: InputDecoration(
-                labelText: 'API Key',
-                hintText: 'Enter your ${widget.serviceType.displayName} API key',
-                border: const OutlineInputBorder(),
-                suffixIcon: IconButton(
-                  icon: Icon(_obscureApiKey ? Icons.visibility : Icons.visibility_off),
-                  onPressed: () {
-                    setState(() {
-                      _obscureApiKey = !_obscureApiKey;
-                    });
-                  },
-                ),
-              ),
+            FutureBuilder<String?>(
+              future: _getCurrentApiKey(),
+              builder: (context, snapshot) {
+                final currentApiKey = snapshot.data;
+                final hasSavedKey = currentApiKey != null && currentApiKey.isNotEmpty;
+                
+                return TextField(
+                  controller: _apiKeyController,
+                  obscureText: _obscureApiKey,
+                  decoration: InputDecoration(
+                    labelText: 'API Key',
+                    hintText: hasSavedKey 
+                      ? 'Current: ${APIKeyManager.getMaskedApiKey(currentApiKey)}'
+                      : 'Enter your ${widget.serviceType.displayName} API key',
+                    border: const OutlineInputBorder(),
+                    suffixIcon: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (hasSavedKey) 
+                          IconButton(
+                            icon: const Icon(Icons.clear),
+                            onPressed: () => _clearApiKey(),
+                            tooltip: 'Clear saved API key',
+                          ),
+                        IconButton(
+                          icon: Icon(_obscureApiKey ? Icons.visibility : Icons.visibility_off),
+                          onPressed: () {
+                            setState(() {
+                              _obscureApiKey = !_obscureApiKey;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
             ),
             const SizedBox(height: 16),
             
@@ -285,7 +406,7 @@ class _APIConfigDialogState extends State<APIConfigDialog> {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -355,8 +476,15 @@ class _APIConfigDialogState extends State<APIConfigDialog> {
   }
 
   Future<void> _testConnection() async {
-    if (_apiKeyController.text.trim().isEmpty) {
+    final apiKey = _apiKeyController.text.trim();
+    if (apiKey.isEmpty) {
       _showSnackBar('Please enter an API key');
+      return;
+    }
+    
+    // Validate API key format first
+    if (!APIKeyManager.isValidApiKeyFormat(apiKey, widget.serviceType)) {
+      _showSnackBar('Invalid API key format for ${widget.serviceType.displayName}');
       return;
     }
 
@@ -366,10 +494,11 @@ class _APIConfigDialogState extends State<APIConfigDialog> {
 
     try {
       // Test the API connection
-      await Future.delayed(const Duration(seconds: 2)); // Simulate API call
+      // TODO: Implement actual API test calls using the respective service parsers
+      await Future.delayed(const Duration(seconds: 2)); // Simulate API call for now
       
       if (mounted) {
-        _showSnackBar('Connection successful!', isError: false);
+        _showSnackBar('Connection test completed! (Note: Actual API validation pending)', isError: false);
       }
     } catch (e) {
       if (mounted) {
@@ -384,17 +513,50 @@ class _APIConfigDialogState extends State<APIConfigDialog> {
     }
   }
 
-  void _saveSettings() {
-    if (_apiKeyController.text.trim().isEmpty) {
+  void _saveSettings() async {
+    final apiKey = _apiKeyController.text.trim();
+    final baseUrl = _baseUrlController.text.trim();
+    
+    if (apiKey.isEmpty) {
       _showSnackBar('Please enter an API key');
       return;
     }
-
-    // Save settings to SharedPreferences
-    // This would be implemented with actual persistence
     
-    Navigator.of(context).pop();
-    _showSnackBar('Settings saved successfully!', isError: false);
+    // Validate API key format
+    if (!APIKeyManager.isValidApiKeyFormat(apiKey, widget.serviceType)) {
+      _showSnackBar('Invalid API key format for ${widget.serviceType.displayName}');
+      return;
+    }
+
+    try {
+      // Save settings to secure storage
+      switch (widget.serviceType) {
+        case AIServiceType.openai:
+          await APIKeyManager.setOpenAIApiKey(apiKey);
+          if (baseUrl.isNotEmpty) {
+            await APIKeyManager.setOpenAIBaseUrl(baseUrl);
+          }
+          break;
+        case AIServiceType.claude:
+          await APIKeyManager.setClaudeApiKey(apiKey);
+          if (baseUrl.isNotEmpty) {
+            await APIKeyManager.setClaudeBaseUrl(baseUrl);
+          }
+          break;
+        case AIServiceType.local:
+          // No settings to save for local processing
+          break;
+      }
+      
+      if (mounted) {
+        Navigator.of(context).pop();
+        _showSnackBar('Settings saved securely!', isError: false);
+      }
+    } catch (e) {
+      if (mounted) {
+        _showSnackBar('Failed to save settings: ${e.toString()}');
+      }
+    }
   }
 
   void _showSnackBar(String message, {bool isError = true}) {

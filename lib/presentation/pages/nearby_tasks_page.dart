@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../widgets/standardized_app_bar.dart';
 import '../widgets/location_task_widgets.dart';
 import '../widgets/location_widgets.dart';
+import '../widgets/glassmorphism_container.dart';
+import '../../core/theme/typography_constants.dart';
 import '../providers/location_providers.dart';
 import '../../services/location/location_task_service.dart';
 
@@ -17,8 +20,8 @@ class _NearbyTasksPageState extends ConsumerState<NearbyTasksPage> {
     final locationSettings = ref.watch(locationSettingsProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Nearby Tasks'),
+      appBar: StandardizedAppBar(
+        title: 'Nearby Tasks',
         actions: [
           IconButton(
             icon: const Icon(Icons.tune),
@@ -54,17 +57,12 @@ class _NearbyTasksPageState extends ConsumerState<NearbyTasksPage> {
               ],
             )
           : _buildLocationDisabledView(),
-      floatingActionButton: locationSettings.locationEnabled
-          ? FloatingActionButton(
-              onPressed: _showCreateLocationTaskDialog,
-              child: const Icon(Icons.add_location),
-            )
-          : null,
     );
   }
 
   Widget _buildLocationStatusCard() {
-    return Card(
+    return GlassmorphismContainer(
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       margin: const EdgeInsets.all(16),
       child: Padding(
         padding: const EdgeInsets.all(16),

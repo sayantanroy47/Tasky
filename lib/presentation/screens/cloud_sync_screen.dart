@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../widgets/standardized_app_bar.dart';
 import '../../services/cloud_sync_service.dart';
 import '../../domain/models/enums.dart';
 
@@ -18,8 +19,8 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
     final syncStatsAsync = ref.watch(cloudSyncStatsProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Cloud Sync'),
+      appBar: StandardizedAppBar(
+        title: 'Cloud Sync',
         actions: [
           if (isAuthenticated)
             IconButton(

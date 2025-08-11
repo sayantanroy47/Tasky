@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/theme/typography_constants.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
+import '../../core/providers/core_providers.dart';
+import '../providers/task_provider.dart';
 import '../providers/task_providers.dart';
 import '../widgets/app_scaffold.dart';
 import '../widgets/task_form_dialog.dart';
@@ -292,7 +295,7 @@ class _TaskHeader extends ConsumerWidget {
                   height: 32,
                   decoration: BoxDecoration(
                     color: task.priority.color,
-                    borderRadius: BorderRadius.circular(2),
+                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                   ),
                 ),
                 

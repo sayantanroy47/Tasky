@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../widgets/standardized_app_bar.dart';
 import '../../services/integration_service.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
@@ -36,9 +37,8 @@ class _IntegrationSettingsScreenState extends ConsumerState<IntegrationSettingsS
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('External App Integration'),
-        elevation: 0,
+      appBar: const StandardizedAppBar(
+        title: 'External App Integration',
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())

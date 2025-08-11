@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/enhanced_ux_widgets.dart';
+import '../widgets/standardized_app_bar.dart';
 import '../../services/gesture_customization_service.dart';
 
 /// Screen for customizing gestures and haptic feedback
@@ -13,8 +14,8 @@ class GestureSettingsScreen extends ConsumerWidget {
     final hapticNotifier = ref.read(hapticSettingsProvider.notifier);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Gesture & Haptic Settings'),
+      appBar: StandardizedAppBar(
+        title: 'Gesture & Haptic Settings',
         actions: [
           IconButton(
             onPressed: () => _showResetDialog(context, gestureNotifier, hapticNotifier),

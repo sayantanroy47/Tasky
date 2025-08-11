@@ -5,6 +5,8 @@ import '../../domain/entities/calendar_event.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
 import '../providers/calendar_provider.dart';
+import '../providers/task_providers.dart';
+import '../../core/theme/typography_constants.dart';
 
 /// Main calendar widget with month/week/day views
 class CalendarWidget extends ConsumerWidget {
@@ -14,17 +16,26 @@ class CalendarWidget extends ConsumerWidget {
     final calendarState = ref.watch(calendarProvider);
     final calendarNotifier = ref.read(calendarProvider.notifier);
 
-    return Column(
-      children: [
-        // Calendar view mode selector
-        _CalendarViewModeSelector(),
-        const SizedBox(height: 8),
-        
-        // Calendar widget
-        Expanded(
-          child: _buildCalendarView(context, calendarState, calendarNotifier),
-        ),
-      ],
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.75, // Fixed height to prevent layout issues
+      child: Column(
+        children: [
+          // Calendar view mode selector
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: _CalendarViewModeSelector(),
+          ),
+          const SizedBox(height: 12),
+          
+          // Calendar widget
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: _buildCalendarView(context, calendarState, calendarNotifier),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -52,38 +63,51 @@ class _CalendarViewModeSelector extends ConsumerWidget {
     final calendarNotifier = ref.read(calendarProvider.notifier);
 
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         // Today button
-        TextButton.icon(
-          onPressed: () => calendarNotifier.goToToday(),
-          icon: const Icon(Icons.today),
-          label: const Text('Today'),
+        Flexible(
+          child: TextButton.icon(
+            onPressed: () => calendarNotifier.goToToday(),
+            icon: const Icon(Icons.today),
+            label: const Text('Today'),
+          ),
         ),
         
-        // View mode buttons
-        SegmentedButton<CalendarViewMode>(
-          segments: const [
-            ButtonSegment(
-              value: CalendarViewMode.month,
-              label: Text('Month'),
-              icon: Icon(Icons.calendar_view_month),
+        // View mode buttons - optimized height and sizing
+        Expanded(
+          flex: 2,
+          child: SizedBox(
+            height: 36, // Reduced height to better match content
+            child: SegmentedButton<CalendarViewMode>(
+              segments: [
+                ButtonSegment(
+                  value: CalendarViewMode.month,
+                  label: Text('Month', style: TextStyle(fontSize: TypographyConstants.labelMedium)),
+                  icon: Icon(Icons.calendar_view_month, size: 16),
+                ),
+                ButtonSegment(
+                  value: CalendarViewMode.week,
+                  label: Text('Week', style: TextStyle(fontSize: TypographyConstants.labelMedium)),
+                  icon: Icon(Icons.calendar_view_week, size: 16),
+                ),
+                ButtonSegment(
+                  value: CalendarViewMode.day,
+                  label: Text('Day', style: TextStyle(fontSize: TypographyConstants.labelMedium)),
+                  icon: Icon(Icons.calendar_view_day, size: 16),
+                ),
+              ],
+              selected: {calendarState.viewMode},
+              onSelectionChanged: (Set<CalendarViewMode> selection) {
+                calendarNotifier.changeViewMode(selection.first);
+              },
+              style: ButtonStyle(
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                minimumSize: WidgetStateProperty.all(const Size(60, 40)),
+                padding: WidgetStateProperty.all(const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
+              ),
             ),
-            ButtonSegment(
-              value: CalendarViewMode.week,
-              label: Text('Week'),
-              icon: Icon(Icons.calendar_view_week),
-            ),
-            ButtonSegment(
-              value: CalendarViewMode.day,
-              label: Text('Day'),
-              icon: Icon(Icons.calendar_view_day),
-            ),
-          ],
-          selected: {calendarState.viewMode},
-          onSelectionChanged: (Set<CalendarViewMode> selection) {
-            calendarNotifier.changeViewMode(selection.first);
-          },
+          ),
         ),
       ],
     );
@@ -91,7 +115,7 @@ class _CalendarViewModeSelector extends ConsumerWidget {
 }
 
 /// Month calendar view
-class _MonthCalendarView extends StatelessWidget {
+class _MonthCalendarView extends ConsumerWidget {
   final CalendarState state;
   final CalendarNotifier notifier;
 
@@ -99,8 +123,9 @@ class _MonthCalendarView extends StatelessWidget {
     required this.state,
     required this.notifier,
   });
+  
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return TableCalendar<CalendarEvent>(
       firstDay: DateTime.utc(2020, 1, 1),
       lastDay: DateTime.utc(2030, 12, 31),
@@ -111,8 +136,8 @@ class _MonthCalendarView extends StatelessWidget {
       startingDayOfWeek: StartingDayOfWeek.monday,
       calendarStyle: CalendarStyle(
         outsideDaysVisible: false,
-        weekendTextStyle: TextStyle(color: Colors.red[400]),
-        holidayTextStyle: TextStyle(color: Colors.red[800]),
+        weekendTextStyle: TextStyle(color: Theme.of(context).colorScheme.error),
+        holidayTextStyle: TextStyle(color: Theme.of(context).colorScheme.errorContainer),
         markerDecoration: BoxDecoration(
           color: Theme.of(context).primaryColor,
           shape: BoxShape.circle,
@@ -141,33 +166,77 @@ class _MonthCalendarView extends StatelessWidget {
       },
       calendarBuilders: CalendarBuilders(
         markerBuilder: (context, date, events) {
-          if (events.isEmpty) return null;
-          
-          return Positioned(
-            right: 1,
-            bottom: 1,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).primaryColor,
-                shape: BoxShape.circle,
-              ),
-              width: 16,
-              height: 16,
-              child: Center(
-                child: Text(
-                  '${events.length}',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          );
+          return _buildTaskDots(context, ref, date, events, notifier);
         },
       ),
     );
+  }
+
+  Widget? _buildTaskDots(BuildContext context, WidgetRef ref, DateTime date, List<CalendarEvent> events, CalendarNotifier notifier) {
+    // Get tasks for this date
+    final allTasksAsync = ref.watch(tasksProvider);
+    final tasksForDate = allTasksAsync.maybeWhen(
+      data: (allTasks) => allTasks.where((task) {
+        if (task.dueDate == null) return false;
+        final taskDate = DateTime(task.dueDate!.year, task.dueDate!.month, task.dueDate!.day);
+        final targetDate = DateTime(date.year, date.month, date.day);
+        return taskDate.isAtSameMomentAs(targetDate);
+      }).toList(),
+      orElse: () => <TaskModel>[],
+    );
+    
+    // Combine events and tasks
+    final allItems = <dynamic>[...events, ...tasksForDate];
+    
+    if (allItems.isEmpty) return null;
+
+    // Limit to 3 dots maximum to avoid overcrowding
+    final displayItems = allItems.take(3).toList();
+    
+    return Positioned(
+      right: 1,
+      bottom: 1,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: displayItems.map((item) {
+          Color dotColor;
+          
+          if (item is CalendarEvent) {
+            // Use event color
+            dotColor = Color(int.parse(item.color.replaceFirst('#', '0xFF')));
+          } else if (item is TaskModel) {
+            // Use priority color for tasks
+            dotColor = _getPriorityColor(item.priority);
+          } else {
+            dotColor = Theme.of(context).primaryColor;
+          }
+          
+          return Container(
+            margin: const EdgeInsets.only(left: 1),
+            width: 6,
+            height: 6,
+            decoration: BoxDecoration(
+              color: dotColor,
+              shape: BoxShape.circle,
+              border: Border.all(color: Theme.of(context).colorScheme.onPrimary, width: 0.5),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Color _getPriorityColor(TaskPriority priority) {
+    switch (priority) {
+      case TaskPriority.urgent:
+        return const Color(0xFFFF1744); // Bright red
+      case TaskPriority.high:
+        return const Color(0xFFFF9100); // Orange
+      case TaskPriority.medium:
+        return const Color(0xFF2196F3); // Blue
+      case TaskPriority.low:
+        return const Color(0xFF4CAF50); // Green
+    }
   }
 }
 
@@ -184,25 +253,48 @@ class _WeekCalendarView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // Week header
-        TableCalendar<CalendarEvent>(
-          firstDay: DateTime.utc(2020, 1, 1),
-          lastDay: DateTime.utc(2030, 12, 31),
-          focusedDay: state.focusedDate,
-          selectedDayPredicate: (day) => isSameDay(day, state.selectedDate),
-          calendarFormat: CalendarFormat.week,
-          eventLoader: (day) => notifier.getEventsForDate(day),
-          startingDayOfWeek: StartingDayOfWeek.monday,
-          headerVisible: true,
-          daysOfWeekVisible: true,
-          onDaySelected: (selectedDay, focusedDay) {
-            notifier.selectDate(selectedDay);
-            notifier.changeFocusedDate(focusedDay);
-          },
-          onPageChanged: (focusedDay) {
-            notifier.changeFocusedDate(focusedDay);
-          },
+        // Week header - constrained height
+        SizedBox(
+          height: 120, // Fixed height for week calendar
+          child: TableCalendar<CalendarEvent>(
+            firstDay: DateTime.utc(2020, 1, 1),
+            lastDay: DateTime.utc(2030, 12, 31),
+            focusedDay: state.focusedDate,
+            selectedDayPredicate: (day) => isSameDay(day, state.selectedDate),
+            calendarFormat: CalendarFormat.week,
+            eventLoader: (day) => notifier.getEventsForDate(day),
+            startingDayOfWeek: StartingDayOfWeek.monday,
+            headerVisible: true,
+            daysOfWeekVisible: true,
+            onDaySelected: (selectedDay, focusedDay) {
+              notifier.selectDate(selectedDay);
+              notifier.changeFocusedDate(focusedDay);
+            },
+            onPageChanged: (focusedDay) {
+              notifier.changeFocusedDate(focusedDay);
+            },
+            calendarStyle: CalendarStyle(
+              outsideDaysVisible: false,
+              weekendTextStyle: TextStyle(color: Theme.of(context).colorScheme.error),
+              selectedDecoration: BoxDecoration(
+                color: Theme.of(context).primaryColor,
+                shape: BoxShape.circle,
+              ),
+              todayDecoration: BoxDecoration(
+                color: Theme.of(context).primaryColor.withOpacity(0.5),
+                shape: BoxShape.circle,
+              ),
+            ),
+            headerStyle: const HeaderStyle(
+              formatButtonVisible: false,
+              titleCentered: true,
+              leftChevronIcon: Icon(Icons.chevron_left),
+              rightChevronIcon: Icon(Icons.chevron_right),
+            ),
+          ),
         ),
+        
+        const SizedBox(height: 8),
         
         // Week events list
         Expanded(
@@ -367,11 +459,11 @@ class EventCard extends ConsumerWidget {
       margin: const EdgeInsets.symmetric(vertical: 2),
       child: InkWell(
         onTap: onTap ?? () => _showEventDetails(context, ref),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
         child: Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
             border: Border(
               left: BorderSide(
                 width: 4,

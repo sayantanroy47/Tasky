@@ -174,12 +174,13 @@ class TranscriptionServiceImpl implements TranscriptionService {
 /// Production-ready transcription service using external APIs
 /// 
 /// This class would integrate with actual transcription services
-class ExternalTranscriptionService implements TranscriptionService {
+class MockExternalTranscriptionService implements TranscriptionService {
   final String? _apiKey;
   final String _serviceUrl;
   bool _isInitialized = false;
+  TranscriptionConfig _config = const TranscriptionConfig();
   
-  ExternalTranscriptionService({
+  MockExternalTranscriptionService({
     String? apiKey,
     String serviceUrl = 'https://api.openai.com/v1/audio/transcriptions',
   }) : _apiKey = apiKey, _serviceUrl = serviceUrl;
@@ -199,30 +200,142 @@ class ExternalTranscriptionService implements TranscriptionService {
 
   @override
   Future<TranscriptionResult> transcribeAudioFile(String audioFilePath) async {
-    // TODO: Implement actual API call to OpenAI Whisper or similar service
-    // This would involve:
-    // 1. Reading the audio file
-    // 2. Making HTTP request to transcription API
-    // 3. Parsing the response
-    // 4. Handling errors and retries
+    if (!_isInitialized || !isAvailable) {
+      return TranscriptionResult.failure(
+        error: const TranscriptionError(
+          message: 'Transcription service not available',
+          type: TranscriptionErrorType.serviceUnavailable,
+        ),
+      );
+    }
     
-    return TranscriptionResult.failure(
-      error: const TranscriptionError(
-        message: 'External API transcription not implemented',
-        type: TranscriptionErrorType.serviceUnavailable,
-      ),
-    );
+    try {
+      final file = File(audioFilePath);
+      if (!await file.exists()) {
+        return TranscriptionResult.failure(
+          error: const TranscriptionError(
+            message: 'Audio file not found',
+            type: TranscriptionErrorType.fileNotFound,
+          ),
+        );
+      }
+      
+      final stopwatch = Stopwatch()..start();
+      
+      // Read audio file
+      final audioBytes = await file.readAsBytes();
+      
+      // Make API call (structure for OpenAI Whisper API)
+      // Uncomment and configure when API key is available:
+      /*
+      final response = await http.post(
+        Uri.parse('$_serviceUrl'),
+        headers: {
+          'Authorization': 'Bearer $_apiKey',
+        },
+        body: {
+          'file': MultipartFile.fromBytes('audio', audioBytes),
+          'model': 'whisper-1',
+          'language': 'en',
+        },
+      );
+      
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        stopwatch.stop();
+        
+        return TranscriptionResult.success(
+          text: data['text'],
+          confidence: 0.95,
+          processingTime: stopwatch.elapsed,
+          language: data['language'] ?? 'en',
+        );
+      }
+      */
+      
+      // Fallback to local implementation for now
+      final localService = TranscriptionServiceImpl();
+      await localService.initialize();
+      return await localService.transcribeAudioFile(audioFilePath);
+      
+    } catch (e) {
+      return TranscriptionResult.failure(
+        error: TranscriptionError(
+          message: 'Transcription failed: ${e.toString()}',
+          type: TranscriptionErrorType.processingError,
+          originalError: e,
+        ),
+      );
+    }
   }
 
   @override
   Future<TranscriptionResult> transcribeAudioData(List<int> audioData) async {
-    // TODO: Implement actual API call
-    return TranscriptionResult.failure(
-      error: const TranscriptionError(
-        message: 'External API transcription not implemented',
-        type: TranscriptionErrorType.serviceUnavailable,
-      ),
-    );
+    if (!_isInitialized || !isAvailable) {
+      return TranscriptionResult.failure(
+        error: const TranscriptionError(
+          message: 'Service not initialized or unavailable',
+          type: TranscriptionErrorType.serviceUnavailable,
+        ),
+      );
+    }
+
+    try {
+      final stopwatch = Stopwatch()..start();
+      
+      // For now, use a mock transcription result
+      // In a real implementation, this would call an external API like OpenAI Whisper
+      // Example API call structure:
+      // final response = await _httpClient.post(
+      //   Uri.parse('https://api.openai.com/v1/audio/transcriptions'),
+      //   headers: {
+      //     'Authorization': 'Bearer $apiKey',
+      //     'Content-Type': 'multipart/form-data',
+      //   },
+      //   body: {
+      //     'file': MultipartFile.fromBytes(audioData, filename: 'audio.wav'),
+      //     'model': 'whisper-1',
+      //     'language': _config.language,
+      //   },
+      // );
+      
+      // Mock delay to simulate API call
+      await Future.delayed(const Duration(milliseconds: 500));
+      
+      stopwatch.stop();
+      
+      // Return mock success result for development/testing
+      return TranscriptionResult.success(
+        text: 'Mock transcription result - external API integration needed',
+        confidence: 0.85,
+        processingTime: stopwatch.elapsed,
+        language: _config.language ?? 'en',
+        segments: [
+          TranscriptionSegment(
+            text: 'Mock transcription result - external API integration needed',
+            startTime: Duration.zero,
+            endTime: const Duration(seconds: 2),
+            confidence: 0.85,
+          ),
+        ],
+      );
+    } catch (e) {
+      return TranscriptionResult.failure(
+        error: TranscriptionError(
+          message: 'External API transcription failed: ${e.toString()}',
+          type: TranscriptionErrorType.processingError,
+          originalError: e,
+        ),
+      );
+    }
+  }
+
+  @override
+  TranscriptionConfig get transcriptionConfig => _config;
+
+  @override
+  Future<void> updateTranscriptionConfig(TranscriptionConfig config) async {
+    _config = config;
   }
 
   @override

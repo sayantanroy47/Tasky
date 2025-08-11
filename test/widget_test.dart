@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:task_tracker_app/presentation/pages/home_page.dart';
-import 'package:task_tracker_app/core/theme/app_theme.dart';
+import 'package:task_tracker_app/presentation/pages/home_page_m3.dart';
 
 void main() {
   group('TaskTrackerApp', () {
@@ -11,7 +10,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
-            theme: AppTheme.lightTheme,
+            theme: ThemeData.light(useMaterial3: true),
             home: const HomePage(),
           ),
         ),
@@ -36,7 +35,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
-            theme: AppTheme.lightTheme,
+            theme: ThemeData.light(useMaterial3: true),
             home: const HomePage(),
           ),
         ),
@@ -54,8 +53,8 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
-            theme: AppTheme.lightTheme,
-            darkTheme: AppTheme.darkTheme,
+            theme: ThemeData.light(useMaterial3: true),
+            darkTheme: ThemeData.dark(useMaterial3: true),
             home: const HomePage(),
           ),
         ),

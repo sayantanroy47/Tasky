@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/theme/typography_constants.dart';
 
 
 /// Widget displaying AI usage statistics and insights
@@ -83,7 +84,7 @@ class AIUsageStatistics extends ConsumerWidget {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
               ),
               child: Row(
                 children: [
@@ -114,7 +115,7 @@ class AIUsageStatistics extends ConsumerWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: Colors.green.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                     ),
                     child: Text(
                       'Active',
@@ -233,7 +234,7 @@ class _StatCard extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
         border: Border.all(color: color.withOpacity(0.3)),
       ),
       child: Column(

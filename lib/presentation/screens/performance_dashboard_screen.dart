@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../widgets/standardized_app_bar.dart';
+import '../../core/theme/typography_constants.dart';
 import '../../services/performance_service.dart';
 
 /// Performance monitoring dashboard for debugging and optimization
@@ -10,8 +12,8 @@ class PerformanceDashboardScreen extends ConsumerWidget {
     final performanceStatsAsync = ref.watch(performanceStatsProvider);
     
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Performance Dashboard'),
+      appBar: StandardizedAppBar(
+        title: 'Performance Dashboard',
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -104,7 +106,7 @@ class PerformanceDashboardScreen extends ConsumerWidget {
       margin: const EdgeInsets.only(right: 8),
       decoration: BoxDecoration(
         color: Colors.blue.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       ),
       child: Column(
         children: [
@@ -157,7 +159,7 @@ class PerformanceDashboardScreen extends ConsumerWidget {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey.withOpacity(0.3)),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -175,7 +177,7 @@ class PerformanceDashboardScreen extends ConsumerWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: _getPerformanceColor(opStats.averageDuration),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                 ),
                 child: Text(
                   '${opStats.count}x',

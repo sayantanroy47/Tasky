@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/theme/typography_constants.dart';
 import '../../services/responsive_design_service.dart';
 import '../../services/accessibility_service.dart';
 
@@ -226,7 +227,7 @@ class _EnhancedCardState extends ConsumerState<EnhancedCard>
                         }
                       }
                     },
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                     child: Padding(
                       padding: widget.padding ?? config.padding,
                       child: widget.child,
@@ -448,10 +449,10 @@ class _EnhancedTextFieldState extends ConsumerState<EnhancedTextField>
                   prefixIcon: widget.prefixIcon,
                   suffixIcon: widget.suffixIcon,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                     borderSide: BorderSide(
                       color: settings.highContrastMode 
                           ? Colors.black 
@@ -460,7 +461,7 @@ class _EnhancedTextFieldState extends ConsumerState<EnhancedTextField>
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                     borderSide: BorderSide(
                       color: _borderColorAnimation.value ?? Theme.of(context).colorScheme.primary,
                       width: 2,

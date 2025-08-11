@@ -24,7 +24,7 @@ class NotificationManager {
     NotificationService? notificationService,
     required TaskRepository taskRepository,
     this.settings = const NotificationSettings(),
-  }) : _notificationService = notificationService ?? LocalNotificationService(),
+  }) : _notificationService = notificationService ?? LocalNotificationService(taskRepository),
         _taskRepository = taskRepository {
     _setupEventHandling();
   }
@@ -77,9 +77,14 @@ class NotificationManager {
 
     // Schedule overdue notification if task becomes overdue
     if (settings.overdueNotifications && task.dueDate!.isAfter(DateTime.now())) {
-      Timer(task.dueDate!.add(const Duration(hours: 1)).difference(DateTime.now()), () {
-        _checkAndScheduleOverdueNotification(task.id);
-      });
+      final overdueTime = task.dueDate!.add(const Duration(hours: 1));
+      if (overdueTime.isAfter(DateTime.now())) {
+        // Schedule a proper notification instead of using an unmanaged Timer
+        await _notificationService.scheduleOverdueNotification(
+          task: task,
+          scheduledTime: overdueTime,
+        );
+      }
     }
   }
 

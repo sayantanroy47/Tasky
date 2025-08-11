@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/theme/typography_constants.dart';
 import '../../services/location/location_models.dart';
 import '../../services/location/location_task_service.dart';
 import '../../domain/models/enums.dart';
@@ -26,7 +27,7 @@ class LocationTaskCard extends ConsumerWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -70,7 +71,7 @@ class LocationTaskCard extends ConsumerWidget {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: Colors.blue.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                   border: Border.all(color: Colors.blue.withOpacity(0.3)),
                 ),
                 child: Column(

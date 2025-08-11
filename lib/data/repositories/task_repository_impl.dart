@@ -63,97 +63,8 @@ class TaskRepositoryImpl implements TaskRepository {
 
   @override
   Future<List<TaskModel>> getTasksWithFilter(TaskFilter filter) async {
-    // Start with all tasks
-    var tasks = await getAllTasks();
-
-    // Apply filters
-    if (filter.status != null) {
-      tasks = tasks.where((task) => task.status == filter.status).toList();
-    }
-
-    if (filter.priority != null) {
-      tasks = tasks.where((task) => task.priority == filter.priority).toList();
-    }
-
-    if (filter.tags != null && filter.tags!.isNotEmpty) {
-      tasks = tasks.where((task) {
-        return filter.tags!.any((tagId) => task.tags.contains(tagId));
-      }).toList();
-    }
-
-    if (filter.projectId != null) {
-      tasks = tasks.where((task) => task.projectId == filter.projectId).toList();
-    }
-
-    if (filter.dueDateFrom != null) {
-      tasks = tasks.where((task) {
-        return task.dueDate != null && task.dueDate!.isAfter(filter.dueDateFrom!);
-      }).toList();
-    }
-
-    if (filter.dueDateTo != null) {
-      tasks = tasks.where((task) {
-        return task.dueDate != null && task.dueDate!.isBefore(filter.dueDateTo!);
-      }).toList();
-    }
-
-    if (filter.isOverdue == true) {
-      tasks = tasks.where((task) => task.isOverdue).toList();
-    } else if (filter.isOverdue == false) {
-      tasks = tasks.where((task) => !task.isOverdue).toList();
-    }
-
-    if (filter.isPinned != null) {
-      tasks = tasks.where((task) => task.isPinned == filter.isPinned).toList();
-    }
-
-    if (filter.searchQuery != null && filter.searchQuery!.isNotEmpty) {
-      final query = filter.searchQuery!.toLowerCase();
-      tasks = tasks.where((task) {
-        return task.title.toLowerCase().contains(query) ||
-            (task.description?.toLowerCase().contains(query) ?? false);
-      }).toList();
-    }
-
-    // Apply sorting
-    tasks.sort((a, b) {
-      int comparison = 0;
-      
-      switch (filter.sortBy) {
-        case TaskSortBy.createdAt:
-          comparison = a.createdAt.compareTo(b.createdAt);
-          break;
-        case TaskSortBy.updatedAt:
-          final aUpdated = a.updatedAt ?? a.createdAt;
-          final bUpdated = b.updatedAt ?? b.createdAt;
-          comparison = aUpdated.compareTo(bUpdated);
-          break;
-        case TaskSortBy.dueDate:
-          if (a.dueDate == null && b.dueDate == null) {
-            comparison = 0;
-          } else if (a.dueDate == null) {
-            comparison = 1;
-          } else if (b.dueDate == null) {
-            comparison = -1;
-          } else {
-            comparison = a.dueDate!.compareTo(b.dueDate!);
-          }
-          break;
-        case TaskSortBy.priority:
-          comparison = a.priority.sortValue.compareTo(b.priority.sortValue);
-          break;
-        case TaskSortBy.title:
-          comparison = a.title.toLowerCase().compareTo(b.title.toLowerCase());
-          break;
-        case TaskSortBy.status:
-          comparison = a.status.index.compareTo(b.status.index);
-          break;
-      }
-
-      return filter.sortAscending ? comparison : -comparison;
-    });
-
-    return tasks;
+    // Use database-level filtering for better performance
+    return await _database.taskDao.getTasksWithFilter(filter);
   }
   @override
   Stream<List<TaskModel>> watchAllTasks() {
@@ -172,13 +83,33 @@ class TaskRepositoryImpl implements TaskRepository {
 
   @override
   Future<List<TaskModel>> getTasksByIds(List<String> ids) async {
-    final tasks = await getAllTasks();
-    return tasks.where((task) => ids.contains(task.id)).toList();
+    return await _database.taskDao.getTasksByIds(ids);
   }
 
   @override
   Future<List<TaskModel>> getTasksWithDependency(String dependencyId) async {
-    final tasks = await getAllTasks();
-    return tasks.where((task) => task.dependencies.contains(dependencyId)).toList();
+    return await _database.taskDao.getTasksWithDependency(dependencyId);
+  }
+
+  // Bulk Operations
+  
+  @override
+  Future<void> deleteTasks(List<String> taskIds) async {
+    await _database.taskDao.deleteTasks(taskIds);
+  }
+  
+  @override
+  Future<void> updateTasksStatus(List<String> taskIds, TaskStatus status) async {
+    await _database.taskDao.updateTasksStatus(taskIds, status);
+  }
+  
+  @override
+  Future<void> updateTasksPriority(List<String> taskIds, TaskPriority priority) async {
+    await _database.taskDao.updateTasksPriority(taskIds, priority);
+  }
+  
+  @override
+  Future<void> assignTasksToProject(List<String> taskIds, String? projectId) async {
+    await _database.taskDao.assignTasksToProject(taskIds, projectId);
   }
 }

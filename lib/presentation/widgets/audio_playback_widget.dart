@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/theme/typography_constants.dart';
 import '../../services/audio/audio_playback_service.dart';
 import '../../domain/entities/task_audio_metadata.dart';
 
@@ -79,7 +80,7 @@ class _AudioPlaybackWidgetState extends State<AudioPlaybackWidget> {
       padding: const EdgeInsets.all(8.0),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.errorContainer,
-        borderRadius: BorderRadius.circular(8.0),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -128,7 +129,7 @@ class _AudioPlaybackWidgetState extends State<AudioPlaybackWidget> {
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.secondaryContainer,
-        borderRadius: BorderRadius.circular(16.0),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

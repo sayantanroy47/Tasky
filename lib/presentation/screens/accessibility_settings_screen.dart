@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../widgets/standardized_app_bar.dart';
+import '../../core/theme/typography_constants.dart';
 import '../../services/accessibility_service.dart';
 import '../widgets/accessible_widgets.dart';
 
@@ -12,8 +14,8 @@ class AccessibilitySettingsScreen extends ConsumerWidget {
     final settings = ref.watch(accessibilitySettingsProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Accessibility Settings'),
+      appBar: StandardizedAppBar(
+        title: 'Accessibility Settings',
         leading: AccessibleIconButton(
           icon: Icons.arrow_back,
           semanticLabel: 'Go back',
@@ -363,7 +365,7 @@ class AccessibilitySettingsScreen extends ConsumerWidget {
       decoration: BoxDecoration(
         color: background,
         border: Border.all(color: Colors.grey),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       ),
       child: Text(
         label,

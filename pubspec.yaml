@@ -14,6 +14,8 @@ dependencies:
 
   # UI and Material Design
   cupertino_icons: ^1.0.6
+  google_fonts: ^6.1.0
+  # font_awesome_flutter: ^10.3.0  # Temporarily disabled
 
   # State Management
   flutter_riverpod: ^2.4.9
@@ -23,6 +25,7 @@ dependencies:
   equatable: ^2.0.5
   uuid: ^3.0.7
   shared_preferences: ^2.2.2
+  flutter_secure_storage: ^9.0.0
 
   # Database
   drift: ^2.14.1

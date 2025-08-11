@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/enhanced_ux_widgets.dart';
+import '../widgets/standardized_app_bar.dart';
 import '../../services/privacy_service.dart';
 import 'dart:convert';
 
@@ -13,8 +14,8 @@ class PrivacySettingsScreen extends ConsumerWidget {
     final retentionSettings = ref.watch(dataRetentionSettingsProvider);
     
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Privacy & Data'),
+      appBar: StandardizedAppBar(
+        title: 'Privacy & Data',
         actions: [
           IconButton(
             onPressed: () => _showPrivacyInfo(context),

@@ -21,12 +21,13 @@ class SpeechServiceImpl implements SpeechService {
       _isAvailable = await _speechToText.initialize(
         onError: (error) {
           if (kDebugMode) {
-            print('Speech recognition error: ${error.errorMsg}');
+            print('🎤 Speech recognition initialization error: ${error.errorMsg}');
+            print('🎤 Error message: ${error.errorMsg}');
           }
         },
         onStatus: (status) {
           if (kDebugMode) {
-            print('Speech recognition status: $status');
+            print('🎤 Speech recognition initialization status: $status');
           }
         },
       );
@@ -74,24 +75,60 @@ class SpeechServiceImpl implements SpeechService {
       return;
     }
     
+    // Check microphone permission before starting
+    final hasPermission = await this.hasPermission();
+    if (!hasPermission) {
+      if (kDebugMode) {
+        print('🎤 No microphone permission - requesting...');
+      }
+      final granted = await requestPermission();
+      if (!granted) {
+        onError('Microphone permission denied');
+        return;
+      }
+      if (kDebugMode) {
+        print('🎤 Microphone permission granted');
+      }
+    }
+    
     try {
+      if (kDebugMode) {
+        print('🎤 Starting speech recognition with 5-minute timeout...');
+        print('🎤 Using locale: ${localeId ?? 'default'}');
+        print('🎤 Listen duration: ${listenFor ?? const Duration(minutes: 5)}');
+        print('🎤 Pause duration: ${pauseFor ?? const Duration(seconds: 5)}');
+      }
+      
       await _speechToText.listen(
         onResult: (stt.SpeechRecognitionResult result) {
+          if (kDebugMode) {
+            print('🎤 Speech result: ${result.recognizedWords} (confidence: ${result.confidence}, final: ${result.finalResult})');
+          }
           onResult(result.recognizedWords);
           if (result.finalResult) {
             _isListening = false;
+            if (kDebugMode) {
+              print('🎤 Final result received - stopping listening');
+            }
           }
         },
         localeId: localeId,
-        listenFor: listenFor ?? const Duration(minutes: 3), // 3 minute limit
-        pauseFor: pauseFor ?? const Duration(seconds: 3),
+        listenFor: listenFor ?? const Duration(minutes: 5), // Increase to 5 minutes
+        pauseFor: pauseFor ?? const Duration(seconds: 5), // Increase pause timeout
         partialResults: true,
         onSoundLevelChange: null, // Could be used for visual feedback
-        cancelOnError: true,
-        listenMode: ListenMode.confirmation,
+        cancelOnError: false, // Don't cancel on error - let user handle it
+        listenMode: ListenMode.dictation, // Change to dictation mode for longer listening
       );
       _isListening = true;
+      if (kDebugMode) {
+        print('🎤 Successfully started listening');
+      }
     } catch (e) {
+      if (kDebugMode) {
+        print('🎤 Failed to start listening: $e');
+        print('🎤 Error type: ${e.runtimeType}');
+      }
       onError('Failed to start listening: $e');
     }
   }

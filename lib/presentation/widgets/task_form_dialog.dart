@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/theme/typography_constants.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
 import '../providers/task_provider.dart';
@@ -81,8 +82,8 @@ class _TaskFormDialogState extends ConsumerState<TaskFormDialog> {
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.primaryContainer,
                 borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(12),
-                  topRight: Radius.circular(12),
+                  topLeft: Radius.circular(TypographyConstants.radiusStandard),
+                  topRight: Radius.circular(TypographyConstants.radiusStandard),
                 ),
               ),
               child: Row(
@@ -255,8 +256,8 @@ class _TaskFormDialogState extends ConsumerState<TaskFormDialog> {
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(12),
-                  bottomRight: Radius.circular(12),
+                  bottomLeft: Radius.circular(TypographyConstants.radiusStandard),
+                  bottomRight: Radius.circular(TypographyConstants.radiusStandard),
                 ),
               ),
               child: Row(

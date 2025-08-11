@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:task_tracker_app/presentation/widgets/message_task_dialog.dart';
-import 'package:task_tracker_app/presentation/widgets/task_card.dart';
+import 'package:task_tracker_app/presentation/widgets/advanced_task_card.dart';
 import 'package:task_tracker_app/presentation/pages/settings_page.dart';
-import 'package:task_tracker_app/core/theme/app_theme.dart';
 import 'package:task_tracker_app/domain/entities/task_model.dart';
 import 'package:task_tracker_app/domain/models/enums.dart';
 
@@ -14,7 +13,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
-            theme: AppTheme.lightTheme,
+            theme: ThemeData.light(),
             home: Scaffold(
               body: MessageTaskDialog(
                 messageText: 'Can you pick up milk on your way home?',
@@ -41,7 +40,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
-            theme: AppTheme.darkTheme,
+            theme: ThemeData.dark(),
             home: Scaffold(
               body: MessageTaskDialog(
                 messageText: 'Can you pick up milk on your way home?',
@@ -68,7 +67,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
-            theme: AppTheme.highContrastLightTheme,
+            theme: ThemeData.light().copyWith(visualDensity: VisualDensity.adaptivePlatformDensity),
             home: Scaffold(
               body: MessageTaskDialog(
                 messageText: 'Can you pick up milk on your way home?',
@@ -95,7 +94,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
-            theme: AppTheme.highContrastDarkTheme,
+            theme: ThemeData.dark().copyWith(visualDensity: VisualDensity.adaptivePlatformDensity),
             home: Scaffold(
               body: MessageTaskDialog(
                 messageText: 'Can you pick up milk on your way home?',
@@ -130,11 +129,11 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
-            theme: AppTheme.lightTheme,
+            theme: ThemeData.light(),
             home: Scaffold(
               body: Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: TaskCard(task: task),
+                child: AdvancedTaskCard(task: task),
               ),
             ),
           ),
@@ -142,7 +141,7 @@ void main() {
       );
 
       await expectLater(
-        find.byType(TaskCard),
+        find.byType(AdvancedTaskCard),
         matchesGoldenFile('task_card_pending_light.png'),
       );
     });
@@ -158,11 +157,11 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
-            theme: AppTheme.darkTheme,
+            theme: ThemeData.dark(),
             home: Scaffold(
               body: Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: TaskCard(task: task),
+                child: AdvancedTaskCard(task: task),
               ),
             ),
           ),
@@ -170,7 +169,7 @@ void main() {
       );
 
       await expectLater(
-        find.byType(TaskCard),
+        find.byType(AdvancedTaskCard),
         matchesGoldenFile('task_card_completed_dark.png'),
       );
     });
@@ -196,11 +195,11 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
-            theme: AppTheme.lightTheme,
+            theme: ThemeData.light(),
             home: Scaffold(
               body: Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: TaskCard(task: taskWithSubtasks),
+                child: AdvancedTaskCard(task: taskWithSubtasks),
               ),
             ),
           ),
@@ -208,7 +207,7 @@ void main() {
       );
 
       await expectLater(
-        find.byType(TaskCard),
+        find.byType(AdvancedTaskCard),
         matchesGoldenFile('task_card_urgent_with_subtasks.png'),
       );
     });
@@ -225,11 +224,11 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
-            theme: AppTheme.lightTheme,
+            theme: ThemeData.light(),
             home: Scaffold(
               body: Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: TaskCard(task: task),
+                child: AdvancedTaskCard(task: task),
               ),
             ),
           ),
@@ -237,7 +236,7 @@ void main() {
       );
 
       await expectLater(
-        find.byType(TaskCard),
+        find.byType(AdvancedTaskCard),
         matchesGoldenFile('task_card_overdue.png'),
       );
     });
@@ -246,7 +245,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
-            theme: AppTheme.lightTheme,
+            theme: ThemeData.light(),
             home: const SettingsPage(),
           ),
         ),
@@ -262,7 +261,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
-            theme: AppTheme.darkTheme,
+            theme: ThemeData.dark(),
             home: const SettingsPage(),
           ),
         ),
@@ -282,7 +281,7 @@ void main() {
         await tester.pumpWidget(
           ProviderScope(
             child: MaterialApp(
-              theme: AppTheme.lightTheme,
+              theme: ThemeData.light(),
               home: Scaffold(
                 body: MessageTaskDialog(
                   messageText: 'Can you pick up milk on your way home?',
@@ -322,11 +321,11 @@ void main() {
         await tester.pumpWidget(
           ProviderScope(
             child: MaterialApp(
-              theme: AppTheme.lightTheme,
+              theme: ThemeData.light(),
               home: Scaffold(
                 body: Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: TaskCard(task: task),
+                  child: AdvancedTaskCard(task: task),
                 ),
               ),
             ),
@@ -334,7 +333,7 @@ void main() {
         );
 
         await expectLater(
-          find.byType(TaskCard),
+          find.byType(AdvancedTaskCard),
           matchesGoldenFile('task_card_phone_portrait.png'),
         );
 
@@ -348,7 +347,7 @@ void main() {
         await tester.pumpWidget(
           ProviderScope(
             child: MaterialApp(
-              theme: AppTheme.lightTheme,
+              theme: ThemeData.light(),
               home: MediaQuery(
                 data: const MediaQueryData(
                   textScaleFactor: 2.0, // Large text scale
@@ -387,11 +386,11 @@ void main() {
         await tester.pumpWidget(
           ProviderScope(
             child: MaterialApp(
-              theme: AppTheme.highContrastLightTheme,
+              theme: ThemeData.light().copyWith(visualDensity: VisualDensity.adaptivePlatformDensity),
               home: Scaffold(
                 body: Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: TaskCard(task: task),
+                  child: AdvancedTaskCard(task: task),
                 ),
               ),
             ),
@@ -399,7 +398,7 @@ void main() {
         );
 
         await expectLater(
-          find.byType(TaskCard),
+          find.byType(AdvancedTaskCard),
           matchesGoldenFile('task_card_high_contrast_accessibility.png'),
         );
       });
@@ -410,7 +409,7 @@ void main() {
         await tester.pumpWidget(
           ProviderScope(
             child: MaterialApp(
-              theme: AppTheme.lightTheme,
+              theme: ThemeData.light(),
               home: Scaffold(
                 body: MessageTaskDialog(
                   messageText: '', // Empty message to trigger validation
@@ -439,7 +438,7 @@ void main() {
         await tester.pumpWidget(
           ProviderScope(
             child: MaterialApp(
-              theme: AppTheme.lightTheme,
+              theme: ThemeData.light(),
               home: Scaffold(
                 body: MessageTaskDialog(
                   messageText: 'Loading test message',
@@ -474,11 +473,11 @@ void main() {
           await tester.pumpWidget(
             ProviderScope(
               child: MaterialApp(
-                theme: AppTheme.lightTheme,
+                theme: ThemeData.light(),
                 home: Scaffold(
                   body: Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: TaskCard(task: task),
+                    child: AdvancedTaskCard(task: task),
                   ),
                 ),
               ),
@@ -486,7 +485,7 @@ void main() {
           );
 
           await expectLater(
-            find.byType(TaskCard),
+            find.byType(AdvancedTaskCard),
             matchesGoldenFile('task_card_priority_${priority.name}.png'),
           );
         });
@@ -522,11 +521,11 @@ void main() {
           await tester.pumpWidget(
             ProviderScope(
               child: MaterialApp(
-                theme: AppTheme.lightTheme,
+                theme: ThemeData.light(),
                 home: Scaffold(
                   body: Padding(
                     padding: const EdgeInsets.all(16.0),
-                    child: TaskCard(task: task),
+                    child: AdvancedTaskCard(task: task),
                   ),
                 ),
               ),
@@ -534,7 +533,7 @@ void main() {
           );
 
           await expectLater(
-            find.byType(TaskCard),
+            find.byType(AdvancedTaskCard),
             matchesGoldenFile('task_card_status_${status.name}.png'),
           );
         });

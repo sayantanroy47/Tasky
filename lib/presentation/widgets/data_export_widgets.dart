@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 // import 'package:file_picker/file_picker.dart';
+import '../../core/theme/typography_constants.dart';
 
 import '../../services/data_export/data_export_models.dart';
 import '../providers/data_export_providers.dart';
@@ -263,7 +264,7 @@ class FilePickerWidget extends ConsumerWidget {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                 ),
                 child: Row(
                   children: [
@@ -371,7 +372,7 @@ class ImportValidationWidget extends ConsumerWidget {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

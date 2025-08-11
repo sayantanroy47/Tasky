@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../presentation/pages/home_page.dart';
+import '../../presentation/widgets/standardized_app_bar.dart';
+import '../../presentation/pages/main_scaffold.dart';
 import '../../presentation/pages/tasks_page.dart';
 import '../../presentation/pages/settings_page.dart';
 import '../../presentation/pages/calendar_page.dart';
@@ -8,9 +9,11 @@ import '../../presentation/pages/projects_page.dart';
 import '../../presentation/pages/task_detail_page.dart';
 import '../../presentation/pages/voice_demo_page.dart';
 import '../../presentation/pages/data_export_page.dart';
+import '../../presentation/pages/help_page.dart';
 import '../../presentation/screens/performance_dashboard_screen.dart';
 import '../../presentation/screens/integration_settings_screen.dart';
 import '../../presentation/screens/task_sharing_screen.dart';
+import '../../presentation/widgets/theme_background_widget.dart';
 
 /// Application router
 class AppRouter {
@@ -72,6 +75,14 @@ class AppRouter {
 
   /// Task detail route getter
   static String get taskDetail => '/task-detail';
+  
+  /// Add task route getter
+  static String get addTask => '/add-task';
+  
+  /// Navigate to task detail
+  static void navigateToTaskDetail(BuildContext context, String taskId) {
+    Navigator.pushNamed(context, taskDetail, arguments: taskId);
+  }
 
   /// Bottom navigation destinations
   static List<NavigationDestination> get bottomNavigationDestinations => [
@@ -98,69 +109,81 @@ class AppRouter {
     switch (settings.name) {
       case home:
         return MaterialPageRoute(
-          builder: (_) => const HomePage(),
+          builder: (_) => const MainScaffold(),
           settings: settings,
         );
       case '/tasks':
         return MaterialPageRoute(
-          builder: (_) => const TasksPage(),
+          builder: (_) => const ThemeBackgroundWidget(child: TasksPage()),
           settings: settings,
         );
       case '/settings':
         return MaterialPageRoute(
-          builder: (_) => const SettingsPage(),
+          builder: (_) => const ThemeBackgroundWidget(child: SettingsPage()),
           settings: settings,
         );
       case '/performance':
         return MaterialPageRoute(
-          builder: (_) => const PerformanceDashboardScreen(),
+          builder: (_) => const ThemeBackgroundWidget(child: PerformanceDashboardScreen()),
           settings: settings,
         );
       case '/calendar':
         return MaterialPageRoute(
-          builder: (_) => const CalendarPage(),
+          builder: (_) => const ThemeBackgroundWidget(child: CalendarPage()),
           settings: settings,
         );
       case '/analytics':
         return MaterialPageRoute(
-          builder: (_) => const AnalyticsPage(),
+          builder: (_) => const ThemeBackgroundWidget(child: AnalyticsPage()),
           settings: settings,
         );
       case '/projects':
         return MaterialPageRoute(
-          builder: (_) => const ProjectsPage(),
+          builder: (_) => const ThemeBackgroundWidget(child: ProjectsPage()),
           settings: settings,
         );
       case '/task-detail':
         return MaterialPageRoute(
-          builder: (_) => TaskDetailPage(
-            taskId: settings.arguments as String? ?? '',
+          builder: (_) => ThemeBackgroundWidget(
+            child: TaskDetailPage(
+              taskId: settings.arguments as String? ?? '',
+            ),
           ),
           settings: settings,
         );
       case '/voice-demo':
         return MaterialPageRoute(
-          builder: (_) => const VoiceDemoPage(),
+          builder: (_) => const ThemeBackgroundWidget(child: VoiceDemoPage()),
           settings: settings,
         );
       case '/data-export':
         return MaterialPageRoute(
-          builder: (_) => const DataExportPage(),
+          builder: (_) => const ThemeBackgroundWidget(child: DataExportPage()),
           settings: settings,
         );
       case '/integration-settings':
         return MaterialPageRoute(
-          builder: (_) => const IntegrationSettingsScreen(),
+          builder: (_) => const ThemeBackgroundWidget(child: IntegrationSettingsScreen()),
           settings: settings,
         );
       case '/task-sharing':
         return MaterialPageRoute(
-          builder: (_) => const TaskSharingScreen(),
+          builder: (_) => const ThemeBackgroundWidget(child: TaskSharingScreen()),
+          settings: settings,
+        );
+      case '/help':
+        return MaterialPageRoute(
+          builder: (_) => const ThemeBackgroundWidget(child: HelpPage()),
+          settings: settings,
+        );
+      case '/add-task':
+        return MaterialPageRoute(
+          builder: (_) => const ThemeBackgroundWidget(child: TasksPage()), // Will show add task form
           settings: settings,
         );
       default:
         return MaterialPageRoute(
-          builder: (_) => const NotFoundScreen(),
+          builder: (_) => const ThemeBackgroundWidget(child: NotFoundScreen()),
           settings: settings,
         );
     }
@@ -175,8 +198,8 @@ class NotFoundScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Page Not Found'),
+      appBar: const StandardizedAppBar(
+        title: 'Page Not Found',
       ),
       body: const Center(
         child: Column(

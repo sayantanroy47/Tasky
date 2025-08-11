@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../services/analytics/analytics_models.dart';
+import 'glassmorphism_container.dart';
+import '../../core/theme/typography_constants.dart';
 
 /// Collection of reusable widgets for analytics display
 
@@ -26,10 +28,11 @@ class AnalyticsMetricCard extends StatelessWidget {
     this.onTap,
   });  @override
   Widget build(BuildContext context) {
-    return Card(
+    return GlassmorphismContainer(
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -124,7 +127,8 @@ class SimpleBarChart extends StatelessWidget {
     final maxValue = values.isNotEmpty ? values.reduce((a, b) => a > b ? a : b) : 1.0;
     final color = barColor ?? Theme.of(context).colorScheme.primary;
 
-    return Card(
+    return GlassmorphismContainer(
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -155,7 +159,7 @@ class SimpleBarChart extends StatelessWidget {
                             decoration: BoxDecoration(
                               color: color,
                               borderRadius: const BorderRadius.vertical(
-                                top: Radius.circular(4),
+                                top: Radius.circular(TypographyConstants.radiusStandard),
                               ),
                             ),
                           ),
@@ -192,7 +196,8 @@ class CategoryBreakdownWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final totalTasks = categories.fold<int>(0, (sum, cat) => sum + cat.totalTasks);
 
-    return Card(
+    return GlassmorphismContainer(
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -319,7 +324,8 @@ class ProductivityInsightsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final insights = _generateInsights();
 
-    return Card(
+    return GlassmorphismContainer(
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -439,7 +445,7 @@ class InsightItem extends StatelessWidget {
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
             color: color.withOpacity( 0.1),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
           ),
           child: Icon(icon, color: color, size: 20),
         ),
@@ -475,7 +481,8 @@ class StreakWidget extends StatelessWidget {
     required this.streakInfo,
   });  @override
   Widget build(BuildContext context) {
-    return Card(
+    return GlassmorphismContainer(
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -610,7 +617,8 @@ class TimePeriodSelector extends StatelessWidget {
     required this.onPeriodChanged,
   });  @override
   Widget build(BuildContext context) {
-    return Card(
+    return GlassmorphismContainer(
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -655,7 +663,8 @@ class ProductivityPatternsWidget extends StatelessWidget {
     required this.patterns,
   });  @override
   Widget build(BuildContext context) {
-    return Card(
+    return GlassmorphismContainer(
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -780,7 +789,8 @@ class PeakHoursAnalysisWidget extends StatelessWidget {
     required this.analysis,
   });  @override
   Widget build(BuildContext context) {
-    return Card(
+    return GlassmorphismContainer(
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -853,7 +863,7 @@ class PeakHoursAnalysisWidget extends StatelessWidget {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -897,7 +907,8 @@ class AdvancedCategoryAnalyticsWidget extends StatelessWidget {
     required this.analytics,
   });  @override
   Widget build(BuildContext context) {
-    return Card(
+    return GlassmorphismContainer(
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -956,7 +967,7 @@ class AdvancedCategoryAnalyticsWidget extends StatelessWidget {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -993,7 +1004,8 @@ class AdvancedProductivityInsightsWidget extends StatelessWidget {
     required this.insights,
   });  @override
   Widget build(BuildContext context) {
-    return Card(
+    return GlassmorphismContainer(
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -1010,7 +1022,7 @@ class AdvancedProductivityInsightsWidget extends StatelessWidget {
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: _getScoreColor(insights.overallScore.overall).withOpacity( 0.1),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
               ),
               child: Row(
                 children: [
@@ -1105,7 +1117,7 @@ class AdvancedProductivityInsightsWidget extends StatelessWidget {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                   ),
                   child: Row(
                     children: [
@@ -1113,7 +1125,7 @@ class AdvancedProductivityInsightsWidget extends StatelessWidget {
                         padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(
                           color: _getImpactColor(suggestion.impactScore).withOpacity( 0.2),
-                          borderRadius: BorderRadius.circular(6),
+                          borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                         ),
                         child: Icon(
                           _getSuggestionIcon(suggestion.actionType),
@@ -1194,7 +1206,7 @@ class _MetricCard extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: color.withOpacity( 0.1),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1272,7 +1284,8 @@ class AnalyticsExportWidget extends StatelessWidget {
     this.onExportExcel,
   });  @override
   Widget build(BuildContext context) {
-    return Card(
+    return GlassmorphismContainer(
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

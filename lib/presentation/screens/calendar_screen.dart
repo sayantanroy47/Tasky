@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/calendar_widgets.dart';
+import '../widgets/standardized_app_bar.dart';
 import '../providers/calendar_provider.dart';
 import '../providers/task_provider.dart';
 import '../../domain/entities/task_model.dart';
@@ -30,8 +31,8 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Calendar'),
+      appBar: StandardizedAppBar(
+        title: 'Calendar',
         bottom: TabBar(
           controller: _tabController,
           tabs: const [

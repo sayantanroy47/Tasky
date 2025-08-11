@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/theme/typography_constants.dart';
 
 import '../../domain/entities/task_model.dart';
 import '../../domain/entities/task_enums.dart';
@@ -65,7 +66,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> {  @over
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: canComplete ? Colors.green.withOpacity( 0.1) : Colors.orange.withOpacity( 0.1),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -105,7 +106,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> {  @over
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: theme.colorScheme.errorContainer,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                 ),
                 child: Row(
                   children: [
@@ -212,7 +213,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> {  @over
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         border: Border.all(color: theme.colorScheme.outline.withOpacity( 0.1)),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       ),
       child: Row(
         children: [
@@ -262,7 +263,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> {  @over
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
                 color: _getPriorityColor(task.priority).withOpacity( 0.1),
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
               ),
               child: Text(
                 task.priority.name.toUpperCase(),
@@ -295,7 +296,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> {  @over
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerHighest.withOpacity( 0.1),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       ),
       child: Row(
         children: [
@@ -323,7 +324,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> {  @over
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: theme.colorScheme.errorContainer,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       ),
       child: Row(
         children: [
@@ -532,7 +533,7 @@ class _AddDependencyDialogState extends ConsumerState<AddDependencyDialog> {
                                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                 decoration: BoxDecoration(
                                   color: _getPriorityColor(task.priority).withOpacity( 0.1),
-                                  borderRadius: BorderRadius.circular(4),
+                                  borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                                 ),
                                 child: Text(
                                   task.priority.name.toUpperCase(),

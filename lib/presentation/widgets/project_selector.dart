@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/theme/typography_constants.dart';
 
 import '../../domain/entities/project.dart';
 import '../providers/project_providers.dart';
@@ -41,7 +42,7 @@ class ProjectSelector extends ConsumerWidget {
             return Container(
               decoration: BoxDecoration(
                 border: Border.all(color: theme.colorScheme.outline),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
               ),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String?>(
@@ -122,7 +123,7 @@ class ProjectSelector extends ConsumerWidget {
                               ),
                               decoration: BoxDecoration(
                                 color: theme.colorScheme.surfaceContainerHighest,
-                                borderRadius: BorderRadius.circular(10),
+                                borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                               ),
                               child: Text(
                                 '${project.taskCount}',
@@ -150,7 +151,7 @@ class ProjectSelector extends ConsumerWidget {
             height: 48,
             decoration: BoxDecoration(
               border: Border.all(color: theme.colorScheme.outline),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
             ),
             child: const Center(
               child: SizedBox(
@@ -164,7 +165,7 @@ class ProjectSelector extends ConsumerWidget {
             height: 48,
             decoration: BoxDecoration(
               border: Border.all(color: theme.colorScheme.error),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
             ),
             child: Center(
               child: Row(
@@ -204,7 +205,7 @@ class ProjectSelector extends ConsumerWidget {
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: _parseColor(project.color).withOpacity( 0.1),
-                    borderRadius: BorderRadius.circular(6),
+                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                     border: Border.all(
                       color: _parseColor(project.color).withOpacity( 0.3),
                     ),
@@ -306,7 +307,7 @@ class CompactProjectSelector extends ConsumerWidget {
               color: selectedProject != null
                   ? _parseColor(selectedProject.color).withOpacity( 0.1)
                   : theme.colorScheme.surfaceContainerHighest.withOpacity( 0.1),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
               border: selectedProject != null
                   ? Border.all(
                       color: _parseColor(selectedProject.color).withOpacity( 0.1),
@@ -415,7 +416,7 @@ class CompactProjectSelector extends ConsumerWidget {
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
           color: theme.colorScheme.surfaceContainerHighest.withOpacity( 0.1),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -443,7 +444,7 @@ class CompactProjectSelector extends ConsumerWidget {
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
           color: theme.colorScheme.errorContainer.withOpacity( 0.1),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,

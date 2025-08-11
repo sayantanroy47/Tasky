@@ -89,44 +89,85 @@ class ClaudeTaskParser implements AITaskParser {
 
   /// Makes an API call to Claude
   Future<String> _makeAPICall(String prompt) async {
-    final uri = Uri.parse('$_baseUrl/messages');
-    
-    final body = jsonEncode({
-      'model': _model,
-      'max_tokens': 500,
-      'messages': [
-        {
-          'role': 'user',
-          'content': prompt,
+    try {
+      final uri = Uri.parse('$_baseUrl/messages');
+      
+      final body = jsonEncode({
+        'model': _model,
+        'max_tokens': 500,
+        'messages': [
+          {
+            'role': 'user',
+            'content': prompt,
+          },
+        ],
+      });
+
+      final response = await _httpClient.post(
+        uri,
+        headers: {
+          'x-api-key': _apiKey,
+          'Content-Type': 'application/json',
+          'anthropic-version': '2023-06-01',
         },
-      ],
-    });
+        body: body,
+      ).timeout(
+        const Duration(seconds: 30),
+        onTimeout: () => throw AIParsingException(
+          'Claude API request timed out after 30 seconds',
+          code: 'TIMEOUT',
+        ),
+      );
 
-    final response = await _httpClient.post(
-      uri,
-      headers: {
-        'x-api-key': _apiKey,
-        'Content-Type': 'application/json',
-        'anthropic-version': '2023-06-01',
-      },
-      body: body,
-    );
+      if (response.statusCode != 200) {
+        String errorMessage = 'Claude API request failed with status ${response.statusCode}';
+        try {
+          final errorData = jsonDecode(response.body);
+          if (errorData['error']?['message'] != null) {
+            errorMessage += ': ${errorData['error']['message']}';
+          }
+        } catch (_) {
+          // Ignore JSON parsing errors for error response
+        }
+        
+        throw AIParsingException(
+          errorMessage,
+          code: response.statusCode.toString(),
+        );
+      }
 
-    if (response.statusCode != 200) {
+      if (response.body.isEmpty) {
+        throw const AIParsingException('Empty response from Claude API');
+      }
+
+      late final Map<String, dynamic> responseData;
+      try {
+        responseData = jsonDecode(response.body);
+      } catch (e) {
+        throw AIParsingException(
+          'Invalid JSON response from Claude API: $e',
+          code: 'INVALID_JSON',
+        );
+      }
+      
+      final content = responseData['content']?[0]?['text'];
+      
+      if (content == null || content.toString().trim().isEmpty) {
+        throw const AIParsingException('Invalid or empty response content from Claude API');
+      }
+
+      return content.toString();
+    } on AIParsingException {
+      // Re-throw AIParsingException as-is
+      rethrow;
+    } catch (e) {
+      // Catch all other exceptions (network errors, etc.)
       throw AIParsingException(
-        'Claude API request failed with status ${response.statusCode}',
-        code: response.statusCode.toString(),
+        'Network or system error during Claude API call: ${e.toString()}',
+        originalError: e,
+        code: 'NETWORK_ERROR',
       );
     }
-
-    final responseData = jsonDecode(response.body);
-    final content = responseData['content']?[0]?['text'];
-    
-    if (content == null) {
-      throw const AIParsingException('Invalid response from Claude API');
-    }
-
-    return content.toString();
   }
 
   /// Builds the prompt for comprehensive task parsing

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/theme/typography_constants.dart';
 
 /// Loading indicator widget with optional message
 class LoadingWidget extends StatelessWidget {
@@ -238,7 +239,7 @@ class _ShimmerListItemState extends State<ShimmerListItem>
                   decoration: BoxDecoration(
                     color: theme.colorScheme.surfaceContainerHighest
                         .withOpacity( 0.1),
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -255,7 +256,7 @@ class _ShimmerListItemState extends State<ShimmerListItem>
                         decoration: BoxDecoration(
                           color: theme.colorScheme.surfaceContainerHighest
                               .withOpacity( 0.1),
-                          borderRadius: BorderRadius.circular(4),
+                          borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -267,7 +268,7 @@ class _ShimmerListItemState extends State<ShimmerListItem>
                         decoration: BoxDecoration(
                           color: theme.colorScheme.surfaceContainerHighest
                               .withOpacity( 0.1),
-                          borderRadius: BorderRadius.circular(4),
+                          borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                         ),
                       ),
                     ],
@@ -281,7 +282,7 @@ class _ShimmerListItemState extends State<ShimmerListItem>
                   decoration: BoxDecoration(
                     color: theme.colorScheme.surfaceContainerHighest
                         .withOpacity( 0.1),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                   ),
                 ),
               ],

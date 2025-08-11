@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../widgets/glassmorphism_container.dart';
+import '../widgets/standardized_app_bar.dart';
+import '../../core/theme/typography_constants.dart';
 import '../../services/data_export/data_export_models.dart';
 import '../providers/data_export_providers.dart';
 import '../widgets/data_export_widgets.dart';
@@ -77,8 +80,8 @@ class _DataExportPageState extends ConsumerState<DataExportPage>
     });
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Data Management'),
+      appBar: StandardizedAppBar(
+        title: 'Data Management',
         bottom: TabBar(
           controller: _tabController,
           tabs: const [
@@ -114,10 +117,10 @@ class _DataExportPageState extends ConsumerState<DataExportPage>
           const SizedBox(height: 16),
           
           // Export actions
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
+          GlassmorphismContainer(
+            borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+            padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
+            child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
@@ -148,16 +151,15 @@ class _DataExportPageState extends ConsumerState<DataExportPage>
                   ),
                 ],
               ),
-            ),
           ),
           
           const SizedBox(height: 16),
           
           // Export options (future enhancement)
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
+          GlassmorphismContainer(
+            borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+            padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
+            child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
@@ -172,7 +174,6 @@ class _DataExportPageState extends ConsumerState<DataExportPage>
                   ),
                 ],
               ),
-            ),
           ),
         ],
       ),
@@ -242,10 +243,10 @@ class _DataExportPageState extends ConsumerState<DataExportPage>
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // Create backup section
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
+          GlassmorphismContainer(
+            borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+            padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
+            child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
@@ -267,16 +268,15 @@ class _DataExportPageState extends ConsumerState<DataExportPage>
                   ),
                 ],
               ),
-            ),
           ),
           
           const SizedBox(height: 16),
           
           // Backup list
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
+          GlassmorphismContainer(
+            borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+            padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
+            child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
@@ -297,7 +297,6 @@ class _DataExportPageState extends ConsumerState<DataExportPage>
                   const BackupListWidget(),
                 ],
               ),
-            ),
           ),
         ],
       ),

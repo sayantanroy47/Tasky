@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../widgets/standardized_app_bar.dart';
+import '../../core/theme/typography_constants.dart';
 import '../../services/collaboration_service.dart';
 import 'collaboration_management_screen.dart';
 
@@ -58,9 +60,8 @@ class _TaskSharingScreenState extends ConsumerState<TaskSharingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Task Sharing & Collaboration'),
-        elevation: 0,
+      appBar: const StandardizedAppBar(
+        title: 'Task Sharing & Collaboration',
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -292,7 +293,7 @@ class _TaskSharingScreenState extends ConsumerState<TaskSharingScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
             decoration: BoxDecoration(
               color: _getPermissionColor(userPermission).withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
             ),
             child: Text(
               isOwner ? 'Owner' : userPermission.name.toUpperCase(),
@@ -563,7 +564,7 @@ class _TaskSharingScreenState extends ConsumerState<TaskSharingScreen> {
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Theme.of(context).primaryColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
               ),
               child: Text(
                 sharedList.shareCode!,

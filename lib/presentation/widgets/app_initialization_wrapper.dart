@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/services/app_initialization_service.dart';
-import '../../services/performance_service.dart';
+import '../../main.dart' show performanceServiceProvider, shareIntentServiceProvider;
+import '../../core/providers/core_providers.dart';
+import '../providers/initialization_providers.dart';
+import '../providers/task_providers.dart';
+import '../../core/theme/typography_constants.dart';
 
 /// Wrapper widget that handles app initialization with performance monitoring
 class AppInitializationWrapper extends ConsumerStatefulWidget {
@@ -10,11 +13,14 @@ class AppInitializationWrapper extends ConsumerStatefulWidget {
   const AppInitializationWrapper({
     super.key,
     required this.child,
-  });  @override
+  });
+
+  @override
   ConsumerState<AppInitializationWrapper> createState() => _AppInitializationWrapperState();
 }
 
-class _AppInitializationWrapperState extends ConsumerState<AppInitializationWrapper> {  @override
+class _AppInitializationWrapperState extends ConsumerState<AppInitializationWrapper> {
+  @override
   void initState() {
     super.initState();
     
@@ -23,15 +29,25 @@ class _AppInitializationWrapperState extends ConsumerState<AppInitializationWrap
       final performanceService = ref.read(performanceServiceProvider);
       performanceService.startTimer('app_initialization');
       
+      // Set context for ShareIntentService
+      final shareIntentService = ref.read(shareIntentServiceProvider);
+      final taskRepository = ref.read(taskRepositoryProvider);
+      shareIntentService.setContext(context);
+      shareIntentService.setTaskRepository(taskRepository);
+      
       // Start memory management
       MemoryManager.startPeriodicCleanup();
     });
-  }  @override
+  }
+
+  @override
   void dispose() {
     // Stop memory management
     MemoryManager.stopPeriodicCleanup();
     super.dispose();
-  }  @override
+  }
+
+  @override
   Widget build(BuildContext context) {
     final initializationAsync = ref.watch(appInitializationProvider);
     final performanceService = ref.watch(performanceServiceProvider);
@@ -65,7 +81,7 @@ class _AppInitializationWrapperState extends ConsumerState<AppInitializationWrap
                 const Text(
                   'Initializing Task Tracker...',
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: TypographyConstants.bodyLarge,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -73,7 +89,7 @@ class _AppInitializationWrapperState extends ConsumerState<AppInitializationWrap
                 Text(
                   'Optimizing performance...',
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: TypographyConstants.bodyMedium,
                     color: Colors.grey[600],
                   ),
                 ),
@@ -110,7 +126,7 @@ class _AppInitializationWrapperState extends ConsumerState<AppInitializationWrap
                     const Text(
                       'Failed to initialize app',
                       style: TextStyle(
-                        fontSize: 20,
+                        fontSize: TypographyConstants.headlineMedium,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -119,7 +135,7 @@ class _AppInitializationWrapperState extends ConsumerState<AppInitializationWrap
                       'The app encountered an error during startup. This might be due to corrupted data or insufficient device resources.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: TypographyConstants.bodyLarge,
                         color: Colors.grey[700],
                       ),
                     ),
@@ -130,13 +146,13 @@ class _AppInitializationWrapperState extends ConsumerState<AppInitializationWrap
                         margin: const EdgeInsets.symmetric(vertical: 8),
                         decoration: BoxDecoration(
                           color: Colors.grey[100],
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                         ),
                         child: Text(
                           error.toString(),
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: TypographyConstants.bodySmall,
                             color: Colors.grey[600],
                             fontFamily: 'monospace',
                           ),
@@ -185,5 +201,34 @@ class _AppInitializationWrapperState extends ConsumerState<AppInitializationWrap
     } catch (e) {
       // Handle error
     }
+  }
+}
+
+/// Memory manager for periodic cleanup
+class MemoryManager {
+  static void startPeriodicCleanup() {
+    // TODO: Implement periodic cleanup
+  }
+  
+  static void stopPeriodicCleanup() {
+    // TODO: Implement cleanup stop
+  }
+}
+
+/// Performance monitor widget for tracking render performance
+class PerformanceMonitor extends StatelessWidget {
+  final String operationName;
+  final Widget child;
+  
+  const PerformanceMonitor({
+    super.key,
+    required this.operationName,
+    required this.child,
+  });
+  
+  @override
+  Widget build(BuildContext context) {
+    // TODO: Implement performance monitoring
+    return child;
   }
 }

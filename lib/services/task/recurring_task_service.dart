@@ -2,6 +2,7 @@ import '../../domain/entities/task_model.dart';
 import '../../domain/entities/recurrence_pattern.dart';
 import '../../domain/repositories/task_repository.dart';
 import '../../domain/models/enums.dart';
+import '../../services/database/database.dart';
 
 /// Service for managing recurring tasks
 /// 
@@ -12,23 +13,27 @@ import '../../domain/models/enums.dart';
 /// - Handling recurrence pattern modifications
 class RecurringTaskService {
   final TaskRepository _taskRepository;
+  final AppDatabase _database;
   
-  const RecurringTaskService(this._taskRepository);
+  const RecurringTaskService(this._taskRepository, this._database);
   
   /// Processes all completed recurring tasks and generates their next instances
   Future<List<TaskModel>> processCompletedRecurringTasks() async {
     final completedTasks = await _taskRepository.getTasksByStatus(TaskStatus.completed);
     final newTasks = <TaskModel>[];
     
-    for (final task in completedTasks) {
-      if (task.isRecurring && task.completedAt != null) {
-        final nextTask = await generateNextRecurringTask(task);
-        if (nextTask != null) {
-          await _taskRepository.createTask(nextTask);
-          newTasks.add(nextTask);
+    // Use transaction for creating multiple recurring task instances
+    await _database.transaction(() async {
+      for (final task in completedTasks) {
+        if (task.isRecurring && task.completedAt != null) {
+          final nextTask = await generateNextRecurringTask(task);
+          if (nextTask != null) {
+            await _taskRepository.createTask(nextTask);
+            newTasks.add(nextTask);
+          }
         }
       }
-    }
+    });
     
     return newTasks;
   }
@@ -156,10 +161,11 @@ class RecurringTaskService {
   
   /// Counts how many instances of a recurring task have been created
   Future<int> _countRecurringTaskInstances(TaskModel originalTask) async {
-    final allTasks = await _taskRepository.getAllTasks();
+    // Use optimized search to find instances instead of loading all tasks
+    final instances = await _taskRepository.searchTasks(originalTask.title);
     
     int count = 0;
-    for (final task in allTasks) {
+    for (final task in instances) {
       // Count tasks with same title and recurrence pattern
       if (task.title == originalTask.title && 
           task.recurrence?.type == originalTask.recurrence?.type) {
@@ -181,24 +187,21 @@ class RecurringTaskService {
     RecurrencePattern newPattern,
     {bool updateFutureInstances = true}
   ) async {
-    // Update the current task
-    final updatedTask = task.copyWith(recurrence: newPattern);
-    await _taskRepository.updateTask(updatedTask);
-    
-    if (updateFutureInstances) {
-      // Find and update future instances
-      final allTasks = await _taskRepository.getAllTasks();
-      final futureInstances = allTasks.where((t) => 
-        t.metadata['original_task_id'] == task.id &&
-        t.status != TaskStatus.completed &&
-        (t.dueDate?.isAfter(DateTime.now()) ?? false)
-      ).toList();
+    await _database.transaction(() async {
+      // Update the current task
+      final updatedTask = task.copyWith(recurrence: newPattern);
+      await _taskRepository.updateTask(updatedTask);
       
-      for (final instance in futureInstances) {
-        final updatedInstance = instance.copyWith(recurrence: newPattern);
-        await _taskRepository.updateTask(updatedInstance);
+      if (updateFutureInstances) {
+        // Find and update future instances more efficiently
+        final futureInstances = await getFutureRecurringInstances(task);
+        
+        for (final instance in futureInstances) {
+          final updatedInstance = instance.copyWith(recurrence: newPattern);
+          await _taskRepository.updateTask(updatedInstance);
+        }
       }
-    }
+    });
   }
   
   /// Stops a recurring task series (marks the pattern as none)
@@ -213,12 +216,21 @@ class RecurringTaskService {
   
   /// Gets all future instances of a recurring task
   Future<List<TaskModel>> getFutureRecurringInstances(TaskModel task) async {
-    final allTasks = await _taskRepository.getAllTasks();
+    // Use filtering instead of loading all tasks
+    final filter = TaskFilter(
+      status: null, // Don't filter by status here, we'll filter out completed below
+      dueDateFrom: DateTime.now(), // Only get tasks due from now onwards
+      searchQuery: null,
+      sortBy: TaskSortBy.dueDate,
+      sortAscending: true,
+    );
     
-    return allTasks.where((t) => 
+    final futureTasks = await _taskRepository.getTasksWithFilter(filter);
+    
+    // Filter for instances of this specific recurring task
+    return futureTasks.where((t) => 
       t.metadata['original_task_id'] == task.id &&
-      t.status != TaskStatus.completed &&
-      (t.dueDate?.isAfter(DateTime.now()) ?? false)
+      t.status != TaskStatus.completed
     ).toList();
   }
   
@@ -226,8 +238,12 @@ class RecurringTaskService {
   Future<void> deleteFutureRecurringInstances(TaskModel task) async {
     final futureInstances = await getFutureRecurringInstances(task);
     
-    for (final instance in futureInstances) {
-      await _taskRepository.deleteTask(instance.id);
+    if (futureInstances.isNotEmpty) {
+      await _database.transaction(() async {
+        for (final instance in futureInstances) {
+          await _taskRepository.deleteTask(instance.id);
+        }
+      });
     }
   }
   
@@ -267,6 +283,24 @@ class RecurringTaskService {
       
       instances.add(nextTask);
       currentDate = nextDate;
+    }
+    
+    return instances;
+  }
+  
+  /// Creates multiple future instances in a single transaction
+  Future<List<TaskModel>> createFutureInstances(
+    TaskModel task, 
+    int count,
+  ) async {
+    final instances = await generateFutureInstances(task, count);
+    
+    if (instances.isNotEmpty) {
+      await _database.transaction(() async {
+        for (final instance in instances) {
+          await _taskRepository.createTask(instance);
+        }
+      });
     }
     
     return instances;

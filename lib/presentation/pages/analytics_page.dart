@@ -1,41 +1,51 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../widgets/theme_selector.dart';
-import '../widgets/app_scaffold.dart';
+import '../widgets/glassmorphism_container.dart';
+import '../widgets/standardized_app_bar.dart';
+import '../../core/theme/typography_constants.dart';
 import '../widgets/analytics_widgets.dart';
 import '../providers/analytics_providers.dart';
 import '../../services/analytics/analytics_models.dart';
+import '../../core/theme/material3/motion_system.dart';
 
 /// Analytics page for viewing productivity metrics and insights
 class AnalyticsPage extends ConsumerWidget {
   const AnalyticsPage({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return AppScaffold(
-      title: 'Analytics',
-      actions: [
-        const ThemeToggleButton(),
-        IconButton(
-          icon: const Icon(Icons.date_range),
-          onPressed: () {
-            // TODO: Change date range
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Date range selector coming soon!')),
-            );
-          },
-          tooltip: 'Change date range',
-        ),
-        IconButton(
-          icon: const Icon(Icons.file_download),
-          onPressed: () {
-            // TODO: Export analytics
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Export analytics coming soon!')),
-            );
-          },
-          tooltip: 'Export data',
-        ),
-      ],
+    final theme = Theme.of(context);
+    
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      appBar: StandardizedAppBar(
+        title: 'Analytics',
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.date_range_outlined),
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: const Text('Date range selector coming soon!'),
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            },
+            tooltip: 'Change date range',
+          ),
+          IconButton(
+            icon: const Icon(Icons.file_download_outlined),
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: const Text('Export analytics coming soon!'),
+                  behavior: SnackBarBehavior.floating,
+                ),
+              );
+            },
+            tooltip: 'Export data',
+          ),
+        ],
+      ),
       body: const AnalyticsPageBody(),
     );
   }
@@ -143,11 +153,10 @@ class AnalyticsPageBody extends ConsumerWidget {
               final streakAsync = ref.watch(streakInfoProvider);
               return streakAsync.when(
                 data: (streak) => StreakWidget(streakInfo: streak),
-                loading: () => const Card(
-                  child: Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Center(child: CircularProgressIndicator()),
-                  ),
+                loading: () => GlassmorphismContainer(
+                  borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                  padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
+                  child: const Center(child: CircularProgressIndicator()),
                 ),
                 error: (error, stack) => _ErrorWidget(error: error.toString()),
               );
@@ -171,11 +180,10 @@ class AnalyticsPageBody extends ConsumerWidget {
                     title: 'Daily Task Completion',
                   );
                 },
-                loading: () => const Card(
-                  child: Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Center(child: CircularProgressIndicator()),
-                  ),
+                loading: () => GlassmorphismContainer(
+                  borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                  padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
+                  child: const Center(child: CircularProgressIndicator()),
                 ),
                 error: (error, stack) => _ErrorWidget(error: error.toString()),
               );
@@ -193,11 +201,10 @@ class AnalyticsPageBody extends ConsumerWidget {
                   categories: categories,
                   title: 'Task Categories',
                 ),
-                loading: () => const Card(
-                  child: Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Center(child: CircularProgressIndicator()),
-                  ),
+                loading: () => GlassmorphismContainer(
+                  borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                  padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
+                  child: const Center(child: CircularProgressIndicator()),
                 ),
                 error: (error, stack) => _ErrorWidget(error: error.toString()),
               );
@@ -237,11 +244,10 @@ class AnalyticsPageBody extends ConsumerWidget {
                   ),
                   error: (error, stack) => _ErrorWidget(error: error.toString()),
                 ),
-                loading: () => const Card(
-                  child: Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Center(child: CircularProgressIndicator()),
-                  ),
+                loading: () => GlassmorphismContainer(
+                  borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                  padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
+                  child: const Center(child: CircularProgressIndicator()),
                 ),
                 error: (error, stack) => _ErrorWidget(error: error.toString()),
               );
@@ -258,11 +264,10 @@ class AnalyticsPageBody extends ConsumerWidget {
               final patternsAsync = ref.watch(productivityPatternsProvider);
               return patternsAsync.when(
                 data: (patterns) => ProductivityPatternsWidget(patterns: patterns),
-                loading: () => const Card(
-                  child: Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Center(child: CircularProgressIndicator()),
-                  ),
+                loading: () => GlassmorphismContainer(
+                  borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                  padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
+                  child: const Center(child: CircularProgressIndicator()),
                 ),
                 error: (error, stack) => _ErrorWidget(error: error.toString()),
               );
@@ -277,11 +282,10 @@ class AnalyticsPageBody extends ConsumerWidget {
               final peakHoursAsync = ref.watch(peakHoursAnalysisProvider);
               return peakHoursAsync.when(
                 data: (analysis) => PeakHoursAnalysisWidget(analysis: analysis),
-                loading: () => const Card(
-                  child: Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Center(child: CircularProgressIndicator()),
-                  ),
+                loading: () => GlassmorphismContainer(
+                  borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                  padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
+                  child: const Center(child: CircularProgressIndicator()),
                 ),
                 error: (error, stack) => _ErrorWidget(error: error.toString()),
               );
@@ -296,11 +300,10 @@ class AnalyticsPageBody extends ConsumerWidget {
               final advancedCategoryAsync = ref.watch(advancedCategoryAnalyticsProvider);
               return advancedCategoryAsync.when(
                 data: (analytics) => AdvancedCategoryAnalyticsWidget(analytics: analytics),
-                loading: () => const Card(
-                  child: Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Center(child: CircularProgressIndicator()),
-                  ),
+                loading: () => GlassmorphismContainer(
+                  borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                  padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
+                  child: const Center(child: CircularProgressIndicator()),
                 ),
                 error: (error, stack) => _ErrorWidget(error: error.toString()),
               );
@@ -315,11 +318,10 @@ class AnalyticsPageBody extends ConsumerWidget {
               final insightsAsync = ref.watch(productivityInsightsProvider);
               return insightsAsync.when(
                 data: (insights) => AdvancedProductivityInsightsWidget(insights: insights),
-                loading: () => const Card(
-                  child: Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: Center(child: CircularProgressIndicator()),
-                  ),
+                loading: () => GlassmorphismContainer(
+                  borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                  padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
+                  child: const Center(child: CircularProgressIndicator()),
                 ),
                 error: (error, stack) => _ErrorWidget(error: error.toString()),
               );
@@ -434,22 +436,20 @@ class _LoadingMetrics extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: Card(
-                child: Container(
-                  height: 120,
-                  padding: const EdgeInsets.all(16.0),
-                  child: const Center(child: CircularProgressIndicator()),
-                ),
+              child: GlassmorphismContainer(
+                borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                height: 120,
+                padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
+                child: const Center(child: CircularProgressIndicator()),
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: Card(
-                child: Container(
-                  height: 120,
-                  padding: const EdgeInsets.all(16.0),
-                  child: const Center(child: CircularProgressIndicator()),
-                ),
+              child: GlassmorphismContainer(
+                borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                height: 120,
+                padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
+                child: const Center(child: CircularProgressIndicator()),
               ),
             ),
           ],
@@ -458,22 +458,20 @@ class _LoadingMetrics extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: Card(
-                child: Container(
-                  height: 120,
-                  padding: const EdgeInsets.all(16.0),
-                  child: const Center(child: CircularProgressIndicator()),
-                ),
+              child: GlassmorphismContainer(
+                borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                height: 120,
+                padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
+                child: const Center(child: CircularProgressIndicator()),
               ),
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: Card(
-                child: Container(
-                  height: 120,
-                  padding: const EdgeInsets.all(16.0),
-                  child: const Center(child: CircularProgressIndicator()),
-                ),
+              child: GlassmorphismContainer(
+                borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                height: 120,
+                padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
+                child: const Center(child: CircularProgressIndicator()),
               ),
             ),
           ],
@@ -490,10 +488,10 @@ class _ErrorWidget extends StatelessWidget {
   const _ErrorWidget({required this.error});
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
+    return GlassmorphismContainer(
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+      padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
+      child: Column(
           children: [
             Icon(
               Icons.error_outline,
@@ -513,7 +511,6 @@ class _ErrorWidget extends StatelessWidget {
             ),
           ],
         ),
-      ),
     );
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:local_auth/local_auth.dart';
 import '../widgets/enhanced_ux_widgets.dart';
+import '../widgets/standardized_app_bar.dart';
 import '../../services/security_service.dart';
 
 /// Screen for managing security and privacy settings
@@ -11,8 +12,8 @@ class SecuritySettingsScreen extends ConsumerWidget {
     final securitySettings = ref.watch(securitySettingsProvider);
     
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Security & Privacy'),
+      appBar: const StandardizedAppBar(
+        title: 'Security & Privacy',
       ),
       body: securitySettings.when(
         data: (settings) => _buildSecuritySettings(context, ref, settings),

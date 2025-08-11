@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'standardized_app_bar.dart';
 import '../../core/providers/navigation_provider.dart';
 import '../../core/routing/app_router.dart';
 
@@ -26,8 +27,8 @@ class AppScaffold extends ConsumerWidget {
     final selectedIndex = ref.watch(selectedIndexProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
+      appBar: StandardizedAppBar(
+        title: title,
         actions: actions,
         bottom: bottom,
       ),

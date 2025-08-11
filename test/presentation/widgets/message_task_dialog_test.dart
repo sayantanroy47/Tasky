@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mockito/mockito.dart';
@@ -103,7 +104,7 @@ void main() {
 
         // Assert
         expect(find.text('Buy groceries'), findsOneWidget);
-        expect(find.text(messageText), findsAtLeastNWidget(1)); // In both preview and description field
+        expect(find.text(messageText), findsAtLeast(1)); // In both preview and description field
       });
     });
 
@@ -315,7 +316,7 @@ void main() {
 
         // Assert
         expect(find.bySemanticsLabel('Task Title'), findsNothing); // Would need proper labels
-        expect(find.byType(TextField), findsAtLeastNWidget(2)); // Title and description fields
+        expect(find.byType(TextField), findsAtLeast(2)); // Title and description fields
       });
 
       testWidgets('should support keyboard navigation', (tester) async {
@@ -328,7 +329,7 @@ void main() {
 
         // Assert
         // Focus should move between interactive elements
-        expect(find.byType(TextField), findsAtLeastNWidget(2));
+        expect(find.byType(TextField), findsAtLeast(2));
       });
     });
 
@@ -349,9 +350,9 @@ void main() {
         await tester.pumpWidget(createTestWidget(messageText: 'Test message'));
 
         // Assert
-        expect(find.byType(SizedBox), findsAtLeastNWidget(5)); // Spacing elements
-        expect(find.byType(Column), findsAtLeastNWidget(2)); // Layout structure
-        expect(find.byType(Row), findsAtLeastNWidget(1)); // Button row
+        expect(find.byType(SizedBox), findsAtLeast(5)); // Spacing elements
+        expect(find.byType(Column), findsAtLeast(2)); // Layout structure
+        expect(find.byType(Row), findsAtLeast(1)); // Button row
       });
     });
 

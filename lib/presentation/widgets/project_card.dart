@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/project.dart';
 import '../../services/project_service.dart';
 import '../providers/project_providers.dart';
+import 'glassmorphism_container.dart';
+import '../../core/theme/typography_constants.dart';
 
 /// A card widget that displays project information
 /// 
@@ -28,14 +30,10 @@ class ProjectCard extends ConsumerWidget {
     final theme = Theme.of(context);
     final projectStatsAsync = ref.watch(projectStatsProvider(project.id));
 
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
+    return GlassProjectCard(
+      onTap: onTap,
+      accentColor: _parseColor(project.color, context),
+      child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Header with project name and actions
@@ -46,8 +44,8 @@ class ProjectCard extends ConsumerWidget {
                     width: 4,
                     height: 24,
                     decoration: BoxDecoration(
-                      color: _parseColor(project.color),
-                      borderRadius: BorderRadius.circular(2),
+                      color: _parseColor(project.color, context),
+                      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -106,14 +104,16 @@ class ProjectCard extends ConsumerWidget {
                             ],
                           ),
                         ),
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: 'delete',
-                          child: Row(
-                            children: [
-                              Icon(Icons.delete, color: Colors.red),
-                              SizedBox(width: 8),
-                              Text('Delete', style: TextStyle(color: Colors.red)),
-                            ],
+                          child: Builder(
+                            builder: (context) => Row(
+                              children: [
+                                Icon(Icons.delete, color: Theme.of(context).colorScheme.error),
+                                SizedBox(width: 8),
+                                Text('Delete', style: TextStyle(color: Theme.of(context).colorScheme.error)),
+                              ],
+                            ),
                           ),
                         ),
                       ],
@@ -173,8 +173,6 @@ class ProjectCard extends ConsumerWidget {
               ),
             ],
           ),
-        ),
-      ),
     );
   }
 
@@ -191,7 +189,7 @@ class ProjectCard extends ConsumerWidget {
                 value: stats.completionPercentage,
                 backgroundColor: theme.colorScheme.surfaceContainerHighest,
                 valueColor: AlwaysStoppedAnimation<Color>(
-                  _parseColor(project.color),
+                  _parseColor(project.color, context),
                 ),
               ),
             ),
@@ -214,21 +212,21 @@ class ProjectCard extends ConsumerWidget {
               context,
               label: 'Completed',
               value: stats.completedTasks.toString(),
-              color: Colors.green,
+              color: theme.colorScheme.primary,
             ),
             const SizedBox(width: 16),
             _buildStatItem(
               context,
               label: 'In Progress',
               value: stats.inProgressTasks.toString(),
-              color: Colors.blue,
+              color: theme.colorScheme.secondary,
             ),
             const SizedBox(width: 16),
             _buildStatItem(
               context,
               label: 'Pending',
               value: stats.pendingTasks.toString(),
-              color: Colors.orange,
+              color: theme.colorScheme.tertiary,
             ),
             if (stats.overdueTasks > 0) ...[
               const SizedBox(width: 16),
@@ -236,7 +234,7 @@ class ProjectCard extends ConsumerWidget {
                 context,
                 label: 'Overdue',
                 value: stats.overdueTasks.toString(),
-                color: Colors.red,
+                color: theme.colorScheme.error,
               ),
             ],
           ],
@@ -282,7 +280,7 @@ class ProjectCard extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: (color ?? theme.colorScheme.surfaceContainerHighest).withOpacity( 0.1),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -350,11 +348,11 @@ class ProjectCard extends ConsumerWidget {
     );
   }
 
-  Color _parseColor(String colorString) {
+  Color _parseColor(String colorString, BuildContext context) {
     try {
       return Color(int.parse(colorString.replaceFirst('#', '0xFF')));
     } catch (e) {
-      return Colors.blue; // Default color
+      return Theme.of(context).colorScheme.primary; // Default color
     }
   }
 

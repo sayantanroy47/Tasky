@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../widgets/standardized_app_bar.dart';
 import '../../services/collaboration_service.dart';
 
 class CollaborationManagementScreen extends ConsumerStatefulWidget {
@@ -53,8 +54,8 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Manage ${widget.sharedList.name}'),
+      appBar: StandardizedAppBar(
+        title: 'Manage ${widget.sharedList.name}',
         bottom: TabBar(
           controller: _tabController,
           tabs: const [

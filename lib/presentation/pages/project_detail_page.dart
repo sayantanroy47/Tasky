@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../widgets/standardized_app_bar.dart';
 
 import '../../domain/entities/project.dart';
 import '../../domain/entities/task_model.dart';
 import '../../services/project_service.dart';
 import '../providers/project_providers.dart';
 import '../providers/task_providers.dart';
-import '../widgets/task_card.dart';
+import '../widgets/advanced_task_card.dart';
 import '../widgets/project_form_dialog.dart';
+import '../../core/theme/typography_constants.dart';
+import '../../core/theme/typography_constants.dart';
 
 /// Detailed view of a single project
 /// 
@@ -46,8 +49,8 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
         );
 
         return Scaffold(
-          appBar: AppBar(
-            title: Text(project.name),
+          appBar: StandardizedAppBar(
+            title: project.name,
             actions: [
               IconButton(
                 onPressed: () => _editProject(project),
@@ -119,18 +122,13 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
               ),
             ],
           ),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () => _createTaskForProject(project),
-            tooltip: 'Add Task to Project',
-            child: const Icon(Icons.add_task),
-          ),
         );
       },
       loading: () => const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       ),
       error: (error, stackTrace) => Scaffold(
-        appBar: AppBar(title: const Text('Error')),
+        appBar: const StandardizedAppBar(title: 'Error'),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -183,7 +181,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
                 height: 32,
                 decoration: BoxDecoration(
                   color: _parseColor(project.color),
-                  borderRadius: BorderRadius.circular(2),
+                  borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                 ),
               ),
               const SizedBox(width: 12),
@@ -215,7 +213,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: theme.colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -230,7 +228,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
                         'Archived',
                         style: TextStyle(
                           color: theme.colorScheme.onSurfaceVariant,
-                          fontSize: 12,
+                          fontSize: TypographyConstants.bodySmall,
                         ),
                       ),
                     ],
@@ -279,13 +277,13 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
                       color: theme.colorScheme.error.withOpacity( 0.1),
-                      borderRadius: BorderRadius.circular(4),
+                      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                     ),
                     child: Text(
                       'OVERDUE',
                       style: TextStyle(
                         color: theme.colorScheme.error,
-                        fontSize: 10,
+                        fontSize: TypographyConstants.labelSmall,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -390,7 +388,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: color.withOpacity( 0.1),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
         border: Border.all(color: color.withOpacity( 0.1)),
       ),
       child: Column(
@@ -402,14 +400,14 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
             style: TextStyle(
               color: color,
               fontWeight: FontWeight.w600,
-              fontSize: 16,
+              fontSize: TypographyConstants.bodyLarge,
             ),
           ),
           Text(
             label,
             style: TextStyle(
               color: color,
-              fontSize: 10,
+              fontSize: TypographyConstants.labelSmall,
             ),
           ),
         ],
@@ -482,13 +480,8 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
         const SizedBox(height: 8),
         ...tasks.map((task) => Padding(
           padding: const EdgeInsets.only(bottom: 8),
-          child: TaskCard(
-            title: task.title,
-            description: task.description,
-            isCompleted: task.status.isCompleted,
-            priority: task.priority.sortValue,
-            dueDate: task.dueDate,
-            tags: task.tags,
+          child: AdvancedTaskCard(
+            task: task,
             onTap: () => _viewTask(task),
           ),
         )),
@@ -507,7 +500,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
           SizedBox(height: 16),
           Text(
             'Progress Charts',
-            style: TextStyle(fontSize: 18, color: Colors.grey),
+            style: TextStyle(fontSize: TypographyConstants.headlineSmall, color: Colors.grey),
           ),
           SizedBox(height: 8),
           Text(

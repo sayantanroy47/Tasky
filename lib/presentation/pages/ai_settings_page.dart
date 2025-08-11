@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../widgets/glassmorphism_container.dart';
+import '../widgets/standardized_app_bar.dart';
+import '../../core/theme/typography_constants.dart';
 import '../../services/ai/ai_task_parsing_service.dart';
 import '../widgets/ai_service_selector.dart';
 import '../widgets/ai_privacy_controls.dart';
@@ -18,9 +21,8 @@ class _AISettingsPageState extends ConsumerState<AISettingsPage> {  @override
     final configNotifier = ref.read(aiParsingConfigProvider.notifier);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('AI Settings'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+      appBar: const StandardizedAppBar(
+        title: 'AI Settings',
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -28,10 +30,10 @@ class _AISettingsPageState extends ConsumerState<AISettingsPage> {  @override
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // AI Parsing Toggle
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
+            GlassmorphismContainer(
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+              padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
+              child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
@@ -67,7 +69,6 @@ class _AISettingsPageState extends ConsumerState<AISettingsPage> {  @override
                     ),
                   ],
                 ),
-              ),
             ),
 
             const SizedBox(height: 16),
@@ -79,10 +80,10 @@ class _AISettingsPageState extends ConsumerState<AISettingsPage> {  @override
             ],
 
             // Auto-Apply Settings
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
+            GlassmorphismContainer(
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+              padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
+              child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
@@ -130,16 +131,15 @@ class _AISettingsPageState extends ConsumerState<AISettingsPage> {  @override
                     ),
                   ],
                 ),
-              ),
             ),
 
             const SizedBox(height: 16),
 
             // Display Settings
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
+            GlassmorphismContainer(
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+              padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
+              child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
@@ -166,7 +166,6 @@ class _AISettingsPageState extends ConsumerState<AISettingsPage> {  @override
                     ),
                   ],
                 ),
-              ),
             ),
 
             const SizedBox(height: 16),
@@ -183,10 +182,10 @@ class _AISettingsPageState extends ConsumerState<AISettingsPage> {  @override
             ],
 
             // Help and Information
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
+            GlassmorphismContainer(
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+              padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
+              child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
@@ -219,7 +218,6 @@ class _AISettingsPageState extends ConsumerState<AISettingsPage> {  @override
                     ),
                   ],
                 ),
-              ),
             ),
           ],
         ),

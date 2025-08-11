@@ -8,7 +8,8 @@ import 'task_providers.dart';
 
 /// Provider for the notification service
 final notificationServiceProvider = Provider<NotificationService>((ref) {
-  return LocalNotificationService();
+  final taskRepository = ref.read(taskRepositoryProvider);
+  return LocalNotificationService(taskRepository);
 });
 
 /// Provider for the notification manager

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/theme/typography_constants.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
+import '../../core/providers/core_providers.dart';
 import '../../presentation/providers/task_providers.dart';
 
 /// Dialog for creating tasks from shared messages
@@ -77,7 +79,7 @@ class _MessageTaskDialogState extends ConsumerState<MessageTaskDialog> {
 
     return Dialog(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       ),
       child: Container(
         constraints: const BoxConstraints(maxWidth: 400, maxHeight: 600),
@@ -129,7 +131,7 @@ class _MessageTaskDialogState extends ConsumerState<MessageTaskDialog> {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: colorScheme.surfaceVariant.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                 border: Border.all(
                   color: colorScheme.outline.withOpacity(0.2),
                 ),
@@ -171,7 +173,7 @@ class _MessageTaskDialogState extends ConsumerState<MessageTaskDialog> {
                       decoration: InputDecoration(
                         labelText: 'Task Title',
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                         ),
                         prefixIcon: const Icon(Icons.title),
                       ),
@@ -186,7 +188,7 @@ class _MessageTaskDialogState extends ConsumerState<MessageTaskDialog> {
                       decoration: InputDecoration(
                         labelText: 'Description (Optional)',
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                         ),
                         prefixIcon: const Icon(Icons.description),
                       ),

@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../services/analytics/analytics_service.dart';
 import '../../services/analytics/analytics_models.dart';
 import '../../data/repositories/task_repository_impl.dart';
+import '../../core/providers/core_providers.dart';
 import 'task_providers.dart';
 
 /// Providers for analytics functionality

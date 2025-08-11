@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/theme/typography_constants.dart';
 import '../../services/location/location_models.dart';
 import '../providers/location_providers.dart';
 
@@ -278,7 +279,7 @@ class _GeofenceConfigWidgetState extends ConsumerState<GeofenceConfigWidget> {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: Colors.green.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                     border: Border.all(color: Colors.green),
                   ),
                   child: Row(

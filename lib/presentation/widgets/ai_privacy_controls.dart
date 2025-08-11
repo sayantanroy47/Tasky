@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/theme/typography_constants.dart';
 
 
 /// Widget for AI privacy controls and data management
@@ -81,7 +82,7 @@ class AIPrivacyControls extends ConsumerWidget {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -268,7 +269,7 @@ class _DataRetentionDialogState extends State<DataRetentionDialog> {
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: Theme.of(context).colorScheme.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,

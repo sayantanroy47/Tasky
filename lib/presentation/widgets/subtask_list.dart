@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'glassmorphism_container.dart';
+import '../../core/theme/typography_constants.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/entities/subtask.dart';
-import '../providers/task_providers.dart';
+import '../providers/task_provider.dart' show taskOperationsProvider;
 import 'custom_dialogs.dart';
 
 /// Widget for displaying and managing subtasks within a task
@@ -31,7 +33,8 @@ class _SubTaskListState extends ConsumerState<SubTaskList> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     
-    return Card(
+    return GlassmorphismContainer(
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -108,7 +111,7 @@ class _SubTaskListState extends ConsumerState<SubTaskList> {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       ),
       child: Column(
         children: [
@@ -149,7 +152,7 @@ class _SubTaskListState extends ConsumerState<SubTaskList> {
           _isAddingSubTask = true;
         });
       },
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
@@ -157,7 +160,7 @@ class _SubTaskListState extends ConsumerState<SubTaskList> {
             color: theme.colorScheme.outline.withOpacity( 0.1),
             style: BorderStyle.solid,
           ),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
         ),
         child: Row(
           children: [
@@ -320,7 +323,7 @@ class _SubTaskItem extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
           onTap: isEditable ? onToggle : null,
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
