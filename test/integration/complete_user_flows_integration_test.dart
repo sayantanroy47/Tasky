@@ -10,6 +10,7 @@ import 'package:task_tracker_app/domain/models/enums.dart';
 import 'package:task_tracker_app/domain/repositories/task_repository.dart';
 import 'package:task_tracker_app/services/speech/transcription_service_impl.dart';
 import 'package:task_tracker_app/services/ai/claude_task_parser.dart';
+import 'package:task_tracker_app/core/errors/failures.dart';
 import 'package:dartz/dartz.dart';
 
 @GenerateMocks([

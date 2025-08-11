@@ -7,18 +7,23 @@ import 'package:task_tracker_app/domain/entities/task_model.dart';
 import 'package:task_tracker_app/domain/entities/task_enums.dart';
 import 'package:task_tracker_app/services/notification/local_notification_service.dart';
 import 'package:task_tracker_app/services/notification/notification_models.dart';
+import 'package:task_tracker_app/domain/repositories/task_repository.dart';
 
 // Generate mocks for external dependencies
-@GenerateMocks([])
+@GenerateMocks([TaskRepository])
+import 'local_notification_service_test.mocks.dart';
+
 class MockLocalNotificationService extends Mock implements LocalNotificationService {}
 
 void main() {
   group('LocalNotificationService', () {
     late LocalNotificationService notificationService;
+    late MockTaskRepository mockTaskRepository;
     late TaskModel testTask;
 
     setUp(() {
-      notificationService = LocalNotificationService();
+      mockTaskRepository = MockTaskRepository();
+      notificationService = LocalNotificationService(mockTaskRepository);
       testTask = TaskModel.create(
         title: 'Test Task',
         description: 'Test task description',

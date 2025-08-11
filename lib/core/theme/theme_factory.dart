@@ -169,14 +169,14 @@ class ThemeFactory {
       
       // Switch theme
       switchTheme: SwitchThemeData(
-        thumbColor: MaterialStateProperty.resolveWith<Color>((states) {
-          if (states.contains(MaterialState.selected)) {
+        thumbColor: WidgetStateProperty.resolveWith<Color>((states) {
+          if (states.contains(WidgetState.selected)) {
             return colors.primary;
           }
           return colors.outline;
         }),
-        trackColor: MaterialStateProperty.resolveWith<Color>((states) {
-          if (states.contains(MaterialState.selected)) {
+        trackColor: WidgetStateProperty.resolveWith<Color>((states) {
+          if (states.contains(WidgetState.selected)) {
             return colors.primary.withOpacity(0.5);
           }
           return colors.surfaceVariant;
@@ -185,13 +185,13 @@ class ThemeFactory {
       
       // Checkbox theme
       checkboxTheme: CheckboxThemeData(
-        fillColor: MaterialStateProperty.resolveWith<Color>((states) {
-          if (states.contains(MaterialState.selected)) {
+        fillColor: WidgetStateProperty.resolveWith<Color>((states) {
+          if (states.contains(WidgetState.selected)) {
             return colors.primary;
           }
           return colors.outline;
         }),
-        checkColor: MaterialStateProperty.all(colors.onPrimary),
+        checkColor: WidgetStateProperty.all(colors.onPrimary),
         shape: RoundedRectangleBorder(
           borderRadius: effects.getBorderRadius(2.0),
         ),
@@ -199,8 +199,8 @@ class ThemeFactory {
       
       // Radio theme
       radioTheme: RadioThemeData(
-        fillColor: MaterialStateProperty.resolveWith<Color>((states) {
-          if (states.contains(MaterialState.selected)) {
+        fillColor: WidgetStateProperty.resolveWith<Color>((states) {
+          if (states.contains(WidgetState.selected)) {
             return colors.primary;
           }
           return colors.outline;

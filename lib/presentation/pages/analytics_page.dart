@@ -63,12 +63,18 @@ class AnalyticsPageBody extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Time period selector
-          TimePeriodSelector(
-            selectedPeriod: selectedPeriod,
-            onPeriodChanged: (period) {
-              ref.read(analyticsTimePeriodProvider.notifier).state = period;
-            },
+          // Time period selector - same width as metric cards
+          Row(
+            children: [
+              Expanded(
+                child: TimePeriodSelector(
+                  selectedPeriod: selectedPeriod,
+                  onPeriodChanged: (period) {
+                    ref.read(analyticsTimePeriodProvider.notifier).state = period;
+                  },
+                ),
+              ),
+            ],
           ),
           
           const SizedBox(height: 16),

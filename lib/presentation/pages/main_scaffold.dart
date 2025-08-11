@@ -38,36 +38,25 @@ class MainScaffold extends ConsumerWidget {
           index: selectedIndex,
           children: pages,
         ),
-        floatingActionButton: ClipOval(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
-            child: FloatingActionButton(
-              heroTag: "mainFAB",
-              onPressed: () => _showTaskCreationMenu(context),
-              backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.9), // FILLED like before
-              elevation: 8,
-              child: Icon(
-                Icons.add, 
-                color: Colors.white, // White icon on colored background
-                size: 28,
-              ),
-            ),
-          ),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        bottomNavigationBar: ClipRRect(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
-            child: BottomAppBar(
-              notchMargin: 6,
-              shape: const CircularNotchedRectangle(),
-              color: Theme.of(context).colorScheme.surface.withOpacity(0.85), // Consistent with theme colors
-              elevation: 8, // Match FAB elevation
-              child: SizedBox(
-                height: 80,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
+        bottomNavigationBar: Stack(
+          clipBehavior: Clip.none, // Allow FAB to extend beyond stack bounds
+          children: [
+            // Bottom navigation container with notch
+            Container(
+              height: 70, // Back to original height
+              margin: const EdgeInsets.only(bottom: 16.0, top: 14.0), // Add top margin for FAB clearance
+              child: Stack(
+                children: [
+                  // Main glassmorphism container
+                  GlassmorphismContainer(
+                    height: 70,
+                    borderRadius: BorderRadius.zero, // Remove container radius
+                    padding: EdgeInsets.zero, // Remove all padding to center content
+                    borderWidth: 0, // Remove all borders
+                    child: Center( // Center the content vertically
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
                     // Home
                     Expanded(
                       child: _buildNavItem(
@@ -110,11 +99,73 @@ class MainScaffold extends ConsumerWidget {
                         onTap: () => ref.read(navigationProvider.notifier).navigateToIndex(3),
                       ),
                     ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  // Notch cutout for FAB (circular hole in the glass container)
+                  Positioned(
+                    top: 56, // At the top of container where FAB intersects
+                    left: MediaQuery.of(context).size.width / 2 - 30,
+                    child: Container(
+                      width: 60,
+                      height: 30,
+                      decoration: BoxDecoration(
+                        color: Colors.transparent,
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(30),
+                          bottomRight: Radius.circular(30),
+                        ),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(30),
+                          bottomRight: Radius.circular(30),
+                        ),
+                        child: Container(
+                          color: Colors.transparent,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // FAB positioned with 1/4 outside (above) container, 3/4 inside
+            Positioned(
+              bottom: 16 + 70 - 42, // Container bottom + height - 3/4 of FAB (42px) = 44px from screen bottom
+              left: MediaQuery.of(context).size.width / 2 - 28,
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    // Subtle glow effect
+                    BoxShadow(
+                      color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                      blurRadius: 8,
+                      spreadRadius: 1,
+                    ),
                   ],
+                ),
+                child: ClipOval(
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
+                    child: FloatingActionButton(
+                      heroTag: "mainFAB",
+                      onPressed: () => _showTaskCreationMenu(context),
+                      backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.9),
+                      elevation: 0, // Remove default elevation since we have custom glow
+                      child: Icon(
+                        Icons.add, 
+                        color: Colors.white,
+                        size: 28,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
+          ],
         ),
       ),
     );
@@ -134,28 +185,32 @@ class MainScaffold extends ConsumerWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium),
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 6),
+        height: 70,
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               icon,
-              size: 22,
+              size: 16,
               color: isSelected 
                   ? theme.colorScheme.primary 
                   : theme.colorScheme.onSurfaceVariant,
             ),
-            const SizedBox(height: 3),
+            const SizedBox(height: 2),
             Text(
               label,
               style: TextStyle(
-                fontSize: TypographyConstants.labelSmall,
+                fontSize: 8,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
                 color: isSelected 
                     ? theme.colorScheme.primary 
                     : theme.colorScheme.onSurfaceVariant,
               ),
+              maxLines: 1,
+              overflow: TextOverflow.clip,
+              textAlign: TextAlign.center,
             ),
           ],
         ),

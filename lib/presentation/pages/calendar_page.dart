@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/calendar_widgets.dart';
+import '../widgets/glassmorphism_container.dart';
+import '../widgets/standardized_app_bar.dart';
 import '../providers/calendar_provider.dart';
 import '../../domain/entities/calendar_event.dart';
 import '../../core/theme/material3/motion_system.dart';
@@ -17,68 +19,16 @@ class CalendarPage extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: CustomScrollView(
-        slivers: [
-          // Modern app bar with gradient and elevated style
-          SliverAppBar(
-            expandedHeight: 120,
-            floating: true,
-            pinned: true,
-            elevation: 0,
-            backgroundColor: Colors.transparent,
-            flexibleSpace: FlexibleSpaceBar(
-              background: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      theme.colorScheme.primary.withOpacity(0.1),
-                      theme.colorScheme.secondary.withOpacity(0.05),
-                    ],
-                  ),
-                ),
-              ),
-              title: Text(
-                'Calendar',
-                style: theme.textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.onSurface,
-                ),
-              ),
-              centerTitle: false,
-            ),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.today_outlined),
-                onPressed: () {
-                  calendarNotifier.goToToday();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: const Text('Navigated to today'),
-                      behavior: SnackBarBehavior.floating,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                      ),
-                    ),
-                  );
-                },
-                tooltip: 'Go to today',
-              ),
-              IconButton(
-                icon: const Icon(Icons.event_note_outlined),
-                onPressed: () => _showCreateEventDialog(context, ref),
-                tooltip: 'Create event',
-              ),
-              const SizedBox(width: 8),
-            ],
-          ),
-          
-          // Calendar content
-          const SliverToBoxAdapter(
-            child: CalendarWidget(),
-          ),
-        ],
+      appBar: const StandardizedAppBar(
+        title: 'Calendar',
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: GlassmorphismContainer(
+          borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+          padding: const EdgeInsets.all(16.0),
+          child: const CalendarWidget(),
+        ),
       ),
     );
   }

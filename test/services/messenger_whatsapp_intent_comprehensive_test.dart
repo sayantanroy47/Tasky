@@ -8,6 +8,7 @@ import 'package:task_tracker_app/services/share_intent_service.dart';
 import 'package:task_tracker_app/domain/repositories/task_repository.dart';
 import 'package:task_tracker_app/domain/entities/task_model.dart';
 import 'package:task_tracker_app/domain/models/enums.dart';
+import 'package:task_tracker_app/core/errors/failures.dart';
 import 'package:dartz/dartz.dart';
 
 @GenerateMocks([TaskRepository, ReceiveSharingIntent])

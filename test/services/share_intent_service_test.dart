@@ -218,9 +218,8 @@ void main() {
       test('should process text files as potential messages', () async {
         // Arrange
         final textFile = SharedMediaFile(
-          '/storage/emulated/0/Download/message.txt',
-          'text/plain',
-          DateTime.now().millisecondsSinceEpoch,
+          path: '/storage/emulated/0/Download/message.txt',
+          type: SharedMediaType.TEXT,
         );
         
         when(mockTaskRepository.createTask(any)).thenAnswer((_) async {});
@@ -237,9 +236,8 @@ void main() {
       test('should create basic tasks for non-text media files', () async {
         // Arrange
         final imageFile = SharedMediaFile(
-          '/storage/emulated/0/Pictures/photo.jpg',
-          'image/jpeg',
-          DateTime.now().millisecondsSinceEpoch,
+          path: '/storage/emulated/0/Pictures/photo.jpg',
+          type: SharedMediaType.IMAGE,
         );
 
         // Act & Assert

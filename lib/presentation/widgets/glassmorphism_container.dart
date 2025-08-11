@@ -25,7 +25,7 @@ class GlassmorphismContainer extends StatelessWidget {
     this.padding,
     this.margin,
     this.borderRadius,
-    this.blur = 15.0,
+    this.blur = 8.0, // Reduced by 25% again from 11px
     this.opacity = 0.15,
     this.glassTint,
     this.borderColor,
@@ -102,7 +102,7 @@ class GlassTaskCard extends StatelessWidget {
       padding: padding ?? const EdgeInsets.all(16.0),
       margin: margin ?? const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-      blur: 15.0,
+      blur: 8.0, // Reduced by 25% again
       opacity: 0.12, // Slightly more opaque for cards
       glassTint: Colors.blue.withOpacity(0.08),
       borderColor: Colors.white.withOpacity(0.25),
@@ -143,7 +143,7 @@ class GlassProjectCard extends StatelessWidget {
       padding: const EdgeInsets.all(16.0),
       margin: const EdgeInsets.all(8.0),
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-      blur: 18.0,
+      blur: 10.0, // Reduced by 25% again from 13.5px
       opacity: 0.15,
       glassTint: (accentColor ?? Colors.blue).withOpacity(0.1),
       borderColor: Colors.white.withOpacity(0.3),
@@ -185,7 +185,7 @@ class GlassControlContainer extends StatelessWidget {
       width: size,
       height: size,
       borderRadius: BorderRadius.circular(size / 2),
-      blur: 12.0,
+      blur: 7.0, // Reduced by 25% again from 9px
       opacity: 0.2,
       glassTint: Colors.blue.withOpacity(0.15),
       borderColor: Colors.white.withOpacity(0.4),

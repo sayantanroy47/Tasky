@@ -8,6 +8,7 @@ import 'package:task_tracker_app/domain/entities/task_model.dart';
 import 'package:task_tracker_app/domain/models/enums.dart';
 import 'package:task_tracker_app/domain/repositories/task_repository.dart';
 import 'package:task_tracker_app/presentation/providers/task_providers.dart';
+import 'package:task_tracker_app/core/errors/failures.dart';
 
 @GenerateMocks([TaskRepository])
 import 'calendar_widgets_comprehensive_test.mocks.dart';

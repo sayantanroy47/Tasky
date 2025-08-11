@@ -65,36 +65,35 @@ class _CalendarViewModeSelector extends ConsumerWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        // Today button
-        Flexible(
-          child: TextButton.icon(
-            onPressed: () => calendarNotifier.goToToday(),
-            icon: const Icon(Icons.today),
-            label: const Text('Today'),
+        // Today button - compact
+        TextButton(
+          onPressed: () => calendarNotifier.goToToday(),
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            minimumSize: const Size(60, 32),
           ),
+          child: const Text('Today', style: TextStyle(fontSize: 12)),
         ),
         
-        // View mode buttons - optimized height and sizing
+        const SizedBox(width: 8),
+        
+        // View mode buttons - compact
         Expanded(
-          flex: 2,
           child: SizedBox(
-            height: 36, // Reduced height to better match content
+            height: 32, // Reduced height
             child: SegmentedButton<CalendarViewMode>(
               segments: [
                 ButtonSegment(
                   value: CalendarViewMode.month,
-                  label: Text('Month', style: TextStyle(fontSize: TypographyConstants.labelMedium)),
-                  icon: Icon(Icons.calendar_view_month, size: 16),
+                  label: Text('Month', style: TextStyle(fontSize: 10)), // Smaller text
                 ),
                 ButtonSegment(
                   value: CalendarViewMode.week,
-                  label: Text('Week', style: TextStyle(fontSize: TypographyConstants.labelMedium)),
-                  icon: Icon(Icons.calendar_view_week, size: 16),
+                  label: Text('Week', style: TextStyle(fontSize: 10)), // Smaller text
                 ),
                 ButtonSegment(
                   value: CalendarViewMode.day,
-                  label: Text('Day', style: TextStyle(fontSize: TypographyConstants.labelMedium)),
-                  icon: Icon(Icons.calendar_view_day, size: 16),
+                  label: Text('Day', style: TextStyle(fontSize: 10)), // Smaller text
                 ),
               ],
               selected: {calendarState.viewMode},

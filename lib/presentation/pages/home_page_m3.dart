@@ -179,113 +179,85 @@ class _HomePageState extends ConsumerState<HomePage>
           final totalTasks = pendingCount + completedCount;
           final completionRate = totalTasks > 0 ? (completedCount / totalTasks * 100).toInt() : 0;
           
+          // Get task data for summary
+          final pendingTasks = ref.watch(pendingTasksProvider);
+          final urgentCount = pendingTasks.maybeWhen(
+            data: (tasks) => tasks.where((task) => task.priority == TaskPriority.urgent).length,
+            orElse: () => 0,
+          );
+          final highCount = pendingTasks.maybeWhen(
+            data: (tasks) => tasks.where((task) => task.priority == TaskPriority.high).length,
+            orElse: () => 0,
+          );
+          
+          // Generate natural task summary text
+          String taskSummaryText = _generateTaskSummary(pendingCount, urgentCount, highCount, completedCount);
+          
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Header Row - Perfect Alignment
+              // Welcome Header
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Row(
-                    children: [
-                      Container(
-                        width: 32.0,  // Perfect square
-                        height: 32.0,
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.primary.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                        ),
-                        child: Icon(
-                          Icons.analytics_outlined,
-                          size: 18.0,
-                          color: theme.colorScheme.primary,
-                        ),
-                      ),
-                      const SizedBox(width: 12.0),  // Consistent spacing
-                      Text(
-                        'Task Summary',
-                        style: TextStyle(
-                          fontSize: TypographyConstants.titleLarge,
-                          fontWeight: TypographyConstants.semiBold,
-                          color: theme.colorScheme.onSurface,
-                          letterSpacing: 0.0,
-                        ),
-                      ),
-                    ],
-                  ),
-                  // Completion Rate Badge - Right Aligned
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                    width: 36,
+                    height: 36,
                     decoration: BoxDecoration(
-                      color: completionRate >= 70 
-                          ? theme.colorScheme.primary.withOpacity(0.1)
-                          : theme.colorScheme.surface,
-                      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                      border: Border.all(
-                        color: completionRate >= 70 
-                            ? theme.colorScheme.primary.withOpacity(0.3)
-                            : theme.colorScheme.outline.withOpacity(0.3),
-                        width: 1.0,
-                      ),
+                      color: theme.colorScheme.primary.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Text(
-                      '$completionRate%',
-                      style: TextStyle(
-                        fontSize: TypographyConstants.labelMedium,
-                        fontWeight: TypographyConstants.medium,
-                        color: completionRate >= 70 
-                            ? theme.colorScheme.primary
-                            : theme.colorScheme.onSurfaceVariant,
-                      ),
+                    child: Icon(
+                      Icons.waving_hand,
+                      color: theme.colorScheme.primary,
+                      size: 20,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Good ${_getTimeOfDay()}!',
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: theme.colorScheme.onSurface,
+                          ),
+                        ),
+                        Text(
+                          'Here\'s your task overview',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
               
-              const SizedBox(height: 16.0),  // Perfect spacing
+              const SizedBox(height: 16),
               
-              // Statistics Row - Perfectly Aligned
-              Row(
-                children: [
-                  // Pending Tasks
-                  Expanded(
-                    child: _buildSummaryStatItem(
-                      theme: theme,
-                      label: 'Pending',
-                      count: pendingCount,
-                      icon: Icons.pending_actions_outlined,
-                      color: theme.colorScheme.tertiary,
-                    ),
+              // Task Summary Text
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: theme.colorScheme.outline.withOpacity(0.2),
+                    width: 1,
                   ),
-                  
-                  const SizedBox(width: 16.0),  // Perfect separator
-                  
-                  // Completed Tasks  
-                  Expanded(
-                    child: _buildSummaryStatItem(
-                      theme: theme,
-                      label: 'Completed',
-                      count: completedCount,
-                      icon: Icons.check_circle_outline,
-                      color: theme.colorScheme.primary,
-                    ),
+                ),
+                child: Text(
+                  taskSummaryText,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    color: theme.colorScheme.onSurface,
+                    height: 1.4,
                   ),
-                  
-                  const SizedBox(width: 16.0),  // Perfect separator
-                  
-                  // Total Tasks
-                  Expanded(
-                    child: _buildSummaryStatItem(
-                      theme: theme,
-                      label: 'Total',
-                      count: totalTasks,
-                      icon: Icons.list_alt_outlined,
-                      color: theme.colorScheme.secondary,
-                    ),
-                  ),
-                ],
+                ),
               ),
             ],
           );
@@ -1359,6 +1331,46 @@ class _HomePageState extends ConsumerState<HomePage>
     } else {
       return '${-difference} days ago';
     }
+  }
+
+  /// Generate natural language task summary
+  String _generateTaskSummary(int pendingCount, int urgentCount, int highCount, int completedCount) {
+    List<String> parts = [];
+    
+    // Today's tasks
+    if (pendingCount > 0) {
+      parts.add('Today you have $pendingCount pending task${pendingCount != 1 ? 's' : ''}');
+      
+      if (urgentCount > 0 || highCount > 0) {
+        List<String> priorityParts = [];
+        if (urgentCount > 0) {
+          priorityParts.add('$urgentCount urgent');
+        }
+        if (highCount > 0) {
+          priorityParts.add('$highCount high priority');
+        }
+        parts.add('out of which ${priorityParts.join(' and ')} task${(urgentCount + highCount) != 1 ? 's are' : ' is'} critical');
+      }
+    } else {
+      parts.add('Great! You have no pending tasks today');
+    }
+    
+    // Yesterday's completion (simulated)
+    if (completedCount > 0) {
+      parts.add('Yesterday you completed $completedCount task${completedCount != 1 ? 's' : ''}');
+    } else {
+      parts.add('ready to tackle today with a fresh start');
+    }
+    
+    return parts.join(pendingCount > 0 ? ', ' : ' and ') + '.';
+  }
+
+  /// Get time-based greeting
+  String _getTimeOfDay() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) return 'morning';
+    if (hour < 17) return 'afternoon';
+    return 'evening';
   }
 }
 

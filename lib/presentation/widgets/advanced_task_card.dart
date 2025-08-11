@@ -224,7 +224,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
   Widget _buildMainCard(ThemeData theme) {
     return GlassmorphismContainer(
       borderRadius: BorderRadius.circular(TypographyConstants.taskCardRadius),
-      blur: 15.0,
+      blur: 8.0, // Reduced by 25% from 15px → 11px → 8px
       opacity: 0.15,
       glassTint: _getPriorityColor().withOpacity(0.1),
       borderColor: _getPriorityColor().withOpacity(0.3),
