@@ -6,6 +6,22 @@ class TranscriptionValidator {
   static const int _minTextLength = 3;
   static const int _maxTextLength = 1000;
   
+  // Language patterns for improved validation
+  static final _englishWords = <String>{
+    'a', 'an', 'and', 'are', 'as', 'at', 'be', 'by', 'for', 'from',
+    'has', 'he', 'in', 'is', 'it', 'its', 'of', 'on', 'that', 'the',
+    'to', 'was', 'were', 'will', 'with', 'would', 'i', 'you', 'my',
+    'me', 'we', 'they', 'this', 'can', 'do', 'have', 'should', 'could',
+  };
+  
+  // Common task-related keywords for context validation
+  static final _taskKeywords = <String>{
+    'task', 'todo', 'remind', 'reminder', 'meeting', 'call', 'email',
+    'buy', 'purchase', 'appointment', 'deadline', 'project', 'work',
+    'home', 'family', 'urgent', 'important', 'today', 'tomorrow',
+    'week', 'month', 'schedule', 'plan', 'complete', 'finish',
+  };
+  
   /// Validate transcription result quality
   static TranscriptionValidationResult validateResult(TranscriptionResult result) {
     final issues = <ValidationIssue>[];
@@ -62,6 +78,12 @@ class TranscriptionValidator {
     
     // Check for suspicious patterns
     _checkSuspiciousPatterns(result.text, issues);
+    
+    // Check language coherence
+    _checkLanguageCoherence(result.text, issues);
+    
+    // Check task-relevance
+    _checkTaskRelevance(result.text, issues);
     
     // Check processing time (flag unusually long processing times)
     if (result.processingTime.inSeconds > 30) {
@@ -197,6 +219,183 @@ class TranscriptionValidator {
     return false;
   }
   
+  /// Check language coherence and word recognition accuracy
+  static void _checkLanguageCoherence(String text, List<ValidationIssue> issues) {
+    final words = text.toLowerCase().split(RegExp(r'\s+'));
+    if (words.length < 3) return; // Skip for very short text
+    
+    // Count recognizable English words
+    int recognizedWords = 0;
+    for (final word in words) {
+      final cleanWord = word.replaceAll(RegExp(r'[^\w]'), '');
+      if (_englishWords.contains(cleanWord) || cleanWord.length >= 4) {
+        recognizedWords++;
+      }
+    }
+    
+    final recognitionRate = recognizedWords / words.length;
+    
+    if (recognitionRate < 0.3) {
+      issues.add(ValidationIssue(
+        type: ValidationIssueType.lowLanguageCoherence,
+        message: 'Low language recognition rate: ${(recognitionRate * 100).toStringAsFixed(1)}%',
+        severity: ValidationSeverity.warning,
+      ));
+    }
+    
+    // Check for grammatical patterns
+    if (!_hasBasicGrammarPatterns(text)) {
+      issues.add(const ValidationIssue(
+        type: ValidationIssueType.grammarIssues,
+        message: 'Text lacks basic grammatical structure',
+        severity: ValidationSeverity.warning,
+      ));
+    }
+  }
+  
+  /// Check if text is relevant for task creation
+  static void _checkTaskRelevance(String text, List<ValidationIssue> issues) {
+    final lowerText = text.toLowerCase();
+    final words = lowerText.split(RegExp(r'\s+'));
+    
+    // Check for task-relevant keywords
+    bool hasTaskKeywords = false;
+    for (final keyword in _taskKeywords) {
+      if (lowerText.contains(keyword)) {
+        hasTaskKeywords = true;
+        break;
+      }
+    }
+    
+    // Check for action verbs
+    final actionVerbs = {
+      'do', 'make', 'create', 'call', 'email', 'buy', 'get', 'go', 'visit',
+      'complete', 'finish', 'start', 'schedule', 'plan', 'organize', 'prepare',
+      'review', 'check', 'update', 'send', 'write', 'read', 'meet', 'discuss',
+    };
+    
+    bool hasActionVerbs = false;
+    for (final word in words) {
+      if (actionVerbs.contains(word)) {
+        hasActionVerbs = true;
+        break;
+      }
+    }
+    
+    if (!hasTaskKeywords && !hasActionVerbs && words.length > 5) {
+      issues.add(const ValidationIssue(
+        type: ValidationIssueType.lowTaskRelevance,
+        message: 'Text may not be relevant for task creation',
+        severity: ValidationSeverity.info,
+      ));
+    }
+  }
+  
+  /// Check for basic grammar patterns
+  static bool _hasBasicGrammarPatterns(String text) {
+    final lowerText = text.toLowerCase();
+    
+    // Check for basic sentence structure indicators
+    final grammarIndicators = [
+      RegExp(r'\b(i|you|we|they|he|she|it)\s+\w+'), // Subject-verb patterns
+      RegExp(r'\b(the|a|an)\s+\w+'), // Article-noun patterns
+      RegExp(r'\b\w+ing\b'), // Present participle
+      RegExp(r'\b\w+ed\b'), // Past tense
+      RegExp(r'\b(is|are|was|were|will|would|can|should|could)\b'), // Auxiliary verbs
+    ];
+    
+    int patternMatches = 0;
+    for (final pattern in grammarIndicators) {
+      if (pattern.hasMatch(lowerText)) {
+        patternMatches++;
+      }
+    }
+    
+    return patternMatches >= 2 || text.split(RegExp(r'\s+')).length < 6;
+  }
+  
+  /// Perform cross-validation between multiple transcription attempts
+  static TranscriptionValidationResult crossValidateResults(
+    List<TranscriptionResult> results,
+  ) {
+    if (results.isEmpty) {
+      throw ArgumentError('Cannot cross-validate empty results list');
+    }
+    
+    if (results.length == 1) {
+      return validateResult(results.first);
+    }
+    
+    // Find common elements between transcriptions
+    final texts = results.map((r) => r.text.toLowerCase()).toList();
+    final commonWords = _findCommonWords(texts);
+    final averageConfidence = results.map((r) => r.confidence).reduce((a, b) => a + b) / results.length;
+    
+    // Select the result with highest confidence that contains most common words
+    TranscriptionResult bestResult = results.first;
+    double bestScore = 0.0;
+    
+    for (final result in results) {
+      final commonWordsInResult = _countCommonWords(result.text.toLowerCase(), commonWords);
+      final score = result.confidence * 0.7 + (commonWordsInResult / commonWords.length) * 0.3;
+      
+      if (score > bestScore) {
+        bestScore = score;
+        bestResult = result;
+      }
+    }
+    
+    // Validate the best result and add cross-validation metadata
+    final validation = validateResult(bestResult);
+    
+    // Add cross-validation insights
+    final crossValidationIssues = <ValidationIssue>[];
+    
+    if (commonWords.length < 3 && results.length > 2) {
+      crossValidationIssues.add(const ValidationIssue(
+        type: ValidationIssueType.lowConsistency,
+        message: 'Low consistency between multiple transcription attempts',
+        severity: ValidationSeverity.warning,
+      ));
+    }
+    
+    return TranscriptionValidationResult(
+      isValid: validation.isValid,
+      confidence: (validation.confidence + averageConfidence) / 2,
+      issues: [...validation.issues, ...crossValidationIssues],
+      originalResult: bestResult,
+    );
+  }
+  
+  /// Find words that appear in multiple transcriptions
+  static Set<String> _findCommonWords(List<String> texts) {
+    if (texts.isEmpty) return <String>{};
+    
+    final wordCounts = <String, int>{};
+    
+    for (final text in texts) {
+      final words = text.split(RegExp(r'\s+'));
+      final uniqueWords = words.toSet();
+      
+      for (final word in uniqueWords) {
+        wordCounts[word] = (wordCounts[word] ?? 0) + 1;
+      }
+    }
+    
+    // Return words that appear in at least half of the transcriptions
+    final threshold = (texts.length / 2).ceil();
+    return wordCounts.entries
+        .where((entry) => entry.value >= threshold)
+        .map((entry) => entry.key)
+        .toSet();
+  }
+  
+  /// Count how many common words appear in a text
+  static int _countCommonWords(String text, Set<String> commonWords) {
+    final words = text.split(RegExp(r'\s+'));
+    return words.where((word) => commonWords.contains(word)).length;
+  }
+  
   /// Calculate adjusted confidence based on validation issues
   static double _calculateAdjustedConfidence(
     TranscriptionResult result, 
@@ -311,6 +510,10 @@ enum ValidationIssueType {
   emptyText,
   suspiciousPattern,
   slowProcessing,
+  lowLanguageCoherence,
+  grammarIssues,
+  lowTaskRelevance,
+  lowConsistency,
 }
 
 /// Severity levels for validation issues

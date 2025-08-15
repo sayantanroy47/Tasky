@@ -5,6 +5,7 @@ import '../widgets/glassmorphism_container.dart';
 import '../../core/theme/typography_constants.dart';
 import '../widgets/location_widgets.dart';
 import '../widgets/standardized_app_bar.dart';
+import '../widgets/theme_background_widget.dart';
 import '../../services/location/location_models.dart';
 
 class LocationSettingsPage extends ConsumerWidget {
@@ -14,12 +15,20 @@ class LocationSettingsPage extends ConsumerWidget {
     final locationPermission = ref.watch(locationPermissionProvider);
     final locationServiceEnabled = ref.watch(locationServiceEnabledProvider);
 
-    return Scaffold(
-      appBar: const StandardizedAppBar(
-        title: 'Location Settings',
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16.0),
+    return ThemeBackgroundWidget(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        extendBodyBehindAppBar: true,
+        appBar: const StandardizedAppBar(
+          title: 'Location Settings',
+        ),
+        body: ListView(
+          padding: const EdgeInsets.only(
+            top: kToolbarHeight + 8,
+            left: 16.0,
+            right: 16.0,
+            bottom: 16.0,
+          ),
         children: [
           // Location Service Status
           GlassmorphismContainer(
@@ -249,6 +258,7 @@ class LocationSettingsPage extends ConsumerWidget {
           ),
         ],
       ),
+    ),
     );
   }
 
@@ -359,7 +369,8 @@ class LocationSettingsPage extends ConsumerWidget {
             onSelected: (value) {
               switch (value) {
                 case 'edit':
-                  // TODO: Implement edit functionality
+                  // Show edit dialog for location trigger
+                  _showEditLocationDialog(context, ref, trigger);
                   break;
                 case 'delete':
                   ref.read(locationTriggersProvider.notifier).removeLocationTrigger(trigger.id);
@@ -381,6 +392,24 @@ class LocationSettingsPage extends ConsumerWidget {
       case GeofenceType.both:
         return 'On Enter & Exit';
     }
+  }
+
+  void _showEditLocationDialog(BuildContext context, WidgetRef ref, LocationTrigger trigger) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width * 0.9,
+          child: GeofenceConfigWidget(
+            initialGeofence: trigger.geofence,
+            onGeofenceCreated: (geofence) {
+              final updatedTrigger = trigger.copyWith(geofence: geofence);
+              ref.read(locationTriggersProvider.notifier).updateLocationTrigger(updatedTrigger);
+            },
+          ),
+        ),
+      ),
+    );
   }
 
   void _showCreateGeofenceDialog(BuildContext context, WidgetRef ref) {

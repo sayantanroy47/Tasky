@@ -1,10 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../domain/entities/task_model.dart';
 import '../domain/models/enums.dart';
 import '../domain/repositories/task_repository.dart';
-import '../presentation/providers/task_providers.dart';
 
 /// Service for managing home screen widgets
 class WidgetService {
@@ -83,7 +81,7 @@ class WidgetService {
         debugPrint('Warning: TaskRepository not initialized in WidgetService');
       }
 
-      debugPrint('Created task from widget: ${task.title}');
+      // Task created successfully from widget
 
       return {
         'success': true,
@@ -116,7 +114,7 @@ class WidgetService {
         debugPrint('Warning: TaskRepository not initialized in WidgetService');
       }
 
-      debugPrint('Completed task from widget: $taskId');
+      // Task completed successfully from widget
 
       return {
         'success': true,

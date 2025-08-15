@@ -1,6 +1,8 @@
+import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../main.dart' show performanceServiceProvider, shareIntentServiceProvider;
+import '../../main.dart' show shareIntentServiceProvider;
 import '../../core/providers/core_providers.dart';
 import '../providers/initialization_providers.dart';
 import '../providers/task_providers.dart';
@@ -24,45 +26,27 @@ class _AppInitializationWrapperState extends ConsumerState<AppInitializationWrap
   void initState() {
     super.initState();
     
-    // Start performance monitoring
+    // Set context for ShareIntentService
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final performanceService = ref.read(performanceServiceProvider);
-      performanceService.startTimer('app_initialization');
-      
-      // Set context for ShareIntentService
       final shareIntentService = ref.read(shareIntentServiceProvider);
       final taskRepository = ref.read(taskRepositoryProvider);
       shareIntentService.setContext(context);
       shareIntentService.setTaskRepository(taskRepository);
-      
-      // Start memory management
-      MemoryManager.startPeriodicCleanup();
     });
   }
 
   @override
   void dispose() {
-    // Stop memory management
-    MemoryManager.stopPeriodicCleanup();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final initializationAsync = ref.watch(appInitializationProvider);
-    final performanceService = ref.watch(performanceServiceProvider);
 
     return initializationAsync.when(
       data: (_) {
-        // Stop initialization timer when complete
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          performanceService.stopTimer('app_initialization');
-        });
-        
-        return PerformanceMonitor(
-          operationName: 'main_app_render',
-          child: widget.child,
-        );
+        return widget.child;
       },
       loading: () => MaterialApp(
         home: Scaffold(
@@ -87,7 +71,7 @@ class _AppInitializationWrapperState extends ConsumerState<AppInitializationWrap
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Optimizing performance...',
+                  'Setting up your workspace...',
                   style: TextStyle(
                     fontSize: TypographyConstants.bodyMedium,
                     color: Colors.grey[600],
@@ -99,15 +83,6 @@ class _AppInitializationWrapperState extends ConsumerState<AppInitializationWrap
         ),
       ),
       error: (error, stackTrace) {
-        // Record initialization error
-        performanceService.recordMetric(
-          'app_initialization_error',
-          Duration.zero,
-          metadata: {
-            'error': error.toString(),
-            'stack_trace': stackTrace.toString(),
-          },
-        );
         
         return MaterialApp(
           home: Scaffold(
@@ -165,7 +140,6 @@ class _AppInitializationWrapperState extends ConsumerState<AppInitializationWrap
                         ElevatedButton.icon(
                           onPressed: () {
                             // Retry initialization
-                            performanceService.startTimer('app_initialization_retry');
                             ref.invalidate(appInitializationProvider);
                           },
                           icon: const Icon(Icons.refresh),
@@ -206,29 +180,24 @@ class _AppInitializationWrapperState extends ConsumerState<AppInitializationWrap
 
 /// Memory manager for periodic cleanup
 class MemoryManager {
+  static Timer? _cleanupTimer;
+  
   static void startPeriodicCleanup() {
-    // TODO: Implement periodic cleanup
+    // Start periodic cleanup every 5 minutes
+    _cleanupTimer = Timer.periodic(const Duration(minutes: 5), (_) {
+      // Force garbage collection
+      // Running periodic memory cleanup
+      // Clear image cache when memory pressure is high
+      PaintingBinding.instance.imageCache.clear();
+      // Clear any cached network responses
+      // This would typically be done by specific cache managers
+    });
   }
   
   static void stopPeriodicCleanup() {
-    // TODO: Implement cleanup stop
+    // Stop periodic cleanup timer
+    _cleanupTimer?.cancel();
+    _cleanupTimer = null;
   }
 }
 
-/// Performance monitor widget for tracking render performance
-class PerformanceMonitor extends StatelessWidget {
-  final String operationName;
-  final Widget child;
-  
-  const PerformanceMonitor({
-    super.key,
-    required this.operationName,
-    required this.child,
-  });
-  
-  @override
-  Widget build(BuildContext context) {
-    // TODO: Implement performance monitoring
-    return child;
-  }
-}

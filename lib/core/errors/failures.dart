@@ -13,45 +13,45 @@ abstract class Failure extends Equatable {
 
 /// Failure related to server/network issues
 class ServerFailure extends Failure {
-  const ServerFailure(String message, [int? code]) : super(message, code);
+  const ServerFailure(super.message, [super.code]);
 }
 
 /// Failure related to network connectivity
 class NetworkFailure extends Failure {
-  const NetworkFailure(String message, [int? code]) : super(message, code);
+  const NetworkFailure(super.message, [super.code]);
 }
 
 /// Failure related to database operations
 class DatabaseFailure extends Failure {
-  const DatabaseFailure(String message, [int? code]) : super(message, code);
+  const DatabaseFailure(super.message, [super.code]);
 }
 
 /// Failure related to cache operations
 class CacheFailure extends Failure {
-  const CacheFailure(String message, [int? code]) : super(message, code);
+  const CacheFailure(super.message, [super.code]);
 }
 
 /// Failure related to validation
 class ValidationFailure extends Failure {
-  const ValidationFailure(String message, [int? code]) : super(message, code);
+  const ValidationFailure(super.message, [super.code]);
 }
 
 /// Failure related to authentication
 class AuthenticationFailure extends Failure {
-  const AuthenticationFailure(String message, [int? code]) : super(message, code);
+  const AuthenticationFailure(super.message, [super.code]);
 }
 
 /// Failure related to authorization
 class AuthorizationFailure extends Failure {
-  const AuthorizationFailure(String message, [int? code]) : super(message, code);
+  const AuthorizationFailure(super.message, [super.code]);
 }
 
 /// Failure related to parsing operations
 class ParsingFailure extends Failure {
-  const ParsingFailure(String message, [int? code]) : super(message, code);
+  const ParsingFailure(super.message, [super.code]);
 }
 
 /// Generic failure for unknown errors
 class UnknownFailure extends Failure {
-  const UnknownFailure(String message, [int? code]) : super(message, code);
+  const UnknownFailure(super.message, [super.code]);
 }

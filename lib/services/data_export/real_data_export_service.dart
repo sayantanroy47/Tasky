@@ -2,14 +2,19 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:csv/csv.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/entities/project.dart';
+import '../../domain/models/enums.dart' show TaskPriority, TaskStatus;
 import '../../domain/repositories/task_repository.dart';
 import '../../domain/repositories/project_repository.dart';
 import '../../domain/repositories/tag_repository.dart';
@@ -51,6 +56,12 @@ class RealDataExportService implements DataExportService {
           break;
         case ExportFormat.plainText:
           await _exportTasksToPlainText(tasks, filePath, options);
+          break;
+        case ExportFormat.pdf:
+          await _exportTasksToPDF(tasks, filePath, options);
+          break;
+        case ExportFormat.excel:
+          await _exportTasksToExcel(tasks, filePath, options);
           break;
       }
 
@@ -97,6 +108,12 @@ class RealDataExportService implements DataExportService {
           break;
         case ExportFormat.plainText:
           await _exportProjectsToPlainText(projects, filePath, options);
+          break;
+        case ExportFormat.pdf:
+          await _exportProjectsToPDF(projects, filePath, options);
+          break;
+        case ExportFormat.excel:
+          await _exportProjectsToExcel(projects, filePath, options);
           break;
       }
 
@@ -461,7 +478,13 @@ class RealDataExportService implements DataExportService {
 
   @override
   Future<List<ExportFormat>> getSupportedFormats() async {
-    return [ExportFormat.csv, ExportFormat.json];
+    return [
+      ExportFormat.csv,
+      ExportFormat.json,
+      ExportFormat.plainText,
+      ExportFormat.pdf,
+      ExportFormat.excel,
+    ];
   }
 
   @override
@@ -1200,6 +1223,429 @@ class RealDataExportService implements DataExportService {
 
     await File(filePath).writeAsString(buffer.toString());
   }
+
+  // PDF Export Methods
+  Future<void> _exportTasksToPDF(
+    List<TaskModel> tasks,
+    String filePath,
+    ExportOptions? options,
+  ) async {
+    final pdf = pw.Document();
+
+    // Load a font for PDF (required for text rendering)
+    final font = await PdfGoogleFonts.notoSansRegular();
+    final fontBold = await PdfGoogleFonts.notoSansBold();
+
+    // Split tasks into pages (20 tasks per page)
+    const tasksPerPage = 20;
+    final totalPages = (tasks.length / tasksPerPage).ceil();
+
+    for (int pageIndex = 0; pageIndex < totalPages; pageIndex++) {
+      final startIndex = pageIndex * tasksPerPage;
+      final endIndex = (startIndex + tasksPerPage > tasks.length) 
+          ? tasks.length 
+          : startIndex + tasksPerPage;
+      final pageTasks = tasks.sublist(startIndex, endIndex);
+
+      pdf.addPage(
+        pw.MultiPage(
+          pageFormat: PdfPageFormat.a4,
+          margin: const pw.EdgeInsets.all(32),
+          build: (pw.Context context) {
+            return [
+              // Header
+              pw.Header(
+                level: 0,
+                child: pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                  children: [
+                    pw.Text(
+                      'Task Tracker Export',
+                      style: pw.TextStyle(
+                        font: fontBold,
+                        fontSize: 24,
+                        color: PdfColors.blue800,
+                      ),
+                    ),
+                    pw.Text(
+                      'Page ${pageIndex + 1} of $totalPages',
+                      style: pw.TextStyle(font: font, fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
+              
+              pw.SizedBox(height: 20),
+              
+              // Summary section (only on first page)
+              if (pageIndex == 0) ...[
+                pw.Container(
+                  padding: const pw.EdgeInsets.all(12),
+                  decoration: pw.BoxDecoration(
+                    color: PdfColors.blue50,
+                    borderRadius: pw.BorderRadius.circular(8),
+                  ),
+                  child: pw.Row(
+                    children: [
+                      pw.Expanded(
+                        child: pw.Column(
+                          crossAxisAlignment: pw.CrossAxisAlignment.start,
+                          children: [
+                            pw.Text(
+                              'Export Summary',
+                              style: pw.TextStyle(font: fontBold, fontSize: 14),
+                            ),
+                            pw.SizedBox(height: 4),
+                            pw.Text(
+                              'Total Tasks: ${tasks.length}',
+                              style: pw.TextStyle(font: font, fontSize: 12),
+                            ),
+                            pw.Text(
+                              'Generated: ${DateTime.now().toString().split('.')[0]}',
+                              style: pw.TextStyle(font: font, fontSize: 12),
+                            ),
+                          ],
+                        ),
+                      ),
+                      pw.Expanded(
+                        child: pw.Column(
+                          crossAxisAlignment: pw.CrossAxisAlignment.start,
+                          children: [
+                            pw.Text(
+                              'Status Breakdown',
+                              style: pw.TextStyle(font: fontBold, fontSize: 14),
+                            ),
+                            pw.SizedBox(height: 4),
+                            ...TaskStatus.values.map((status) {
+                              final count = tasks.where((t) => t.status == status).length;
+                              return pw.Text(
+                                '${status.name}: $count',
+                                style: pw.TextStyle(font: font, fontSize: 12),
+                              );
+                            }).toList(),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                pw.SizedBox(height: 20),
+              ],
+
+              // Tasks table
+              pw.Table(
+                border: pw.TableBorder.all(color: PdfColors.grey300, width: 0.5),
+                columnWidths: {
+                  0: const pw.FlexColumnWidth(3), // Title
+                  1: const pw.FlexColumnWidth(1), // Priority
+                  2: const pw.FlexColumnWidth(1), // Status
+                  3: const pw.FlexColumnWidth(2), // Due Date
+                },
+                children: [
+                  // Header row
+                  pw.TableRow(
+                    decoration: const pw.BoxDecoration(color: PdfColors.grey200),
+                    children: [
+                      _buildTableCell('Title', fontBold, isHeader: true),
+                      _buildTableCell('Priority', fontBold, isHeader: true),
+                      _buildTableCell('Status', fontBold, isHeader: true),
+                      _buildTableCell('Due Date', fontBold, isHeader: true),
+                    ],
+                  ),
+                  // Data rows
+                  ...pageTasks.map((task) => pw.TableRow(
+                    children: [
+                      _buildTableCell(task.title, font),
+                      _buildTableCell(
+                        task.priority.name.toUpperCase(),
+                        font,
+                        color: _getPriorityColor(task.priority),
+                      ),
+                      _buildTableCell(
+                        task.status.name.toUpperCase(),
+                        font,
+                        color: _getStatusColor(task.status),
+                      ),
+                      _buildTableCell(
+                        task.dueDate?.toString().split(' ')[0] ?? 'No due date',
+                        font,
+                      ),
+                    ],
+                  )).toList(),
+                ],
+              ),
+
+              // Detailed task information
+              pw.SizedBox(height: 30),
+              pw.Text(
+                'Detailed Task Information',
+                style: pw.TextStyle(font: fontBold, fontSize: 18),
+              ),
+              pw.SizedBox(height: 10),
+              
+              ...pageTasks.map((task) => pw.Container(
+                margin: const pw.EdgeInsets.only(bottom: 16),
+                padding: const pw.EdgeInsets.all(12),
+                decoration: pw.BoxDecoration(
+                  border: pw.Border.all(color: PdfColors.grey300),
+                  borderRadius: pw.BorderRadius.circular(4),
+                ),
+                child: pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.start,
+                  children: [
+                    pw.Row(
+                      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                      children: [
+                        pw.Expanded(
+                          child: pw.Text(
+                            task.title,
+                            style: pw.TextStyle(font: fontBold, fontSize: 14),
+                          ),
+                        ),
+                        pw.Container(
+                          padding: const pw.EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: pw.BoxDecoration(
+                            color: _getPriorityColor(task.priority),
+                            borderRadius: pw.BorderRadius.circular(3),
+                          ),
+                          child: pw.Text(
+                            task.priority.name.toUpperCase(),
+                            style: pw.TextStyle(
+                              font: fontBold,
+                              fontSize: 10,
+                              color: PdfColors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    if (task.description?.isNotEmpty == true) ...[
+                      pw.SizedBox(height: 6),
+                      pw.Text(
+                        task.description!,
+                        style: pw.TextStyle(font: font, fontSize: 12),
+                      ),
+                    ],
+                    pw.SizedBox(height: 6),
+                    pw.Row(
+                      children: [
+                        pw.Expanded(
+                          child: pw.Text(
+                            'Status: ${task.status.name}',
+                            style: pw.TextStyle(font: font, fontSize: 10),
+                          ),
+                        ),
+                        pw.Expanded(
+                          child: pw.Text(
+                            'Created: ${task.createdAt.toString().split(' ')[0]}',
+                            style: pw.TextStyle(font: font, fontSize: 10),
+                          ),
+                        ),
+                        if (task.dueDate != null)
+                          pw.Expanded(
+                            child: pw.Text(
+                              'Due: ${task.dueDate!.toString().split(' ')[0]}',
+                              style: pw.TextStyle(font: font, fontSize: 10),
+                            ),
+                          ),
+                      ],
+                    ),
+                    if (task.tags.isNotEmpty) ...[
+                      pw.SizedBox(height: 4),
+                      pw.Wrap(
+                        spacing: 4,
+                        children: task.tags.map((tag) => pw.Container(
+                          padding: const pw.EdgeInsets.symmetric(
+                            horizontal: 4,
+                            vertical: 2,
+                          ),
+                          decoration: pw.BoxDecoration(
+                            color: PdfColors.blue100,
+                            borderRadius: pw.BorderRadius.circular(2),
+                          ),
+                          child: pw.Text(
+                            tag,
+                            style: pw.TextStyle(font: font, fontSize: 10),
+                          ),
+                        )).toList(),
+                      ),
+                    ],
+                  ],
+                ),
+              )).toList(),
+            ];
+          },
+        ),
+      );
+    }
+
+    // Save PDF to file
+    final file = File(filePath);
+    await file.writeAsBytes(await pdf.save());
+  }
+
+  Future<void> _exportProjectsToPDF(
+    List<Project> projects,
+    String filePath,
+    ExportOptions? options,
+  ) async {
+    final pdf = pw.Document();
+    final font = await PdfGoogleFonts.notoSansRegular();
+    final fontBold = await PdfGoogleFonts.notoSansBold();
+
+    pdf.addPage(
+      pw.MultiPage(
+        pageFormat: PdfPageFormat.a4,
+        margin: const pw.EdgeInsets.all(32),
+        build: (pw.Context context) {
+          return [
+            // Header
+            pw.Header(
+              level: 0,
+              child: pw.Text(
+                'Project Export',
+                style: pw.TextStyle(
+                  font: fontBold,
+                  fontSize: 24,
+                  color: PdfColors.blue800,
+                ),
+              ),
+            ),
+            
+            pw.SizedBox(height: 20),
+            
+            // Summary
+            pw.Container(
+              padding: const pw.EdgeInsets.all(12),
+              decoration: pw.BoxDecoration(
+                color: PdfColors.blue50,
+                borderRadius: pw.BorderRadius.circular(8),
+              ),
+              child: pw.Row(
+                children: [
+                  pw.Expanded(
+                    child: pw.Text(
+                      'Total Projects: ${projects.length}',
+                      style: pw.TextStyle(font: fontBold, fontSize: 14),
+                    ),
+                  ),
+                  pw.Expanded(
+                    child: pw.Text(
+                      'Generated: ${DateTime.now().toString().split('.')[0]}',
+                      style: pw.TextStyle(font: font, fontSize: 12),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            
+            pw.SizedBox(height: 20),
+
+            // Projects
+            ...projects.map((project) => pw.Container(
+              margin: const pw.EdgeInsets.only(bottom: 20),
+              padding: const pw.EdgeInsets.all(16),
+              decoration: pw.BoxDecoration(
+                border: pw.Border.all(color: PdfColors.grey300),
+                borderRadius: pw.BorderRadius.circular(8),
+              ),
+              child: pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.start,
+                children: [
+                  pw.Text(
+                    project.name,
+                    style: pw.TextStyle(font: fontBold, fontSize: 18),
+                  ),
+                  if (project.description?.isNotEmpty == true) ...[
+                    pw.SizedBox(height: 8),
+                    pw.Text(
+                      project.description!,
+                      style: pw.TextStyle(font: font, fontSize: 12),
+                    ),
+                  ],
+                  pw.SizedBox(height: 10),
+                  pw.Row(
+                    children: [
+                      pw.Expanded(
+                        child: pw.Text(
+                          'Created: ${project.createdAt.toString().split(' ')[0]}',
+                          style: pw.TextStyle(font: font, fontSize: 11),
+                        ),
+                      ),
+                      pw.Expanded(
+                        child: pw.Text(
+                          'Tasks: ${project.taskIds.length}',
+                          style: pw.TextStyle(font: font, fontSize: 11),
+                        ),
+                      ),
+                      if (project.deadline != null)
+                        pw.Expanded(
+                          child: pw.Text(
+                            'Deadline: ${project.deadline!.toString().split(' ')[0]}',
+                            style: pw.TextStyle(font: font, fontSize: 11),
+                          ),
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+            )).toList(),
+          ];
+        },
+      ),
+    );
+
+    final file = File(filePath);
+    await file.writeAsBytes(await pdf.save());
+  }
+
+  pw.Widget _buildTableCell(
+    String text, 
+    pw.Font font, {
+    bool isHeader = false,
+    PdfColor? color,
+  }) {
+    return pw.Container(
+      padding: const pw.EdgeInsets.all(8),
+      child: pw.Text(
+        text,
+        style: pw.TextStyle(
+          font: font,
+          fontSize: isHeader ? 12 : 10,
+          color: color ?? PdfColors.black,
+        ),
+      ),
+    );
+  }
+
+  PdfColor _getPriorityColor(TaskPriority priority) {
+    switch (priority) {
+      case TaskPriority.urgent:
+        return PdfColors.red600;
+      case TaskPriority.high:
+        return PdfColors.orange600;
+      case TaskPriority.medium:
+        return PdfColors.yellow600;
+      case TaskPriority.low:
+        return PdfColors.green600;
+    }
+  }
+
+  PdfColor _getStatusColor(TaskStatus status) {
+    switch (status) {
+      case TaskStatus.pending:
+        return PdfColors.grey600;
+      case TaskStatus.inProgress:
+        return PdfColors.blue600;
+      case TaskStatus.completed:
+        return PdfColors.green600;
+      case TaskStatus.cancelled:
+        return PdfColors.red600;
+    }
+  }
 }
 
 /// Extension to add file extension mapping
@@ -1212,6 +1658,10 @@ extension ExportFormatExtension on ExportFormat {
         return 'json';
       case ExportFormat.plainText:
         return 'txt';
+      case ExportFormat.pdf:
+        return 'pdf';
+      case ExportFormat.excel:
+        return 'xlsx';
     }
   }
 }

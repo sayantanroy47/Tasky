@@ -36,6 +36,12 @@ class TaskCacheManager {
     _taskCache[task.id] = _CacheEntry(task);
     _accessTimes[task.id] = DateTime.now();
   }
+
+  /// Remove a specific task from cache
+  void removeCachedTask(String taskId) {
+    _taskCache.remove(taskId);
+    _accessTimes.remove(taskId);
+  }
   
   /// Get cached task list by filter key
   List<TaskModel>? getCachedTaskList(String filterKey) {
@@ -115,6 +121,54 @@ class TaskCacheManager {
     _listCache.clear();
     _accessTimes.clear();
   }
+
+  /// Clear specific list caches by type
+  void clearListCachesByType(CacheClearType type) {
+    final keysToRemove = <String>[];
+    
+    switch (type) {
+      case CacheClearType.statusRelated:
+        for (final key in _listCache.keys) {
+          if (key.contains('status=') || key.contains('filter:')) {
+            keysToRemove.add(key);
+          }
+        }
+        break;
+      case CacheClearType.priorityRelated:
+        for (final key in _listCache.keys) {
+          if (key.contains('priority=') || key.contains('filter:')) {
+            keysToRemove.add(key);
+          }
+        }
+        break;
+      case CacheClearType.projectRelated:
+        for (final key in _listCache.keys) {
+          if (key.contains('project=') || key.contains('filter:')) {
+            keysToRemove.add(key);
+          }
+        }
+        break;
+      case CacheClearType.dateRelated:
+        for (final key in _listCache.keys) {
+          if (key.contains('from=') || key.contains('to=') || key.contains('overdue=')) {
+            keysToRemove.add(key);
+          }
+        }
+        break;
+      case CacheClearType.searchRelated:
+        for (final key in _listCache.keys) {
+          if (key.contains('search=')) {
+            keysToRemove.add(key);
+          }
+        }
+        break;
+    }
+    
+    for (final key in keysToRemove) {
+      _listCache.remove(key);
+      _accessTimes.remove(key);
+    }
+  }
   
   /// Evict least recently used entries if cache is full
   void _evictIfNeeded() {
@@ -176,4 +230,13 @@ class CacheStats {
   
   double get hitRatio => totalSize > 0 ? totalSize / maxSize : 0.0;
   bool get isFull => totalSize >= maxSize;
+}
+
+/// Cache clear types for selective invalidation
+enum CacheClearType {
+  statusRelated,
+  priorityRelated,
+  projectRelated,
+  dateRelated,
+  searchRelated,
 }

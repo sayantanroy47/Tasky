@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:task_tracker_app/core/providers/navigation_provider.dart';
 
 void main() {
@@ -7,19 +8,19 @@ void main() {
       expect(AppNavigationDestination.values.length, 4);
       expect(AppNavigationDestination.values[0].label, 'Home');
       expect(AppNavigationDestination.values[0].route, '/');
-      expect(AppNavigationDestination.values[1].label, 'Tasks');
-      expect(AppNavigationDestination.values[1].route, '/tasks');
-      expect(AppNavigationDestination.values[2].label, 'Settings');
-      expect(AppNavigationDestination.values[2].route, '/settings');
-      expect(AppNavigationDestination.values[3].label, 'Performance');
-      expect(AppNavigationDestination.values[3].route, '/performance');
+      expect(AppNavigationDestination.values[1].label, 'Calendar');
+      expect(AppNavigationDestination.values[1].route, '/calendar');
+      expect(AppNavigationDestination.values[2].label, 'Analytics');
+      expect(AppNavigationDestination.values[2].route, '/analytics');
+      expect(AppNavigationDestination.values[3].label, 'Settings');
+      expect(AppNavigationDestination.values[3].route, '/settings');
     });
 
     test('should return correct destination by index', () {
       expect(AppNavigationDestination.fromIndex(0), AppNavigationDestination.home);
-      expect(AppNavigationDestination.fromIndex(1), AppNavigationDestination.tasks);
-      expect(AppNavigationDestination.fromIndex(2), AppNavigationDestination.settings);
-      expect(AppNavigationDestination.fromIndex(3), AppNavigationDestination.performance);
+      expect(AppNavigationDestination.fromIndex(1), AppNavigationDestination.calendar);
+      expect(AppNavigationDestination.fromIndex(2), AppNavigationDestination.analytics);
+      expect(AppNavigationDestination.fromIndex(3), AppNavigationDestination.settings);
     });
 
     test('should return home for invalid index', () {
@@ -29,9 +30,9 @@ void main() {
 
     test('should return correct destination by route', () {
       expect(AppNavigationDestination.fromRoute('/'), AppNavigationDestination.home);
-      expect(AppNavigationDestination.fromRoute('/tasks'), AppNavigationDestination.tasks);
+      expect(AppNavigationDestination.fromRoute('/calendar'), AppNavigationDestination.calendar);
+      expect(AppNavigationDestination.fromRoute('/analytics'), AppNavigationDestination.analytics);
       expect(AppNavigationDestination.fromRoute('/settings'), AppNavigationDestination.settings);
-      expect(AppNavigationDestination.fromRoute('/performance'), AppNavigationDestination.performance);
     });
 
     test('should return home for invalid route', () {
@@ -41,17 +42,17 @@ void main() {
 
     test('should have correct index property', () {
       expect(AppNavigationDestination.home.index, 0);
-      expect(AppNavigationDestination.tasks.index, 1);
-      expect(AppNavigationDestination.settings.index, 2);
-      expect(AppNavigationDestination.performance.index, 3);
+      expect(AppNavigationDestination.calendar.index, 1);
+      expect(AppNavigationDestination.analytics.index, 2);
+      expect(AppNavigationDestination.settings.index, 3);
     });
 
     test('should have correct values list', () {
       expect(AppNavigationDestination.values.length, 4);
       expect(AppNavigationDestination.values[0], AppNavigationDestination.home);
-      expect(AppNavigationDestination.values[1], AppNavigationDestination.tasks);
-      expect(AppNavigationDestination.values[2], AppNavigationDestination.settings);
-      expect(AppNavigationDestination.values[3], AppNavigationDestination.performance);
+      expect(AppNavigationDestination.values[1], AppNavigationDestination.calendar);
+      expect(AppNavigationDestination.values[2], AppNavigationDestination.analytics);
+      expect(AppNavigationDestination.values[3], AppNavigationDestination.settings);
     });
   });
 
@@ -66,12 +67,12 @@ void main() {
 
     test('should create navigation state with custom values', () {
       const state = NavigationState(
-        currentDestination: AppNavigationDestination.tasks,
+        currentDestination: AppNavigationDestination.calendar,
         selectedIndex: 1,
         canPop: true,
       );
       
-      expect(state.currentDestination, AppNavigationDestination.tasks);
+      expect(state.currentDestination, AppNavigationDestination.calendar);
       expect(state.selectedIndex, 1);
       expect(state.canPop, true);
     });
@@ -79,12 +80,12 @@ void main() {
     test('should copy with new values', () {
       const originalState = NavigationState();
       final newState = originalState.copyWith(
-        currentDestination: AppNavigationDestination.settings,
+        currentDestination: AppNavigationDestination.analytics,
         selectedIndex: 2,
         canPop: true,
       );
       
-      expect(newState.currentDestination, AppNavigationDestination.settings);
+      expect(newState.currentDestination, AppNavigationDestination.analytics);
       expect(newState.selectedIndex, 2);
       expect(newState.canPop, true);
       
@@ -96,13 +97,13 @@ void main() {
 
     test('should have correct equality', () {
       const state1 = NavigationState(
-        currentDestination: AppNavigationDestination.tasks,
+        currentDestination: AppNavigationDestination.calendar,
         selectedIndex: 1,
         canPop: true,
       );
       
       const state2 = NavigationState(
-        currentDestination: AppNavigationDestination.tasks,
+        currentDestination: AppNavigationDestination.calendar,
         selectedIndex: 1,
         canPop: true,
       );
@@ -115,6 +116,42 @@ void main() {
       
       expect(state1, state2);
       expect(state1, isNot(state3));
+    });
+  });
+
+  group('Navigation Provider Tests', () {
+    test('selectedIndexProvider should clamp invalid indices', () {
+      final container = ProviderContainer();
+      
+      // Set navigation state with invalid index
+      container.read(navigationProvider.notifier).state = const NavigationState(
+        currentDestination: AppNavigationDestination.home,
+        selectedIndex: 5, // Invalid index - out of bounds
+        canPop: false,
+      );
+      
+      // selectedIndexProvider should clamp it to valid range
+      final selectedIndex = container.read(selectedIndexProvider);
+      expect(selectedIndex, 3); // Should be clamped to max valid index (3)
+      
+      container.dispose();
+    });
+
+    test('selectedIndexProvider should handle negative indices', () {
+      final container = ProviderContainer();
+      
+      // Set navigation state with negative index
+      container.read(navigationProvider.notifier).state = const NavigationState(
+        currentDestination: AppNavigationDestination.home,
+        selectedIndex: -1, // Invalid negative index
+        canPop: false,
+      );
+      
+      // selectedIndexProvider should clamp it to valid range
+      final selectedIndex = container.read(selectedIndexProvider);
+      expect(selectedIndex, 0); // Should be clamped to min valid index (0)
+      
+      container.dispose();
     });
   });
 }

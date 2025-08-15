@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/standardized_app_bar.dart';
+import '../widgets/theme_background_widget.dart';
 
 import '../providers/notification_providers.dart';
 import '../../services/notification/notification_models.dart' as models;
@@ -13,9 +14,12 @@ class NotificationSettingsPage extends ConsumerWidget {
     final settingsAsync = ref.watch(notificationSettingsProvider);
     final permissionsAsync = ref.watch(notificationPermissionsProvider);
 
-    return Scaffold(
-      appBar: const StandardizedAppBar(title: 'Notification Settings'),
-      body: settingsAsync.when(
+    return ThemeBackgroundWidget(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        extendBodyBehindAppBar: true,
+        appBar: const StandardizedAppBar(title: 'Notification Settings'),
+        body: settingsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(
           child: Column(
@@ -34,6 +38,7 @@ class NotificationSettingsPage extends ConsumerWidget {
         ),
         data: (settings) => _buildSettingsContent(context, ref, settings, permissionsAsync),
       ),
+    ),
     );
   }
 
@@ -44,7 +49,12 @@ class NotificationSettingsPage extends ConsumerWidget {
     AsyncValue<bool> permissionsAsync,
   ) {
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.only(
+        top: kToolbarHeight + 8,
+        left: 16,
+        right: 16,
+        bottom: 16,
+      ),
       children: [
         // Permissions section
         _buildPermissionsSection(context, ref, permissionsAsync),

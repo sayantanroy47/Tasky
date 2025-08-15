@@ -121,7 +121,7 @@ class ShareIntentService {
       );
 
       if (result == true) {
-        debugPrint('Task created successfully from message dialog');
+        // Task created successfully from message dialog
       }
     } catch (e) {
       debugPrint('Error showing task creation dialog: $e');
@@ -155,7 +155,7 @@ class ShareIntentService {
 
       // Text sharing not available in current package version
       // Using media file approach and test methods instead
-      debugPrint('ShareIntentService initialized - media sharing ready');
+      // ShareIntentService initialized - media sharing ready
       
       // Handle initial shared content when app is launched
       await _handleInitialSharedContent();
@@ -175,7 +175,7 @@ class ShareIntentService {
 
       // Text sharing not available in current package version
       // Fallback to media file processing
-      debugPrint('Initial shared content handled - media only');
+      // Initial shared content handled - media only
     } catch (e) {
       debugPrint('Error handling initial shared content: $e');
     }
@@ -184,7 +184,7 @@ class ShareIntentService {
   /// Handle shared media files
   void _handleSharedMedia(List<SharedMediaFile> files) {
     for (final file in files) {
-      debugPrint('Received shared media: ${file.path}');
+      // Processing shared media file
       
       // Check if it's a text file that might contain a message
       final fileName = file.path.split('/').last.toLowerCase();
@@ -205,7 +205,7 @@ class ShareIntentService {
     try {
       // Read the text file content
       // Note: This is a simplified approach - in practice you'd need proper file reading
-      debugPrint('Processing text file: ${file.path}');
+      // Processing shared text file
       
       // For demo purposes, simulate message processing
       const demoMessage = 'Can you pick up milk on your way home?';
@@ -228,11 +228,11 @@ class ShareIntentService {
       // from the intent metadata
       
       if (!_isTaskRequest(text)) {
-        debugPrint('Shared text does not appear to be a task request: $text');
+        // Shared text does not appear to be a task request
         return;
       }
       
-      debugPrint('Processing potential task from shared text: $text');
+      // Processing potential task from shared text
       
       // Show task creation dialog if context is available
       if (_context != null && _context!.mounted) {
@@ -308,9 +308,9 @@ class ShareIntentService {
       // Save task to repository
       if (_taskRepository != null) {
         await _taskRepository!.createTask(task);
-        debugPrint('Created and saved task from shared content: ${task.title}');
+        // Created and saved task from shared content
       } else {
-        debugPrint('TaskRepository not set - task not saved: ${task.title}');
+        // TaskRepository not set - task not saved
       }
       
     } catch (e) {
@@ -342,9 +342,9 @@ class ShareIntentService {
 
     if (_taskRepository != null) {
       _taskRepository!.createTask(task);
-      debugPrint('Created and saved basic task from shared content: ${task.title}');
+      // Created and saved basic task from shared content
     } else {
-      debugPrint('TaskRepository not set - basic task not saved: ${task.title}');
+      // TaskRepository not set - basic task not saved
     }
   }
 
@@ -379,7 +379,7 @@ class ShareIntentService {
   /// Test method to simulate receiving a message from wife
   /// This can be called manually to test the message-to-task flow
   Future<void> testWifeMessage(String message) async {
-    debugPrint('Testing wife message: $message');
+    // Testing wife message
     await _processSharedText(message);
   }
 

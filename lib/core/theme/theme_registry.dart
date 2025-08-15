@@ -64,9 +64,7 @@ class ThemeRegistry {
   /// Register a new theme
   void register(AppThemeData theme) {
     if (_themes.containsKey(theme.metadata.id)) {
-      if (kDebugMode) {
-        print('Theme ${theme.metadata.id} is already registered. Updating...');
-      }
+      // Theme update - silently replacing existing theme
     }
     
     _themes[theme.metadata.id] = theme;
@@ -179,9 +177,7 @@ class ThemeRegistry {
     
     // Check for duplicate IDs
     if (_themes.containsKey(theme.metadata.id)) {
-      if (kDebugMode) {
-        print('Warning: Theme ID ${theme.metadata.id} already exists');
-      }
+      // Duplicate theme ID detected during validation
     }
 
     return true;

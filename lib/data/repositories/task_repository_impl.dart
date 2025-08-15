@@ -27,6 +27,12 @@ class TaskRepositoryImpl implements TaskRepository {
   Future<void> updateTask(TaskModel task) async {
     await _database.taskDao.updateTask(task);
   }
+  
+  @override
+  Future<TaskModel?> updateTaskSafely(TaskModel task) async {
+    return await _database.taskDao.updateTaskSafely(task);
+  }
+  
   @override
   Future<void> deleteTask(String id) async {
     await _database.taskDao.deleteTask(id);

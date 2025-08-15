@@ -5,6 +5,7 @@ import '../../core/theme/typography_constants.dart';
 import '../../services/ai/ai_task_parsing_service.dart';
 import '../../services/ai/composite_ai_task_parser.dart';
 import '../../services/security/api_key_manager.dart';
+import '../../domain/models/ai_service_type.dart';
 
 /// Widget for selecting AI service provider
 class AIServiceSelector extends ConsumerWidget {
@@ -231,45 +232,7 @@ class AIServiceSelector extends ConsumerWidget {
     }
   }
 
-  Future<String?> _getCurrentApiKey() async {
-    switch (widget.serviceType) {
-      case AIServiceType.openai:
-        return await APIKeyManager.getOpenAIApiKey();
-      case AIServiceType.claude:
-        return await APIKeyManager.getClaudeApiKey();
-      case AIServiceType.local:
-        return null;
-    }
-  }
 
-  Future<void> _clearApiKey() async {
-    try {
-      switch (widget.serviceType) {
-        case AIServiceType.openai:
-          await APIKeyManager.setOpenAIApiKey('');
-          await APIKeyManager.setOpenAIBaseUrl(null);
-          break;
-        case AIServiceType.claude:
-          await APIKeyManager.setClaudeApiKey('');
-          await APIKeyManager.setClaudeBaseUrl(null);
-          break;
-        case AIServiceType.local:
-          break;
-      }
-      
-      if (mounted) {
-        setState(() {
-          _apiKeyController.clear();
-          _baseUrlController.clear();
-        });
-        _showSnackBar('API key cleared successfully!', isError: false);
-      }
-    } catch (e) {
-      if (mounted) {
-        _showSnackBar('Failed to clear API key: ${e.toString()}');
-      }
-    }
-  }
 }
 
 /// Dialog for configuring API keys and settings
@@ -327,6 +290,47 @@ class _APIConfigDialogState extends State<APIConfigDialog> {
       }
     }
   }
+
+  Future<String?> _getCurrentApiKey() async {
+    switch (widget.serviceType) {
+      case AIServiceType.openai:
+        return await APIKeyManager.getOpenAIApiKey();
+      case AIServiceType.claude:
+        return await APIKeyManager.getClaudeApiKey();
+      case AIServiceType.local:
+        return null;
+    }
+  }
+
+  Future<void> _clearApiKey() async {
+    try {
+      switch (widget.serviceType) {
+        case AIServiceType.openai:
+          await APIKeyManager.setOpenAIApiKey('');
+          await APIKeyManager.setOpenAIBaseUrl(null);
+          break;
+        case AIServiceType.claude:
+          await APIKeyManager.setClaudeApiKey('');
+          await APIKeyManager.setClaudeBaseUrl(null);
+          break;
+        case AIServiceType.local:
+          break;
+      }
+      
+      if (mounted) {
+        setState(() {
+          _apiKeyController.clear();
+          _baseUrlController.clear();
+        });
+        _showSnackBar('API key cleared successfully!', isError: false);
+      }
+    } catch (e) {
+      if (mounted) {
+        _showSnackBar('Failed to clear API key: ${e.toString()}');
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -493,9 +497,28 @@ class _APIConfigDialogState extends State<APIConfigDialog> {
     });
 
     try {
-      // Test the API connection
-      // TODO: Implement actual API test calls using the respective service parsers
-      await Future.delayed(const Duration(seconds: 2)); // Simulate API call for now
+      // Test the API connection with a simple validation request
+      // For now, we'll validate the API key format and simulate a test
+      bool isValidFormat = false;
+      switch (widget.serviceType) {
+        case AIServiceType.openai:
+          isValidFormat = _apiKeyController.text.startsWith('sk-') && 
+                         _apiKeyController.text.length > 20;
+          break;
+        case AIServiceType.claude:
+          isValidFormat = _apiKeyController.text.startsWith('sk-ant-') && 
+                         _apiKeyController.text.length > 30;
+          break;
+        case AIServiceType.local:
+          isValidFormat = true; // Local service doesn't need API validation
+          break;
+      }
+      
+      if (!isValidFormat) {
+        throw Exception('Invalid API key format for ${widget.serviceType.name}');
+      }
+      
+      await Future.delayed(const Duration(seconds: 2)); // Simulate API call
       
       if (mounted) {
         _showSnackBar('Connection test completed! (Note: Actual API validation pending)', isError: false);

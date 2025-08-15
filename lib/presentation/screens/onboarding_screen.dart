@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/typography_constants.dart';
 import '../widgets/enhanced_ux_widgets.dart';
@@ -171,8 +172,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                   _animationController.reset();
                   _animationController.forward();
                   
-                  // Provide haptic feedback for page changes
-                  // TODO: Add proper accessibility service integration
+                  // Provide haptic feedback for page changes and accessibility
+                  HapticFeedback.lightImpact();
+                  // Announce page changes for screen readers
+                  SemanticsService.announce(
+                    'Page ${index + 1} of $_totalPages',
+                    TextDirection.ltr,
+                  );
                 },
                 itemCount: _totalPages,
                 itemBuilder: (context, index) {

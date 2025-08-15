@@ -5,8 +5,6 @@ import '../../data/repositories/tag_repository_impl.dart';
 import '../../services/data_export/data_export_service.dart';
 import '../../services/data_export/data_export_models.dart';
 import '../../core/providers/core_providers.dart';
-import 'task_providers.dart' as task_providers;
-import 'project_providers.dart' as project_providers;
 
 // Tag repository provider
 final tagRepositoryProvider = Provider<TagRepository>((ref) {

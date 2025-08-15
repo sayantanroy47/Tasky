@@ -40,66 +40,211 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
     return await _taskRowToModel(taskRow);
   }
 
-  /// Creates a new task in the database
+  /// Creates a new task in the database with comprehensive error handling
   Future<void> createTask(TaskModel task) async {
-    await db.transaction(() async {
-      // Insert the main task
-      await into(tasks).insert(_taskModelToRow(task));
-
-      // Insert subtasks
-      for (final subTask in task.subTasks) {
-        await into(subTasks).insert(_subTaskToRow(subTask));
+    try {
+      // Validate input
+      if (task.id.isEmpty) {
+        throw ArgumentError('Task ID cannot be empty');
+      }
+      if (task.title.trim().isEmpty) {
+        throw ArgumentError('Task title cannot be empty');
       }
 
-      // Insert task-tag relationships
-      for (final tag in task.tags) {
-        await into(taskTags).insert(TaskTagsCompanion.insert(
-          taskId: task.id,
-          tagId: tag,
-        ));
-      }
+      await db.transaction(() async {
+        // Insert the main task
+        await into(tasks).insert(_taskModelToRow(task));
 
-      // Insert task dependencies
-      for (final dependencyId in task.dependencies) {
-        await into(taskDependencies).insert(TaskDependenciesCompanion.insert(
-          dependentTaskId: task.id,
-          prerequisiteTaskId: dependencyId,
-        ));
-      }
-    });
+        // Insert subtasks
+        for (final subTask in task.subTasks) {
+          if (subTask.id.isEmpty || subTask.title.trim().isEmpty) {
+            throw ArgumentError('SubTask ID and title cannot be empty');
+          }
+          await into(subTasks).insert(_subTaskToRow(subTask));
+        }
+
+        // Insert task-tag relationships
+        for (final tag in task.tags) {
+          if (tag.isEmpty) {
+            print('Warning: Skipping empty tag ID for task ${task.id}');
+            continue;
+          }
+          try {
+            await into(taskTags).insert(TaskTagsCompanion.insert(
+              taskId: task.id,
+              tagId: tag,
+            ));
+          } catch (e) {
+            print('Warning: Failed to insert task-tag relationship (task: ${task.id}, tag: $tag): $e');
+            // Continue with other tags
+          }
+        }
+
+        // Insert task dependencies
+        for (final dependencyId in task.dependencies) {
+          if (dependencyId.isEmpty || dependencyId == task.id) {
+            print('Warning: Skipping invalid dependency ID: $dependencyId for task ${task.id}');
+            continue;
+          }
+          try {
+            await into(taskDependencies).insert(TaskDependenciesCompanion.insert(
+              dependentTaskId: task.id,
+              prerequisiteTaskId: dependencyId,
+            ));
+          } catch (e) {
+            print('Warning: Failed to insert task dependency (dependent: ${task.id}, prerequisite: $dependencyId): $e');
+            // Continue with other dependencies
+          }
+        }
+      });
+    } catch (e) {
+      print('Error creating task ${task.id}: $e');
+      rethrow; // Re-throw to let caller handle
+    }
   }
 
-  /// Updates an existing task in the database
+  /// Updates an existing task in the database with optimistic locking for concurrent modification handling
   Future<void> updateTask(TaskModel task) async {
-    await db.transaction(() async {
-      // Update the main task
-      await (update(tasks)..where((t) => t.id.equals(task.id)))
-          .write(_taskModelToRow(task));
-
-      // Delete and recreate subtasks (simpler than complex update logic)
-      await (delete(subTasks)..where((st) => st.taskId.equals(task.id))).go();
-      for (final subTask in task.subTasks) {
-        await into(subTasks).insert(_subTaskToRow(subTask));
+    try {
+      // Validate input
+      if (task.id.isEmpty) {
+        throw ArgumentError('Task ID cannot be empty');
+      }
+      if (task.title.trim().isEmpty) {
+        throw ArgumentError('Task title cannot be empty');
       }
 
-      // Delete and recreate task-tag relationships
-      await (delete(taskTags)..where((tt) => tt.taskId.equals(task.id))).go();
-      for (final tag in task.tags) {
-        await into(taskTags).insert(TaskTagsCompanion.insert(
-          taskId: task.id,
-          tagId: tag,
-        ));
+      // Optimistic locking: Check if task exists and get current state
+      final existingTask = await getTaskById(task.id);
+      if (existingTask == null) {
+        throw StateError('Task with ID ${task.id} does not exist');
       }
 
-      // Delete and recreate task dependencies
-      await (delete(taskDependencies)..where((td) => td.dependentTaskId.equals(task.id))).go();
-      for (final dependencyId in task.dependencies) {
-        await into(taskDependencies).insert(TaskDependenciesCompanion.insert(
-          dependentTaskId: task.id,
-          prerequisiteTaskId: dependencyId,
-        ));
+      // Check for concurrent modifications by comparing updatedAt timestamps
+      if (task.updatedAt != null && existingTask.updatedAt != null) {
+        if (task.updatedAt!.isBefore(existingTask.updatedAt!)) {
+          throw ConcurrentModificationError(
+            'Task ${task.id} has been modified by another user. '
+            'Expected updatedAt: ${task.updatedAt}, '
+            'Current updatedAt: ${existingTask.updatedAt}'
+          );
+        }
       }
-    });
+
+      // Update the updatedAt timestamp to current time
+      final updatedTask = task.copyWith(updatedAt: DateTime.now());
+
+      await db.transaction(() async {
+        // Update the main task with optimistic locking check
+        final updatedRows = await (update(tasks)
+          ..where((t) => t.id.equals(task.id) & 
+                        (existingTask.updatedAt != null 
+                          ? t.updatedAt.equals(existingTask.updatedAt!) 
+                          : t.updatedAt.isNull())))
+            .write(_taskModelToRow(updatedTask));
+        
+        if (updatedRows == 0) {
+          // Either the task was deleted or updated by another process
+          final currentTask = await getTaskById(task.id);
+          if (currentTask == null) {
+            throw StateError('Task ${task.id} was deleted during update');
+          } else {
+            throw ConcurrentModificationError(
+              'Task ${task.id} was modified during update. Please refresh and try again.'
+            );
+          }
+        }
+
+        // Delete and recreate subtasks (simpler than complex update logic)
+        await (delete(subTasks)..where((st) => st.taskId.equals(task.id))).go();
+        for (final subTask in updatedTask.subTasks) {
+          if (subTask.id.isEmpty || subTask.title.trim().isEmpty) {
+            throw ArgumentError('SubTask ID and title cannot be empty');
+          }
+          await into(subTasks).insert(_subTaskToRow(subTask));
+        }
+
+        // Delete and recreate task-tag relationships
+        await (delete(taskTags)..where((tt) => tt.taskId.equals(task.id))).go();
+        for (final tag in updatedTask.tags) {
+          if (tag.isEmpty) {
+            print('Warning: Skipping empty tag ID for task ${task.id}');
+            continue;
+          }
+          try {
+            await into(taskTags).insert(TaskTagsCompanion.insert(
+              taskId: task.id,
+              tagId: tag,
+            ));
+          } catch (e) {
+            print('Warning: Failed to update task-tag relationship (task: ${task.id}, tag: $tag): $e');
+            // Continue with other tags
+          }
+        }
+
+        // Delete and recreate task dependencies
+        await (delete(taskDependencies)..where((td) => td.dependentTaskId.equals(task.id))).go();
+        for (final dependencyId in updatedTask.dependencies) {
+          if (dependencyId.isEmpty || dependencyId == task.id) {
+            print('Warning: Skipping invalid dependency ID: $dependencyId for task ${task.id}');
+            continue;
+          }
+          try {
+            await into(taskDependencies).insert(TaskDependenciesCompanion.insert(
+              dependentTaskId: task.id,
+              prerequisiteTaskId: dependencyId,
+            ));
+          } catch (e) {
+            print('Warning: Failed to update task dependency (dependent: ${task.id}, prerequisite: $dependencyId): $e');
+            // Continue with other dependencies
+          }
+        }
+      });
+    } on ConcurrentModificationError {
+      rethrow; // Re-throw concurrent modification errors as-is
+    } catch (e) {
+      print('Error updating task ${task.id}: $e');
+      rethrow; // Re-throw to let caller handle
+    }
+  }
+
+  /// Safe update method that handles concurrent modifications gracefully
+  Future<TaskModel?> updateTaskSafely(TaskModel task) async {
+    const maxRetries = 3;
+    int attempts = 0;
+    
+    while (attempts < maxRetries) {
+      try {
+        await updateTask(task);
+        // If successful, return the updated task
+        return await getTaskById(task.id);
+      } on ConcurrentModificationError catch (e) {
+        attempts++;
+        if (attempts >= maxRetries) {
+          print('Failed to update task ${task.id} after $maxRetries attempts: $e');
+          rethrow;
+        }
+        
+        print('Concurrent modification detected for task ${task.id}, retry $attempts/$maxRetries');
+        
+        // Wait before retry with exponential backoff
+        await Future.delayed(Duration(milliseconds: 100 * attempts));
+        
+        // Get the latest version of the task
+        final latestTask = await getTaskById(task.id);
+        if (latestTask == null) {
+          throw StateError('Task ${task.id} was deleted during update retry');
+        }
+        
+        // Update the task with the latest timestamp
+        task = task.copyWith(updatedAt: latestTask.updatedAt);
+      } catch (e) {
+        print('Error during safe task update for ${task.id}: $e');
+        rethrow;
+      }
+    }
+    
+    return null; // Should never reach here
   }
 
   /// Deletes a task from the database
@@ -286,25 +431,50 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
     ).get();
     final dependencyIds = dependencyRows.map((row) => row.prerequisiteTaskId).toList();
 
-    // Parse metadata
-    final metadata = taskRow.metadata.isNotEmpty 
-        ? Map<String, dynamic>.from(jsonDecode(taskRow.metadata))
-        : <String, dynamic>{};
+    // Parse metadata with error handling
+    Map<String, dynamic> metadata = <String, dynamic>{};
+    try {
+      if (taskRow.metadata.isNotEmpty) {
+        final decoded = jsonDecode(taskRow.metadata);
+        if (decoded is Map) {
+          metadata = Map<String, dynamic>.from(decoded);
+        } else {
+          print('Warning: Task ${taskRow.id} metadata is not a valid map, using empty metadata');
+        }
+      }
+    } catch (e) {
+      print('Warning: Failed to parse metadata for task ${taskRow.id}: $e, using empty metadata');
+    }
 
-    // Parse recurrence pattern
+    // Parse recurrence pattern with error handling
     RecurrencePattern? recurrence;
-    if (taskRow.recurrenceType != null) {
-      final daysOfWeek = taskRow.recurrenceDaysOfWeek != null
-          ? List<int>.from(jsonDecode(taskRow.recurrenceDaysOfWeek!))
-          : null;
+    try {
+      if (taskRow.recurrenceType != null) {
+        List<int>? daysOfWeek;
+        
+        if (taskRow.recurrenceDaysOfWeek != null && taskRow.recurrenceDaysOfWeek!.isNotEmpty) {
+          try {
+            final decoded = jsonDecode(taskRow.recurrenceDaysOfWeek!);
+            if (decoded is List) {
+              daysOfWeek = decoded.whereType<int>().toList();
+            } else {
+              print('Warning: Task ${taskRow.id} recurrence days of week is not a valid list, ignoring');
+            }
+          } catch (e) {
+            print('Warning: Failed to parse recurrence days of week for task ${taskRow.id}: $e');
+          }
+        }
 
-      recurrence = RecurrencePattern(
-        type: _intToRecurrenceType(taskRow.recurrenceType!),
-        interval: taskRow.recurrenceInterval ?? 1,
-        daysOfWeek: daysOfWeek,
-        endDate: taskRow.recurrenceEndDate,
-        maxOccurrences: taskRow.recurrenceMaxOccurrences,
-      );
+        recurrence = RecurrencePattern(
+          type: _intToRecurrenceType(taskRow.recurrenceType!),
+          interval: taskRow.recurrenceInterval ?? 1,
+          daysOfWeek: daysOfWeek,
+          endDate: taskRow.recurrenceEndDate,
+          maxOccurrences: taskRow.recurrenceMaxOccurrences,
+        );
+      }
+    } catch (e) {
+      print('Warning: Failed to parse recurrence pattern for task ${taskRow.id}: $e, ignoring recurrence');
     }
 
     return TaskModel(
@@ -330,8 +500,113 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
     );
   }
 
-  /// Converts a TaskModel to a database row
+  /// Validates a TaskModel before database operations
+  void _validateTaskModel(TaskModel task) {
+    // Basic validation
+    if (task.id.isEmpty) {
+      throw ArgumentError('Task ID cannot be empty');
+    }
+    if (task.id.length > 255) {
+      throw ArgumentError('Task ID cannot exceed 255 characters');
+    }
+    if (task.title.trim().isEmpty) {
+      throw ArgumentError('Task title cannot be empty');
+    }
+    if (task.title.length > 500) {
+      throw ArgumentError('Task title cannot exceed 500 characters');
+    }
+    if (task.description != null && task.description!.length > 2000) {
+      throw ArgumentError('Task description cannot exceed 2000 characters');
+    }
+
+    // Validate dates
+    if (task.dueDate != null && task.completedAt != null) {
+      if (task.completedAt!.isAfter(task.dueDate!)) {
+        print('Warning: Task ${task.id} completed after due date');
+      }
+    }
+    if (task.createdAt.isAfter(DateTime.now().add(const Duration(minutes: 1)))) {
+      throw ArgumentError('Task created date cannot be in the future');
+    }
+    if (task.updatedAt != null && task.updatedAt!.isBefore(task.createdAt)) {
+      throw ArgumentError('Task updated date cannot be before created date');
+    }
+
+    // Validate durations
+    if (task.estimatedDuration != null && task.estimatedDuration! < 0) {
+      throw ArgumentError('Estimated duration cannot be negative');
+    }
+    if (task.actualDuration != null && task.actualDuration! < 0) {
+      throw ArgumentError('Actual duration cannot be negative');
+    }
+    if (task.estimatedDuration != null && task.estimatedDuration! > 10080) { // 1 week in minutes
+      throw ArgumentError('Estimated duration cannot exceed 1 week (10,080 minutes)');
+    }
+
+    // Validate recurrence
+    if (task.recurrence != null) {
+      final recurrence = task.recurrence!;
+      if (recurrence.interval <= 0) {
+        throw ArgumentError('Recurrence interval must be positive');
+      }
+      if (recurrence.interval > 365) {
+        throw ArgumentError('Recurrence interval cannot exceed 365');
+      }
+      if (recurrence.daysOfWeek != null) {
+        for (final day in recurrence.daysOfWeek!) {
+          if (day < 1 || day > 7) {
+            throw ArgumentError('Invalid day of week: $day (must be 1-7)');
+          }
+        }
+      }
+      if (recurrence.endDate != null && recurrence.endDate!.isBefore(DateTime.now())) {
+        throw ArgumentError('Recurrence end date cannot be in the past');
+      }
+      if (recurrence.maxOccurrences != null && recurrence.maxOccurrences! <= 0) {
+        throw ArgumentError('Max occurrences must be positive');
+      }
+    }
+
+    // Validate tags
+    for (final tagId in task.tags) {
+      if (tagId.isEmpty) {
+        throw ArgumentError('Tag ID cannot be empty');
+      }
+      if (tagId.length > 255) {
+        throw ArgumentError('Tag ID cannot exceed 255 characters');
+      }
+    }
+
+    // Validate dependencies
+    for (final depId in task.dependencies) {
+      if (depId.isEmpty) {
+        throw ArgumentError('Dependency ID cannot be empty');
+      }
+      if (depId == task.id) {
+        throw ArgumentError('Task cannot depend on itself');
+      }
+    }
+
+    // Validate status transitions
+    if (task.status == TaskStatus.completed && task.completedAt == null) {
+      print('Warning: Task ${task.id} marked as completed but has no completion date');
+    }
+    if (task.status != TaskStatus.completed && task.completedAt != null) {
+      print('Warning: Task ${task.id} has completion date but is not marked as completed');
+    }
+
+    // Validate metadata size
+    final metadataJson = jsonEncode(task.metadata);
+    if (metadataJson.length > 5000) {
+      throw ArgumentError('Task metadata JSON cannot exceed 5000 characters');
+    }
+  }
+
+  /// Converts a TaskModel to a database row with validation
   TasksCompanion _taskModelToRow(TaskModel task) {
+    // Validate the task before conversion
+    _validateTaskModel(task);
+
     final metadataJson = task.metadata.isNotEmpty ? jsonEncode(task.metadata) : '{}';
     
     int? recurrenceType;
@@ -415,17 +690,23 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
   }
 
   TaskStatus _intToTaskStatus(int value) {
-    switch (value) {
-      case 0:
-        return TaskStatus.pending;
-      case 1:
-        return TaskStatus.inProgress;
-      case 2:
-        return TaskStatus.completed;
-      case 3:
-        return TaskStatus.cancelled;
-      default:
-        return TaskStatus.pending;
+    try {
+      switch (value) {
+        case 0:
+          return TaskStatus.pending;
+        case 1:
+          return TaskStatus.inProgress;
+        case 2:
+          return TaskStatus.completed;
+        case 3:
+          return TaskStatus.cancelled;
+        default:
+          print('Warning: Unknown TaskStatus value: $value, defaulting to pending');
+          return TaskStatus.pending;
+      }
+    } catch (e) {
+      print('Error converting int to TaskStatus (value: $value): $e');
+      return TaskStatus.pending;
     }
   }
 
@@ -443,17 +724,23 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
   }
 
   TaskPriority _intToTaskPriority(int value) {
-    switch (value) {
-      case 0:
-        return TaskPriority.low;
-      case 1:
-        return TaskPriority.medium;
-      case 2:
-        return TaskPriority.high;
-      case 3:
-        return TaskPriority.urgent;
-      default:
-        return TaskPriority.medium;
+    try {
+      switch (value) {
+        case 0:
+          return TaskPriority.low;
+        case 1:
+          return TaskPriority.medium;
+        case 2:
+          return TaskPriority.high;
+        case 3:
+          return TaskPriority.urgent;
+        default:
+          print('Warning: Unknown TaskPriority value: $value, defaulting to medium');
+          return TaskPriority.medium;
+      }
+    } catch (e) {
+      print('Error converting int to TaskPriority (value: $value): $e');
+      return TaskPriority.medium;
     }
   }
 
@@ -475,21 +762,27 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
   }
 
   RecurrenceType _intToRecurrenceType(int value) {
-    switch (value) {
-      case 0:
-        return RecurrenceType.none;
-      case 1:
-        return RecurrenceType.daily;
-      case 2:
-        return RecurrenceType.weekly;
-      case 3:
-        return RecurrenceType.monthly;
-      case 4:
-        return RecurrenceType.yearly;
-      case 5:
-        return RecurrenceType.custom;
-      default:
-        return RecurrenceType.none;
+    try {
+      switch (value) {
+        case 0:
+          return RecurrenceType.none;
+        case 1:
+          return RecurrenceType.daily;
+        case 2:
+          return RecurrenceType.weekly;
+        case 3:
+          return RecurrenceType.monthly;
+        case 4:
+          return RecurrenceType.yearly;
+        case 5:
+          return RecurrenceType.custom;
+        default:
+          print('Warning: Unknown RecurrenceType value: $value, defaulting to none');
+          return RecurrenceType.none;
+      }
+    } catch (e) {
+      print('Error converting int to RecurrenceType (value: $value): $e');
+      return RecurrenceType.none;
     }
   }
 
@@ -597,109 +890,145 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
     return taskModels;
   }
 
-  /// Optimized database-level filtering with proper query building
+  /// Optimized database-level filtering with proper query building and comprehensive error handling
   Future<List<TaskModel>> getTasksWithFilter(TaskFilter filter) async {
-    var query = select(tasks);
+    try {
+      // Validate filter parameters
+      if (filter.dueDateFrom != null && filter.dueDateTo != null) {
+        if (filter.dueDateFrom!.isAfter(filter.dueDateTo!)) {
+          throw ArgumentError('dueDateFrom cannot be after dueDateTo');
+        }
+      }
 
-    // Apply database-level filters
-    if (filter.status != null) {
-      query = query..where((t) => t.status.equals(_taskStatusToInt(filter.status!)));
+      if (filter.searchQuery != null && filter.searchQuery!.length > 1000) {
+        throw ArgumentError('searchQuery is too long (max 1000 characters)');
+      }
+
+      var query = select(tasks);
+
+      // Apply database-level filters with proper null safety
+      if (filter.status != null) {
+        final statusValue = _taskStatusToInt(filter.status!);
+        query = query..where((t) => t.status.equals(statusValue));
+      }
+
+      if (filter.priority != null) {
+        final priorityValue = _taskPriorityToInt(filter.priority!);
+        query = query..where((t) => t.priority.equals(priorityValue));
+      }
+
+      if (filter.projectId != null && filter.projectId!.isNotEmpty) {
+        query = query..where((t) => t.projectId.equals(filter.projectId!));
+      }
+
+      if (filter.dueDateFrom != null) {
+        query = query..where((t) => t.dueDate.isBiggerOrEqualValue(filter.dueDateFrom!));
+      }
+
+      if (filter.dueDateTo != null) {
+        query = query..where((t) => t.dueDate.isSmallerOrEqualValue(filter.dueDateTo!));
+      }
+
+      if (filter.isOverdue == true) {
+        final now = DateTime.now();
+        query = query..where((t) => 
+          t.dueDate.isSmallerThanValue(now) & 
+          t.status.isNotValue(_taskStatusToInt(TaskStatus.completed))
+        );
+      } else if (filter.isOverdue == false) {
+        final now = DateTime.now();
+        query = query..where((t) => 
+          t.dueDate.isBiggerOrEqualValue(now) |
+          t.dueDate.isNull() |
+          t.status.equals(_taskStatusToInt(TaskStatus.completed))
+        );
+      }
+
+      if (filter.isPinned != null) {
+        query = query..where((t) => t.isPinned.equals(filter.isPinned!));
+      }
+
+      // Apply database-level search with safety checks
+      if (filter.searchQuery != null && filter.searchQuery!.trim().isNotEmpty) {
+        final searchTerm = filter.searchQuery!.trim();
+        // Escape SQL special characters to prevent injection
+        final escapedSearch = searchTerm.replaceAll("'", "''");
+        query = query..where((t) => 
+          t.title.contains(escapedSearch) |
+          t.description.contains(escapedSearch)
+        );
+      }
+
+      // Apply sorting at database level with comprehensive options
+      switch (filter.sortBy) {
+        case TaskSortBy.createdAt:
+          query = filter.sortAscending 
+            ? (query..orderBy([((t) => OrderingTerm.asc(t.createdAt))]))
+            : (query..orderBy([((t) => OrderingTerm.desc(t.createdAt))]));
+          break;
+        case TaskSortBy.updatedAt:
+          query = filter.sortAscending 
+            ? (query..orderBy([((t) => OrderingTerm.asc(t.updatedAt))]))
+            : (query..orderBy([((t) => OrderingTerm.desc(t.updatedAt))]));
+          break;
+        case TaskSortBy.dueDate:
+          // Handle null due dates properly - nulls last for ascending, first for descending
+          if (filter.sortAscending) {
+            query = query..orderBy([((t) => OrderingTerm(expression: t.dueDate, mode: OrderingMode.asc, nulls: NullsOrder.last))]);
+          } else {
+            query = query..orderBy([((t) => OrderingTerm(expression: t.dueDate, mode: OrderingMode.desc, nulls: NullsOrder.first))]);
+          }
+          break;
+        case TaskSortBy.priority:
+          query = filter.sortAscending 
+            ? (query..orderBy([((t) => OrderingTerm.asc(t.priority))]))
+            : (query..orderBy([((t) => OrderingTerm.desc(t.priority))]));
+          break;
+        case TaskSortBy.title:
+          query = filter.sortAscending 
+            ? (query..orderBy([((t) => OrderingTerm.asc(t.title))]))
+            : (query..orderBy([((t) => OrderingTerm.desc(t.title))]));
+          break;
+        case TaskSortBy.status:
+          query = filter.sortAscending 
+            ? (query..orderBy([((t) => OrderingTerm.asc(t.status))]))
+            : (query..orderBy([((t) => OrderingTerm.desc(t.status))]));
+          break;
+      }
+
+      final taskRows = await query.get();
+      final taskModels = <TaskModel>[];
+
+      // Convert rows to models with error handling for each task
+      for (final taskRow in taskRows) {
+        try {
+          final taskModel = await _taskRowToModel(taskRow);
+          taskModels.add(taskModel);
+        } catch (e) {
+          // Log the error but continue processing other tasks
+          print('Warning: Failed to convert task row to model (ID: ${taskRow.id}): $e');
+          continue;
+        }
+      }
+
+      // Apply tag filtering at database level if possible, otherwise in memory
+      var filteredTasks = taskModels;
+      if (filter.tags != null && filter.tags!.isNotEmpty) {
+        // Validate tag IDs
+        final validTags = filter.tags!.where((tagId) => tagId.isNotEmpty).toList();
+        if (validTags.isNotEmpty) {
+          filteredTasks = taskModels.where((task) {
+            return validTags.any((tagId) => task.tags.contains(tagId));
+          }).toList();
+        }
+      }
+
+      return filteredTasks;
+    } catch (e) {
+      print('Error in getTasksWithFilter: $e');
+      // Return empty list on error to prevent app crashes
+      return <TaskModel>[];
     }
-
-    if (filter.priority != null) {
-      query = query..where((t) => t.priority.equals(_taskPriorityToInt(filter.priority!)));
-    }
-
-    if (filter.projectId != null) {
-      query = query..where((t) => t.projectId.equals(filter.projectId!));
-    }
-
-    if (filter.dueDateFrom != null) {
-      query = query..where((t) => t.dueDate.isBiggerOrEqualValue(filter.dueDateFrom!));
-    }
-
-    if (filter.dueDateTo != null) {
-      query = query..where((t) => t.dueDate.isSmallerOrEqualValue(filter.dueDateTo!));
-    }
-
-    if (filter.isOverdue == true) {
-      final now = DateTime.now();
-      query = query..where((t) => 
-        t.dueDate.isSmallerThanValue(now) & 
-        t.status.isNotValue(_taskStatusToInt(TaskStatus.completed))
-      );
-    } else if (filter.isOverdue == false) {
-      final now = DateTime.now();
-      query = query..where((t) => 
-        t.dueDate.isBiggerOrEqualValue(now) |
-        t.dueDate.isNull() |
-        t.status.equals(_taskStatusToInt(TaskStatus.completed))
-      );
-    }
-
-    if (filter.isPinned != null) {
-      query = query..where((t) => t.isPinned.equals(filter.isPinned!));
-    }
-
-    // Apply database-level search if provided
-    if (filter.searchQuery != null && filter.searchQuery!.isNotEmpty) {
-      query = query..where((t) => 
-        t.title.contains(filter.searchQuery!) |
-        t.description.contains(filter.searchQuery!)
-      );
-    }
-
-    // Apply sorting at database level
-    switch (filter.sortBy) {
-      case TaskSortBy.createdAt:
-        query = filter.sortAscending 
-          ? (query..orderBy([((t) => OrderingTerm.asc(t.createdAt))]))
-          : (query..orderBy([((t) => OrderingTerm.desc(t.createdAt))]));
-        break;
-      case TaskSortBy.updatedAt:
-        query = filter.sortAscending 
-          ? (query..orderBy([((t) => OrderingTerm.asc(t.updatedAt))]))
-          : (query..orderBy([((t) => OrderingTerm.desc(t.updatedAt))]));
-        break;
-      case TaskSortBy.dueDate:
-        query = filter.sortAscending 
-          ? (query..orderBy([((t) => OrderingTerm.asc(t.dueDate))]))
-          : (query..orderBy([((t) => OrderingTerm.desc(t.dueDate))]));
-        break;
-      case TaskSortBy.priority:
-        query = filter.sortAscending 
-          ? (query..orderBy([((t) => OrderingTerm.asc(t.priority))]))
-          : (query..orderBy([((t) => OrderingTerm.desc(t.priority))]));
-        break;
-      case TaskSortBy.title:
-        query = filter.sortAscending 
-          ? (query..orderBy([((t) => OrderingTerm.asc(t.title))]))
-          : (query..orderBy([((t) => OrderingTerm.desc(t.title))]));
-        break;
-      case TaskSortBy.status:
-        query = filter.sortAscending 
-          ? (query..orderBy([((t) => OrderingTerm.asc(t.status))]))
-          : (query..orderBy([((t) => OrderingTerm.desc(t.status))]));
-        break;
-    }
-
-    final taskRows = await query.get();
-    final taskModels = <TaskModel>[];
-
-    for (final taskRow in taskRows) {
-      final taskModel = await _taskRowToModel(taskRow);
-      taskModels.add(taskModel);
-    }
-
-    // Apply tag filtering in memory only if needed (since it requires JOIN logic)
-    var filteredTasks = taskModels;
-    if (filter.tags != null && filter.tags!.isNotEmpty) {
-      filteredTasks = taskModels.where((task) {
-        return filter.tags!.any((tagId) => task.tags.contains(tagId));
-      }).toList();
-    }
-
-    return filteredTasks;
   }
 
   /// Database-level pagination for better performance

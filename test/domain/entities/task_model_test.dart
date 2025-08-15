@@ -407,12 +407,12 @@ void main() {
       });
 
       test('should return false for invalid recurrence pattern', () {
-        const invalidRecurrence = RecurrencePattern(
-          type: RecurrenceType.daily,
-          interval: 0, // Invalid interval
+        // Cannot create const invalid recurrence due to assert, so we test that
+        // the constructor throws an error instead
+        expect(
+          () => RecurrencePattern(type: RecurrenceType.daily, interval: 0),
+          throwsA(isA<AssertionError>()),
         );
-        final invalidTask = testTask.copyWith(recurrence: invalidRecurrence);
-        expect(invalidTask.isValid(), false);
       });
 
       test('should return false for self-dependency', () {
@@ -606,9 +606,10 @@ void main() {
       });
     });
 
-    group('generateNextRecurrence', () {
+    group('generateNextRecurrence (deprecated)', () {
       test('should generate next recurring task when completed', () {
         final completedTask = testTask.markCompleted();
+        // ignore: deprecated_member_use_from_same_package
         final nextTask = completedTask.generateNextRecurrence();
 
         expect(nextTask, isNotNull);
@@ -628,12 +629,14 @@ void main() {
           recurrence: null,
         );
         final completedTask = nonRecurringTask.markCompleted();
+        // ignore: deprecated_member_use_from_same_package
         final nextTask = completedTask.generateNextRecurrence();
 
         expect(nextTask, isNull);
       });
 
       test('should return null for non-completed task', () {
+        // ignore: deprecated_member_use_from_same_package
         final nextTask = testTask.generateNextRecurrence();
         expect(nextTask, isNull);
       });

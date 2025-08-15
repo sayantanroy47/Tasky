@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'package:flutter/material.dart';
 
 /// Service for generating dynamic welcome messages and productivity insights
 class WelcomeMessageService {
@@ -13,8 +14,9 @@ class WelcomeMessageService {
     // Morning motivations
     WelcomeMessage(
       greeting: 'Good Morning, Achiever!',
-      subtitle: 'Time to turn dreams into done ✨',
+      subtitle: 'Time to turn dreams into done',
       timeOfDay: TimeOfDay.morning,
+      icon: Icons.auto_awesome,
     ),
     WelcomeMessage(
       greeting: 'Rise and Grind!',
@@ -40,8 +42,9 @@ class WelcomeMessageService {
     // Afternoon energy
     WelcomeMessage(
       greeting: 'Afternoon Focus Mode',
-      subtitle: 'Momentum is building! 🚀',
+      subtitle: 'Momentum is building!',
       timeOfDay: TimeOfDay.afternoon,
+      icon: Icons.rocket_launch,
     ),
     WelcomeMessage(
       greeting: 'Midday Warrior',
@@ -67,8 +70,9 @@ class WelcomeMessageService {
     // Evening wind-down
     WelcomeMessage(
       greeting: 'Evening Reflection',
-      subtitle: 'Planning tomorrow\'s victories 🌅',
+      subtitle: 'Planning tomorrow\'s victories',
       timeOfDay: TimeOfDay.evening,
+      icon: Icons.wb_sunny,
     ),
     WelcomeMessage(
       greeting: 'Sunset Planning',
@@ -94,8 +98,9 @@ class WelcomeMessageService {
     // Late night/general
     WelcomeMessage(
       greeting: 'Night Owl Mode',
-      subtitle: 'Quiet hours, focused mind 🌙',
+      subtitle: 'Quiet hours, focused mind',
       timeOfDay: TimeOfDay.night,
+      icon: Icons.nightlight_round,
     ),
     WelcomeMessage(
       greeting: 'Midnight Planner',
@@ -116,8 +121,9 @@ class WelcomeMessageService {
     ),
     WelcomeMessage(
       greeting: 'Task Champion',
-      subtitle: 'You\'ve got this! 💪',
+      subtitle: 'You\'ve got this!',
       timeOfDay: TimeOfDay.any,
+      icon: Icons.fitness_center,
     ),
     WelcomeMessage(
       greeting: 'Productivity Legend',
@@ -240,26 +246,26 @@ class WelcomeMessageService {
     required List<String> topPriorities,
   }) {
     if (completedToday > completedYesterday && completedToday > 0) {
-      return '📈 You\'re on fire! ${completedToday - completedYesterday} more than yesterday.';
+      return 'You\'re on fire! ${completedToday - completedYesterday} more than yesterday.';
     }
     
     if (completedToday == completedYesterday && completedToday > 0) {
-      return '🎯 Consistent performance! Same pace as yesterday.';
+      return 'Consistent performance! Same pace as yesterday.';
     }
     
     if (topPriorities.isNotEmpty) {
-      return '⭐ Focus area: ${topPriorities.first}';
+      return 'Focus area: ${topPriorities.first}';
     }
     
     if (completedToday > 5) {
-      return '🏆 Productivity champion! $completedToday tasks completed.';
+      return 'Productivity champion! $completedToday tasks completed.';
     }
     
     if (completedToday > 0) {
-      return '✅ Steady progress with $completedToday completions.';
+      return 'Steady progress with $completedToday completions.';
     }
     
-    return '🌟 Fresh start! Ready to tackle new challenges.';
+    return 'Fresh start! Ready to tackle new challenges.';
   }
 
   /// Determine time of day category
@@ -283,11 +289,13 @@ class WelcomeMessage {
   final String greeting;
   final String subtitle;
   final TimeOfDay timeOfDay;
+  final IconData? icon;
   
   const WelcomeMessage({
     required this.greeting,
     required this.subtitle,
     required this.timeOfDay,
+    this.icon,
   });
 }
 

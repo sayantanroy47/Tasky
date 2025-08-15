@@ -151,31 +151,77 @@ class DependencyService {
     return readyTasks;
   }
 
+  /// Validates if a task can be completed based on its dependencies
+  Future<DependencyValidationResult> validateTaskCompletion(TaskModel task) async {
+    if (task.dependencies.isEmpty) {
+      return DependencyValidationResult.success();
+    }
+    
+    final incompleteDependencies = <TaskModel>[];
+    for (final dependencyId in task.dependencies) {
+      final dependency = await _taskRepository.getTaskById(dependencyId);
+      if (dependency != null && dependency.status != TaskStatus.completed) {
+        incompleteDependencies.add(dependency);
+      }
+    }
+    
+    if (incompleteDependencies.isNotEmpty) {
+      return DependencyValidationResult.failure(
+        'Cannot complete task: ${incompleteDependencies.length} dependencies are not completed',
+        incompleteDependencies,
+      );
+    }
+    
+    return DependencyValidationResult.success();
+  }
+
+  /// Updates all dependent tasks when a task is completed
+  Future<void> onTaskCompleted(TaskModel completedTask) async {
+    final dependentTasks = await getDependentTasks(completedTask.id);
+    
+    // Check if any dependent tasks are now ready to start
+    for (final dependent in dependentTasks) {
+      final validation = await validateTaskCompletion(dependent);
+      if (validation.isValid && dependent.status == TaskStatus.pending) {
+        // Task is now ready to start
+        print('Task "${dependent.title}" is now ready to start');
+      }
+    }
+  }
+
+  /// Gets all tasks that depend on the given task (dependents)
+  Future<List<TaskModel>> getDependentTasks(String taskId) async {
+    final allTasks = await _taskRepository.getAllTasks();
+    return allTasks.where((task) => task.dependencies.contains(taskId)).toList();
+  }
+
   /// Adds a dependency between two tasks
-  Future<void> addDependency(String dependentTaskId, String prerequisiteTaskId) async {
+  Future<DependencyResult> addDependency(String dependentTaskId, String prerequisiteTaskId) async {
     final validationError = await validateDependency(dependentTaskId, prerequisiteTaskId);
     if (validationError != null) {
-      throw DependencyValidationException(validationError);
+      return DependencyResult.failure(validationError);
     }
 
     final task = await _taskRepository.getTaskById(dependentTaskId);
     if (task == null) {
-      throw TaskNotFoundException('Task not found: $dependentTaskId');
+      return DependencyResult.failure('Task not found: $dependentTaskId');
     }
 
     final updatedTask = task.addDependency(prerequisiteTaskId);
     await _taskRepository.updateTask(updatedTask);
+    return DependencyResult.success();
   }
 
   /// Removes a dependency between two tasks
-  Future<void> removeDependency(String dependentTaskId, String prerequisiteTaskId) async {
+  Future<DependencyResult> removeDependency(String dependentTaskId, String prerequisiteTaskId) async {
     final task = await _taskRepository.getTaskById(dependentTaskId);
     if (task == null) {
-      throw TaskNotFoundException('Task not found: $dependentTaskId');
+      return DependencyResult.failure('Task not found: $dependentTaskId');
     }
 
     final updatedTask = task.removeDependency(prerequisiteTaskId);
     await _taskRepository.updateTask(updatedTask);
+    return DependencyResult.success();
   }
 
   /// Gets the dependency chain for a task (all tasks it depends on, recursively)
@@ -223,6 +269,53 @@ class DependencyService {
     });
 
     return readyTasks.take(limit).toList();
+  }
+}
+
+/// Result of dependency validation
+class DependencyValidationResult {
+  final bool isValid;
+  final String? errorMessage;
+  final List<TaskModel> incompleteDependencies;
+  
+  const DependencyValidationResult._({
+    required this.isValid,
+    this.errorMessage,
+    this.incompleteDependencies = const [],
+  });
+  
+  factory DependencyValidationResult.success() {
+    return const DependencyValidationResult._(isValid: true);
+  }
+  
+  factory DependencyValidationResult.failure(
+    String message,
+    List<TaskModel> incompleteDependencies,
+  ) {
+    return DependencyValidationResult._(
+      isValid: false,
+      errorMessage: message,
+      incompleteDependencies: incompleteDependencies,
+    );
+  }
+}
+
+/// Result of dependency operations
+class DependencyResult {
+  final bool isSuccess;
+  final String? errorMessage;
+  
+  const DependencyResult._({
+    required this.isSuccess,
+    this.errorMessage,
+  });
+  
+  factory DependencyResult.success() {
+    return const DependencyResult._(isSuccess: true);
+  }
+  
+  factory DependencyResult.failure(String message) {
+    return DependencyResult._(isSuccess: false, errorMessage: message);
   }
 }
 

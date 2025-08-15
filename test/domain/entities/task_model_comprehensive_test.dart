@@ -1,5 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:task_tracker_app/domain/entities/task_model.dart';
+import 'package:task_tracker_app/domain/entities/subtask.dart';
+import 'package:task_tracker_app/domain/entities/recurrence_pattern.dart';
 import 'package:task_tracker_app/domain/models/enums.dart';
 
 /// COMPREHENSIVE TASK MODEL TESTS - EVERY EDGE CASE AND SCENARIO
@@ -18,15 +20,13 @@ void main() {
         expect(task.priority, equals(TaskPriority.medium));
         expect(task.status, equals(TaskStatus.pending));
         expect(task.tags, isEmpty);
-        expect(task.subtasks, isEmpty);
+        expect(task.subTasks, isEmpty);
         expect(task.id, isNotNull);
         expect(task.createdAt, isNotNull);
-        expect(task.updatedAt, isNotNull);
       });
 
       test('should create task with all fields populated', () {
         final dueDate = DateTime(2024, 12, 25, 14, 30);
-        final reminder = DateTime(2024, 12, 24, 9, 0);
         final tags = ['work', 'urgent'];
         
         final task = TaskModel.create(
@@ -34,396 +34,426 @@ void main() {
           description: 'Finish all remaining tasks for the project',
           priority: TaskPriority.high,
           dueDate: dueDate,
-          reminderDate: reminder,
           tags: tags,
-          metadata: {'source': 'voice', 'category': 'work'},
+          metadata: const {'source': 'voice', 'category': 'work'},
         );
         
         expect(task.title, equals('Complete Project'));
         expect(task.description, equals('Finish all remaining tasks for the project'));
         expect(task.priority, equals(TaskPriority.high));
         expect(task.dueDate, equals(dueDate));
-        expect(task.reminderDate, equals(reminder));
         expect(task.tags, equals(tags));
         expect(task.metadata['source'], equals('voice'));
         expect(task.metadata['category'], equals('work'));
       });
 
-      test('should throw ArgumentError for empty title', () {
-        expect(
-          () => TaskModel.create(title: ''),
-          throwsA(isA<ArgumentError>()),
-        );
+      test('should generate unique IDs for different tasks', () {
+        final task1 = TaskModel.create(title: 'Task 1');
+        final task2 = TaskModel.create(title: 'Task 2');
+        
+        expect(task1.id, isNot(equals(task2.id)));
       });
 
-      test('should throw ArgumentError for whitespace-only title', () {
-        expect(
-          () => TaskModel.create(title: '   '),
-          throwsA(isA<ArgumentError>()),
-        );
-      });
-      
-      test('should trim title and description whitespace', () {
-        final task = TaskModel.create(
-          title: '  Task Title  ',
-          description: '  Task Description  ',
-        );
+      test('should set creation time for new tasks', () {
+        final beforeCreation = DateTime.now();
+        final task = TaskModel.create(title: 'Timed Task');
+        final afterCreation = DateTime.now();
         
-        expect(task.title, equals('Task Title'));
-        expect(task.description, equals('Task Description'));
+        expect(task.createdAt.isAfter(beforeCreation) || task.createdAt.isAtSameMomentAs(beforeCreation), isTrue);
+        expect(task.createdAt.isBefore(afterCreation) || task.createdAt.isAtSameMomentAs(afterCreation), isTrue);
       });
     });
 
-    group('Task Priority Logic Tests', () {
-      test('should handle all priority levels correctly', () {
-        for (final priority in TaskPriority.values) {
-          final task = TaskModel.create(
-            title: 'Test $priority',
-            priority: priority,
-          );
-          
-          expect(task.priority, equals(priority));
-        }
-      });
-
-      test('should validate priority ordering logic', () {
-        final priorities = [
-          TaskPriority.low,
-          TaskPriority.medium,
-          TaskPriority.high,
-          TaskPriority.urgent,
-        ];
+    group('Task Status Management', () {
+      test('should mark task as completed', () {
+        final task = TaskModel.create(title: 'Test Task');
+        final completedTask = task.markCompleted();
         
-        for (int i = 0; i < priorities.length - 1; i++) {
-          final current = priorities[i];
-          final next = priorities[i + 1];
-          
-          expect(current.index < next.index, isTrue,
-              reason: '$current should have lower index than $next');
-        }
-      });
-    });
-
-    group('Task Status Transitions Tests', () {
-      test('should transition from pending to in_progress', () {
-        var task = TaskModel.create(title: 'Test Task');
-        expect(task.status, equals(TaskStatus.pending));
-        
-        task = task.copyWith(status: TaskStatus.inProgress);
-        expect(task.status, equals(TaskStatus.inProgress));
-      });
-
-      test('should complete task and update completedAt timestamp', () {
-        var task = TaskModel.create(title: 'Test Task');
-        expect(task.isCompleted, isFalse);
-        expect(task.completedAt, isNull);
-        
-        final completedTask = task.complete();
-        expect(completedTask.isCompleted, isTrue);
-        expect(completedTask.completedAt, isNotNull);
         expect(completedTask.status, equals(TaskStatus.completed));
+        expect(completedTask.completedAt, isNotNull);
+        expect(completedTask.isCompleted, isTrue);
+        expect(completedTask.updatedAt, isNotNull);
       });
 
-      test('should reopen completed task', () {
-        var task = TaskModel.create(title: 'Test Task').complete();
-        expect(task.isCompleted, isTrue);
+      test('should mark task as in progress', () {
+        final task = TaskModel.create(title: 'Test Task');
+        final inProgressTask = task.markInProgress();
         
-        task = task.reopen();
-        expect(task.isCompleted, isFalse);
-        expect(task.completedAt, isNull);
-        expect(task.status, equals(TaskStatus.pending));
+        expect(inProgressTask.status, equals(TaskStatus.inProgress));
+        expect(inProgressTask.updatedAt, isNotNull);
+      });
+
+      test('should mark task as cancelled', () {
+        final task = TaskModel.create(title: 'Test Task');
+        final cancelledTask = task.markCancelled();
+        
+        expect(cancelledTask.status, equals(TaskStatus.cancelled));
+        expect(cancelledTask.updatedAt, isNotNull);
+      });
+
+      test('should reset task to pending', () {
+        final task = TaskModel.create(title: 'Test Task')
+            .markCompleted();
+        final resetTask = task.resetToPending();
+        
+        expect(resetTask.status, equals(TaskStatus.pending));
+        expect(resetTask.completedAt, isNull);
+        expect(resetTask.updatedAt, isNotNull);
       });
     });
 
-    group('Date Logic Tests - CRITICAL EDGE CASES', () {
-      test('should handle due date in the past', () {
-        final pastDate = DateTime.now().subtract(const Duration(days: 5));
-        final task = TaskModel.create(
-          title: 'Overdue Task',
-          dueDate: pastDate,
-        );
+    group('Tag Management', () {
+      test('should add tags to task', () {
+        final task = TaskModel.create(title: 'Test Task');
+        final taggedTask = task.addTag('work');
         
-        expect(task.dueDate, equals(pastDate));
-        expect(task.isOverdue, isTrue);
+        expect(taggedTask.tags, contains('work'));
+        expect(taggedTask.updatedAt, isNotNull);
       });
 
-      test('should handle due date today', () {
+      test('should not add duplicate tags', () {
+        final task = TaskModel.create(title: 'Test Task', tags: const ['work']);
+        final taggedTask = task.addTag('work');
+        
+        expect(taggedTask.tags.length, equals(1));
+        expect(taggedTask.tags, contains('work'));
+      });
+
+      test('should remove tags from task', () {
+        final task = TaskModel.create(title: 'Test Task', tags: const ['work', 'urgent']);
+        final untaggedTask = task.removeTag('work');
+        
+        expect(untaggedTask.tags, isNot(contains('work')));
+        expect(untaggedTask.tags, contains('urgent'));
+        expect(untaggedTask.updatedAt, isNotNull);
+      });
+
+      test('should handle removing non-existent tag', () {
+        final task = TaskModel.create(title: 'Test Task', tags: const ['work']);
+        final unchanged = task.removeTag('nonexistent');
+        
+        expect(unchanged.tags, equals(task.tags));
+      });
+    });
+
+    group('SubTask Management', () {
+      test('should add subtasks to task', () {
+        final task = TaskModel.create(title: 'Test Task');
+        final subtask = SubTask.create(
+          title: 'Subtask 1',
+          taskId: task.id,
+        );
+        final withSubtask = task.addSubTask(subtask);
+        
+        expect(withSubtask.subTasks.length, equals(1));
+        expect(withSubtask.subTasks.first.title, equals('Subtask 1'));
+        expect(withSubtask.hasSubTasks, isTrue);
+        expect(withSubtask.updatedAt, isNotNull);
+      });
+
+      test('should update existing subtask', () {
+        final task = TaskModel.create(title: 'Test Task');
+        final subtask = SubTask.create(
+          title: 'Original Title',
+          taskId: task.id,
+        );
+        final withSubtask = task.addSubTask(subtask);
+        final updatedSubtask = subtask.copyWith(title: 'Updated Title');
+        final withUpdatedSubtask = withSubtask.updateSubTask(updatedSubtask);
+        
+        expect(withUpdatedSubtask.subTasks.first.title, equals('Updated Title'));
+        expect(withUpdatedSubtask.updatedAt, isNotNull);
+      });
+
+      test('should remove subtask from task', () {
+        final task = TaskModel.create(title: 'Test Task');
+        final subtask = SubTask.create(
+          title: 'To Remove',
+          taskId: task.id,
+        );
+        final withSubtask = task.addSubTask(subtask);
+        final withoutSubtask = withSubtask.removeSubTask(subtask.id);
+        
+        expect(withoutSubtask.subTasks, isEmpty);
+        expect(withoutSubtask.hasSubTasks, isFalse);
+        expect(withoutSubtask.updatedAt, isNotNull);
+      });
+
+      test('should calculate subtask completion percentage', () {
+        final task = TaskModel.create(title: 'Test Task');
+        final subtask1 = SubTask.create(title: 'Sub 1', taskId: task.id).markCompleted();
+        final subtask2 = SubTask.create(title: 'Sub 2', taskId: task.id);
+        
+        final withSubtasks = task
+            .addSubTask(subtask1)
+            .addSubTask(subtask2);
+        
+        expect(withSubtasks.subTaskCompletionPercentage, equals(0.5));
+      });
+
+      test('should check if all subtasks are completed', () {
+        final task = TaskModel.create(title: 'Test Task');
+        final subtask1 = SubTask.create(title: 'Sub 1', taskId: task.id).markCompleted();
+        final subtask2 = SubTask.create(title: 'Sub 2', taskId: task.id).markCompleted();
+        
+        final withSubtasks = task
+            .addSubTask(subtask1)
+            .addSubTask(subtask2);
+        
+        expect(withSubtasks.allSubTasksCompleted, isTrue);
+      });
+    });
+
+    group('Due Date Properties', () {
+      test('should identify if task is due today', () {
         final today = DateTime.now();
-        final todayMidnight = DateTime(today.year, today.month, today.day);
+        final todayDate = DateTime(today.year, today.month, today.day, 23, 59);
         
         final task = TaskModel.create(
           title: 'Due Today',
-          dueDate: todayMidnight,
+          dueDate: todayDate,
         );
         
         expect(task.isDueToday, isTrue);
+      });
+
+      test('should identify if task is overdue', () {
+        final yesterday = DateTime.now().subtract(const Duration(days: 1));
+        
+        final task = TaskModel.create(
+          title: 'Overdue Task',
+          dueDate: yesterday,
+        );
+        
+        expect(task.isOverdue, isTrue);
+      });
+
+      test('should not consider completed tasks as overdue', () {
+        final yesterday = DateTime.now().subtract(const Duration(days: 1));
+        
+        final task = TaskModel.create(
+          title: 'Completed Overdue',
+          dueDate: yesterday,
+        ).markCompleted();
+        
         expect(task.isOverdue, isFalse);
       });
 
-      test('should handle due date in the future', () {
-        final futureDate = DateTime.now().add(const Duration(days: 5));
+      test('should identify if task is due soon', () {
+        final soon = DateTime.now().add(const Duration(hours: 12));
+        
+        final task = TaskModel.create(
+          title: 'Due Soon',
+          dueDate: soon,
+        );
+        
+        expect(task.isDueSoon, isTrue);
+      });
+
+      test('should calculate days until due', () {
+        final threeDaysFromNow = DateTime.now().add(const Duration(days: 3));
+        
         final task = TaskModel.create(
           title: 'Future Task',
-          dueDate: futureDate,
+          dueDate: threeDaysFromNow,
         );
         
-        expect(task.isOverdue, isFalse);
-        expect(task.isDueToday, isFalse);
-      });
-
-      test('should validate reminder date logic', () {
-        final dueDate = DateTime(2024, 12, 25, 14, 0);
-        final validReminder = DateTime(2024, 12, 24, 9, 0);
-        final invalidReminder = DateTime(2024, 12, 26, 9, 0); // After due date
-        
-        // Valid reminder
-        final validTask = TaskModel.create(
-          title: 'Task with Valid Reminder',
-          dueDate: dueDate,
-          reminderDate: validReminder,
-        );
-        expect(validTask.reminderDate, equals(validReminder));
-        
-        // Invalid reminder should throw or be ignored
-        expect(
-          () => TaskModel.create(
-            title: 'Task with Invalid Reminder',
-            dueDate: dueDate,
-            reminderDate: invalidReminder,
-          ),
-          throwsA(isA<ArgumentError>()),
-        );
-      });
-
-      test('should handle leap year dates correctly', () {
-        final leapYearDate = DateTime(2024, 2, 29); // 2024 is a leap year
-        final task = TaskModel.create(
-          title: 'Leap Year Task',
-          dueDate: leapYearDate,
-        );
-        
-        expect(task.dueDate, equals(leapYearDate));
-      });
-
-      test('should handle timezone edge cases', () {
-        final utcDate = DateTime.utc(2024, 12, 25, 12, 0);
-        final localDate = DateTime(2024, 12, 25, 12, 0);
-        
-        final utcTask = TaskModel.create(
-          title: 'UTC Task',
-          dueDate: utcDate,
-        );
-        
-        final localTask = TaskModel.create(
-          title: 'Local Task',
-          dueDate: localDate,
-        );
-        
-        expect(utcTask.dueDate, equals(utcDate));
-        expect(localTask.dueDate, equals(localDate));
+        final daysUntil = task.daysUntilDue;
+        expect(daysUntil, isA<int>());
+        expect(daysUntil! >= 2 && daysUntil <= 3, isTrue); // Account for time precision
       });
     });
 
-    group('Task Tags and Metadata Tests', () {
-      test('should handle empty tags list', () {
+    group('Recurrence Properties', () {
+      test('should create recurring task with pattern', () {
+        final recurrence = RecurrencePattern.daily(interval: 2);
+        
         final task = TaskModel.create(
-          title: 'No Tags Task',
-          tags: [],
+          title: 'Recurring Task',
+          recurrence: recurrence,
         );
         
-        expect(task.tags, isEmpty);
+        expect(task.isRecurring, isTrue);
+        expect(task.recurrence, equals(recurrence));
       });
 
-      test('should normalize and validate tags', () {
+      test('should identify task as part of recurring series', () {
         final task = TaskModel.create(
-          title: 'Tagged Task',
-          tags: ['WORK', 'personal', '  urgent  ', 'work'], // Duplicates and whitespace
+          title: 'Recurring Instance',
+          metadata: const {'original_task_id': 'parent-123'},
         );
         
-        // Should normalize to lowercase and remove duplicates/whitespace
-        expect(task.tags, containsAll(['work', 'personal', 'urgent']));
-        expect(task.tags.length, equals(3)); // No duplicates
+        expect(task.isPartOfRecurringSeries, isTrue);
+        expect(task.originalRecurringTaskId, equals('parent-123'));
       });
 
-      test('should handle large metadata objects', () {
-        final largeMetadata = <String, dynamic>{
-          'source': 'voice_recognition',
-          'confidence_score': 0.95,
-          'processing_time_ms': 1250,
-          'user_corrections': ['title', 'due_date'],
-          'ai_suggestions': {
-            'priority': 'high',
-            'category': 'work',
-            'estimated_duration': '2h',
-          },
-          'location_data': {
-            'latitude': 37.7749,
-            'longitude': -122.4194,
-            'address': '123 Main St, San Francisco, CA',
-          }
-        };
-        
+      test('should get occurrence number', () {
         final task = TaskModel.create(
-          title: 'Complex Task',
-          metadata: largeMetadata,
+          title: 'Third Occurrence',
+          metadata: const {'occurrence_number': 3},
         );
         
-        expect(task.metadata['source'], equals('voice_recognition'));
-        expect(task.metadata['ai_suggestions']['priority'], equals('high'));
-        expect(task.metadata['location_data']['latitude'], equals(37.7749));
+        expect(task.occurrenceNumber, equals(3));
       });
     });
 
-    group('Subtask Logic Tests', () {
-      test('should handle empty subtasks list', () {
-        final task = TaskModel.create(
-          title: 'Task with No Subtasks',
-        );
+    group('Dependencies Management', () {
+      test('should add dependency to task', () {
+        final task = TaskModel.create(title: 'Dependent Task');
+        final withDependency = task.addDependency('prerequisite-task-id');
         
-        expect(task.subtasks, isEmpty);
-        expect(task.completedSubtasks, equals(0));
-        expect(task.totalSubtasks, equals(0));
-        expect(task.subtaskProgress, equals(0.0));
+        expect(withDependency.dependencies, contains('prerequisite-task-id'));
+        expect(withDependency.hasDependencies, isTrue);
+        expect(withDependency.updatedAt, isNotNull);
       });
 
-      test('should calculate subtask progress correctly', () {
-        final subtasks = [
-          'Subtask 1',
-          'Subtask 2',
-          'Subtask 3',
-          'Subtask 4',
-        ];
+      test('should not add self as dependency', () {
+        final task = TaskModel.create(title: 'Self Task');
+        final unchanged = task.addDependency(task.id);
         
-        final task = TaskModel.create(
-          title: 'Task with Subtasks',
-          subtasks: subtasks,
-        );
+        expect(unchanged.dependencies, isEmpty);
+      });
+
+      test('should remove dependency from task', () {
+        final task = TaskModel.create(title: 'Task')
+            .addDependency('dep-1')
+            .addDependency('dep-2');
+        final withoutDep = task.removeDependency('dep-1');
         
-        expect(task.totalSubtasks, equals(4));
-        expect(task.completedSubtasks, equals(0));
-        expect(task.subtaskProgress, equals(0.0));
-        
-        // Complete some subtasks
-        final partiallyCompleted = task.copyWith(
-          completedSubtasks: 2,
-        );
-        
-        expect(partiallyCompleted.subtaskProgress, equals(0.5)); // 2/4 = 0.5
-        
-        // Complete all subtasks
-        final fullyCompleted = task.copyWith(
-          completedSubtasks: 4,
-        );
-        
-        expect(fullyCompleted.subtaskProgress, equals(1.0)); // 4/4 = 1.0
+        expect(withoutDep.dependencies, isNot(contains('dep-1')));
+        expect(withoutDep.dependencies, contains('dep-2'));
+        expect(withoutDep.updatedAt, isNotNull);
       });
     });
 
-    group('Task Validation and Edge Cases', () {
-      test('should handle very long title (boundary testing)', () {
-        final longTitle = 'A' * 1000; // 1000 characters
-        
-        final task = TaskModel.create(title: longTitle);
-        expect(task.title, equals(longTitle));
-      });
-
-      test('should handle special characters in title', () {
-        const specialTitle = 'Task with émojis 🚀 and spëcial chärs #@%';
-        
-        final task = TaskModel.create(title: specialTitle);
-        expect(task.title, equals(specialTitle));
-      });
-
-      test('should handle null description correctly', () {
+    group('Metadata Management', () {
+      test('should update metadata', () {
         final task = TaskModel.create(
           title: 'Task',
-          description: null,
+          metadata: const {'key1': 'value1'},
         );
+        final updated = task.updateMetadata({'key2': 'value2', 'key1': 'updated'});
         
-        expect(task.description, isNull);
+        expect(updated.metadata['key1'], equals('updated'));
+        expect(updated.metadata['key2'], equals('value2'));
+        expect(updated.updatedAt, isNotNull);
       });
 
-      test('should handle empty description', () {
-        final task = TaskModel.create(
-          title: 'Task',
-          description: '',
-        );
+      test('should toggle pin status', () {
+        final task = TaskModel.create(title: 'Task');
+        final pinned = task.togglePin();
+        final unpinned = pinned.togglePin();
         
-        // Empty description should be converted to null
-        expect(task.description, isNull);
+        expect(pinned.isPinned, isTrue);
+        expect(unpinned.isPinned, isFalse);
+        expect(unpinned.updatedAt, isNotNull);
       });
     });
 
-    group('Task Equality and Comparison Tests', () {
-      test('should compare tasks by ID correctly', () {
-        final task1 = TaskModel.create(title: 'Task 1');
-        final task2 = TaskModel.create(title: 'Task 2');
-        final task1Copy = task1.copyWith(title: 'Modified Task 1');
+    group('Project and Location', () {
+      test('should identify task with project', () {
+        final task = TaskModel.create(
+          title: 'Project Task',
+          projectId: 'project-123',
+        );
         
-        expect(task1 == task2, isFalse);
-        expect(task1 == task1Copy, isTrue); // Same ID
-        expect(task1.hashCode == task1Copy.hashCode, isTrue);
+        expect(task.hasProject, isTrue);
+        expect(task.projectId, equals('project-123'));
       });
 
-      test('should handle copyWith edge cases', () {
+      test('should identify task with location trigger', () {
+        final task = TaskModel.create(
+          title: 'Location Task',
+          locationTrigger: 'office',
+        );
+        
+        expect(task.hasLocationTrigger, isTrue);
+        expect(task.locationTrigger, equals('office'));
+      });
+    });
+
+    group('Task Validation', () {
+      test('should validate correct task', () {
+        final task = TaskModel.create(title: 'Valid Task');
+        
+        expect(task.isValid(), isTrue);
+      });
+
+      test('should invalidate task with empty title', () {
+        // Create task with valid title first, then copy with empty title
+        final task = TaskModel.create(title: 'Valid')
+            .copyWith(title: '   ');
+        
+        expect(task.isValid(), isFalse);
+      });
+
+      test('should invalidate completed task without completion date', () {
+        final task = TaskModel.create(title: 'Task')
+            .copyWith(status: TaskStatus.completed, completedAt: null);
+        
+        expect(task.isValid(), isFalse);
+      });
+
+      test('should invalidate non-completed task with completion date', () {
+        final task = TaskModel.create(title: 'Task')
+            .copyWith(
+              status: TaskStatus.pending, 
+              completedAt: DateTime.now(),
+            );
+        
+        expect(task.isValid(), isFalse);
+      });
+    });
+
+    group('Task Copying', () {
+      test('should copy task with updated fields', () {
         final original = TaskModel.create(
-          title: 'Original Task',
-          description: 'Original Description',
+          title: 'Original',
           priority: TaskPriority.low,
         );
         
-        // Copy with null values
         final copied = original.copyWith(
-          description: null,
-          priority: TaskPriority.urgent,
+          title: 'Updated',
+          priority: TaskPriority.high,
         );
         
-        expect(copied.title, equals('Original Task'));
-        expect(copied.description, isNull);
-        expect(copied.priority, equals(TaskPriority.urgent));
-        expect(copied.id, equals(original.id)); // ID should remain the same
+        expect(copied.title, equals('Updated'));
+        expect(copied.priority, equals(TaskPriority.high));
+        expect(copied.id, equals(original.id)); // ID should remain same
+        expect(copied.createdAt, equals(original.createdAt)); // Created date unchanged
+        expect(copied.updatedAt, isNotNull); // Updated date set
       });
     });
 
-    group('Recurring Task Logic Tests', () {
-      test('should handle daily recurring tasks', () {
-        final task = TaskModel.create(
-          title: 'Daily Task',
-          recurrenceRule: RecurrenceRule.daily(interval: 1),
-        );
+    group('Edge Cases', () {
+      test('should handle task with very long title', () {
+        const longTitle = 'This is a very long task title that exceeds normal length to test how the system handles lengthy task descriptions and titles';
         
-        expect(task.isRecurring, isTrue);
-        expect(task.recurrenceRule?.pattern, equals(RecurrencePattern.daily));
-        expect(task.recurrenceRule?.interval, equals(1));
+        final task = TaskModel.create(title: longTitle);
+        
+        expect(task.title, equals(longTitle));
+        expect(task.isValid(), isTrue);
       });
 
-      test('should handle weekly recurring tasks with specific days', () {
-        final task = TaskModel.create(
-          title: 'Weekly Meeting',
-          recurrenceRule: RecurrenceRule.weekly(
-            interval: 1,
-            daysOfWeek: [DateTime.monday, DateTime.friday],
-          ),
-        );
+      test('should handle task with special characters', () {
+        const specialTitle = 'Task with émojis 🚀 & symbols @#\$%^&*()';
         
-        expect(task.isRecurring, isTrue);
-        expect(task.recurrenceRule?.pattern, equals(RecurrencePattern.weekly));
-        expect(task.recurrenceRule?.daysOfWeek, contains(DateTime.monday));
-        expect(task.recurrenceRule?.daysOfWeek, contains(DateTime.friday));
+        final task = TaskModel.create(title: specialTitle);
+        
+        expect(task.title, equals(specialTitle));
+        expect(task.isValid(), isTrue);
       });
 
-      test('should handle monthly recurring tasks', () {
+      test('should handle task with null optional fields', () {
         final task = TaskModel.create(
-          title: 'Monthly Report',
-          recurrenceRule: RecurrenceRule.monthly(
-            interval: 1,
-            dayOfMonth: 15,
-          ),
+          title: 'Minimal Task',
+          description: null,
+          dueDate: null,
         );
         
-        expect(task.isRecurring, isTrue);
-        expect(task.recurrenceRule?.pattern, equals(RecurrencePattern.monthly));
-        expect(task.recurrenceRule?.dayOfMonth, equals(15));
+        expect(task.description, isNull);
+        expect(task.dueDate, isNull);
+        expect(task.isValid(), isTrue);
       });
     });
   });

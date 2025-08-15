@@ -117,7 +117,7 @@ class OpenAITaskParser implements AITaskParser {
         body: body,
       ).timeout(
         const Duration(seconds: 30),
-        onTimeout: () => throw AIParsingException(
+        onTimeout: () => throw const AIParsingException(
           'OpenAI API request timed out after 30 seconds',
           code: 'TIMEOUT',
         ),

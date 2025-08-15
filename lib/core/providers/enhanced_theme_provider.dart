@@ -113,11 +113,6 @@ class EnhancedThemeNotifier extends StateNotifier<EnhancedThemeState> {
       _themeHistory.clear();
       _themeHistory.addAll(historyJson);
       
-      // FORCE Matrix theme for debugging - ignore saved theme
-      debugPrint('🎨 FORCING Matrix Dark theme for debugging (ignoring saved: $savedThemeId)');
-      await setTheme('matrix_dark', saveToPrefs: true); // Save it so it persists
-      
-      /*
       if (savedThemeId != null && _themeRegistry.isRegistered(savedThemeId)) {
         debugPrint('🎨 Loading saved theme: $savedThemeId');
         await setTheme(savedThemeId, saveToPrefs: false);
@@ -126,7 +121,6 @@ class EnhancedThemeNotifier extends StateNotifier<EnhancedThemeState> {
         debugPrint('🎨 No saved theme found, setting default to: matrix_dark');
         await setTheme('matrix_dark', saveToPrefs: false);
       }
-      */
     } catch (e) {
       state = state.copyWith(
         error: 'Failed to load saved theme: $e',
@@ -350,10 +344,19 @@ final currentFlutterDarkThemeProvider = Provider<ThemeData?>((ref) {
   return themeState.darkFlutterTheme;
 });
 
-/// Provider for theme mode (always use system for now)
-final themeModeProvider = StateProvider<ThemeMode>((ref) {
-  // Force dark mode for Matrix theme debugging
-  return ThemeMode.dark;
+/// Provider for theme mode (dynamically changes based on selected theme)
+final themeModeProvider = Provider<ThemeMode>((ref) {
+  final themeState = ref.watch(enhancedThemeProvider);
+  
+  if (themeState.currentTheme == null) {
+    return ThemeMode.system;
+  }
+  
+  // Determine if the current theme is light or dark based on theme ID
+  final themeId = themeState.currentTheme!.metadata.id;
+  final isLightTheme = !themeId.contains('_dark');
+  
+  return isLightTheme ? ThemeMode.light : ThemeMode.dark;
 });
 
 /// Provider for all available themes

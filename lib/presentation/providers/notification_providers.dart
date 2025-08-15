@@ -4,7 +4,7 @@ import '../../services/notification/notification_manager.dart' as manager;
 import '../../services/notification/notification_models.dart';
 import '../../services/notification/notification_service.dart';
 import '../../services/notification/local_notification_service.dart';
-import 'task_providers.dart';
+import '../../core/providers/core_providers.dart';
 
 /// Provider for the notification service
 final notificationServiceProvider = Provider<NotificationService>((ref) {

@@ -6,6 +6,9 @@ import '../../services/location/geofencing_manager.dart';
 import '../../services/location/location_task_service.dart';
 import '../../domain/entities/task_model.dart';
 import 'task_providers.dart';
+import '../../domain/repositories/task_repository.dart';
+import 'dependency_providers.dart';
+import '../../core/providers/core_providers.dart';
 import 'notification_providers.dart';
 
 // Location service provider

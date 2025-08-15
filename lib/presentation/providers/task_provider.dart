@@ -3,97 +3,42 @@ import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
 import '../../domain/repositories/task_repository.dart';
 import '../../services/task/recurring_task_service.dart';
-import '../../services/task/task_dependency_service.dart';
+import '../../services/dependency_service.dart';
+import '../../services/task/enhanced_task_operations.dart';
 import '../../services/notification/notification_service.dart';
 import '../../services/notification/local_notification_service.dart';
 import '../../core/providers/core_providers.dart';
+import 'task_providers.dart';
+import 'dependency_providers.dart';
+import 'notification_providers.dart';
 
-/// Provider for all tasks
-final tasksProvider = StreamProvider<List<TaskModel>>((ref) {
+// All basic task providers moved to task_providers.dart to avoid duplicates
+// This file now only contains specialized operations providers
+
+/// Recurring task service provider (removed duplicate - using one from task_providers.dart)
+// Duplicate removed to avoid conflicts
+
+/// Task dependency service provider (using the one from dependency_providers.dart)
+// Duplicate removed to avoid conflicts
+
+/// Notification service provider (using the one from notification_providers.dart)
+// Duplicate removed to avoid conflicts
+
+/// Enhanced task operations provider with comprehensive error handling and undo
+final taskOperationsProvider = Provider<EnhancedTaskOperations>((ref) {
   final repository = ref.watch(taskRepositoryProvider);
-  return repository.watchAllTasks();
+  // Import services from their respective provider files to avoid duplicates
+  final recurringService = ref.watch(recurringTaskServiceProvider);
+  final dependencyService = ref.watch(dependencyServiceProvider);
+  final notificationService = ref.watch(notificationServiceProvider);
+  return EnhancedTaskOperations(repository, recurringService, dependencyService, notificationService);
 });
 
-/// Provider for pending tasks
-final pendingTasksProvider = StreamProvider<List<TaskModel>>((ref) {
-  final repository = ref.watch(taskRepositoryProvider);
-  return repository.watchTasksByStatus(TaskStatus.pending);
-});
-
-/// Provider for completed tasks
-final completedTasksProvider = StreamProvider<List<TaskModel>>((ref) {
-  final repository = ref.watch(taskRepositoryProvider);
-  return repository.watchTasksByStatus(TaskStatus.completed);
-});
-
-/// Provider for today's tasks
-final todayTasksProvider = FutureProvider<List<TaskModel>>((ref) async {
-  final repository = ref.watch(taskRepositoryProvider);
-  return repository.getTasksDueToday();
-});
-
-/// Provider for overdue tasks
-final overdueTasksProvider = FutureProvider<List<TaskModel>>((ref) async {
-  final repository = ref.watch(taskRepositoryProvider);
-  return repository.getOverdueTasks();
-});
-
-/// Provider for task filter state
-final taskFilterProvider = StateProvider<TaskFilter>((ref) {
-  return const TaskFilter();
-});
-
-/// Provider for filtered tasks
-final filteredTasksProvider = FutureProvider<List<TaskModel>>((ref) async {
-  final repository = ref.watch(taskRepositoryProvider);
-  final filter = ref.watch(taskFilterProvider);
-  
-  if (!filter.hasFilters) {
-    return repository.getAllTasks();
-  }
-  
-  return repository.getTasksWithFilter(filter);
-});
-
-/// Provider for search query
-final searchQueryProvider = StateProvider<String>((ref) => '');
-
-/// Provider for searched tasks
-final searchedTasksProvider = FutureProvider<List<TaskModel>>((ref) async {
-  final repository = ref.watch(taskRepositoryProvider);
-  final query = ref.watch(searchQueryProvider);
-  
-  if (query.isEmpty) {
-    return repository.getAllTasks();
-  }
-  
-  return repository.searchTasks(query);
-});
-
-/// Recurring task service provider
-final recurringTaskServiceProvider = Provider<RecurringTaskService>((ref) {
-  final repository = ref.watch(taskRepositoryProvider);
-  final database = ref.watch(databaseProvider);
-  return RecurringTaskService(repository, database);
-});
-
-/// Task dependency service provider
-final taskDependencyServiceProvider = Provider<TaskDependencyService>((ref) {
-  final repository = ref.watch(taskRepositoryProvider);
-  return TaskDependencyService(repository);
-});
-
-/// Notification service provider
-final notificationServiceProvider = Provider<NotificationService>((ref) {
-  final repository = ref.watch(taskRepositoryProvider);
-  return LocalNotificationService(repository);
-});
-
-/// Task operations provider
-final taskOperationsProvider = Provider<TaskOperations>((ref) {
+/// Legacy task operations provider for backward compatibility
+final legacyTaskOperationsProvider = Provider<TaskOperations>((ref) {
   final repository = ref.watch(taskRepositoryProvider);
   final recurringService = ref.watch(recurringTaskServiceProvider);
-  final dependencyService = ref.watch(taskDependencyServiceProvider);
+  final dependencyService = ref.watch(dependencyServiceProvider);
   return TaskOperations(repository, recurringService, dependencyService);
 });
 
@@ -101,7 +46,7 @@ final taskOperationsProvider = Provider<TaskOperations>((ref) {
 class TaskOperations {
   final TaskRepository _repository;
   final RecurringTaskService _recurringService;
-  final TaskDependencyService _dependencyService;
+  final DependencyService _dependencyService;
   
   TaskOperations(this._repository, this._recurringService, this._dependencyService);
   

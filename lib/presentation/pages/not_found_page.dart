@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../widgets/app_scaffold.dart';
+import '../widgets/standardized_app_bar.dart';
+import '../widgets/theme_background_widget.dart';
 import '../../core/routing/app_router.dart';
 
 /// 404 Not Found page for invalid routes
@@ -8,12 +9,19 @@ class NotFoundPage extends ConsumerWidget {
   const NotFoundPage({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return AppScaffold(
-      title: 'Page Not Found',
-      showBottomNavigation: false,
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
+    return ThemeBackgroundWidget(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        extendBodyBehindAppBar: true,
+        appBar: const StandardizedAppBar(title: 'Page Not Found'),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.only(
+              top: kToolbarHeight + 32,
+              left: 24.0,
+              right: 24.0,
+              bottom: 24.0,
+            ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -71,6 +79,7 @@ class NotFoundPage extends ConsumerWidget {
                 label: const Text('Go Back'),
               ),
             ],
+          ),
           ),
         ),
       ),

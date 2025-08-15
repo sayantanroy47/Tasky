@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../services/speech/speech_service.dart';
 import '../../services/speech/speech_service_impl.dart';
+import '../../core/providers/error_state_manager.dart';
 
 // Provider for the speech service
 final speechServiceProvider = Provider<SpeechService>((ref) {
@@ -58,9 +59,10 @@ class SpeechRecognitionState {
 // Notifier for managing speech recognition state
 class SpeechRecognitionNotifier extends StateNotifier<SpeechRecognitionState> {
   final SpeechService _speechService;
+  final Ref _ref;
   Timer? _soundLevelTimer;
 
-  SpeechRecognitionNotifier(this._speechService) : super(const SpeechRecognitionState());
+  SpeechRecognitionNotifier(this._speechService, this._ref) : super(const SpeechRecognitionState());
 
   /// Get access to the underlying speech service for advanced operations
   SpeechService? get speechService => _speechService;
@@ -105,10 +107,20 @@ class SpeechRecognitionNotifier extends StateNotifier<SpeechRecognitionState> {
         selectedLocale: locales.isNotEmpty ? locales.first : null,
         errorMessage: null,
       );
-    } catch (e) {
+    } catch (e, stackTrace) {
+      final errorMessage = e.toString();
       state = state.copyWith(
         status: SpeechRecognitionStatus.error,
-        errorMessage: e.toString(),
+        errorMessage: errorMessage,
+      );
+      
+      // Report to global error state
+      _ref.reportError(
+        e,
+        code: 'speech_initialization_failed',
+        severity: ErrorSeverity.error,
+        context: {'operation': 'initialize'},
+        stackTrace: stackTrace,
       );
     }
   }
@@ -143,10 +155,20 @@ class SpeechRecognitionNotifier extends StateNotifier<SpeechRecognitionState> {
 
       // Start sound level monitoring (simulated)
       _startSoundLevelMonitoring();
-    } catch (e) {
+    } catch (e, stackTrace) {
+      final errorMessage = e.toString();
       state = state.copyWith(
         status: SpeechRecognitionStatus.error,
-        errorMessage: e.toString(),
+        errorMessage: errorMessage,
+      );
+      
+      // Report to global error state
+      _ref.reportError(
+        e,
+        code: 'speech_listening_failed',
+        severity: ErrorSeverity.error,
+        context: {'operation': 'startListening'},
+        stackTrace: stackTrace,
       );
     }
   }
@@ -255,28 +277,35 @@ class SpeechRecognitionNotifier extends StateNotifier<SpeechRecognitionState> {
 }
 
 // Provider for speech recognition state
-final speechRecognitionProvider = StateNotifierProvider<SpeechRecognitionNotifier, SpeechRecognitionState>((ref) {
+final speechRecognitionProvider = StateNotifierProvider.autoDispose<SpeechRecognitionNotifier, SpeechRecognitionState>((ref) {
   final speechService = ref.read(speechServiceProvider);
-  return SpeechRecognitionNotifier(speechService);
+  final notifier = SpeechRecognitionNotifier(speechService, ref);
+  
+  // Ensure proper disposal of resources
+  ref.onDispose(() {
+    notifier.dispose();
+  });
+  
+  return notifier;
 });
 
 // Computed providers for specific state aspects
-final isRecordingProvider = Provider<bool>((ref) {
+final isRecordingProvider = Provider.autoDispose<bool>((ref) {
   return ref.watch(speechRecognitionProvider).isRecording;
 });
 
-final transcriptionTextProvider = Provider<String?>((ref) {
+final transcriptionTextProvider = Provider.autoDispose<String?>((ref) {
   return ref.watch(speechRecognitionProvider).transcriptionText;
 });
 
-final speechErrorProvider = Provider<String?>((ref) {
+final speechErrorProvider = Provider.autoDispose<String?>((ref) {
   return ref.watch(speechRecognitionProvider).errorMessage;
 });
 
-final speechAvailableLocalesProvider = Provider<List<String>>((ref) {
+final speechAvailableLocalesProvider = Provider.autoDispose<List<String>>((ref) {
   return ref.watch(speechRecognitionProvider).availableLocales;
 });
 
-final selectedSpeechLocaleProvider = Provider<String?>((ref) {
+final selectedSpeechLocaleProvider = Provider.autoDispose<String?>((ref) {
   return ref.watch(speechRecognitionProvider).selectedLocale;
 });

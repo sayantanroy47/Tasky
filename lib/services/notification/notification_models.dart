@@ -18,7 +18,22 @@ enum NotificationTypeModel {
   taskCompleted,
   
   @JsonValue('location_reminder')
-  locationReminder;
+  locationReminder,
+  
+  @JsonValue('location_based')
+  locationBased,
+  
+  @JsonValue('emergency')
+  emergency,
+  
+  @JsonValue('smart_suggestion')
+  smartSuggestion,
+  
+  @JsonValue('collaboration')
+  collaboration,
+  
+  @JsonValue('automation_trigger')
+  automationTrigger;
 
   String get displayName {
     switch (this) {
@@ -32,6 +47,16 @@ enum NotificationTypeModel {
         return 'Task Completed';
       case NotificationTypeModel.locationReminder:
         return 'Location Reminder';
+      case NotificationTypeModel.locationBased:
+        return 'Location Based';
+      case NotificationTypeModel.emergency:
+        return 'Emergency';
+      case NotificationTypeModel.smartSuggestion:
+        return 'Smart Suggestion';
+      case NotificationTypeModel.collaboration:
+        return 'Collaboration';
+      case NotificationTypeModel.automationTrigger:
+        return 'Automation Trigger';
     }
   }
 }
@@ -48,7 +73,19 @@ enum NotificationAction {
   view,
   
   @JsonValue('dismiss')
-  dismiss;
+  dismiss,
+  
+  @JsonValue('reschedule')
+  reschedule,
+  
+  @JsonValue('postpone')
+  postpone,
+  
+  @JsonValue('delegate')
+  delegate,
+  
+  @JsonValue('archive')
+  archive;
 
   String get displayName {
     switch (this) {
@@ -60,6 +97,14 @@ enum NotificationAction {
         return 'View';
       case NotificationAction.dismiss:
         return 'Dismiss';
+      case NotificationAction.reschedule:
+        return 'Reschedule';
+      case NotificationAction.postpone:
+        return 'Postpone';
+      case NotificationAction.delegate:
+        return 'Delegate';
+      case NotificationAction.archive:
+        return 'Archive';
     }
   }
 }
@@ -429,4 +474,288 @@ class NotificationStats extends Equatable {
         mostCommonType,
         averageResponseTime,
       ];
+}
+
+/// Priority levels for notifications
+enum NotificationPriority {
+  @JsonValue('low')
+  low,
+  
+  @JsonValue('normal') 
+  normal,
+  
+  @JsonValue('high')
+  high,
+  
+  @JsonValue('urgent')
+  urgent,
+  
+  @JsonValue('critical')
+  critical;
+
+  String get displayName {
+    switch (this) {
+      case NotificationPriority.low:
+        return 'Low';
+      case NotificationPriority.normal:
+        return 'Normal';
+      case NotificationPriority.high:
+        return 'High';
+      case NotificationPriority.urgent:
+        return 'Urgent';
+      case NotificationPriority.critical:
+        return 'Critical';
+    }
+  }
+
+  int get weight {
+    switch (this) {
+      case NotificationPriority.low:
+        return 1;
+      case NotificationPriority.normal:
+        return 2;
+      case NotificationPriority.high:
+        return 3;
+      case NotificationPriority.urgent:
+        return 4;
+      case NotificationPriority.critical:
+        return 5;
+    }
+  }
+}
+
+/// Notification template for customizable notifications
+@JsonSerializable()
+class NotificationTemplate extends Equatable {
+  final String id;
+  final String name;
+  final NotificationTypeModel type;
+  final String titleTemplate;
+  final String bodyTemplate;
+  final List<NotificationAction> availableActions;
+  final NotificationPriority defaultPriority;
+  final Map<String, dynamic> metadata;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+
+  const NotificationTemplate({
+    required this.id,
+    required this.name,
+    required this.type,
+    required this.titleTemplate,
+    required this.bodyTemplate,
+    this.availableActions = const [],
+    this.defaultPriority = NotificationPriority.normal,
+    this.metadata = const {},
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory NotificationTemplate.fromJson(Map<String, dynamic> json) =>
+      _$NotificationTemplateFromJson(json);
+
+  Map<String, dynamic> toJson() => _$NotificationTemplateToJson(this);
+
+  NotificationTemplate copyWith({
+    String? id,
+    String? name,
+    NotificationTypeModel? type,
+    String? titleTemplate,
+    String? bodyTemplate,
+    List<NotificationAction>? availableActions,
+    NotificationPriority? defaultPriority,
+    Map<String, dynamic>? metadata,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) {
+    return NotificationTemplate(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      type: type ?? this.type,
+      titleTemplate: titleTemplate ?? this.titleTemplate,
+      bodyTemplate: bodyTemplate ?? this.bodyTemplate,
+      availableActions: availableActions ?? this.availableActions,
+      defaultPriority: defaultPriority ?? this.defaultPriority,
+      metadata: metadata ?? this.metadata,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
+  @override
+  List<Object?> get props => [
+        id,
+        name,
+        type,
+        titleTemplate,
+        bodyTemplate,
+        availableActions,
+        defaultPriority,
+        metadata,
+        createdAt,
+        updatedAt,
+      ];
+}
+
+/// Notification group for organizing related notifications
+@JsonSerializable()
+class NotificationGroup extends Equatable {
+  final String id;
+  final String name;
+  final String description;
+  final List<int> notificationIds;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final bool isCollapsed;
+
+  const NotificationGroup({
+    required this.id,
+    required this.name,
+    required this.description,
+    this.notificationIds = const [],
+    required this.createdAt,
+    required this.updatedAt,
+    this.isCollapsed = false,
+  });
+
+  factory NotificationGroup.fromJson(Map<String, dynamic> json) =>
+      _$NotificationGroupFromJson(json);
+
+  Map<String, dynamic> toJson() => _$NotificationGroupToJson(this);
+
+  NotificationGroup copyWith({
+    String? id,
+    String? name,
+    String? description,
+    List<int>? notificationIds,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    bool? isCollapsed,
+  }) {
+    return NotificationGroup(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      notificationIds: notificationIds ?? this.notificationIds,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      isCollapsed: isCollapsed ?? this.isCollapsed,
+    );
+  }
+
+  @override
+  List<Object?> get props => [
+        id,
+        name,
+        description,
+        notificationIds,
+        createdAt,
+        updatedAt,
+        isCollapsed,
+      ];
+}
+
+/// Rich notification content with media and formatting
+@JsonSerializable()
+class RichNotificationContent extends Equatable {
+  final String? imageUrl;
+  final String? videoUrl;
+  final String? audioUrl;
+  final List<NotificationButton> customButtons;
+  final Map<String, String> customFields;
+  final String? backgroundColor;
+  final String? textColor;
+  final String? accentColor;
+
+  const RichNotificationContent({
+    this.imageUrl,
+    this.videoUrl,
+    this.audioUrl,
+    this.customButtons = const [],
+    this.customFields = const {},
+    this.backgroundColor,
+    this.textColor,
+    this.accentColor,
+  });
+
+  factory RichNotificationContent.fromJson(Map<String, dynamic> json) =>
+      _$RichNotificationContentFromJson(json);
+
+  Map<String, dynamic> toJson() => _$RichNotificationContentToJson(this);
+
+  RichNotificationContent copyWith({
+    String? imageUrl,
+    String? videoUrl,
+    String? audioUrl,
+    List<NotificationButton>? customButtons,
+    Map<String, String>? customFields,
+    String? backgroundColor,
+    String? textColor,
+    String? accentColor,
+  }) {
+    return RichNotificationContent(
+      imageUrl: imageUrl ?? this.imageUrl,
+      videoUrl: videoUrl ?? this.videoUrl,
+      audioUrl: audioUrl ?? this.audioUrl,
+      customButtons: customButtons ?? this.customButtons,
+      customFields: customFields ?? this.customFields,
+      backgroundColor: backgroundColor ?? this.backgroundColor,
+      textColor: textColor ?? this.textColor,
+      accentColor: accentColor ?? this.accentColor,
+    );
+  }
+
+  @override
+  List<Object?> get props => [
+        imageUrl,
+        videoUrl,
+        audioUrl,
+        customButtons,
+        customFields,
+        backgroundColor,
+        textColor,
+        accentColor,
+      ];
+}
+
+/// Custom notification button
+@JsonSerializable()
+class NotificationButton extends Equatable {
+  final String id;
+  final String label;
+  final String? icon;
+  final NotificationAction action;
+  final Map<String, dynamic> payload;
+
+  const NotificationButton({
+    required this.id,
+    required this.label,
+    this.icon,
+    required this.action,
+    this.payload = const {},
+  });
+
+  factory NotificationButton.fromJson(Map<String, dynamic> json) =>
+      _$NotificationButtonFromJson(json);
+
+  Map<String, dynamic> toJson() => _$NotificationButtonToJson(this);
+
+  NotificationButton copyWith({
+    String? id,
+    String? label,
+    String? icon,
+    NotificationAction? action,
+    Map<String, dynamic>? payload,
+  }) {
+    return NotificationButton(
+      id: id ?? this.id,
+      label: label ?? this.label,
+      icon: icon ?? this.icon,
+      action: action ?? this.action,
+      payload: payload ?? this.payload,
+    );
+  }
+
+  @override
+  List<Object?> get props => [id, label, icon, action, payload];
 }

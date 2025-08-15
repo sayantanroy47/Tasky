@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/typography_constants.dart';
+import '../../core/theme/material3/motion_system.dart';
+import '../../core/design_system/design_tokens.dart' hide BorderRadius;
 import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
 import '../providers/task_provider.dart';
+import 'glassmorphism_container.dart';
+import 'theme_aware_dialog_components.dart';
 
 /// Dialog for creating or editing tasks
 class TaskFormDialog extends ConsumerStatefulWidget {
@@ -22,10 +26,16 @@ class TaskFormDialog extends ConsumerStatefulWidget {
   ConsumerState<TaskFormDialog> createState() => _TaskFormDialogState();
 }
 
-class _TaskFormDialogState extends ConsumerState<TaskFormDialog> {
+class _TaskFormDialogState extends ConsumerState<TaskFormDialog>
+    with TickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
+  
+  late AnimationController _fadeController;
+  late AnimationController _scaleController;
+  late Animation<double> _fadeAnimation;
+  late Animation<double> _scaleAnimation;
   
   TaskPriority _priority = TaskPriority.medium;
   DateTime? _dueDate;
@@ -37,7 +47,36 @@ class _TaskFormDialogState extends ConsumerState<TaskFormDialog> {
   @override
   void initState() {
     super.initState();
+    
+    _fadeController = AnimationController(
+      duration: ExpressiveMotionSystem.durationMedium3,
+      vsync: this,
+    );
+    
+    _scaleController = AnimationController(
+      duration: ExpressiveMotionSystem.durationMedium2,
+      vsync: this,
+    );
+    
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _fadeController,
+      curve: ExpressiveMotionSystem.emphasizedDecelerate,
+    ));
+    
+    _scaleAnimation = Tween<double>(
+      begin: 0.8,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _scaleController,
+      curve: ExpressiveMotionSystem.emphasizedDecelerate,
+    ));
+    
     _initializeForm();
+    _fadeController.forward();
+    _scaleController.forward();
   }
 
   void _initializeForm() {
@@ -63,222 +102,244 @@ class _TaskFormDialogState extends ConsumerState<TaskFormDialog> {
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
+    _fadeController.dispose();
+    _scaleController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final isEditing = widget.task != null;
+    final theme = Theme.of(context);
+    final size = MediaQuery.of(context).size;
     
-    return Dialog(
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 500, maxHeight: 600),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+    return FadeTransition(
+      opacity: _fadeAnimation,
+      child: ScaleTransition(
+        scale: _scaleAnimation,
+        child: ThemeAwareTaskDialog(
+          title: isEditing ? 'Edit Task' : 'Create Task',
+          subtitle: isEditing ? 'Update task details' : 'Fill in task information',
+          icon: isEditing ? Icons.edit : Icons.add_task,
+          onBack: () => Navigator.of(context).pop(),
+            child: Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(20),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildTitleField(theme),
+                          const SizedBox(height: 16),
+                          _buildDescriptionField(theme),
+                          const SizedBox(height: 16),
+                          _buildPrioritySelector(theme),
+                          const SizedBox(height: 16),
+                          _buildDueDateSelector(theme),
+                          const SizedBox(height: 16),
+                          _buildTagsField(theme),
+                          const SizedBox(height: 16),
+                          _buildPinToggle(theme),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                _buildFooter(context, theme, isEditing),
+              ],
+            ),
+        ),
+      ),
+    );
+  }
+
+  // Header is now handled by ThemeAwareTaskDialog - this method is no longer needed
+
+  Widget _buildTitleField(ThemeData theme) {
+    return ThemeAwareFormField(
+      controller: _titleController,
+      labelText: 'Task Title',
+      hintText: 'Enter task title...',
+      prefixIcon: Icons.title,
+      required: true,
+      autofocus: widget.task == null,
+      validator: (value) {
+        if (value == null || value.trim().isEmpty) {
+          return 'Please enter a task title';
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget _buildDescriptionField(ThemeData theme) {
+    return ThemeAwareFormField(
+      controller: _descriptionController,
+      labelText: 'Description (Optional)',
+      hintText: 'Enter task description...',
+      prefixIcon: Icons.description,
+      maxLines: 3,
+      textInputAction: TextInputAction.newline,
+      keyboardType: TextInputType.multiline,
+    );
+  }
+
+  Widget _buildPrioritySelector(ThemeData theme) {
+    return ThemeAwarePrioritySelector(
+      selectedPriority: _priority.name,
+      priorities: TaskPriority.values.map((priority) => PriorityOption(
+        value: priority.name,
+        name: _getPriorityLabel(priority),
+        icon: Icons.flag,
+        color: _getPriorityColor(priority),
+      )).toList(),
+      onPriorityChanged: (String value) {
+        final priority = TaskPriority.values.firstWhere(
+          (p) => p.name == value,
+          orElse: () => TaskPriority.medium,
+        );
+        setState(() {
+          _priority = priority;
+        });
+      },
+    );
+  }
+
+  Widget _buildDueDateSelector(ThemeData theme) {
+    return GestureDetector(
+      onTap: _selectDueDate,
+      child: GlassmorphismContainer(
+        level: GlassLevel.content,
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
+        padding: const EdgeInsets.all(16),
+        glassTint: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+        borderColor: theme.colorScheme.outline.withOpacity(0.3),
+        child: Row(
           children: [
-            // Header
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primaryContainer,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(TypographyConstants.radiusStandard),
-                  topRight: Radius.circular(TypographyConstants.radiusStandard),
-                ),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    isEditing ? Icons.edit : Icons.add_task,
-                    color: Theme.of(context).colorScheme.onPrimaryContainer,
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      isEditing ? 'Edit Task' : 'Create Task',
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: Theme.of(context).colorScheme.onPrimaryContainer,
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon: Icon(
-                      Icons.close,
-                      color: Theme.of(context).colorScheme.onPrimaryContainer,
-                    ),
-                  ),
-                ],
-              ),
+            Icon(
+              Icons.calendar_today,
+              color: _dueDate == null 
+                  ? theme.colorScheme.onSurfaceVariant
+                  : theme.colorScheme.primary,
             ),
-            
-            // Form content
+            const SizedBox(width: 12),
             Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Title field
-                      TextFormField(
-                        controller: _titleController,
-                        decoration: const InputDecoration(
-                          labelText: 'Task Title',
-                          hintText: 'Enter task title...',
-                          prefixIcon: Icon(Icons.title),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'Please enter a task title';
-                          }
-                          return null;
-                        },
-                        autofocus: !isEditing,
-                      ),
-                      
-                      const SizedBox(height: 16),
-                      
-                      // Description field
-                      TextFormField(
-                        controller: _descriptionController,
-                        decoration: const InputDecoration(
-                          labelText: 'Description (Optional)',
-                          hintText: 'Enter task description...',
-                          prefixIcon: Icon(Icons.description),
-                        ),
-                        maxLines: 3,
-                      ),
-                      
-                      const SizedBox(height: 16),
-                      
-                      // Priority selector
-                      DropdownButtonFormField<TaskPriority>(
-                        value: _priority,
-                        decoration: const InputDecoration(
-                          labelText: 'Priority',
-                          prefixIcon: Icon(Icons.flag),
-                        ),
-                        items: TaskPriority.values.map((priority) {
-                          return DropdownMenuItem(
-                            value: priority,
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 12,
-                                  height: 12,
-                                  decoration: BoxDecoration(
-                                    color: priority.color,
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Text(priority.displayName),
-                              ],
-                            ),
-                          );
-                        }).toList(),
-                        onChanged: (value) {
-                          if (value != null) {
-                            setState(() {
-                              _priority = value;
-                            });
-                          }
-                        },
-                      ),
-                      
-                      const SizedBox(height: 16),
-                      
-                      // Due date picker
-                      ListTile(
-                        leading: const Icon(Icons.calendar_today),
-                        title: Text(_dueDate == null 
-                          ? 'Set Due Date (Optional)' 
-                          : 'Due: ${_formatDate(_dueDate!)}'),
-                        trailing: _dueDate != null 
-                          ? IconButton(
-                              icon: const Icon(Icons.clear),
-                              onPressed: () {
-                                setState(() {
-                                  _dueDate = null;
-                                });
-                              },
-                            )
-                          : const Icon(Icons.arrow_forward_ios),
-                        onTap: _selectDueDate,
-                        contentPadding: EdgeInsets.zero,
-                      ),
-                      
-                      const SizedBox(height: 16),
-                      
-                      // Tags input (simplified for now)
-                      TextFormField(
-                        decoration: const InputDecoration(
-                          labelText: 'Tags (Optional)',
-                          hintText: 'Enter tags separated by commas...',
-                          prefixIcon: Icon(Icons.tag),
-                        ),
-                        initialValue: _tags.join(', '),
-                        onChanged: (value) {
-                          _tags = value
-                              .split(',')
-                              .map((tag) => tag.trim())
-                              .where((tag) => tag.isNotEmpty)
-                              .toList();
-                        },
-                      ),
-                      
-                      const SizedBox(height: 16),
-                      
-                      // Pin toggle
-                      SwitchListTile(
-                        title: const Text('Pin Task'),
-                        subtitle: const Text('Pin to top of task list'),
-                        value: _isPinned,
-                        onChanged: (value) {
-                          setState(() {
-                            _isPinned = value;
-                          });
-                        },
-                        secondary: const Icon(Icons.push_pin),
-                        contentPadding: EdgeInsets.zero,
-                      ),
-                    ],
-                  ),
+              child: Text(
+                _dueDate == null 
+                    ? 'Set Due Date (Optional)'
+                    : 'Due: ${_formatDate(_dueDate!)}',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: _dueDate == null 
+                      ? theme.colorScheme.onSurfaceVariant
+                      : theme.colorScheme.onSurface,
                 ),
               ),
             ),
-            
-            // Action buttons
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(TypographyConstants.radiusStandard),
-                  bottomRight: Radius.circular(TypographyConstants.radiusStandard),
-                ),
+            if (_dueDate != null)
+              IconButton(
+                onPressed: () {
+                  setState(() {
+                    _dueDate = null;
+                  });
+                },
+                icon: const Icon(Icons.clear),
+                iconSize: 20,
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: const Text('Cancel'),
-                  ),
-                  const SizedBox(width: 8),
-                  FilledButton(
-                    onPressed: _saveTask,
-                    child: Text(isEditing ? 'Update' : 'Create'),
-                  ),
-                ],
-              ),
-            ),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildTagsField(ThemeData theme) {
+    return ThemeAwareFormField(
+      labelText: 'Tags (Optional)',
+      hintText: 'Enter tags separated by commas...',
+      prefixIcon: Icons.tag,
+    );
+  }
+
+  Widget _buildPinToggle(ThemeData theme) {
+    return GlassmorphismContainer(
+      level: GlassLevel.interactive,
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      glassTint: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+      child: SwitchListTile(
+        title: const Text('Pin Task'),
+        subtitle: const Text('Pin to top of task list'),
+        value: _isPinned,
+        onChanged: (value) {
+          setState(() {
+            _isPinned = value;
+          });
+        },
+        secondary: const Icon(Icons.push_pin),
+        contentPadding: EdgeInsets.zero,
+      ),
+    );
+  }
+
+  Widget _buildFooter(BuildContext context, ThemeData theme, bool isEditing) {
+    return GlassmorphismContainer(
+      level: GlassLevel.content,
+      borderRadius: const BorderRadius.only(
+        bottomLeft: Radius.circular(TypographyConstants.dialogRadius),
+        bottomRight: Radius.circular(TypographyConstants.dialogRadius),
+      ),
+      padding: const EdgeInsets.all(20),
+      glassTint: theme.colorScheme.surface.withOpacity(0.8),
+      borderColor: Colors.transparent,
+      child: Row(
+        children: [
+          Expanded(
+            child: RoundedGlassButton(
+              label: 'Cancel',
+              onPressed: () => Navigator.of(context).pop(),
+              icon: Icons.cancel,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: RoundedGlassButton(
+              label: isEditing ? 'Update Task' : 'Create Task',
+              onPressed: _saveTask,
+              icon: isEditing ? Icons.edit : Icons.add,
+              isPrimary: true,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Color _getPriorityColor(TaskPriority priority) {
+    switch (priority) {
+      case TaskPriority.low:
+        return Colors.green;
+      case TaskPriority.medium:
+        return Colors.blue;
+      case TaskPriority.high:
+        return Colors.orange;
+      case TaskPriority.urgent:
+        return Colors.red;
+    }
+  }
+
+  String _getPriorityLabel(TaskPriority priority) {
+    switch (priority) {
+      case TaskPriority.low:
+        return 'Low Priority';
+      case TaskPriority.medium:
+        return 'Medium Priority';
+      case TaskPriority.high:
+        return 'High Priority';
+      case TaskPriority.urgent:
+        return 'Urgent Priority';
+    }
   }
 
   Future<void> _selectDueDate() async {

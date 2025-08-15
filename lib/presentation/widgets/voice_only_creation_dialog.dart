@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/typography_constants.dart';
+import '../../core/theme/material3/motion_system.dart';
+import '../../core/design_system/design_tokens.dart' hide BorderRadius;
 import '../../domain/entities/task_model.dart';
+import '../../domain/entities/recurrence_pattern.dart';
 import '../../domain/models/enums.dart';
 import '../providers/task_provider.dart' show taskOperationsProvider;
-import '../painters/glassmorphism_painter.dart';
-import '../../core/theme/material3/motion_system.dart';
+import '../providers/audio_providers.dart';
+import '../../services/audio/audio_file_manager.dart';
+import '../../services/audio/audio_recording_service.dart';
+import 'glassmorphism_container.dart';
+import 'recurring_task_scheduling_widget.dart';
+import 'theme_aware_dialog_components.dart';
 import 'dart:async';
+import 'dart:io';
 
 /// Voice-Only Task Creation Dialog - records audio without transcription
 class VoiceOnlyCreationDialog extends ConsumerStatefulWidget {
@@ -19,32 +27,61 @@ class VoiceOnlyCreationDialog extends ConsumerStatefulWidget {
 class _VoiceOnlyCreationDialogState extends ConsumerState<VoiceOnlyCreationDialog>
     with TickerProviderStateMixin {
   
-  late AnimationController _pulseController;
+  late AnimationController _fadeController;
   late AnimationController _scaleController;
-  late Animation<double> _pulseAnimation;
+  late AnimationController _pulseController;
+  late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
+  late Animation<double> _pulseAnimation;
   
   bool _isRecording = false;
   bool _isProcessing = false;
   bool _hasRecording = false;
   String _statusMessage = 'Tap to start recording';
   Duration _recordingDuration = Duration.zero;
-  Timer? _recordingTimer;
   String? _audioFilePath;
+  
+  // Real audio recording service
+  final AudioRecordingService _audioService = AudioRecordingService();
+  bool _isAudioInitialized = false;
+  
+  // Recurring task scheduling
+  RecurrencePattern? _recurrencePattern;
   
   @override
   void initState() {
     super.initState();
+    
+    _fadeController = AnimationController(
+      duration: ExpressiveMotionSystem.durationMedium3,
+      vsync: this,
+    );
+    
+    _scaleController = AnimationController(
+      duration: ExpressiveMotionSystem.durationMedium2,
+      vsync: this,
+    );
     
     _pulseController = AnimationController(
       duration: const Duration(milliseconds: 1000),
       vsync: this,
     );
     
-    _scaleController = AnimationController(
-      duration: ExpressiveMotionSystem.durationShort3,
-      vsync: this,
-    );
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _fadeController,
+      curve: ExpressiveMotionSystem.emphasizedDecelerate,
+    ));
+    
+    _scaleAnimation = Tween<double>(
+      begin: 0.8,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _scaleController,
+      curve: ExpressiveMotionSystem.emphasizedDecelerate,
+    ));
     
     _pulseAnimation = Tween<double>(
       begin: 0.8,
@@ -54,210 +91,212 @@ class _VoiceOnlyCreationDialogState extends ConsumerState<VoiceOnlyCreationDialo
       curve: Curves.easeInOut,
     ));
     
-    _scaleAnimation = Tween<double>(
-      begin: 1.0,
-      end: 0.95,
-    ).animate(CurvedAnimation(
-      parent: _scaleController,
-      curve: Curves.easeInOut,
-    ));
+    _initializeAudioService();
+    _fadeController.forward();
+    _scaleController.forward();
+  }
+  
+  Future<void> _initializeAudioService() async {
+    try {
+      _isAudioInitialized = await _audioService.initialize();
+      if (_isAudioInitialized) {
+        setState(() {
+          _statusMessage = 'Ready to record';
+        });
+      } else {
+        setState(() {
+          _statusMessage = 'Audio recording not available';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _statusMessage = 'Error initializing audio: $e';
+      });
+      debugPrint('Error initializing audio service: $e');
+    }
   }
   
   @override
   void dispose() {
-    _pulseController.dispose();
+    _fadeController.dispose();
     _scaleController.dispose();
-    _recordingTimer?.cancel();
+    _pulseController.dispose();
+    _audioService.dispose();
     super.dispose();
   }
   
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final size = MediaQuery.of(context).size;
     
-    return Dialog(
-      backgroundColor: Colors.transparent,
-      child: GlassmorphicContainer(
-        width: MediaQuery.of(context).size.width * 0.85,
-        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-        blur: 20,
-        opacity: 0.95,
-        color: theme.colorScheme.surface,
-        borderColor: theme.colorScheme.secondary.withOpacity(0.3),
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Header
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        theme.colorScheme.secondary,
-                        theme.colorScheme.tertiary,
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                  ),
-                  child: const Icon(Icons.mic, color: Colors.white, size: 24),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Text(
-                    'Voice Only Task',
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                IconButton(
-                  onPressed: () => Navigator.of(context).pop(),
-                  icon: const Icon(Icons.close),
-                ),
-              ],
-            ),
-            
-            const SizedBox(height: 32),
-            
-            // Recording visualization
-            AnimatedBuilder(
-              animation: _pulseAnimation,
-              builder: (context, child) {
-                return ScaleTransition(
-                  scale: _scaleAnimation,
-                  child: GestureDetector(
-                    onTapDown: (_) => _scaleController.forward(),
-                    onTapUp: (_) {
-                      _scaleController.reverse();
-                      _toggleRecording();
-                    },
-                    onTapCancel: () => _scaleController.reverse(),
-                    child: Container(
-                      width: 120,
-                      height: 120,
-                      decoration: BoxDecoration(
-                        gradient: RadialGradient(
-                          colors: [
-                            _isRecording 
-                                ? Colors.red.withOpacity(0.3)
-                                : theme.colorScheme.secondary.withOpacity(0.3),
-                            _isRecording 
-                                ? Colors.red.withOpacity(0.1)
-                                : theme.colorScheme.secondary.withOpacity(0.1),
-                            Colors.transparent,
-                          ],
-                          stops: const [0.3, 0.6, 1.0],
-                        ),
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: _isRecording 
-                              ? Colors.red
-                              : theme.colorScheme.secondary,
-                          width: _isRecording ? 3 : 2,
-                        ),
-                      ),
-                      child: Transform.scale(
-                        scale: _isRecording ? _pulseAnimation.value : 1.0,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                _isRecording 
-                                    ? Colors.red
-                                    : theme.colorScheme.secondary,
-                                _isRecording 
-                                    ? Colors.red.shade700
-                                    : theme.colorScheme.tertiary,
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            _isRecording ? Icons.stop : Icons.mic,
-                            size: 48,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-            
-            const SizedBox(height: 24),
-            
-            // Status message
-            Text(
-              _statusMessage,
-              style: theme.textTheme.bodyLarge?.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            
-            const SizedBox(height: 8),
-            
-            // Recording duration
-            if (_isRecording || _hasRecording)
-              Text(
-                _formatDuration(_recordingDuration),
-                style: theme.textTheme.titleMedium?.copyWith(
-                  color: _isRecording ? Colors.red : theme.colorScheme.primary,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            
-            const SizedBox(height: 32),
-            
-            // Action buttons
-            if (_hasRecording && !_isRecording) ...[
-              Row(
+    return FadeTransition(
+      opacity: _fadeAnimation,
+      child: ScaleTransition(
+        scale: _scaleAnimation,
+        child: ThemeAwareTaskDialog(
+          title: 'Voice Only Task',
+          subtitle: 'Record audio task without transcription',
+          icon: Icons.record_voice_over,
+          onBack: () => Navigator.of(context).pop(),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: _resetRecording,
-                      icon: const Icon(Icons.refresh),
-                      label: const Text('Re-record'),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: FilledButton.icon(
-                      onPressed: _isProcessing ? null : _saveVoiceTask,
-                      icon: _isProcessing
-                          ? const SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Icon(Icons.save),
-                      label: const Text('Save Task'),
-                    ),
-                  ),
+                  _buildRecordingVisualization(theme),
+                  const SizedBox(height: 24),
+                  _buildStatusMessage(theme),
+                  const SizedBox(height: 8),
+                  _buildRecordingDuration(theme),
+                  const SizedBox(height: 24),
+                  _buildRecurrenceWidget(),
+                  _buildActionButtons(theme),
                 ],
               ),
-            ] else if (!_isRecording) ...[
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: const Text('Cancel'),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ],
+            ),
         ),
       ),
     );
+  }
+
+  // Header is now handled by ThemeAwareTaskDialog - this method is no longer needed
+
+  Widget _buildRecordingVisualization(ThemeData theme) {
+    return AnimatedBuilder(
+      animation: _pulseAnimation,
+      builder: (context, child) {
+        return GestureDetector(
+          onTap: _toggleRecording,
+          child: Container(
+            width: 120,
+            height: 120,
+            decoration: BoxDecoration(
+              gradient: RadialGradient(
+                colors: [
+                  _isRecording 
+                      ? Colors.red.withOpacity(0.3)
+                      : theme.colorScheme.secondary.withOpacity(0.3),
+                  _isRecording 
+                      ? Colors.red.withOpacity(0.1)
+                      : theme.colorScheme.secondary.withOpacity(0.1),
+                  Colors.transparent,
+                ],
+                stops: const [0.3, 0.6, 1.0],
+              ),
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: _isRecording 
+                    ? Colors.red
+                    : theme.colorScheme.secondary,
+                width: _isRecording ? 3 : 2,
+              ),
+            ),
+            child: Transform.scale(
+              scale: _isRecording ? _pulseAnimation.value : 1.0,
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      _isRecording 
+                          ? Colors.red
+                          : theme.colorScheme.secondary,
+                      _isRecording 
+                          ? Colors.red.shade700
+                          : theme.colorScheme.tertiary,
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  _isRecording ? Icons.stop : Icons.mic,
+                  size: 48,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildStatusMessage(ThemeData theme) {
+    return Text(
+      _statusMessage,
+      style: theme.textTheme.bodyLarge?.copyWith(
+        fontWeight: FontWeight.w500,
+      ),
+      textAlign: TextAlign.center,
+    );
+  }
+
+  Widget _buildRecordingDuration(ThemeData theme) {
+    if (!_isRecording && !_hasRecording) return const SizedBox.shrink();
+    
+    return Text(
+      _formatDuration(_recordingDuration),
+      style: theme.textTheme.titleMedium?.copyWith(
+        color: _isRecording ? Colors.red : theme.colorScheme.primary,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+
+  Widget _buildRecurrenceWidget() {
+    if (!_hasRecording) return const SizedBox.shrink();
+    
+    return Column(
+      children: [
+        RecurringTaskSchedulingWidget(
+          onRecurrenceChanged: (RecurrencePattern? pattern) {
+            setState(() {
+              _recurrencePattern = pattern;
+            });
+          },
+          initiallyEnabled: _recurrencePattern != null,
+          initialRecurrence: _recurrencePattern,
+        ),
+        const SizedBox(height: 16),
+      ],
+    );
+  }
+
+  Widget _buildActionButtons(ThemeData theme) {
+    if (_hasRecording && !_isRecording) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Continue to Edit button - attach audio to task form
+          RoundedGlassButton(
+            width: double.infinity,
+            label: _isProcessing ? 'Processing...' : 'Attach Audio & Continue',
+            onPressed: _isProcessing ? null : _continueToEdit,
+            icon: _isProcessing ? null : Icons.attach_file,
+            isPrimary: true,
+            isLoading: _isProcessing,
+          ),
+          const SizedBox(height: 12),
+          // Re-record button - start over
+          RoundedGlassButton(
+            width: double.infinity,
+            label: 'Re-record Audio',
+            onPressed: _resetRecording,
+            icon: Icons.refresh,
+          ),
+        ],
+      );
+    } else if (!_isRecording) {
+      return RoundedGlassButton(
+        width: double.infinity,
+        label: 'Cancel',
+        onPressed: () => Navigator.of(context).pop(),
+        icon: Icons.cancel,
+      );
+    }
+    return const SizedBox.shrink();
   }
   
   void _toggleRecording() async {
@@ -269,96 +308,127 @@ class _VoiceOnlyCreationDialogState extends ConsumerState<VoiceOnlyCreationDialo
   }
   
   Future<void> _startRecording() async {
-    setState(() {
-      _isRecording = true;
-      _statusMessage = 'Recording... Tap to stop';
-      _recordingDuration = Duration.zero;
-    });
-    
-    _pulseController.repeat(reverse: true);
-    
-    // Start recording timer
-    _recordingTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+    if (!_isAudioInitialized) {
       setState(() {
-        _recordingDuration = Duration(seconds: timer.tick);
+        _statusMessage = 'Audio service not ready';
       });
-    });
-    
-    // TODO: Implement actual audio recording
-    // For now, simulate recording
-    _audioFilePath = 'simulated_recording_${DateTime.now().millisecondsSinceEpoch}.wav';
+      return;
+    }
+
+    try {
+      setState(() {
+        _isRecording = true;
+        _statusMessage = 'Recording... Tap to stop';
+        _recordingDuration = Duration.zero;
+      });
+      
+      _pulseController.repeat(reverse: true);
+      
+      // Start real audio recording
+      _audioFilePath = await _audioService.startRecording(
+        onDurationUpdate: (duration) {
+          setState(() {
+            _recordingDuration = duration;
+          });
+        },
+        onMaxDurationReached: () {
+          setState(() {
+            _statusMessage = 'Maximum recording duration reached';
+          });
+          _stopRecording();
+        },
+      );
+      
+      debugPrint('VoiceDialog: Started real recording to $_audioFilePath');
+    } catch (e) {
+      setState(() {
+        _isRecording = false;
+        _statusMessage = 'Error starting recording: $e';
+      });
+      debugPrint('Error starting recording: $e');
+    }
   }
   
   Future<void> _stopRecording() async {
-    setState(() {
-      _isRecording = false;
-      _hasRecording = true;
-      _statusMessage = 'Recording saved! Save as voice task or re-record.';
-    });
-    
-    _pulseController.stop();
-    _recordingTimer?.cancel();
-    
-    // TODO: Stop actual recording
+    if (!_isRecording) return;
+
+    try {
+      _pulseController.stop();
+      
+      // Stop real audio recording
+      final recordingPath = await _audioService.stopRecording();
+      
+      setState(() {
+        _isRecording = false;
+        _hasRecording = recordingPath != null;
+        _audioFilePath = recordingPath;
+        _statusMessage = recordingPath != null 
+            ? 'Recording saved! Attach to task or re-record.'
+            : 'Recording failed. Please try again.';
+      });
+      
+      debugPrint('VoiceDialog: Stopped real recording, saved to $_audioFilePath');
+    } catch (e) {
+      setState(() {
+        _isRecording = false;
+        _hasRecording = false;
+        _statusMessage = 'Error stopping recording: $e';
+      });
+      debugPrint('Error stopping recording: $e');
+    }
   }
   
-  void _resetRecording() {
+  void _resetRecording() async {
+    // Cancel current recording if in progress
+    if (_isRecording) {
+      await _audioService.cancelRecording();
+    }
+    
     setState(() {
       _hasRecording = false;
-      _statusMessage = 'Tap to start recording';
+      _isRecording = false;
+      _statusMessage = 'Ready to record';
       _recordingDuration = Duration.zero;
       _audioFilePath = null;
     });
   }
   
-  Future<void> _saveVoiceTask() async {
+  void _continueToEdit() async {
     if (_audioFilePath == null) return;
     
-    setState(() {
-      _isProcessing = true;
-    });
-    
     try {
-      final task = TaskModel.create(
-        title: 'Voice Task - ${_formatDate(DateTime.now())}',
-        description: 'Audio recording duration: ${_formatDuration(_recordingDuration)}',
-        priority: TaskPriority.medium,
-        tags: ['voice'],
-        metadata: {
-          'audioFilePath': _audioFilePath,
-          'recordingDuration': _recordingDuration.inSeconds,
+      // Get file size for metadata - file should already exist from _startRecording
+      final file = File(_audioFilePath!);
+      final fileExists = await file.exists();
+      final fileSize = fileExists ? await file.length() : 0;
+      
+      
+      // Return ONLY audio data - no auto-generated title/description
+      // User will manually enter title/description with audio attached
+      final returnData = {
+        'audioFilePath': _audioFilePath,
+        'recordingDuration': _recordingDuration.inSeconds,
+        'creationMode': 'voiceOnly',
+        'audioData': {
+          'filePath': _audioFilePath,
+          'duration': _recordingDuration.inSeconds,
+          'timestamp': DateTime.now().toIso8601String(),
+          'fileSize': fileSize,
         },
-      );
+        'recurrence': _recurrencePattern,
+        // NO title or description - user will type these manually
+      };
       
-      // Add task through provider
-      await ref.read(taskOperationsProvider).createTask(task);
-      
-      if (mounted) {
-        Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Voice task saved successfully!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      }
+      Navigator.of(context).pop(returnData);
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error saving voice task: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isProcessing = false;
-        });
-      }
+      debugPrint('Error processing audio file: $e');
+      setState(() {
+        _statusMessage = 'Error saving recording. Please try again.';
+      });
     }
   }
+  
+  // Real audio recording is now handled by AudioRecordingService
   
   String _formatDuration(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, '0');

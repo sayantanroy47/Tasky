@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-// import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../app_theme_data.dart' as app_theme_data;
 import '../models/theme_metadata.dart';
 import '../models/theme_colors.dart';
@@ -49,92 +48,108 @@ class MatrixTheme {
   /// Create dark variant (standard Matrix)
   static app_theme_data.AppThemeData createDark() => create(isDark: true);
 
+  /// Helper method to reduce color brightness by 25%
+  static Color _reduceBrightness(Color color, double factor) {
+    final hsl = HSLColor.fromColor(color);
+    return hsl.withLightness((hsl.lightness * factor).clamp(0.0, 1.0)).toColor();
+  }
+
   /// Create Matrix-inspired color palette
   static ThemeColors _createMatrixColors({bool isDark = true}) {
     if (!isDark) {
-      // Light variant: Inverted Matrix with green on light backgrounds
-      const pureWhite = Color(0xFFffffff);          // Background - Light void
-      const terminalGreen = Color(0xFF00cc00);      // Primary - Matrix code
-      const darkGreen = Color(0xFF006600);          // Secondary - Deeper code
-      const brightGreen = Color(0xFF009900);        // Highlight - Active code
-      const forestGreen = Color(0xFF004d00);        // Accent - Dark green
-      const lightGray = Color(0xFFf0f8f0);          // Surface - Light green tint
-      const paleGreen = Color(0xFFe6ffe6);          // Container - Pale green
+      // Light variant: Use dark theme colors reduced by 25% brightness + light backgrounds
+      
+      // Get dark theme colors first
+      const darkNeonGreen = Color(0xFF00ff00);      // Dark theme primary
+      const darkGreen = Color(0xFF008000);          // Dark theme secondary  
+      const darkBrightGreen = Color(0xFF39ff14);    // Dark theme highlight
+      const darkTerminalGreen = Color(0xFF00cc00);  // Dark theme accent
+      
+      // Reduce brightness by 25% (factor of 0.75)
+      final lightPrimary = _reduceBrightness(darkNeonGreen, 0.75);
+      final lightSecondary = _reduceBrightness(darkGreen, 0.75);
+      final lightHighlight = _reduceBrightness(darkBrightGreen, 0.75);
+      final lightAccent = _reduceBrightness(darkTerminalGreen, 0.75);
+      
+      // Light backgrounds
+      const lightestGray = Color(0xFFfafafa);       // Background - Brighter white
+      const lightGray = Color(0xFFf5f5f5);          // Surface - Light gray  
+      const paleGreen = Color(0xFFe8f5e8);          // Container - More visible green tint
       
       return ThemeColors(
-        // Primary colors - Terminal green
-        primary: terminalGreen,
-        onPrimary: pureWhite,
+        // Primary colors - Reduced brightness from dark theme
+        primary: lightPrimary,
+        onPrimary: const Color(0xFFffffff), // White text on colored primary buttons
         primaryContainer: paleGreen,
-        onPrimaryContainer: forestGreen,
+        onPrimaryContainer: const Color(0xFF003300), // Very dark green text on light containers
 
-        // Secondary colors - Dark green variations
-        secondary: darkGreen,
-        onSecondary: pureWhite,
-        secondaryContainer: const Color(0xFFccffcc),
-        onSecondaryContainer: darkGreen,
+        // Secondary colors - Reduced brightness from dark theme
+        secondary: lightSecondary,
+        onSecondary: const Color(0xFFffffff), // White text on colored secondary buttons
+        secondaryContainer: paleGreen,
+        onSecondaryContainer: const Color(0xFF003300), // Very dark green text on light containers
 
-        // Tertiary colors - Bright green highlights
-        tertiary: brightGreen,
-        onTertiary: pureWhite,
-        tertiaryContainer: const Color(0xFFe0ffe0),
-        onTertiaryContainer: forestGreen,
+        // Tertiary colors - Reduced brightness from dark theme
+        tertiary: lightHighlight,
+        onTertiary: const Color(0xFFffffff), // White text on colored tertiary buttons
+        tertiaryContainer: paleGreen,
+        onTertiaryContainer: const Color(0xFF003300), // Very dark green text on light containers
 
-        // Surface colors - Light with green tint
+        // Surface colors - Light backgrounds
         surface: lightGray,
-        onSurface: forestGreen,
+        onSurface: const Color(0xFF1a1a1a), // Dark text for light surfaces
         surfaceVariant: const Color(0xFFf5f5f5),
-        onSurfaceVariant: darkGreen,
-        inverseSurface: forestGreen,
-        onInverseSurface: pureWhite,
+        onSurfaceVariant: const Color(0xFF2a2a2a), // Dark text for light surfaces
+        inverseSurface: lightSecondary,
+        onInverseSurface: lightestGray,
 
-        // Background colors - Pure white
-        background: pureWhite,
-        onBackground: forestGreen,
+        // Background colors - Lightest gray as requested
+        background: lightestGray,
+        onBackground: const Color(0xFF0a0a0a), // Very dark text for light backgrounds
 
-        // Error colors - Red warnings
-        error: const Color(0xFFd32f2f),
-        onError: pureWhite,
+        // Error colors - Reduced brightness
+        error: _reduceBrightness(const Color(0xFFff0040), 0.75),
+        onError: lightestGray,
         errorContainer: const Color(0xFFffebee),
-        onErrorContainer: const Color(0xFFb71c1c),
+        onErrorContainer: _reduceBrightness(const Color(0xFFff0040), 0.75),
 
-        // Special colors
-        accent: terminalGreen,
-        highlight: brightGreen,
+        // Special colors - Reduced brightness
+        accent: lightAccent,
+        highlight: lightHighlight,
         shadow: const Color(0xFF000000),
-        outline: darkGreen,
-        outlineVariant: const Color(0xFF66bb6a),
+        outline: lightSecondary,
+        outlineVariant: lightAccent,
 
-        // Task priority colors - Green variations
-        taskLowPriority: const Color(0xFF81c784),    // Light green
-        taskMediumPriority: terminalGreen,           // Standard green
-        taskHighPriority: brightGreen,               // Bright green
-        taskUrgentPriority: const Color(0xFFd32f2f), // Red - System alert
+        // Task priority colors - Reduced brightness from dark theme
+        taskLowPriority: _reduceBrightness(const Color(0xFF40ff40), 0.75),
+        taskMediumPriority: lightPrimary,
+        taskHighPriority: lightHighlight,
+        taskUrgentPriority: _reduceBrightness(const Color(0xFFff0040), 0.75),
 
-        // Status colors
-        success: const Color(0xFF388e3c),
-        warning: const Color(0xFFf57c00),
-        info: terminalGreen,
+        // Status colors - Reduced brightness
+        success: _reduceBrightness(const Color(0xFF00ff80), 0.75),
+        warning: _reduceBrightness(const Color(0xFFffff00), 0.75),
+        info: lightAccent,
 
-        // Calendar dot colors - Matrix light theme
-        calendarTodayDot: terminalGreen,                // Terminal green for today
-        calendarOverdueDot: const Color(0xFFd32f2f),    // Red for overdue
-        calendarFutureDot: const Color(0xFF00cc00),     // Light green for future
-        calendarCompletedDot: const Color(0xFF388e3c),  // Success green for completed
-        calendarHighPriorityDot: brightGreen,           // Bright green for high priority
+        // Calendar dot colors - Reduced brightness
+        calendarTodayDot: lightPrimary,
+        calendarOverdueDot: _reduceBrightness(const Color(0xFFff0040), 0.75),
+        calendarFutureDot: lightAccent,
+        calendarCompletedDot: _reduceBrightness(const Color(0xFF00ff80), 0.75),
+        calendarHighPriorityDot: lightHighlight,
         
-        // Status badge colors - Matrix light themed
-        statusPendingBadge: const Color(0xFF00cc00),    // Light green for pending
-        statusInProgressBadge: brightGreen,             // Bright green for in progress
-        statusCompletedBadge: const Color(0xFF388e3c),  // Success green for completed
-        statusCancelledBadge: const Color(0xFF9e9e9e),  // Gray for cancelled
-        statusOverdueBadge: const Color(0xFFd32f2f),    // Red for overdue
-        statusOnHoldBadge: const Color(0xFFf57c00),     // Orange for on hold
+        // Status badge colors - Reduced brightness
+        statusPendingBadge: lightAccent,
+        statusInProgressBadge: lightHighlight,
+        statusCompletedBadge: _reduceBrightness(const Color(0xFF00ff80), 0.75),
+        statusCancelledBadge: const Color(0xFF9e9e9e),
+        statusOverdueBadge: _reduceBrightness(const Color(0xFFff0040), 0.75),
+        statusOnHoldBadge: _reduceBrightness(const Color(0xFFffff00), 0.75),
 
-        // Interactive colors
-        hover: const Color(0xFF00b300),
-        pressed: const Color(0xFF009900),
-        focus: brightGreen,
+        // Interactive colors - Reduced brightness
+        hover: _reduceBrightness(const Color(0xFF00cc00), 0.75),
+        pressed: _reduceBrightness(const Color(0xFF008000), 0.75),
+        focus: lightHighlight,
         disabled: const Color(0xFF9e9e9e),
       );
     }

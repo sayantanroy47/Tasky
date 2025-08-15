@@ -54,6 +54,16 @@ class CachedTaskRepositoryImpl implements TaskRepository {
   }
 
   @override
+  Future<TaskModel?> updateTaskSafely(TaskModel task) async {
+    final updatedTask = await _baseRepository.updateTaskSafely(task);
+    if (updatedTask != null) {
+      _cache.cacheTask(updatedTask);
+      _cache.invalidateTaskRelatedCache(updatedTask);
+    }
+    return updatedTask;
+  }
+
+  @override
   Future<void> deleteTask(String id) async {
     // Get task before deletion for cache invalidation
     final task = await getTaskById(id);
@@ -121,7 +131,7 @@ class CachedTaskRepositoryImpl implements TaskRepository {
 
   @override
   Future<List<TaskModel>> getOverdueTasks() async {
-    final filter = TaskFilter(isOverdue: true);
+    const filter = TaskFilter(isOverdue: true);
     final cacheKey = TaskCacheManager.generateFilterKey(filter);
     
     // Check cache first
@@ -273,20 +283,34 @@ class CachedTaskRepositoryImpl implements TaskRepository {
   Future<void> updateTasksStatus(List<String> taskIds, TaskStatus status) async {
     await _baseRepository.updateTasksStatus(taskIds, status);
     
-    // Clear potentially affected caches
-    _cache.clearAll(); // Bulk operations affect too many caches, safer to clear all
+    // Clear specific affected caches instead of clearing all
+    for (final taskId in taskIds) {
+      _cache.removeCachedTask(taskId); // Remove from individual cache if exists
+    }
+    // Clear list caches that would be affected by status change
+    _cache.clearListCachesByType(CacheClearType.statusRelated);
   }
 
   @override
   Future<void> updateTasksPriority(List<String> taskIds, TaskPriority priority) async {
     await _baseRepository.updateTasksPriority(taskIds, priority);
-    _cache.clearAll(); // Bulk operations affect too many caches
+    
+    // Clear specific affected caches
+    for (final taskId in taskIds) {
+      _cache.removeCachedTask(taskId); // Remove from individual cache if exists
+    }
+    _cache.clearListCachesByType(CacheClearType.priorityRelated);
   }
 
   @override
   Future<void> assignTasksToProject(List<String> taskIds, String? projectId) async {
     await _baseRepository.assignTasksToProject(taskIds, projectId);
-    _cache.clearAll(); // Bulk operations affect too many caches
+    
+    // Clear specific affected caches
+    for (final taskId in taskIds) {
+      _cache.removeCachedTask(taskId); // Remove from individual cache if exists
+    }
+    _cache.clearListCachesByType(CacheClearType.projectRelated);
   }
 
   /// Get cache statistics for monitoring

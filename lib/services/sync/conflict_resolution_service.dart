@@ -1,6 +1,5 @@
 import '../../domain/entities/task_model.dart';
 import '../../domain/entities/subtask.dart';
-import '../../domain/models/enums.dart';
 
 /// Service for handling data synchronization conflicts
 /// 

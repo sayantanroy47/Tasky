@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../widgets/glassmorphism_container.dart';
 import '../widgets/standardized_app_bar.dart';
+import '../widgets/theme_background_widget.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../services/ai/ai_task_parsing_service.dart';
 import '../widgets/ai_service_selector.dart';
@@ -20,12 +21,20 @@ class _AISettingsPageState extends ConsumerState<AISettingsPage> {  @override
     final config = ref.watch(aiParsingConfigProvider);
     final configNotifier = ref.read(aiParsingConfigProvider.notifier);
 
-    return Scaffold(
-      appBar: const StandardizedAppBar(
-        title: 'AI Settings',
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+    return ThemeBackgroundWidget(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        extendBodyBehindAppBar: true,
+        appBar: const StandardizedAppBar(
+          title: 'AI Settings',
+        ),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.only(
+            top: kToolbarHeight + 8,
+            left: 16.0,
+            right: 16.0,
+            bottom: 16.0,
+          ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -222,6 +231,7 @@ class _AISettingsPageState extends ConsumerState<AISettingsPage> {  @override
           ],
         ),
       ),
+    ),
     );
   }
 

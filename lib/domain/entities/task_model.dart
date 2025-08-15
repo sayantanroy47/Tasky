@@ -400,7 +400,7 @@ class TaskModel extends Equatable {
   }
 
   /// Returns true if this is a recurring task
-  bool get isRecurring => recurrence != null && recurrence!.type != RecurrenceType.none;
+  bool get isRecurring => recurrence != null && recurrence!.type != RecurrenceType.none && recurrence!.isValid();
 
   /// Returns true if this task belongs to a project
   bool get hasProject => projectId != null && projectId!.isNotEmpty;
@@ -419,13 +419,20 @@ class TaskModel extends Equatable {
     return difference;
   }
 
-  /// Generates the next recurring task instance
-  TaskModel? generateNextRecurrence() {
+  /// Generates the next recurring task instance with proper occurrence tracking
+  /// Note: This method is deprecated. Use RecurringTaskService.generateNextRecurringTask instead
+  /// for proper occurrence tracking and validation.
+  @Deprecated('Use RecurringTaskService.generateNextRecurringTask for proper occurrence tracking')
+  TaskModel? generateNextRecurrence({int? knownOccurrenceCount}) {
     if (!isRecurring || status != TaskStatus.completed) return null;
+    
+    // Extract occurrence count from metadata if available
+    final occurrenceCount = knownOccurrenceCount ?? 
+      (metadata['occurrence_number'] as int?) ?? 1;
     
     final nextDueDate = recurrence!.getNextOccurrence(
       dueDate ?? createdAt,
-      occurrenceCount: 1, // This would need to be tracked separately
+      occurrenceCount: occurrenceCount,
     );
     
     if (nextDueDate == null) return null;
@@ -440,11 +447,30 @@ class TaskModel extends Equatable {
       recurrence: recurrence,
       projectId: projectId,
       dependencies: dependencies,
-      metadata: metadata,
-      isPinned: isPinned,
+      metadata: {
+        ...metadata,
+        'original_task_id': metadata['original_task_id'] ?? id,
+        'occurrence_number': occurrenceCount + 1,
+        'parent_completed_at': completedAt?.toIso8601String(),
+      },
+      isPinned: false, // Don't pin recurring instances
       estimatedDuration: estimatedDuration,
     );
   }
+  
+  /// Gets the occurrence number of this task in a recurring series
+  int get occurrenceNumber => metadata['occurrence_number'] as int? ?? 1;
+  
+  /// Gets the original task ID if this is a recurring instance
+  String? get originalRecurringTaskId => metadata['original_task_id'] as String?;
+  
+  /// Checks if this is part of a recurring series
+  bool get isPartOfRecurringSeries => 
+    metadata.containsKey('original_task_id') || isRecurring;
+    
+  /// Checks if this is the original recurring task (not an instance)
+  bool get isOriginalRecurringTask => 
+    isRecurring && !metadata.containsKey('original_task_id');
   @override
   List<Object?> get props => [
         id,

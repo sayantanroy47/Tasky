@@ -276,6 +276,57 @@ class ProjectUseCases {
 
     return projects;
   }
+  
+  /// Validates if a project can be deleted safely
+  Future<ProjectDeletionValidation> validateProjectDeletion(String projectId) async {
+    final project = await _projectRepository.getProjectById(projectId);
+    if (project == null) {
+      return const ProjectDeletionValidation(
+        canDelete: false,
+        warnings: ['Project not found'],
+        blockers: [],
+        associatedTasks: 0,
+        activeTasks: 0,
+        completedTasks: 0,
+      );
+    }
+
+    final tasks = await _taskRepository.getTasksByProject(projectId);
+    final activeTasks = tasks.where((t) => !t.isCompleted).toList();
+    final completedTasks = tasks.where((t) => t.isCompleted).toList();
+
+    final warnings = <String>[];
+    final blockers = <String>[];
+
+    if (tasks.isNotEmpty) {
+      warnings.add('${tasks.length} tasks are associated with this project');
+    }
+
+    if (activeTasks.isNotEmpty) {
+      warnings.add('${activeTasks.length} active tasks will be affected');
+    }
+
+    // Check for tasks with dependencies that might be affected
+    final tasksWithDependencies = activeTasks.where((t) => t.hasDependencies).toList();
+    if (tasksWithDependencies.isNotEmpty) {
+      warnings.add('${tasksWithDependencies.length} tasks have dependencies that may be affected');
+    }
+
+    // Check for recurring tasks
+    final recurringTasks = tasks.where((t) => t.isRecurring).toList();
+    if (recurringTasks.isNotEmpty) {
+      warnings.add('${recurringTasks.length} recurring tasks will be affected');
+    }
+
+    return ProjectDeletionValidation(
+      canDelete: true, // Can always delete, but with different strategies
+      warnings: warnings,
+      blockers: blockers,
+      associatedTasks: tasks.length,
+      activeTasks: activeTasks.length,
+      completedTasks: completedTasks.length,
+    );
+  }
 }
 
 /// Statistics for a project
@@ -299,4 +350,59 @@ class ProjectStatistics {
     required this.completionPercentage,
     required this.isOverdue,
   });
+}
+
+/// Strategy for handling tasks when deleting a project
+enum ProjectDeletionStrategy {
+  /// Remove project association from all tasks (default)
+  unassignTasks,
+  /// Delete all tasks associated with the project
+  deleteAllTasks,
+  /// Delete only active tasks, unassign completed tasks
+  deleteActiveTasks,
+  /// Reassign all tasks to another project
+  reassignTasks,
+}
+
+/// Result of project deletion operation
+class ProjectDeletionResult {
+  final Project deletedProject;
+  final ProjectDeletionStrategy strategy;
+  final int tasksDeleted;
+  final int tasksReassigned;
+  final int tasksUnassigned;
+  final String? reassignedToProjectId;
+
+  const ProjectDeletionResult({
+    required this.deletedProject,
+    required this.strategy,
+    required this.tasksDeleted,
+    required this.tasksReassigned,
+    required this.tasksUnassigned,
+    this.reassignedToProjectId,
+  });
+
+  int get totalTasksProcessed => tasksDeleted + tasksReassigned + tasksUnassigned;
+}
+
+/// Validation result for project deletion
+class ProjectDeletionValidation {
+  final bool canDelete;
+  final List<String> warnings;
+  final List<String> blockers;
+  final int associatedTasks;
+  final int activeTasks;
+  final int completedTasks;
+
+  const ProjectDeletionValidation({
+    required this.canDelete,
+    required this.warnings,
+    required this.blockers,
+    required this.associatedTasks,
+    required this.activeTasks,
+    required this.completedTasks,
+  });
+
+  bool get hasWarnings => warnings.isNotEmpty;
+  bool get hasBlockers => blockers.isNotEmpty;
 }

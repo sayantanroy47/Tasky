@@ -2,14 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/task_model.dart';
+import '../../domain/entities/task_audio_extensions.dart';
 import '../../domain/models/enums.dart';
 import '../../core/theme/material3/motion_system.dart';
 import '../providers/task_providers.dart';
+import '../../core/providers/enhanced_theme_provider.dart';
+import '../../core/design_system/responsive_builder.dart';
+import '../../services/gesture_customization_service.dart';
 import 'animated_priority_chip.dart';
 import '../../core/theme/typography_constants.dart';
 import 'smart_text_widgets.dart';
 import 'enhanced_list_animations.dart';
 import 'glassmorphism_container.dart';
+import 'gesture_enhancements.dart';
+import 'status_badge_widget.dart';
+import 'audio_widgets.dart';
+import '../../core/accessibility/accessibility_constants.dart';
+import '../../core/accessibility/touch_target_validator.dart';
+import '../../core/design_system/design_tokens.dart' hide BorderRadius;
 import 'dart:math' as math;
 
 /// Advanced task card with all Material 3 expressive features
@@ -47,12 +57,9 @@ class AdvancedTaskCard extends ConsumerStatefulWidget {
 
 class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
     with TickerProviderStateMixin {
-  late AnimationController _hoverController;
-  late AnimationController _pressController;
-  late AnimationController _completeController;
-  late AnimationController _swipeController;
-  late AnimationController _priorityPulseController;
-  late AnimationController _progressController;
+  // OPTIMIZED: Reduced from 6 to 2 animation controllers for better performance
+  late AnimationController _interactionController; // Combined hover/press/complete
+  late AnimationController _progressController; // Progress and priority pulse
 
   late Animation<double> _hoverAnimation;
   late Animation<double> _pressAnimation;
@@ -75,59 +82,59 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
   }
 
   void _setupAnimations() {
-    _hoverController = AnimationController(
-      duration: ExpressiveMotionSystem.durationShort3,
-      vsync: this,
-    );
-
-    _pressController = AnimationController(
-      duration: ExpressiveMotionSystem.durationShort2,
-      vsync: this,
-    );
-
-    _completeController = AnimationController(
-      duration: ExpressiveMotionSystem.durationLong2,
-      vsync: this,
-    );
-
-    _swipeController = AnimationController(
+    // OPTIMIZED: Combined interaction controller for hover/press/complete
+    _interactionController = AnimationController(
       duration: ExpressiveMotionSystem.durationMedium2,
       vsync: this,
     );
 
-    _priorityPulseController = AnimationController(
-      duration: _getPriorityPulseDuration(),
-      vsync: this,
-    );
-
+    // OPTIMIZED: Single controller for progress and priority pulse
     _progressController = AnimationController(
       duration: ExpressiveMotionSystem.durationLong3,
       vsync: this,
     );
 
-    // Animation definitions
+    // Animation definitions - all based on the 2 controllers
     _hoverAnimation = Tween<double>(begin: 1.0, end: 1.02).animate(
-      CurvedAnimation(parent: _hoverController, curve: ExpressiveMotionSystem.standard),
+      CurvedAnimation(
+        parent: _interactionController, 
+        curve: const Interval(0.0, 0.3, curve: ExpressiveMotionSystem.standard),
+      ),
     );
 
     _pressAnimation = Tween<double>(begin: 1.0, end: 0.98).animate(
-      CurvedAnimation(parent: _pressController, curve: ExpressiveMotionSystem.emphasizedDecelerate),
+      CurvedAnimation(
+        parent: _interactionController, 
+        curve: const Interval(0.3, 0.6, curve: ExpressiveMotionSystem.emphasizedDecelerate),
+      ),
     );
 
     _completeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _completeController, curve: Curves.elasticOut),
+      CurvedAnimation(
+        parent: _interactionController, 
+        curve: const Interval(0.6, 1.0, curve: Curves.elasticOut),
+      ),
     );
 
     _swipeAnimation = Tween<Offset>(begin: Offset.zero, end: const Offset(0.3, 0)).animate(
-      CurvedAnimation(parent: _swipeController, curve: ExpressiveMotionSystem.emphasizedEasing),
+      CurvedAnimation(
+        parent: _interactionController, 
+        curve: ExpressiveMotionSystem.emphasizedEasing,
+      ),
     );
 
     _priorityPulseAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
-      CurvedAnimation(parent: _priorityPulseController, curve: Curves.easeInOut),
+      CurvedAnimation(
+        parent: _progressController, 
+        curve: Curves.easeInOut,
+      ),
     );
 
     _progressAnimation = Tween<double>(begin: 0.0, end: _completionProgress).animate(
-      CurvedAnimation(parent: _progressController, curve: ExpressiveMotionSystem.emphasizedDecelerate),
+      CurvedAnimation(
+        parent: _progressController, 
+        curve: ExpressiveMotionSystem.emphasizedDecelerate,
+      ),
     );
   }
 
@@ -136,11 +143,11 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
     _progressController.animateTo(_completionProgress);
     
     if (widget.task.priority == TaskPriority.urgent || widget.task.priority == TaskPriority.high) {
-      _priorityPulseController.repeat(reverse: true);
+      _progressController.repeat(reverse: true); // Use progress controller for pulse
     }
 
     if (widget.task.status == TaskStatus.completed) {
-      _completeController.value = 1.0;
+      _interactionController.value = 1.0; // Use interaction controller for completion
     }
   }
 
@@ -169,39 +176,140 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     
+    // Get accessibility-aware animation duration
+    final animationDuration = AccessibilityUtils.getAnimationDuration(
+      context, 
+      ExpressiveMotionSystem.durationMedium2,
+    );
+    
+    // Create semantic label
+    final semanticLabel = _buildSemanticLabel();
+    final semanticHint = _buildSemanticHint();
+    
     return Container(
       margin: widget.margin ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: MouseRegion(
-        onEnter: (_) => _setHovered(true),
-        onExit: (_) => _setHovered(false),
-        child: GestureDetector(
-          onTapDown: _onTapDown,
-          onTapUp: _onTapUp,
-          onTapCancel: _onTapCancel,
-          onTap: _onTap,
-          onPanStart: _onPanStart,
-          onPanUpdate: _onPanUpdate,
-          onPanEnd: _onPanEnd,
-          child: AnimatedBuilder(
-            animation: Listenable.merge([
-              _hoverAnimation,
-              _pressAnimation,
-              _completeAnimation,
-              _swipeAnimation,
-              _progressAnimation,
-            ]),
-            builder: (context, child) {
-              return Transform.scale(
-                scale: _hoverAnimation.value * _pressAnimation.value,
-                child: Transform.translate(
-                  offset: _swipeAnimation.value * MediaQuery.of(context).size.width,
-                  child: _buildCard(theme),
+      child: Semantics(
+        label: semanticLabel,
+        hint: semanticHint,
+        button: true,
+        enabled: true,
+        selected: widget.task.isCompleted,
+        onTap: () {
+          _onTap();
+          AccessibilityUtils.announceToScreenReader(
+            context,
+            widget.task.isCompleted 
+                ? AccessibilityConstants.taskCompletedAnnouncement
+                : AccessibilityConstants.taskUncompletedAnnouncement,
+          );
+        },
+        onLongPress: () {
+          if (widget.onEdit != null) {
+            widget.onEdit!();
+            AccessibilityUtils.announceToScreenReader(
+              context,
+              'Opening task editor',
+            );
+          }
+        },
+        child: Focus(
+          child: Builder(
+            builder: (context) {
+              final hasFocus = Focus.of(context).hasFocus;
+              return Container(
+                decoration: hasFocus
+                    ? BoxDecoration(
+                        border: Border.all(
+                          color: AccessibilityConstants.focusIndicatorColor,
+                          width: AccessibilityConstants.focusIndicatorWidth,
+                        ),
+                        borderRadius: BorderRadius.circular(TypographyConstants.taskCardRadius),
+                      )
+                    : null,
+                child: MouseRegion(
+                  onEnter: (_) => _setHovered(true),
+                  onExit: (_) => _setHovered(false),
+                  child: GestureDetector(
+                    onTapDown: _onTapDown,
+                    onTapUp: _onTapUp,
+                    onTapCancel: _onTapCancel,
+                    onTap: _onTap,
+                    onLongPress: widget.onEdit,
+                    onPanStart: _onPanStart,
+                    onPanUpdate: _onPanUpdate,
+                    onPanEnd: _onPanEnd,
+                    child: AnimatedBuilder(
+                      animation: Listenable.merge([
+                        _interactionController,
+                        _progressController,
+                      ]),
+                      builder: (context, child) {
+                        // Reduce or disable animations for accessibility
+                        final shouldReduceMotion = AccessibilityUtils.shouldReduceMotion(context);
+                        final scaleValue = shouldReduceMotion ? 1.0 : _hoverAnimation.value * _pressAnimation.value;
+                        final translateValue = shouldReduceMotion 
+                            ? Offset.zero 
+                            : _swipeAnimation.value * MediaQuery.of(context).size.width;
+                        
+                        return Transform.scale(
+                          scale: scaleValue,
+                          child: Transform.translate(
+                            offset: translateValue,
+                            child: _buildAccessibleCard(theme),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
                 ),
               );
             },
           ),
         ),
       ),
+    );
+  }
+
+  /// Build semantic label for screen readers
+  String _buildSemanticLabel() {
+    final priority = widget.task.priority?.toString().split('.').last ?? 'normal';
+    final status = widget.task.isCompleted ? 'completed' : 'incomplete';
+    final dueInfo = widget.task.dueDate != null 
+        ? 'due ${_formatDueDate(widget.task.dueDate!)}'
+        : 'no due date';
+    
+    return 'Task: ${widget.task.title}. Priority: $priority. Status: $status. $dueInfo';
+  }
+  
+  /// Build semantic hint for screen readers
+  String _buildSemanticHint() {
+    if (widget.task.isCompleted) {
+      return AccessibilityConstants.completedTaskSemanticHint;
+    } else {
+      return AccessibilityConstants.incompleteTaskSemanticHint + '. ' + 
+             AccessibilityConstants.deleteTaskSemanticHint;
+    }
+  }
+  
+  /// Format due date for accessibility
+  String _formatDueDate(DateTime dueDate) {
+    final now = DateTime.now();
+    final difference = dueDate.difference(now).inDays;
+    
+    if (difference == 0) return 'today';
+    if (difference == 1) return 'tomorrow';
+    if (difference == -1) return 'yesterday';
+    if (difference > 0) return 'in $difference days';
+    return '${difference.abs()} days ago';
+  }
+  
+  /// Build accessible card with minimum touch targets
+  Widget _buildAccessibleCard(ThemeData theme) {
+    return ConstrainedBox(
+      constraints: const BoxConstraints(
+        minHeight: AccessibilityConstants.minTouchTarget,
+      ),
+      child: _buildCard(theme),
     );
   }
 
@@ -223,10 +331,9 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
 
   Widget _buildMainCard(ThemeData theme) {
     return GlassmorphismContainer(
+      level: GlassLevel.content, // Use content level for task cards
       borderRadius: BorderRadius.circular(TypographyConstants.taskCardRadius),
-      blur: 8.0, // Reduced by 25% from 15px → 11px → 8px
-      opacity: 0.15,
-      glassTint: _getPriorityColor().withOpacity(0.1),
+      // Let glassmorphism auto-determine tint, keep priority indication via border
       borderColor: _getPriorityColor().withOpacity(0.3),
       child: Container(
         decoration: BoxDecoration(
@@ -296,43 +403,270 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
   Widget _buildHeaderRow(ThemeData theme) {
     return Row(
       children: [
-        // Status indicator
-        _buildStatusIndicator(theme),
+        // Creation method icon
+        _buildCreationMethodIcon(theme),
         
-        const SizedBox(width: 8),
-        
-        // Due date
-        if (widget.task.dueDate != null)
+        // Due date with improved hierarchy
+        if (widget.task.dueDate != null) ...[
+          const SizedBox(width: 8),
           _buildDueDateChip(theme),
+          const SizedBox(width: 8),
+        ] else if (_getCreationMethodIcon() != null) ...[
+          const SizedBox(width: 8),
+        ],
         
         const Spacer(),
         
-        // Priority chip
-        PulsingPriorityChip(
+        // Enhanced priority indicator with prominent glow
+        PriorityBadgeWidget(
           priority: widget.task.priority,
-          showPulse: widget.task.status != TaskStatus.completed,
+          showText: true,
+          compact: false,
+        ),
+        
+        // 5px gap between priority and status badges
+        const SizedBox(width: 5),
+        
+        // Status badge on the right side
+        StatusBadgeWidget(
+          status: widget.task.status,
+          showText: true,
+          compact: false,
         ),
       ],
     );
   }
 
-  Widget _buildStatusIndicator(ThemeData theme) {
-    return AnimatedContainer(
-      duration: ExpressiveMotionSystem.durationMedium2,
-      width: 12,
-      height: 12,
-      decoration: BoxDecoration(
-        color: _getStatusColor(),
-        shape: BoxShape.circle,
-        boxShadow: widget.task.status == TaskStatus.inProgress ? [
-          BoxShadow(
-            color: _getStatusColor(),
-            blurRadius: 4,
-            spreadRadius: 1,
+  /// Build creation method icon based on task metadata
+  Widget _buildCreationMethodIcon(ThemeData theme) {
+    final icon = _getCreationMethodIcon();
+    final color = _getCreationMethodColor(theme);
+    final tooltip = _getCreationMethodTooltip();
+    
+    if (icon == null) return const SizedBox.shrink();
+    
+    return Tooltip(
+      message: tooltip,
+      child: Container(
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.15),
+          borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall),
+          border: Border.all(
+            color: color.withOpacity(0.3),
+            width: 1,
           ),
-        ] : null,
+        ),
+        child: Icon(
+          icon,
+          size: 14,
+          color: color,
+        ),
       ),
     );
+  }
+
+  /// Get the appropriate icon for the creation method
+  IconData? _getCreationMethodIcon() {
+    final source = widget.task.metadata['source'] as String?;
+    
+    switch (source) {
+      case 'voice':
+        return Icons.mic;
+      case 'voice_to_text':
+        return Icons.mic_none;
+      case 'voice_only':
+        return Icons.record_voice_over;
+      case 'manual':
+        return Icons.edit;
+      default:
+        // If no source is specified, assume manual
+        return Icons.edit;
+    }
+  }
+
+  /// Get the appropriate color for the creation method
+  Color _getCreationMethodColor(ThemeData theme) {
+    final source = widget.task.metadata['source'] as String?;
+    
+    switch (source) {
+      case 'voice':
+      case 'voice_to_text':
+      case 'voice_only':
+        return theme.colorScheme.secondary;
+      case 'manual':
+      default:
+        return theme.colorScheme.primary;
+    }
+  }
+
+  /// Get the tooltip text for the creation method
+  String _getCreationMethodTooltip() {
+    final source = widget.task.metadata['source'] as String?;
+    
+    switch (source) {
+      case 'voice':
+        return 'Created with voice input';
+      case 'voice_to_text':
+        return 'Created with voice-to-text';
+      case 'voice_only':
+        return 'Created with voice recording';
+      case 'manual':
+        return 'Created manually';
+      default:
+        return 'Created manually';
+    }
+  }
+
+  Widget _buildStatusIndicator(ThemeData theme) {
+    final statusColor = _getThemedStatusColor();
+    final statusText = _getStatusText();
+    
+    return AnimatedContainer(
+      duration: ExpressiveMotionSystem.durationMedium2,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: statusColor.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium),
+        border: Border.all(color: statusColor, width: 2),
+        // Enhanced glow effects for better visibility
+        boxShadow: [
+          // Outer glow
+          BoxShadow(
+            color: statusColor.withOpacity(0.4),
+            blurRadius: widget.task.status == TaskStatus.inProgress ? 12 : 8,
+            spreadRadius: widget.task.status == TaskStatus.inProgress ? 2 : 1,
+          ),
+          // Inner highlight for Material 3
+          BoxShadow(
+            color: statusColor.withOpacity(0.1),
+            blurRadius: 2,
+            spreadRadius: 0,
+            offset: const Offset(0, 1),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Much larger, more prominent status dot with enhanced glow
+          AnimatedContainer(
+            duration: ExpressiveMotionSystem.durationShort2,
+            width: _getStatusDotSize(),
+            height: _getStatusDotSize(),
+            decoration: BoxDecoration(
+              color: statusColor,
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: statusColor.withOpacity(0.8),
+                width: 2.5,
+              ),
+              // Enhanced multi-layer glow effects
+              boxShadow: [
+                // Outer glow - largest
+                BoxShadow(
+                  color: statusColor.withOpacity(0.4),
+                  blurRadius: widget.task.status == TaskStatus.inProgress ? 16 : 12,
+                  spreadRadius: widget.task.status == TaskStatus.inProgress ? 4 : 2,
+                ),
+                // Middle glow
+                BoxShadow(
+                  color: statusColor.withOpacity(0.6),
+                  blurRadius: widget.task.status == TaskStatus.inProgress ? 8 : 6,
+                  spreadRadius: widget.task.status == TaskStatus.inProgress ? 2 : 1,
+                ),
+                // Inner highlight
+                BoxShadow(
+                  color: statusColor.withOpacity(0.8),
+                  blurRadius: 3,
+                  spreadRadius: 0,
+                  offset: const Offset(0, 1),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 6),
+          Text(
+            statusText,
+            style: TextStyle(
+              fontSize: 12, // Increased from 10
+              fontWeight: FontWeight.w700, // Bolder text
+              color: statusColor,
+              letterSpacing: 0.5, // Better readability
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  String _getStatusText() {
+    switch (widget.task.status) {
+      case TaskStatus.pending:
+        return 'PENDING';
+      case TaskStatus.inProgress:
+        return 'DOING';
+      case TaskStatus.completed:
+        return 'DONE';
+      case TaskStatus.cancelled:
+        return 'CANCELLED';
+    }
+  }
+  
+  Color _getThemedStatusColor() {
+    final theme = Theme.of(context);
+    final themeState = ref.watch(enhancedThemeProvider);
+    final themeId = themeState.currentTheme?.metadata.id ?? '';
+    
+    if (themeId.contains('matrix')) {
+      // Matrix themed status colors
+      switch (widget.task.status) {
+        case TaskStatus.pending:
+          return const Color(0xFF006600);
+        case TaskStatus.inProgress:
+          return const Color(0xFF00FF00);
+        case TaskStatus.completed:
+          return const Color(0xFF00CC00);
+        case TaskStatus.cancelled:
+          return const Color(0xFF990000);
+      }
+    } else if (themeId.contains('vegeta')) {
+      // Vegeta themed status colors
+      switch (widget.task.status) {
+        case TaskStatus.pending:
+          return const Color(0xFF1e3a8a);
+        case TaskStatus.inProgress:
+          return const Color(0xFF60a5fa);
+        case TaskStatus.completed:
+          return const Color(0xFF93c5fd);
+        case TaskStatus.cancelled:
+          return const Color(0xFFdc2626);
+      }
+    } else if (themeId.contains('dracula')) {
+      // Dracula themed status colors
+      switch (widget.task.status) {
+        case TaskStatus.pending:
+          return const Color(0xFF8be9fd); // Cyan
+        case TaskStatus.inProgress:
+          return const Color(0xFFffb86c); // Orange
+        case TaskStatus.completed:
+          return const Color(0xFF50fa7b); // Green
+        case TaskStatus.cancelled:
+          return const Color(0xFFff5555); // Red
+      }
+    }
+    
+    // Default Material 3 colors for expressive and other themes
+    switch (widget.task.status) {
+      case TaskStatus.pending:
+        return theme.colorScheme.outline;
+      case TaskStatus.inProgress:
+        return theme.colorScheme.primary;
+      case TaskStatus.completed:
+        return theme.colorScheme.tertiary;
+      case TaskStatus.cancelled:
+        return theme.colorScheme.error;
+    }
   }
 
   Widget _buildDueDateChip(ThemeData theme) {
@@ -369,26 +703,49 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          widget.task.title,
-          style: theme.textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w600,
-            decoration: widget.task.status == TaskStatus.completed 
-              ? TextDecoration.lineThrough 
-              : null,
-          ),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
+        // Task title with improved typography and audio indicator
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                widget.task.title,
+                style: TextStyle(
+                  fontSize: TypographyConstants.textLG, // 18px for better hierarchy
+                  fontWeight: TypographyConstants.semiBold,
+                  color: theme.colorScheme.onSurface,
+                  decoration: widget.task.status == TaskStatus.completed 
+                    ? TextDecoration.lineThrough 
+                    : null,
+                  height: 1.3,
+                ),
+                maxLines: 2, // Allow 2 lines for better readability
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            // Audio indicator for voice tasks
+            if (widget.task.hasAudio) ...[
+              const SizedBox(width: 8),
+              AudioIndicatorWidget(
+                taskId: widget.task.id,
+                audioFilePath: widget.task.audioFilePath,
+                duration: widget.task.audioDuration,
+                size: 22, // Increased from 16 to make it more visible
+                // Remove onTap override - let it use default audio play behavior
+              ),
+            ],
+          ],
         ),
         
-        if (widget.task.description != null) ...[
-          const SizedBox(height: 6),
+        if (widget.task.description != null && widget.task.description!.isNotEmpty) ...[
+          const SizedBox(height: 8),
           Text(
             widget.task.description!,
-            style: theme.textTheme.bodySmall?.copyWith(
+            style: TextStyle(
+              fontSize: TypographyConstants.textSM, // 14px for description
               color: theme.colorScheme.onSurfaceVariant,
+              height: 1.4,
             ),
-            maxLines: 1,
+            maxLines: 2, // Allow 2 lines for descriptions
             overflow: TextOverflow.ellipsis,
           ),
         ],
@@ -397,34 +754,37 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
   }
 
   Widget _buildMetadataRow(ThemeData theme) {
+    // Only show tags, no status badges since they're already shown at the top
+    if (widget.task.tags.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    
     return Wrap(
       spacing: 8,
       runSpacing: 4,
       children: [
-        // Tags
-        ...widget.task.tags.take(3).map((tag) => 
-          _buildTag(tag, theme),
-        ),
+        // Show first 2 tags
+        ...widget.task.tags.take(2).map((tag) => _buildTag(tag, theme)),
         
-        // More tags indicator
-        if (widget.task.tags.length > 3)
+        // Show "more" indicator if there are more than 2 tags
+        if (widget.task.tags.length > 2)
           _buildMoreTagsIndicator(theme),
       ],
     );
   }
 
   Widget _buildTag(String tag, ThemeData theme) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.secondaryContainer.withOpacity(0.5),
-        borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium),
-      ),
+    return GlassmorphismContainer(
+      level: GlassLevel.interactive, // Use interactive level for tags
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      // Let glassmorphism auto-determine tint based on theme
       child: Text(
         '#$tag',
-        style: theme.textTheme.bodySmall?.copyWith(
-          color: theme.colorScheme.onSecondaryContainer,
-          fontWeight: FontWeight.w500,
+        style: theme.textTheme.labelSmall?.copyWith(
+          fontSize: TypographyConstants.textXS, // 12px for tags
+          fontWeight: TypographyConstants.medium,
+          color: theme.colorScheme.onSurfaceVariant,
         ),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
@@ -433,25 +793,29 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
   }
 
   Widget _buildMoreTagsIndicator(ThemeData theme) {
-    return GestureDetector(
-      onTap: () {
-        // Show all tags dialog
-        _showAllTagsDialog();
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-        decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceVariant,
-          borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium),
-        ),
-        child: Text(
-          '+${widget.task.tags.length - 3}',
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-            fontWeight: FontWeight.w500,
+    return Semantics(
+      label: '${widget.task.tags.length - 3} more tags',
+      hint: 'Tap to view all tags',
+      button: true,
+      child: GestureDetector(
+        onTap: () {
+          _showAllTagsDialog();
+        },
+        child: GlassmorphismContainer(
+          level: GlassLevel.interactive,
+          borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          glassTint: theme.colorScheme.outline.withOpacity(0.2),
+          child: Text(
+            '+${widget.task.tags.length - 3}',
+            style: TextStyle(
+              fontSize: TypographyConstants.textXS,
+              fontWeight: TypographyConstants.medium,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
         ),
       ),
     );
@@ -542,35 +906,39 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
     required VoidCallback onPressed,
     required Color color,
   }) {
-    return GestureDetector(
-      onTap: () {
+    return AccessibleIconButton(
+      icon: icon,
+      onPressed: () {
         HapticFeedback.selectionClick();
         onPressed();
       },
-      child: Container(
-        padding: const EdgeInsets.all(6),
-        decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
-        ),
-        child: Icon(
-          icon,
-          size: 16,
-          color: color,
-        ),
-      ),
+      iconColor: color,
+      iconSize: 20, // Improved icon size for better visibility
+      minTouchTarget: AccessibilityConstants.minTouchTarget,
+      padding: const EdgeInsets.all(2),
+      tooltip: _getActionTooltip(icon),
     );
+  }
+
+  String _getActionTooltip(IconData icon) {
+    if (icon == Icons.check_circle || icon == Icons.radio_button_unchecked) {
+      return widget.task.status == TaskStatus.completed ? 'Mark as incomplete' : 'Mark as complete';
+    } else if (icon == Icons.edit) {
+      return 'Edit task';
+    } else if (icon == Icons.share) {
+      return 'Share task';
+    }
+    return 'Task action';
   }
 
   Widget _buildActionsPanel(ThemeData theme) {
     return Positioned.fill(
-      child: Container(
-        decoration: BoxDecoration(
-          color: _swipeDirection == SwipeDirection.left
-            ? theme.colorScheme.error.withOpacity(0.1)
-            : theme.colorScheme.primary.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(TypographyConstants.taskCardRadius),
-        ),
+      child: GlassmorphismContainer(
+        level: GlassLevel.floating, // Use floating level for swipe actions
+        borderRadius: BorderRadius.circular(TypographyConstants.taskCardRadius),
+        glassTint: _swipeDirection == SwipeDirection.left
+          ? theme.colorScheme.error.withOpacity(0.2)
+          : theme.colorScheme.primary.withOpacity(0.2),
         child: Row(
           mainAxisAlignment: _swipeDirection == SwipeDirection.left
             ? MainAxisAlignment.end
@@ -600,18 +968,32 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
 
   Widget _buildCompletionOverlay(ThemeData theme) {
     return Positioned.fill(
-      child: Container(
-        decoration: BoxDecoration(
-          color: theme.colorScheme.tertiary.withOpacity(0.1 * _completeAnimation.value),
-          borderRadius: BorderRadius.circular(TypographyConstants.taskCardRadius),
-        ),
+      child: GlassmorphismContainer(
+        level: GlassLevel.floating,
+        borderRadius: BorderRadius.circular(TypographyConstants.taskCardRadius),
+        glassTint: theme.colorScheme.tertiary.withOpacity(0.2 * _completeAnimation.value),
         child: Center(
           child: Transform.scale(
             scale: _completeAnimation.value,
-            child: Icon(
-              Icons.check_circle,
-              color: theme.colorScheme.tertiary,
-              size: 48,
+            child: Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.tertiary,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: theme.colorScheme.tertiary.withOpacity(0.3),
+                    blurRadius: 8,
+                    spreadRadius: 2,
+                  ),
+                ],
+              ),
+              child: Icon(
+                Icons.check,
+                color: theme.colorScheme.onTertiary,
+                size: 32,
+              ),
             ),
           ),
         ),
@@ -683,16 +1065,6 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
     return date.year == now.year && date.month == now.month && date.day == now.day;
   }
 
-  String _formatDueDate(DateTime date) {
-    final now = DateTime.now();
-    final difference = date.difference(now).inDays;
-    
-    if (difference == 0) return 'Today';
-    if (difference == 1) return 'Tomorrow';
-    if (difference == -1) return 'Yesterday';
-    if (difference > 0) return '${difference}d left';
-    return '${difference.abs()}d ago';
-  }
 
   String _formatCreatedDate(DateTime date) {
     final now = DateTime.now();
@@ -703,28 +1075,55 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
     return '${difference}d ago';
   }
 
+  // New helper methods for enhanced status indicators
+  double _getStatusDotSize() {
+    switch (widget.task.priority) {
+      case TaskPriority.urgent:
+        return widget.task.status == TaskStatus.inProgress ? 20 : 18; // Much larger for urgent
+      case TaskPriority.high:
+        return widget.task.status == TaskStatus.inProgress ? 18 : 16;
+      case TaskPriority.medium:
+        return widget.task.status == TaskStatus.inProgress ? 16 : 14;
+      case TaskPriority.low:
+        return widget.task.status == TaskStatus.inProgress ? 14 : 12;
+    }
+  }
+
+  double _getPriorityDotSize() {
+    switch (widget.task.priority) {
+      case TaskPriority.urgent:
+        return 10;
+      case TaskPriority.high:
+        return 8;
+      case TaskPriority.medium:
+        return 7;
+      case TaskPriority.low:
+        return 6;
+    }
+  }
+
   // Event handlers
   void _setHovered(bool hovered) {
     if (_isHovered != hovered) {
       setState(() => _isHovered = hovered);
       if (hovered) {
-        _hoverController.forward();
+        _interactionController.animateTo(0.3); // Hover to 30% of the interaction
       } else {
-        _hoverController.reverse();
+        _interactionController.animateTo(0.0);
       }
     }
   }
 
   void _onTapDown(TapDownDetails details) {
-    _pressController.forward();
+    _interactionController.animateTo(0.6); // Press to 60% of the interaction
   }
 
   void _onTapUp(TapUpDetails details) {
-    _pressController.reverse();
+    _interactionController.animateTo(_isHovered ? 0.3 : 0.0); // Return to hover or idle
   }
 
   void _onTapCancel() {
-    _pressController.reverse();
+    _interactionController.animateTo(_isHovered ? 0.3 : 0.0); // Return to hover or idle
   }
 
   void _onTap() {
@@ -744,7 +1143,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
     });
 
     final progress = (_swipeOffset.abs() / 200).clamp(0.0, 1.0);
-    _swipeController.value = progress;
+    _interactionController.value = progress; // Use interaction controller for swipe
   }
 
   void _onPanEnd(DragEndDetails details) {
@@ -757,7 +1156,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
     }
 
     // Reset swipe
-    _swipeController.reverse();
+    _interactionController.animateTo(0.0);
     setState(() {
       _showActionsPanel = false;
       _swipeOffset = 0.0;
@@ -771,10 +1170,10 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
         : TaskStatus.completed;
     
     if (newStatus == TaskStatus.completed) {
-      _completeController.forward();
+      _interactionController.animateTo(1.0); // Complete animation to 100%
       HapticFeedback.heavyImpact();
     } else {
-      _completeController.reverse();
+      _interactionController.animateTo(0.0);
     }
 
     // Update task status through provider
@@ -805,11 +1204,8 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
 
   @override
   void dispose() {
-    _hoverController.dispose();
-    _pressController.dispose();
-    _completeController.dispose();
-    _swipeController.dispose();
-    _priorityPulseController.dispose();
+    // OPTIMIZED: Only 2 controllers to dispose now
+    _interactionController.dispose();
     _progressController.dispose();
     super.dispose();
   }

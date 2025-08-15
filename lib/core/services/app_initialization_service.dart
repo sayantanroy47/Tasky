@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../services/error_recovery_service.dart';
-import '../../services/performance_service.dart';
 import '../../services/privacy_service.dart';
 import '../../services/database/database.dart';
 import '../../services/share_intent_service.dart';
@@ -8,14 +7,12 @@ import '../../services/share_intent_service.dart';
 /// Service for handling app initialization with error recovery
 class AppInitializationService {
   final ErrorRecoveryService _errorRecoveryService;
-  final PerformanceService _performanceService;
   final PrivacyService _privacyService;
   final AppDatabase _database;
   final ShareIntentService _shareIntentService;
   
   AppInitializationService(
     this._errorRecoveryService,
-    this._performanceService,
     this._privacyService,
     this._database,
     this._shareIntentService,
@@ -23,14 +20,9 @@ class AppInitializationService {
   
   /// Initialize the app with comprehensive error handling
   Future<void> initialize() async {
-    _performanceService.startTimer('app_initialization_service');
-    
     try {
       // Initialize error recovery first
       await _errorRecoveryService.initialize();
-      
-      // Initialize performance monitoring
-      await _performanceService.initialize();
       
       // Initialize database
       await _initializeDatabase();
@@ -60,11 +52,7 @@ class AppInitializationService {
         );
       }
       
-      _performanceService.stopTimer('app_initialization_service');
-      
     } catch (error, stackTrace) {
-      _performanceService.stopTimer('app_initialization_service');
-      
       // Record initialization failure
       await _errorRecoveryService.recordError(
         'app_initialization',
@@ -82,11 +70,7 @@ class AppInitializationService {
       // The database is already initialized when created, but we can
       // perform additional setup here if needed
       final stats = await _database.getDatabaseStats();
-      _performanceService.recordMetric(
-        'database_initialization',
-        Duration.zero,
-        metadata: stats,
-      );
+      // Database initialized successfully with stats: $stats
     } catch (e) {
       await _errorRecoveryService.recordError(
         'database_initialization',

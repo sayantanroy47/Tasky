@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/standardized_app_bar.dart';
+import '../widgets/theme_background_widget.dart';
 import '../../core/theme/typography_constants.dart';
 
 import '../../domain/entities/project.dart';
@@ -32,31 +33,36 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     
-    return Scaffold(
-      appBar: StandardizedAppBar(
-        title: 'Projects',
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(text: 'Active', icon: Icon(Icons.folder)),
-            Tab(text: 'Archived', icon: Icon(Icons.archive)),
-            Tab(text: 'At Risk', icon: Icon(Icons.warning)),
+    return ThemeBackgroundWidget(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        extendBodyBehindAppBar: true,
+        appBar: StandardizedAppBar(
+          title: 'Projects',
+          bottom: TabBar(
+            controller: _tabController,
+            tabs: const [
+              Tab(text: 'Active', icon: Icon(Icons.folder)),
+              Tab(text: 'Archived', icon: Icon(Icons.archive)),
+              Tab(text: 'At Risk', icon: Icon(Icons.warning)),
+            ],
+          ),
+          actions: [
+            IconButton(
+              onPressed: _showSearchDialog,
+              icon: const Icon(Icons.search),
+              tooltip: 'Search projects',
+            ),
+            IconButton(
+              onPressed: _refreshProjects,
+              icon: const Icon(Icons.refresh),
+              tooltip: 'Refresh',
+            ),
           ],
         ),
-        actions: [
-          IconButton(
-            onPressed: _showSearchDialog,
-            icon: const Icon(Icons.search),
-            tooltip: 'Search projects',
-          ),
-          IconButton(
-            onPressed: _refreshProjects,
-            icon: const Icon(Icons.refresh),
-            tooltip: 'Refresh',
-          ),
-        ],
-      ),
-      body: Column(
+        body: Padding(
+          padding: const EdgeInsets.only(top: kToolbarHeight + 48), // Account for TabBar
+          child: Column(
         children: [
           // Search bar (if searching)
           if (_searchQuery.isNotEmpty)
@@ -101,8 +107,10 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
               ],
             ),
           ),
-        ],
+          ],
+        ),
       ),
+    ),
     );
   }
 

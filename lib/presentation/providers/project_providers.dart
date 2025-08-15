@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/project.dart' as domain;
 import '../../services/project_service.dart';
 import '../../core/providers/core_providers.dart';
+import '../../core/providers/error_state_manager.dart';
 
 // Service provider
 final projectServiceProvider = Provider<ProjectService>((ref) {
@@ -13,11 +14,11 @@ final projectServiceProvider = Provider<ProjectService>((ref) {
 
 // State providers
 final projectsProvider = StateNotifierProvider<ProjectsNotifier, AsyncValue<List<domain.Project>>>(
-  (ref) => ProjectsNotifier(ref.read(projectServiceProvider)),
+  (ref) => ProjectsNotifier(ref.read(projectServiceProvider), ref),
 );
 
 final activeProjectsProvider = StateNotifierProvider<ActiveProjectsNotifier, AsyncValue<List<domain.Project>>>(
-  (ref) => ActiveProjectsNotifier(ref.read(projectServiceProvider)),
+  (ref) => ActiveProjectsNotifier(ref.read(projectServiceProvider), ref),
 );
 
 final selectedProjectProvider = StateProvider<domain.Project?>((ref) => null);
@@ -45,8 +46,9 @@ final projectFormProvider = StateNotifierProvider<ProjectFormNotifier, ProjectFo
 /// Notifier for managing all projects
 class ProjectsNotifier extends StateNotifier<AsyncValue<List<domain.Project>>> {
   final ProjectService _projectService;
+  final Ref _ref;
 
-  ProjectsNotifier(this._projectService) : super(const AsyncValue.loading()) {
+  ProjectsNotifier(this._projectService, this._ref) : super(const AsyncValue.loading()) {
     loadProjects();
   }
 
@@ -57,6 +59,14 @@ class ProjectsNotifier extends StateNotifier<AsyncValue<List<domain.Project>>> {
       state = AsyncValue.data(projects);
     } catch (error, stackTrace) {
       state = AsyncValue.error(error, stackTrace);
+      
+      // Report to global error state with appropriate context
+      _ref.reportError(
+        error,
+        code: 'project_operation_failed',
+        severity: ErrorSeverity.error,
+        stackTrace: stackTrace,
+      );
     }
   }
 
@@ -76,6 +86,14 @@ class ProjectsNotifier extends StateNotifier<AsyncValue<List<domain.Project>>> {
       await loadProjects();
     } catch (error, stackTrace) {
       state = AsyncValue.error(error, stackTrace);
+      
+      // Report to global error state with appropriate context
+      _ref.reportError(
+        error,
+        code: 'project_operation_failed',
+        severity: ErrorSeverity.error,
+        stackTrace: stackTrace,
+      );
     }
   }
 
@@ -85,6 +103,14 @@ class ProjectsNotifier extends StateNotifier<AsyncValue<List<domain.Project>>> {
       await loadProjects();
     } catch (error, stackTrace) {
       state = AsyncValue.error(error, stackTrace);
+      
+      // Report to global error state with appropriate context
+      _ref.reportError(
+        error,
+        code: 'project_operation_failed',
+        severity: ErrorSeverity.error,
+        stackTrace: stackTrace,
+      );
     }
   }
 
@@ -94,6 +120,14 @@ class ProjectsNotifier extends StateNotifier<AsyncValue<List<domain.Project>>> {
       await loadProjects();
     } catch (error, stackTrace) {
       state = AsyncValue.error(error, stackTrace);
+      
+      // Report to global error state with appropriate context
+      _ref.reportError(
+        error,
+        code: 'project_operation_failed',
+        severity: ErrorSeverity.error,
+        stackTrace: stackTrace,
+      );
     }
   }
 
@@ -103,6 +137,14 @@ class ProjectsNotifier extends StateNotifier<AsyncValue<List<domain.Project>>> {
       await loadProjects();
     } catch (error, stackTrace) {
       state = AsyncValue.error(error, stackTrace);
+      
+      // Report to global error state with appropriate context
+      _ref.reportError(
+        error,
+        code: 'project_operation_failed',
+        severity: ErrorSeverity.error,
+        stackTrace: stackTrace,
+      );
     }
   }
 
@@ -112,6 +154,14 @@ class ProjectsNotifier extends StateNotifier<AsyncValue<List<domain.Project>>> {
       await loadProjects();
     } catch (error, stackTrace) {
       state = AsyncValue.error(error, stackTrace);
+      
+      // Report to global error state with appropriate context
+      _ref.reportError(
+        error,
+        code: 'project_operation_failed',
+        severity: ErrorSeverity.error,
+        stackTrace: stackTrace,
+      );
     }
   }
 }
@@ -119,8 +169,9 @@ class ProjectsNotifier extends StateNotifier<AsyncValue<List<domain.Project>>> {
 /// Notifier for managing active projects
 class ActiveProjectsNotifier extends StateNotifier<AsyncValue<List<domain.Project>>> {
   final ProjectService _projectService;
+  final Ref _ref;
 
-  ActiveProjectsNotifier(this._projectService) : super(const AsyncValue.loading()) {
+  ActiveProjectsNotifier(this._projectService, this._ref) : super(const AsyncValue.loading()) {
     loadActiveProjects();
   }
 
@@ -131,6 +182,14 @@ class ActiveProjectsNotifier extends StateNotifier<AsyncValue<List<domain.Projec
       state = AsyncValue.data(projects);
     } catch (error, stackTrace) {
       state = AsyncValue.error(error, stackTrace);
+      
+      // Report to global error state with appropriate context
+      _ref.reportError(
+        error,
+        code: 'project_operation_failed',
+        severity: ErrorSeverity.error,
+        stackTrace: stackTrace,
+      );
     }
   }
 

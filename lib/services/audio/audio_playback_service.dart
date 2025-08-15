@@ -121,11 +121,32 @@ class AudioPlaybackService {
   Future<Duration?> getAudioDuration(String filePath) async {
     final file = File(filePath);
     if (!await file.exists()) {
+      if (kDebugMode) {
+        print('Audio file does not exist: $filePath');
+      }
       return null;
     }
 
-    // For now, return null - would need additional processing to get duration
-    // without starting playback
+    // Try to get duration using flutter_sound
+    if (_player != null && _isInitialized) {
+      try {
+        // For now, we'll need to estimate duration based on file size
+        // Real implementation would require additional audio processing libraries
+        // or temporary playback to get actual duration
+        if (kDebugMode) {
+          print('Attempting to get duration for: $filePath');
+        }
+        
+        // This is still a fallback - flutter_sound doesn't provide duration without playback
+        return null;
+      } catch (e) {
+        if (kDebugMode) {
+          print('Error getting audio duration: $e');
+        }
+        return null;
+      }
+    }
+
     return null;
   }
 

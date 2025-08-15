@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../presentation/widgets/standardized_app_bar.dart';
+import '../theme/typography_constants.dart';
 import '../../presentation/pages/main_scaffold.dart';
 import '../../presentation/pages/tasks_page.dart';
 import '../../presentation/pages/settings_page.dart';
@@ -10,10 +11,11 @@ import '../../presentation/pages/task_detail_page.dart';
 import '../../presentation/pages/voice_demo_page.dart';
 import '../../presentation/pages/data_export_page.dart';
 import '../../presentation/pages/help_page.dart';
-import '../../presentation/screens/performance_dashboard_screen.dart';
 import '../../presentation/screens/integration_settings_screen.dart';
 import '../../presentation/screens/task_sharing_screen.dart';
 import '../../presentation/widgets/theme_background_widget.dart';
+import 'route_validator.dart';
+import '../errors/app_exceptions.dart';
 
 /// Application router
 class AppRouter {
@@ -21,7 +23,6 @@ class AppRouter {
   static const String home = '/';
   static const String tasks = '/tasks';
   static const String settings = '/settings';
-  static const String performance = '/performance';
 
   /// Current navigation index
   final int _currentIndex = 0;
@@ -43,13 +44,13 @@ class AppRouter {
         route = home;
         break;
       case 1:
-        route = tasks;
+        route = calendar;
         break;
       case 2:
-        route = settings;
+        route = analytics;
         break;
       case 3:
-        route = performance;
+        route = settings;
         break;
       default:
         route = home;
@@ -91,16 +92,16 @@ class AppRouter {
       label: 'Home',
     ),
     const NavigationDestination(
-      icon: Icon(Icons.task_alt),
-      label: 'Tasks',
+      icon: Icon(Icons.calendar_today),
+      label: 'Calendar',
+    ),
+    const NavigationDestination(
+      icon: Icon(Icons.analytics),
+      label: 'Analytics',
     ),
     const NavigationDestination(
       icon: Icon(Icons.settings),
       label: 'Settings',
-    ),
-    const NavigationDestination(
-      icon: Icon(Icons.speed),
-      label: 'Performance',
     ),
   ];
 
@@ -122,11 +123,6 @@ class AppRouter {
           builder: (_) => const ThemeBackgroundWidget(child: SettingsPage()),
           settings: settings,
         );
-      case '/performance':
-        return MaterialPageRoute(
-          builder: (_) => const ThemeBackgroundWidget(child: PerformanceDashboardScreen()),
-          settings: settings,
-        );
       case '/calendar':
         return MaterialPageRoute(
           builder: (_) => const ThemeBackgroundWidget(child: CalendarPage()),
@@ -143,14 +139,22 @@ class AppRouter {
           settings: settings,
         );
       case '/task-detail':
-        return MaterialPageRoute(
-          builder: (_) => ThemeBackgroundWidget(
-            child: TaskDetailPage(
-              taskId: settings.arguments as String? ?? '',
+        try {
+          final validationResult = RouteValidator.validateTaskId(settings.arguments);
+          if (!validationResult.isValid) {
+            return _createErrorRoute(validationResult.errorMessage!, settings);
+          }
+          
+          final taskId = validationResult.validatedParams!['taskId'] as String;
+          return MaterialPageRoute(
+            builder: (_) => ThemeBackgroundWidget(
+              child: TaskDetailPage(taskId: taskId),
             ),
-          ),
-          settings: settings,
-        );
+            settings: settings,
+          );
+        } catch (e) {
+          return _createErrorRoute('Invalid task detail parameters: $e', settings);
+        }
       case '/voice-demo':
         return MaterialPageRoute(
           builder: (_) => const ThemeBackgroundWidget(child: VoiceDemoPage()),
@@ -182,11 +186,33 @@ class AppRouter {
           settings: settings,
         );
       default:
-        return MaterialPageRoute(
-          builder: (_) => const ThemeBackgroundWidget(child: NotFoundScreen()),
-          settings: settings,
-        );
+        return _createNotFoundRoute(settings);
     }
+  }
+
+  /// Create error route with validation message
+  static MaterialPageRoute _createErrorRoute(String errorMessage, RouteSettings settings) {
+    return MaterialPageRoute(
+      builder: (_) => ThemeBackgroundWidget(
+        child: RouteErrorScreen(
+          errorMessage: errorMessage,
+          routeName: settings.name ?? 'Unknown',
+        ),
+      ),
+      settings: settings,
+    );
+  }
+
+  /// Create not found route
+  static MaterialPageRoute _createNotFoundRoute(RouteSettings settings) {
+    return MaterialPageRoute(
+      builder: (_) => ThemeBackgroundWidget(
+        child: NotFoundScreen(
+          requestedRoute: settings.name ?? 'Unknown',
+        ),
+      ),
+      settings: settings,
+    );
   }
 }
 
@@ -194,39 +220,155 @@ class AppRouter {
 
 /// Not found screen
 class NotFoundScreen extends StatelessWidget {
-  const NotFoundScreen({super.key});
+  final String requestedRoute;
+  
+  const NotFoundScreen({
+    super.key,
+    this.requestedRoute = 'Unknown',
+  });
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
     return Scaffold(
       appBar: const StandardizedAppBar(
         title: 'Page Not Found',
       ),
-      body: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.error_outline,
-              size: 64,
-              color: Colors.red,
-            ),
-            SizedBox(height: 16),
-            Text(
-              'Page Not Found',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.error_outline,
+                size: 64,
+                color: theme.colorScheme.error,
               ),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'The requested page could not be found.',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey,
+              const SizedBox(height: 16),
+              Text(
+                'Page Not Found',
+                style: TextStyle(
+                  fontSize: TypographyConstants.textXL,
+                  fontWeight: TypographyConstants.bold,
+                  color: theme.colorScheme.onSurface,
+                ),
+                textAlign: TextAlign.center,
               ),
-            ),
-          ],
+              const SizedBox(height: 8),
+              Text(
+                'The requested page "$requestedRoute" could not be found.',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: () => Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  '/',
+                  (route) => false,
+                ),
+                child: const Text('Go to Home'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Route error screen for validation failures
+class RouteErrorScreen extends StatelessWidget {
+  final String errorMessage;
+  final String routeName;
+  
+  const RouteErrorScreen({
+    super.key,
+    required this.errorMessage,
+    required this.routeName,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
+    return Scaffold(
+      appBar: const StandardizedAppBar(
+        title: 'Route Error',
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.warning_outlined,
+                size: 64,
+                color: theme.colorScheme.error,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Invalid Route Parameters',
+                style: TextStyle(
+                  fontSize: TypographyConstants.textXL,
+                  fontWeight: TypographyConstants.bold,
+                  color: theme.colorScheme.onSurface,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Route: $routeName',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: theme.colorScheme.primary,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.errorContainer,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  errorMessage,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: theme.colorScheme.onErrorContainer,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Go Back'),
+                  ),
+                  const SizedBox(width: 16),
+                  ElevatedButton(
+                    onPressed: () => Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      '/',
+                      (route) => false,
+                    ),
+                    child: const Text('Go to Home'),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

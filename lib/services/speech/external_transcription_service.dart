@@ -29,10 +29,8 @@ class ExternalTranscriptionService implements TranscriptionService {
   @override
   bool get isInitialized => _isInitialized;
 
-  @override
   TranscriptionConfig get transcriptionConfig => _config;
 
-  @override
   Future<void> updateTranscriptionConfig(TranscriptionConfig config) async {
     _config = config;
   }

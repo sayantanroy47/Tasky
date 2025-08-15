@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-// import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../app_theme_data.dart' as app_theme_data;
 import '../models/theme_metadata.dart';
 import '../models/theme_colors.dart';
@@ -48,6 +47,12 @@ class VegetaBlueTheme {
   
   /// Create dark variant
   static app_theme_data.AppThemeData createDark() => create(isDark: true);
+
+  /// Helper method to reduce color brightness by 25%
+  static Color _reduceBrightness(Color color, double factor) {
+    final hsl = HSLColor.fromColor(color);
+    return hsl.withLightness((hsl.lightness * factor).clamp(0.0, 1.0)).toColor();
+  }
 
   /// Create Vegeta-inspired color palette
   static ThemeColors _createVegetaColors({bool isDark = false}) {
@@ -139,90 +144,100 @@ class VegetaBlueTheme {
       );
     }
     
-    // Light variant: Original Vegeta colors
-    const deepRoyalBlue = Color(0xFF1e3a8a);     // Primary - Vegeta's aura
-    const electricBlue = Color(0xFF3b82f6);       // Secondary - Energy blasts
-    const silverWhite = Color(0xFFf8fafc);        // On colors - Saiyan armor
-    const darkNavy = Color(0xFF0f172a);           // Background - Space darkness
-    const metallicSilver = Color(0xFFe2e8f0);     // Surface - Armor shine
-    const energyBlue = Color(0xFF60a5fa);         // Accent - Power aura
-    const lightningYellow = Color(0xFFfbbf24);    // Highlight - Energy sparks
+    // Light variant: Use dark theme colors reduced by 25% brightness + light backgrounds
     
-    return const ThemeColors(
-      // Primary colors - Deep royal blue like Vegeta's aura
-      primary: deepRoyalBlue,
-      onPrimary: silverWhite,
-      primaryContainer: Color(0xFF1e40af),
-      onPrimaryContainer: silverWhite,
+    // Get dark theme colors first  
+    const darkRoyalNavy = Color(0xFF1e3a8a);          // Dark theme primary
+    const darkBrilliantBlue = Color(0xFF60a5fa);      // Dark theme secondary
+    const darkEnergyGlow = Color(0xFF93c5fd);         // Dark theme accent
+    const darkPlasmaYellow = Color(0xFFfde047);       // Dark theme highlight
+    
+    // Reduce brightness by 25% (factor of 0.75)
+    final lightPrimary = _reduceBrightness(darkRoyalNavy, 0.75);
+    final lightSecondary = _reduceBrightness(darkBrilliantBlue, 0.75);
+    final lightAccent = _reduceBrightness(darkEnergyGlow, 0.75);
+    final lightHighlight = _reduceBrightness(darkPlasmaYellow, 0.75);
+    
+    // Light backgrounds
+    const pureWhite = Color(0xFFfafafa);          // Background - Softer white
+    const lightSilver = Color(0xFFf1f5f9);        // Surface - Light silver
+    const paleBlue = Color(0xFFe0f2fe);           // Container - More visible blue tint
+    
+    return ThemeColors(
+      // Primary colors - Reduced brightness from dark theme
+      primary: lightPrimary,
+      onPrimary: pureWhite,
+      primaryContainer: paleBlue,
+      onPrimaryContainer: lightPrimary,
 
-      // Secondary colors - Electric blue energy
-      secondary: electricBlue,
-      onSecondary: silverWhite,
-      secondaryContainer: Color(0xFF2563eb),
-      onSecondaryContainer: silverWhite,
+      // Secondary colors - Reduced brightness from dark theme
+      secondary: lightSecondary,
+      onSecondary: pureWhite,
+      secondaryContainer: paleBlue,
+      onSecondaryContainer: lightSecondary,
 
-      // Tertiary colors - Lightning accents
-      tertiary: lightningYellow,
-      onTertiary: darkNavy,
-      tertiaryContainer: Color(0xFFf59e0b),
-      onTertiaryContainer: darkNavy,
+      // Tertiary colors - Reduced brightness from dark theme
+      tertiary: lightHighlight,
+      onTertiary: pureWhite,
+      tertiaryContainer: paleBlue,
+      onTertiaryContainer: lightSecondary,
 
-      // Surface colors - Metallic armor
-      surface: metallicSilver,
-      onSurface: darkNavy,
-      surfaceVariant: Color(0xFFcbd5e1),
-      onSurfaceVariant: Color(0xFF334155),
-      inverseSurface: darkNavy,
-      onInverseSurface: silverWhite,
+      // Surface colors - Light backgrounds
+      surface: lightSilver,
+      onSurface: const Color(0xFF1a1a1a), // Dark text for light surfaces
+      surfaceVariant: const Color(0xFFe2e8f0),
+      onSurfaceVariant: const Color(0xFF2a2a2a), // Dark text for light surfaces
+      inverseSurface: lightPrimary,
+      onInverseSurface: pureWhite,
 
-      // Background colors - Space darkness
-      background: darkNavy,
-      onBackground: silverWhite,
+      // Background colors - Light backgrounds
+      background: pureWhite,
+      onBackground: const Color(0xFF0a0a0a), // Very dark text for light backgrounds
 
-      // Error colors - Destructive power
-      error: Color(0xFFdc2626),
-      onError: silverWhite,
-      errorContainer: Color(0xFFef4444),
-      onErrorContainer: silverWhite,
+      // Error colors - Reduced brightness
+      error: _reduceBrightness(const Color(0xFFf87171), 0.75),
+      onError: pureWhite,
+      errorContainer: const Color(0xFFfef2f2),
+      onErrorContainer: _reduceBrightness(const Color(0xFFdc2626), 0.75),
 
       // Special colors
-      accent: energyBlue,
-      highlight: lightningYellow,
-      shadow: Color(0xFF000000),
-      outline: Color(0xFF475569),
-      outlineVariant: Color(0xFF64748b),
+      accent: lightAccent,
+      highlight: lightHighlight,
+      shadow: const Color(0xFF000000),
+      outline: _reduceBrightness(const Color(0xFF475569), 0.75),
+      outlineVariant: _reduceBrightness(const Color(0xFF64748b), 0.75),
 
-      // Task priority colors - Power levels
-      taskLowPriority: Color(0xFF10b981),    // Green - Low power
-      taskMediumPriority: electricBlue,       // Blue - Medium power
-      taskHighPriority: Color(0xFFf59e0b),   // Yellow - High power
-      taskUrgentPriority: Color(0xFFdc2626), // Red - Maximum power
+      // Task priority colors - Reduced brightness power levels
+      taskLowPriority: _reduceBrightness(const Color(0xFF4ade80), 0.75),    // Reduced green
+      taskMediumPriority: lightSecondary,                                   // Reduced blue
+      taskHighPriority: lightHighlight,                                     // Reduced yellow
+      taskUrgentPriority: _reduceBrightness(const Color(0xFFf87171), 0.75), // Reduced red
 
-      // Status colors
-      success: Color(0xFF059669),
-      warning: Color(0xFFd97706),
-      info: energyBlue,
+      // Status colors - Reduced brightness
+      success: _reduceBrightness(const Color(0xFF22c55e), 0.75),
+      warning: _reduceBrightness(const Color(0xFFf59e0b), 0.75),
+      info: lightAccent,
 
-      // Calendar dot colors - Vegeta blue theme (light)
-      calendarTodayDot: deepRoyalBlue,                // Deep royal blue for today
-      calendarOverdueDot: Color(0xFFdc2626),          // Red for overdue
-      calendarFutureDot: electricBlue,                // Electric blue for future
-      calendarCompletedDot: Color(0xFF059669),        // Success green for completed
-      calendarHighPriorityDot: lightningYellow,       // Lightning yellow for high priority
+      // Calendar dot colors - Vegeta blue theme (light) - reduced brightness
+      calendarTodayDot: lightAccent,                                        // Reduced energy blue for today
+      calendarOverdueDot: _reduceBrightness(const Color(0xFFdc2626), 0.75), // Reduced red for overdue
+      calendarFutureDot: lightSecondary,                                    // Reduced blue for future
+      calendarCompletedDot: _reduceBrightness(const Color(0xFF22c55e), 0.75), // Reduced green for completed
+      calendarHighPriorityDot: lightHighlight,                             // Reduced yellow for high priority
       
-      // Status badge colors - Vegeta themed (light)
-      statusPendingBadge: electricBlue,               // Electric blue for pending
-      statusInProgressBadge: lightningYellow,         // Lightning yellow for in progress
-      statusCompletedBadge: Color(0xFF059669),        // Success green for completed
-      statusCancelledBadge: Color(0xFF6b7280),        // Gray for cancelled
-      statusOverdueBadge: Color(0xFFdc2626),          // Red for overdue
-      statusOnHoldBadge: Color(0xFFd97706),           // Orange for on hold
+      // Status badge colors - Vegeta themed (light) - reduced brightness
+      statusPendingBadge: lightSecondary,                                   // Reduced blue for pending
+      statusInProgressBadge: lightHighlight,                                // Reduced yellow for in progress
+      statusCompletedBadge: _reduceBrightness(const Color(0xFF22c55e), 0.75), // Reduced green for completed
+      statusCancelledBadge: _reduceBrightness(const Color(0xFF64748b), 0.75), // Reduced gray for cancelled
+      statusOverdueBadge: _reduceBrightness(const Color(0xFFdc2626), 0.75),  // Reduced red for overdue
+      statusOnHoldBadge: _reduceBrightness(const Color(0xFFf59e0b), 0.75),   // Reduced orange for on hold
 
-      // Interactive colors
-      hover: Color(0xFF2563eb),
-      pressed: Color(0xFF1d4ed8),
-      focus: lightningYellow,
-      disabled: Color(0xFF6b7280),
+      // Interactive colors - Reduced brightness
+      hover: _reduceBrightness(const Color(0xFF3730a3), 0.75),
+      pressed: _reduceBrightness(const Color(0xFF312e81), 0.75),
+      focus: lightHighlight,
+      disabled: _reduceBrightness(const Color(0xFF64748b), 0.75),
     );
   }
 
@@ -567,7 +582,7 @@ class _VegetaColorsHelper {
   final bool isDark;
   const _VegetaColorsHelper({this.isDark = false});
   
-  Color get onBackground => isDark ? const Color(0xFFf1f5f9) : const Color(0xFFf8fafc);
+  Color get onBackground => isDark ? const Color(0xFFf1f5f9) : const Color(0xFF1a1a1a); // Fixed: dark text for light theme
   Color get primary => const Color(0xFF1e3a8a);  // Same in both variants
   Color get secondary => isDark ? const Color(0xFF60a5fa) : const Color(0xFF3b82f6);
 }

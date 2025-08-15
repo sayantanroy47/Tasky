@@ -82,7 +82,6 @@ class NotificationManager {
         // Schedule a proper notification instead of using an unmanaged Timer
         await _notificationService.scheduleOverdueNotification(
           task: task,
-          scheduledTime: overdueTime,
         );
       }
     }
@@ -167,12 +166,21 @@ class NotificationManager {
       case NotificationAction.snooze:
         await _snoozeTaskNotification(taskId);
         break;
+      case NotificationAction.reschedule:
+        await _rescheduleTaskNotification(taskId);
+        break;
+      case NotificationAction.postpone:
+        await _postponeTaskNotification(taskId);
+        break;
       case NotificationAction.view:
         // This would typically navigate to the task detail screen
         // The UI layer should handle this through the event stream
         break;
       case NotificationAction.dismiss:
         // Just dismiss the notification, no action needed
+        break;
+      default:
+        // Handle any other actions
         break;
     }
     
@@ -390,6 +398,44 @@ class NotificationManager {
     }
   }
 
+  Future<void> _rescheduleTaskNotification(String taskId) async {
+    try {
+      final task = await _taskRepository.getTaskById(taskId);
+      if (task != null && task.status.isActive) {
+        // Cancel existing notifications
+        await _notificationService.cancelTaskNotifications(taskId);
+        
+        // Schedule new notification in 1 hour (for reschedule)
+        final rescheduleTime = DateTime.now().add(const Duration(hours: 1));
+        await _notificationService.scheduleTaskReminder(
+          task: task,
+          scheduledTime: rescheduleTime,
+        );
+      }
+    } catch (e) {
+      debugPrint('Error rescheduling task notification: $e');
+    }
+  }
+
+  Future<void> _postponeTaskNotification(String taskId) async {
+    try {
+      final task = await _taskRepository.getTaskById(taskId);
+      if (task != null && task.status.isActive) {
+        // Cancel existing notifications
+        await _notificationService.cancelTaskNotifications(taskId);
+        
+        // Schedule new notification in 4 hours (for postpone)
+        final postponeTime = DateTime.now().add(const Duration(hours: 4));
+        await _notificationService.scheduleTaskReminder(
+          task: task,
+          scheduledTime: postponeTime,
+        );
+      }
+    } catch (e) {
+      debugPrint('Error postponing task notification: $e');
+    }
+  }
+
   Future<void> _scheduleDetailedDailySummary({
     required DateTime scheduledTime,
     required List<TaskModel> todayTasks,
@@ -422,21 +468,21 @@ class NotificationManager {
     final buffer = StringBuffer();
     
     if (overdueTasks.isNotEmpty) {
-      buffer.write('⚠️ ${overdueTasks.length} overdue task${overdueTasks.length == 1 ? '' : 's'}');
+      buffer.write('${overdueTasks.length} overdue task${overdueTasks.length == 1 ? '' : 's'}');
     }
     
     if (todayTasks.isNotEmpty) {
       if (buffer.isNotEmpty) buffer.write(' • ');
-      buffer.write('📅 ${todayTasks.length} due today');
+      buffer.write('${todayTasks.length} due today');
     }
     
     if (upcomingTasks.isNotEmpty) {
       if (buffer.isNotEmpty) buffer.write(' • ');
-      buffer.write('📋 ${upcomingTasks.length} upcoming');
+      buffer.write('${upcomingTasks.length} upcoming');
     }
     
     if (buffer.isEmpty) {
-      return '✅ All caught up! No pending tasks.';
+      return 'All caught up! No pending tasks.';
     }
     
     return buffer.toString();

@@ -21,8 +21,8 @@ class LocationServiceImpl implements LocationService {
     }
   }
 
-  static LocationServiceImpl getInstance() {
-    return _instance ??= LocationServiceImpl() as LocationServiceImpl;
+  static LocationService getInstance() {
+    return _instance ??= LocationServiceImpl();
   }
 
   @override

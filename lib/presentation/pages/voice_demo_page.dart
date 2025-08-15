@@ -5,6 +5,7 @@ import '../widgets/glassmorphism_container.dart';
 import '../../core/theme/typography_constants.dart';
 import '../widgets/voice_recording_widget.dart';
 import '../widgets/standardized_app_bar.dart';
+import '../widgets/theme_background_widget.dart';
 import '../../services/speech/transcription_service.dart';
 import '../../services/speech/transcription_validator.dart';
 
@@ -29,12 +30,20 @@ class _VoiceDemoPageState extends ConsumerState<VoiceDemoPage> {
     final speechState = ref.watch(speechRecognitionProvider);
     final speechNotifier = ref.read(speechRecognitionProvider.notifier);
 
-    return Scaffold(
-      appBar: const StandardizedAppBar(
-        title: 'Voice Recording Demo',
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+    return ThemeBackgroundWidget(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        extendBodyBehindAppBar: true,
+        appBar: const StandardizedAppBar(
+          title: 'Voice Recording Demo',
+        ),
+        body: Padding(
+          padding: const EdgeInsets.only(
+            top: kToolbarHeight + 8,
+            left: 16.0,
+            right: 16.0,
+            bottom: 16.0,
+          ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -342,6 +351,7 @@ class _VoiceDemoPageState extends ConsumerState<VoiceDemoPage> {
           ],
         ),
       ),
+    ),
     );
   }
 

@@ -246,7 +246,7 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
       ),
       child: Text(
         number,
-        style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
+        style: TextStyle(fontSize: TypographyConstants.textXL, fontWeight: TypographyConstants.medium),
       ),
     );
   }

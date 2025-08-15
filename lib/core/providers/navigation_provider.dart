@@ -31,8 +31,8 @@ class AppNavigationDestination {
       route: '/analytics',
     ),
     AppNavigationDestination(
-      label: 'Menu',
-      icon: Icons.menu,
+      label: 'Settings',
+      icon: Icons.settings,
       route: '/settings',
     ),
   ];
@@ -56,9 +56,9 @@ class AppNavigationDestination {
     route: '/analytics',
   );
 
-  static const AppNavigationDestination menu = AppNavigationDestination(
-    label: 'Menu',
-    icon: Icons.menu,
+  static const AppNavigationDestination settings = AppNavigationDestination(
+    label: 'Settings',
+    icon: Icons.settings,
     route: '/settings',
   );
 
@@ -135,10 +135,12 @@ class NavigationNotifier extends StateNotifier<NavigationState> {
 
   /// Navigate to a destination by index
   void navigateToIndex(int index) {
-    final destination = AppNavigationDestination.fromIndex(index);
+    // Ensure index is within valid bounds
+    final safeIndex = index.clamp(0, AppNavigationDestination.values.length - 1);
+    final destination = AppNavigationDestination.fromIndex(safeIndex);
     state = state.copyWith(
       currentDestination: destination,
-      selectedIndex: index,
+      selectedIndex: safeIndex,
     );
   }
 
@@ -185,10 +187,11 @@ final currentDestinationProvider = Provider<AppNavigationDestination>((ref) {
   return navigationState.currentDestination;
 });
 
-/// Selected index provider
+/// Selected index provider with safety bounds checking
 final selectedIndexProvider = Provider<int>((ref) {
   final navigationState = ref.watch(navigationProvider);
-  return navigationState.selectedIndex;
+  // Ensure selectedIndex is within valid bounds (0 to 3 for our 4 destinations)
+  return navigationState.selectedIndex.clamp(0, AppNavigationDestination.values.length - 1);
 });
 
 /// Can pop provider

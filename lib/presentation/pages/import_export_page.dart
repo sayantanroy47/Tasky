@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../services/import_export_service.dart';
-import '../../domain/repositories/task_repository.dart';
 import '../../core/providers/core_providers.dart';
 import '../providers/task_providers.dart';
-import '../../core/theme/material3/motion_system.dart';
+import '../widgets/standardized_app_bar.dart';
+import '../widgets/theme_background_widget.dart';
 import '../../core/theme/typography_constants.dart';
 
 /// Import/Export page for managing task data
@@ -15,63 +15,37 @@ class ImportExportPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     
-    return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          // Modern app bar
-          SliverAppBar(
-            expandedHeight: 120,
-            floating: true,
-            pinned: true,
-            elevation: 0,
-            backgroundColor: Colors.transparent,
-            flexibleSpace: FlexibleSpaceBar(
-              background: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      theme.colorScheme.primary.withOpacity(0.1),
-                      theme.colorScheme.secondary.withOpacity(0.05),
-                    ],
-                  ),
-                ),
-              ),
-              title: Text(
-                'Import & Export',
-                style: theme.textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.onSurface,
-                ),
-              ),
-              centerTitle: false,
-            ),
+    return ThemeBackgroundWidget(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        extendBodyBehindAppBar: true,
+        appBar: const StandardizedAppBar(title: 'Import & Export'),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.only(
+            top: kToolbarHeight + 8,
+            left: 16,
+            right: 16,
+            bottom: 16,
           ),
-          
-          // Content
-          SliverPadding(
-            padding: const EdgeInsets.all(16),
-            sliver: SliverList(
-              delegate: SliverChildListDelegate([
-                // Export section
-                _buildExportSection(context, ref, theme),
-                
-                const SizedBox(height: 24),
-                
-                // Import section
-                _buildImportSection(context, ref, theme),
-                
-                const SizedBox(height: 24),
-                
-                // Info section
-                _buildInfoSection(context, theme),
-                
-                const SizedBox(height: 100),
-              ]),
-            ),
+          child: Column(
+            children: [
+              // Export section
+              _buildExportSection(context, ref, theme),
+              
+              const SizedBox(height: 24),
+              
+              // Import section
+              _buildImportSection(context, ref, theme),
+              
+              const SizedBox(height: 24),
+              
+              // Info section
+              _buildInfoSection(context, theme),
+              
+              const SizedBox(height: 100),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -295,7 +269,7 @@ class ImportExportPage extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+                color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
                 borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
               ),
               child: Row(
@@ -503,7 +477,7 @@ class ImportExportPage extends ConsumerWidget {
       builder: (context) => AlertDialog(
         title: Row(
           children: [
-            Icon(
+            const Icon(
               Icons.check_circle,
               color: Colors.green,
               size: 28,
@@ -576,13 +550,13 @@ class ImportExportPage extends ConsumerWidget {
               
               if (result.hasErrors) ...[
                 const SizedBox(height: 16),
-                Text(
+                const Text(
                   'Errors:',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
                 ...result.errors.take(5).map((error) => 
-                  Text('• $error', style: TextStyle(fontSize: TypographyConstants.bodySmall))
+                  Text('• $error', style: const TextStyle(fontSize: TypographyConstants.bodySmall))
                 ),
                 if (result.errors.length > 5)
                   Text('... and ${result.errors.length - 5} more errors'),

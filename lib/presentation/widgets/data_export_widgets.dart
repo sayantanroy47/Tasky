@@ -50,6 +50,10 @@ class ExportFormatSelector extends ConsumerWidget {
         return 'CSV (Spreadsheet)';
       case ExportFormat.plainText:
         return 'Plain Text';
+      case ExportFormat.pdf:
+        return 'PDF';
+      case ExportFormat.excel:
+        return 'Excel';
     }
   }
 
@@ -61,6 +65,10 @@ class ExportFormatSelector extends ConsumerWidget {
         return 'Spreadsheet format, good for analysis';
       case ExportFormat.plainText:
         return 'Human-readable format, good for sharing';
+      case ExportFormat.pdf:
+        return 'Professional document format, best for reports';
+      case ExportFormat.excel:
+        return 'Excel spreadsheet format with advanced features';
     }
   }
 }

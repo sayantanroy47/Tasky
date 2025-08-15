@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-// import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../app_theme_data.dart' as app_theme_data;
 import '../models/theme_metadata.dart';
 import '../models/theme_colors.dart';
@@ -49,97 +48,117 @@ class DraculaIDETheme {
   /// Create dark variant (standard Dracula)
   static app_theme_data.AppThemeData createDark() => create(isDark: true);
 
+  /// Helper method to reduce color brightness by 25%
+  static Color _reduceBrightness(Color color, double factor) {
+    final hsl = HSLColor.fromColor(color);
+    return hsl.withLightness((hsl.lightness * factor).clamp(0.0, 1.0)).toColor();
+  }
+
   /// Create Dracula-inspired color palette
   static ThemeColors _createDraculaColors({bool isDark = true}) {
     if (!isDark) {
-      // Light variant: Inverted Dracula with light background and darker accents
-      const lightBackground = Color(0xFFf8f8f2);     // Light background
-      const lightSurface = Color(0xFFf1f1f1);        // Lighter surface
-      const darkText = Color(0xFF2d2d2d);             // Dark text
-      const draculaCommentLight = Color(0xFF4a5a8a);  // Darker blue-gray
-      const draculaCyanDark = Color(0xFF4db3d9);      // Darker cyan
-      const draculaGreenDark = Color(0xFF3ca350);     // Darker green
-      const draculaOrangeDark = Color(0xFFd99945);    // Darker orange
-      const draculaPink = Color(0xFFff79c6);          // Pink - same
-      const draculaPurpleDark = Color(0xFF9d6fd9);    // Darker purple
-      const draculaRedDark = Color(0xFFd93333);       // Darker red
-      const draculaYellowDark = Color(0xFFd4d15a);    // Darker yellow
+      // Light variant: Use dark theme colors reduced by 25% brightness + light backgrounds
+      
+      // Get dark theme colors first
+      const darkDraculaPink = Color(0xFFff79c6);          // Dark theme primary
+      const darkDraculaPurple = Color(0xFFbd93f9);        // Dark theme secondary  
+      const darkDraculaCyan = Color(0xFF8be9fd);          // Dark theme tertiary
+      const darkDraculaGreen = Color(0xFF50fa7b);         // Dark theme success
+      const darkDraculaOrange = Color(0xFFffb86c);        // Dark theme warning
+      const darkDraculaRed = Color(0xFFff5555);           // Dark theme error
+      const darkDraculaYellow = Color(0xFFf1fa8c);        // Dark theme highlight
+      const darkDraculaComment = Color(0xFF6272a4);       // Dark theme comment
+      
+      // Reduce brightness by 25% (factor of 0.75)
+      final lightPink = _reduceBrightness(darkDraculaPink, 0.75);
+      final lightPurple = _reduceBrightness(darkDraculaPurple, 0.75);
+      final lightCyan = _reduceBrightness(darkDraculaCyan, 0.75);
+      final lightGreen = _reduceBrightness(darkDraculaGreen, 0.75);
+      final lightOrange = _reduceBrightness(darkDraculaOrange, 0.75);
+      final lightRed = _reduceBrightness(darkDraculaRed, 0.75);
+      final lightYellow = _reduceBrightness(darkDraculaYellow, 0.75);
+      final lightComment = _reduceBrightness(darkDraculaComment, 0.75);
+      
+      // Light backgrounds
+      const pureWhite = Color(0xFFfafafa);        // Background - Softer white
+      const lightSurface = Color(0xFFf5f5f5);     // Surface - Light gray
+      const paleContainer = Color(0xFFede7f6);    // Container - Light purple tint
       
       return ThemeColors(
-        // Primary colors - Dracula pink
-        primary: draculaPink,
-        onPrimary: lightBackground,
-        primaryContainer: const Color(0xFFffe6f3),
-        onPrimaryContainer: const Color(0xFF661a40),
+        // Primary colors - Reduced brightness from dark theme
+        primary: lightPink,
+        onPrimary: pureWhite,
+        primaryContainer: paleContainer,
+        onPrimaryContainer: lightPink,
 
-        // Secondary colors - Darker purple
-        secondary: draculaPurpleDark,
-        onSecondary: lightBackground,
-        secondaryContainer: const Color(0xFFede6ff),
-        onSecondaryContainer: const Color(0xFF3d1a66),
+        // Secondary colors - Reduced brightness from dark theme
+        secondary: lightPurple,
+        onSecondary: pureWhite,
+        secondaryContainer: paleContainer,
+        onSecondaryContainer: lightPurple,
 
-        // Tertiary colors - Darker cyan
-        tertiary: draculaCyanDark,
-        onTertiary: lightBackground,
-        tertiaryContainer: const Color(0xFFe6f9ff),
-        onTertiaryContainer: const Color(0xFF1a4d5c),
+        // Tertiary colors - Reduced brightness from dark theme
+        tertiary: lightCyan,
+        onTertiary: pureWhite,
+        tertiaryContainer: paleContainer,
+        onTertiaryContainer: lightCyan,
 
-        // Surface colors - Light surfaces
+        // Surface colors - Light backgrounds
         surface: lightSurface,
-        onSurface: darkText,
-        surfaceVariant: const Color(0xFFe8e8e8),
-        onSurfaceVariant: const Color(0xFF4a4a4a),
-        inverseSurface: darkText,
-        onInverseSurface: lightBackground,
+        onSurface: const Color(0xFF1a1a1a), // Dark text for light surfaces
+        surfaceVariant: const Color(0xFFf0f0f0),
+        onSurfaceVariant: const Color(0xFF2a2a2a), // Dark text for light surfaces
+        inverseSurface: lightPink,
+        onInverseSurface: pureWhite,
 
-        // Background colors - Light background
-        background: lightBackground,
-        onBackground: darkText,
+        // Background colors - Light backgrounds
+        background: pureWhite,
+        onBackground: const Color(0xFF0a0a0a), // Very dark text for light backgrounds
 
-        // Error colors - Darker red
-        error: draculaRedDark,
-        onError: lightBackground,
-        errorContainer: const Color(0xFFffebee),
-        onErrorContainer: const Color(0xFF8a1a1a),
+        // Error colors - Reduced brightness
+        error: lightRed,
+        onError: pureWhite,
+        errorContainer: const Color(0xFFfff5f5),
+        onErrorContainer: lightRed,
 
         // Special colors
-        accent: draculaCyanDark,
-        highlight: draculaYellowDark,
+        accent: lightCyan,
+        highlight: lightYellow,
         shadow: const Color(0xFF000000),
-        outline: draculaCommentLight,
-        outlineVariant: const Color(0xFF6a7a94),
+        outline: lightComment,
+        outlineVariant: lightComment,
 
-        // Task priority colors - Dracula syntax colors (darker)
-        taskLowPriority: draculaGreenDark,     // Darker green
-        taskMediumPriority: draculaCyanDark,   // Darker cyan
-        taskHighPriority: draculaOrangeDark,   // Darker orange
-        taskUrgentPriority: draculaRedDark,    // Darker red
+        // Task priority colors - Reduced brightness syntax colors
+        taskLowPriority: lightGreen,     // Reduced green
+        taskMediumPriority: lightCyan,   // Reduced cyan
+        taskHighPriority: lightOrange,   // Reduced orange
+        taskUrgentPriority: lightRed,    // Reduced red
 
-        // Status colors
-        success: draculaGreenDark,
-        warning: draculaOrangeDark,
-        info: draculaCyanDark,
+        // Status colors - Reduced brightness
+        success: lightGreen,
+        warning: lightOrange,
+        info: lightCyan,
 
-        // Calendar dot colors - Dracula IDE theme (light)
-        calendarTodayDot: draculaPink,                  // Pink for today
-        calendarOverdueDot: draculaRedDark,             // Red for overdue
-        calendarFutureDot: draculaCyanDark,             // Cyan for future
-        calendarCompletedDot: draculaGreenDark,         // Green for completed
-        calendarHighPriorityDot: draculaOrangeDark,     // Orange for high priority
+        // Calendar dot colors - Dracula IDE theme (light) - reduced brightness
+        calendarTodayDot: lightPink,                  // Reduced pink for today
+        calendarOverdueDot: lightRed,                 // Reduced red for overdue
+        calendarFutureDot: lightCyan,                 // Reduced cyan for future
+        calendarCompletedDot: lightGreen,             // Reduced green for completed
+        calendarHighPriorityDot: lightOrange,         // Reduced orange for high priority
         
-        // Status badge colors - Dracula IDE themed (light)
-        statusPendingBadge: draculaCyanDark,            // Cyan for pending
-        statusInProgressBadge: draculaOrangeDark,       // Orange for in progress
-        statusCompletedBadge: draculaGreenDark,         // Green for completed
-        statusCancelledBadge: draculaCommentLight,      // Comment color for cancelled
-        statusOverdueBadge: draculaRedDark,             // Red for overdue
-        statusOnHoldBadge: draculaYellowDark,           // Yellow for on hold
+        // Status badge colors - Dracula IDE themed (light) - reduced brightness
+        statusPendingBadge: lightCyan,                // Reduced cyan for pending
+        statusInProgressBadge: lightOrange,           // Reduced orange for in progress
+        statusCompletedBadge: lightGreen,             // Reduced green for completed
+        statusCancelledBadge: lightComment,           // Reduced comment color for cancelled
+        statusOverdueBadge: lightRed,                 // Reduced red for overdue
+        statusOnHoldBadge: lightYellow,               // Reduced yellow for on hold
 
-        // Interactive colors
-        hover: const Color(0xFFe55da0),
-        pressed: const Color(0xFFd14287),
-        focus: draculaYellowDark,
-        disabled: draculaCommentLight,
+        // Interactive colors - Reduced brightness
+        hover: _reduceBrightness(const Color(0xFFf565a7), 0.75),
+        pressed: _reduceBrightness(const Color(0xFFe84d96), 0.75),
+        focus: lightYellow,
+        disabled: lightComment,
       );
     }
     

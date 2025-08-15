@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:task_tracker_app/core/services/app_initialization_service.dart';
+import 'package:task_tracker_app/presentation/providers/initialization_providers.dart';
 
 void main() {
   group('AppInitializationService', () {

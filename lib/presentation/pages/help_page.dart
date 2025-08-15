@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../widgets/app_scaffold.dart';
+import '../widgets/standardized_app_bar.dart';
+import '../widgets/theme_background_widget.dart';
 import '../widgets/glassmorphism_container.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../services/help_service.dart';
@@ -33,22 +34,34 @@ class _HelpPageState extends State<HelpPage> with SingleTickerProviderStateMixin
   Widget build(BuildContext context) {
     final categories = _helpService.getCategories();
 
-    return AppScaffold(
-      title: 'Help & Support',
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.search),
-          onPressed: () {
-            _helpService.showHelpSearch(context);
-          },
-          tooltip: 'Search Help',
+    return ThemeBackgroundWidget(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        extendBodyBehindAppBar: true,
+        appBar: StandardizedAppBar(
+          title: 'Help & Support',
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.search),
+              onPressed: () {
+                _helpService.showHelpSearch(context);
+              },
+              tooltip: 'Search Help',
+            ),
+          ],
         ),
-      ],
-      body: Column(
+        body: Padding(
+          padding: const EdgeInsets.only(
+            top: kToolbarHeight + 8,
+            left: 16,
+            right: 16,
+            bottom: 16,
+          ),
+          child: Column(
         children: [
-          // Welcome Card
-          Container(
-            margin: const EdgeInsets.all(16.0),
+            // Welcome Card
+            Container(
+              margin: const EdgeInsets.only(bottom: 16.0),
             child: GlassmorphismContainer(
               borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
               padding: const EdgeInsets.all(20.0),
@@ -124,18 +137,20 @@ class _HelpPageState extends State<HelpPage> with SingleTickerProviderStateMixin
               }).toList(),
             ),
             
-            // Tab Content
-            Expanded(
-              child: TabBarView(
-                controller: _tabController,
-                children: categories.map((category) {
-                  return _buildCategoryContent(category);
-                }).toList(),
+              // Tab Content
+              Expanded(
+                child: TabBarView(
+                  controller: _tabController,
+                  children: categories.map((category) {
+                    return _buildCategoryContent(category);
+                  }).toList(),
+                ),
               ),
-            ),
+            ],
           ],
-        ],
+        ),
       ),
+    ),
     );
   }
 

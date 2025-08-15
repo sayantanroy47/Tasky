@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/standardized_app_bar.dart';
+import '../widgets/theme_background_widget.dart';
 
 import '../../domain/entities/project.dart';
 import '../../domain/entities/task_model.dart';
@@ -9,7 +10,6 @@ import '../providers/project_providers.dart';
 import '../providers/task_providers.dart';
 import '../widgets/advanced_task_card.dart';
 import '../widgets/project_form_dialog.dart';
-import '../../core/theme/typography_constants.dart';
 import '../../core/theme/typography_constants.dart';
 
 /// Detailed view of a single project
@@ -48,53 +48,58 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
           orElse: () => throw Exception('Project not found'),
         );
 
-        return Scaffold(
-          appBar: StandardizedAppBar(
-            title: project.name,
-            actions: [
-              IconButton(
-                onPressed: () => _editProject(project),
-                icon: const Icon(Icons.edit),
-                tooltip: 'Edit Project',
-              ),
-              PopupMenuButton<String>(
-                onSelected: (value) => _handleMenuAction(project, value),
-                itemBuilder: (context) => [
-                  PopupMenuItem(
-                    value: project.isArchived ? 'unarchive' : 'archive',
-                    child: Row(
-                      children: [
-                        Icon(project.isArchived ? Icons.unarchive : Icons.archive),
-                        const SizedBox(width: 8),
-                        Text(project.isArchived ? 'Unarchive' : 'Archive'),
-                      ],
+        return ThemeBackgroundWidget(
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            extendBodyBehindAppBar: true,
+            appBar: StandardizedAppBar(
+              title: project.name,
+              actions: [
+                IconButton(
+                  onPressed: () => _editProject(project),
+                  icon: const Icon(Icons.edit),
+                  tooltip: 'Edit Project',
+                ),
+                PopupMenuButton<String>(
+                  onSelected: (value) => _handleMenuAction(project, value),
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      value: project.isArchived ? 'unarchive' : 'archive',
+                      child: Row(
+                        children: [
+                          Icon(project.isArchived ? Icons.unarchive : Icons.archive),
+                          const SizedBox(width: 8),
+                          Text(project.isArchived ? 'Unarchive' : 'Archive'),
+                        ],
+                      ),
                     ),
-                  ),
-                  const PopupMenuItem(
-                    value: 'duplicate',
-                    child: Row(
-                      children: [
-                        Icon(Icons.copy),
-                        SizedBox(width: 8),
-                        Text('Duplicate'),
-                      ],
+                    const PopupMenuItem(
+                      value: 'duplicate',
+                      child: Row(
+                        children: [
+                          Icon(Icons.copy),
+                          SizedBox(width: 8),
+                          Text('Duplicate'),
+                        ],
+                      ),
                     ),
-                  ),
-                  const PopupMenuItem(
-                    value: 'delete',
-                    child: Row(
-                      children: [
-                        Icon(Icons.delete, color: Colors.red),
-                        SizedBox(width: 8),
-                        Text('Delete', style: TextStyle(color: Colors.red)),
-                      ],
+                    const PopupMenuItem(
+                      value: 'delete',
+                      child: Row(
+                        children: [
+                          Icon(Icons.delete, color: Colors.red),
+                          SizedBox(width: 8),
+                          Text('Delete', style: TextStyle(color: Colors.red)),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          body: Column(
+                  ],
+                ),
+              ],
+            ),
+            body: Padding(
+              padding: const EdgeInsets.only(top: kToolbarHeight + 8),
+              child: Column(
             children: [
               // Project header with stats
               _buildProjectHeader(project, projectStatsAsync),
@@ -121,6 +126,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
                 ),
               ),
             ],
+            ),
           ),
         );
       },

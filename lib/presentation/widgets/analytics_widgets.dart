@@ -634,18 +634,49 @@ class TimePeriodSelector extends StatelessWidget {
               runSpacing: 8,
               children: AnalyticsTimePeriod.values
                   .where((period) => period != AnalyticsTimePeriod.custom)
-                  .map((period) => FilterChip(
-                        label: Text(period.displayName),
-                        selected: selectedPeriod == period,
-                        onSelected: (selected) {
-                          if (selected) {
-                            onPeriodChanged(period);
-                          }
-                        },
+                  .map((period) => _buildGlassmorphicChip(
+                        context,
+                        period.displayName,
+                        selectedPeriod == period,
+                        () => onPeriodChanged(period),
                       ))
                   .toList(),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  /// Build a glassmorphic chip for time period selection
+  Widget _buildGlassmorphicChip(
+    BuildContext context,
+    String label,
+    bool isSelected,
+    VoidCallback onTap,
+  ) {
+    final theme = Theme.of(context);
+    
+    return GlassmorphismContainer(
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      glassTint: isSelected 
+          ? theme.colorScheme.primary.withOpacity(0.2)
+          : null,
+      borderColor: isSelected 
+          ? theme.colorScheme.primary.withOpacity(0.3)
+          : null,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+        child: Text(
+          label,
+          style: theme.textTheme.labelMedium?.copyWith(
+            color: isSelected 
+                ? theme.colorScheme.primary
+                : theme.colorScheme.onSurfaceVariant,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+          ),
         ),
       ),
     );

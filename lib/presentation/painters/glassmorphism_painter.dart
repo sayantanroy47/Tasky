@@ -13,7 +13,7 @@ class GlassmorphismPainter extends CustomPainter {
   
   GlassmorphismPainter({
     this.color = Colors.white,
-    this.blur = 7.5, // Reduced by 25% from 10px
+    this.blur = 5.6, // Reduced by 25% from 7.5px
     this.opacity = 0.2,
     this.borderRadius = const BorderRadius.all(Radius.circular(TypographyConstants.radiusStandard)),
     this.borderColor,
@@ -74,7 +74,7 @@ class GlassmorphicContainer extends StatelessWidget {
     this.width,
     this.height,
     this.borderRadius = const BorderRadius.all(Radius.circular(TypographyConstants.radiusStandard)),
-    this.blur = 7.5, // Reduced by 25% from 10px
+    this.blur = 5.6, // Reduced by 25% from 7.5px
     this.opacity = 0.2,
     this.color = Colors.white,
     this.borderColor,
@@ -136,7 +136,7 @@ class FrostedGlass extends StatelessWidget {
   const FrostedGlass({
     super.key,
     required this.child,
-    this.blur = 11.25, // Reduced by 25% from 15px
+    this.blur = 8.4, // Reduced by 25% from 11.25px
     this.opacity = 0.1,
     this.color = Colors.white,
     this.borderRadius,

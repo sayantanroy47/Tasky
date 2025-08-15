@@ -2,21 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'core/constants/app_constants.dart';
 import 'core/routing/app_router.dart';
 import 'core/providers/enhanced_theme_provider.dart';
+import 'core/localization/app_localizations.dart';
+import 'core/localization/locale_service.dart';
+import 'core/localization/app_localizations_delegate.dart';
 import 'presentation/widgets/app_initialization_wrapper.dart';
-import 'services/performance_service.dart';
 import 'services/share_intent_service.dart';
 import 'services/widget_service.dart';
+import 'services/audio/audio_file_manager.dart';
 
 /// Global navigator key for accessing context from services
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 /// Performance service provider
-final performanceServiceProvider = Provider<PerformanceService>((ref) {
-  return PerformanceService();
-});
 
 /// Share intent service provider
 final shareIntentServiceProvider = Provider<ShareIntentService>((ref) {
@@ -25,17 +26,16 @@ final shareIntentServiceProvider = Provider<ShareIntentService>((ref) {
 
 void main() async {
   // Start performance monitoring early
-  final performanceService = PerformanceService();
-  performanceService.startTimer('app_startup_total');
   
   WidgetsFlutterBinding.ensureInitialized();
   
   // Initialize services early
   final shareIntentService = ShareIntentService();
   final widgetService = WidgetService();
+  final audioFileManager = AudioFileManager();
   
-  // Performance optimizations
-  await _performStartupOptimizations(performanceService);
+  // Startup optimizations
+  await _performStartupOptimizations();
   
   // Initialize share intent service
   await shareIntentService.initialize();
@@ -43,12 +43,19 @@ void main() async {
   // Initialize widget service
   await widgetService.initialize();
   
-  performanceService.stopTimer('app_startup_total');
+  // Initialize audio file manager
+  try {
+    await audioFileManager.initialize();
+  } catch (e) {
+    debugPrint('Warning: Audio file manager initialization failed: $e');
+    // Don't fail app startup if audio services fail
+  }
+  
+  
   
   runApp(
     ProviderScope(
       overrides: [
-        performanceServiceProvider.overrideWithValue(performanceService),
         shareIntentServiceProvider.overrideWithValue(shareIntentService),
       ],
       child: const TaskTrackerApp(),
@@ -57,8 +64,7 @@ void main() async {
 }
 
 /// Perform startup optimizations
-Future<void> _performStartupOptimizations(PerformanceService performanceService) async {
-  performanceService.startTimer('startup_optimizations');
+Future<void> _performStartupOptimizations() async {
   
   try {
     // Set preferred orientations
@@ -76,7 +82,6 @@ Future<void> _performStartupOptimizations(PerformanceService performanceService)
     );
     
     // Initialize performance service
-    await performanceService.initialize();
     
     // Preload critical resources in debug mode
     if (kDebugMode) {
@@ -87,14 +92,8 @@ Future<void> _performStartupOptimizations(PerformanceService performanceService)
     
   } catch (e) {
     // Log startup optimization errors but don't block app startup
-    performanceService.recordMetric(
-      'startup_optimization_error',
-      Duration.zero,
-      metadata: {'error': e.toString()},
-    );
   }
   
-  performanceService.stopTimer('startup_optimizations');
 }
 
 class TaskTrackerApp extends ConsumerWidget {
@@ -104,15 +103,30 @@ class TaskTrackerApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final themeState = ref.watch(enhancedThemeProvider);
     final themeMode = ref.watch(themeModeProvider);
+    final locale = ref.watch(localeProvider);
     
     return AppInitializationWrapper(
       child: MaterialApp(
         title: AppConstants.appName,
         navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
+        
+        // Theme configuration
         theme: themeState.flutterTheme ?? ThemeData.light(useMaterial3: true),
         darkTheme: themeState.darkFlutterTheme ?? ThemeData.dark(useMaterial3: true),
         themeMode: themeMode,
+        
+        // Localization configuration
+        locale: locale,
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: SupportedLocales.all,
+        
+        // Routing
         initialRoute: AppRouter.initialRoute,
         onGenerateRoute: AppRouter.generateRoute,
       ),

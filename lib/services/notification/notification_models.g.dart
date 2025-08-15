@@ -85,6 +85,11 @@ const _$NotificationTypeModelEnumMap = {
   NotificationTypeModel.overdueTask: 'overdue_task',
   NotificationTypeModel.taskCompleted: 'task_completed',
   NotificationTypeModel.locationReminder: 'location_reminder',
+  NotificationTypeModel.locationBased: 'location_based',
+  NotificationTypeModel.emergency: 'emergency',
+  NotificationTypeModel.smartSuggestion: 'smart_suggestion',
+  NotificationTypeModel.collaboration: 'collaboration',
+  NotificationTypeModel.automationTrigger: 'automation_trigger',
 };
 
 NotificationHistoryEntry _$NotificationHistoryEntryFromJson(
@@ -120,6 +125,10 @@ const _$NotificationActionEnumMap = {
   NotificationAction.snooze: 'snooze',
   NotificationAction.view: 'view',
   NotificationAction.dismiss: 'dismiss',
+  NotificationAction.reschedule: 'reschedule',
+  NotificationAction.postpone: 'postpone',
+  NotificationAction.delegate: 'delegate',
+  NotificationAction.archive: 'archive',
 };
 
 NotificationStats _$NotificationStatsFromJson(Map<String, dynamic> json) =>
@@ -144,4 +153,126 @@ Map<String, dynamic> _$NotificationStatsToJson(NotificationStats instance) =>
       'actedUponNotifications': instance.actedUponNotifications,
       'mostCommonType': _$NotificationTypeModelEnumMap[instance.mostCommonType],
       'averageResponseTime': instance.averageResponseTime,
+    };
+
+NotificationTemplate _$NotificationTemplateFromJson(
+        Map<String, dynamic> json) =>
+    NotificationTemplate(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      type: $enumDecode(_$NotificationTypeModelEnumMap, json['type']),
+      titleTemplate: json['titleTemplate'] as String,
+      bodyTemplate: json['bodyTemplate'] as String,
+      availableActions: (json['availableActions'] as List<dynamic>?)
+              ?.map((e) => $enumDecode(_$NotificationActionEnumMap, e))
+              .toList() ??
+          const [],
+      defaultPriority: $enumDecodeNullable(
+              _$NotificationPriorityEnumMap, json['defaultPriority']) ??
+          NotificationPriority.normal,
+      metadata: json['metadata'] as Map<String, dynamic>? ?? const {},
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      updatedAt: DateTime.parse(json['updatedAt'] as String),
+    );
+
+Map<String, dynamic> _$NotificationTemplateToJson(
+        NotificationTemplate instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'type': _$NotificationTypeModelEnumMap[instance.type]!,
+      'titleTemplate': instance.titleTemplate,
+      'bodyTemplate': instance.bodyTemplate,
+      'availableActions': instance.availableActions
+          .map((e) => _$NotificationActionEnumMap[e]!)
+          .toList(),
+      'defaultPriority':
+          _$NotificationPriorityEnumMap[instance.defaultPriority]!,
+      'metadata': instance.metadata,
+      'createdAt': instance.createdAt.toIso8601String(),
+      'updatedAt': instance.updatedAt.toIso8601String(),
+    };
+
+const _$NotificationPriorityEnumMap = {
+  NotificationPriority.low: 'low',
+  NotificationPriority.normal: 'normal',
+  NotificationPriority.high: 'high',
+  NotificationPriority.urgent: 'urgent',
+  NotificationPriority.critical: 'critical',
+};
+
+NotificationGroup _$NotificationGroupFromJson(Map<String, dynamic> json) =>
+    NotificationGroup(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      description: json['description'] as String,
+      notificationIds: (json['notificationIds'] as List<dynamic>?)
+              ?.map((e) => (e as num).toInt())
+              .toList() ??
+          const [],
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      updatedAt: DateTime.parse(json['updatedAt'] as String),
+      isCollapsed: json['isCollapsed'] as bool? ?? false,
+    );
+
+Map<String, dynamic> _$NotificationGroupToJson(NotificationGroup instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'description': instance.description,
+      'notificationIds': instance.notificationIds,
+      'createdAt': instance.createdAt.toIso8601String(),
+      'updatedAt': instance.updatedAt.toIso8601String(),
+      'isCollapsed': instance.isCollapsed,
+    };
+
+RichNotificationContent _$RichNotificationContentFromJson(
+        Map<String, dynamic> json) =>
+    RichNotificationContent(
+      imageUrl: json['imageUrl'] as String?,
+      videoUrl: json['videoUrl'] as String?,
+      audioUrl: json['audioUrl'] as String?,
+      customButtons: (json['customButtons'] as List<dynamic>?)
+              ?.map(
+                  (e) => NotificationButton.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const [],
+      customFields: (json['customFields'] as Map<String, dynamic>?)?.map(
+            (k, e) => MapEntry(k, e as String),
+          ) ??
+          const {},
+      backgroundColor: json['backgroundColor'] as String?,
+      textColor: json['textColor'] as String?,
+      accentColor: json['accentColor'] as String?,
+    );
+
+Map<String, dynamic> _$RichNotificationContentToJson(
+        RichNotificationContent instance) =>
+    <String, dynamic>{
+      'imageUrl': instance.imageUrl,
+      'videoUrl': instance.videoUrl,
+      'audioUrl': instance.audioUrl,
+      'customButtons': instance.customButtons,
+      'customFields': instance.customFields,
+      'backgroundColor': instance.backgroundColor,
+      'textColor': instance.textColor,
+      'accentColor': instance.accentColor,
+    };
+
+NotificationButton _$NotificationButtonFromJson(Map<String, dynamic> json) =>
+    NotificationButton(
+      id: json['id'] as String,
+      label: json['label'] as String,
+      icon: json['icon'] as String?,
+      action: $enumDecode(_$NotificationActionEnumMap, json['action']),
+      payload: json['payload'] as Map<String, dynamic>? ?? const {},
+    );
+
+Map<String, dynamic> _$NotificationButtonToJson(NotificationButton instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'label': instance.label,
+      'icon': instance.icon,
+      'action': _$NotificationActionEnumMap[instance.action]!,
+      'payload': instance.payload,
     };

@@ -330,10 +330,8 @@ class MockExternalTranscriptionService implements TranscriptionService {
     }
   }
 
-  @override
   TranscriptionConfig get transcriptionConfig => _config;
 
-  @override
   Future<void> updateTranscriptionConfig(TranscriptionConfig config) async {
     _config = config;
   }

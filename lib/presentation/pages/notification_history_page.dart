@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/standardized_app_bar.dart';
+import '../widgets/theme_background_widget.dart';
 
 import '../providers/notification_providers.dart';
 import '../../services/notification/notification_models.dart';
@@ -13,17 +14,20 @@ class NotificationHistoryPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final scheduledNotificationsAsync = ref.watch(scheduledNotificationsProvider);
 
-    return Scaffold(
-      appBar: StandardizedAppBar(
-        title: 'Notification History',
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () => ref.refresh(scheduledNotificationsProvider),
-          ),
-        ],
-      ),
-      body: scheduledNotificationsAsync.when(
+    return ThemeBackgroundWidget(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        extendBodyBehindAppBar: true,
+        appBar: StandardizedAppBar(
+          title: 'Notification History',
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              onPressed: () => ref.refresh(scheduledNotificationsProvider),
+            ),
+          ],
+        ),
+        body: scheduledNotificationsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(
           child: Column(
@@ -42,6 +46,7 @@ class NotificationHistoryPage extends ConsumerWidget {
         ),
         data: (notifications) => _buildContent(context, ref, notifications),
       ),
+    ),
     );
   }
 
@@ -51,7 +56,12 @@ class NotificationHistoryPage extends ConsumerWidget {
     List<ScheduledNotification> notifications,
   ) {
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.only(
+        top: kToolbarHeight + 8,
+        left: 16,
+        right: 16,
+        bottom: 16,
+      ),
       children: [
         _buildStatsCard(notifications),
         const SizedBox(height: 16),
@@ -387,6 +397,16 @@ class NotificationHistoryPage extends ConsumerWidget {
         return Icons.check_circle;
       case NotificationTypeModel.locationReminder:
         return Icons.location_on;
+      case NotificationTypeModel.locationBased:
+        return Icons.location_on;
+      case NotificationTypeModel.emergency:
+        return Icons.emergency;
+      case NotificationTypeModel.smartSuggestion:
+        return Icons.lightbulb;
+      case NotificationTypeModel.collaboration:
+        return Icons.group;
+      case NotificationTypeModel.automationTrigger:
+        return Icons.auto_awesome;
     }
   }
 

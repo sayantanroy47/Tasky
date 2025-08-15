@@ -1,14 +1,20 @@
 import 'dart:async';
+import 'dart:math' as math;
 import 'package:geolocator/geolocator.dart' as geolocator;
 import 'package:geocoding/geocoding.dart';
 import 'package:flutter/foundation.dart';
 import 'location_service.dart';
-import 'location_models.dart' as models;
+import 'location_models.dart';
 
 /// Real implementation of LocationService using geolocator
 class RealLocationService implements LocationService {
   StreamSubscription<geolocator.Position>? _positionSubscription;
-  StreamController<models.LocationData>? _locationController;
+  StreamController<LocationData>? _locationController;
+  final Map<String, GeofenceData> _activeGeofences = {};
+  final StreamController<GeofenceEvent> _geofenceController = 
+      StreamController<GeofenceEvent>.broadcast();
+  Timer? _geofenceMonitoringTimer;
+  LocationData? _lastKnownLocation;
 
   @override
   Future<bool> isLocationServiceEnabled() async {
@@ -49,7 +55,7 @@ class RealLocationService implements LocationService {
   }
 
   @override
-  Future<models.LocationData> getCurrentLocation() async {
+  Future<LocationData> getCurrentLocation() async {
     try {
       // Check if location services are enabled
       final serviceEnabled = await isLocationServiceEnabled();
@@ -72,17 +78,15 @@ class RealLocationService implements LocationService {
 
       // Get current position
       final position = await geolocator.Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
+        desiredAccuracy: geolocator.LocationAccuracy.high,
         timeLimit: const Duration(seconds: 10),
       );
 
-      return models.LocationData(
+      return LocationData(
         latitude: position.latitude,
         longitude: position.longitude,
         accuracy: position.accuracy,
         altitude: position.altitude,
-        heading: position.heading,
-        speed: position.speed,
         timestamp: position.timestamp ?? DateTime.now(),
       );
     } catch (e) {
@@ -94,14 +98,14 @@ class RealLocationService implements LocationService {
   }
 
   @override
-  Stream<models.LocationData> getLocationStream() {
+  Stream<LocationData> getLocationStream() {
     try {
       _locationController?.close();
-      _locationController = StreamController<models.LocationData>.broadcast();
+      _locationController = StreamController<LocationData>.broadcast();
 
       // Configure location settings
-      const locationSettings = LocationSettings(
-        accuracy: LocationAccuracy.high,
+      const locationSettings = geolocator.LocationSettings(
+        accuracy: geolocator.LocationAccuracy.high,
         distanceFilter: 10, // Update every 10 meters
       );
 
@@ -109,14 +113,12 @@ class RealLocationService implements LocationService {
       _positionSubscription = geolocator.Geolocator.getPositionStream(
         locationSettings: locationSettings,
       ).listen(
-        (Position position) {
-          final locationData = models.LocationData(
+        (geolocator.Position position) {
+          final locationData = LocationData(
             latitude: position.latitude,
             longitude: position.longitude,
             accuracy: position.accuracy,
             altitude: position.altitude,
-            heading: position.heading,
-            speed: position.speed,
             timestamp: position.timestamp ?? DateTime.now(),
           );
           _locationController?.add(locationData);
@@ -208,21 +210,19 @@ class RealLocationService implements LocationService {
   }
 
   /// Check if device is within a geofenced area
-  Future<bool> isWithinGeofence(
-    double centerLatitude,
-    double centerLongitude,
-    double radiusInMeters,
-  ) async {
+  bool isWithinGeofence(
+    LocationData location,
+    GeofenceData geofence,
+  ) {
     try {
-      final currentLocation = await getCurrentLocation();
-      final distance = await getDistanceBetween(
-        currentLocation.latitude,
-        currentLocation.longitude,
-        centerLatitude,
-        centerLongitude,
+      final distance = _calculateDistance(
+        location.latitude,
+        location.longitude,
+        geofence.latitude,
+        geofence.longitude,
       );
       
-      return distance <= radiusInMeters;
+      return distance <= geofence.radius;
     } catch (e) {
       if (kDebugMode) {
         print('Error checking geofence: $e');
@@ -232,13 +232,13 @@ class RealLocationService implements LocationService {
   }
 
   /// Get coordinates from address string
-  Future<models.LocationData?> getCoordinatesFromAddress(String address) async {
+  Future<LocationData?> getCoordinatesFromAddress(String address) async {
     try {
       final locations = await locationFromAddress(address);
       
       if (locations.isNotEmpty) {
         final location = locations.first;
-        return models.LocationData(
+        return LocationData(
           latitude: location.latitude,
           longitude: location.longitude,
           timestamp: DateTime.now(),
@@ -284,22 +284,157 @@ class RealLocationService implements LocationService {
     _positionSubscription = null;
     _locationController?.close();
     _locationController = null;
+    _stopGeofenceMonitoringTimer();
+    _geofenceController.close();
+  }
+
+  @override
+  double calculateDistance(
+    double startLatitude,
+    double startLongitude,
+    double endLatitude,
+    double endLongitude,
+  ) {
+    return geolocator.Geolocator.distanceBetween(
+      startLatitude,
+      startLongitude,
+      endLatitude,
+      endLongitude,
+    );
+  }
+
+  @override
+  bool isLocationWithinGeofence(
+    LocationData location,
+    GeofenceData geofence,
+  ) {
+    final distance = calculateDistance(
+      location.latitude,
+      location.longitude,
+      geofence.latitude,
+      geofence.longitude,
+    );
+    return distance <= geofence.radius;
+  }
+
+  @override
+  Future<void> startGeofenceMonitoring(GeofenceData geofence) async {
+    _activeGeofences[geofence.id] = geofence;
+    _startGeofenceMonitoringTimer();
+  }
+
+  @override
+  Future<void> stopGeofenceMonitoring(String geofenceId) async {
+    _activeGeofences.remove(geofenceId);
+    if (_activeGeofences.isEmpty) {
+      _stopGeofenceMonitoringTimer();
+    }
+  }
+
+  @override
+  Future<void> stopAllGeofenceMonitoring() async {
+    _activeGeofences.clear();
+    _stopGeofenceMonitoringTimer();
+  }
+
+  @override
+  Stream<GeofenceEvent> getGeofenceEventStream() {
+    return _geofenceController.stream;
+  }
+
+  void _startGeofenceMonitoringTimer() {
+    _geofenceMonitoringTimer?.cancel();
+    _geofenceMonitoringTimer = Timer.periodic(const Duration(seconds: 30), (_) async {
+      try {
+        final currentLocation = await getCurrentLocation();
+        _checkGeofences(currentLocation);
+        _lastKnownLocation = currentLocation;
+      } catch (e) {
+        if (kDebugMode) {
+          print('Geofence monitoring error: $e');
+        }
+      }
+    });
+  }
+
+  void _stopGeofenceMonitoringTimer() {
+    _geofenceMonitoringTimer?.cancel();
+    _geofenceMonitoringTimer = null;
+  }
+
+  void _checkGeofences(LocationData currentLocation) {
+    for (final geofence in _activeGeofences.values) {
+      if (!geofence.isActive) continue;
+
+      final isCurrentlyInside = isLocationWithinGeofence(currentLocation, geofence);
+      final wasInside = _lastKnownLocation != null ? 
+          isLocationWithinGeofence(_lastKnownLocation!, geofence) : false;
+
+      // Check for enter event
+      if (isCurrentlyInside && !wasInside) {
+        if (geofence.type == GeofenceType.enter || 
+            geofence.type == GeofenceType.both) {
+          _geofenceController.add(GeofenceEvent(
+            geofenceId: geofence.id,
+            type: GeofenceEventType.enter,
+            location: currentLocation,
+            timestamp: DateTime.now(),
+          ));
+        }
+      }
+
+      // Check for exit event
+      if (!isCurrentlyInside && wasInside) {
+        if (geofence.type == GeofenceType.exit || 
+            geofence.type == GeofenceType.both) {
+          _geofenceController.add(GeofenceEvent(
+            geofenceId: geofence.id,
+            type: GeofenceEventType.exit,
+            location: currentLocation,
+            timestamp: DateTime.now(),
+          ));
+        }
+      }
+    }
   }
 
   /// Maps Geolocator permission to our permission enum
-  LocationPermissionStatus _mapGeolocatorPermission(LocationPermission permission) {
+  LocationPermissionStatus _mapGeolocatorPermission(geolocator.LocationPermission permission) {
     switch (permission) {
-      case LocationPermission.always:
+      case geolocator.LocationPermission.always:
         return LocationPermissionStatus.always;
-      case LocationPermission.whileInUse:
+      case geolocator.LocationPermission.whileInUse:
         return LocationPermissionStatus.whileInUse;
-      case LocationPermission.denied:
+      case geolocator.LocationPermission.denied:
         return LocationPermissionStatus.denied;
-      case LocationPermission.deniedForever:
+      case geolocator.LocationPermission.deniedForever:
         return LocationPermissionStatus.deniedForever;
-      case LocationPermission.unableToDetermine:
+      case geolocator.LocationPermission.unableToDetermine:
         return LocationPermissionStatus.denied;
     }
+  }
+
+  /// Calculate distance between two points in meters using Haversine formula
+  double _calculateDistance(
+    double lat1,
+    double lon1,
+    double lat2,
+    double lon2,
+  ) {
+    const double earthRadius = 6371000; // Earth radius in meters
+    final double dLat = _degreesToRadians(lat2 - lat1);
+    final double dLon = _degreesToRadians(lon2 - lon1);
+    
+    final double a = math.sin(dLat / 2) * math.sin(dLat / 2) +
+        math.cos(_degreesToRadians(lat1)) * math.cos(_degreesToRadians(lat2)) *
+        math.sin(dLon / 2) * math.sin(dLon / 2);
+    final double c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
+    
+    return earthRadius * c;
+  }
+
+  double _degreesToRadians(double degrees) {
+    return degrees * (math.pi / 180);
   }
 }
 
@@ -307,7 +442,7 @@ class RealLocationService implements LocationService {
 class EnhancedLocationService extends RealLocationService {
   final Map<String, GeofenceRegion> _geofences = {};
   Timer? _geofenceTimer;
-  models.LocationData? _lastKnownLocation;
+  LocationData? _lastKnownLocation;
 
   /// Add a geofence region
   void addGeofence(GeofenceRegion region) {
@@ -353,7 +488,7 @@ class EnhancedLocationService extends RealLocationService {
     _geofenceTimer = null;
   }
 
-  void _checkGeofences(models.LocationData currentLocation) {
+  void _checkGeofences(LocationData currentLocation) {
     for (final geofence in _geofences.values) {
       final distance = geolocator.Geolocator.distanceBetween(
         currentLocation.latitude,
@@ -369,8 +504,8 @@ class EnhancedLocationService extends RealLocationService {
         // Entered geofence
         geofence.isInside = true;
         _geofenceController.add(GeofenceEvent(
+          geofenceId: geofence.id,
           type: GeofenceEventType.enter,
-          region: geofence,
           location: currentLocation,
           timestamp: DateTime.now(),
         ));
@@ -378,8 +513,8 @@ class EnhancedLocationService extends RealLocationService {
         // Exited geofence
         geofence.isInside = false;
         _geofenceController.add(GeofenceEvent(
+          geofenceId: geofence.id,
           type: GeofenceEventType.exit,
-          region: geofence,
           location: currentLocation,
           timestamp: DateTime.now(),
         ));
@@ -414,20 +549,5 @@ class GeofenceRegion {
   });
 }
 
-/// Geofence event types
-enum GeofenceEventType { enter, exit }
 
 /// Geofence event data
-class GeofenceEvent {
-  final GeofenceEventType type;
-  final GeofenceRegion region;
-  final models.LocationData location;
-  final DateTime timestamp;
-
-  const GeofenceEvent({
-    required this.type,
-    required this.region,
-    required this.location,
-    required this.timestamp,
-  });
-}

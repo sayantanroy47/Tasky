@@ -1,17 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/design_system/design_tokens.dart' hide BorderRadius;
 import 'package:speech_to_text/speech_to_text.dart';
 import '../../domain/entities/task_model.dart';
+import '../../domain/entities/recurrence_pattern.dart';
 import '../../domain/models/enums.dart';
 import '../../services/speech/speech_service_impl.dart';
 import '../../services/ai/composite_ai_task_parser.dart';
 import '../providers/task_provider.dart' show taskOperationsProvider;
-import '../painters/glassmorphism_painter.dart';
+import '../providers/audio_providers.dart';
+import '../../services/audio/audio_file_manager.dart';
+import 'glassmorphism_container.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../core/theme/material3/motion_system.dart';
 import 'voice_visualization_painter.dart';
+import 'recurring_task_scheduling_widget.dart';
 import 'dart:async';
+import 'dart:io';
+import 'theme_aware_dialog_components.dart';
 
 /// Enhanced Voice Task Creation Dialog with M3 design
 class VoiceTaskCreationDialog extends ConsumerStatefulWidget {
@@ -41,6 +48,9 @@ class _VoiceTaskCreationDialogState extends ConsumerState<VoiceTaskCreationDialo
   TaskModel? _parsedTask;
   
   Timer? _silenceTimer;
+  
+  // Recurring task scheduling
+  RecurrencePattern? _recurrencePattern;
   
   @override
   void initState() {
@@ -123,64 +133,20 @@ class _VoiceTaskCreationDialogState extends ConsumerState<VoiceTaskCreationDialo
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
     
-    return Dialog(
-      backgroundColor: Colors.transparent,
-      insetPadding: const EdgeInsets.all(24),
-      child: FadeTransition(
-        opacity: _fadeAnimation,
-        child: ScaleTransition(
-          scale: _scaleAnimation,
-          child: GlassmorphicContainer(
-            width: size.width * 0.9,
-            borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-            blur: 20,
-            opacity: 0.95,
-            color: theme.colorScheme.surface,
-            borderColor: theme.colorScheme.primary.withOpacity(0.2),
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Header
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                theme.colorScheme.primary,
-                                theme.colorScheme.secondary,
-                              ],
-                            ),
-                            borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                          ),
-                          child: const Icon(
-                            Icons.mic,
-                            color: Colors.white,
-                            size: 20,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          'Voice Task Creation',
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    IconButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      icon: const Icon(Icons.close),
-                    ),
-                  ],
-                ),
-                
-                const SizedBox(height: 32),
+    return FadeTransition(
+      opacity: _fadeAnimation,
+      child: ScaleTransition(
+        scale: _scaleAnimation,
+        child: ThemeAwareTaskDialog(
+          title: 'Voice Task Creation',
+          subtitle: 'Speak to create your task',
+          icon: Icons.mic,
+          onBack: () => Navigator.of(context).pop(),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
                 
                 // Sound wave visualization
                 Container(
@@ -188,8 +154,8 @@ class _VoiceTaskCreationDialogState extends ConsumerState<VoiceTaskCreationDialo
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        theme.colorScheme.primaryContainer.withOpacity(0.1),
-                        theme.colorScheme.secondaryContainer.withOpacity(0.1),
+                        theme.colorScheme.surfaceContainerHighest.withOpacity(0.2),
+                        theme.colorScheme.surfaceContainerHighest.withOpacity(0.1),
                       ],
                     ),
                     borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
@@ -323,8 +289,8 @@ class _VoiceTaskCreationDialogState extends ConsumerState<VoiceTaskCreationDialo
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          theme.colorScheme.primaryContainer.withOpacity(0.5),
-                          theme.colorScheme.secondaryContainer.withOpacity(0.3),
+                          theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                          theme.colorScheme.surfaceContainerHighest.withOpacity(0.2),
                         ],
                       ),
                       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
@@ -395,10 +361,10 @@ class _VoiceTaskCreationDialogState extends ConsumerState<VoiceTaskCreationDialo
                               Chip(
                                 label: Text(
                                   '#$tag',
-                                  style: TextStyle(fontSize: TypographyConstants.bodySmall),
+                                  style: theme.textTheme.bodySmall,
                                 ),
-                                backgroundColor: theme.colorScheme.primaryContainer.withOpacity(0.5),
-                                labelStyle: TextStyle(
+                                backgroundColor: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                                labelStyle: theme.textTheme.bodySmall?.copyWith(
                                   color: theme.colorScheme.onPrimaryContainer,
                                 ),
                                 padding: EdgeInsets.zero,
@@ -412,37 +378,57 @@ class _VoiceTaskCreationDialogState extends ConsumerState<VoiceTaskCreationDialo
                   ),
                 ],
                 
+                // Universal Recurring Task Scheduling Widget (only show if task is parsed)
+                if (_parsedTask != null) ...[
+                  const SizedBox(height: 24),
+                  RecurringTaskSchedulingWidget(
+                    onRecurrenceChanged: (RecurrencePattern? pattern) {
+                      setState(() {
+                        _recurrencePattern = pattern;
+                      });
+                    },
+                    initiallyEnabled: _recurrencePattern != null,
+                    initialRecurrence: _recurrencePattern,
+                  ),
+                ],
+                
                 const SizedBox(height: 24),
                 
-                // Action buttons
+                // Action buttons - Fixed layout to prevent constraint issues
                 if (_parsedTask != null || _isProcessing)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      TextButton(
-                        onPressed: _isProcessing ? null : _reset,
-                        child: const Text('Try Again'),
+                      // Continue to Edit button (primary action for voice-to-text flow)
+                      RoundedGlassButton(
+                        width: double.infinity,
+                        label: _isProcessing ? 'Processing...' : 'Continue to Edit',
+                        onPressed: _isProcessing ? null : _continueToEdit,
+                        icon: _isProcessing ? null : Icons.edit,
+                        isPrimary: true,
+                        isLoading: _isProcessing,
                       ),
-                      const SizedBox(width: 12),
-                      FilledButton.icon(
-                        onPressed: _isProcessing ? null : _saveTask,
-                        icon: _isProcessing
-                          ? SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white,
-                              ),
-                            )
-                          : const Icon(Icons.save),
-                        label: Text(_isProcessing ? 'Processing...' : 'Save Task'),
+                      
+                      const SizedBox(height: 12),
+                      
+                      // Row for secondary actions
+                      Row(
+                        children: [
+                          // Try Again button - reset and start over
+                          Expanded(
+                            child: RoundedGlassButton(
+                              label: 'Try Again',
+                              onPressed: _isProcessing ? null : _reset,
+                              icon: Icons.refresh,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-              ],
+                ],
+              ),
             ),
-          ),
         ),
       ),
     );
@@ -550,41 +536,31 @@ class _VoiceTaskCreationDialogState extends ConsumerState<VoiceTaskCreationDialo
     }
   }
   
-  void _saveTask() async {
-    if (_parsedTask == null) return;
+  void _continueToEdit() async {
+    if (_parsedTask == null && _transcribedText.isEmpty) return;
     
-    HapticFeedback.mediumImpact();
+    HapticFeedback.lightImpact();
     
-    try {
-      await ref.read(taskOperationsProvider).createTask(_parsedTask!);
-      
-      if (mounted) {
-        Navigator.of(context).pop(true);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Task "${_parsedTask!.title}" created successfully!'),
-            behavior: SnackBarBehavior.floating,
-            action: SnackBarAction(
-              label: 'View',
-              onPressed: () {
-                Navigator.of(context).pushNamed('/tasks');
-              },
-            ),
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to create task: $e'),
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
-      }
-    }
+    // Voice-to-Text does not need audio files - transcription is the output
+    // The original speech is already converted to text, no need to store audio
+    
+    // Return the voice data to populate the unified task creation form
+    final result = {
+      'title': _parsedTask?.title ?? _transcribedText,
+      'description': _parsedTask?.description,
+      'priority': _parsedTask?.priority?.name ?? 'medium',
+      'dueDate': _parsedTask?.dueDate?.toIso8601String(),
+      'tags': _parsedTask?.tags ?? [],
+      'transcription': _transcribedText,
+      'recurrence': _recurrencePattern,
+      'creationMode': 'voiceToText',
+      // No audio data - Voice-to-Text only provides transcription
+    };
+    
+    Navigator.of(context).pop(result);
   }
+  
+  // Voice-to-Text only provides transcription, no audio files needed
   
   void _reset() {
     HapticFeedback.selectionClick();

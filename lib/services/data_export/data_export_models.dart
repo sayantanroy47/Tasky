@@ -6,6 +6,8 @@ enum ExportFormat {
   json,
   csv,
   plainText,
+  pdf,
+  excel,
 }
 
 enum ImportResult {

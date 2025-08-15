@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import '../../core/theme/typography_constants.dart';
+import '../../core/theme/material3/motion_system.dart';
+import '../../core/design_system/design_tokens.dart' hide BorderRadius;
+import 'glassmorphism_container.dart';
 
-/// A reusable confirmation dialog widget
-class ConfirmationDialog extends StatelessWidget {
+/// A reusable confirmation dialog widget with M3 glassmorphism design
+class ConfirmationDialog extends StatefulWidget {
   final String title;
   final String content;
   final String confirmText;
@@ -24,38 +28,165 @@ class ConfirmationDialog extends StatelessWidget {
   });
 
   @override
+  State<ConfirmationDialog> createState() => _ConfirmationDialogState();
+}
+
+class _ConfirmationDialogState extends State<ConfirmationDialog>
+    with TickerProviderStateMixin {
+  late AnimationController _fadeController;
+  late AnimationController _scaleController;
+  late Animation<double> _fadeAnimation;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    
+    _fadeController = AnimationController(
+      duration: ExpressiveMotionSystem.durationMedium3,
+      vsync: this,
+    );
+    
+    _scaleController = AnimationController(
+      duration: ExpressiveMotionSystem.durationMedium2,
+      vsync: this,
+    );
+    
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _fadeController,
+      curve: ExpressiveMotionSystem.emphasizedDecelerate,
+    ));
+    
+    _scaleAnimation = Tween<double>(
+      begin: 0.8,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _scaleController,
+      curve: ExpressiveMotionSystem.emphasizedDecelerate,
+    ));
+    
+    _fadeController.forward();
+    _scaleController.forward();
+  }
+
+  @override
+  void dispose() {
+    _fadeController.dispose();
+    _scaleController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      icon: icon != null 
-        ? Icon(
-            icon,
-            color: isDestructive 
-              ? Theme.of(context).colorScheme.error
-              : Theme.of(context).colorScheme.primary,
-          )
-        : null,
-      title: Text(title),
-      content: Text(content),
-      actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-            onCancel?.call();
-          },
-          child: Text(cancelText),
+    final theme = Theme.of(context);
+    final size = MediaQuery.of(context).size;
+    
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      insetPadding: const EdgeInsets.all(24),
+      child: FadeTransition(
+        opacity: _fadeAnimation,
+        child: ScaleTransition(
+          scale: _scaleAnimation,
+          child: GlassmorphismContainer(
+            level: GlassLevel.floating,
+            width: size.width * 0.85,
+            borderRadius: BorderRadius.circular(TypographyConstants.dialogRadius),
+            glassTint: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+            borderColor: theme.colorScheme.primary.withOpacity(0.2),
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildHeader(theme),
+                const SizedBox(height: 16),
+                _buildContent(theme),
+                const SizedBox(height: 24),
+                _buildActions(theme),
+              ],
+            ),
+          ),
         ),
-        FilledButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-            onConfirm?.call();
-          },
-          style: isDestructive
-            ? FilledButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.error,
-                foregroundColor: Theme.of(context).colorScheme.onError,
-              )
-            : null,
-          child: Text(confirmText),
+      ),
+    );
+  }
+
+  Widget _buildHeader(ThemeData theme) {
+    return Row(
+      children: [
+        if (widget.icon != null) ...[
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  widget.isDestructive ? theme.colorScheme.error : theme.colorScheme.primary,
+                  widget.isDestructive ? theme.colorScheme.error.withOpacity(0.8) : theme.colorScheme.secondary,
+                ],
+              ),
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
+            ),
+            child: Icon(
+              widget.icon,
+              color: Colors.white,
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: 16),
+        ],
+        Expanded(
+          child: Text(
+            widget.title,
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: theme.colorScheme.onSurface,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildContent(ThemeData theme) {
+    return Text(
+      widget.content,
+      style: theme.textTheme.bodyLarge?.copyWith(
+        color: theme.colorScheme.onSurfaceVariant,
+        height: 1.5,
+      ),
+    );
+  }
+
+  Widget _buildActions(ThemeData theme) {
+    return Row(
+      children: [
+        Expanded(
+          child: OutlinedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              widget.onCancel?.call();
+            },
+            child: Text(widget.cancelText),
+          ),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: FilledButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              widget.onConfirm?.call();
+            },
+            style: widget.isDestructive
+              ? FilledButton.styleFrom(
+                  backgroundColor: theme.colorScheme.error,
+                  foregroundColor: theme.colorScheme.onError,
+                )
+              : null,
+            child: Text(widget.confirmText),
+          ),
         ),
       ],
     );

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/standardized_app_bar.dart';
+import '../widgets/theme_background_widget.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../domain/entities/task_model.dart';
-import '../../domain/entities/task_audio_metadata.dart';
 import '../../domain/models/enums.dart';
 import '../../core/routing/app_router.dart';
 import '../providers/task_provider.dart';
+import '../providers/task_providers.dart';
 import '../widgets/simple_theme_toggle.dart';
-import '../widgets/app_scaffold.dart';
 import '../widgets/advanced_task_card.dart';
 import '../widgets/task_form_dialog.dart';
 import '../widgets/loading_error_widgets.dart' as loading_widgets;
@@ -18,27 +18,43 @@ class TasksPage extends ConsumerWidget {
   const TasksPage({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      appBar: StandardizedAppBar(
-        title: 'Tasks',
-        actions: [
-          const ThemeToggleButton(),
-          IconButton(
-            icon: const Icon(Icons.filter_list),
-            onPressed: () => _showFilterDialog(context, ref),
-            tooltip: 'Filter tasks',
+    return ThemeBackgroundWidget(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        extendBodyBehindAppBar: true,
+        appBar: StandardizedAppBar(
+          title: 'Tasks',
+          forceBackButton: false, // Tasks is main tab - no back button
+          actions: [
+            const ThemeToggleButton(),
+            IconButton(
+              icon: const Icon(Icons.filter_list),
+              onPressed: () => _showFilterDialog(context, ref),
+              tooltip: 'Filter tasks',
+            ),
+          ],
+        ),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.only(
+              top: kToolbarHeight + 8,
+              left: 16,
+              right: 16,
+              bottom: 16,
+            ),
+            child: const TasksPageBody(),
           ),
-        ],
+        ),
       ),
-      body: const TasksPageBody(),
     );
   }
 
   void _showAddTaskDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => const TaskFormDialog(),
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const TaskFormDialog(),
+        fullscreenDialog: true,
+      ),
     );
   }
 
@@ -147,7 +163,9 @@ class _SmartFilters extends ConsumerWidget {
       children: [
         Text(
           'Quick Filters',
-          style: Theme.of(context).textTheme.titleSmall,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
         ),
         const SizedBox(height: 8),
         SingleChildScrollView(
@@ -404,9 +422,11 @@ class _TaskList extends ConsumerWidget {
   }
 
   void _editTask(BuildContext context, TaskModel task) {
-    showDialog(
-      context: context,
-      builder: (context) => TaskFormDialog(task: task),
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => TaskFormDialog(task: task),
+        fullscreenDialog: true,
+      ),
     );
   }
 
@@ -420,7 +440,7 @@ class _TaskList extends ConsumerWidget {
         cancelText: 'Cancel',
         isDestructive: true,
         onConfirm: () async {
-          await ref.read(taskOperationsProvider).deleteTask(task.id);
+          await ref.read(taskOperationsProvider).deleteTask(task);
           if (context.mounted) {
             Navigator.of(context).pop();
             ScaffoldMessenger.of(context).showSnackBar(
@@ -449,12 +469,18 @@ class _EmptyTaskList extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             'No tasks found',
-            style: Theme.of(context).textTheme.headlineSmall,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.w600,
+              fontSize: 20,
+            ),
           ),
           const SizedBox(height: 8),
           Text(
             'Create your first task to get started!',
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontSize: 14,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
             textAlign: TextAlign.center,
           ),
         ],
@@ -486,7 +512,9 @@ class _FilterDialogState extends ConsumerState<_FilterDialog> {
           children: [
             Text(
               'Status',
-              style: Theme.of(context).textTheme.titleSmall,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 8),
             Wrap(
@@ -511,7 +539,9 @@ class _FilterDialogState extends ConsumerState<_FilterDialog> {
             const SizedBox(height: 16),
             Text(
               'Priority',
-              style: Theme.of(context).textTheme.titleSmall,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 8),
             Wrap(

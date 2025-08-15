@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/task_model.dart';
+import '../../domain/entities/recurrence_pattern.dart';
 import '../../domain/models/enums.dart';
 import '../providers/task_provider.dart' show taskOperationsProvider;
-import '../painters/glassmorphism_painter.dart';
+import 'glassmorphism_container.dart';
 import '../../core/theme/material3/motion_system.dart';
 import '../../core/theme/typography_constants.dart';
+import '../../core/design_system/design_tokens.dart' hide BorderRadius;
+import 'recurring_task_scheduling_widget.dart';
+import 'theme_aware_dialog_components.dart';
 
 /// Manual Task Creation Dialog with form inputs
 class ManualTaskCreationDialog extends ConsumerStatefulWidget {
@@ -24,6 +28,9 @@ class _ManualTaskCreationDialogState extends ConsumerState<ManualTaskCreationDia
   DateTime? _selectedDueDate;
   bool _isCreating = false;
   
+  // Recurring task scheduling
+  RecurrencePattern? _recurrencePattern;
+  
   @override
   void dispose() {
     _titleController.dispose();
@@ -35,69 +42,27 @@ class _ManualTaskCreationDialogState extends ConsumerState<ManualTaskCreationDia
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     
-    return Dialog(
-      backgroundColor: Colors.transparent,
-      child: GlassmorphicContainer(
-        width: MediaQuery.of(context).size.width * 0.9,
-        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-        blur: 20,
-        opacity: 0.95,
-        color: theme.colorScheme.surface,
-        borderColor: theme.colorScheme.primary.withOpacity(0.3),
-        padding: const EdgeInsets.all(24),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Header
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          theme.colorScheme.primary,
-                          theme.colorScheme.secondary,
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                    ),
-                    child: const Icon(Icons.edit, color: Colors.white, size: 24),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Text(
-                      'Create Task Manually',
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon: const Icon(Icons.close),
-                  ),
-                ],
-              ),
-              
-              const SizedBox(height: 24),
-              
-              // Title field
-              TextFormField(
+    return ThemeAwareTaskDialog(
+      title: 'Create Task',
+      subtitle: 'Fill in task information',
+      icon: Icons.edit,
+      // No onBack - remove back button for manual task creation
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Title field
+                ThemeAwareFormField(
                 controller: _titleController,
-                decoration: InputDecoration(
-                  labelText: 'Task Title',
-                  hintText: 'Enter task title...',
-                  prefixIcon: const Icon(Icons.title),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                  ),
-                  filled: true,
-                  fillColor: theme.colorScheme.surfaceVariant.withOpacity(0.3),
-                ),
+                labelText: 'Task Title',
+                hintText: 'Enter task title...',
+                prefixIcon: Icons.title,
+                required: true,
+                autofocus: true,
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
                     return 'Please enter a task title';
@@ -106,138 +71,157 @@ class _ManualTaskCreationDialogState extends ConsumerState<ManualTaskCreationDia
                 },
               ),
               
-              const SizedBox(height: 16),
+                const SizedBox(height: 16),
               
               // Description field
-              TextFormField(
+                ThemeAwareFormField(
                 controller: _descriptionController,
+                labelText: 'Description (Optional)',
+                hintText: 'Enter task description...',
+                prefixIcon: Icons.description,
                 maxLines: 3,
-                decoration: InputDecoration(
-                  labelText: 'Description (Optional)',
-                  hintText: 'Enter task description...',
-                  prefixIcon: const Icon(Icons.description),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                  ),
-                  filled: true,
-                  fillColor: theme.colorScheme.surfaceVariant.withOpacity(0.3),
-                ),
+                textInputAction: TextInputAction.newline,
+                keyboardType: TextInputType.multiline,
               ),
               
-              const SizedBox(height: 16),
+                const SizedBox(height: 16),
               
-              // Priority selection
-              DropdownButtonFormField<TaskPriority>(
-                value: _selectedPriority,
-                decoration: InputDecoration(
-                  labelText: 'Priority',
-                  prefixIcon: const Icon(Icons.flag),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                  ),
-                  filled: true,
-                  fillColor: theme.colorScheme.surfaceVariant.withOpacity(0.3),
-                ),
-                items: TaskPriority.values.map((priority) {
-                  return DropdownMenuItem(
-                    value: priority,
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 12,
-                          height: 12,
-                          decoration: BoxDecoration(
-                            color: _getPriorityColor(priority),
-                            borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(_getPriorityLabel(priority)),
-                      ],
-                    ),
+                // Priority selection
+                ThemeAwarePrioritySelector(
+                selectedPriority: _selectedPriority.name,
+                priorities: TaskPriority.values.map((priority) => PriorityOption(
+                  value: priority.name,
+                  name: _getPriorityLabel(priority),
+                  icon: Icons.flag,
+                  color: _getPriorityColor(priority),
+                )).toList(),
+                onPriorityChanged: (String value) {
+                  final priority = TaskPriority.values.firstWhere(
+                    (p) => p.name == value,
+                    orElse: () => TaskPriority.medium,
                   );
-                }).toList(),
-                onChanged: (TaskPriority? value) {
-                  if (value != null) {
-                    setState(() {
-                      _selectedPriority = value;
-                    });
-                  }
+                  setState(() {
+                    _selectedPriority = priority;
+                  });
                 },
               ),
               
-              const SizedBox(height: 16),
+                const SizedBox(height: 16),
               
-              // Due date selection
-              InkWell(
-                onTap: () => _selectDueDate(context),
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: theme.colorScheme.outline),
-                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                    color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.calendar_today, color: theme.colorScheme.onSurfaceVariant),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Text(
-                          _selectedDueDate == null 
-                              ? 'Select due date (Optional)'
-                              : 'Due: ${_formatDate(_selectedDueDate!)}',
-                          style: TextStyle(
+                // Universal Recurring Task Scheduling Widget
+                RecurringTaskSchedulingWidget(
+                onRecurrenceChanged: (RecurrencePattern? pattern) {
+                  setState(() {
+                    _recurrencePattern = pattern;
+                  });
+                },
+                initiallyEnabled: _recurrencePattern != null,
+                initialRecurrence: _recurrencePattern,
+              ),
+              
+                const SizedBox(height: 16),
+              
+                // Enhanced Due date selection with glassmorphism
+                Semantics(
+                label: _selectedDueDate == null 
+                    ? 'Select due date, optional' 
+                    : 'Due date: ${_formatDate(_selectedDueDate!)}',
+                button: true,
+                child: GlassmorphismContainer(
+                  level: GlassLevel.content,
+                  borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
+                  glassTint: theme.colorScheme.secondaryContainer.withOpacity(0.1),
+                  child: InkWell(
+                    onTap: () => _selectDueDate(context),
+                    borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.calendar_today, 
                             color: _selectedDueDate == null 
                                 ? theme.colorScheme.onSurfaceVariant
-                                : theme.colorScheme.onSurface,
+                                : theme.colorScheme.secondary,
+                            size: 20,
                           ),
-                        ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Text(
+                              _selectedDueDate == null 
+                                  ? 'Select due date (Optional)'
+                                  : 'Due: ${_formatDate(_selectedDueDate!)}',
+                              style: TextStyle(
+                                fontSize: TypographyConstants.textBase,
+                                color: _selectedDueDate == null 
+                                    ? theme.colorScheme.onSurfaceVariant
+                                    : theme.colorScheme.onSurface,
+                                fontWeight: _selectedDueDate == null 
+                                    ? TypographyConstants.regular
+                                    : TypographyConstants.medium,
+                              ),
+                            ),
+                          ),
+                          if (_selectedDueDate != null)
+                            Semantics(
+                              label: 'Clear due date',
+                              button: true,
+                              child: GlassmorphismContainer(
+                                level: GlassLevel.interactive,
+                                width: 32,
+                                height: 32,
+                                borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall),
+                                glassTint: theme.colorScheme.error.withOpacity(0.1),
+                                child: InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      _selectedDueDate = null;
+                                    });
+                                  },
+                                  borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall),
+                                  child: Icon(
+                                    Icons.clear, 
+                                    size: 16,
+                                    color: theme.colorScheme.error,
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
-                      if (_selectedDueDate != null)
-                        IconButton(
-                          onPressed: () {
-                            setState(() {
-                              _selectedDueDate = null;
-                            });
-                          },
-                          icon: const Icon(Icons.clear, size: 18),
-                        ),
-                    ],
+                    ),
                   ),
                 ),
               ),
               
-              const SizedBox(height: 32),
+                const SizedBox(height: 32),
               
-              // Action buttons
-              Row(
+                // Action buttons
+                Row(
                 children: [
                   Expanded(
-                    child: OutlinedButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: const Text('Cancel'),
+                    child: RoundedGlassButton(
+                      label: 'Cancel',
+                      onPressed: _isCreating ? null : () => Navigator.of(context).pop(),
+                      icon: Icons.cancel,
                     ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
-                    child: FilledButton(
+                    child: RoundedGlassButton(
+                      label: 'Create Task',
                       onPressed: _isCreating ? null : _createTask,
-                      child: _isCreating
-                          ? const SizedBox(
-                              height: 16,
-                              width: 16,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Text('Create Task'),
+                      icon: Icons.add,
+                      isPrimary: true,
+                      isLoading: _isCreating,
                     ),
                   ),
                 ],
               ),
-            ],
+              ],
+            ),
           ),
         ),
-      ),
     );
   }
   
@@ -271,6 +255,7 @@ class _ManualTaskCreationDialogState extends ConsumerState<ManualTaskCreationDia
             : _descriptionController.text.trim(),
         priority: _selectedPriority,
         dueDate: _selectedDueDate,
+        recurrence: _recurrencePattern,
       );
       
       // Add task through provider
@@ -279,9 +264,31 @@ class _ManualTaskCreationDialogState extends ConsumerState<ManualTaskCreationDia
       if (mounted) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Task created successfully!'),
-            backgroundColor: Colors.green,
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(
+                  Icons.check_circle,
+                  color: Colors.white,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Task created successfully!',
+                  style: TextStyle(
+                    fontSize: TypographyConstants.textSM,
+                    fontWeight: TypographyConstants.medium,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: Theme.of(context).colorScheme.tertiary,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
+            ),
+            margin: const EdgeInsets.all(16),
           ),
         );
       }
@@ -289,8 +296,32 @@ class _ManualTaskCreationDialogState extends ConsumerState<ManualTaskCreationDia
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error creating task: $e'),
-            backgroundColor: Colors.red,
+            content: Row(
+              children: [
+                Icon(
+                  Icons.error,
+                  color: Colors.white,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Error creating task: $e',
+                    style: TextStyle(
+                      fontSize: TypographyConstants.textSM,
+                      fontWeight: TypographyConstants.medium,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: Theme.of(context).colorScheme.error,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
+            ),
+            margin: const EdgeInsets.all(16),
           ),
         );
       }

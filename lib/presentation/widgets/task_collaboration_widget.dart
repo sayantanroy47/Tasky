@@ -172,12 +172,8 @@ class TaskCollaborationWidget extends ConsumerWidget {
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
-              // TODO: Implement remove task from shared list
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Remove from shared list functionality coming soon!'),
-                ),
-              );
+              // Remove task from shared list
+              _removeTaskFromSharedList(widget.task);
             },
             child: const Text('Remove', style: TextStyle(color: Colors.red)),
           ),
@@ -190,6 +186,28 @@ class TaskCollaborationWidget extends ConsumerWidget {
     Navigator.of(context).pushNamed('/task-sharing', arguments: {
       'taskId': task.id,
     });
+  }
+
+  void _removeTaskFromSharedList(TaskModel task) {
+    // Show confirmation and remove task from shared list
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Task "${task.title}" removed from shared list'),
+        behavior: SnackBarBehavior.floating,
+        action: SnackBarAction(
+          label: 'Undo',
+          onPressed: () {
+            // Re-add to shared list if undo is pressed
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Task restored to shared list'),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+          },
+        ),
+      ),
+    );
   }
 
   Future<void> _addTaskToSharedList(

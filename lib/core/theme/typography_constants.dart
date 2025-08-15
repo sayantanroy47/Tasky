@@ -11,35 +11,41 @@ class TypographyConstants {
   // Private constructor to prevent instantiation
   TypographyConstants._();
 
-  // Master font size scale - FIXED OVERLAPS - DISTINCT SIZES ONLY
-  static const double displayLarge = 32.0;      // Major headings
-  static const double displayMedium = 28.0;     // Page titles  
-  static const double displaySmall = 26.0;      // Section headers (FIXED: was 24.0)
+  // SIMPLIFIED 8-TIER TYPOGRAPHY SYSTEM - Clean, scalable, no overlaps
+  static const double textXS = 12.0;    // Captions, tiny labels
+  static const double textSM = 14.0;    // Body secondary, small buttons  
+  static const double textBase = 16.0;  // Body primary, input text
+  static const double textLG = 18.0;    // Subheadings, card titles
+  static const double textXL = 20.0;    // Headings, app bar
+  static const double text2XL = 24.0;   // Page titles, section headers
+  static const double text3XL = 30.0;   // Display text, hero content
+  static const double text4XL = 36.0;   // Large display, splash screens
 
-  static const double headlineLarge = 22.0;     // Card titles (FIXED: was 24.0 - overlapped with displaySmall)
-  static const double headlineMedium = 20.0;    // Subsection headers
-  static const double headlineSmall = 19.0;     // Important text (FIXED: was 18.0)
+  // Legacy aliases for backwards compatibility during transition
+  static const double displayLarge = text4XL;      // 36.0
+  static const double displayMedium = text3XL;     // 30.0
+  static const double displaySmall = text2XL;      // 24.0
+  static const double headlineLarge = textXL;      // 20.0
+  static const double headlineMedium = textLG;     // 18.0  
+  static const double headlineSmall = textBase;    // 16.0
+  static const double titleLarge = textLG;         // 18.0
+  static const double titleMedium = textBase;      // 16.0
+  static const double titleSmall = textSM;         // 14.0
+  static const double bodyLarge = textBase;        // 16.0
+  static const double bodyMedium = textSM;         // 14.0
+  static const double bodySmall = textXS;          // 12.0
+  static const double labelLarge = textSM;         // 14.0
+  static const double labelMedium = textXS;        // 12.0
+  static const double labelSmall = textXS;         // 12.0
 
-  static const double titleLarge = 17.0;        // Widget titles (FIXED: was 18.0 - overlapped with headlineSmall)
-  static const double titleMedium = 16.0;       // Standard titles
-  static const double titleSmall = 14.0;        // Small titles
-
-  static const double bodyLarge = 16.2;         // Main body text (FIXED: was 16.0 - overlapped with titleMedium & inputText)
-  static const double bodyMedium = 14.2;        // Secondary body text (FIXED: was 14.0 - overlapped with titleSmall & buttonText)
-  static const double bodySmall = 12.3;         // Small body text (FIXED: was 12.0 - overlapped with navigationLabel)
-
-  static const double labelLarge = 14.5;        // Button labels (FIXED: was 14.0 - overlapped with titleSmall & buttonText)
-  static const double labelMedium = 11.0;       // Form labels (FIXED: was 12.0 - overlapped with navigationLabel)
-  static const double labelSmall = 9.0;         // Tiny labels/captions (FIXED: was 10.0 - overlapped with taskMeta)
-
-  // Specialized sizes for specific components - NO OVERLAPS
-  static const double appBarTitle = 21.0;        // FIXED: was 20.0 - overlapped with headlineMedium
-  static const double navigationLabel = 12.0;
-  static const double buttonText = 14.0;
-  static const double inputText = 16.0;
-  static const double taskTitle = 15.0;          // FIXED: was 16.0 - overlapped with titleMedium & inputText
-  static const double taskDescription = 13.0;    // FIXED: was 14.0 - overlapped with titleSmall & buttonText  
-  static const double taskMeta = 10.0;
+  // Specialized component aliases
+  static const double appBarTitle = textXL;        // 20.0
+  static const double navigationLabel = textXS;    // 12.0
+  static const double buttonText = textSM;         // 14.0
+  static const double inputText = textBase;        // 16.0
+  static const double taskTitle = textBase;        // 16.0
+  static const double taskDescription = textSM;    // 14.0  
+  static const double taskMeta = textXS;           // 12.0
 
   // Font weight constants
   static const FontWeight light = FontWeight.w300;
@@ -59,26 +65,26 @@ class TypographyConstants {
   static const double relaxedLetterSpacing = 0.5;
   static const double wideLetterSpacing = 1.0;
 
-  // Border radius constants - STANDARDIZED TO 5px AS REQUESTED
-  static const double radiusStandard = 5.0;    // UNIVERSAL STANDARD - 5px everywhere
-  
-  // Legacy constants - ALL SET TO 5px FOR CONSISTENCY
-  static const double radiusXSmall = 5.0;      // Now 5px
-  static const double radiusSmall = 5.0;       // Now 5px  
-  static const double radiusMedium = 5.0;      // Now 5px
-  static const double radiusLarge = 5.0;       // Now 5px
-  static const double radiusXLarge = 5.0;      // Now 5px
-  static const double radiusXXLarge = 5.0;     // Now 5px
-  static const double radiusRound = 5.0;       // Now 5px (no more fully rounded)
+  // Border radius constants - MATERIAL 3 HIERARCHY FOR VISUAL DEPTH
+  static const double radiusXSmall = 4.0;      // Small components: chips, small buttons
+  static const double radiusSmall = 8.0;       // Cards, standard buttons  
+  static const double radiusMedium = 12.0;     // Dialogs, large components
+  static const double radiusLarge = 16.0;      // Prominent surfaces, sheets
+  static const double radiusXLarge = 20.0;     // Hero components
+  static const double radiusXXLarge = 24.0;    // Largest components
+  static const double radiusRound = 999.0;     // Fully rounded components
 
-  // Specialized radius for specific components - ALL 5px
-  static const double taskCardRadius = 5.0;
-  static const double dialogRadius = 5.0;
-  static const double bottomSheetRadius = 5.0;
-  static const double fabRadius = 5.0;          // No more round FAB
-  static const double chipRadius = 5.0;
-  static const double buttonRadius = 5.0;
-  static const double containerRadius = 5.0;
+  // Default radius for backwards compatibility
+  static const double radiusStandard = radiusSmall; // Default to 8px
+
+  // Specialized radius for specific components - HIERARCHY-BASED
+  static const double taskCardRadius = radiusSmall;        // 8px for cards
+  static const double dialogRadius = radiusMedium;         // 12px for dialogs
+  static const double bottomSheetRadius = radiusLarge;     // 16px for sheets
+  static const double fabRadius = radiusRound;             // Fully round FAB
+  static const double chipRadius = radiusXSmall;           // 4px for chips
+  static const double buttonRadius = radiusSmall;          // 8px for buttons
+  static const double containerRadius = radiusSmall;       // 8px for containers
 
   // Padding constants - STANDARDIZED
   static const double paddingSmall = 8.0;
@@ -92,23 +98,24 @@ class TypographyConstants {
   static const double spacingLarge = 24.0;
   static const double spacingXLarge = 32.0;
 
-  /// Validate that a font size is allowed
+  /// Validate that a font size is allowed - SIMPLIFIED 8-TIER SYSTEM
   static bool isValidFontSize(double size) {
-    const allowedSizes = [
-      displayLarge, displayMedium, displaySmall,
-      headlineLarge, headlineMedium, headlineSmall,
-      titleLarge, titleMedium, titleSmall,
-      bodyLarge, bodyMedium, bodySmall,
-      labelLarge, labelMedium, labelSmall,
-      appBarTitle, navigationLabel, buttonText, inputText,
-      taskTitle, taskDescription, taskMeta,
+    const coreSizes = [
+      textXS, textSM, textBase, textLG, 
+      textXL, text2XL, text3XL, text4XL
     ];
-    return allowedSizes.contains(size);
+    return coreSizes.contains(size);
   }
 
-  /// Validate that a border radius is allowed - ONLY 5.0 is valid now
+  /// Validate that a border radius is allowed - MATERIAL 3 HIERARCHY
   static bool isValidRadius(double radius) {
-    return radius == 5.0; // Only 5px is allowed as per requirement
+    const allowedRadii = [
+      radiusXSmall, radiusSmall, radiusMedium, radiusLarge,
+      radiusXLarge, radiusXXLarge, radiusRound,
+      taskCardRadius, dialogRadius, bottomSheetRadius, fabRadius,
+      chipRadius, buttonRadius, containerRadius,
+    ];
+    return allowedRadii.contains(radius);
   }
 
   /// Get a TextStyle with the specified size and weight

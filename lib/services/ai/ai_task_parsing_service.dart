@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/entities/task_enums.dart';
 import '../../domain/entities/subtask.dart';
+import '../../domain/models/ai_service_type.dart';
 import 'composite_ai_task_parser.dart';
 
 /// Service for managing AI-powered task parsing with configuration

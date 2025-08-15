@@ -1,9 +1,11 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../core/theme/typography_constants.dart';
+import '../../core/accessibility/accessibility_constants.dart';
+import '../../core/design_system/design_tokens.dart' hide BorderRadius;
 
-/// Glassmorphism container widget that provides a consistent glass effect
-/// across all components in the app with a subtle blue tint
+// Using GlassLevel from design_tokens.dart to avoid conflicts
+
 class GlassmorphismContainer extends StatelessWidget {
   final Widget child;
   final double? width;
@@ -11,11 +13,13 @@ class GlassmorphismContainer extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
   final BorderRadiusGeometry? borderRadius;
-  final double blur;
-  final double opacity;
+  final double? blur;         // Custom blur (overrides level)
+  final double? opacity;      // Custom opacity (overrides level)
+  final GlassLevel level;     // Hierarchy level for automatic blur/opacity
   final Color? glassTint;
   final Color? borderColor;
   final double borderWidth;
+  final bool enableAccessibilityMode; // Enable accessibility optimizations
   
   const GlassmorphismContainer({
     super.key,
@@ -25,20 +29,117 @@ class GlassmorphismContainer extends StatelessWidget {
     this.padding,
     this.margin,
     this.borderRadius,
-    this.blur = 8.0, // Reduced by 25% again from 11px
-    this.opacity = 0.15,
+    this.blur,           // Custom blur (overrides level defaults)
+    this.opacity,        // Custom opacity (overrides level defaults)
+    this.level = GlassLevel.content, // Default to content level
     this.glassTint,
     this.borderColor,
-    this.borderWidth = 0.5,
+    this.borderWidth = 0.2, // Ultra-thin borders by default
+    this.enableAccessibilityMode = true, // Enable accessibility by default
   });
+
+  /// Get blur value based on level hierarchy and accessibility settings
+  double _getEffectiveBlur(BuildContext context) {
+    if (blur != null) return blur!; // Custom blur overrides level
+    
+    // Use default properties for level
+    final adaptiveProperties = _getDefaultPropertiesForLevel(level);
+    
+    // Check accessibility settings
+    final accessibleSettings = enableAccessibilityMode 
+        ? _getAccessibleGlassSettings(context)
+        : null;
+    
+    if (accessibleSettings?.blurRadius != null) {
+      return accessibleSettings!.blurRadius!;
+    }
+    
+    return adaptiveProperties.blurRadius;
+  }
+
+  /// Get opacity value based on level hierarchy and accessibility settings
+  double _getEffectiveOpacity(BuildContext context) {
+    if (opacity != null) return opacity!; // Custom opacity overrides level
+    
+    // Use default properties for level
+    final adaptiveProperties = _getDefaultPropertiesForLevel(level);
+    
+    // Check accessibility settings
+    final accessibleSettings = enableAccessibilityMode 
+        ? _getAccessibleGlassSettings(context)
+        : null;
+    
+    if (accessibleSettings?.opacity != null) {
+      return accessibleSettings!.opacity!;
+    }
+    
+    // In high contrast mode, use higher opacity for better visibility
+    if (enableAccessibilityMode && MediaQuery.of(context).highContrast) {
+      return (adaptiveProperties.opacity * 2.0).clamp(0.0, 1.0);
+    }
+    
+    return adaptiveProperties.opacity;
+  }
+
+  /// Get accessible glass settings for accessibility mode
+  _AccessibleGlassSettings? _getAccessibleGlassSettings(BuildContext context) {
+    if (!enableAccessibilityMode) return null;
+    
+    final isHighContrast = MediaQuery.of(context).highContrast;
+    
+    if (isHighContrast) {
+      return _AccessibleGlassSettings(
+        blurRadius: 5.0, // Reduced blur for better visibility
+        opacity: 0.9, // High opacity for better contrast
+        useHighContrastColors: true,
+      );
+    }
+    
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    // Record performance metrics
+    final stopwatch = Stopwatch()..start();
     
-    // Default glass tint - TRANSPARENT WHITE for glassmorphism effect
-    final defaultGlassTint = glassTint ?? Colors.white.withOpacity(opacity);
-    final defaultBorderColor = borderColor ?? Colors.white.withOpacity(0.3);
+    final theme = Theme.of(context);
+    final isDarkTheme = theme.brightness == Brightness.dark;
+    
+    // ENHANCED GLASSMORPHISM - Use hierarchy-based values with accessibility support
+    final effectiveBlurValue = _getEffectiveBlur(context);
+    final effectiveOpacityValue = _getEffectiveOpacity(context);
+    
+    // Check for high contrast mode
+    final accessibleSettings = enableAccessibilityMode 
+        ? _getAccessibleGlassSettings(context)
+        : null;
+    final useHighContrast = accessibleSettings?.useHighContrastColors ?? false;
+    
+    // Use high contrast colors if accessibility mode is enabled
+    final systemHighContrast = MediaQuery.of(context).highContrast;
+    final effectiveHighContrast = useHighContrast || systemHighContrast;
+    
+    final defaultGlassTint = glassTint ?? (effectiveHighContrast 
+        ? (isDarkTheme 
+            ? AccessibilityConstants.highContrastSurface
+            : AccessibilityConstants.highContrastBackground.withOpacity(0.95))
+        : (isDarkTheme 
+            ? Colors.white.withOpacity(effectiveOpacityValue)
+            : Colors.black.withOpacity(effectiveOpacityValue * 1.0))
+    );
+    
+    final defaultBorderColor = borderColor ?? (effectiveHighContrast 
+        ? (isDarkTheme 
+            ? AccessibilityConstants.highContrastText.withOpacity(0.8)
+            : AccessibilityConstants.highContrastText.withOpacity(0.6))
+        : (isDarkTheme 
+            ? Colors.white.withOpacity(0.45)  // Increased from 0.25 to 0.45 for better visibility in dark themes
+            : Colors.black.withOpacity(0.35))
+    );
+    
+    // Increase border width for high contrast mode
+    final effectiveBorderWidth = effectiveHighContrast ? (borderWidth * 2.0).clamp(1.0, 3.0) : borderWidth;
     
     return Container(
       width: width,
@@ -47,35 +148,112 @@ class GlassmorphismContainer extends StatelessWidget {
       child: ClipRRect(
         borderRadius: borderRadius ?? BorderRadius.circular(TypographyConstants.radiusStandard),
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
+          filter: ImageFilter.blur(
+            sigmaX: effectiveBlurValue, 
+            sigmaY: effectiveBlurValue
+          ),
           child: Container(
             padding: padding,
             decoration: BoxDecoration(
-              // Glassmorphism background with subtle blue tint
+              // ENHANCED glassmorphism - white for dark themes, darker for light themes
               color: defaultGlassTint,
               borderRadius: borderRadius ?? BorderRadius.circular(TypographyConstants.radiusStandard),
               border: Border.all(
                 color: defaultBorderColor,
-                width: borderWidth,
+                width: effectiveBorderWidth,
               ),
-              // TRUE GLASSMORPHISM - WHITE transparent gradient
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Colors.white.withOpacity(0.25),
-                  Colors.white.withOpacity(0.10),
-                  Colors.white.withOpacity(0.05),
-                  Colors.white.withOpacity(0.20),
-                ],
-                stops: const [0.0, 0.4, 0.8, 1.0],
-              ),
+              // ENHANCED glassmorphism gradient - hierarchy-based with theme awareness and high contrast support
+              gradient: effectiveHighContrast
+                  ? null // Disable gradient in high contrast mode for better accessibility
+                  : LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: isDarkTheme 
+                        ? [
+                            // Dark theme: white glass with hierarchy-based opacity
+                            Colors.white.withOpacity(effectiveOpacityValue * 1.4),
+                            Colors.white.withOpacity(effectiveOpacityValue * 0.6),
+                            Colors.white.withOpacity(effectiveOpacityValue * 0.3),
+                            Colors.white.withOpacity(effectiveOpacityValue * 1.1),
+                          ]
+                        : [
+                            // Light theme: dark glass with hierarchy-based opacity
+                            Colors.black.withOpacity(effectiveOpacityValue * 0.7),
+                            Colors.black.withOpacity(effectiveOpacityValue * 0.5),
+                            Colors.grey.withOpacity(effectiveOpacityValue * 0.8),
+                            Colors.black.withOpacity(effectiveOpacityValue * 0.6),
+                          ],
+                      stops: const [0.0, 0.4, 0.8, 1.0],
+                    ),
             ),
-            child: child,
+            child: Builder(
+              builder: (context) {
+                // Render completed
+                stopwatch.stop();
+                return child;
+              },
+            ),
           ),
         ),
       ),
     );
+  }
+  
+  /// Get default properties object for a given glass level (static helper)
+  static _GlassProperties _getDefaultPropertiesForLevel(GlassLevel level) {
+    return _GlassProperties(
+      blurRadius: _getDefaultBlurForLevel(level),
+      opacity: _getDefaultOpacityForLevel(level),
+      borderWidth: _getDefaultBorderWidthForLevel(level),
+    );
+  }
+  
+  /// Get default blur value for a given glass level (static helper)
+  static double _getDefaultBlurForLevel(GlassLevel level) {
+    switch (level) {
+      case GlassLevel.background:
+        return 5.0;
+      case GlassLevel.content:
+        return 8.0;
+      case GlassLevel.interactive:
+        return 12.0;
+      case GlassLevel.floating:
+        return 16.0;
+      default:
+        return 10.0;
+    }
+  }
+
+  /// Get default opacity for a given glass level (static helper)
+  static double _getDefaultOpacityForLevel(GlassLevel level) {
+    switch (level) {
+      case GlassLevel.background:
+        return 0.1;
+      case GlassLevel.content:
+        return 0.15;
+      case GlassLevel.interactive:
+        return 0.2;
+      case GlassLevel.floating:
+        return 0.25;
+      default:
+        return 0.2;
+    }
+  }
+
+  /// Get default border width for a given glass level (static helper)
+  static double _getDefaultBorderWidthForLevel(GlassLevel level) {
+    switch (level) {
+      case GlassLevel.background:
+        return 0.5;
+      case GlassLevel.content:
+        return 0.8;
+      case GlassLevel.interactive:
+        return 1.0;
+      case GlassLevel.floating:
+        return 1.2;
+      default:
+        return 1.0;
+    }
   }
 }
 
@@ -98,14 +276,15 @@ class GlassTaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Get adaptive properties from design tokens
+    final adaptiveProperties = GlassmorphismContainer._getDefaultPropertiesForLevel(GlassLevel.content);
+    
     final cardWidget = GlassmorphismContainer(
-      padding: padding ?? const EdgeInsets.all(16.0),
+      level: GlassLevel.content, // Use content level for task cards
+      padding: padding ?? const EdgeInsets.all(SpacingTokens.md),
       margin: margin ?? const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-      blur: 8.0, // Reduced by 25% again
-      opacity: 0.12, // Slightly more opaque for cards
-      glassTint: Colors.blue.withOpacity(0.08),
-      borderColor: Colors.white.withOpacity(0.25),
+      borderWidth: adaptiveProperties.borderWidth,
       child: child,
     );
     
@@ -139,15 +318,16 @@ class GlassProjectCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Get adaptive properties from design tokens
+    final adaptiveProperties = GlassmorphismContainer._getDefaultPropertiesForLevel(GlassLevel.content);
+    
     final cardWidget = GlassmorphismContainer(
-      padding: const EdgeInsets.all(16.0),
-      margin: const EdgeInsets.all(8.0),
+      level: GlassLevel.content, // Use content level for project cards
+      padding: const EdgeInsets.all(SpacingTokens.md),
+      margin: const EdgeInsets.all(SpacingTokens.sm),
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-      blur: 10.0, // Reduced by 25% again from 13.5px
-      opacity: 0.15,
-      glassTint: (accentColor ?? Colors.blue).withOpacity(0.1),
-      borderColor: Colors.white.withOpacity(0.3),
-      borderWidth: 1.0,
+      borderWidth: adaptiveProperties.borderWidth,
+      glassTint: accentColor?.withOpacity(0.1), // Keep accent color tinting
       child: child,
     );
     
@@ -181,15 +361,15 @@ class GlassControlContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Get adaptive properties from design tokens
+    final adaptiveProperties = GlassmorphismContainer._getDefaultPropertiesForLevel(GlassLevel.floating);
+    
     return GlassmorphismContainer(
+      level: GlassLevel.floating, // Use floating level for controls
       width: size,
       height: size,
       borderRadius: BorderRadius.circular(size / 2),
-      blur: 7.0, // Reduced by 25% again from 9px
-      opacity: 0.2,
-      glassTint: Colors.blue.withOpacity(0.15),
-      borderColor: Colors.white.withOpacity(0.4),
-      borderWidth: 1.0,
+      borderWidth: adaptiveProperties.borderWidth,
       child: onTap != null
           ? Material(
               color: Colors.transparent,
@@ -202,4 +382,80 @@ class GlassControlContainer extends StatelessWidget {
           : Center(child: child),
     );
   }
+}
+
+/// Glassmorphism button with consistent styling
+class GlassButton extends StatelessWidget {
+  final Widget child;
+  final VoidCallback? onPressed;
+  final ButtonType type;
+  final bool enabled;
+  final Color? color;
+  final EdgeInsetsGeometry? padding;
+  
+  const GlassButton({
+    super.key,
+    required this.child,
+    this.onPressed,
+    this.type = ButtonType.primary,
+    this.enabled = true,
+    this.color,
+    this.padding,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // Get adaptive properties from design tokens
+    final level = type == ButtonType.floating ? GlassLevel.floating : GlassLevel.interactive;
+    final adaptiveProperties = GlassmorphismContainer._getDefaultPropertiesForLevel(level);
+    
+    return GlassmorphismContainer(
+      level: level,
+      padding: padding ?? const EdgeInsets.all(SpacingTokens.sm),
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+      borderWidth: adaptiveProperties.borderWidth,
+      glassTint: color?.withOpacity(0.1),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: enabled ? onPressed : null,
+          borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+          child: Center(child: child),
+        ),
+      ),
+    );
+  }
+}
+
+/// Simple properties class for glass effects
+class _GlassProperties {
+  final double blurRadius;
+  final double opacity;
+  final double borderWidth;
+  
+  const _GlassProperties({
+    required this.blurRadius,
+    required this.opacity,
+    required this.borderWidth,
+  });
+}
+
+/// Accessible glass settings for high contrast mode
+class _AccessibleGlassSettings {
+  final double? blurRadius;
+  final double? opacity;
+  final bool useHighContrastColors;
+  
+  const _AccessibleGlassSettings({
+    this.blurRadius,
+    this.opacity,
+    this.useHighContrastColors = false,
+  });
+}
+
+/// Button types for different glassmorphism levels
+enum ButtonType {
+  primary,
+  secondary,
+  floating,
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/standardized_app_bar.dart';
+import '../widgets/theme_background_widget.dart';
 import '../widgets/location_task_widgets.dart';
 import '../widgets/location_widgets.dart';
 import '../widgets/glassmorphism_container.dart';
@@ -19,26 +20,31 @@ class _NearbyTasksPageState extends ConsumerState<NearbyTasksPage> {
   Widget build(BuildContext context) {
     final locationSettings = ref.watch(locationSettingsProvider);
 
-    return Scaffold(
-      appBar: StandardizedAppBar(
-        title: 'Nearby Tasks',
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.tune),
-            onPressed: _showFilterDialog,
-          ),
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () {
-              setState(() {
-                // Trigger rebuild to refresh data
-              });
-            },
-          ),
-        ],
-      ),
-      body: locationSettings.locationEnabled
-          ? Column(
+    return ThemeBackgroundWidget(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        extendBodyBehindAppBar: true,
+        appBar: StandardizedAppBar(
+          title: 'Nearby Tasks',
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.tune),
+              onPressed: _showFilterDialog,
+            ),
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              onPressed: () {
+                setState(() {
+                  // Trigger rebuild to refresh data
+                });
+              },
+            ),
+          ],
+        ),
+        body: Padding(
+          padding: const EdgeInsets.only(top: kToolbarHeight + 8),
+          child: locationSettings.locationEnabled
+            ? Column(
               children: [
                 // Location status and settings
                 _buildLocationStatusCard(),
@@ -57,6 +63,8 @@ class _NearbyTasksPageState extends ConsumerState<NearbyTasksPage> {
               ],
             )
           : _buildLocationDisabledView(),
+        ),
+      ),
     );
   }
 

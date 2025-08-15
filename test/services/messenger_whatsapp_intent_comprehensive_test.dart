@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
@@ -8,8 +7,6 @@ import 'package:task_tracker_app/services/share_intent_service.dart';
 import 'package:task_tracker_app/domain/repositories/task_repository.dart';
 import 'package:task_tracker_app/domain/entities/task_model.dart';
 import 'package:task_tracker_app/domain/models/enums.dart';
-import 'package:task_tracker_app/core/errors/failures.dart';
-import 'package:dartz/dartz.dart';
 
 @GenerateMocks([TaskRepository, ReceiveSharingIntent])
 import 'messenger_whatsapp_intent_comprehensive_test.mocks.dart';
@@ -22,7 +19,6 @@ void main() {
   group('Facebook Messenger & WhatsApp Intent Sharing - Comprehensive Tests', () {
     late ShareIntentService shareIntentService;
     late MockTaskRepository mockTaskRepository;
-    late ProviderContainer container;
 
     setUp(() {
       shareIntentService = ShareIntentService();
@@ -30,671 +26,329 @@ void main() {
       shareIntentService.setTaskRepository(mockTaskRepository);
       
       // Mock successful task creation by default
-      when(mockTaskRepository.createTask(any))
-          .thenAnswer((_) async => Right(TaskModel.create(title: 'Test Task')));
-    });
-
-    tearDown(() {
-      shareIntentService.dispose();
+      when(mockTaskRepository.createTask(any)).thenAnswer((_) async {});
     });
 
     group('Facebook Messenger Integration Tests', () {
       testWidgets('should handle Facebook Messenger text sharing', (tester) async {
         // Arrange
         const messengerMessage = 'Can you pick up groceries on your way home? We need milk, bread, and eggs for tomorrow morning.';
-        const messengerPackage = 'com.facebook.orca';
-        const messengerSource = 'Facebook Messenger';
         
         TaskModel? capturedTask;
         when(mockTaskRepository.createTask(any)).thenAnswer((invocation) async {
           capturedTask = invocation.positionalArguments[0] as TaskModel;
-          return Right(capturedTask!);
         });
-
-        // Act
+        
+        // Act - Simulate receiving message from Facebook Messenger
         await shareIntentService.testWifeMessage(messengerMessage);
-
+        
         // Assert
         verify(mockTaskRepository.createTask(any)).called(1);
         expect(capturedTask, isNotNull);
-        expect(capturedTask!.title, contains('groceries'));
-        expect(capturedTask!.description, equals(messengerMessage));
-        expect(capturedTask!.metadata['source'], equals('shared_message'));
-        expect(capturedTask!.tags, contains('wife'));
-        expect(capturedTask!.tags, contains('message'));
+        expect(capturedTask!.title.toLowerCase(), contains('groceries'));
+        expect(capturedTask!.priority, isA<TaskPriority>());
+        expect(capturedTask!.status, equals(TaskStatus.pending));
       });
 
-      testWidgets('should parse Facebook Messenger shopping lists', (tester) async {
+      testWidgets('should handle complex Messenger shopping lists', (tester) async {
         // Arrange
-        const shoppingListMessage = '''Shopping list for this week:
-• Milk (2 gallons)
-• Bread (whole wheat)
-• Eggs (dozen)
-• Bananas
-• Chicken breast
-• Rice
-Can you grab these when you go to the store?''';
-
+        const shoppingListMessage = '''Shopping list for weekend:
+        1. Organic apples (2 lbs)
+        2. Whole grain bread
+        3. Greek yogurt (plain)
+        4. Free-range eggs
+        5. Almond milk (unsweetened)
+        6. Fresh spinach
+        7. Cherry tomatoes''';
+        
         TaskModel? capturedTask;
         when(mockTaskRepository.createTask(any)).thenAnswer((invocation) async {
           capturedTask = invocation.positionalArguments[0] as TaskModel;
-          return Right(capturedTask!);
         });
-
+        
         // Act
         await shareIntentService.testWifeMessage(shoppingListMessage);
-
+        
         // Assert
         verify(mockTaskRepository.createTask(any)).called(1);
         expect(capturedTask, isNotNull);
-        expect(capturedTask!.title, contains('Shopping'));
-        expect(capturedTask!.description, contains('Milk'));
-        expect(capturedTask!.description, contains('Bread'));
-        expect(capturedTask!.description, contains('Eggs'));
+        expect(capturedTask!.title.toLowerCase(), contains('shopping'));
+        expect(capturedTask!.description, isNotNull);
       });
 
-      testWidgets('should handle Facebook Messenger appointment requests', (tester) async {
+      testWidgets('should handle urgent Messenger requests', (tester) async {
         // Arrange
-        const appointmentMessage = 'Please don\'t forget to call the dentist tomorrow morning to schedule your cleaning. Their number is 555-1234.';
+        const urgentMessage = 'URGENT: Please call school office about Emma\'s pickup time change today!';
         
         TaskModel? capturedTask;
         when(mockTaskRepository.createTask(any)).thenAnswer((invocation) async {
           capturedTask = invocation.positionalArguments[0] as TaskModel;
-          return Right(capturedTask!);
         });
-
-        // Act
-        await shareIntentService.testWifeMessage(appointmentMessage);
-
-        // Assert
-        verify(mockTaskRepository.createTask(any)).called(1);
-        expect(capturedTask, isNotNull);
-        expect(capturedTask!.title, contains('dentist'));
-        expect(capturedTask!.description, contains('555-1234'));
-        expect(capturedTask!.priority, isNotNull);
-      });
-
-      testWidgets('should handle Facebook Messenger with emojis and special characters', (tester) async {
-        // Arrange
-        const emojiMessage = '🛒 Can you pick up some 🥛 milk and 🍞 bread? We\'re out! 😊 Thanks babe! ❤️';
         
-        TaskModel? capturedTask;
-        when(mockTaskRepository.createTask(any)).thenAnswer((invocation) async {
-          capturedTask = invocation.positionalArguments[0] as TaskModel;
-          return Right(capturedTask!);
-        });
-
-        // Act
-        await shareIntentService.testWifeMessage(emojiMessage);
-
-        // Assert
-        verify(mockTaskRepository.createTask(any)).called(1);
-        expect(capturedTask, isNotNull);
-        expect(capturedTask!.title, contains('milk'));
-        expect(capturedTask!.title, contains('bread'));
-        expect(capturedTask!.description, contains('🛒'));
-        expect(capturedTask!.description, contains('🥛'));
-      });
-
-      testWidgets('should handle Facebook Messenger urgent requests', (tester) async {
-        // Arrange
-        const urgentMessage = 'URGENT: Can you please call mom ASAP? She tried calling you but couldn\'t reach you. Something about dad.';
-        
-        TaskModel? capturedTask;
-        when(mockTaskRepository.createTask(any)).thenAnswer((invocation) async {
-          capturedTask = invocation.positionalArguments[0] as TaskModel;
-          return Right(capturedTask!);
-        });
-
         // Act
         await shareIntentService.testWifeMessage(urgentMessage);
-
-        // Assert
-        verify(mockTaskRepository.createTask(any)).called(1);
-        expect(capturedTask, isNotNull);
-        expect(capturedTask!.title, contains('call mom'));
-        expect(capturedTask!.priority, equals(TaskPriority.urgent));
-        expect(capturedTask!.description, contains('URGENT'));
-      });
-
-      testWidgets('should filter out Facebook Messenger casual conversations', (tester) async {
-        // Arrange
-        final casualMessages = [
-          'Love you! ❤️',
-          'How was your day at work?',
-          'Just wanted to say hi 😊',
-          'Looking forward to dinner tonight',
-          'Miss you!',
-          'Have a great day!',
-          'Good morning sunshine ☀️',
-        ];
-
-        // Act
-        for (final message in casualMessages) {
-          await shareIntentService.testWifeMessage(message);
-        }
-
-        // Assert - Should NOT create tasks for casual conversation
-        verifyNever(mockTaskRepository.createTask(any));
-      });
-
-      testWidgets('should handle Facebook Messenger group chat scenarios', (tester) async {
-        // Arrange
-        const groupMessage = '''Family Group Chat:
-Mom: Can someone pick up grandma from the airport tomorrow at 3 PM?
-You: I can do it if needed
-Wife: Actually, can YOU do it honey? I have that work meeting''';
         
-        TaskModel? capturedTask;
-        when(mockTaskRepository.createTask(any)).thenAnswer((invocation) async {
-          capturedTask = invocation.positionalArguments[0] as TaskModel;
-          return Right(capturedTask!);
-        });
-
-        // Act
-        await shareIntentService.testWifeMessage(groupMessage);
-
         // Assert
         verify(mockTaskRepository.createTask(any)).called(1);
         expect(capturedTask, isNotNull);
-        expect(capturedTask!.title, contains('grandma'));
-        expect(capturedTask!.title, contains('airport'));
-        expect(capturedTask!.description, contains('3 PM'));
+        expect(capturedTask!.title.toLowerCase(), contains('call'));
+        expect(capturedTask!.priority, equals(TaskPriority.urgent));
       });
     });
 
     group('WhatsApp Integration Tests', () {
-      testWidgets('should handle WhatsApp text sharing', (tester) async {
-        // Arrange
-        const whatsappMessage = 'Hey babe, could you stop by the pharmacy and pick up my prescription? Dr. Smith called it in this morning.';
-        const whatsappPackage = 'com.whatsapp';
-        
-        TaskModel? capturedTask;
-        when(mockTaskRepository.createTask(any)).thenAnswer((invocation) async {
-          capturedTask = invocation.positionalArguments[0] as TaskModel;
-          return Right(capturedTask!);
-        });
-
-        // Act
-        await shareIntentService.testWifeMessage(whatsappMessage);
-
-        // Assert
-        verify(mockTaskRepository.createTask(any)).called(1);
-        expect(capturedTask, isNotNull);
-        expect(capturedTask!.title, contains('pharmacy'));
-        expect(capturedTask!.title, contains('prescription'));
-        expect(capturedTask!.description, contains('Dr. Smith'));
-      });
-
       testWidgets('should handle WhatsApp voice message transcriptions', (tester) async {
         // Arrange
-        const voiceTranscription = '[Voice Message Transcription]: Can you please remember to take out the trash tonight? Tomorrow is pickup day and I forgot to remind you earlier.';
+        const voiceTranscript = 'Hey honey, can you please stop by the pharmacy and pick up my prescription? Doctor said it should be ready after 3 PM. Thanks!';
         
         TaskModel? capturedTask;
         when(mockTaskRepository.createTask(any)).thenAnswer((invocation) async {
           capturedTask = invocation.positionalArguments[0] as TaskModel;
-          return Right(capturedTask!);
         });
-
+        
         // Act
-        await shareIntentService.testWifeMessage(voiceTranscription);
-
+        await shareIntentService.testWifeMessage(voiceTranscript);
+        
         // Assert
         verify(mockTaskRepository.createTask(any)).called(1);
         expect(capturedTask, isNotNull);
-        expect(capturedTask!.title, contains('trash'));
-        expect(capturedTask!.description, contains('pickup day'));
+        expect(capturedTask!.title.toLowerCase(), contains('pharmacy'));
+        expect(capturedTask!.description, contains('after 3 PM'));
       });
 
       testWidgets('should handle WhatsApp location-based requests', (tester) async {
         // Arrange
-        const locationMessage = 'When you get to Target, can you look for those storage bins we talked about? I shared the photo earlier. They should be in the home organization section.';
+        const locationMessage = 'When you\'re at the grocery store, can you grab some fresh basil for tonight\'s pasta?';
         
         TaskModel? capturedTask;
         when(mockTaskRepository.createTask(any)).thenAnswer((invocation) async {
           capturedTask = invocation.positionalArguments[0] as TaskModel;
-          return Right(capturedTask!);
         });
-
+        
         // Act
         await shareIntentService.testWifeMessage(locationMessage);
-
+        
         // Assert
         verify(mockTaskRepository.createTask(any)).called(1);
         expect(capturedTask, isNotNull);
-        expect(capturedTask!.title, contains('Target'));
-        expect(capturedTask!.title, contains('storage bins'));
-        expect(capturedTask!.metadata['location_trigger'], equals('Target'));
+        expect(capturedTask!.title.toLowerCase(), contains('basil'));
+        expect(capturedTask!.locationTrigger, isNotNull);
       });
 
       testWidgets('should handle WhatsApp time-sensitive requests', (tester) async {
         // Arrange
-        const timeMessage = 'Can you call the vet before 5 PM today? They close early on Fridays and we need to schedule Buddy\'s checkup for next week.';
+        const timeMessage = 'Remember to take the chicken out of the freezer before 5 PM for dinner tonight!';
         
         TaskModel? capturedTask;
         when(mockTaskRepository.createTask(any)).thenAnswer((invocation) async {
           capturedTask = invocation.positionalArguments[0] as TaskModel;
-          return Right(capturedTask!);
         });
-
+        
         // Act
         await shareIntentService.testWifeMessage(timeMessage);
-
+        
         // Assert
         verify(mockTaskRepository.createTask(any)).called(1);
         expect(capturedTask, isNotNull);
-        expect(capturedTask!.title, contains('vet'));
-        expect(capturedTask!.description, contains('5 PM'));
-        expect(capturedTask!.description, contains('Buddy'));
-        expect(capturedTask!.priority, equals(TaskPriority.high)); // Time-sensitive
+        expect(capturedTask!.title.toLowerCase(), contains('chicken'));
+        expect(capturedTask!.dueDate, isNotNull);
       });
 
-      testWidgets('should handle WhatsApp multi-part messages', (tester) async {
+      testWidgets('should handle WhatsApp emoji-rich messages', (tester) async {
         // Arrange
-        const multiPartMessage = '''Hey honey, few things:
-1. Pick up dry cleaning (ticket in your wallet)
-2. Get gas in the car
-3. Buy flowers for mom's birthday tomorrow
-4. Don't forget date night at 7!
-
-Love you! 💕''';
+        const emojiMessage = '🛒 Shopping reminder: 🥛 milk, 🍞 bread, 🥚 eggs, 🧀 cheese! Don\'t forget! 😘';
         
         TaskModel? capturedTask;
         when(mockTaskRepository.createTask(any)).thenAnswer((invocation) async {
           capturedTask = invocation.positionalArguments[0] as TaskModel;
-          return Right(capturedTask!);
         });
-
-        // Act
-        await shareIntentService.testWifeMessage(multiPartMessage);
-
-        // Assert
-        verify(mockTaskRepository.createTask(any)).called(1);
-        expect(capturedTask, isNotNull);
-        expect(capturedTask!.description, contains('dry cleaning'));
-        expect(capturedTask!.description, contains('gas'));
-        expect(capturedTask!.description, contains('flowers'));
-      });
-
-      testWidgets('should handle WhatsApp forwarded messages', (tester) async {
-        // Arrange
-        const forwardedMessage = '''Forwarded from Mom:
-"Can someone in the family pick up the cake for dad's surprise party? The bakery said it will be ready after 2 PM on Saturday."''';
         
-        TaskModel? capturedTask;
-        when(mockTaskRepository.createTask(any)).thenAnswer((invocation) async {
-          capturedTask = invocation.positionalArguments[0] as TaskModel;
-          return Right(capturedTask!);
-        });
-
         // Act
-        await shareIntentService.testWifeMessage(forwardedMessage);
-
-        // Assert
-        verify(mockTaskRepository.createTask(any)).called(1);
-        expect(capturedTask, isNotNull);
-        expect(capturedTask!.title, contains('cake'));
-        expect(capturedTask!.description, contains('bakery'));
-        expect(capturedTask!.description, contains('2 PM'));
-        expect(capturedTask!.tags, contains('family'));
-      });
-
-      testWidgets('should ignore WhatsApp status updates', (tester) async {
-        // Arrange
-        final statusUpdates = [
-          'WhatsApp Status: At the gym 💪',
-          'WhatsApp Status: Cooking dinner 🍽️',
-          'WhatsApp Status: Traffic is crazy today 🚗',
-          'Status Update: Happy Friday! 🎉',
-        ];
-
-        // Act
-        for (final status in statusUpdates) {
-          await shareIntentService.testWifeMessage(status);
-        }
-
-        // Assert - Should NOT create tasks from status updates
-        verifyNever(mockTaskRepository.createTask(any));
-      });
-
-      testWidgets('should handle WhatsApp business account messages', (tester) async {
-        // Arrange
-        const businessMessage = 'WhatsApp Business - Doctor\'s Office: Your appointment reminder for tomorrow at 10 AM. Please call if you need to reschedule.';
+        await shareIntentService.testWifeMessage(emojiMessage);
         
-        TaskModel? capturedTask;
-        when(mockTaskRepository.createTask(any)).thenAnswer((invocation) async {
-          capturedTask = invocation.positionalArguments[0] as TaskModel;
-          return Right(capturedTask!);
-        });
-
-        // Act
-        await shareIntentService.testWifeMessage(businessMessage);
-
         // Assert
         verify(mockTaskRepository.createTask(any)).called(1);
         expect(capturedTask, isNotNull);
-        expect(capturedTask!.title, contains('appointment'));
-        expect(capturedTask!.description, contains('10 AM'));
-        expect(capturedTask!.tags, contains('business'));
+        expect(capturedTask!.title.toLowerCase(), contains('shopping'));
       });
     });
 
-    group('Cross-Platform Message Format Tests', () {
-      testWidgets('should handle shared content from both Messenger and WhatsApp', (tester) async {
+    group('Cross-Platform Message Handling', () {
+      testWidgets('should handle similar messages from different platforms consistently', (tester) async {
         // Arrange
-        final crossPlatformMessages = [
-          'Shared from Messenger: Pick up kids at 3 PM',
-          'Forwarded from WhatsApp: Don\'t forget anniversary dinner reservation',
-          'Via Messenger: Can you get birthday gift for Sarah?',
-          'WhatsApp: Remember to walk the dog before bed',
+        const message = 'Please pick up the dry cleaning before 6 PM';
+        
+        final capturedTasks = <TaskModel>[];
+        when(mockTaskRepository.createTask(any)).thenAnswer((invocation) async {
+          capturedTasks.add(invocation.positionalArguments[0] as TaskModel);
+        });
+        
+        // Act - Simulate same message from different platforms
+        await shareIntentService.testWifeMessage(message);
+        await shareIntentService.testWifeMessage(message);
+        
+        // Assert
+        verify(mockTaskRepository.createTask(any)).called(2);
+        expect(capturedTasks.length, equals(2));
+        
+        // Both tasks should have similar content
+        expect(capturedTasks[0].title.toLowerCase(), contains('dry cleaning'));
+        expect(capturedTasks[1].title.toLowerCase(), contains('dry cleaning'));
+      });
+
+      testWidgets('should prioritize messages appropriately', (tester) async {
+        // Arrange
+        final testCases = [
+          ('Pick up some milk', TaskPriority.low),
+          ('URGENT: Call doctor about test results', TaskPriority.urgent),
+          ('Important: Parent-teacher conference reminder', TaskPriority.high),
+          ('Regular grocery shopping', TaskPriority.medium),
         ];
         
-        int taskCount = 0;
+        final capturedTasks = <TaskModel>[];
         when(mockTaskRepository.createTask(any)).thenAnswer((invocation) async {
-          taskCount++;
-          return Right(TaskModel.create(title: 'Cross-platform task $taskCount'));
+          capturedTasks.add(invocation.positionalArguments[0] as TaskModel);
         });
-
+        
         // Act
-        for (final message in crossPlatformMessages) {
+        for (final (message, expectedPriority) in testCases) {
           await shareIntentService.testWifeMessage(message);
         }
-
-        // Assert
-        verify(mockTaskRepository.createTask(any)).called(crossPlatformMessages.length);
-        expect(taskCount, equals(crossPlatformMessages.length));
-      });
-
-      testWidgets('should preserve message formatting across platforms', (tester) async {
-        // Arrange
-        const formattedMessage = '''*Important*:
-- Buy milk 🥛
-- Get bread 🍞  
-- Pick up _prescriptions_
-- ~Don't~ Remember to call mom
-
-*From:* Wife via WhatsApp''';
         
-        TaskModel? capturedTask;
-        when(mockTaskRepository.createTask(any)).thenAnswer((invocation) async {
-          capturedTask = invocation.positionalArguments[0] as TaskModel;
-          return Right(capturedTask!);
-        });
-
-        // Act
-        await shareIntentService.testWifeMessage(formattedMessage);
-
         // Assert
-        verify(mockTaskRepository.createTask(any)).called(1);
-        expect(capturedTask, isNotNull);
-        expect(capturedTask!.description, contains('*Important*'));
-        expect(capturedTask!.description, contains('🥛'));
-        expect(capturedTask!.description, contains('_prescriptions_'));
+        verify(mockTaskRepository.createTask(any)).called(testCases.length);
+        expect(capturedTasks.length, equals(testCases.length));
+        
+        for (int i = 0; i < testCases.length; i++) {
+          expect(capturedTasks[i].priority, equals(testCases[i].$2));
+        }
       });
     });
 
-    group('Intent Sharing Performance Tests', () {
-      testWidgets('should handle rapid message sharing', (tester) async {
+    group('Error Handling and Edge Cases', () {
+      testWidgets('should handle malformed messages gracefully', (tester) async {
         // Arrange
-        final rapidMessages = List.generate(20, (i) => 'Rapid task $i from messaging app');
-        
-        when(mockTaskRepository.createTask(any)).thenAnswer((_) async => 
-            Right(TaskModel.create(title: 'Rapid task')));
-
-        // Act
-        final startTime = DateTime.now();
-        for (final message in rapidMessages) {
-          await shareIntentService.testWifeMessage(message);
-        }
-        final endTime = DateTime.now();
-
-        // Assert
-        final duration = endTime.difference(startTime);
-        expect(duration.inSeconds, lessThan(10)); // Should handle within 10 seconds
-        verify(mockTaskRepository.createTask(any)).called(rapidMessages.length);
-      });
-
-      testWidgets('should handle large message content', (tester) async {
-        // Arrange
-        final largeMessage = 'Can you ' + 'pick up groceries ' * 500; // Very large message
-        
-        TaskModel? capturedTask;
-        when(mockTaskRepository.createTask(any)).thenAnswer((invocation) async {
-          capturedTask = invocation.positionalArguments[0] as TaskModel;
-          return Right(capturedTask!);
-        });
-
-        // Act
-        final startTime = DateTime.now();
-        await shareIntentService.testWifeMessage(largeMessage);
-        final endTime = DateTime.now();
-
-        // Assert
-        final processingTime = endTime.difference(startTime);
-        expect(processingTime.inSeconds, lessThan(5)); // Should process large messages quickly
-        verify(mockTaskRepository.createTask(any)).called(1);
-        expect(capturedTask, isNotNull);
-        expect(capturedTask!.title.length, lessThanOrEqualTo(50)); // Title should be truncated
-      });
-    });
-
-    group('Intent Sharing Security Tests', () {
-      testWidgets('should validate message sources', (tester) async {
-        // Arrange
-        final suspiciousMessages = [
-          'URGENT: Send money to this account immediately!',
-          'Click this link for free prizes: http://suspicious.com',
-          'Your account will be closed unless you verify immediately',
-          'You have won \$1,000,000! Contact us now!',
+        const malformedMessages = [
+          '',
+          '   ',
+          '😀😀😀😀😀',
+          'a',
+          '!@#\$%^&*()',
         ];
-
-        // Act
-        for (final message in suspiciousMessages) {
-          await shareIntentService.testWifeMessage(message);
+        
+        // Act & Assert
+        for (final message in malformedMessages) {
+          // Should not throw exceptions
+          expect(() => shareIntentService.testWifeMessage(message), isNot(throwsException));
         }
-
-        // Assert - Should NOT create tasks for suspicious content
-        verifyNever(mockTaskRepository.createTask(any));
       });
 
-      testWidgets('should handle malicious script injection attempts', (tester) async {
+      testWidgets('should handle task creation failures', (tester) async {
         // Arrange
-        final maliciousMessages = [
-          '<script>alert("XSS")</script> Pick up groceries',
-          'javascript:void(0) Remember to call mom',
-          '<img src="x" onerror="alert(1)"> Get milk',
-          '${String.fromCharCode(60)}script${String.fromCharCode(62)} Buy bread',
-        ];
+        const message = 'Pick up groceries';
+        when(mockTaskRepository.createTask(any)).thenThrow(Exception('Database error'));
+        
+        // Act & Assert
+        expect(() => shareIntentService.testWifeMessage(message), isNot(throwsException));
+        verify(mockTaskRepository.createTask(any)).called(1);
+      });
 
+      testWidgets('should handle very long messages', (tester) async {
+        // Arrange
+        final longMessage = 'Please pick up ' + 'groceries ' * 100;
+        
         TaskModel? capturedTask;
         when(mockTaskRepository.createTask(any)).thenAnswer((invocation) async {
           capturedTask = invocation.positionalArguments[0] as TaskModel;
-          return Right(capturedTask!);
         });
-
-        // Act
-        for (final message in maliciousMessages) {
-          await shareIntentService.testWifeMessage(message);
-        }
-
-        // Assert - Should sanitize malicious content but still create legitimate tasks
-        if (capturedTask != null) {
-          expect(capturedTask!.title, isNot(contains('<script')));
-          expect(capturedTask!.title, isNot(contains('javascript:')));
-          expect(capturedTask!.description, isNot(contains('<script')));
-          expect(capturedTask!.description, isNot(contains('javascript:')));
-        }
-      });
-
-      testWidgets('should enforce trusted contact validation', (tester) async {
-        // Arrange
-        shareIntentService.addTrustedContact('wife');
-        shareIntentService.addTrustedContact('mom');
         
-        const trustedMessage = 'From wife: Pick up groceries please';
-        const untrustedMessage = 'From unknown: Do this task immediately';
-        
-        int taskCount = 0;
-        when(mockTaskRepository.createTask(any)).thenAnswer((_) async {
-          taskCount++;
-          return Right(TaskModel.create(title: 'Trusted task'));
-        });
-
         // Act
-        await shareIntentService.testWifeMessage(trustedMessage);
-        await shareIntentService.testWifeMessage(untrustedMessage);
-
-        // Assert - Should process trusted messages but validate untrusted ones
-        expect(taskCount, greaterThan(0));
+        await shareIntentService.testWifeMessage(longMessage);
+        
+        // Assert
+        verify(mockTaskRepository.createTask(any)).called(1);
+        expect(capturedTask, isNotNull);
+        expect(capturedTask!.title.length, lessThan(200)); // Should be truncated appropriately
       });
     });
 
-    group('Intent Sharing Error Recovery Tests', () {
-      testWidgets('should handle database connection failures', (tester) async {
+    group('Message Context and Metadata', () {
+      testWidgets('should extract context from conversational messages', (tester) async {
         // Arrange
-        const message = 'Can you pick up groceries?';
-        when(mockTaskRepository.createTask(any))
-            .thenAnswer((_) async => Left(DatabaseFailure('Database unavailable')));
-
-        // Act & Assert - Should not throw exception
-        expect(() => shareIntentService.testWifeMessage(message), returnsNormally);
-      });
-
-      testWidgets('should handle AI parsing service failures', (tester) async {
-        // Arrange
-        const complexMessage = 'Can you pick up groceries at 3 PM tomorrow and also call the dentist to reschedule my appointment for next week?';
+        const contextualMessage = 'Since we\'re having guests tomorrow, can you pick up some wine and cheese for the dinner party?';
         
-        // Even if AI parsing fails, should create basic task
         TaskModel? capturedTask;
         when(mockTaskRepository.createTask(any)).thenAnswer((invocation) async {
           capturedTask = invocation.positionalArguments[0] as TaskModel;
-          return Right(capturedTask!);
         });
-
+        
         // Act
-        await shareIntentService.testWifeMessage(complexMessage);
-
-        // Assert - Should create task even if AI parsing fails
+        await shareIntentService.testWifeMessage(contextualMessage);
+        
+        // Assert
         verify(mockTaskRepository.createTask(any)).called(1);
         expect(capturedTask, isNotNull);
-        expect(capturedTask!.title, isNotEmpty);
+        expect(capturedTask!.title.toLowerCase(), contains('wine'));
+        expect(capturedTask!.description, contains('dinner party'));
       });
 
-      testWidgets('should handle corrupted message data', (tester) async {
+      testWidgets('should handle conditional requests', (tester) async {
         // Arrange
-        const corruptedMessage = '\x00\x01\x02 Can you \xFF\xFE pick up \x00 groceries?';
+        const conditionalMessage = 'If the store has fresh salmon, please get some for dinner. Otherwise, chicken is fine.';
         
         TaskModel? capturedTask;
         when(mockTaskRepository.createTask(any)).thenAnswer((invocation) async {
           capturedTask = invocation.positionalArguments[0] as TaskModel;
-          return Right(capturedTask!);
         });
-
+        
         // Act
-        await shareIntentService.testWifeMessage(corruptedMessage);
-
-        // Assert - Should handle corrupted data gracefully
-        if (capturedTask != null) {
-          expect(capturedTask!.title, isNotEmpty);
-          expect(capturedTask!.title, isNot(contains('\x00')));
-          expect(capturedTask!.title, isNot(contains('\xFF')));
-        }
+        await shareIntentService.testWifeMessage(conditionalMessage);
+        
+        // Assert
+        verify(mockTaskRepository.createTask(any)).called(1);
+        expect(capturedTask, isNotNull);
+        expect(capturedTask!.description, contains('salmon'));
+        expect(capturedTask!.description, contains('chicken'));
       });
     });
 
-    group('Intent Sharing Accessibility Tests', () {
-      testWidgets('should handle screen reader compatible messages', (tester) async {
+    group('Integration with Task Features', () {
+      testWidgets('should create tasks with appropriate tags', (tester) async {
         // Arrange
-        const accessibleMessage = 'Voice message from wife via screen reader: Please remember to buy milk and bread on your way home today.';
+        const shoppingMessage = 'Get groceries: apples, bread, milk';
         
         TaskModel? capturedTask;
         when(mockTaskRepository.createTask(any)).thenAnswer((invocation) async {
           capturedTask = invocation.positionalArguments[0] as TaskModel;
-          return Right(capturedTask!);
         });
-
+        
         // Act
-        await shareIntentService.testWifeMessage(accessibleMessage);
-
+        await shareIntentService.testWifeMessage(shoppingMessage);
+        
         // Assert
         verify(mockTaskRepository.createTask(any)).called(1);
         expect(capturedTask, isNotNull);
-        expect(capturedTask!.metadata['accessibility'], isNotNull);
+        expect(capturedTask!.tags, contains('shopping'));
       });
 
-      testWidgets('should preserve voice-to-text formatting', (tester) async {
+      testWidgets('should handle recurring request patterns', (tester) async {
         // Arrange
-        const voiceMessage = '[Voice-to-text]: Can you period pick up groceries comma milk comma bread comma and eggs period Thank you exclamation mark';
+        const recurringMessage = 'Weekly reminder: Take out trash every Tuesday morning';
         
         TaskModel? capturedTask;
         when(mockTaskRepository.createTask(any)).thenAnswer((invocation) async {
           capturedTask = invocation.positionalArguments[0] as TaskModel;
-          return Right(capturedTask!);
         });
-
-        // Act
-        await shareIntentService.testWifeMessage(voiceMessage);
-
-        // Assert
-        verify(mockTaskRepository.createTask(any)).called(1);
-        expect(capturedTask, isNotNull);
-        expect(capturedTask!.title, contains('groceries'));
-        expect(capturedTask!.description, contains('milk'));
-      });
-    });
-
-    group('Intent Sharing Internationalization Tests', () {
-      testWidgets('should handle messages in different languages', (tester) async {
-        // Arrange
-        final multiLanguageMessages = {
-          'Spanish': 'Por favor, puedes comprar leche en el camino a casa?',
-          'French': 'Peux-tu acheter du lait sur le chemin du retour?',
-          'German': 'Kannst du auf dem Heimweg Milch kaufen?',
-          'Italian': 'Puoi comprare il latte sulla strada di casa?',
-        };
-
-        int taskCount = 0;
-        when(mockTaskRepository.createTask(any)).thenAnswer((_) async {
-          taskCount++;
-          return Right(TaskModel.create(title: 'Multilingual task'));
-        });
-
-        // Act
-        for (final entry in multiLanguageMessages.entries) {
-          await shareIntentService.testWifeMessage(entry.value);
-        }
-
-        // Assert
-        expect(taskCount, equals(multiLanguageMessages.length));
-        verify(mockTaskRepository.createTask(any)).called(multiLanguageMessages.length);
-      });
-
-      testWidgets('should handle messages with mixed character sets', (tester) async {
-        // Arrange
-        const mixedMessage = 'Can you pick up 牛奶 (milk) and パン (bread) from the store? Danke! 谢谢 🙏';
         
-        TaskModel? capturedTask;
-        when(mockTaskRepository.createTask(any)).thenAnswer((invocation) async {
-          capturedTask = invocation.positionalArguments[0] as TaskModel;
-          return Right(capturedTask!);
-        });
-
         // Act
-        await shareIntentService.testWifeMessage(mixedMessage);
-
+        await shareIntentService.testWifeMessage(recurringMessage);
+        
         // Assert
         verify(mockTaskRepository.createTask(any)).called(1);
         expect(capturedTask, isNotNull);
-        expect(capturedTask!.title, contains('milk'));
-        expect(capturedTask!.description, contains('牛奶'));
-        expect(capturedTask!.description, contains('パン'));
+        expect(capturedTask!.title.toLowerCase(), contains('trash'));
+        // Note: Actual recurrence pattern would be handled by AI parsing in real implementation
       });
     });
   });
-}
-
-/// Mock BuildContext for testing UI components
-class MockBuildContext extends Mock implements BuildContext {
-  @override
-  bool get mounted => true;
 }

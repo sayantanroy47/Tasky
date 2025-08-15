@@ -523,3 +523,8 @@ enum TaskSortBy {
   }
 }
 
+/// Exception thrown when a concurrent modification is detected during database operations
+class ConcurrentModificationError extends StateError {
+  ConcurrentModificationError(super.message);
+}
+

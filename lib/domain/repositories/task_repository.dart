@@ -19,6 +19,9 @@ abstract class TaskRepository {
   /// Updates an existing task in the repository
   Future<void> updateTask(TaskModel task);
 
+  /// Updates a task safely with concurrent modification handling
+  Future<TaskModel?> updateTaskSafely(TaskModel task);
+
   /// Deletes a task from the repository
   Future<void> deleteTask(String id);
 

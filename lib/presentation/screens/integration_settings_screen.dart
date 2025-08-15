@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/standardized_app_bar.dart';
+import '../widgets/share_intent_settings_widget.dart';
 import '../../services/integration_service.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
@@ -48,7 +49,7 @@ class _IntegrationSettingsScreenState extends ConsumerState<IntegrationSettingsS
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildSectionHeader('Share Intent Settings'),
-                  _buildShareIntentCard(),
+                  const ShareIntentSettingsWidget(),
                   const SizedBox(height: 24),
                   
                   _buildSectionHeader('Messaging Apps'),
@@ -83,41 +84,6 @@ class _IntegrationSettingsScreenState extends ConsumerState<IntegrationSettingsS
     );
   }
 
-  Widget _buildShareIntentCard() {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.share, color: Theme.of(context).primaryColor),
-                const SizedBox(width: 8),
-                const Text(
-                  'Share Intent Handling',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            const Text(
-              'This app can receive shared text from other apps and automatically create tasks. '
-              'Share any text content to this app to create a new task.',
-            ),
-            const SizedBox(height: 16),
-            const Row(
-              children: [
-                Icon(Icons.check_circle, color: Colors.green, size: 20),
-                SizedBox(width: 8),
-                Text('Share intent handling enabled'),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   Widget _buildMessagingAppsSection() {
     return Card(

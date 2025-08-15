@@ -237,13 +237,13 @@ void main() {
       });
 
       test('should return false for zero interval', () {
-        const pattern = RecurrencePattern(type: RecurrenceType.daily, interval: 0);
-        expect(pattern.isValid(), false);
+        expect(() => RecurrencePattern(type: RecurrenceType.daily, interval: 0), 
+               throwsA(isA<AssertionError>()));
       });
 
       test('should return false for negative interval', () {
-        const pattern = RecurrencePattern(type: RecurrenceType.daily, interval: -1);
-        expect(pattern.isValid(), false);
+        expect(() => RecurrencePattern(type: RecurrenceType.daily, interval: -1), 
+               throwsA(isA<AssertionError>()));
       });
 
       test('should return false for invalid weekly days', () {

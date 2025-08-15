@@ -8,6 +8,7 @@ import '../../core/cache/task_cache_manager.dart';
 import '../../services/task/recurring_task_service.dart';
 import '../../services/speech/transcription_service_factory.dart';
 import '../../core/providers/core_providers.dart';
+import '../../core/providers/error_state_manager.dart';
 
 /// Provider for cache statistics monitoring
 final cacheStatsProvider = Provider<CacheStats>((ref) {
@@ -42,22 +43,19 @@ final completedTasksProvider = StreamProvider<List<TaskModel>>((ref) {
 });
 
 /// Provider for today's tasks (reactive - updates when tasks change)
-final todayTasksProvider = StreamProvider<List<TaskModel>>((ref) {
-  final allTasksStream = ref.watch(tasksProvider.stream);
+final todayTasksProvider = StreamProvider.autoDispose<List<TaskModel>>((ref) {
+  final repository = ref.watch(taskRepositoryProvider);
   
-  return allTasksStream.asyncMap((allTasks) async {
+  // Use repository stream and filter client-side for reactivity
+  // This ensures cache is used for individual queries but stream stays reactive
+  return repository.watchAllTasks().map((allTasks) {
     final now = DateTime.now();
-    final todayStart = DateTime(now.year, now.month, now.day);
-    final todayEnd = DateTime(now.year, now.month, now.day, 23, 59, 59, 999);
+    final today = DateTime(now.year, now.month, now.day);
     
     return allTasks.where((task) {
       if (task.dueDate == null) return false;
       
-      // Only include tasks due today (not past or future days)
-      final taskDate = task.dueDate!;
-      final taskDay = DateTime(taskDate.year, taskDate.month, taskDate.day);
-      final today = DateTime(now.year, now.month, now.day);
-      
+      final taskDay = DateTime(task.dueDate!.year, task.dueDate!.month, task.dueDate!.day);
       return taskDay.isAtSameMomentAs(today);
     }).toList();
   });
@@ -79,19 +77,28 @@ final tasksCreatedTodayProvider = StreamProvider<List<TaskModel>>((ref) {
   });
 });
 
-/// Provider for overdue tasks
-final overdueTasksProvider = FutureProvider<List<TaskModel>>((ref) async {
+/// Provider for overdue tasks (reactive - updates when tasks change)
+final overdueTasksProvider = StreamProvider.autoDispose<List<TaskModel>>((ref) {
   final repository = ref.watch(taskRepositoryProvider);
-  return repository.getOverdueTasks();
+  
+  // Use repository stream and filter for overdue tasks
+  return repository.watchAllTasks().map((allTasks) {
+    final now = DateTime.now();
+    
+    return allTasks.where((task) {
+      if (task.dueDate == null || task.status == TaskStatus.completed) return false;
+      return task.dueDate!.isBefore(now);
+    }).toList();
+  });
 });
 
 /// Provider for task filter state
-final taskFilterProvider = StateProvider<TaskFilter>((ref) {
+final taskFilterProvider = StateProvider.autoDispose<TaskFilter>((ref) {
   return const TaskFilter();
 });
 
 /// Provider for filtered tasks
-final filteredTasksProvider = FutureProvider<List<TaskModel>>((ref) async {
+final filteredTasksProvider = FutureProvider.autoDispose<List<TaskModel>>((ref) async {
   final repository = ref.watch(taskRepositoryProvider);
   final filter = ref.watch(taskFilterProvider);
   
@@ -103,10 +110,10 @@ final filteredTasksProvider = FutureProvider<List<TaskModel>>((ref) async {
 });
 
 /// Provider for search query
-final searchQueryProvider = StateProvider<String>((ref) => '');
+final searchQueryProvider = StateProvider.autoDispose<String>((ref) => '');
 
 /// Provider for searched tasks
-final searchedTasksProvider = FutureProvider<List<TaskModel>>((ref) async {
+final searchedTasksProvider = FutureProvider.autoDispose<List<TaskModel>>((ref) async {
   final repository = ref.watch(taskRepositoryProvider);
   final query = ref.watch(searchQueryProvider);
   
@@ -163,12 +170,12 @@ class PaginatedTaskResult {
 }
 
 /// Provider for pagination configuration
-final paginationConfigProvider = StateProvider<PaginationConfig>((ref) {
+final paginationConfigProvider = StateProvider.autoDispose<PaginationConfig>((ref) {
   return const PaginationConfig();
 });
 
 /// Optimized provider for paginated filtered tasks
-final paginatedFilteredTasksProvider = FutureProvider.family<PaginatedTaskResult, TaskFilter>((ref, filter) async {
+final paginatedFilteredTasksProvider = FutureProvider.autoDispose.family<PaginatedTaskResult, TaskFilter>((ref, filter) async {
   final repository = ref.watch(taskRepositoryProvider);
   final config = ref.watch(paginationConfigProvider);
   
@@ -190,50 +197,54 @@ final paginatedFilteredTasksProvider = FutureProvider.family<PaginatedTaskResult
   );
 });
 
-/// Lazy loading provider for infinite scroll
+/// Standardized task list state using AsyncValue pattern
 class TaskListState {
-  final List<TaskModel> tasks;
-  final bool isLoading;
+  final AsyncValue<List<TaskModel>> tasks;
   final bool hasMore;
-  final String? error;
+  final TaskFilter? currentFilter;
   
   const TaskListState({
     required this.tasks,
-    this.isLoading = false,
     this.hasMore = true,
-    this.error,
+    this.currentFilter,
   });
   
   TaskListState copyWith({
-    List<TaskModel>? tasks,
-    bool? isLoading,
+    AsyncValue<List<TaskModel>>? tasks,
     bool? hasMore,
-    String? error,
+    TaskFilter? currentFilter,
   }) {
     return TaskListState(
       tasks: tasks ?? this.tasks,
-      isLoading: isLoading ?? this.isLoading,
       hasMore: hasMore ?? this.hasMore,
-      error: error ?? this.error,
+      currentFilter: currentFilter ?? this.currentFilter,
     );
   }
+
+  // Convenience getters for consistent access patterns
+  bool get isLoading => tasks.isLoading;
+  bool get hasError => tasks.hasError;
+  Object? get error => tasks.error;
+  List<TaskModel> get data => tasks.valueOrNull ?? [];
 }
 
 /// Notifier for infinite scroll task loading
 class TaskListNotifier extends StateNotifier<TaskListState> {
   final TaskRepository _repository;
-  TaskFilter? _currentFilter;
+  final Ref _ref;
   int _currentPage = 0;
   static const int _pageSize = 20;
   
-  TaskListNotifier(this._repository) : super(const TaskListState(tasks: []));
+  TaskListNotifier(this._repository, this._ref) : super(const TaskListState(tasks: AsyncValue.loading()));
   
   /// Load initial tasks with filter
   Future<void> loadTasks(TaskFilter filter) async {
     if (state.isLoading) return;
     
-    state = state.copyWith(isLoading: true, error: null);
-    _currentFilter = filter;
+    state = state.copyWith(
+      tasks: const AsyncValue.loading(),
+      currentFilter: filter,
+    );
     _currentPage = 0;
     
     try {
@@ -241,60 +252,73 @@ class TaskListNotifier extends StateNotifier<TaskListState> {
       final paginatedTasks = tasks.take(_pageSize).toList();
       
       state = TaskListState(
-        tasks: paginatedTasks,
-        isLoading: false,
+        tasks: AsyncValue.data(paginatedTasks),
         hasMore: tasks.length > _pageSize,
+        currentFilter: filter,
       );
-    } catch (e) {
+    } catch (e, stackTrace) {
       state = state.copyWith(
-        isLoading: false,
-        error: 'Failed to load tasks: ${e.toString()}',
+        tasks: AsyncValue.error(e, stackTrace),
+      );
+      
+      // Report to global error state
+      _ref.reportError(
+        e,
+        code: 'task_list_load_failed',
+        severity: ErrorSeverity.error,
+        context: {'operation': 'loadTasks', 'filter': filter.toString()},
+        stackTrace: stackTrace,
       );
     }
   }
   
   /// Load more tasks for infinite scroll
   Future<void> loadMore() async {
-    if (state.isLoading || !state.hasMore || _currentFilter == null) return;
+    if (state.isLoading || !state.hasMore || state.currentFilter == null) return;
     
-    state = state.copyWith(isLoading: true);
+    // For loading more, we keep existing data and just indicate loading state
     _currentPage++;
     
     try {
-      final allTasks = await _repository.getTasksWithFilter(_currentFilter!);
+      final allTasks = await _repository.getTasksWithFilter(state.currentFilter!);
       final startIndex = _currentPage * _pageSize;
       final endIndex = (startIndex + _pageSize).clamp(0, allTasks.length);
       
       if (startIndex < allTasks.length) {
         final newTasks = allTasks.sublist(startIndex, endIndex);
+        final currentTasks = state.data;
+        
         state = state.copyWith(
-          tasks: [...state.tasks, ...newTasks],
-          isLoading: false,
+          tasks: AsyncValue.data([...currentTasks, ...newTasks]),
           hasMore: endIndex < allTasks.length,
         );
       } else {
-        state = state.copyWith(isLoading: false, hasMore: false);
+        state = state.copyWith(hasMore: false);
       }
-    } catch (e) {
-      state = state.copyWith(
-        isLoading: false,
-        error: 'Failed to load more tasks: ${e.toString()}',
+    } catch (e, stackTrace) {
+      // For load more errors, we keep existing data
+      _ref.reportError(
+        e,
+        code: 'task_list_load_more_failed',
+        severity: ErrorSeverity.warning, // Less severe since we have existing data
+        context: {'operation': 'loadMore'},
+        stackTrace: stackTrace,
       );
     }
   }
   
   /// Refresh the current task list
   Future<void> refresh() async {
-    if (_currentFilter != null) {
-      await loadTasks(_currentFilter!);
+    if (state.currentFilter != null) {
+      await loadTasks(state.currentFilter!);
     }
   }
 }
 
 /// Provider for infinite scroll task list
-final taskListProvider = StateNotifierProvider<TaskListNotifier, TaskListState>((ref) {
+final taskListProvider = StateNotifierProvider.autoDispose<TaskListNotifier, TaskListState>((ref) {
   final repository = ref.watch(taskRepositoryProvider);
-  return TaskListNotifier(repository);
+  return TaskListNotifier(repository, ref);
 });
 
 /// Provider for recurring task service
@@ -313,6 +337,52 @@ final transcriptionServiceProvider = FutureProvider((ref) async {
 /// Provider for transcription service info
 final transcriptionServiceInfoProvider = FutureProvider((ref) async {
   return await TranscriptionServiceFactory.getServiceInfo();
+});
+
+/// State synchronization helper that ensures cache and live data consistency
+class StateSynchronizationHelper {
+  final TaskRepository _repository;
+  final TaskCacheManager _cache;
+  
+  StateSynchronizationHelper(this._repository, this._cache);
+  
+  /// Ensures a cached list is up-to-date with latest data
+  Future<List<TaskModel>> ensureListSync(String cacheKey, Future<List<TaskModel>> Function() fetcher) async {
+    // Check if we have cached data
+    final cached = _cache.getCachedTaskList(cacheKey);
+    
+    // Always return cached data if available for performance
+    if (cached != null) {
+      // Async verification - update cache if needed but don't block UI
+      _verifyAndUpdateCache(cacheKey, fetcher);
+      return cached;
+    }
+    
+    // No cached data, fetch and cache
+    final fresh = await fetcher();
+    _cache.cacheTaskList(cacheKey, fresh);
+    return fresh;
+  }
+  
+  /// Verify cache in background and update if needed
+  Future<void> _verifyAndUpdateCache(String cacheKey, Future<List<TaskModel>> Function() fetcher) async {
+    try {
+      final fresh = await fetcher();
+      _cache.cacheTaskList(cacheKey, fresh);
+    } catch (e) {
+      // Silent failure for background updates
+    }
+  }
+}
+
+/// Provider for state synchronization helper
+final stateSyncHelperProvider = Provider<StateSynchronizationHelper>((ref) {
+  final repository = ref.watch(taskRepositoryProvider);
+  final cache = ref.watch(cacheStatsProvider); // This gets us access to the cache
+  
+  // Note: In a real implementation, we'd need to access the cache manager directly
+  // For now, this serves as a pattern for state synchronization
+  throw UnimplementedError('StateSynchronizationHelper needs direct cache access');
 });
 
 // TaskOperations class moved to task_provider.dart to avoid conflicts

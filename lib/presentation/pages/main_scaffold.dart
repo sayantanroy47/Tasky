@@ -1,21 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/providers/navigation_provider.dart';
-import '../../core/routing/app_router.dart';
 import '../../core/theme/typography_constants.dart';
+import '../../core/accessibility/accessibility_constants.dart';
+import '../../core/design_system/design_tokens.dart' hide BorderRadius;
+import '../../core/design_system/responsive_builder.dart';
+import '../../core/design_system/responsive_constants.dart';
+import '../../domain/entities/task_model.dart';
 import 'home_page_m3.dart';
 import 'calendar_page.dart';
 import 'analytics_page.dart';
 import 'settings_page.dart';
-import '../widgets/expressive_bottom_navigation.dart';
-import '../widgets/manual_task_creation_dialog.dart';
-import '../widgets/voice_only_creation_dialog.dart';
+import '../widgets/unified_task_creation_dialog.dart';
 import '../widgets/voice_task_creation_dialog_m3.dart';
+import '../widgets/voice_only_creation_dialog.dart';
 import '../widgets/theme_background_widget.dart';
 import '../widgets/glassmorphism_container.dart';
+import '../widgets/adaptive_navigation.dart';
 import 'dart:ui';
 
-/// Main scaffold with bottom navigation that switches between pages
+/// Responsive main scaffold with adaptive navigation
 class MainScaffold extends ConsumerWidget {
   const MainScaffold({super.key});
 
@@ -28,304 +32,550 @@ class MainScaffold extends ConsumerWidget {
       const HomePage(),
       const CalendarPage(),
       const AnalyticsPage(),
-      const SettingsPage(), // Menu will show settings
+      const SettingsPage(),
+    ];
+
+    // Define navigation items
+    final navigationItems = [
+      const AdaptiveNavigationItem(
+        icon: Icons.dashboard_outlined,
+        selectedIcon: Icons.dashboard_rounded,
+        label: 'Home',
+        tooltip: 'Go to home screen',
+      ),
+      const AdaptiveNavigationItem(
+        icon: Icons.event_outlined,
+        selectedIcon: Icons.event_rounded,
+        label: 'Calendar',
+        tooltip: 'Go to calendar view',
+      ),
+      const AdaptiveNavigationItem(
+        icon: Icons.insights_outlined,
+        selectedIcon: Icons.insights_rounded,
+        label: 'Analytics',
+        tooltip: 'Go to analytics and insights',
+      ),
+      const AdaptiveNavigationItem(
+        icon: Icons.settings_outlined,
+        selectedIcon: Icons.settings_rounded,
+        label: 'Settings',
+        tooltip: 'Go to settings and menu',
+      ),
     ];
 
     return ThemeBackgroundWidget(
-      child: Scaffold(
-        backgroundColor: Colors.transparent, // Make scaffold transparent to show background
-        body: IndexedStack(
-          index: selectedIndex,
-          children: pages,
-        ),
-        bottomNavigationBar: Stack(
-          clipBehavior: Clip.none, // Allow FAB to extend beyond stack bounds
-          children: [
-            // Bottom navigation container with notch
-            Container(
-              height: 70, // Back to original height
-              margin: const EdgeInsets.only(bottom: 16.0, top: 14.0), // Add top margin for FAB clearance
-              child: Stack(
+      child: ResponsiveLayout(
+        mobile: _buildMobileLayout(context, ref, selectedIndex, pages, navigationItems),
+        tablet: _buildTabletLayout(context, ref, selectedIndex, pages, navigationItems),
+        desktop: _buildDesktopLayout(context, ref, selectedIndex, pages, navigationItems),
+      ),
+    );
+  }
+
+  /// Build mobile layout with bottom navigation
+  Widget _buildMobileLayout(
+    BuildContext context,
+    WidgetRef ref,
+    int selectedIndex,
+    List<Widget> pages,
+    List<AdaptiveNavigationItem> navigationItems,
+  ) {
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: IndexedStack(
+        index: selectedIndex,
+        children: pages,
+      ),
+      bottomNavigationBar: _buildBottomNavigation(context, ref, selectedIndex, navigationItems),
+      floatingActionButton: _buildFloatingActionButton(context),
+      floatingActionButtonLocation: const CenterDockedFloatingActionButtonLocation(),
+    );
+  }
+
+  /// Build tablet layout with navigation rail
+  Widget _buildTabletLayout(
+    BuildContext context,
+    WidgetRef ref,
+    int selectedIndex,
+    List<Widget> pages,
+    List<AdaptiveNavigationItem> navigationItems,
+  ) {
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Row(
+        children: [
+          // Navigation rail
+          Container(
+            width: ResponsiveConstants.navRailWidth,
+            padding: const EdgeInsets.all(16),
+            child: GlassmorphismContainer(
+              level: GlassLevel.background,
+              borderRadius: BorderRadius.circular(ResponsiveConstants.tabletCardRadius),
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: Column(
                 children: [
-                  // Main glassmorphism container
-                  GlassmorphismContainer(
-                    height: 70,
-                    borderRadius: BorderRadius.zero, // Remove container radius
-                    padding: EdgeInsets.zero, // Remove all padding to center content
-                    borderWidth: 0, // Remove all borders
-                    child: Center( // Center the content vertically
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                    // Home
-                    Expanded(
-                      child: _buildNavItem(
-                        context: context,
-                        icon: selectedIndex == 0 ? Icons.home : Icons.home_outlined,
-                        label: 'Home',
-                        isSelected: selectedIndex == 0,
-                        onTap: () => ref.read(navigationProvider.notifier).navigateToIndex(0),
-                      ),
+                  // App logo
+                  Container(
+                    width: 40,
+                    height: 40,
+                    margin: const EdgeInsets.only(bottom: 24),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primary,
+                      borderRadius: BorderRadius.circular(12),
                     ),
-                    // Calendar  
-                    Expanded(
-                      child: _buildNavItem(
-                        context: context,
-                        icon: selectedIndex == 1 ? Icons.calendar_today : Icons.calendar_today_outlined,
-                        label: 'Calendar',
-                        isSelected: selectedIndex == 1,
-                        onTap: () => ref.read(navigationProvider.notifier).navigateToIndex(1),
-                      ),
-                    ),
-                    // Spacer for FAB
-                    const SizedBox(width: 80),
-                    // Analytics
-                    Expanded(
-                      child: _buildNavItem(
-                        context: context,
-                        icon: selectedIndex == 2 ? Icons.analytics : Icons.analytics_outlined,
-                        label: 'Analytics',
-                        isSelected: selectedIndex == 2,
-                        onTap: () => ref.read(navigationProvider.notifier).navigateToIndex(2),
-                      ),
-                    ),
-                    // Menu
-                    Expanded(
-                      child: _buildNavItem(
-                        context: context,
-                        icon: selectedIndex == 3 ? Icons.menu : Icons.menu_outlined,
-                        label: 'Menu',
-                        isSelected: selectedIndex == 3,
-                        onTap: () => ref.read(navigationProvider.notifier).navigateToIndex(3),
-                      ),
-                    ),
-                        ],
-                      ),
+                    child: Icon(
+                      Icons.task_alt,
+                      color: Theme.of(context).colorScheme.onPrimary,
+                      size: 24,
                     ),
                   ),
-                  // Notch cutout for FAB (circular hole in the glass container)
-                  Positioned(
-                    top: 56, // At the top of container where FAB intersects
-                    left: MediaQuery.of(context).size.width / 2 - 30,
-                    child: Container(
-                      width: 60,
-                      height: 30,
-                      decoration: BoxDecoration(
-                        color: Colors.transparent,
-                        borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(30),
-                          bottomRight: Radius.circular(30),
-                        ),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(30),
-                          bottomRight: Radius.circular(30),
-                        ),
-                        child: Container(
-                          color: Colors.transparent,
-                        ),
-                      ),
+                  
+                  // Navigation items
+                  Expanded(
+                    child: Column(
+                      children: navigationItems.asMap().entries.map((entry) {
+                        final index = entry.key;
+                        final item = entry.value;
+                        final isSelected = selectedIndex == index;
+                        
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 8),
+                          child: Semantics(
+                            label: '${item.label} navigation',
+                            hint: item.tooltip,
+                            button: true,
+                            selected: isSelected,
+                            child: InkWell(
+                              onTap: () => ref.read(navigationProvider.notifier).navigateToIndex(index),
+                              borderRadius: BorderRadius.circular(12),
+                              child: Container(
+                                width: 48,
+                                height: 48,
+                                decoration: BoxDecoration(
+                                  color: isSelected 
+                                    ? Theme.of(context).colorScheme.primaryContainer 
+                                    : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Icon(
+                                  isSelected ? item.selectedIcon : item.icon,
+                                  color: isSelected 
+                                    ? Theme.of(context).colorScheme.primary 
+                                    : Theme.of(context).colorScheme.onSurfaceVariant,
+                                  size: 24,
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
                     ),
+                  ),
+                  
+                  // FAB
+                  _buildFloatingActionButton(context),
+                ],
+              ),
+            ),
+          ),
+          
+          // Main content
+          Expanded(
+            child: IndexedStack(
+              index: selectedIndex,
+              children: pages,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Build desktop layout with navigation drawer
+  Widget _buildDesktopLayout(
+    BuildContext context,
+    WidgetRef ref,
+    int selectedIndex,
+    List<Widget> pages,
+    List<AdaptiveNavigationItem> navigationItems,
+  ) {
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Row(
+        children: [
+          // Navigation drawer
+          Container(
+            width: ResponsiveConstants.navDrawerWidth,
+            padding: const EdgeInsets.all(24),
+            child: GlassmorphismContainer(
+              level: GlassLevel.background,
+              borderRadius: BorderRadius.circular(ResponsiveConstants.desktopCardRadius),
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // App header
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.primary,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Icon(
+                            Icons.task_alt,
+                            color: Theme.of(context).colorScheme.onPrimary,
+                            size: 28,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Text(
+                          'Task Tracker',
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 16),
+                  
+                  // Navigation items
+                  Expanded(
+                    child: Column(
+                      children: navigationItems.asMap().entries.map((entry) {
+                        final index = entry.key;
+                        final item = entry.value;
+                        final isSelected = selectedIndex == index;
+                        
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 8),
+                          child: Semantics(
+                            label: '${item.label} navigation',
+                            hint: item.tooltip,
+                            button: true,
+                            selected: isSelected,
+                            child: ListTile(
+                              leading: Icon(
+                                isSelected ? item.selectedIcon : item.icon,
+                                color: isSelected 
+                                  ? Theme.of(context).colorScheme.primary 
+                                  : Theme.of(context).colorScheme.onSurfaceVariant,
+                                size: 28,
+                              ),
+                              title: Text(
+                                item.label,
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  color: isSelected 
+                                    ? Theme.of(context).colorScheme.primary 
+                                    : Theme.of(context).colorScheme.onSurfaceVariant,
+                                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                ),
+                              ),
+                              selected: isSelected,
+                              selectedTileColor: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              onTap: () => ref.read(navigationProvider.notifier).navigateToIndex(index),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                  
+                  // Bottom section with FAB
+                  const Divider(),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    width: double.infinity,
+                    child: _buildFloatingActionButton(context),
                   ),
                 ],
               ),
             ),
-            // FAB positioned with 1/4 outside (above) container, 3/4 inside
-            Positioned(
-              bottom: 16 + 70 - 42, // Container bottom + height - 3/4 of FAB (42px) = 44px from screen bottom
-              left: MediaQuery.of(context).size.width / 2 - 28,
-              child: Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    // Subtle glow effect
-                    BoxShadow(
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
-                      blurRadius: 8,
-                      spreadRadius: 1,
-                    ),
-                  ],
+          ),
+          
+          // Main content with max width constraint
+          Expanded(
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxWidth: ResponsiveConstants.maxContentWidth,
                 ),
-                child: ClipOval(
-                  child: BackdropFilter(
-                    filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
-                    child: FloatingActionButton(
-                      heroTag: "mainFAB",
-                      onPressed: () => _showTaskCreationMenu(context),
-                      backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.9),
-                      elevation: 0, // Remove default elevation since we have custom glow
-                      child: Icon(
-                        Icons.add, 
-                        color: Colors.white,
-                        size: 28,
-                      ),
-                    ),
-                  ),
+                child: IndexedStack(
+                  index: selectedIndex,
+                  children: pages,
                 ),
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Build bottom navigation for mobile with Material 3 design and glassmorphism
+  Widget _buildBottomNavigation(
+    BuildContext context,
+    WidgetRef ref,
+    int selectedIndex,
+    List<AdaptiveNavigationItem> navigationItems,
+  ) {
+    final theme = Theme.of(context);
+    
+    return Container(
+      decoration: BoxDecoration(
+        // Enhanced glassmorphism background
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            theme.colorScheme.surface.withOpacity(0.8),
+            theme.colorScheme.surface.withOpacity(0.95),
           ],
+        ),
+        // Subtle shadow for depth
+        boxShadow: [
+          BoxShadow(
+            color: theme.colorScheme.shadow.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, -2),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 12.0, sigmaY: 12.0),
+          child: BottomAppBar(
+            height: 80,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            notchMargin: 3, // 3px notch around FAB as requested
+            shape: const CircularNotchedRectangle(),
+            color: Colors.transparent, // Make transparent to show glassmorphism
+            elevation: 0, // Remove default elevation
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                // First two navigation items
+                for (int i = 0; i < 2; i++)
+                  _buildNavItem(
+                    context: context,
+                    item: navigationItems[i],
+                    isSelected: selectedIndex == i,
+                    onTap: () => ref.read(navigationProvider.notifier).navigateToIndex(i),
+                  ),
+                
+                // Enhanced spacer for FAB with proper sizing
+                const SizedBox(width: 88), // Increased width for better spacing
+                
+                // Last two navigation items
+                for (int i = 2; i < navigationItems.length; i++)
+                  _buildNavItem(
+                    context: context,
+                    item: navigationItems[i],
+                    isSelected: selectedIndex == i,
+                    onTap: () => ref.read(navigationProvider.notifier).navigateToIndex(i),
+                  ),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
 
-  /// Build navigation item for bottom app bar
+  /// Build floating action button with enhanced Material 3 design and glassmorphism
+  Widget _buildFloatingActionButton(BuildContext context) {
+    final theme = Theme.of(context);
+    
+    return Container(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        // Enhanced multi-layer glow effects
+        boxShadow: [
+          // Outer glow - most prominent
+          BoxShadow(
+            color: theme.colorScheme.primary.withOpacity(0.5),
+            blurRadius: 20,
+            spreadRadius: 4,
+          ),
+          // Middle glow
+          BoxShadow(
+            color: theme.colorScheme.primary.withOpacity(0.3),
+            blurRadius: 12,
+            spreadRadius: 2,
+          ),
+          // Inner glow for depth
+          BoxShadow(
+            color: theme.colorScheme.primary.withOpacity(0.2),
+            blurRadius: 6,
+            spreadRadius: 1,
+          ),
+        ],
+      ),
+      child: Semantics(
+        label: AccessibilityConstants.fabSemanticLabel,
+        hint: AccessibilityConstants.fabSemanticHint,
+        button: true,
+        child: SizedBox(
+          width: 72, // Increased size for better prominence and notch compatibility
+          height: 72,
+          child: ClipOval(
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  // Enhanced glassmorphism effect
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      theme.colorScheme.primary.withOpacity(0.95),
+                      theme.colorScheme.primary.withOpacity(0.85),
+                      theme.colorScheme.secondary.withOpacity(0.1),
+                    ],
+                    stops: const [0.0, 0.7, 1.0],
+                  ),
+                  // Subtle border for definition
+                  border: Border.all(
+                    color: theme.colorScheme.primary.withOpacity(0.3),
+                    width: 1.5,
+                  ),
+                ),
+                child: FloatingActionButton.large(
+                  heroTag: 'mainFAB',
+                  onPressed: () => _showTaskCreationMenu(context),
+                  backgroundColor: Colors.transparent, // Use container gradient
+                  foregroundColor: theme.colorScheme.onPrimary,
+                  elevation: 0, // Remove default elevation to use custom shadow
+                  shape: const CircleBorder(),
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.add,
+                      size: 36, // Larger icon for better visibility
+                      weight: 600, // Make icon bolder
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Build navigation item for bottom app bar with accessibility and glassmorphism
   Widget _buildNavItem({
     required BuildContext context,
-    required IconData icon,
-    required String label,
+    required AdaptiveNavigationItem item,
     required bool isSelected,
     required VoidCallback onTap,
   }) {
     final theme = Theme.of(context);
     
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium),
-      child: Container(
-        height: 70,
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              size: 16,
-              color: isSelected 
-                  ? theme.colorScheme.primary 
-                  : theme.colorScheme.onSurfaceVariant,
+    return Semantics(
+      label: '${item.label} ${AccessibilityConstants.navigationSemanticLabel}',
+      hint: item.tooltip,
+      button: true,
+      selected: isSelected,
+      child: SizedBox(
+        width: AccessibilityConstants.minTouchTarget,
+        height: AccessibilityConstants.minTouchTarget,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium),
+          child: Container(
+            height: AccessibilityConstants.minTouchTarget,
+            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2), // Reduced padding to prevent overflow
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Enhanced icon with larger selection box that covers the icon properly
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  width: 40, // Increased width to properly cover icon
+                  height: 40, // Increased height to properly cover icon
+                  padding: const EdgeInsets.all(8), // Increased padding for better coverage
+                  decoration: isSelected ? BoxDecoration(
+                    color: theme.colorScheme.primary.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium), // Larger radius
+                    border: Border.all(
+                      color: theme.colorScheme.primary.withOpacity(0.3),
+                      width: 1.5, // Slightly thicker border
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: theme.colorScheme.primary.withOpacity(0.3),
+                        blurRadius: 6,
+                        spreadRadius: 2,
+                      ),
+                    ],
+                  ) : null,
+                  child: Icon(
+                    isSelected ? item.selectedIcon : item.icon,
+                    size: 24, // Increased icon size for better visibility
+                    color: isSelected 
+                        ? theme.colorScheme.primary 
+                        : theme.colorScheme.onSurfaceVariant,
+                  ),
+                )
+              ],
             ),
-            const SizedBox(height: 2),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 8,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                color: isSelected 
-                    ? theme.colorScheme.primary 
-                    : theme.colorScheme.onSurfaceVariant,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.clip,
-              textAlign: TextAlign.center,
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
 
-  /// Show task creation menu with 3 options
+  /// Show streamlined task creation dialog - single unified flow
   void _showTaskCreationMenu(BuildContext context) {
-    showMenu<String>(
-      context: context,
-      position: RelativeRect.fromLTRB(
-        MediaQuery.of(context).size.width - 250,
-        MediaQuery.of(context).size.height - 300,
-        20,
-        20,
+    // Navigate to the unified task creation page
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const UnifiedTaskCreationDialog(
+          mode: TaskCreationMode.manual, // Default to manual, but dialog includes voice options
+        ),
+        fullscreenDialog: true,
       ),
-      items: [
-        PopupMenuItem<String>(
-          value: 'manual',
-          child: ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Theme.of(context).colorScheme.primary,
-                    Theme.of(context).colorScheme.secondary,
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
-              ),
-              child: const Icon(Icons.edit, color: Colors.white, size: 20),
-            ),
-            title: const Text('Manual'),
-            subtitle: const Text('Type task details', style: TextStyle(fontSize: TypographyConstants.bodySmall)),
-          ),
-        ),
-        PopupMenuItem<String>(
-          value: 'voice_only',
-          child: ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Theme.of(context).colorScheme.secondary,
-                    Theme.of(context).colorScheme.tertiary,
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
-              ),
-              child: const Icon(Icons.mic, color: Colors.white, size: 20),
-            ),
-            title: const Text('Voice Only'),
-            subtitle: const Text('Record voice task', style: TextStyle(fontSize: TypographyConstants.bodySmall)),
-          ),
-        ),
-        PopupMenuItem<String>(
-          value: 'voice_to_text',
-          child: ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    Theme.of(context).colorScheme.tertiary,
-                    Theme.of(context).colorScheme.primary,
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
-              ),
-              child: const Icon(Icons.mic_none, color: Colors.white, size: 20),
-            ),
-            title: const Text('Voice → Text'),
-            subtitle: const Text('Speak to fill form', style: TextStyle(fontSize: TypographyConstants.bodySmall)),
-          ),
-        ),
-      ],
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium),
-      ),
-      elevation: 8,
-    ).then((String? selected) {
-      if (selected != null) {
-        _handleTaskCreationOption(context, selected);
-      }
-    });
+    );
+  }
+}
+
+/// Custom FloatingActionButtonLocation that centers the FAB vertically within the bottom toolbar
+class CenterDockedFloatingActionButtonLocation extends FloatingActionButtonLocation {
+  const CenterDockedFloatingActionButtonLocation();
+
+  @override
+  Offset getOffset(ScaffoldPrelayoutGeometry scaffoldGeometry) {
+    // Get the FAB size (72x72 as defined in _buildFloatingActionButton)
+    const fabSize = 72.0;
+    
+    // Get the bottom navigation bar height (80px as defined in _buildBottomNavigation)
+    const bottomNavHeight = 80.0;
+    
+    // Calculate horizontal center
+    final double fabX = (scaffoldGeometry.scaffoldSize.width - fabSize) / 2.0;
+    
+    // Calculate vertical center within the bottom navigation bar
+    // Position FAB so its center aligns with the center of the 80px toolbar
+    final double fabY = scaffoldGeometry.scaffoldSize.height - bottomNavHeight + (bottomNavHeight - fabSize) / 2.0;
+    
+    return Offset(fabX, fabY);
   }
 
-  /// Handle task creation option selection
-  void _handleTaskCreationOption(BuildContext context, String option) {
-    // Import the required dialog widgets
-    switch (option) {
-      case 'manual':
-        showDialog(
-          context: context,
-          builder: (context) => const ManualTaskCreationDialog(),
-        );
-        break;
-      case 'voice_only':
-        showDialog(
-          context: context,
-          builder: (context) => const VoiceOnlyCreationDialog(),
-        );
-        break;
-      case 'voice_to_text':
-        showDialog(
-          context: context,
-          builder: (context) => const VoiceTaskCreationDialog(),
-        );
-        break;
-    }
-  }
+  @override
+  String toString() => 'CenterDockedFloatingActionButtonLocation';
 }

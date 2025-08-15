@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 import '../../domain/entities/task_model.dart';
@@ -16,6 +18,9 @@ class LocalNotificationService implements NotificationService {
   static const String _channelName = 'Task Reminders';
   static const String _channelDescription = 'Notifications for task reminders and updates';
   
+  // SharedPreferences keys for settings persistence
+  static const String _keyNotificationSettings = 'notification_settings';
+  
   final FlutterLocalNotificationsPlugin _notificationsPlugin;
   final TaskRepository _taskRepository;
   final StreamController<NotificationEvent> _eventController;
@@ -24,7 +29,9 @@ class LocalNotificationService implements NotificationService {
   
   LocalNotificationService(this._taskRepository) 
       : _notificationsPlugin = FlutterLocalNotificationsPlugin(),
-        _eventController = StreamController<NotificationEvent>.broadcast();
+        _eventController = StreamController<NotificationEvent>.broadcast() {
+    _loadSavedSettings();
+  }
   
   @override
   Stream<NotificationEvent> get notificationEvents => _eventController.stream;
@@ -397,11 +404,20 @@ class LocalNotificationService implements NotificationService {
       case NotificationAction.snooze:
         await _snoozeTaskReminder(taskId);
         break;
-      case NotificationAction.view:
+      case NotificationAction.reschedule:
         await _rescheduleTask(taskId);
+        break;
+      case NotificationAction.postpone:
+        await _postponeTask(taskId);
+        break;
+      case NotificationAction.view:
+        // Open task details
         break;
       case NotificationAction.dismiss:
         // Just dismiss, no action needed
+        break;
+      default:
+        // Handle any other actions
         break;
     }
   }
@@ -409,7 +425,7 @@ class LocalNotificationService implements NotificationService {
   @override
   Future<void> updateSettings(NotificationSettings settings) async {
     _settings = settings;
-    // You might want to persist settings here
+    await _saveSettings(settings);
   }
   
   @override
@@ -652,6 +668,40 @@ class LocalNotificationService implements NotificationService {
       type: 'task_reschedule_requested',
       taskId: taskId,
     ));
+  }
+
+  Future<void> _postponeTask(String taskId) async {
+    _eventController.add(NotificationEvent(
+      type: 'task_postpone_requested',
+      taskId: taskId,
+    ));
+  }
+  
+  /// Load notification settings from SharedPreferences
+  Future<void> _loadSavedSettings() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final settingsJson = prefs.getString(_keyNotificationSettings);
+      
+      if (settingsJson != null) {
+        final settingsMap = jsonDecode(settingsJson);
+        _settings = NotificationSettings.fromJson(settingsMap);
+      }
+    } catch (e) {
+      debugPrint('Error loading notification settings: $e');
+      // Continue with default settings if loading fails
+    }
+  }
+  
+  /// Save notification settings to SharedPreferences
+  Future<void> _saveSettings(NotificationSettings settings) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final settingsJson = jsonEncode(settings.toJson());
+      await prefs.setString(_keyNotificationSettings, settingsJson);
+    } catch (e) {
+      debugPrint('Error saving notification settings: $e');
+    }
   }
   
   void dispose() {

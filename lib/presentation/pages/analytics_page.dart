@@ -6,26 +6,26 @@ import '../../core/theme/typography_constants.dart';
 import '../widgets/analytics_widgets.dart';
 import '../providers/analytics_providers.dart';
 import '../../services/analytics/analytics_models.dart';
-import '../../core/theme/material3/motion_system.dart';
 
 /// Analytics page for viewing productivity metrics and insights
 class AnalyticsPage extends ConsumerWidget {
   const AnalyticsPage({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
     
     return Scaffold(
       backgroundColor: Colors.transparent,
+      extendBodyBehindAppBar: true, // Show phone status bar
       appBar: StandardizedAppBar(
         title: 'Analytics',
+        forceBackButton: false, // Analytics is main tab - no back button
         actions: [
           IconButton(
             icon: const Icon(Icons.date_range_outlined),
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: const Text('Date range selector coming soon!'),
+                const SnackBar(
+                  content: Text('Date range selector coming soon!'),
                   behavior: SnackBarBehavior.floating,
                 ),
               );
@@ -36,8 +36,8 @@ class AnalyticsPage extends ConsumerWidget {
             icon: const Icon(Icons.file_download_outlined),
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: const Text('Export analytics coming soon!'),
+                const SnackBar(
+                  content: Text('Export analytics coming soon!'),
                   behavior: SnackBarBehavior.floating,
                 ),
               );
@@ -46,7 +46,17 @@ class AnalyticsPage extends ConsumerWidget {
           ),
         ],
       ),
-      body: const AnalyticsPageBody(),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.only(
+            top: kToolbarHeight + 8, // App bar height + spacing
+            left: 16,
+            right: 16,
+            bottom: 16,
+          ),
+          child: const AnalyticsPageBody(),
+        ),
+      ),
     );
   }
 }
@@ -59,7 +69,6 @@ class AnalyticsPageBody extends ConsumerWidget {
     final selectedPeriod = ref.watch(analyticsTimePeriodProvider);
     
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

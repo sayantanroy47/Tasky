@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:local_auth/local_auth.dart';
 import '../widgets/enhanced_ux_widgets.dart';
 import '../../services/security_service.dart';
+import '../../core/theme/typography_constants.dart';
 
 /// Main authentication screen that handles different auth states
 class AuthenticationScreen extends ConsumerStatefulWidget {
@@ -466,7 +467,7 @@ class _PinAuthWidgetState extends ConsumerState<PinAuthWidget> {
       ),
       child: Text(
         number,
-        style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
+        style: TextStyle(fontSize: TypographyConstants.textXL, fontWeight: TypographyConstants.medium),
       ),
     );
   }

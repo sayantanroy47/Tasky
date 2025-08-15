@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../widgets/glassmorphism_container.dart';
 import '../widgets/standardized_app_bar.dart';
+import '../widgets/theme_background_widget.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../services/data_export/data_export_models.dart';
 import '../providers/data_export_providers.dart';
@@ -79,25 +80,32 @@ class _DataExportPageState extends ConsumerState<DataExportPage>
       );
     });
 
-    return Scaffold(
-      appBar: StandardizedAppBar(
-        title: 'Data Management',
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(icon: Icon(Icons.upload), text: 'Export'),
-            Tab(icon: Icon(Icons.download), text: 'Import'),
-            Tab(icon: Icon(Icons.backup), text: 'Backup'),
-          ],
+    return ThemeBackgroundWidget(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        extendBodyBehindAppBar: true,
+        appBar: StandardizedAppBar(
+          title: 'Data Management',
+          bottom: TabBar(
+            controller: _tabController,
+            tabs: const [
+              Tab(icon: Icon(Icons.upload), text: 'Export'),
+              Tab(icon: Icon(Icons.download), text: 'Import'),
+              Tab(icon: Icon(Icons.backup), text: 'Backup'),
+            ],
+          ),
         ),
-      ),
-      body: TabBarView(
+        body: Padding(
+          padding: const EdgeInsets.only(top: kToolbarHeight + 48), // Account for TabBar
+          child: TabBarView(
         controller: _tabController,
         children: [
           _buildExportTab(),
           _buildImportTab(),
           _buildBackupTab(),
         ],
+          ),
+        ),
       ),
     );
   }

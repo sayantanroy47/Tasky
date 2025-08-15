@@ -5,7 +5,6 @@ import '../widgets/glassmorphism_container.dart';
 import '../widgets/standardized_app_bar.dart';
 import '../providers/calendar_provider.dart';
 import '../../domain/entities/calendar_event.dart';
-import '../../core/theme/material3/motion_system.dart';
 import '../../core/theme/typography_constants.dart';
 
 /// Calendar page for viewing tasks in calendar format
@@ -14,16 +13,20 @@ class CalendarPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-    final calendarNotifier = ref.read(calendarProvider.notifier);
-
     return Scaffold(
       backgroundColor: Colors.transparent,
+      extendBodyBehindAppBar: true,
       appBar: const StandardizedAppBar(
         title: 'Calendar',
+        forceBackButton: false,
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.only(
+          top: kToolbarHeight + 8,
+          left: 16.0,
+          right: 16.0,
+          bottom: 16.0,
+        ),
         child: GlassmorphismContainer(
           borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
           padding: const EdgeInsets.all(16.0),
@@ -33,12 +36,7 @@ class CalendarPage extends ConsumerWidget {
     );
   }
 
-  void _showCreateEventDialog(BuildContext context, WidgetRef ref) {
-    showDialog(
-      context: context,
-      builder: (context) => _CreateEventDialog(),
-    );
-  }
+
 }
 
 /// Create event dialog
@@ -219,7 +217,7 @@ class _CreateEventDialogState extends ConsumerState<_CreateEventDialog> {
               ? null
               : () async {
                   await _createEvent();
-                  if (mounted) {
+                  if (context.mounted) {
                     Navigator.of(context).pop();
                   }
                 },

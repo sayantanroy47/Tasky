@@ -11,43 +11,43 @@ final dependencyServiceProvider = Provider<DependencyService>((ref) {
 });
 
 // State providers
-final blockedTasksProvider = FutureProvider<List<TaskModel>>((ref) async {
+final blockedTasksProvider = FutureProvider.autoDispose<List<TaskModel>>((ref) async {
   final dependencyService = ref.read(dependencyServiceProvider);
   return await dependencyService.getBlockedTasks();
 });
 
-final readyTasksProvider = FutureProvider<List<TaskModel>>((ref) async {
+final readyTasksProvider = FutureProvider.autoDispose<List<TaskModel>>((ref) async {
   final dependencyService = ref.read(dependencyServiceProvider);
   return await dependencyService.getReadyTasks();
 });
 
-final suggestedNextTasksProvider = FutureProvider<List<TaskModel>>((ref) async {
+final suggestedNextTasksProvider = FutureProvider.autoDispose<List<TaskModel>>((ref) async {
   final dependencyService = ref.read(dependencyServiceProvider);
   return await dependencyService.getSuggestedNextTasks();
 });
 
-final taskPrerequisitesProvider = FutureProvider.family<List<TaskModel>, String>((ref, taskId) async {
+final taskPrerequisitesProvider = FutureProvider.autoDispose.family<List<TaskModel>, String>((ref, taskId) async {
   final dependencyService = ref.read(dependencyServiceProvider);
   return await dependencyService.getPrerequisites(taskId);
 });
 
-final taskDependentsProvider = FutureProvider.family<List<TaskModel>, String>((ref, taskId) async {
+final taskDependentsProvider = FutureProvider.autoDispose.family<List<TaskModel>, String>((ref, taskId) async {
   final dependencyService = ref.read(dependencyServiceProvider);
   return await dependencyService.getDependents(taskId);
 });
 
-final taskDependencyChainProvider = FutureProvider.family<List<TaskModel>, String>((ref, taskId) async {
+final taskDependencyChainProvider = FutureProvider.autoDispose.family<List<TaskModel>, String>((ref, taskId) async {
   final dependencyService = ref.read(dependencyServiceProvider);
   return await dependencyService.getDependencyChain(taskId);
 });
 
-final canCompleteTaskProvider = FutureProvider.family<bool, String>((ref, taskId) async {
+final canCompleteTaskProvider = FutureProvider.autoDispose.family<bool, String>((ref, taskId) async {
   final dependencyService = ref.read(dependencyServiceProvider);
   return await dependencyService.canCompleteTask(taskId);
 });
 
 // Dependency management state
-final dependencyManagerProvider = StateNotifierProvider<DependencyManagerNotifier, DependencyManagerState>(
+final dependencyManagerProvider = StateNotifierProvider.autoDispose<DependencyManagerNotifier, DependencyManagerState>(
   (ref) => DependencyManagerNotifier(ref.read(dependencyServiceProvider)),
 );
 
