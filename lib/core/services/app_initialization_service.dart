@@ -69,8 +69,8 @@ class AppInitializationService {
     try {
       // The database is already initialized when created, but we can
       // perform additional setup here if needed
-      final stats = await _database.getDatabaseStats();
-      // Database initialized successfully with stats: $stats
+      await _database.getDatabaseStats();
+      // Database initialized successfully
     } catch (e) {
       await _errorRecoveryService.recordError(
         'database_initialization',

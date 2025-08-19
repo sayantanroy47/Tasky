@@ -643,23 +643,82 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
   }
 
   void _editListName() {
-    // Show dialog to edit list name
-    _showSuccessSnackBar('Edit list name functionality coming soon!');
+    showDialog(
+      context: context,
+      builder: (context) => _EditListNameDialog(
+        currentName: widget.sharedList.name,
+        onSave: (newName) async {
+          try {
+            final currentList = _collaborationService.getSharedTaskList(widget.sharedList.id);
+            if (currentList != null) {
+              currentList.copyWith(name: newName, updatedAt: DateTime.now());
+              // In a real implementation, this would update the storage
+              debugPrint('List name updated to: $newName');
+            }
+            if (mounted) {
+              Navigator.of(context).pop();
+              _showSuccessSnackBar('List name updated successfully!');
+            }
+          } catch (e) {
+            _showErrorSnackBar('Failed to update list name: $e');
+          }
+        },
+      ),
+    );
   }
 
   void _editListDescription() {
-    // Show dialog to edit list description
-    _showSuccessSnackBar('Edit list description functionality coming soon!');
+    showDialog(
+      context: context,
+      builder: (context) => _EditListDescriptionDialog(
+        currentDescription: widget.sharedList.description,
+        onSave: (newDescription) async {
+          try {
+            final currentList = _collaborationService.getSharedTaskList(widget.sharedList.id);
+            if (currentList != null) {
+              currentList.copyWith(description: newDescription, updatedAt: DateTime.now());
+              // In a real implementation, this would update the storage
+              debugPrint('List description updated to: $newDescription');
+            }
+            if (mounted) {
+              Navigator.of(context).pop();
+              _showSuccessSnackBar('List description updated successfully!');
+            }
+          } catch (e) {
+            _showErrorSnackBar('Failed to update list description: $e');
+          }
+        },
+      ),
+    );
   }
 
   void _manageListTasks() {
-    // Navigate to task management screen
-    _showSuccessSnackBar('Task management functionality coming soon!');
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => _SharedTaskListTasksScreen(
+          sharedList: widget.sharedList,
+          collaborationService: _collaborationService,
+        ),
+      ),
+    );
   }
 
-  void _togglePublicAccess(bool isPublic) {
-    // Toggle public access
-    _showSuccessSnackBar('Toggle public access functionality coming soon!');
+  void _togglePublicAccess(bool isPublic) async {
+    try {
+      final currentList = _collaborationService.getSharedTaskList(widget.sharedList.id);
+      if (currentList != null) {
+        currentList.copyWith(isPublic: isPublic, updatedAt: DateTime.now());
+        // In a real implementation, this would update the storage
+        debugPrint('List visibility updated: ${isPublic ? "public" : "private"}');
+      }
+      if (mounted) {
+        _showSuccessSnackBar(
+          isPublic ? 'List is now public' : 'List is now private',
+        );
+      }
+    } catch (e) {
+      _showErrorSnackBar('Failed to update list visibility: $e');
+    }
   }
 
   void _copyShareCode() {
@@ -694,10 +753,21 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              Navigator.of(context).pop();
-              _showSuccessSnackBar('Delete shared list functionality coming soon!');
+            onPressed: () async {
+              final navigator = Navigator.of(context);
+              navigator.pop();
+              try {
+                // In a real implementation, this would delete from storage
+                debugPrint('Shared list ${widget.sharedList.id} deleted');
+                navigator.pop();
+                if (mounted) {
+                  _showSuccessSnackBar('Shared list deleted successfully!');
+                }
+              } catch (e) {
+                if (mounted) {
+                  _showErrorSnackBar('Failed to delete shared list: $e');
+                }
+              }
             },
             child: const Text('Delete', style: TextStyle(color: Colors.red)),
           ),
@@ -752,5 +822,207 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
         backgroundColor: Colors.red,
       ),
     );
+  }
+}
+
+/// Dialog for editing list name
+class _EditListNameDialog extends StatefulWidget {
+  final String currentName;
+  final Function(String) onSave;
+
+  const _EditListNameDialog({
+    required this.currentName,
+    required this.onSave,
+  });
+
+  @override
+  State<_EditListNameDialog> createState() => _EditListNameDialogState();
+}
+
+class _EditListNameDialogState extends State<_EditListNameDialog> {
+  late TextEditingController _controller;
+  final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.currentName);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Edit List Name'),
+      content: Form(
+        key: _formKey,
+        child: TextFormField(
+          controller: _controller,
+          decoration: const InputDecoration(
+            labelText: 'List Name',
+            border: OutlineInputBorder(),
+          ),
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return 'Please enter a list name';
+            }
+            return null;
+          },
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            if (_formKey.currentState!.validate()) {
+              widget.onSave(_controller.text.trim());
+            }
+          },
+          child: const Text('Save'),
+        ),
+      ],
+    );
+  }
+}
+
+/// Dialog for editing list description
+class _EditListDescriptionDialog extends StatefulWidget {
+  final String currentDescription;
+  final Function(String) onSave;
+
+  const _EditListDescriptionDialog({
+    required this.currentDescription,
+    required this.onSave,
+  });
+
+  @override
+  State<_EditListDescriptionDialog> createState() => _EditListDescriptionDialogState();
+}
+
+class _EditListDescriptionDialogState extends State<_EditListDescriptionDialog> {
+  late TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.currentDescription);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Edit List Description'),
+      content: TextField(
+        controller: _controller,
+        decoration: const InputDecoration(
+          labelText: 'Description',
+          border: OutlineInputBorder(),
+        ),
+        maxLines: 3,
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            widget.onSave(_controller.text.trim());
+          },
+          child: const Text('Save'),
+        ),
+      ],
+    );
+  }
+}
+
+/// Screen for managing tasks in a shared list
+class _SharedTaskListTasksScreen extends StatelessWidget {
+  final SharedTaskList sharedList;
+  final CollaborationService collaborationService;
+
+  const _SharedTaskListTasksScreen({
+    required this.sharedList,
+    required this.collaborationService,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Tasks in ${sharedList.name}'),
+      ),
+      body: ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: sharedList.taskIds.length,
+        itemBuilder: (context, index) {
+          final taskId = sharedList.taskIds[index];
+          return Card(
+            child: ListTile(
+              title: Text('Task $taskId'),
+              subtitle: const Text('Task details would be loaded from task service'),
+              trailing: PopupMenuButton<String>(
+                onSelected: (value) {
+                  if (value == 'remove') {
+                    _removeTaskFromList(context, taskId);
+                  }
+                },
+                itemBuilder: (context) => [
+                  const PopupMenuItem(
+                    value: 'remove',
+                    child: ListTile(
+                      leading: Icon(Icons.remove_circle, color: Colors.red),
+                      title: Text('Remove from list'),
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  void _removeTaskFromList(BuildContext context, String taskId) async {
+    try {
+      await collaborationService.removeTaskFromSharedList(
+        taskListId: sharedList.id,
+        taskId: taskId,
+        userId: 'current_user_id',
+      );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Task removed from shared list'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to remove task: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 }

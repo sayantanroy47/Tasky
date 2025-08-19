@@ -1,0 +1,834 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/semantics.dart';
+import '../../core/design_system/design_tokens.dart';
+import '../../core/accessibility/accessibility_constants.dart';
+import '../../core/theme/typography_constants.dart';
+import 'glassmorphism_container.dart';
+
+/// Mobile-optimized swipe actions for task cards
+class SwipeActionContainer extends StatefulWidget {
+  final Widget child;
+  final List<SwipeAction> leftActions;
+  final List<SwipeAction> rightActions;
+  final double actionWidth;
+  final bool enableHapticFeedback;
+  final VoidCallback? onSwipeComplete;
+
+  const SwipeActionContainer({
+    super.key,
+    required this.child,
+    this.leftActions = const [],
+    this.rightActions = const [],
+    this.actionWidth = 80,
+    this.enableHapticFeedback = true,
+    this.onSwipeComplete,
+  });
+
+  @override
+  State<SwipeActionContainer> createState() => _SwipeActionContainerState();
+}
+
+class _SwipeActionContainerState extends State<SwipeActionContainer>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _slideAnimation;
+  late Animation<double> _fadeAnimation;
+  
+  double _dragExtent = 0.0;
+  bool _isDragging = false;
+  List<SwipeAction> _currentActions = [];
+  bool _isLeftSwipe = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
+    _slideAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(_controller);
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final shouldReduceMotion = AccessibilityUtils.shouldReduceMotion(context);
+    
+    return Semantics(
+      customSemanticsActions: _buildSemanticActions(),
+      child: GestureDetector(
+        onHorizontalDragStart: _onDragStart,
+        onHorizontalDragUpdate: _onDragUpdate,
+        onHorizontalDragEnd: _onDragEnd,
+        child: Stack(
+          children: [
+            // Background actions
+            if (_currentActions.isNotEmpty)
+              _buildActionBackground(),
+            
+            // Main content
+            AnimatedBuilder(
+              animation: shouldReduceMotion ? kAlwaysCompleteAnimation : _slideAnimation,
+              builder: (context, child) {
+                final offset = shouldReduceMotion ? 0.0 : _dragExtent;
+                return Transform.translate(
+                  offset: Offset(offset, 0),
+                  child: widget.child,
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Map<CustomSemanticsAction, VoidCallback> _buildSemanticActions() {
+    final actions = <CustomSemanticsAction, VoidCallback>{};
+    
+    for (final action in widget.leftActions) {
+      actions[CustomSemanticsAction(label: action.label)] = () {
+        action.onPressed?.call();
+        _resetPosition();
+      };
+    }
+    
+    for (final action in widget.rightActions) {
+      actions[CustomSemanticsAction(label: action.label)] = () {
+        action.onPressed?.call();
+        _resetPosition();
+      };
+    }
+    
+    return actions;
+  }
+
+  Widget _buildActionBackground() {
+    return Positioned.fill(
+      child: AnimatedBuilder(
+        animation: _fadeAnimation,
+        builder: (context, child) {
+          return Opacity(
+            opacity: _fadeAnimation.value,
+            child: Row(
+              children: [
+                if (_isLeftSwipe && widget.leftActions.isNotEmpty)
+                  ..._buildActions(widget.leftActions, true)
+                else if (!_isLeftSwipe && widget.rightActions.isNotEmpty)
+                  Expanded(child: Container()),
+                  
+                if (!_isLeftSwipe && widget.rightActions.isNotEmpty)
+                  ..._buildActions(widget.rightActions, false)
+                else if (_isLeftSwipe && widget.leftActions.isNotEmpty)
+                  Expanded(child: Container()),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  List<Widget> _buildActions(List<SwipeAction> actions, bool isLeft) {
+    return actions.map((action) {
+      return SizedBox(
+        width: widget.actionWidth,
+        child: GlassmorphismContainer(
+          level: GlassLevel.interactive,
+          glassTint: action.backgroundColor?.withOpacity(0.9),
+          borderRadius: BorderRadius.zero,
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () {
+                if (widget.enableHapticFeedback) {
+                  HapticFeedback.lightImpact();
+                }
+                action.onPressed?.call();
+                _resetPosition();
+              },
+              child: Semantics(
+                button: true,
+                label: action.label,
+                hint: action.semanticHint,
+                child: SizedBox(
+                  height: double.infinity,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        action.icon,
+                        color: action.iconColor ?? Colors.white,
+                        size: 24,
+                      ),
+                      if (action.showLabel) ...[ 
+                        const SizedBox(height: 4),
+                        Text(
+                          action.label,
+                          style: TextStyle(
+                            fontSize: TypographyConstants.textXS,
+                            color: action.textColor ?? Colors.white,
+                            fontWeight: TypographyConstants.medium,
+                          ),
+                          textAlign: TextAlign.center,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    }).toList();
+  }
+
+  void _onDragStart(DragStartDetails details) {
+    _isDragging = true;
+    _controller.stop();
+  }
+
+  void _onDragUpdate(DragUpdateDetails details) {
+    if (!_isDragging) return;
+    
+    final delta = details.delta.dx;
+    _dragExtent += delta;
+    
+    // Determine swipe direction and available actions
+    if (_dragExtent > 0 && widget.leftActions.isNotEmpty) {
+      _isLeftSwipe = true;
+      _currentActions = widget.leftActions;
+    } else if (_dragExtent < 0 && widget.rightActions.isNotEmpty) {
+      _isLeftSwipe = false;
+      _currentActions = widget.rightActions;
+    } else {
+      _currentActions = [];
+    }
+    
+    // Limit drag extent
+    final maxExtent = _currentActions.length * widget.actionWidth;
+    _dragExtent = _dragExtent.clamp(-maxExtent, maxExtent);
+    
+    // Update animation progress
+    final progress = (_dragExtent.abs() / maxExtent).clamp(0.0, 1.0);
+    _controller.value = progress;
+    
+    setState(() {});
+    
+    // Haptic feedback at certain thresholds
+    if (widget.enableHapticFeedback && progress > 0.3 && progress < 0.4) {
+      HapticFeedback.selectionClick();
+    }
+  }
+
+  void _onDragEnd(DragEndDetails details) {
+    if (!_isDragging) return;
+    _isDragging = false;
+    
+    final velocity = details.velocity.pixelsPerSecond.dx;
+    final threshold = widget.actionWidth * 0.5;
+    
+    if (_dragExtent.abs() > threshold || velocity.abs() > 1000) {
+      // Snap to action position
+      final targetExtent = _isLeftSwipe 
+          ? _currentActions.length * widget.actionWidth
+          : -_currentActions.length * widget.actionWidth;
+      
+      _animateToPosition(targetExtent.toDouble());
+      
+      if (widget.enableHapticFeedback) {
+        HapticFeedback.mediumImpact();
+      }
+    } else {
+      // Snap back to center
+      _resetPosition();
+    }
+  }
+
+  void _animateToPosition(double target) {
+    final tween = Tween<double>(begin: _dragExtent, end: target);
+    final animation = tween.animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
+    );
+    
+    _controller.forward(from: 0.0).then((_) {
+      _dragExtent = target;
+      if (target == 0) {
+        _currentActions = [];
+      }
+    });
+    
+    animation.addListener(() {
+      setState(() => _dragExtent = animation.value);
+    });
+  }
+
+  void _resetPosition() {
+    _animateToPosition(0.0);
+  }
+}
+
+/// Swipe action definition
+class SwipeAction {
+  final String label;
+  final IconData icon;
+  final Color? backgroundColor;
+  final Color? iconColor;
+  final Color? textColor;
+  final VoidCallback? onPressed;
+  final bool showLabel;
+  final String? semanticHint;
+
+  const SwipeAction({
+    required this.label,
+    required this.icon,
+    this.backgroundColor,
+    this.iconColor,
+    this.textColor,
+    this.onPressed,
+    this.showLabel = true,
+    this.semanticHint,
+  });
+
+  // Predefined common actions
+  static SwipeAction complete({
+    required VoidCallback onPressed,
+    Color? backgroundColor,
+  }) =>
+      SwipeAction(
+        label: 'Complete',
+        icon: Icons.check,
+        backgroundColor: backgroundColor ?? Colors.green,
+        onPressed: onPressed,
+        semanticHint: 'Mark task as complete',
+      );
+
+  static SwipeAction delete({
+    required VoidCallback onPressed,
+    Color? backgroundColor,
+  }) =>
+      SwipeAction(
+        label: 'Delete',
+        icon: Icons.delete,
+        backgroundColor: backgroundColor ?? Colors.red,
+        onPressed: onPressed,
+        semanticHint: 'Delete this task',
+      );
+
+  static SwipeAction edit({
+    required VoidCallback onPressed,
+    Color? backgroundColor,
+  }) =>
+      SwipeAction(
+        label: 'Edit',
+        icon: Icons.edit,
+        backgroundColor: backgroundColor ?? Colors.blue,
+        onPressed: onPressed,
+        semanticHint: 'Edit task details',
+      );
+
+  static SwipeAction archive({
+    required VoidCallback onPressed,
+    Color? backgroundColor,
+  }) =>
+      SwipeAction(
+        label: 'Archive',
+        icon: Icons.archive,
+        backgroundColor: backgroundColor ?? Colors.orange,
+        onPressed: onPressed,
+        semanticHint: 'Archive this task',
+      );
+}
+
+/// Pull-to-refresh with glassmorphism indicator
+class GlassPullToRefresh extends StatefulWidget {
+  final Widget child;
+  final Future<void> Function() onRefresh;
+  final String refreshMessage;
+  final double triggerDistance;
+  final bool enableHapticFeedback;
+
+  const GlassPullToRefresh({
+    super.key,
+    required this.child,
+    required this.onRefresh,
+    this.refreshMessage = 'Pull to refresh',
+    this.triggerDistance = 100.0,
+    this.enableHapticFeedback = true,
+  });
+
+  @override
+  State<GlassPullToRefresh> createState() => _GlassPullToRefreshState();
+}
+
+class _GlassPullToRefreshState extends State<GlassPullToRefresh>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _rotationAnimation;
+  
+  double _pullDistance = 0.0;
+  bool _isRefreshing = false;
+  bool _hasTriggered = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 1000),
+      vsync: this,
+    );
+    _rotationAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(_controller);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return NotificationListener<ScrollNotification>(
+      onNotification: _handleScrollNotification,
+      child: Stack(
+        children: [
+          widget.child,
+          if (_pullDistance > 0)
+            _buildRefreshIndicator(),
+        ],
+      ),
+    );
+  }
+
+  bool _handleScrollNotification(ScrollNotification notification) {
+    if (notification is ScrollUpdateNotification) {
+      if (notification.metrics.pixels < 0 && !_isRefreshing) {
+        setState(() {
+          _pullDistance = -notification.metrics.pixels;
+          
+          if (_pullDistance >= widget.triggerDistance && !_hasTriggered) {
+            _hasTriggered = true;
+            if (widget.enableHapticFeedback) {
+              HapticFeedback.mediumImpact();
+            }
+          } else if (_pullDistance < widget.triggerDistance && _hasTriggered) {
+            _hasTriggered = false;
+          }
+        });
+        return true;
+      }
+    } else if (notification is ScrollEndNotification) {
+      if (_hasTriggered && !_isRefreshing) {
+        _triggerRefresh();
+      } else if (_pullDistance > 0) {
+        setState(() => _pullDistance = 0.0);
+      }
+      return true;
+    }
+    return false;
+  }
+
+  Widget _buildRefreshIndicator() {
+    final theme = Theme.of(context);
+    final progress = (_pullDistance / widget.triggerDistance).clamp(0.0, 1.0);
+    final shouldReduceMotion = AccessibilityUtils.shouldReduceMotion(context);
+    
+    return Positioned(
+      top: 0,
+      left: 0,
+      right: 0,
+      child: Transform.translate(
+        offset: Offset(0, _pullDistance - 60),
+        child: Opacity(
+          opacity: progress,
+          child: SizedBox(
+            height: 60,
+            child: Center(
+              child: Semantics(
+                label: _isRefreshing ? 'Refreshing' : widget.refreshMessage,
+                liveRegion: true,
+                child: GlassmorphismContainer(
+                  level: GlassLevel.floating,
+                  width: 200,
+                  height: 40,
+                  borderRadius: BorderRadius.circular(20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: _isRefreshing
+                            ? (shouldReduceMotion
+                                ? CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: theme.colorScheme.primary,
+                                  )
+                                : AnimatedBuilder(
+                                    animation: _rotationAnimation,
+                                    builder: (context, child) {
+                                      return Transform.rotate(
+                                        angle: _rotationAnimation.value * 2 * 3.14159,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          color: theme.colorScheme.primary,
+                                        ),
+                                      );
+                                    },
+                                  ))
+                            : Transform.rotate(
+                                angle: progress * 3.14159,
+                                child: Icon(
+                                  Icons.refresh,
+                                  size: 20,
+                                  color: _hasTriggered
+                                      ? theme.colorScheme.primary
+                                      : theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        _isRefreshing ? 'Refreshing...' : widget.refreshMessage,
+                        style: TextStyle(
+                          fontSize: TypographyConstants.textSM,
+                          color: theme.colorScheme.onSurface,
+                          fontWeight: TypographyConstants.medium,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _triggerRefresh() async {
+    setState(() {
+      _isRefreshing = true;
+      _pullDistance = widget.triggerDistance;
+    });
+    
+    if (!AccessibilityUtils.shouldReduceMotion(context)) {
+      _controller.repeat();
+    }
+    
+    try {
+      await widget.onRefresh();
+      
+      if (!mounted) return;
+      
+      if (widget.enableHapticFeedback) {
+        HapticFeedback.lightImpact();
+      }
+      
+      AccessibilityUtils.announceToScreenReader(
+        context,
+        'Refresh completed',
+      );
+    } finally {
+      _controller.stop();
+      _controller.reset();
+      setState(() {
+        _isRefreshing = false;
+        _hasTriggered = false;
+        _pullDistance = 0.0;
+      });
+    }
+  }
+}
+
+/// Bottom sheet with glassmorphism design
+class GlassBottomSheet extends StatefulWidget {
+  final Widget child;
+  final String title;
+  final bool isDismissible;
+  final bool enableDrag;
+  final double? height;
+  final VoidCallback? onClose;
+
+  const GlassBottomSheet({
+    super.key,
+    required this.child,
+    required this.title,
+    this.isDismissible = true,
+    this.enableDrag = true,
+    this.height,
+    this.onClose,
+  });
+
+  static Future<T?> show<T>({
+    required BuildContext context,
+    required Widget child,
+    required String title,
+    bool isDismissible = true,
+    bool enableDrag = true,
+    double? height,
+    VoidCallback? onClose,
+  }) {
+    return showModalBottomSheet<T>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isDismissible: isDismissible,
+      enableDrag: enableDrag,
+      isScrollControlled: true,
+      builder: (context) => GlassBottomSheet(
+        title: title,
+        isDismissible: isDismissible,
+        enableDrag: enableDrag,
+        height: height,
+        onClose: onClose,
+        child: child,
+      ),
+    );
+  }
+
+  @override
+  State<GlassBottomSheet> createState() => _GlassBottomSheetState();
+}
+
+class _GlassBottomSheetState extends State<GlassBottomSheet>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _slideAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+    _slideAnimation = Tween<double>(begin: 1.0, end: 0.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
+    );
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final mediaQuery = MediaQuery.of(context);
+    final theme = Theme.of(context);
+    final isLargeText = AccessibilityUtils.isLargeTextEnabled(context);
+    final shouldReduceMotion = AccessibilityUtils.shouldReduceMotion(context);
+    
+    final height = widget.height ?? mediaQuery.size.height * 0.7;
+    
+    return Semantics(
+      scopesRoute: true,
+      label: '${widget.title} bottom sheet',
+      child: AnimatedBuilder(
+        animation: shouldReduceMotion ? kAlwaysCompleteAnimation : _slideAnimation,
+        builder: (context, child) {
+          final offset = shouldReduceMotion ? 0.0 : _slideAnimation.value * height;
+          return Transform.translate(
+            offset: Offset(0, offset),
+            child: Container(
+              height: height,
+              margin: const EdgeInsets.only(top: 20),
+              child: GlassmorphismContainer(
+                level: GlassLevel.floating,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(24),
+                  topRight: Radius.circular(24),
+                ),
+                child: Column(
+                  children: [
+                    // Handle bar
+                    if (widget.enableDrag)
+                      Container(
+                        width: 40,
+                        height: 4,
+                        margin: const EdgeInsets.only(top: 12),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.onSurfaceVariant.withOpacity(0.4),
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    
+                    // Header
+                    Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Semantics(
+                              header: true,
+                              child: Text(
+                                widget.title,
+                                style: TextStyle(
+                                  fontSize: isLargeText 
+                                      ? TypographyConstants.textXL 
+                                      : TypographyConstants.textLG,
+                                  fontWeight: TypographyConstants.bold,
+                                  color: theme.colorScheme.onSurface,
+                                ),
+                              ),
+                            ),
+                          ),
+                          if (widget.isDismissible)
+                            IconButton(
+                              onPressed: () {
+                                widget.onClose?.call();
+                                Navigator.of(context).pop();
+                              },
+                              icon: const Icon(Icons.close),
+                              tooltip: 'Close bottom sheet',
+                            ),
+                        ],
+                      ),
+                    ),
+                    
+                    // Content
+                    Expanded(
+                      child: widget.child,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+/// Floating Action Button with glassmorphism
+class GlassFloatingActionButton extends StatefulWidget {
+  final Widget child;
+  final VoidCallback? onPressed;
+  final String? tooltip;
+  final String? semanticLabel;
+  final Color? backgroundColor;
+  final Color? foregroundColor;
+  final double size;
+  final bool mini;
+
+  const GlassFloatingActionButton({
+    super.key,
+    required this.child,
+    this.onPressed,
+    this.tooltip,
+    this.semanticLabel,
+    this.backgroundColor,
+    this.foregroundColor,
+    this.size = 56.0,
+    this.mini = false,
+  });
+
+  @override
+  State<GlassFloatingActionButton> createState() => _GlassFloatingActionButtonState();
+}
+
+class _GlassFloatingActionButtonState extends State<GlassFloatingActionButton>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+  
+  bool _isPressed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 100),
+      vsync: this,
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final backgroundColor = widget.backgroundColor ?? theme.colorScheme.primary;
+    final foregroundColor = widget.foregroundColor ?? theme.colorScheme.onPrimary;
+    final size = widget.mini ? 40.0 : widget.size;
+    final shouldReduceMotion = AccessibilityUtils.shouldReduceMotion(context);
+
+    return Semantics(
+      button: true,
+      label: widget.semanticLabel ?? widget.tooltip,
+      child: AnimatedBuilder(
+        animation: shouldReduceMotion ? kAlwaysCompleteAnimation : _scaleAnimation,
+        builder: (context, child) {
+          final scale = shouldReduceMotion ? 1.0 : _scaleAnimation.value;
+          return Transform.scale(
+            scale: _isPressed ? scale : 1.0,
+            child: GestureDetector(
+              onTapDown: (_) {
+                setState(() => _isPressed = true);
+                if (!shouldReduceMotion) {
+                  _controller.forward();
+                }
+                HapticFeedback.lightImpact();
+              },
+              onTapUp: (_) {
+                setState(() => _isPressed = false);
+                if (!shouldReduceMotion) {
+                  _controller.reverse();
+                }
+                widget.onPressed?.call();
+              },
+              onTapCancel: () {
+                setState(() => _isPressed = false);
+                if (!shouldReduceMotion) {
+                  _controller.reverse();
+                }
+              },
+              child: Tooltip(
+                message: widget.tooltip ?? '',
+                child: GlassmorphismContainer(
+                  level: GlassLevel.floating,
+                  width: size,
+                  height: size,
+                  borderRadius: BorderRadius.circular(size / 2),
+                  glassTint: backgroundColor.withOpacity(0.9),
+                  child: Center(
+                    child: IconTheme(
+                      data: IconThemeData(
+                        color: foregroundColor,
+                        size: widget.mini ? 18 : 24,
+                      ),
+                      child: widget.child,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}

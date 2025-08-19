@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/typography_constants.dart';
 
 import '../../services/ai/ai_task_parsing_service.dart';
-import '../../services/ai/composite_ai_task_parser.dart';
 import '../../services/security/api_key_manager.dart';
 import '../../domain/models/ai_service_type.dart';
 
@@ -183,6 +182,8 @@ class AIServiceSelector extends ConsumerWidget {
       case AIServiceType.openai:
       case AIServiceType.claude:
         return hasKey ? Icons.check_circle : Icons.warning;
+      case AIServiceType.composite:
+        return Icons.auto_mode;
     }
   }
 
@@ -193,6 +194,8 @@ class AIServiceSelector extends ConsumerWidget {
       case AIServiceType.openai:
       case AIServiceType.claude:
         return hasKey ? Colors.green : Colors.orange;
+      case AIServiceType.composite:
+        return Theme.of(context).colorScheme.primary;
     }
   }
 
@@ -203,6 +206,8 @@ class AIServiceSelector extends ConsumerWidget {
       case AIServiceType.openai:
       case AIServiceType.claude:
         return hasKey ? 'Ready' : 'API Key Required';
+      case AIServiceType.composite:
+        return 'Intelligent Selection';
     }
   }
 
@@ -218,6 +223,8 @@ class AIServiceSelector extends ConsumerWidget {
         return hasKey
           ? 'Claude API key is configured and ready to use' 
           : 'Configure your Anthropic API key to enable Claude parsing';
+      case AIServiceType.composite:
+        return 'Automatically selects the best available AI service with fallback to local processing';
     }
   }
 
@@ -229,6 +236,8 @@ class AIServiceSelector extends ConsumerWidget {
         return await APIKeyManager.hasClaudeApiKey();
       case AIServiceType.local:
         return true;
+      case AIServiceType.composite:
+        return true; // Composite always works with fallback
     }
   }
 
@@ -276,6 +285,9 @@ class _APIConfigDialogState extends State<APIConfigDialog> {
         case AIServiceType.local:
           // No API key needed for local processing
           break;
+        case AIServiceType.composite:
+          // Composite service doesn't have its own API key settings
+          break;
       }
       
       if (mounted) {
@@ -299,6 +311,8 @@ class _APIConfigDialogState extends State<APIConfigDialog> {
         return await APIKeyManager.getClaudeApiKey();
       case AIServiceType.local:
         return null;
+      case AIServiceType.composite:
+        return null;
     }
   }
 
@@ -314,6 +328,8 @@ class _APIConfigDialogState extends State<APIConfigDialog> {
           await APIKeyManager.setClaudeBaseUrl(null);
           break;
         case AIServiceType.local:
+          break;
+        case AIServiceType.composite:
           break;
       }
       
@@ -476,6 +492,8 @@ class _APIConfigDialogState extends State<APIConfigDialog> {
         return 'https://api.anthropic.com/v1';
       case AIServiceType.local:
         return '';
+      case AIServiceType.composite:
+        return '';
     }
   }
 
@@ -511,6 +529,9 @@ class _APIConfigDialogState extends State<APIConfigDialog> {
           break;
         case AIServiceType.local:
           isValidFormat = true; // Local service doesn't need API validation
+          break;
+        case AIServiceType.composite:
+          isValidFormat = true; // Composite service doesn't need API validation
           break;
       }
       
@@ -568,6 +589,9 @@ class _APIConfigDialogState extends State<APIConfigDialog> {
           break;
         case AIServiceType.local:
           // No settings to save for local processing
+          break;
+        case AIServiceType.composite:
+          // No settings to save for composite processing
           break;
       }
       

@@ -113,7 +113,7 @@ class TranscriptionServiceFactory {
     if (hasOpenAIKey) {
       final externalService = ext_service.ExternalTranscriptionService();
       externalAvailable = await externalService.initialize();
-      if (externalAvailable && externalService is ext_service.ExternalTranscriptionService) {
+      if (externalAvailable) {
         externalAvailable = await externalService.testConnection();
       }
       await externalService.dispose();

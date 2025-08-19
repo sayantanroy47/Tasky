@@ -8,6 +8,8 @@ import '../../domain/entities/project.dart';
 import '../providers/project_providers.dart';
 import '../widgets/project_card.dart';
 import '../widgets/project_form_dialog.dart';
+import '../widgets/glassmorphism_container.dart';
+import '../../core/design_system/design_tokens.dart';
 
 /// Page for managing projects
 /// 
@@ -66,33 +68,48 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
         children: [
           // Search bar (if searching)
           if (_searchQuery.isNotEmpty)
-            Container(
+            Padding(
               padding: const EdgeInsets.all(16),
-              color: theme.colorScheme.surfaceContainerHighest.withOpacity( 0.1),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.search,
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      'Searching for: "$_searchQuery"',
-                      style: TextStyle(
-                        color: theme.colorScheme.onSurfaceVariant,
+              child: GlassmorphismContainer(
+                level: GlassLevel.content,
+                borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.search,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        'Searching for: "$_searchQuery"',
+                        style: TextStyle(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
                       ),
                     ),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      setState(() {
-                        _searchQuery = '';
-                      });
-                    },
-                    icon: const Icon(Icons.clear),
-                  ),
-                ],
+                    GlassmorphismContainer(
+                      level: GlassLevel.interactive,
+                      borderRadius: BorderRadius.circular(20),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () {
+                            setState(() {
+                              _searchQuery = '';
+                            });
+                          },
+                          borderRadius: BorderRadius.circular(20),
+                          child: const Padding(
+                            padding: EdgeInsets.all(8),
+                            child: Icon(Icons.clear, size: 20),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           
@@ -224,29 +241,29 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
           child: Column(
             children: [
               // Warning header
-              Container(
-                width: double.infinity,
+              Padding(
                 padding: const EdgeInsets.all(16),
-                margin: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.orange.withOpacity( 0.1),
+                child: GlassmorphismContainer(
+                  level: GlassLevel.interactive,
                   borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                  border: Border.all(color: Colors.orange.withOpacity( 0.1)),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.warning,
-                      color: Colors.orange,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'These projects need attention due to overdue tasks, approaching deadlines, or low completion rates.',
-                        style: TextStyle(color: Colors.orange.shade700),
+                  glassTint: Colors.orange.withOpacity(0.1),
+                  borderColor: Colors.orange.withOpacity(0.3),
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.warning,
+                        color: Colors.orange,
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'These projects need attention due to overdue tasks, approaching deadlines, or low completion rates.',
+                          style: TextStyle(color: Colors.orange.shade700),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               
@@ -313,9 +330,37 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
             ),
             if (actionLabel != null && onAction != null) ...[
               const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: onAction,
-                child: Text(actionLabel),
+              GlassmorphismContainer(
+                level: GlassLevel.interactive,
+                borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: onAction,
+                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            theme.colorScheme.primary.withOpacity(0.8),
+                            theme.colorScheme.primary.withOpacity(0.6),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                      ),
+                      child: Text(
+                        actionLabel,
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ],
           ],
@@ -355,9 +400,37 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: _refreshProjects,
-              child: const Text('Retry'),
+            GlassmorphismContainer(
+              level: GlassLevel.interactive,
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: _refreshProjects,
+                  borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          theme.colorScheme.primary.withOpacity(0.8),
+                          theme.colorScheme.primary.withOpacity(0.6),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                    ),
+                    child: Text(
+                      'Retry',
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ),
           ],
         ),
@@ -374,37 +447,128 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
   }
 
   void _showSearchDialog() {
+    final TextEditingController searchController = TextEditingController();
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Search Projects'),
-        content: TextField(
-          autofocus: true,
-          decoration: const InputDecoration(
-            labelText: 'Search query',
-            hintText: 'Enter project name or description',
-            border: OutlineInputBorder(),
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: GlassmorphismContainer(
+          level: GlassLevel.floating,
+          borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Search Projects',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 16),
+              GlassmorphismContainer(
+                level: GlassLevel.interactive,
+                borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                child: TextField(
+                  controller: searchController,
+                  autofocus: true,
+                  decoration: InputDecoration(
+                    labelText: 'Search query',
+                    hintText: 'Enter project name or description',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                      borderSide: BorderSide.none,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                      borderSide: BorderSide.none,
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                      borderSide: BorderSide(
+                        color: Theme.of(context).colorScheme.primary,
+                        width: 2,
+                      ),
+                    ),
+                    filled: true,
+                    fillColor: Colors.transparent,
+                  ),
+                  onSubmitted: (value) {
+                    setState(() {
+                      _searchQuery = value.trim();
+                    });
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  GlassmorphismContainer(
+                    level: GlassLevel.interactive,
+                    borderRadius: BorderRadius.circular(8),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () => Navigator.of(context).pop(),
+                        borderRadius: BorderRadius.circular(8),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          child: Text(
+                            'Cancel',
+                            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  GlassmorphismContainer(
+                    level: GlassLevel.interactive,
+                    borderRadius: BorderRadius.circular(8),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {
+                          setState(() {
+                            _searchQuery = searchController.text.trim();
+                          });
+                          Navigator.of(context).pop();
+                        },
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                                Theme.of(context).colorScheme.primary.withOpacity(0.6),
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            'Search',
+                            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-          onSubmitted: (value) {
-            setState(() {
-              _searchQuery = value.trim();
-            });
-            Navigator.of(context).pop();
-          },
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              // Get the text from the dialog
-              Navigator.of(context).pop();
-            },
-            child: const Text('Search'),
-          ),
-        ],
       ),
     );
   }

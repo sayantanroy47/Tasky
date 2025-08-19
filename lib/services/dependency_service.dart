@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import '../domain/entities/task_model.dart';
 import '../domain/entities/task_enums.dart';
 import '../domain/repositories/task_repository.dart';
@@ -184,7 +185,7 @@ class DependencyService {
       final validation = await validateTaskCompletion(dependent);
       if (validation.isValid && dependent.status == TaskStatus.pending) {
         // Task is now ready to start
-        print('Task "${dependent.title}" is now ready to start');
+        debugPrint('Task "${dependent.title}" is now ready to start');
       }
     }
   }
@@ -322,13 +323,15 @@ class DependencyResult {
 /// Exception thrown when dependency validation fails
 class DependencyValidationException implements Exception {
   final String message;
-  const DependencyValidationException(this.message);  @override
+  const DependencyValidationException(this.message);
+  @override
   String toString() => 'DependencyValidationException: $message';
 }
 
 /// Exception thrown when a task is not found
 class TaskNotFoundException implements Exception {
   final String message;
-  const TaskNotFoundException(this.message);  @override
+  const TaskNotFoundException(this.message);
+  @override
   String toString() => 'TaskNotFoundException: $message';
 }

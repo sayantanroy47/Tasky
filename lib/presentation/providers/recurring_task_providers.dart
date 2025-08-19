@@ -3,25 +3,32 @@ import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
 import '../../domain/entities/recurrence_pattern.dart';
 import '../../services/task/recurring_task_service.dart';
-import 'task_providers.dart';
+import '../../core/providers/core_providers.dart';
 
 /// Provider for RecurringTaskService
 final recurringTaskServiceProvider = Provider<RecurringTaskService>((ref) {
   final taskRepository = ref.watch(taskRepositoryProvider);
-  return RecurringTaskService(taskRepository);
+  final database = ref.watch(databaseProvider);
+  return RecurringTaskService(taskRepository, database);
 });
 
 /// State notifier for managing recurring tasks
 class RecurringTaskNotifier extends StateNotifier<AsyncValue<List<TaskModel>>> {
   final RecurringTaskService _service;
+  final Ref _ref;
 
-  RecurringTaskNotifier(this._service) : super(const AsyncValue.loading()) {
+  RecurringTaskNotifier(this._service, this._ref) : super(const AsyncValue.loading()) {
     _loadRecurringTasks();
   }
 
   Future<void> _loadRecurringTasks() async {
     try {
-      final recurringTasks = await _service.getRecurringTasks();
+      final taskRepository = _ref.read(taskRepositoryProvider);
+      final allTasks = await taskRepository.getAllTasks();
+      
+      // Filter tasks that have recurring patterns
+      final recurringTasks = allTasks.where((task) => task.isRecurring).toList();
+      
       state = AsyncValue.data(recurringTasks);
     } catch (error, stackTrace) {
       state = AsyncValue.error(error, stackTrace);
@@ -43,20 +50,24 @@ class RecurringTaskNotifier extends StateNotifier<AsyncValue<List<TaskModel>>> {
     int? estimatedDuration,
   }) async {
     try {
-      await _service.createRecurringTask(
+      final taskRepository = _ref.read(taskRepositoryProvider);
+      
+      // Create the recurring task using TaskModel.create
+      final recurringTask = TaskModel.create(
         title: title,
         description: description,
         dueDate: dueDate,
-        recurrence: recurrence,
         priority: priority,
         tags: tags,
         locationTrigger: locationTrigger,
+        recurrence: recurrence,
         projectId: projectId,
-        dependencies: dependencies,
         metadata: metadata,
         isPinned: isPinned,
         estimatedDuration: estimatedDuration,
       );
+      
+      await taskRepository.createTask(recurringTask);
       await _loadRecurringTasks();
     } catch (error, stackTrace) {
       state = AsyncValue.error(error, stackTrace);
@@ -68,8 +79,20 @@ class RecurringTaskNotifier extends StateNotifier<AsyncValue<List<TaskModel>>> {
     RecurrencePattern? newRecurrence,
   ) async {
     try {
-      await _service.updateRecurrencePattern(taskId, newRecurrence);
-      await _loadRecurringTasks();
+      final taskRepository = _ref.read(taskRepositoryProvider);
+      final task = await taskRepository.getTaskById(taskId);
+      
+      if (task != null) {
+        if (newRecurrence != null) {
+          // Update the recurrence pattern using the service
+          await _service.updateRecurringTaskPattern(task, newRecurrence);
+        } else {
+          // Remove recurrence pattern
+          final updatedTask = task.copyWith(recurrence: null);
+          await taskRepository.updateTask(updatedTask);
+        }
+        await _loadRecurringTasks();
+      }
     } catch (error, stackTrace) {
       state = AsyncValue.error(error, stackTrace);
     }
@@ -77,8 +100,14 @@ class RecurringTaskNotifier extends StateNotifier<AsyncValue<List<TaskModel>>> {
 
   Future<void> stopRecurringTask(String taskId) async {
     try {
-      await _service.stopRecurringTask(taskId);
-      await _loadRecurringTasks();
+      final taskRepository = _ref.read(taskRepositoryProvider);
+      final task = await taskRepository.getTaskById(taskId);
+      
+      if (task != null && task.isRecurring) {
+        // Stop the recurring task series
+        await _service.stopRecurringTaskSeries(task, deleteFutureInstances: true);
+        await _loadRecurringTasks();
+      }
     } catch (error, stackTrace) {
       state = AsyncValue.error(error, stackTrace);
     }
@@ -86,9 +115,29 @@ class RecurringTaskNotifier extends StateNotifier<AsyncValue<List<TaskModel>>> {
 
   Future<TaskModel?> completeRecurringTask(String taskId) async {
     try {
-      final nextTask = await _service.completeRecurringTask(taskId);
-      await _loadRecurringTasks();
-      return nextTask;
+      final taskRepository = _ref.read(taskRepositoryProvider);
+      final task = await taskRepository.getTaskById(taskId);
+      
+      if (task != null) {
+        // Mark the task as completed
+        final completedTask = task.copyWith(
+          status: TaskStatus.completed,
+          completedAt: DateTime.now(),
+        );
+        await taskRepository.updateTask(completedTask);
+        
+        // If it's a recurring task, generate the next instance
+        if (task.isRecurring) {
+          final nextTask = await _service.generateNextRecurringTask(completedTask);
+          if (nextTask != null) {
+            await taskRepository.createTask(nextTask);
+          }
+        }
+        
+        await _loadRecurringTasks();
+        return completedTask;
+      }
+      return null;
     } catch (error, stackTrace) {
       state = AsyncValue.error(error, stackTrace);
       return null;
@@ -97,7 +146,7 @@ class RecurringTaskNotifier extends StateNotifier<AsyncValue<List<TaskModel>>> {
 
   Future<List<TaskModel>> processRecurringTasks() async {
     try {
-      final newTasks = await _service.processRecurringTasks();
+      final newTasks = await _service.processCompletedRecurringTasks();
       await _loadRecurringTasks();
       return newTasks;
     } catch (error, stackTrace) {
@@ -108,7 +157,23 @@ class RecurringTaskNotifier extends StateNotifier<AsyncValue<List<TaskModel>>> {
 
   Future<List<TaskModel>> getRecurringTaskInstances(String parentTaskId) async {
     try {
-      return await _service.getRecurringTaskInstances(parentTaskId);
+      final taskRepository = _ref.read(taskRepositoryProvider);
+      final parentTask = await taskRepository.getTaskById(parentTaskId);
+      
+      if (parentTask != null && parentTask.isRecurring) {
+        // Get all instances of this recurring task
+        final allTasks = await taskRepository.getAllTasks();
+        final instances = allTasks.where((task) {
+          // Check if this task is an instance of the parent recurring task
+          final originalTaskId = task.metadata['original_task_id'] as String?;
+          return originalTaskId == parentTaskId || task.id == parentTaskId;
+        }).toList();
+        
+        // Sort by creation date
+        instances.sort((a, b) => a.createdAt.compareTo(b.createdAt));
+        return instances;
+      }
+      return [];
     } catch (error) {
       return [];
     }
@@ -118,7 +183,54 @@ class RecurringTaskNotifier extends StateNotifier<AsyncValue<List<TaskModel>>> {
     String taskTitle,
   ) async {
     try {
-      return await _service.getSuggestedRecurrencePatterns(taskTitle);
+      // Provide common recurrence patterns based on task title keywords
+      final suggestions = <RecurrencePattern>[];
+      final titleLower = taskTitle.toLowerCase();
+      
+      // Daily patterns
+      if (titleLower.contains('daily') || titleLower.contains('every day')) {
+        suggestions.add(const RecurrencePattern(
+          type: RecurrenceType.daily,
+          interval: 1,
+        ));
+      }
+      
+      // Weekly patterns
+      if (titleLower.contains('weekly') || titleLower.contains('every week')) {
+        suggestions.add(const RecurrencePattern(
+          type: RecurrenceType.weekly,
+          interval: 1,
+          daysOfWeek: [1], // Default to Monday
+        ));
+      }
+      
+      // Monthly patterns
+      if (titleLower.contains('monthly') || titleLower.contains('every month')) {
+        suggestions.add(const RecurrencePattern(
+          type: RecurrenceType.monthly,
+          interval: 1,
+        ));
+      }
+      
+      // Work-related patterns (weekdays only)
+      if (titleLower.contains('work') || titleLower.contains('meeting') || titleLower.contains('standup')) {
+        suggestions.add(const RecurrencePattern(
+          type: RecurrenceType.weekly,
+          interval: 1,
+          daysOfWeek: [1, 2, 3, 4, 5], // Monday to Friday
+        ));
+      }
+      
+      // Default suggestions if no specific patterns found
+      if (suggestions.isEmpty) {
+        suggestions.addAll([
+          const RecurrencePattern(type: RecurrenceType.daily, interval: 1),
+          const RecurrencePattern(type: RecurrenceType.weekly, interval: 1, daysOfWeek: [1]),
+          const RecurrencePattern(type: RecurrenceType.monthly, interval: 1),
+        ]);
+      }
+      
+      return suggestions;
     } catch (error) {
       return [];
     }
@@ -129,7 +241,7 @@ class RecurringTaskNotifier extends StateNotifier<AsyncValue<List<TaskModel>>> {
 final recurringTaskNotifierProvider = 
     StateNotifierProvider<RecurringTaskNotifier, AsyncValue<List<TaskModel>>>((ref) {
   final service = ref.watch(recurringTaskServiceProvider);
-  return RecurringTaskNotifier(service);
+  return RecurringTaskNotifier(service, ref);
 });
 
 /// Provider for all recurring tasks

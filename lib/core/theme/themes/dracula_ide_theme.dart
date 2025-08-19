@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../app_theme_data.dart' as app_theme_data;
 import '../models/theme_metadata.dart';
 import '../models/theme_colors.dart';
@@ -19,8 +20,8 @@ class DraculaIDETheme {
         id: isDark ? 'dracula_ide_dark' : 'dracula_ide',
         name: isDark ? 'Dracula IDE Dark' : 'Dracula IDE Light',
         description: isDark 
-          ? 'The beloved developer theme with sophisticated dark purple backgrounds and vibrant syntax highlighting colors'
-          : 'Light variant of the Dracula IDE theme with subtle purple tints and vibrant accents',
+          ? 'Refined Dracula IDE theme with moody purple backgrounds and bright neon-like highlights for modern readability'
+          : 'Dracula IDE light variant maintaining playful vibrancy with refined tones for excellent UI usability',
         author: 'Tasky Team',
         version: '1.0.0',
         tags: ['developer', 'ide', 'dark', 'purple', 'pink', 'elegant', 'syntax'],
@@ -48,132 +49,119 @@ class DraculaIDETheme {
   /// Create dark variant (standard Dracula)
   static app_theme_data.AppThemeData createDark() => create(isDark: true);
 
-  /// Helper method to reduce color brightness by 25%
-  static Color _reduceBrightness(Color color, double factor) {
-    final hsl = HSLColor.fromColor(color);
-    return hsl.withLightness((hsl.lightness * factor).clamp(0.0, 1.0)).toColor();
-  }
 
-  /// Create Dracula-inspired color palette
+  /// Create Dracula IDE-inspired color palette with refined usability
   static ThemeColors _createDraculaColors({bool isDark = true}) {
     if (!isDark) {
-      // Light variant: Use dark theme colors reduced by 25% brightness + light backgrounds
+      // Dracula Light Variant: Refined & Usable
       
-      // Get dark theme colors first
-      const darkDraculaPink = Color(0xFFff79c6);          // Dark theme primary
-      const darkDraculaPurple = Color(0xFFbd93f9);        // Dark theme secondary  
-      const darkDraculaCyan = Color(0xFF8be9fd);          // Dark theme tertiary
-      const darkDraculaGreen = Color(0xFF50fa7b);         // Dark theme success
-      const darkDraculaOrange = Color(0xFFffb86c);        // Dark theme warning
-      const darkDraculaRed = Color(0xFFff5555);           // Dark theme error
-      const darkDraculaYellow = Color(0xFFf1fa8c);        // Dark theme highlight
-      const darkDraculaComment = Color(0xFF6272a4);       // Dark theme comment
+      // Dracula colors maintained at full vibrancy
+      const darkDraculaPink = Color(0xFFFF79C6);          // Pink primary
+      const darkDraculaPurple = Color(0xFFBD93F9);        // Purple secondary  
+      const darkDraculaCyan = Color(0xFF8BE9FD);          // Bright cyan
+      const darkDraculaGreen = Color(0xFF50FA7B);         // Vibrant green
+      const darkDraculaOrange = Color(0xFFFFB86C);        // Warm orange
+      const darkDraculaRed = Color(0xFFFF5555);           // Strong red
+      const darkDraculaYellow = Color(0xFFF1FA8C);        // Yellow highlight
+      const darkDraculaComment = Color(0xFF6B7280);       // Adjusted for readability on light bg
       
-      // Reduce brightness by 25% (factor of 0.75)
-      final lightPink = _reduceBrightness(darkDraculaPink, 0.75);
-      final lightPurple = _reduceBrightness(darkDraculaPurple, 0.75);
-      final lightCyan = _reduceBrightness(darkDraculaCyan, 0.75);
-      final lightGreen = _reduceBrightness(darkDraculaGreen, 0.75);
-      final lightOrange = _reduceBrightness(darkDraculaOrange, 0.75);
-      final lightRed = _reduceBrightness(darkDraculaRed, 0.75);
-      final lightYellow = _reduceBrightness(darkDraculaYellow, 0.75);
-      final lightComment = _reduceBrightness(darkDraculaComment, 0.75);
+      // Light backgrounds and containers
+      const pureWhite = Color(0xFFFFFFFF);                // Background
+      const lightSurface = Color(0xFFF3F4F6);             // Soft gray surface
+      const paleContainer = Color(0xFFEDE9FE);            // Light purple tint container
+      const accentInk = Color(0xFF1E293B);                // Neutral text ink
       
-      // Light backgrounds
-      const pureWhite = Color(0xFFfafafa);        // Background - Softer white
-      const lightSurface = Color(0xFFf5f5f5);     // Surface - Light gray
-      const paleContainer = Color(0xFFede7f6);    // Container - Light purple tint
       
-      return ThemeColors(
-        // Primary colors - Reduced brightness from dark theme
-        primary: lightPink,
+      return const ThemeColors(
+        // Primary colors - Dracula pink
+        primary: darkDraculaPink,
         onPrimary: pureWhite,
         primaryContainer: paleContainer,
-        onPrimaryContainer: lightPink,
+        onPrimaryContainer: darkDraculaPink,
 
-        // Secondary colors - Reduced brightness from dark theme
-        secondary: lightPurple,
+        // Secondary colors - Dracula purple
+        secondary: darkDraculaPurple,
         onSecondary: pureWhite,
         secondaryContainer: paleContainer,
-        onSecondaryContainer: lightPurple,
+        onSecondaryContainer: darkDraculaPurple,
 
-        // Tertiary colors - Reduced brightness from dark theme
-        tertiary: lightCyan,
+        // Tertiary colors - Dracula cyan
+        tertiary: darkDraculaCyan,
         onTertiary: pureWhite,
         tertiaryContainer: paleContainer,
-        onTertiaryContainer: lightCyan,
+        onTertiaryContainer: darkDraculaCyan,
 
         // Surface colors - Light backgrounds
         surface: lightSurface,
-        onSurface: const Color(0xFF1a1a1a), // Dark text for light surfaces
-        surfaceVariant: const Color(0xFFf0f0f0),
-        onSurfaceVariant: const Color(0xFF2a2a2a), // Dark text for light surfaces
-        inverseSurface: lightPink,
+        onSurface: accentInk,
+        surfaceVariant: lightSurface,
+        onSurfaceVariant: accentInk,
+        inverseSurface: darkDraculaPink,
         onInverseSurface: pureWhite,
 
         // Background colors - Light backgrounds
         background: pureWhite,
-        onBackground: const Color(0xFF0a0a0a), // Very dark text for light backgrounds
+        onBackground: accentInk,
 
-        // Error colors - Reduced brightness
-        error: lightRed,
+        // Error colors - Dracula red
+        error: darkDraculaRed,
         onError: pureWhite,
-        errorContainer: const Color(0xFFfff5f5),
-        onErrorContainer: lightRed,
+        errorContainer: paleContainer,
+        onErrorContainer: darkDraculaRed,
 
         // Special colors
-        accent: lightCyan,
-        highlight: lightYellow,
-        shadow: const Color(0xFF000000),
-        outline: lightComment,
-        outlineVariant: lightComment,
+        accent: darkDraculaCyan,
+        highlight: darkDraculaYellow,
+        shadow: Color(0xFF000000),
+        outline: darkDraculaComment,
+        outlineVariant: darkDraculaComment,
 
-        // Task priority colors - Reduced brightness syntax colors
-        taskLowPriority: lightGreen,     // Reduced green
-        taskMediumPriority: lightCyan,   // Reduced cyan
-        taskHighPriority: lightOrange,   // Reduced orange
-        taskUrgentPriority: lightRed,    // Reduced red
+        // Task priority colors - Dracula syntax colors
+        taskLowPriority: darkDraculaGreen,
+        taskMediumPriority: darkDraculaCyan,
+        taskHighPriority: darkDraculaOrange,
+        taskUrgentPriority: darkDraculaRed,
 
-        // Status colors - Reduced brightness
-        success: lightGreen,
-        warning: lightOrange,
-        info: lightCyan,
+        // Status colors
+        success: darkDraculaGreen,
+        warning: darkDraculaOrange,
+        info: darkDraculaCyan,
 
-        // Calendar dot colors - Dracula IDE theme (light) - reduced brightness
-        calendarTodayDot: lightPink,                  // Reduced pink for today
-        calendarOverdueDot: lightRed,                 // Reduced red for overdue
-        calendarFutureDot: lightCyan,                 // Reduced cyan for future
-        calendarCompletedDot: lightGreen,             // Reduced green for completed
-        calendarHighPriorityDot: lightOrange,         // Reduced orange for high priority
+        // Calendar dot colors - Dracula IDE theme (light)
+        calendarTodayDot: darkDraculaPink,
+        calendarOverdueDot: darkDraculaRed,
+        calendarFutureDot: darkDraculaCyan,
+        calendarCompletedDot: darkDraculaGreen,
+        calendarHighPriorityDot: darkDraculaOrange,
         
-        // Status badge colors - Dracula IDE themed (light) - reduced brightness
-        statusPendingBadge: lightCyan,                // Reduced cyan for pending
-        statusInProgressBadge: lightOrange,           // Reduced orange for in progress
-        statusCompletedBadge: lightGreen,             // Reduced green for completed
-        statusCancelledBadge: lightComment,           // Reduced comment color for cancelled
-        statusOverdueBadge: lightRed,                 // Reduced red for overdue
-        statusOnHoldBadge: lightYellow,               // Reduced yellow for on hold
+        // Status badge colors - Dracula IDE themed (light)
+        statusPendingBadge: darkDraculaCyan,
+        statusInProgressBadge: darkDraculaOrange,
+        statusCompletedBadge: darkDraculaGreen,
+        statusCancelledBadge: darkDraculaComment,
+        statusOverdueBadge: darkDraculaRed,
+        statusOnHoldBadge: darkDraculaYellow,
 
-        // Interactive colors - Reduced brightness
-        hover: _reduceBrightness(const Color(0xFFf565a7), 0.75),
-        pressed: _reduceBrightness(const Color(0xFFe84d96), 0.75),
-        focus: lightYellow,
-        disabled: lightComment,
+        // Interactive colors
+        hover: Color(0xFFf565a7),
+        pressed: Color(0xFFe84d96),
+        focus: darkDraculaYellow,
+        disabled: darkDraculaComment,
       );
     }
     
-    // Dark variant: Original Dracula colors
-    const draculaBackground = Color(0xFF282a36);    // Dark purple background
-    const draculaCurrentLine = Color(0xFF44475a);   // Lighter purple
-    const draculaForeground = Color(0xFFf8f8f2);    // Light foreground
-    const draculaComment = Color(0xFF6272a4);       // Blue-gray comments
-    const draculaCyan = Color(0xFF8be9fd);          // Cyan
-    const draculaGreen = Color(0xFF50fa7b);         // Green
-    const draculaOrange = Color(0xFFffb86c);        // Orange
-    const draculaPink = Color(0xFFff79c6);          // Pink - primary
-    const draculaPurple = Color(0xFFbd93f9);        // Purple
-    const draculaRed = Color(0xFFff5555);           // Red
-    const draculaYellow = Color(0xFFf1fa8c);        // Yellow
+    // Dracula Dark Variant: Refined & Usable moody aesthetics
+    const draculaBackground = Color(0xFF282A36);    // Dark purple background
+    const draculaCurrentLine = Color(0xFF44475A);   // Lighter purple for contrast
+    const draculaForeground = Color(0xFFF8F8F2);    // Foreground text
+    const draculaComment = Color(0xFF6272A4);       // Subdued blue-gray comments
+    const draculaCyan = Color(0xFF8BE9FD);          // Bright cyan
+    const draculaGreen = Color(0xFF50FA7B);         // Vibrant green
+    const draculaOrange = Color(0xFFFFB86C);        // Warm orange
+    const draculaPink = Color(0xFFFF79C6);          // Pink primary
+    const draculaPurple = Color(0xFFBD93F9);        // Purple secondary
+    const draculaRed = Color(0xFFFF5555);           // Strong red
+    const draculaYellow = Color(0xFFF1FA8C);        // Yellow highlight
     
     return const ThemeColors(
       // Primary colors - Dracula pink
@@ -265,206 +253,206 @@ class DraculaIDETheme {
       baseSize: TypographyConstants.bodyLarge,
       scaleRatio: 1.0, // No scaling - use exact constants
       baseFontWeight: TypographyConstants.regular,
-      baseLetterSpacing: 0.2, // Slightly wider for JetBrains Mono readability
-      baseLineHeight: 1.5, // More comfortable line height for code
+      baseLetterSpacing: TypographyConstants.normalLetterSpacing, // Consistent spacing
+      baseLineHeight: TypographyConstants.normalLineHeight, // Consistent line height
       
       // Use EXACT typography constants for all sizes
-      displayLarge: TypographyConstants.getStyle(
+      displayLarge: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.displayLarge,
         fontWeight: TypographyConstants.light,
-        fontFamily: fontFamily,
-        letterSpacing: 0.2,
-        height: 1.5,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      displayMedium: TypographyConstants.getStyle(
+      displayMedium: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.displayMedium,
         fontWeight: TypographyConstants.light,
-        fontFamily: fontFamily,
-        letterSpacing: 0.2,
-        height: 1.5,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      displaySmall: TypographyConstants.getStyle(
+      displaySmall: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.displaySmall,
         fontWeight: TypographyConstants.regular,
-        fontFamily: fontFamily,
-        letterSpacing: 0.2,
-        height: 1.5,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
       
-      headlineLarge: TypographyConstants.getStyle(
+      headlineLarge: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.headlineLarge,
         fontWeight: TypographyConstants.regular,
-        fontFamily: fontFamily,
-        letterSpacing: 0.2,
-        height: 1.5,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      headlineMedium: TypographyConstants.getStyle(
+      headlineMedium: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.headlineMedium,
         fontWeight: TypographyConstants.regular,
-        fontFamily: fontFamily,
-        letterSpacing: 0.2,
-        height: 1.5,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      headlineSmall: TypographyConstants.getStyle(
+      headlineSmall: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.headlineSmall,
         fontWeight: TypographyConstants.regular,
-        fontFamily: fontFamily,
-        letterSpacing: 0.2,
-        height: 1.5,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
       
-      titleLarge: TypographyConstants.getStyle(
+      titleLarge: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.titleLarge,
         fontWeight: TypographyConstants.medium,
-        fontFamily: fontFamily,
-        letterSpacing: 0.2,
-        height: 1.5,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      titleMedium: TypographyConstants.getStyle(
+      titleMedium: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.titleMedium,
         fontWeight: TypographyConstants.medium,
-        fontFamily: fontFamily,
-        letterSpacing: 0.2,
-        height: 1.5,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      titleSmall: TypographyConstants.getStyle(
+      titleSmall: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.titleSmall,
         fontWeight: TypographyConstants.medium,
-        fontFamily: fontFamily,
-        letterSpacing: 0.2,
-        height: 1.5,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
       
-      bodyLarge: TypographyConstants.getStyle(
+      bodyLarge: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.bodyLarge,
         fontWeight: TypographyConstants.regular,
-        fontFamily: fontFamily,
-        letterSpacing: 0.2,
-        height: 1.5,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      bodyMedium: TypographyConstants.getStyle(
+      bodyMedium: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.bodyMedium,
         fontWeight: TypographyConstants.regular,
-        fontFamily: fontFamily,
-        letterSpacing: 0.2,
-        height: 1.5,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      bodySmall: TypographyConstants.getStyle(
+      bodySmall: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.bodySmall,
         fontWeight: TypographyConstants.regular,
-        fontFamily: fontFamily,
-        letterSpacing: 0.2,
-        height: 1.5,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
       
-      labelLarge: TypographyConstants.getStyle(
+      labelLarge: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.labelLarge,
         fontWeight: TypographyConstants.medium,
-        fontFamily: fontFamily,
-        letterSpacing: 0.2,
-        height: 1.5,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      labelMedium: TypographyConstants.getStyle(
+      labelMedium: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.labelMedium,
         fontWeight: TypographyConstants.medium,
-        fontFamily: fontFamily,
-        letterSpacing: 0.2,
-        height: 1.5,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      labelSmall: TypographyConstants.getStyle(
+      labelSmall: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.labelSmall,
         fontWeight: TypographyConstants.medium,
-        fontFamily: fontFamily,
-        letterSpacing: 0.2,
-        height: 1.5,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
       
       // Custom app styles with exact constants
-      taskTitle: TypographyConstants.getStyle(
+      taskTitle: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.taskTitle,
         fontWeight: TypographyConstants.semiBold,
-        fontFamily: fontFamily,
-        letterSpacing: 0.2,
-        height: 1.5,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      taskDescription: TypographyConstants.getStyle(
+      taskDescription: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.taskDescription,
         fontWeight: TypographyConstants.regular,
-        fontFamily: fontFamily,
-        letterSpacing: 0.2,
-        height: 1.5,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      taskMeta: TypographyConstants.getStyle(
+      taskMeta: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.taskMeta,
         fontWeight: TypographyConstants.regular,
-        fontFamily: fontFamily,
-        letterSpacing: 0.2,
-        height: 1.5,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      cardTitle: TypographyConstants.getStyle(
+      cardTitle: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.titleSmall,
         fontWeight: TypographyConstants.medium,
-        fontFamily: fontFamily,
-        letterSpacing: 0.2,
-        height: 1.5,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      cardSubtitle: TypographyConstants.getStyle(
+      cardSubtitle: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.bodySmall,
         fontWeight: TypographyConstants.regular,
-        fontFamily: fontFamily,
-        letterSpacing: 0.2,
-        height: 1.5,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      buttonText: TypographyConstants.getStyle(
+      buttonText: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.buttonText,
         fontWeight: TypographyConstants.medium,
-        fontFamily: fontFamily,
-        letterSpacing: 0.2,
-        height: 1.5,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      inputText: TypographyConstants.getStyle(
+      inputText: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.inputText,
         fontWeight: TypographyConstants.regular,
-        fontFamily: fontFamily,
-        letterSpacing: 0.2,
-        height: 1.5,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      appBarTitle: TypographyConstants.getStyle(
+      appBarTitle: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.appBarTitle,
         fontWeight: TypographyConstants.medium,
-        fontFamily: fontFamily,
-        letterSpacing: 0.2,
-        height: 1.5,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      navigationLabel: TypographyConstants.getStyle(
+      navigationLabel: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.navigationLabel,
         fontWeight: TypographyConstants.medium,
-        fontFamily: fontFamily,
-        letterSpacing: 0.2,
-        height: 1.5,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
     );

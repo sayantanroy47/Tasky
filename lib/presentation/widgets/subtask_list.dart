@@ -4,7 +4,8 @@ import 'glassmorphism_container.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/entities/subtask.dart';
-import '../providers/task_provider.dart' show taskOperationsProvider;
+import '../providers/subtask_providers.dart';
+import '../providers/task_provider.dart';
 import 'custom_dialogs.dart';
 
 /// Widget for displaying and managing subtasks within a task
@@ -32,6 +33,7 @@ class _SubTaskListState extends ConsumerState<SubTaskList> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final completionPercentageAsync = ref.watch(subtaskCompletionPercentageProvider(widget.task.id));
     
     return GlassmorphismContainer(
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
@@ -48,6 +50,13 @@ class _SubTaskListState extends ConsumerState<SubTaskList> {
                   style: theme.textTheme.titleMedium,
                 ),
                 const Spacer(),
+                
+                // Progress indicator
+                completionPercentageAsync.when(
+                  data: (percentage) => _buildProgressIndicator(theme, percentage),
+                  loading: () => const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
+                  error: (_, __) => const SizedBox(),
+                ),
                 if (widget.task.hasSubTasks)
                   Text(
                     '${widget.task.subTasks.where((st) => st.isCompleted).length}/${widget.task.subTasks.length}',
@@ -208,6 +217,27 @@ class _SubTaskListState extends ConsumerState<SubTaskList> {
             textAlign: TextAlign.center,
           ),
         ],
+      ),
+    );
+  }
+
+  /// Build progress indicator widget
+  Widget _buildProgressIndicator(ThemeData theme, double percentage) {
+    return Container(
+      width: 32,
+      height: 32,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: theme.colorScheme.primaryContainer,
+      ),
+      child: Center(
+        child: Text(
+          '${(percentage * 100).round()}%',
+          style: theme.textTheme.labelSmall?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: theme.colorScheme.onPrimaryContainer,
+          ),
+        ),
       ),
     );
   }

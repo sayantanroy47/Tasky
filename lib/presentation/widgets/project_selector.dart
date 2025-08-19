@@ -4,253 +4,286 @@ import '../../core/theme/typography_constants.dart';
 
 import '../../domain/entities/project.dart';
 import '../providers/project_providers.dart';
+import 'glassmorphism_container.dart';
+import '../../core/design_system/design_tokens.dart';
 
-/// Widget for selecting a project from a dropdown
+/// Widget for selecting a project from a list
 /// 
-/// Displays active projects in a dropdown menu with color indicators
-/// and allows clearing the selection.
+/// Provides a dropdown or bottom sheet for selecting a project,
+/// with options to create a new project or clear selection.
 class ProjectSelector extends ConsumerWidget {
   final String? selectedProjectId;
-  final ValueChanged<String?> onProjectChanged;
-  final String? label;
-  final String? hint;
-
+  final Function(Project?) onProjectSelected;
+  final bool allowNone;
+  final String? hintText;
+  final bool showCreateOption;
+  
   const ProjectSelector({
     super.key,
-    required this.selectedProjectId,
-    required this.onProjectChanged,
-    this.label = 'Project',
-    this.hint = 'Select a project (optional)',
-  });  @override
+    this.selectedProjectId,
+    required this.onProjectSelected,
+    this.allowNone = true,
+    this.hintText,
+    this.showCreateOption = true,
+  });
+  
+  @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final activeProjectsAsync = ref.watch(activeProjectsProvider);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (label != null)
-          Text(
-            label!,
-            style: theme.textTheme.titleSmall,
-          ),
-        if (label != null) const SizedBox(height: 8),
+    final projectsAsync = ref.watch(projectsProvider);
+    
+    return projectsAsync.when(
+      data: (projects) {
+        // Filter to only active projects
+        final activeProjects = projects.where((p) => !p.isArchived).toList();
         
-        activeProjectsAsync.when(
-          data: (projects) {
-
-            return Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: theme.colorScheme.outline),
-                borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-              ),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<String?>(
-                  value: selectedProjectId,
-                  hint: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: Text(
-                      hint ?? 'Select a project',
-                      style: TextStyle(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ),
-                  isExpanded: true,
-                  items: [
-                    // Clear selection option
-                    DropdownMenuItem<String?>(
-                      value: null,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.clear,
-                              size: 16,
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'No project',
-                              style: TextStyle(
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    
-                    // Divider
-                    const DropdownMenuItem<String?>(
-                      enabled: false,
-                      value: '__divider__',
-                      child: Divider(height: 1),
-                    ),
-                    
-                    // Project options
-                    ...projects.map((project) => DropdownMenuItem<String?>(
-                      value: project.id,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12),
-                        child: Row(
-                          children: [
-                            // Project color indicator
-                            Container(
-                              width: 16,
-                              height: 16,
-                              decoration: BoxDecoration(
-                                color: _parseColor(project.color),
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            
-                            // Project name
-                            Expanded(
-                              child: Text(
-                                project.name,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            
-                            // Task count
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                                vertical: 2,
-                              ),
-                              decoration: BoxDecoration(
-                                color: theme.colorScheme.surfaceContainerHighest,
-                                borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                              ),
-                              child: Text(
-                                '${project.taskCount}',
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    )),
-                  ],
-                  onChanged: (value) {
-                    if (value != '__divider__') {
-                      onProjectChanged(value);
-                    }
-                  },
-                ),
-              ),
-            );
-          },
-          loading: () => Container(
-            height: 48,
-            decoration: BoxDecoration(
-              border: Border.all(color: theme.colorScheme.outline),
-              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-            ),
-            child: const Center(
-              child: SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
-            ),
-          ),
-          error: (error, _) => Container(
-            height: 48,
-            decoration: BoxDecoration(
-              border: Border.all(color: theme.colorScheme.error),
-              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-            ),
-            child: Center(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    color: theme.colorScheme.error,
-                    size: 16,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Error loading projects',
-                    style: TextStyle(
-                      color: theme.colorScheme.error,
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-        
-        // Selected project info
-        if (selectedProjectId != null)
-          activeProjectsAsync.when(
-            data: (projects) {
-              final project = projects.firstWhere(
+        final selectedProject = selectedProjectId != null
+            ? activeProjects.firstWhere(
                 (p) => p.id == selectedProjectId,
-                orElse: () => Project.create(name: 'Unknown Project'),
-              );
-              
-              return Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: _parseColor(project.color).withOpacity( 0.1),
-                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                    border: Border.all(
-                      color: _parseColor(project.color).withOpacity( 0.3),
-                    ),
-                  ),
-                  child: Row(
+                orElse: () => Project(
+                  id: '',
+                  name: 'Unknown Project',
+                  color: '#2196F3',
+                  createdAt: DateTime.now(),
+                  updatedAt: DateTime.now(),
+                ),
+              )
+            : null;
+        
+        return InkWell(
+          onTap: () => _showProjectSelectionBottomSheet(context, ref, activeProjects),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: theme.colorScheme.outline.withOpacity(0.5),
+              ),
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.folder,
+                  color: selectedProject != null
+                      ? _parseColor(selectedProject.color)
+                      : theme.colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        width: 12,
-                        height: 12,
-                        decoration: BoxDecoration(
-                          color: _parseColor(project.color),
-                          shape: BoxShape.circle,
+                      Text(
+                        'Project',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          project.name,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: _parseColor(project.color).withOpacity( 0.1),
-                            fontWeight: FontWeight.w500,
-                          ),
+                      Text(
+                        selectedProject?.name ?? hintText ?? 'Select a project',
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          color: selectedProject != null
+                              ? theme.colorScheme.onSurface
+                              : theme.colorScheme.onSurfaceVariant,
                         ),
                       ),
-                      if (project.hasDeadline)
-                        Text(
-                          'Due ${_formatDate(project.deadline!)}',
-                          style: TextStyle(
-                            fontSize: 10,
-                            color: _parseColor(project.color).withOpacity( 0.1),
-                          ),
-                        ),
                     ],
                   ),
                 ),
-              );
-            },
-            loading: () => const SizedBox.shrink(),
-            error: (_, __) => const SizedBox.shrink(),
+                Icon(
+                  Icons.arrow_drop_down,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ],
+            ),
           ),
-      ],
+        );
+      },
+      loading: () => Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: theme.colorScheme.outline.withOpacity(0.5),
+          ),
+          borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+        ),
+        child: Row(
+          children: [
+            const SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+            const SizedBox(width: 12),
+            Text(
+              'Loading projects...',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
+      ),
+      error: (error, _) => Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: theme.colorScheme.error.withOpacity(0.5),
+          ),
+          borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              Icons.error_outline,
+              color: theme.colorScheme.error,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                'Error loading projects',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.error,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
-
+  
+  void _showProjectSelectionBottomSheet(BuildContext context, WidgetRef ref, List<Project> projects) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => GlassmorphismContainer(
+        level: GlassLevel.floating,
+        padding: const EdgeInsets.all(16),
+        margin: const EdgeInsets.all(16),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header
+            Row(
+              children: [
+                const Icon(Icons.folder),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Select Project',
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                IconButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: const Icon(Icons.close),
+                ),
+              ],
+            ),
+            
+            const SizedBox(height: 16),
+            
+            // None option
+            if (allowNone)
+              ListTile(
+                leading: const Icon(Icons.clear),
+                title: const Text('No Project'),
+                subtitle: const Text('Don\'t assign to any project'),
+                onTap: () {
+                  onProjectSelected(null);
+                  Navigator.of(context).pop();
+                },
+                selected: selectedProjectId == null,
+              ),
+            
+            // Project list
+            if (projects.isEmpty)
+              const Padding(
+                padding: EdgeInsets.all(32),
+                child: Column(
+                  children: [
+                    Icon(Icons.folder_open, size: 48, color: Colors.grey),
+                    SizedBox(height: 16),
+                    Text(
+                      'No Projects Available',
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                    Text(
+                      'Create a project first to assign tasks',
+                      style: TextStyle(color: Colors.grey, fontSize: 12),
+                    ),
+                  ],
+                ),
+              )
+            else
+              ...projects.map((project) => ListTile(
+                leading: Container(
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    color: _parseColor(project.color),
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                title: Text(project.name),
+                subtitle: project.description != null && project.description!.isNotEmpty
+                    ? Text(
+                        project.description!,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      )
+                    : null,
+                trailing: project.id == selectedProjectId
+                    ? Icon(
+                        Icons.check,
+                        color: _parseColor(project.color),
+                      )
+                    : null,
+                onTap: () {
+                  onProjectSelected(project);
+                  Navigator.of(context).pop();
+                },
+                selected: project.id == selectedProjectId,
+              )),
+            
+            // Create new project option
+            if (showCreateOption) ...[
+              const Divider(),
+              ListTile(
+                leading: const Icon(Icons.add),
+                title: const Text('Create New Project'),
+                subtitle: const Text('Create a new project for this task'),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  _showCreateProjectDialog(context, ref);
+                },
+              ),
+            ],
+            
+            // Bottom padding for safe area
+            SizedBox(height: MediaQuery.of(context).padding.bottom),
+          ],
+        ),
+      ),
+    );
+  }
+  
+  void _showCreateProjectDialog(BuildContext context, WidgetRef ref) {
+    // This would show the ProjectFormDialog
+    // For now, show a simple snackbar
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Project creation coming soon'),
+      ),
+    );
+  }
+  
   Color _parseColor(String colorString) {
     try {
       return Color(int.parse(colorString.replaceFirst('#', '0xFF')));
@@ -258,136 +291,46 @@ class ProjectSelector extends ConsumerWidget {
       return Colors.blue;
     }
   }
-
-  String _formatDate(DateTime date) {
-    final now = DateTime.now();
-    final difference = date.difference(now).inDays;
-    
-    if (difference == 0) {
-      return 'today';
-    } else if (difference == 1) {
-      return 'tomorrow';
-    } else if (difference > 0 && difference <= 7) {
-      return 'in $difference days';
-    } else {
-      return '${date.day}/${date.month}';
-    }
-  }
 }
 
-/// Compact version of project selector for use in smaller spaces
+/// Compact version of project selector for forms
 class CompactProjectSelector extends ConsumerWidget {
   final String? selectedProjectId;
-  final ValueChanged<String?> onProjectChanged;
-
+  final Function(Project?) onProjectSelected;
+  final bool allowNone;
+  
   const CompactProjectSelector({
     super.key,
-    required this.selectedProjectId,
-    required this.onProjectChanged,
-  });  @override
+    this.selectedProjectId,
+    required this.onProjectSelected,
+    this.allowNone = true,
+  });
+  
+  @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final activeProjectsAsync = ref.watch(activeProjectsProvider);
-
-    return activeProjectsAsync.when(
+    final projectsAsync = ref.watch(projectsProvider);
+    
+    return projectsAsync.when(
       data: (projects) {
-        final selectedProject = selectedProjectId != null
-            ? projects.firstWhere(
-                (p) => p.id == selectedProjectId,
-                orElse: () => Project.create(name: 'Unknown'),
-              )
-            : null;
-
-        return PopupMenuButton<String?>(
-          initialValue: selectedProjectId,
-          onSelected: onProjectChanged,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: selectedProject != null
-                  ? _parseColor(selectedProject.color).withOpacity( 0.1)
-                  : theme.colorScheme.surfaceContainerHighest.withOpacity( 0.1),
+        final activeProjects = projects.where((p) => !p.isArchived).toList();
+        
+        return DropdownButtonFormField<String?>(
+          value: selectedProjectId,
+          decoration: InputDecoration(
+            labelText: 'Project',
+            border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-              border: selectedProject != null
-                  ? Border.all(
-                      color: _parseColor(selectedProject.color).withOpacity( 0.1),
-                    )
-                  : null,
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (selectedProject != null) ...[
-                  Container(
-                    width: 8,
-                    height: 8,
-                    decoration: BoxDecoration(
-                      color: _parseColor(selectedProject.color),
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    selectedProject.name,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: _parseColor(selectedProject.color),
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ] else ...[
-                  Icon(
-                    Icons.folder_outlined,
-                    size: 14,
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    'Project',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-                const SizedBox(width: 4),
-                Icon(
-                  Icons.arrow_drop_down,
-                  size: 16,
-                  color: selectedProject != null
-                      ? _parseColor(selectedProject.color)
-                      : theme.colorScheme.onSurfaceVariant,
-                ),
-              ],
-            ),
+            prefixIcon: const Icon(Icons.folder),
           ),
-          itemBuilder: (context) => [
-            // Clear selection
-            PopupMenuItem<String?>(
-              value: null,
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.clear,
-                    size: 16,
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'No project',
-                    style: TextStyle(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
+          items: [
+            if (allowNone)
+              const DropdownMenuItem<String?>(
+                value: null,
+                child: Text('No Project'),
               ),
-            ),
-            
-            // Divider
-            const PopupMenuDivider(),
-            
-            // Projects
-            ...projects.map((project) => PopupMenuItem<String?>(
+            ...activeProjects.map((project) => DropdownMenuItem<String?>(
               value: project.id,
               child: Row(
                 children: [
@@ -410,64 +353,51 @@ class CompactProjectSelector extends ConsumerWidget {
               ),
             )),
           ],
+          onChanged: (value) {
+            if (value == null) {
+              onProjectSelected(null);
+            } else {
+              final project = activeProjects.firstWhere((p) => p.id == value);
+              onProjectSelected(project);
+            }
+          },
         );
       },
-      loading: () => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceContainerHighest.withOpacity( 0.1),
-          borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(
-              width: 12,
-              height: 12,
-              child: CircularProgressIndicator(
-                strokeWidth: 1,
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+      loading: () => TextFormField(
+        enabled: false,
+        decoration: InputDecoration(
+          labelText: 'Project',
+          hintText: 'Loading projects...',
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+          ),
+          prefixIcon: const SizedBox(
+            width: 24,
+            height: 24,
+            child: Padding(
+              padding: EdgeInsets.all(10),
+              child: CircularProgressIndicator(strokeWidth: 2),
             ),
-            const SizedBox(width: 4),
-            Text(
-              'Loading...',
-              style: TextStyle(
-                fontSize: 12,
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ],
+          ),
         ),
       ),
-      error: (_, __) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        decoration: BoxDecoration(
-          color: theme.colorScheme.errorContainer.withOpacity( 0.1),
-          borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.error_outline,
-              size: 12,
-              color: theme.colorScheme.error,
-            ),
-            const SizedBox(width: 4),
-            Text(
-              'Error',
-              style: TextStyle(
-                fontSize: 12,
-                color: theme.colorScheme.error,
-              ),
-            ),
-          ],
+      error: (error, _) => TextFormField(
+        enabled: false,
+        decoration: InputDecoration(
+          labelText: 'Project',
+          hintText: 'Error loading projects',
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+          ),
+          prefixIcon: Icon(
+            Icons.error_outline,
+            color: theme.colorScheme.error,
+          ),
         ),
       ),
     );
   }
-
+  
   Color _parseColor(String colorString) {
     try {
       return Color(int.parse(colorString.replaceFirst('#', '0xFF')));

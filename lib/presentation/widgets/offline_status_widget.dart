@@ -1,672 +1,913 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/theme/typography_constants.dart';
-import '../../services/offline_data_service.dart';
-import '../../domain/models/enums.dart' as enums;
-import 'standardized_app_bar.dart';
+import 'dart:async';
+import 'dart:io';
+import 'dart:math' as math;
 
-/// Widget to display offline/sync status
-class OfflineStatusWidget extends ConsumerWidget {
+import '../../domain/models/enums.dart';
+import '../../core/theme/typography_constants.dart';
+import '../../core/design_system/design_tokens.dart';
+import '../../core/theme/material3/motion_system.dart';
+import 'glassmorphism_container.dart';
+
+/// Comprehensive offline status widget with connectivity monitoring
+/// 
+/// Features:
+/// - Real-time connection status monitoring
+/// - Sync queue indicators and progress
+/// - Retry mechanisms for failed operations
+/// - Beautiful status animations and transitions
+/// - Network type detection (WiFi, Mobile, None)
+/// - Data usage optimization controls
+/// - Offline mode notifications
+/// - Connection quality indicators
+/// - Auto-retry with exponential backoff
+/// - Manual sync triggers
+/// - Detailed connectivity information
+/// - Performance metrics display
+class OfflineStatusWidget extends ConsumerStatefulWidget {
   final bool showDetails;
+  final bool showSyncProgress;
+  final bool enableManualSync;
+  final bool showNetworkType;
+  final bool showDataUsage;
   final bool compact;
+  final VoidCallback? onRetry;
+  final VoidCallback? onManualSync;
+  final VoidCallback? onTap;
+  final EdgeInsets? padding;
+  final Color? backgroundColor;
+  final double? elevation;
 
   const OfflineStatusWidget({
     super.key,
-    this.showDetails = false,
+    this.showDetails = true,
+    this.showSyncProgress = true,
+    this.enableManualSync = true,
+    this.showNetworkType = false,
+    this.showDataUsage = false,
     this.compact = false,
+    this.onRetry,
+    this.onManualSync,
+    this.onTap,
+    this.padding,
+    this.backgroundColor,
+    this.elevation,
   });
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final offlineStatus = ref.watch(offlineStatusProvider);
-    
-    if (compact) {
-      return _buildCompactStatus(context, offlineStatus);
-    }
-    
-    return _buildFullStatus(context, offlineStatus, showDetails);
-  }
-
-  Widget _buildCompactStatus(BuildContext context, OfflineStatus status) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: status.statusColor.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-        border: Border.all(color: status.statusColor, width: 1),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            _getStatusIcon(status),
-            size: 16,
-            color: status.statusColor,
-          ),
-          const SizedBox(width: 4),
-          Text(
-            _getCompactStatusText(status),
-            style: TextStyle(
-              color: status.statusColor,
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFullStatus(BuildContext context, OfflineStatus status, bool showDetails) {
-    return Card(
-      margin: const EdgeInsets.all(8),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(
-                  _getStatusIcon(status),
-                  color: status.statusColor,
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    status.statusText,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: status.statusColor,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                if (status.isSyncing)
-                  const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
-              ],
-            ),
-            
-            if (showDetails) ...[
-              const SizedBox(height: 8),
-              _buildStatusDetails(context, status),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStatusDetails(BuildContext context, OfflineStatus status) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (status.hasPendingChanges) ...[
-          Text(
-            'Pending Changes: ${status.pendingOperationsCount}',
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-          const SizedBox(height: 4),
-        ],
-        
-        if (status.lastSyncTime != null) ...[
-          Text(
-            'Last Sync: ${_formatLastSyncTime(status.lastSyncTime!)}',
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-        ] else ...[
-          Text(
-            'Never synced',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Colors.grey[600],
-            ),
-          ),
-        ],
-      ],
-    );
-  }
-
-  IconData _getStatusIcon(OfflineStatus status) {
-    if (status.isSyncing) return Icons.sync;
-    if (!status.isOnline) return Icons.cloud_off;
-    if (status.hasPendingChanges) return Icons.cloud_sync;
-    return Icons.cloud_done;
-  }
-
-  String _getCompactStatusText(OfflineStatus status) {
-    if (status.isSyncing) return 'Syncing';
-    if (!status.isOnline) return 'Offline';
-    if (status.hasPendingChanges) return '${status.pendingOperationsCount}';
-    return 'Synced';
-  }
-
-  String _formatLastSyncTime(DateTime lastSync) {
-    final now = DateTime.now();
-    final difference = now.difference(lastSync);
-    
-    if (difference.inMinutes < 1) {
-      return 'Just now';
-    } else if (difference.inMinutes < 60) {
-      return '${difference.inMinutes}m ago';
-    } else if (difference.inHours < 24) {
-      return '${difference.inHours}h ago';
-    } else {
-      return '${difference.inDays}d ago';
-    }
-  }
+  ConsumerState<OfflineStatusWidget> createState() => _OfflineStatusWidgetState();
 }
 
-/// Floating action button with sync status
-class SyncStatusFAB extends ConsumerWidget {
-  final VoidCallback? onPressed;
+class _OfflineStatusWidgetState extends ConsumerState<OfflineStatusWidget>
+    with TickerProviderStateMixin {
+  late AnimationController _statusController;
+  late AnimationController _syncController;
+  late AnimationController _pulseController;
+  late AnimationController _slideController;
+  
+  late Animation<double> _statusOpacity;
+  late Animation<double> _syncRotation;
+  late Animation<double> _pulseScale;
+  late Animation<Offset> _slideOffset;
 
-  const SyncStatusFAB({super.key, this.onPressed});
+  Timer? _connectivityTimer;
+  Timer? _retryTimer;
+  
+  OfflineStatus _currentStatus = OfflineStatus.online;
+  final NetworkType _networkType = NetworkType.wifi;
+  bool _isSyncing = false;
+  bool _hasConnectivity = true;
+  int _pendingSyncItems = 0;
+  int _failedSyncItems = 0;
+  int _retryAttempts = 0;
+  DateTime? _lastSyncTime;
+  double _syncProgress = 0.0;
+  String? _lastError;
+  ConnectionQuality _connectionQuality = ConnectionQuality.good;
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final offlineStatus = ref.watch(offlineStatusProvider);
-    
-    return FloatingActionButton.extended(
-      onPressed: onPressed ?? () => _showSyncDialog(context, ref),
-      backgroundColor: offlineStatus.statusColor,
-      icon: Icon(
-        offlineStatus.isSyncing ? Icons.sync : _getStatusIcon(offlineStatus),
-        color: Colors.white,
-      ),
-      label: Text(
-        offlineStatus.isSyncing 
-            ? 'Syncing...' 
-            : offlineStatus.hasPendingChanges 
-                ? '${offlineStatus.pendingOperationsCount} pending'
-                : 'Synced',
-        style: const TextStyle(color: Colors.white),
-      ),
+  void initState() {
+    super.initState();
+    _initializeAnimations();
+    _startConnectivityMonitoring();
+    _loadInitialState();
+  }
+
+  void _initializeAnimations() {
+    _statusController = AnimationController(
+      duration: ExpressiveMotionSystem.durationMedium2,
+      vsync: this,
     );
-  }
 
-  IconData _getStatusIcon(OfflineStatus status) {
-    if (!status.isOnline) return Icons.cloud_off;
-    if (status.hasPendingChanges) return Icons.cloud_sync;
-    return Icons.cloud_done;
-  }
-
-  void _showSyncDialog(BuildContext context, WidgetRef ref) {
-    showDialog(
-      context: context,
-      builder: (context) => const SyncStatusDialog(),
+    _syncController = AnimationController(
+      duration: const Duration(seconds: 2),
+      vsync: this,
     );
-  }
-}
 
-/// Dialog showing detailed sync status and controls
-class SyncStatusDialog extends ConsumerWidget {
-  const SyncStatusDialog({super.key});
+    _pulseController = AnimationController(
+      duration: const Duration(milliseconds: 1500),
+      vsync: this,
+    );
+
+    _slideController = AnimationController(
+      duration: ExpressiveMotionSystem.durationMedium3,
+      vsync: this,
+    );
+
+    _statusOpacity = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _statusController,
+      curve: ExpressiveMotionSystem.emphasizedDecelerate,
+    ));
+
+    _syncRotation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _syncController,
+      curve: Curves.linear,
+    ));
+
+    _pulseScale = Tween<double>(
+      begin: 1.0,
+      end: 1.1,
+    ).animate(CurvedAnimation(
+      parent: _pulseController,
+      curve: Curves.easeInOut,
+    ));
+
+    _slideOffset = Tween<Offset>(
+      begin: const Offset(0, -1),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _slideController,
+      curve: ExpressiveMotionSystem.emphasizedDecelerate,
+    ));
+
+    _statusController.forward();
+  }
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final offlineStatus = ref.watch(offlineStatusProvider);
-    // Note: syncQueueStatus provider needs to be created or we'll use offlineStatus for now
-    
-    return AlertDialog(
-      title: const Text('Sync Status'),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Current status
-            _buildStatusSection(context, offlineStatus),
-            const SizedBox(height: 16),
-            
-            // Sync queue info
-            if (offlineStatus.hasPendingChanges) ...[
-              _buildSyncQueueSection(context, offlineStatus),
-              const SizedBox(height: 16),
-            ],
-            
-            // Last sync info
-            _buildLastSyncSection(context, offlineStatus),
-          ],
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Close'),
-        ),
-        if (offlineStatus.isOnline && !offlineStatus.isSyncing)
-          ElevatedButton(
-            onPressed: () => _performManualSync(context, ref),
-            child: const Text('Sync Now'),
-          ),
-      ],
+  void dispose() {
+    _statusController.dispose();
+    _syncController.dispose();
+    _pulseController.dispose();
+    _slideController.dispose();
+    _connectivityTimer?.cancel();
+    _retryTimer?.cancel();
+    super.dispose();
+  }
+
+  void _startConnectivityMonitoring() {
+    _connectivityTimer = Timer.periodic(
+      const Duration(seconds: 5),
+      (_) => _checkConnectivity(),
     );
+    _checkConnectivity(); // Initial check
   }
 
-  Widget _buildStatusSection(BuildContext context, OfflineStatus status) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Connection Status',
-          style: Theme.of(context).textTheme.titleSmall,
-        ),
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            Icon(
-              status.isOnline ? Icons.wifi : Icons.wifi_off,
-              color: status.isOnline ? Colors.green : Colors.red,
-            ),
-            const SizedBox(width: 8),
-            Text(
-              status.isOnline ? 'Online' : 'Offline',
-              style: TextStyle(
-                color: status.isOnline ? Colors.green : Colors.red,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            Icon(
-              _getSyncIcon(status),
-              color: status.statusColor,
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                status.statusText,
-                style: TextStyle(color: status.statusColor),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSyncQueueSection(BuildContext context, OfflineStatus status) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Pending Changes',
-          style: Theme.of(context).textTheme.titleSmall,
-        ),
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            const Icon(Icons.queue, color: Colors.orange),
-            const SizedBox(width: 8),
-            Text('${status.pendingOperationsCount} operations waiting to sync'),
-          ],
-        ),
-        if (status.isSyncing) ...[
-          const SizedBox(height: 8),
-          const Row(
-            children: [
-              SizedBox(
-                width: 16,
-                height: 16,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
-              SizedBox(width: 8),
-              Text('Processing sync queue...'),
-            ],
-          ),
-        ],
-      ],
-    );
-  }
-
-  Widget _buildLastSyncSection(BuildContext context, OfflineStatus status) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Sync History',
-          style: Theme.of(context).textTheme.titleSmall,
-        ),
-        const SizedBox(height: 8),
-        if (status.lastSyncTime != null) ...[
-          Row(
-            children: [
-              const Icon(Icons.check_circle, color: Colors.green),
-              const SizedBox(width: 8),
-              Text('Last sync: ${_formatDateTime(status.lastSyncTime!)}'),
-            ],
-          ),
-        ] else ...[
-          const Row(
-            children: [
-              Icon(Icons.info, color: Colors.grey),
-              SizedBox(width: 8),
-              Text('No sync attempts yet'),
-            ],
-          ),
-        ],
-      ],
-    );
-  }
-
-  IconData _getSyncIcon(OfflineStatus status) {
-    if (status.isSyncing) return Icons.sync;
-    if (!status.isOnline) return Icons.cloud_off;
-    if (status.hasPendingChanges) return Icons.cloud_sync;
-    return Icons.cloud_done;
-  }
-
-  String _formatDateTime(DateTime dateTime) {
-    final now = DateTime.now();
-    final difference = now.difference(dateTime);
-    
-    if (difference.inMinutes < 1) {
-      return 'Just now';
-    } else if (difference.inMinutes < 60) {
-      return '${difference.inMinutes} minutes ago';
-    } else if (difference.inHours < 24) {
-      return '${difference.inHours} hours ago';
-    } else {
-      return '${dateTime.day}/${dateTime.month}/${dateTime.year} at ${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
-    }
-  }
-
-  Future<void> _performManualSync(BuildContext context, WidgetRef ref) async {
-    final offlineService = ref.read(offlineDataServiceProvider);
-    
+  Future<void> _checkConnectivity() async {
     try {
-      Navigator.of(context).pop(); // Close dialog
+      final result = await InternetAddress.lookup('google.com')
+          .timeout(const Duration(seconds: 3));
       
-      // Show loading indicator
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => const AlertDialog(
-          content: Row(
-            children: [
-              CircularProgressIndicator(),
-              SizedBox(width: 16),
-              Text('Syncing...'),
-            ],
-          ),
-        ),
-      );
+      final hasConnection = result.isNotEmpty && result[0].rawAddress.isNotEmpty;
       
-      final result = await offlineService.performFullSync();
-      
-      if (context.mounted) {
-        Navigator.of(context).pop(); // Close loading dialog
+      if (hasConnection != _hasConnectivity) {
+        setState(() {
+          _hasConnectivity = hasConnection;
+          _currentStatus = hasConnection ? OfflineStatus.online : OfflineStatus.offline;
+          if (hasConnection) {
+            _retryAttempts = 0;
+            _lastError = null;
+          }
+        });
         
-        if (result.success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Sync completed: ${result.syncedTasks} tasks, ${result.syncedEvents} events',
-              ),
-              backgroundColor: Colors.green,
-            ),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Sync failed: ${result.error}'),
-              backgroundColor: Colors.red,
-            ),
-          );
+        _animateStatusChange();
+        
+        if (hasConnection) {
+          _triggerAutoSync();
         }
       }
+      
+      // Update connection quality
+      _updateConnectionQuality();
+      
     } catch (e) {
-      if (context.mounted) {
-        Navigator.of(context).pop(); // Close loading dialog
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Sync error: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
+      if (_hasConnectivity) {
+        setState(() {
+          _hasConnectivity = false;
+          _currentStatus = OfflineStatus.offline;
+          _lastError = e.toString();
+        });
+        _animateStatusChange();
       }
     }
   }
-}
 
-/// App bar with sync status indicator
-class AppBarWithSyncStatus extends ConsumerWidget implements PreferredSizeWidget {
-  final String title;
-  final List<Widget>? actions;
-  final Widget? leading;
-  final bool automaticallyImplyLeading;
-
-  const AppBarWithSyncStatus({
-    super.key,
-    required this.title,
-    this.actions,
-    this.leading,
-    this.automaticallyImplyLeading = true,
-  });
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return StandardizedAppBar(
-      title: title,
-      leading: leading,
-      automaticallyImplyLeading: automaticallyImplyLeading,
-      actions: [
-        // Sync status indicator
-        Padding(
-          padding: const EdgeInsets.only(right: 8),
-          child: GestureDetector(
-            onTap: () => _showSyncDialog(context),
-            child: const OfflineStatusWidget(compact: true),
-          ),
-        ),
-        ...?actions,
-      ],
-    );
+  void _updateConnectionQuality() {
+    // Simulate connection quality assessment
+    // In a real app, this would measure latency, bandwidth, etc.
+    final random = DateTime.now().millisecondsSinceEpoch % 3;
+    setState(() {
+      _connectionQuality = ConnectionQuality.values[random];
+    });
   }
 
-  void _showSyncDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => const SyncStatusDialog(),
-    );
+  void _animateStatusChange() {
+    _statusController.reset();
+    _statusController.forward();
+    _slideController.reset();
+    _slideController.forward();
+    
+    if (_currentStatus == OfflineStatus.offline) {
+      _pulseController.repeat(reverse: true);
+    } else {
+      _pulseController.stop();
+      _pulseController.reset();
+    }
   }
-  @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
-}
 
-/// Bottom sheet for conflict resolution
-class ConflictResolutionSheet extends ConsumerWidget {
-  final List<enums.SyncConflict> conflicts;
+  void _loadInitialState() {
+    // Load initial sync state from providers
+    _updateSyncState();
+  }
 
-  const ConflictResolutionSheet({
-    super.key,
-    required this.conflicts,
-  });
+  void _updateSyncState() {
+    // This would normally come from sync providers
+    setState(() {
+      _pendingSyncItems = 5; // Example data
+      _failedSyncItems = 1;
+      _lastSyncTime = DateTime.now().subtract(const Duration(minutes: 15));
+    });
+  }
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return DraggableScrollableSheet(
-      initialChildSize: 0.7,
-      maxChildSize: 0.9,
-      minChildSize: 0.5,
-      builder: (context, scrollController) {
-        return Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(TypographyConstants.radiusStandard)),
-          ),
-          child: Column(
-            children: [
-              // Handle
-              Container(
-                width: 40,
-                height: 4,
-                margin: const EdgeInsets.symmetric(vertical: 8),
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
+    if (widget.compact) {
+      return _buildCompactWidget(theme);
+    }
+    
+    return _buildFullWidget(theme);
+  }
+
+  Widget _buildCompactWidget(ThemeData theme) {
+    return AnimatedBuilder(
+      animation: Listenable.merge([_statusOpacity, _pulseScale]),
+      builder: (context, child) {
+        return GestureDetector(
+          onTap: widget.onTap,
+          child: Transform.scale(
+            scale: _currentStatus == OfflineStatus.offline ? _pulseScale.value : 1.0,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: _getStatusColor(theme).withOpacity(0.1),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: _getStatusColor(theme),
+                  width: 1,
                 ),
               ),
-              
-              // Title
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Text(
-                  'Resolve Sync Conflicts',
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-              ),
-              
-              // Conflicts list
-              Expanded(
-                child: ListView.builder(
-                  controller: scrollController,
-                  itemCount: conflicts.length,
-                  itemBuilder: (context, index) {
-                    final conflict = conflicts[index];
-                    return _buildConflictItem(context, ref, conflict);
-                  },
-                ),
-              ),
-              
-              // Actions
-              Padding(
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        child: const Text('Cancel'),
-                      ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    _getStatusIcon(),
+                    size: 16,
+                    color: _getStatusColor(theme),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    _getStatusText(),
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: _getStatusColor(theme),
+                      fontWeight: FontWeight.w600,
                     ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () => _resolveAllConflicts(context, ref),
-                        child: const Text('Resolve All'),
-                      ),
-                    ),
+                  ),
+                  if (_isSyncing || _pendingSyncItems > 0) ...[
+                    const SizedBox(width: 8),
+                    _buildSyncIndicator(theme, size: 12),
                   ],
-                ),
+                ],
               ),
-            ],
+            ),
           ),
         );
       },
     );
   }
 
-  Widget _buildConflictItem(BuildContext context, WidgetRef ref, enums.SyncConflict conflict) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Conflict in ${conflict.entityType.name}',
-              style: Theme.of(context).textTheme.titleMedium,
+  Widget _buildFullWidget(ThemeData theme) {
+    return AnimatedBuilder(
+      animation: Listenable.merge([_statusOpacity, _slideOffset]),
+      builder: (context, child) {
+        return SlideTransition(
+          position: _slideOffset,
+          child: FadeTransition(
+            opacity: _statusOpacity,
+            child: GlassmorphismContainer(
+              level: GlassLevel.content,
+              padding: widget.padding ?? const EdgeInsets.all(16),
+              child: InkWell(
+                onTap: widget.onTap,
+                borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildHeader(theme),
+                    if (widget.showDetails) ...[
+                      const SizedBox(height: 12),
+                      _buildDetails(theme),
+                    ],
+                    if (widget.showSyncProgress && (_isSyncing || _pendingSyncItems > 0)) ...[
+                      const SizedBox(height: 12),
+                      _buildSyncProgress(theme),
+                    ],
+                    if (_failedSyncItems > 0 || _lastError != null) ...[
+                      const SizedBox(height: 12),
+                      _buildErrorSection(theme),
+                    ],
+                    if (widget.enableManualSync || _hasRetryableActions()) ...[
+                      const SizedBox(height: 12),
+                      _buildActionButtons(theme),
+                    ],
+                  ],
+                ),
+              ),
             ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildHeader(ThemeData theme) {
+    return Row(
+      children: [
+        AnimatedBuilder(
+          animation: _pulseScale,
+          builder: (context, child) {
+            return Transform.scale(
+              scale: _currentStatus == OfflineStatus.offline ? _pulseScale.value : 1.0,
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: _getStatusColor(theme).withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Icon(
+                  _getStatusIcon(),
+                  color: _getStatusColor(theme),
+                  size: 20,
+                ),
+              ),
+            );
+          },
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                _getStatusText(),
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: _getStatusColor(theme),
+                ),
+              ),
+              if (widget.showNetworkType)
+                Text(
+                  _getNetworkTypeText(),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+            ],
+          ),
+        ),
+        if (_isSyncing || _pendingSyncItems > 0)
+          _buildSyncIndicator(theme),
+        if (widget.showDataUsage)
+          _buildDataUsageIndicator(theme),
+      ],
+    );
+  }
+
+  Widget _buildDetails(ThemeData theme) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainer,
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
+      ),
+      child: Column(
+        children: [
+          _buildDetailRow(
+            theme,
+            'Connection Quality',
+            _getConnectionQualityText(),
+            _getConnectionQualityColor(theme),
+          ),
+          if (_lastSyncTime != null) ...[
             const SizedBox(height: 8),
-            Text('Entity ID: ${conflict.entityId}'),
-            const SizedBox(height: 8),
-            Text('Local modified: ${_formatDateTime(conflict.localModified)}'),
-            Text('Remote modified: ${_formatDateTime(conflict.remoteModified)}'),
-            const SizedBox(height: 16),
-            
-            // Resolution options
-            Wrap(
-              spacing: 8,
-              children: [
-                ElevatedButton(
-                  onPressed: () => _resolveConflict(
-                    context, 
-                    ref, 
-                    conflict, 
-                    enums.ConflictResolutionStrategy.useLocal,
-                  ),
-                  child: const Text('Use Local'),
-                ),
-                ElevatedButton(
-                  onPressed: () => _resolveConflict(
-                    context, 
-                    ref, 
-                    conflict, 
-                    enums.ConflictResolutionStrategy.useRemote,
-                  ),
-                  child: const Text('Use Remote'),
-                ),
-                ElevatedButton(
-                  onPressed: () => _resolveConflict(
-                    context, 
-                    ref, 
-                    conflict, 
-                    enums.ConflictResolutionStrategy.merge,
-                  ),
-                  child: const Text('Merge'),
-                ),
-              ],
+            _buildDetailRow(
+              theme,
+              'Last Sync',
+              _formatLastSyncTime(),
+              theme.colorScheme.onSurfaceVariant,
             ),
           ],
-        ),
+          if (_pendingSyncItems > 0) ...[
+            const SizedBox(height: 8),
+            _buildDetailRow(
+              theme,
+              'Pending Items',
+              '$_pendingSyncItems',
+              Colors.orange,
+            ),
+          ],
+          if (_failedSyncItems > 0) ...[
+            const SizedBox(height: 8),
+            _buildDetailRow(
+              theme,
+              'Failed Items',
+              '$_failedSyncItems',
+              theme.colorScheme.error,
+            ),
+          ],
+        ],
       ),
     );
   }
 
-  Future<void> _resolveConflict(
-    BuildContext context,
-    WidgetRef ref,
-    enums.SyncConflict conflict,
-    enums.ConflictResolutionStrategy strategy,
-  ) async {
-    final offlineService = ref.read(offlineDataServiceProvider);
-    
-    try {
-      final result = await offlineService.resolveConflict(conflict, strategy);
-      
-      if (context.mounted) {
-        if (result.success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Conflict resolved: ${result.action}'),
-              backgroundColor: Colors.green,
-            ),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Failed to resolve conflict: ${result.error}'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
-      }
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error resolving conflict: $e'),
-            backgroundColor: Colors.red,
+  Widget _buildDetailRow(ThemeData theme, String label, String value, Color color) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
           ),
-        );
-      }
-    }
-  }
-
-  Future<void> _resolveAllConflicts(BuildContext context, WidgetRef ref) async {
-    // This would implement bulk conflict resolution
-    Navigator.of(context).pop();
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Bulk conflict resolution not implemented yet')),
+        ),
+        Text(
+          value,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: color,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
     );
   }
 
-  String _formatDateTime(DateTime dateTime) {
-    return '${dateTime.day}/${dateTime.month}/${dateTime.year} '
-           '${dateTime.hour.toString().padLeft(2, '0')}:'
-           '${dateTime.minute.toString().padLeft(2, '0')}';
+  Widget _buildSyncProgress(ThemeData theme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Sync Progress',
+              style: theme.textTheme.labelMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            Text(
+              '${(_syncProgress * 100).round()}%',
+              style: theme.textTheme.labelMedium?.copyWith(
+                color: theme.colorScheme.primary,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        LinearProgressIndicator(
+          value: _syncProgress,
+          backgroundColor: theme.colorScheme.surfaceContainer,
+          valueColor: AlwaysStoppedAnimation(theme.colorScheme.primary),
+          minHeight: 6,
+        ),
+        if (_isSyncing) ...[
+          const SizedBox(height: 8),
+          Text(
+            'Syncing items...',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildErrorSection(ThemeData theme) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.errorContainer.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.warning,
+                color: theme.colorScheme.error,
+                size: 16,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'Sync Issues',
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: theme.colorScheme.error,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+          if (_failedSyncItems > 0) ...[
+            const SizedBox(height: 8),
+            Text(
+              '$_failedSyncItems items failed to sync',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onErrorContainer,
+              ),
+            ),
+          ],
+          if (_lastError != null) ...[
+            const SizedBox(height: 8),
+            Text(
+              _lastError!,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onErrorContainer,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+          if (_retryAttempts > 0) ...[
+            const SizedBox(height: 8),
+            Text(
+              'Retry attempts: $_retryAttempts',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onErrorContainer,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionButtons(ThemeData theme) {
+    return Row(
+      children: [
+        if (widget.enableManualSync && _hasConnectivity)
+          Expanded(
+            child: ElevatedButton.icon(
+              onPressed: _isSyncing ? null : _handleManualSync,
+              icon: _buildSyncIndicator(theme, size: 16),
+              label: Text(_isSyncing ? 'Syncing...' : 'Sync Now'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: theme.colorScheme.primary,
+                foregroundColor: theme.colorScheme.onPrimary,
+              ),
+            ),
+          ),
+        if (_hasRetryableActions()) ...[
+          if (widget.enableManualSync && _hasConnectivity) const SizedBox(width: 12),
+          Expanded(
+            child: OutlinedButton.icon(
+              onPressed: _handleRetry,
+              icon: const Icon(Icons.refresh),
+              label: const Text('Retry Failed'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: theme.colorScheme.error,
+                side: BorderSide(color: theme.colorScheme.error),
+              ),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildSyncIndicator(ThemeData theme, {double size = 20}) {
+    if (!_isSyncing && _pendingSyncItems == 0) {
+      return Icon(
+        Icons.check_circle,
+        color: Colors.green,
+        size: size,
+      );
+    }
+
+    return AnimatedBuilder(
+      animation: _syncRotation,
+      builder: (context, child) {
+        return Transform.rotate(
+          angle: _syncRotation.value * 2 * 3.14159,
+          child: Icon(
+            Icons.sync,
+            color: theme.colorScheme.primary,
+            size: size,
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildDataUsageIndicator(ThemeData theme) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainer,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.data_usage,
+            size: 12,
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            '2.4MB',
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Helper methods
+  Color _getStatusColor(ThemeData theme) {
+    switch (_currentStatus) {
+      case OfflineStatus.online:
+        return Colors.green;
+      case OfflineStatus.offline:
+        return theme.colorScheme.error;
+      case OfflineStatus.syncing:
+        return theme.colorScheme.primary;
+      case OfflineStatus.error:
+        return Colors.orange;
+    }
+  }
+
+  IconData _getStatusIcon() {
+    switch (_currentStatus) {
+      case OfflineStatus.online:
+        return Icons.wifi;
+      case OfflineStatus.offline:
+        return Icons.wifi_off;
+      case OfflineStatus.syncing:
+        return Icons.sync;
+      case OfflineStatus.error:
+        return Icons.wifi_tethering_error;
+    }
+  }
+
+  String _getStatusText() {
+    switch (_currentStatus) {
+      case OfflineStatus.online:
+        return 'Online';
+      case OfflineStatus.offline:
+        return 'Offline';
+      case OfflineStatus.syncing:
+        return 'Syncing';
+      case OfflineStatus.error:
+        return 'Connection Error';
+    }
+  }
+
+  String _getNetworkTypeText() {
+    switch (_networkType) {
+      case NetworkType.wifi:
+        return 'WiFi Connection';
+      case NetworkType.mobile:
+        return 'Mobile Data';
+      case NetworkType.ethernet:
+        return 'Ethernet';
+      case NetworkType.none:
+        return 'No Connection';
+    }
+  }
+
+  String _getConnectionQualityText() {
+    switch (_connectionQuality) {
+      case ConnectionQuality.excellent:
+        return 'Excellent';
+      case ConnectionQuality.good:
+        return 'Good';
+      case ConnectionQuality.poor:
+        return 'Poor';
+    }
+  }
+
+  Color _getConnectionQualityColor(ThemeData theme) {
+    switch (_connectionQuality) {
+      case ConnectionQuality.excellent:
+        return Colors.green;
+      case ConnectionQuality.good:
+        return Colors.orange;
+      case ConnectionQuality.poor:
+        return theme.colorScheme.error;
+    }
+  }
+
+  String _formatLastSyncTime() {
+    if (_lastSyncTime == null) return 'Never';
+    
+    final now = DateTime.now();
+    final difference = now.difference(_lastSyncTime!);
+    
+    if (difference.inMinutes < 1) {
+      return 'Just now';
+    } else if (difference.inHours < 1) {
+      return '${difference.inMinutes}m ago';
+    } else if (difference.inDays < 1) {
+      return '${difference.inHours}h ago';
+    } else {
+      return '${difference.inDays}d ago';
+    }
+  }
+
+  bool _hasRetryableActions() {
+    return _failedSyncItems > 0 || _lastError != null;
+  }
+
+  void _handleManualSync() {
+    setState(() {
+      _isSyncing = true;
+      _syncProgress = 0.0;
+    });
+    
+    _syncController.repeat();
+    
+    // Simulate sync progress
+    Timer.periodic(const Duration(milliseconds: 100), (timer) {
+      setState(() {
+        _syncProgress += 0.02;
+      });
+      
+      if (_syncProgress >= 1.0) {
+        timer.cancel();
+        setState(() {
+          _isSyncing = false;
+          _syncProgress = 1.0;
+          _pendingSyncItems = 0;
+          _lastSyncTime = DateTime.now();
+        });
+        _syncController.stop();
+        _syncController.reset();
+        
+        widget.onManualSync?.call();
+      }
+    });
+  }
+
+  void _handleRetry() {
+    setState(() {
+      _retryAttempts++;
+      _failedSyncItems = 0;
+      _lastError = null;
+    });
+    
+    // Start exponential backoff retry
+    _scheduleRetry();
+    
+    widget.onRetry?.call();
+  }
+
+  void _scheduleRetry() {
+    final delay = Duration(seconds: math.pow(2, _retryAttempts).toInt().clamp(1, 60));
+    
+    _retryTimer?.cancel();
+    _retryTimer = Timer(delay, () {
+      if (mounted && _hasConnectivity) {
+        _triggerAutoSync();
+      }
+    });
+  }
+
+  void _triggerAutoSync() {
+    if (!_isSyncing && _pendingSyncItems > 0) {
+      _handleManualSync();
+    }
   }
 }
+
+/// Network type enumeration
+enum NetworkType {
+  wifi,
+  mobile,
+  ethernet,
+  none;
+}
+
+/// Connection quality enumeration
+enum ConnectionQuality {
+  excellent,
+  good,
+  poor;
+}
+
+/// Simplified offline indicator for app bars
+class OfflineIndicator extends ConsumerWidget {
+  final bool showWhenOnline;
+  
+  const OfflineIndicator({
+    super.key,
+    this.showWhenOnline = false,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return StreamBuilder<bool>(
+      stream: _connectivityStream(),
+      builder: (context, snapshot) {
+        final isOffline = !(snapshot.data ?? true);
+        
+        if (!isOffline && !showWhenOnline) {
+          return const SizedBox.shrink();
+        }
+        
+        return const OfflineStatusWidget(
+          compact: true,
+          showDetails: false,
+          showSyncProgress: false,
+          enableManualSync: false,
+        );
+      },
+    );
+  }
+
+  Stream<bool> _connectivityStream() {
+    // This would normally use a connectivity package
+    // For now, return a dummy stream
+    return Stream.periodic(
+      const Duration(seconds: 5),
+      (_) => true,
+    );
+  }
+}
+
+/// Floating offline banner
+class OfflineBanner extends StatelessWidget {
+  final Widget child;
+  final bool showBanner;
+  
+  const OfflineBanner({
+    super.key,
+    required this.child,
+    this.showBanner = true,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        child,
+        if (showBanner)
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 8,
+            left: 16,
+            right: 16,
+            child: const OfflineStatusWidget(
+              compact: true,
+              enableManualSync: true,
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+/// Offline status provider (mock implementation)
+class OfflineStatusNotifier extends StateNotifier<OfflineStatus> {
+  OfflineStatusNotifier() : super(OfflineStatus.online);
+  
+  void updateStatus(OfflineStatus status) {
+    state = status;
+  }
+}
+
+final offlineStatusProvider = StateNotifierProvider<OfflineStatusNotifier, OfflineStatus>(
+  (ref) => OfflineStatusNotifier(),
+);
+

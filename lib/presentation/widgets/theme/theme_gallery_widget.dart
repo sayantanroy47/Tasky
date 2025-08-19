@@ -145,6 +145,7 @@ class _ThemePreviewCardState extends State<ThemePreviewCard>
   late Animation<double> _glowAnimation;
   bool _isHovered = false;
 
+
   @override
   void initState() {
     super.initState();
@@ -262,7 +263,7 @@ class _ThemePreviewCardState extends State<ThemePreviewCard>
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            colors.background,
+            colors.surface,
             colors.surface,
           ],
         ),
@@ -315,10 +316,9 @@ class _ThemePreviewCardState extends State<ThemePreviewCard>
                 // Theme name
                 Text(
                   theme.metadata.name,
-                  style: TextStyle(
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: colors.onBackground,
                     fontWeight: FontWeight.bold,
-                    fontSize: 14.0,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -329,9 +329,8 @@ class _ThemePreviewCardState extends State<ThemePreviewCard>
                 // Theme category
                 Text(
                   theme.metadata.category.toUpperCase(),
-                  style: TextStyle(
+                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     color: colors.onBackground.withOpacity(0.7),
-                    fontSize: 11.0,
                     fontWeight: FontWeight.w500,
                     letterSpacing: 0.5,
                   ),
@@ -383,7 +382,7 @@ class _ThemePreviewCardState extends State<ThemePreviewCard>
       child: CustomPaint(
         painter: MatrixPatternPainter(
           codeColor: colors.primary,
-          backgroundColor: colors.background,
+          backgroundColor: colors.surface,
         ),
       ),
     );
@@ -394,7 +393,7 @@ class _ThemePreviewCardState extends State<ThemePreviewCard>
       child: CustomPaint(
         painter: DraculaPatternPainter(
           accentColor: colors.primary,
-          backgroundColor: colors.background,
+          backgroundColor: colors.surface,
         ),
       ),
     );

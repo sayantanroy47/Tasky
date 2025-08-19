@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../services/responsive_design_service.dart';
 import '../../services/accessibility_service.dart';
+import 'glassmorphism_container.dart';
+import '../../core/design_system/design_tokens.dart';
 
 /// Enhanced responsive widget that adapts to screen size
 class ResponsiveWidget extends ConsumerWidget {
@@ -78,27 +80,53 @@ class _EnhancedButtonState extends ConsumerState<EnhancedButton>
             builder: (context, child) {
               return Transform.scale(
                 scale: _scaleAnimation.value,
-                child: ElevatedButton(
-                  onPressed: widget.onPressed == null ? null : () async {
-                    if (widget.enableHaptics) {
-                      await accessibilityService.provideHapticFeedback(
-                        HapticFeedbackType.selection,
-                      );
-                    }
-                    
-                    if (!settings.reducedMotionMode) {
-                      await _animationController.forward();
-                      await _animationController.reverse();
-                    }
-                    
-                    widget.onPressed!();
-                  },
-                  style: widget.style?.copyWith(
-                    minimumSize: WidgetStateProperty.all(
-                      Size.fromHeight(config.buttonHeight),
+                child: GlassmorphismContainer(
+                  level: GlassLevel.interactive,
+                  height: config.buttonHeight,
+                  borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: widget.onPressed == null ? null : () async {
+                        if (widget.enableHaptics) {
+                          await accessibilityService.provideHapticFeedback(
+                            HapticFeedbackType.selection,
+                          );
+                        }
+                        
+                        if (!settings.reducedMotionMode) {
+                          await _animationController.forward();
+                          await _animationController.reverse();
+                        }
+                        
+                        widget.onPressed!();
+                      },
+                      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                      child: Container(
+                        height: config.buttonHeight,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                              Theme.of(context).colorScheme.primary.withOpacity(0.6),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                        ),
+                        child: Center(
+                          child: DefaultTextStyle(
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            child: widget.child,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                  child: widget.child,
                 ),
               );
             },
@@ -139,9 +167,8 @@ class EnhancedCard extends ConsumerStatefulWidget {
 class _EnhancedCardState extends ConsumerState<EnhancedCard>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
-  late Animation<double> _elevationAnimation;
   late Animation<double> _scaleAnimation;
-  bool _isHovered = false;
+
   bool _isPressed = false;  @override
   void initState() {
     super.initState();
@@ -149,14 +176,6 @@ class _EnhancedCardState extends ConsumerState<EnhancedCard>
       duration: const Duration(milliseconds: 200),
       vsync: this,
     );
-    
-    _elevationAnimation = Tween<double>(
-      begin: widget.elevation ?? 1.0,
-      end: (widget.elevation ?? 1.0) + 4.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
     
     _scaleAnimation = Tween<double>(
       begin: 1.0,
@@ -186,51 +205,46 @@ class _EnhancedCardState extends ConsumerState<EnhancedCard>
                 scale: _isPressed && widget.enablePressEffect && !settings.reducedMotionMode
                     ? _scaleAnimation.value
                     : 1.0,
-                child: Card(
+                child: GlassmorphismContainer(
+                  level: GlassLevel.content,
                   margin: widget.margin ?? config.margin,
-                  color: widget.color,
-                  elevation: _isHovered && widget.enableHoverEffect && !settings.reducedMotionMode
-                      ? _elevationAnimation.value
-                      : widget.elevation,
-                  child: InkWell(
-                    onTap: widget.onTap == null ? null : () async {
-                      await accessibilityService.provideHapticFeedback(
-                        HapticFeedbackType.selection,
-                      );
-                      widget.onTap!();
-                    },
-                    onTapDown: (_) {
-                      if (widget.enablePressEffect && !settings.reducedMotionMode) {
-                        setState(() => _isPressed = true);
-                        _animationController.forward();
-                      }
-                    },
-                    onTapUp: (_) {
-                      if (widget.enablePressEffect && !settings.reducedMotionMode) {
-                        setState(() => _isPressed = false);
-                        _animationController.reverse();
-                      }
-                    },
-                    onTapCancel: () {
-                      if (widget.enablePressEffect && !settings.reducedMotionMode) {
-                        setState(() => _isPressed = false);
-                        _animationController.reverse();
-                      }
-                    },
-                    onHover: (isHovered) {
-                      if (widget.enableHoverEffect && !settings.reducedMotionMode) {
-                        setState(() => _isHovered = isHovered);
-                        if (isHovered) {
+                  glassTint: widget.color?.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: widget.onTap == null ? null : () async {
+                        await accessibilityService.provideHapticFeedback(
+                          HapticFeedbackType.selection,
+                        );
+                        widget.onTap!();
+                      },
+                      onTapDown: (_) {
+                        if (widget.enablePressEffect && !settings.reducedMotionMode) {
+                          setState(() => _isPressed = true);
                           _animationController.forward();
-                        } else {
+                        }
+                      },
+                      onTapUp: (_) {
+                        if (widget.enablePressEffect && !settings.reducedMotionMode) {
+                          setState(() => _isPressed = false);
                           _animationController.reverse();
                         }
-                      }
-                    },
-                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                    child: Padding(
-                      padding: widget.padding ?? config.padding,
-                      child: widget.child,
+                      },
+                      onTapCancel: () {
+                        if (widget.enablePressEffect && !settings.reducedMotionMode) {
+                          setState(() => _isPressed = false);
+                          _animationController.reverse();
+                        }
+                      },
+                      onHover: (isHovered) {
+                        // Glass container handles hover effects through glass intensity
+                      },
+                      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                      child: Padding(
+                        padding: widget.padding ?? config.padding,
+                        child: widget.child,
+                      ),
                     ),
                   ),
                 ),
@@ -439,55 +453,62 @@ class _EnhancedTextFieldState extends ConsumerState<EnhancedTextField>
           child: AnimatedBuilder(
             animation: _borderColorAnimation,
             builder: (context, child) {
-              return TextField(
-                controller: widget.controller,
-                focusNode: _focusNode,
-                decoration: InputDecoration(
-                  labelText: widget.labelText,
-                  hintText: widget.hintText,
-                  errorText: widget.errorText,
-                  prefixIcon: widget.prefixIcon,
-                  suffixIcon: widget.suffixIcon,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                    borderSide: BorderSide(
-                      color: settings.highContrastMode 
-                          ? Colors.black 
-                          : Theme.of(context).colorScheme.outline,
-                      width: settings.highContrastMode ? 2 : 1,
+              return GlassmorphismContainer(
+                level: GlassLevel.interactive,
+                borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                child: TextField(
+                  controller: widget.controller,
+                  focusNode: _focusNode,
+                  decoration: InputDecoration(
+                    labelText: widget.labelText,
+                    hintText: widget.hintText,
+                    errorText: widget.errorText,
+                    prefixIcon: widget.prefixIcon,
+                    suffixIcon: widget.suffixIcon,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                      borderSide: BorderSide.none,
                     ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                    borderSide: BorderSide(
-                      color: _borderColorAnimation.value ?? Theme.of(context).colorScheme.primary,
-                      width: 2,
-                    ),
-                  ),
-                  contentPadding: config.padding,
-                ),
-                obscureText: widget.obscureText,
-                keyboardType: widget.keyboardType,
-                onChanged: widget.onChanged,
-                onTap: widget.onTap == null ? null : () async {
-                  await accessibilityService.provideHapticFeedback(
-                    HapticFeedbackType.selection,
-                  );
-                  widget.onTap!();
-                },
-                readOnly: widget.readOnly,
-                maxLines: widget.maxLines,
-                autofocus: widget.autofocus,
-                style: settings.largeTextMode 
-                    ? Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        fontSize: 18 * config.fontSizeMultiplier,
-                      )
-                    : Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        fontSize: (Theme.of(context).textTheme.bodyLarge?.fontSize ?? 16) * config.fontSizeMultiplier,
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                      borderSide: BorderSide(
+                        color: settings.highContrastMode 
+                            ? Colors.black 
+                            : Colors.transparent,
+                        width: settings.highContrastMode ? 2 : 0,
                       ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                      borderSide: BorderSide(
+                        color: _borderColorAnimation.value ?? Theme.of(context).colorScheme.primary,
+                        width: 2,
+                      ),
+                    ),
+                    contentPadding: config.padding,
+                    fillColor: Colors.transparent,
+                    filled: true,
+                  ),
+                  obscureText: widget.obscureText,
+                  keyboardType: widget.keyboardType,
+                  onChanged: widget.onChanged,
+                  onTap: widget.onTap == null ? null : () async {
+                    await accessibilityService.provideHapticFeedback(
+                      HapticFeedbackType.selection,
+                    );
+                    widget.onTap!();
+                  },
+                  readOnly: widget.readOnly,
+                  maxLines: widget.maxLines,
+                  autofocus: widget.autofocus,
+                  style: settings.largeTextMode 
+                      ? Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          fontSize: 18 * config.fontSizeMultiplier,
+                        )
+                      : Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          fontSize: (Theme.of(context).textTheme.bodyLarge?.fontSize ?? 16) * config.fontSizeMultiplier,
+                        ),
+                ),
               );
             },
           ),
@@ -574,11 +595,19 @@ class _EnhancedLoadingIndicatorState extends ConsumerState<EnhancedLoadingIndica
   }
 
   Widget _buildStaticIndicator() {
-    return SizedBox(
-      width: widget.size,
-      height: widget.size,
-      child: CircularProgressIndicator(
-        color: widget.color ?? Theme.of(context).colorScheme.primary,
+    return GlassmorphismContainer(
+      level: GlassLevel.content,
+      width: widget.size + 16,
+      height: widget.size + 16,
+      borderRadius: BorderRadius.circular((widget.size + 16) / 2),
+      child: Center(
+        child: SizedBox(
+          width: widget.size,
+          height: widget.size,
+          child: CircularProgressIndicator(
+            color: widget.color ?? Theme.of(context).colorScheme.primary,
+          ),
+        ),
       ),
     );
   }
@@ -586,13 +615,21 @@ class _EnhancedLoadingIndicatorState extends ConsumerState<EnhancedLoadingIndica
   Widget _buildAnimatedIndicator() {
     switch (widget.type) {
       case LoadingIndicatorType.circular:
-        return RotationTransition(
-          turns: _rotationAnimation,
-          child: SizedBox(
-            width: widget.size,
-            height: widget.size,
-            child: CircularProgressIndicator(
-              color: widget.color ?? Theme.of(context).colorScheme.primary,
+        return GlassmorphismContainer(
+          level: GlassLevel.content,
+          width: widget.size + 16,
+          height: widget.size + 16,
+          borderRadius: BorderRadius.circular((widget.size + 16) / 2),
+          child: Center(
+            child: RotationTransition(
+              turns: _rotationAnimation,
+              child: SizedBox(
+                width: widget.size,
+                height: widget.size,
+                child: CircularProgressIndicator(
+                  color: widget.color ?? Theme.of(context).colorScheme.primary,
+                ),
+              ),
             ),
           ),
         );
@@ -603,12 +640,22 @@ class _EnhancedLoadingIndicatorState extends ConsumerState<EnhancedLoadingIndica
           builder: (context, child) {
             return Transform.scale(
               scale: _pulseAnimation.value,
-              child: Container(
+              child: GlassmorphismContainer(
+                level: GlassLevel.floating,
                 width: widget.size,
                 height: widget.size,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: widget.color ?? Theme.of(context).colorScheme.primary,
+                borderRadius: BorderRadius.circular(widget.size / 2),
+                glassTint: (widget.color ?? Theme.of(context).colorScheme.primary).withOpacity(0.3),
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: RadialGradient(
+                      colors: [
+                        (widget.color ?? Theme.of(context).colorScheme.primary).withOpacity(0.8),
+                        (widget.color ?? Theme.of(context).colorScheme.primary).withOpacity(0.4),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             );
@@ -633,13 +680,23 @@ class _EnhancedLoadingIndicatorState extends ConsumerState<EnhancedLoadingIndica
             
             return Transform.scale(
               scale: scale,
-              child: Container(
+              child: GlassmorphismContainer(
+                level: GlassLevel.interactive,
                 width: widget.size / 4,
                 height: widget.size / 4,
                 margin: const EdgeInsets.symmetric(horizontal: 2),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: widget.color ?? Theme.of(context).colorScheme.primary,
+                borderRadius: BorderRadius.circular(widget.size / 8),
+                glassTint: (widget.color ?? Theme.of(context).colorScheme.primary).withOpacity(0.2),
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: RadialGradient(
+                      colors: [
+                        (widget.color ?? Theme.of(context).colorScheme.primary).withOpacity(0.9),
+                        (widget.color ?? Theme.of(context).colorScheme.primary).withOpacity(0.6),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             );
@@ -728,24 +785,53 @@ class _EnhancedFABState extends ConsumerState<EnhancedFAB>
           
           return Transform.scale(
             scale: scale,
-            child: FloatingActionButton(
-              onPressed: widget.onPressed == null ? null : () async {
-                await accessibilityService.provideHapticFeedback(
-                  HapticFeedbackType.medium,
-                );
-                
-                if (!widget.enablePulseAnimation && !settings.reducedMotionMode) {
-                  await _animationController.forward();
-                  await _animationController.reverse();
-                }
-                
-                widget.onPressed!();
-              },
-              tooltip: widget.tooltip,
-              backgroundColor: widget.backgroundColor,
-              foregroundColor: widget.foregroundColor,
-              mini: widget.mini,
-              child: widget.child,
+            child: GlassmorphismContainer(
+              level: GlassLevel.floating,
+              width: widget.mini ? 40.0 : 56.0,
+              height: widget.mini ? 40.0 : 56.0,
+              borderRadius: BorderRadius.circular((widget.mini ? 40.0 : 56.0) / 2),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: widget.onPressed == null ? null : () async {
+                    await accessibilityService.provideHapticFeedback(
+                      HapticFeedbackType.medium,
+                    );
+                    
+                    if (!widget.enablePulseAnimation && !settings.reducedMotionMode) {
+                      await _animationController.forward();
+                      await _animationController.reverse();
+                    }
+                    
+                    widget.onPressed!();
+                  },
+                  borderRadius: BorderRadius.circular((widget.mini ? 40.0 : 56.0) / 2),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        colors: [
+                          (widget.backgroundColor ?? Theme.of(context).colorScheme.primary).withOpacity(0.9),
+                          (widget.backgroundColor ?? Theme.of(context).colorScheme.primary).withOpacity(0.7),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                    ),
+                    child: Center(
+                      child: Tooltip(
+                        message: widget.tooltip ?? '',
+                        child: IconTheme(
+                          data: IconThemeData(
+                            color: widget.foregroundColor ?? Colors.white,
+                          ),
+                          child: widget.child,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ),
           );
         },

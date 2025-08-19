@@ -1,7 +1,6 @@
 import 'dart:collection';
 import 'package:flutter/foundation.dart';
 import 'app_theme_data.dart';
-import 'models/theme_metadata.dart';
 
 /// Central registry for all app themes
 class ThemeRegistry {

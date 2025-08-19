@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/entities/recurrence_pattern.dart';
 import '../../domain/repositories/task_repository.dart';
@@ -47,7 +48,7 @@ class RecurringTaskService {
               }
             } catch (e) {
               // Log error but continue processing other tasks
-              print('Error generating next recurring task for ${task.id}: $e');
+              debugPrint('Error generating next recurring task for ${task.id}: $e');
             }
           }
         }
@@ -136,17 +137,6 @@ class RecurringTaskService {
     }
     
     return count;
-  }
-  
-  /// Calculates the next due date using the recurrence pattern's built-in logic
-  DateTime? _calculateNextDueDate(DateTime baseDate, RecurrencePattern recurrence, {int occurrenceCount = 0}) {
-    // Use the improved recurrence pattern logic
-    return recurrence.getNextOccurrence(baseDate, occurrenceCount: occurrenceCount);
-  }
-  
-  /// Legacy method - now delegates to RecurrencePattern's improved logic
-  DateTime _getNextWeeklyDate(DateTime baseDate, RecurrencePattern recurrence) {
-    return recurrence.getNextOccurrence(baseDate) ?? baseDate.add(Duration(days: 7));
   }
   
   /// Checks if a recurring task has reached its limit with proper occurrence tracking
@@ -275,7 +265,7 @@ class RecurringTaskService {
   
   /// Stops a recurring task series (marks the pattern as none)
   Future<void> stopRecurringTaskSeries(TaskModel task, {bool deleteFutureInstances = true}) async {
-    final stoppedPattern = RecurrencePattern(
+    const stoppedPattern = RecurrencePattern(
       type: RecurrenceType.none,
       interval: 1,
     );
@@ -283,7 +273,7 @@ class RecurringTaskService {
     await updateRecurringTaskPattern(task, stoppedPattern);
     
     if (deleteFutureInstances) {
-      await this.deleteFutureRecurringInstances(task, confirmed: true);
+      await deleteFutureRecurringInstances(task, confirmed: true);
     }
   }
   

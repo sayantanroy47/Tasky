@@ -523,6 +523,77 @@ enum TaskSortBy {
   }
 }
 
+/// Task creation modes
+enum TaskCreationMode {
+  manual,
+  voice,
+  ai,
+  template;
+
+  /// Get display name
+  String get displayName {
+    switch (this) {
+      case TaskCreationMode.manual:
+        return 'Manual Entry';
+      case TaskCreationMode.voice:
+        return 'Voice Input';
+      case TaskCreationMode.ai:
+        return 'AI Assistant';
+      case TaskCreationMode.template:
+        return 'From Template';
+    }
+  }
+
+  /// Get icon for creation mode
+  IconData get icon {
+    switch (this) {
+      case TaskCreationMode.manual:
+        return Icons.edit_outlined;
+      case TaskCreationMode.voice:
+        return Icons.mic_outlined;
+      case TaskCreationMode.ai:
+        return Icons.psychology_outlined;
+      case TaskCreationMode.template:
+        return Icons.library_books_outlined;
+    }
+  }
+}
+
+/// Task card style options
+enum TaskCardStyle {
+  /// Elevated card with shadow
+  elevated,
+  /// Filled card with background color
+  filled,
+  /// Outlined card with border
+  outlined,
+  /// Compact card for list views
+  compact,
+  /// Glassmorphism card with translucent effect
+  glass,
+  /// Minimal card with clean design
+  minimal;
+
+  /// Get display name
+  String get displayName {
+    switch (this) {
+      case TaskCardStyle.elevated:
+        return 'Elevated';
+      case TaskCardStyle.filled:
+        return 'Filled';
+      case TaskCardStyle.outlined:
+        return 'Outlined';
+      case TaskCardStyle.compact:
+        return 'Compact';
+      case TaskCardStyle.glass:
+        return 'Glass';
+      case TaskCardStyle.minimal:
+        return 'Minimal';
+    }
+  }
+}
+
+
 /// Exception thrown when a concurrent modification is detected during database operations
 class ConcurrentModificationError extends StateError {
   ConcurrentModificationError(super.message);

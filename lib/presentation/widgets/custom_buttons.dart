@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'enhanced_glass_button.dart';
+import 'glassmorphism_container.dart';
+import '../../core/design_system/design_tokens.dart';
+import '../../core/theme/typography_constants.dart';
 
-/// Custom primary button with consistent styling
+/// Custom primary button with glassmorphism styling
 class PrimaryButton extends StatelessWidget {
   final String text;
   final VoidCallback? onPressed;
@@ -15,36 +20,48 @@ class PrimaryButton extends StatelessWidget {
     this.icon,
     this.isLoading = false,
     this.isExpanded = false,
-  });  @override
+  });
+
+  @override
   Widget build(BuildContext context) {
-    final Widget button = icon != null
-        ? FilledButton.icon(
-            onPressed: isLoading ? null : onPressed,
-            icon: isLoading 
-              ? const SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : Icon(icon),
-            label: Text(text),
-          )
-        : FilledButton(
-            onPressed: isLoading ? null : onPressed,
-            child: isLoading
-                ? const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : Text(text),
-          );
+    final Widget button = EnhancedGlassButton.primary(
+      onPressed: isLoading ? null : onPressed,
+      isLoading: isLoading,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (isLoading)
+              const SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: Colors.white,
+                ),
+              )
+            else if (icon != null) ...[
+              Icon(icon, size: 18, color: Colors.white),
+              const SizedBox(width: 8),
+            ],
+            Text(
+              text,
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
 
     return isExpanded ? SizedBox(width: double.infinity, child: button) : button;
   }
 }
 
-/// Custom secondary button with consistent styling
+/// Custom secondary button with glassmorphism styling
 class SecondaryButton extends StatelessWidget {
   final String text;
   final VoidCallback? onPressed;
@@ -59,36 +76,49 @@ class SecondaryButton extends StatelessWidget {
     this.icon,
     this.isLoading = false,
     this.isExpanded = false,
-  });  @override
+  });
+
+  @override
   Widget build(BuildContext context) {
-    final Widget button = icon != null
-        ? OutlinedButton.icon(
-            onPressed: isLoading ? null : onPressed,
-            icon: isLoading 
-              ? const SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : Icon(icon),
-            label: Text(text),
-          )
-        : OutlinedButton(
-            onPressed: isLoading ? null : onPressed,
-            child: isLoading
-                ? const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : Text(text),
-          );
+    final theme = Theme.of(context);
+    final Widget button = EnhancedGlassButton.secondary(
+      onPressed: isLoading ? null : onPressed,
+      isLoading: isLoading,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (isLoading)
+              SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: theme.colorScheme.primary,
+                ),
+              )
+            else if (icon != null) ...[
+              Icon(icon, size: 18, color: theme.colorScheme.primary),
+              const SizedBox(width: 8),
+            ],
+            Text(
+              text,
+              style: theme.textTheme.labelLarge?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: theme.colorScheme.primary,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
 
     return isExpanded ? SizedBox(width: double.infinity, child: button) : button;
   }
 }
 
-/// Custom text button with consistent styling
+/// Custom text button with glassmorphism styling
 class CustomTextButton extends StatelessWidget {
   final String text;
   final VoidCallback? onPressed;
@@ -101,34 +131,57 @@ class CustomTextButton extends StatelessWidget {
     this.onPressed,
     this.icon,
     this.isLoading = false,
-  });  @override
+  });
+
+  @override
   Widget build(BuildContext context) {
-    return icon != null
-        ? TextButton.icon(
-            onPressed: isLoading ? null : onPressed,
-            icon: isLoading 
-              ? const SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : Icon(icon),
-            label: Text(text),
-          )
-        : TextButton(
-            onPressed: isLoading ? null : onPressed,
-            child: isLoading
-                ? const SizedBox(
+    final theme = Theme.of(context);
+    return GlassmorphismContainer(
+      level: GlassLevel.background,
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: isLoading ? null : () {
+            HapticFeedback.selectionClick();
+            onPressed?.call();
+          },
+          borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (isLoading)
+                  SizedBox(
                     width: 16,
                     height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: theme.colorScheme.primary,
+                    ),
                   )
-                : Text(text),
-          );
+                else if (icon != null) ...[
+                  Icon(icon, size: 16, color: theme.colorScheme.primary),
+                  const SizedBox(width: 6),
+                ],
+                Text(
+                  text,
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
 
-/// Voice action button with special styling
+/// Voice action button with glassmorphism styling
 class VoiceActionButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final bool isListening;
@@ -141,43 +194,55 @@ class VoiceActionButton extends StatelessWidget {
     this.isListening = false,
     this.isProcessing = false,
     this.tooltip,
-  });  @override
+  });
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     
     Widget icon;
-    Color? backgroundColor;
-    Color? foregroundColor;
+    Color glassColor;
     
     if (isProcessing) {
       icon = const SizedBox(
         width: 24,
         height: 24,
-        child: CircularProgressIndicator(strokeWidth: 2),
+        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
       );
-      backgroundColor = theme.colorScheme.secondary;
-      foregroundColor = theme.colorScheme.onSecondary;
+      glassColor = theme.colorScheme.secondary;
     } else if (isListening) {
-      icon = const Icon(Icons.mic);
-      backgroundColor = AppColors.voiceRecording;
-      foregroundColor = Colors.white;
+      icon = const Icon(Icons.mic, color: Colors.white);
+      glassColor = AppColors.voiceRecording;
     } else {
-      icon = const Icon(Icons.mic_none);
-      backgroundColor = theme.colorScheme.primaryContainer;
-      foregroundColor = theme.colorScheme.onPrimaryContainer;
+      icon = const Icon(Icons.mic_none, color: Colors.white);
+      glassColor = theme.colorScheme.primaryContainer;
     }
 
-    return FloatingActionButton(
+    return EnhancedGlassButton.floating(
       onPressed: (isProcessing || isListening) ? null : onPressed,
-      backgroundColor: backgroundColor,
-      foregroundColor: foregroundColor,
-      tooltip: tooltip ?? (isListening ? 'Listening...' : 'Voice input'),
-      child: icon,
+      isLoading: isProcessing,
+      child: Tooltip(
+        message: tooltip ?? (isListening ? 'Listening...' : 'Voice input'),
+        child: Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: LinearGradient(
+              colors: [
+                glassColor.withOpacity(0.8),
+                glassColor.withOpacity(0.6),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+          child: icon,
+        ),
+      ),
     );
   }
 }
 
-/// Destructive button for dangerous actions
+/// Destructive button with glassmorphism styling for dangerous actions
 class DestructiveButton extends StatelessWidget {
   final String text;
   final VoidCallback? onPressed;
@@ -192,44 +257,72 @@ class DestructiveButton extends StatelessWidget {
     this.icon,
     this.isLoading = false,
     this.isExpanded = false,
-  });  @override
+  });
+
+  @override
   Widget build(BuildContext context) {
-    final Widget button = icon != null
-        ? FilledButton.icon(
-            onPressed: isLoading ? null : onPressed,
-            icon: isLoading 
-              ? const SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : Icon(icon),
-            label: Text(text),
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.error,
-              foregroundColor: Theme.of(context).colorScheme.onError,
+    final theme = Theme.of(context);
+    final Widget button = GlassmorphismContainer(
+      level: GlassLevel.interactive,
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+      glassTint: theme.colorScheme.error.withOpacity(0.1),
+      borderColor: theme.colorScheme.error.withOpacity(0.3),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: isLoading ? null : () {
+            HapticFeedback.mediumImpact();
+            onPressed?.call();
+          },
+          borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  theme.colorScheme.error.withOpacity(0.8),
+                  theme.colorScheme.error.withOpacity(0.9),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
             ),
-          )
-        : FilledButton(
-            onPressed: isLoading ? null : onPressed,
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.error,
-              foregroundColor: Theme.of(context).colorScheme.onError,
-            ),
-            child: isLoading
-                ? const SizedBox(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (isLoading)
+                  const SizedBox(
                     width: 16,
                     height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
                   )
-                : Text(text),
-          );
+                else if (icon != null) ...[
+                  Icon(icon, size: 18, color: Colors.white),
+                  const SizedBox(width: 8),
+                ],
+                Text(
+                  text,
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
 
     return isExpanded ? SizedBox(width: double.infinity, child: button) : button;
   }
 }
 
-/// Import the AppColors for the VoiceActionButton
+/// App colors for the VoiceActionButton
 class AppColors {
   static const Color voiceRecording = Color(0xFFE91E63);
 }

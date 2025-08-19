@@ -31,7 +31,7 @@ class APIKeyManager {
     } catch (e) {
       // Log error without exposing sensitive details
       if (kDebugMode) {
-        print('Failed to store OpenAI API key securely');
+        debugPrint('Failed to store OpenAI API key securely');
       }
       throw Exception('Failed to store OpenAI API key securely');
     }
@@ -48,7 +48,7 @@ class APIKeyManager {
     } catch (e) {
       // Log error without exposing sensitive details
       if (kDebugMode) {
-        print('Failed to store Claude API key securely');
+        debugPrint('Failed to store Claude API key securely');
       }
       throw Exception('Failed to store Claude API key securely');
     }
@@ -61,7 +61,7 @@ class APIKeyManager {
     } catch (e) {
       // Log error without exposing sensitive details
       if (kDebugMode) {
-        print('Failed to retrieve OpenAI API key');
+        debugPrint('Failed to retrieve OpenAI API key');
       }
       return null;
     }
@@ -74,7 +74,7 @@ class APIKeyManager {
     } catch (e) {
       // Log error without exposing sensitive details
       if (kDebugMode) {
-        print('Failed to retrieve Claude API key');
+        debugPrint('Failed to retrieve Claude API key');
       }
       return null;
     }
@@ -90,7 +90,7 @@ class APIKeyManager {
       }
     } catch (e) {
       if (kDebugMode) {
-        print('Failed to store OpenAI base URL');
+        debugPrint('Failed to store OpenAI base URL');
       }
       throw Exception('Failed to store OpenAI base URL');
     }
@@ -106,7 +106,7 @@ class APIKeyManager {
       }
     } catch (e) {
       if (kDebugMode) {
-        print('Failed to store Claude base URL');
+        debugPrint('Failed to store Claude base URL');
       }
       throw Exception('Failed to store Claude base URL');
     }
@@ -118,7 +118,7 @@ class APIKeyManager {
       return await _storage.read(key: _openaiBaseUrlKey);
     } catch (e) {
       if (kDebugMode) {
-        print('Failed to retrieve OpenAI base URL');
+        debugPrint('Failed to retrieve OpenAI base URL');
       }
       return null;
     }
@@ -130,7 +130,7 @@ class APIKeyManager {
       return await _storage.read(key: _claudeBaseUrlKey);
     } catch (e) {
       if (kDebugMode) {
-        print('Failed to retrieve Claude base URL');
+        debugPrint('Failed to retrieve Claude base URL');
       }
       return null;
     }

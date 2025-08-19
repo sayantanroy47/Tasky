@@ -320,21 +320,21 @@ class ExpressiveTheme {
     required bool isDark,
     required ExpressiveColorSystem colorSystem,
   }) {
-    return app_theme_data.ThemeComponents(
-      appBar: const app_theme_data.AppBarConfig(
+    return const app_theme_data.ThemeComponents(
+      appBar: app_theme_data.AppBarConfig(
         elevation: 0,
         centerTitle: false, // Material 3 style
         toolbarHeight: 64.0,
       ),
       
-      card: const app_theme_data.CardConfig(
+      card: app_theme_data.CardConfig(
         elevation: 0, // Use color/blur instead
         borderRadius: TypographyConstants.radiusStandard, // Large radius for expressive design
         margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         padding: EdgeInsets.all(20.0),
       ),
       
-      button: const app_theme_data.ButtonConfig(
+      button: app_theme_data.ButtonConfig(
         borderRadius: TypographyConstants.radiusStandard, // Pill-shaped buttons
         padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 14.0),
         elevation: 0,
@@ -342,27 +342,27 @@ class ExpressiveTheme {
         style: app_theme_data.ButtonStyle.filled,
       ),
       
-      input: const app_theme_data.InputConfig(
+      input: app_theme_data.InputConfig(
         borderRadius: TypographyConstants.radiusStandard,
         contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
         borderStyle: app_theme_data.InputBorderStyle.outline,
         filled: true,
       ),
       
-      fab: const app_theme_data.FABConfig(
+      fab: app_theme_data.FABConfig(
         shape: app_theme_data.FABShape.extended,
         elevation: 0, // Use color instead
         width: null, // Auto size
         height: 56.0,
       ),
       
-      navigation: const app_theme_data.NavigationConfig(
+      navigation: app_theme_data.NavigationConfig(
         type: app_theme_data.NavigationType.bottomNav,
         elevation: 0,
         showLabels: true,
       ),
       
-      taskCard: const app_theme_data.TaskCardConfig(
+      taskCard: app_theme_data.TaskCardConfig(
         borderRadius: TypographyConstants.radiusStandard,
         margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
         padding: EdgeInsets.all(20.0),

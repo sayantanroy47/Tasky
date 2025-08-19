@@ -2,39 +2,103 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/entities/recurrence_pattern.dart';
+
 import '../../domain/models/enums.dart';
 import '../providers/task_provider.dart' show taskOperationsProvider;
-import 'glassmorphism_container.dart';
-import '../../core/theme/material3/motion_system.dart';
-import '../../core/theme/typography_constants.dart';
-import '../../core/design_system/design_tokens.dart' hide BorderRadius;
-import 'recurring_task_scheduling_widget.dart';
-import 'theme_aware_dialog_components.dart';
 
-/// Manual Task Creation Dialog with form inputs
+
+import 'glassmorphism_container.dart';
+
+import '../../core/theme/typography_constants.dart';
+import '../../core/design_system/design_tokens.dart';
+
+import 'theme_aware_dialog_components.dart';
+import 'project_selector.dart';
+import 'recurrence_pattern_picker.dart';
+import 'dart:async';
+
+/// Manual task creation dialog with form fields
 class ManualTaskCreationDialog extends ConsumerStatefulWidget {
-  const ManualTaskCreationDialog({super.key});
+  final TaskModel? editingTask;
+  final Function(TaskModel)? onTaskCreated;
+  
+  const ManualTaskCreationDialog({
+    super.key,
+    this.editingTask,
+    this.onTaskCreated,
+  });
   
   @override
   ConsumerState<ManualTaskCreationDialog> createState() => _ManualTaskCreationDialogState();
 }
 
 class _ManualTaskCreationDialogState extends ConsumerState<ManualTaskCreationDialog> {
+  final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
+  // Notes are stored in description field
   
   TaskPriority _selectedPriority = TaskPriority.medium;
-  DateTime? _selectedDueDate;
-  bool _isCreating = false;
-  
-  // Recurring task scheduling
+  String? _selectedProjectId;
+  List<String> _selectedTags = [];
+  DateTime? _dueDate;
+  TimeOfDay? _dueTime;
   RecurrencePattern? _recurrencePattern;
+  bool _isLoading = false;
+  
+  // Priority options
+  final List<PriorityOption> _priorityOptions = [
+    const PriorityOption(
+      value: 'low',
+      name: 'Low',
+      icon: Icons.low_priority,
+      color: Colors.green,
+    ),
+    const PriorityOption(
+      value: 'medium',
+      name: 'Medium',
+      icon: Icons.remove,
+      color: Colors.orange,
+    ),
+    const PriorityOption(
+      value: 'high',
+      name: 'High',
+      icon: Icons.priority_high,
+      color: Colors.red,
+    ),
+    const PriorityOption(
+      value: 'urgent',
+      name: 'Urgent',
+      icon: Icons.warning,
+      color: Colors.deepPurple,
+    ),
+  ];
+  
+  @override
+  void initState() {
+    super.initState();
+    _initializeFromEditingTask();
+  }
+  
+  void _initializeFromEditingTask() {
+    if (widget.editingTask != null) {
+      final task = widget.editingTask!;
+      _titleController.text = task.title;
+      _descriptionController.text = task.description ?? '';
+      // Notes are handled via description
+      _selectedPriority = task.priority;
+      _selectedProjectId = task.projectId;
+      _selectedTags = task.tags;
+      _dueDate = task.dueDate;
+      _recurrencePattern = task.recurrence;
+    }
+  }
   
   @override
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
+    // No notes controller to dispose
     super.dispose();
   }
   
@@ -42,325 +106,360 @@ class _ManualTaskCreationDialogState extends ConsumerState<ManualTaskCreationDia
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     
-    return ThemeAwareTaskDialog(
-      title: 'Create Task',
-      subtitle: 'Fill in task information',
-      icon: Icons.edit,
-      // No onBack - remove back button for manual task creation
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      appBar: AppBar(
+        title: Text(widget.editingTask != null ? 'Edit Task' : 'Create Task'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        actions: [
+          TextButton(
+            onPressed: _isLoading ? null : _saveTask,
+            child: _isLoading 
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Text('Save'),
+          ),
+        ],
+      ),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
           child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // Title field
-                ThemeAwareFormField(
-                controller: _titleController,
-                labelText: 'Task Title',
-                hintText: 'Enter task title...',
-                prefixIcon: Icons.title,
-                required: true,
-                autofocus: true,
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Please enter a task title';
-                  }
-                  return null;
-                },
-              ),
-              
-                const SizedBox(height: 16),
-              
-              // Description field
-                ThemeAwareFormField(
-                controller: _descriptionController,
-                labelText: 'Description (Optional)',
-                hintText: 'Enter task description...',
-                prefixIcon: Icons.description,
-                maxLines: 3,
-                textInputAction: TextInputAction.newline,
-                keyboardType: TextInputType.multiline,
-              ),
-              
-                const SizedBox(height: 16),
-              
-                // Priority selection
-                ThemeAwarePrioritySelector(
-                selectedPriority: _selectedPriority.name,
-                priorities: TaskPriority.values.map((priority) => PriorityOption(
-                  value: priority.name,
-                  name: _getPriorityLabel(priority),
-                  icon: Icons.flag,
-                  color: _getPriorityColor(priority),
-                )).toList(),
-                onPriorityChanged: (String value) {
-                  final priority = TaskPriority.values.firstWhere(
-                    (p) => p.name == value,
-                    orElse: () => TaskPriority.medium,
-                  );
-                  setState(() {
-                    _selectedPriority = priority;
-                  });
-                },
-              ),
-              
-                const SizedBox(height: 16),
-              
-                // Universal Recurring Task Scheduling Widget
-                RecurringTaskSchedulingWidget(
-                onRecurrenceChanged: (RecurrencePattern? pattern) {
-                  setState(() {
-                    _recurrencePattern = pattern;
-                  });
-                },
-                initiallyEnabled: _recurrencePattern != null,
-                initialRecurrence: _recurrencePattern,
-              ),
-              
-                const SizedBox(height: 16),
-              
-                // Enhanced Due date selection with glassmorphism
-                Semantics(
-                label: _selectedDueDate == null 
-                    ? 'Select due date, optional' 
-                    : 'Due date: ${_formatDate(_selectedDueDate!)}',
-                button: true,
-                child: GlassmorphismContainer(
-                  level: GlassLevel.content,
-                  borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
-                  glassTint: theme.colorScheme.secondaryContainer.withOpacity(0.1),
-                  child: InkWell(
-                    onTap: () => _selectDueDate(context),
-                    borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
-                    child: Container(
+        key: _formKey,
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Title field
+                    ThemeAwareFormField(
+                      controller: _titleController,
+                      labelText: 'Task Title',
+                      hintText: 'Enter task title',
+                      prefixIcon: Icons.title,
+                      autofocus: true,
+                      required: true,
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Please enter a task title';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    
+                    // Description field
+                    ThemeAwareFormField(
+                      controller: _descriptionController,
+                      labelText: 'Description',
+                      hintText: 'Enter task description (optional)',
+                      prefixIcon: Icons.description,
+                      maxLines: 3,
+                    ),
+                    const SizedBox(height: 16),
+                    
+                    // Priority selector
+                    ThemeAwarePrioritySelector(
+                      selectedPriority: _selectedPriority.name.toLowerCase(),
+                      onPriorityChanged: (priority) {
+                        setState(() {
+                          _selectedPriority = TaskPriority.values.firstWhere(
+                            (p) => p.name.toLowerCase() == priority,
+                            orElse: () => TaskPriority.medium,
+                          );
+                        });
+                      },
+                      priorities: _priorityOptions,
+                    ),
+                    const SizedBox(height: 16),
+                    
+                    // Project selector
+                    ProjectSelector(
+                      selectedProjectId: _selectedProjectId,
+                      onProjectSelected: (project) {
+                        setState(() {
+                          _selectedProjectId = project?.id;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    
+                    // Due date picker
+                    _buildDueDatePicker(context, theme),
+                    const SizedBox(height: 16),
+                    
+                    // Recurrence pattern picker
+                    GlassmorphismContainer(
+                      level: GlassLevel.interactive,
+                      borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
                       padding: const EdgeInsets.all(16),
-                      child: Row(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(
-                            Icons.calendar_today, 
-                            color: _selectedDueDate == null 
-                                ? theme.colorScheme.onSurfaceVariant
-                                : theme.colorScheme.secondary,
-                            size: 20,
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Text(
-                              _selectedDueDate == null 
-                                  ? 'Select due date (Optional)'
-                                  : 'Due: ${_formatDate(_selectedDueDate!)}',
-                              style: TextStyle(
-                                fontSize: TypographyConstants.textBase,
-                                color: _selectedDueDate == null 
-                                    ? theme.colorScheme.onSurfaceVariant
-                                    : theme.colorScheme.onSurface,
-                                fontWeight: _selectedDueDate == null 
-                                    ? TypographyConstants.regular
-                                    : TypographyConstants.medium,
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.repeat,
+                                color: theme.colorScheme.primary,
+                                size: 20,
                               ),
-                            ),
-                          ),
-                          if (_selectedDueDate != null)
-                            Semantics(
-                              label: 'Clear due date',
-                              button: true,
-                              child: GlassmorphismContainer(
-                                level: GlassLevel.interactive,
-                                width: 32,
-                                height: 32,
-                                borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall),
-                                glassTint: theme.colorScheme.error.withOpacity(0.1),
-                                child: InkWell(
-                                  onTap: () {
-                                    setState(() {
-                                      _selectedDueDate = null;
-                                    });
-                                  },
-                                  borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall),
-                                  child: Icon(
-                                    Icons.clear, 
-                                    size: 16,
-                                    color: theme.colorScheme.error,
-                                  ),
+                              const SizedBox(width: 8),
+                              Text(
+                                'Recurring Task',
+                                style: theme.textTheme.titleSmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: theme.colorScheme.primary,
                                 ),
                               ),
-                            ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          
+                          RecurrencePatternPicker(
+                            initialPattern: _recurrencePattern,
+                            onPatternChanged: (pattern) {
+                              setState(() {
+                                _recurrencePattern = pattern;
+                              });
+                            },
+                          ),
                         ],
                       ),
+                    ),
+                    const SizedBox(height: 16),
+                    
+                    // Additional fields could go here
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+        ),
+      ),
+    );
+  }
+  
+  Widget _buildDueDatePicker(BuildContext context, ThemeData theme) {
+    return GlassmorphismContainer(
+      level: GlassLevel.interactive,
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Due Date',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w500,
+              color: theme.colorScheme.onSurface,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: InkWell(
+                  onTap: _selectDueDate,
+                  borderRadius: BorderRadius.circular(8),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: theme.colorScheme.outline.withOpacity(0.3),
+                      ),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.calendar_today,
+                          size: 18,
+                          color: theme.colorScheme.primary,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          _dueDate != null
+                              ? '${_dueDate!.day}/${_dueDate!.month}/${_dueDate!.year}'
+                              : 'Select date',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: _dueDate != null
+                                ? theme.colorScheme.onSurface
+                                : theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ),
-              
-                const SizedBox(height: 32),
-              
-                // Action buttons
-                Row(
-                children: [
-                  Expanded(
-                    child: RoundedGlassButton(
-                      label: 'Cancel',
-                      onPressed: _isCreating ? null : () => Navigator.of(context).pop(),
-                      icon: Icons.cancel,
+              const SizedBox(width: 8),
+              Expanded(
+                child: InkWell(
+                  onTap: _dueDate != null ? _selectDueTime : null,
+                  borderRadius: BorderRadius.circular(8),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: theme.colorScheme.outline.withOpacity(0.3),
+                      ),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.access_time,
+                          size: 18,
+                          color: _dueDate != null
+                              ? theme.colorScheme.primary
+                              : theme.colorScheme.onSurfaceVariant.withOpacity(0.5),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          _dueTime != null
+                              ? '${_dueTime!.hour.toString().padLeft(2, '0')}:${_dueTime!.minute.toString().padLeft(2, '0')}'
+                              : 'Select time',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: _dueTime != null
+                                ? theme.colorScheme.onSurface
+                                : theme.colorScheme.onSurfaceVariant.withOpacity(
+                                    _dueDate != null ? 1.0 : 0.5,
+                                  ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: RoundedGlassButton(
-                      label: 'Create Task',
-                      onPressed: _isCreating ? null : _createTask,
-                      icon: Icons.add,
-                      isPrimary: true,
-                      isLoading: _isCreating,
-                    ),
-                  ),
-                ],
+                ),
               ),
-              ],
-            ),
+            ],
           ),
-        ),
+          if (_dueDate != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: TextButton.icon(
+                onPressed: () {
+                  setState(() {
+                    _dueDate = null;
+                    _dueTime = null;
+                  });
+                },
+                icon: const Icon(Icons.clear, size: 16),
+                label: const Text('Clear due date'),
+                style: TextButton.styleFrom(
+                  foregroundColor: theme.colorScheme.error,
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
   
-  Future<void> _selectDueDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
+  Future<void> _selectDueDate() async {
+    final date = await showDatePicker(
       context: context,
-      initialDate: _selectedDueDate ?? DateTime.now(),
+      initialDate: _dueDate ?? DateTime.now(),
       firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 365)),
+      lastDate: DateTime.now().add(const Duration(days: 365 * 2)),
     );
     
-    if (picked != null) {
+    if (date != null) {
       setState(() {
-        _selectedDueDate = picked;
+        _dueDate = date;
       });
     }
   }
   
-  void _createTask() async {
+  Future<void> _selectDueTime() async {
+    final time = await showTimePicker(
+      context: context,
+      initialTime: _dueTime ?? TimeOfDay.now(),
+    );
+    
+    if (time != null) {
+      setState(() {
+        _dueTime = time;
+      });
+    }
+  }
+  
+  Future<void> _saveTask() async {
     if (!_formKey.currentState!.validate()) return;
     
     setState(() {
-      _isCreating = true;
+      _isLoading = true;
     });
     
     try {
-      final task = TaskModel.create(
+      // Combine date and time if both are set
+      DateTime? finalDueDate;
+      if (_dueDate != null) {
+        finalDueDate = DateTime(
+          _dueDate!.year,
+          _dueDate!.month,
+          _dueDate!.day,
+          _dueTime?.hour ?? 23,
+          _dueTime?.minute ?? 59,
+        );
+      }
+      
+      final task = TaskModel(
+        id: widget.editingTask?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
         title: _titleController.text.trim(),
         description: _descriptionController.text.trim().isEmpty 
             ? null 
             : _descriptionController.text.trim(),
         priority: _selectedPriority,
-        dueDate: _selectedDueDate,
+        status: widget.editingTask?.status ?? TaskStatus.pending,
+        projectId: _selectedProjectId,
+        tags: _selectedTags,
+        dueDate: finalDueDate,
         recurrence: _recurrencePattern,
+        // Notes stored in description field
+        createdAt: widget.editingTask?.createdAt ?? DateTime.now(),
+        updatedAt: DateTime.now(),
       );
       
-      // Add task through provider
-      await ref.read(taskOperationsProvider).createTask(task);
+      if (widget.editingTask != null) {
+        await ref.read(taskOperationsProvider).updateTask(task);
+      } else {
+        await ref.read(taskOperationsProvider).createTask(task);
+      }
       
       if (mounted) {
-        Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                Icon(
-                  Icons.check_circle,
-                  color: Colors.white,
-                  size: 20,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  'Task created successfully!',
-                  style: TextStyle(
-                    fontSize: TypographyConstants.textSM,
-                    fontWeight: TypographyConstants.medium,
-                    color: Colors.white,
-                  ),
-                ),
-              ],
-            ),
-            backgroundColor: Theme.of(context).colorScheme.tertiary,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
-            ),
-            margin: const EdgeInsets.all(16),
-          ),
-        );
+        widget.onTaskCreated?.call(task);
+        Navigator.of(context).pop(task);
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Row(
-              children: [
-                Icon(
-                  Icons.error,
-                  color: Colors.white,
-                  size: 20,
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    'Error creating task: $e',
-                    style: TextStyle(
-                      fontSize: TypographyConstants.textSM,
-                      fontWeight: TypographyConstants.medium,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            content: Text('Error saving task: ${e.toString()}'),
             backgroundColor: Theme.of(context).colorScheme.error,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
-            ),
-            margin: const EdgeInsets.all(16),
           ),
         );
       }
     } finally {
       if (mounted) {
         setState(() {
-          _isCreating = false;
+          _isLoading = false;
         });
       }
     }
-  }
-  
-  Color _getPriorityColor(TaskPriority priority) {
-    switch (priority) {
-      case TaskPriority.low:
-        return Colors.green;
-      case TaskPriority.medium:
-        return Colors.blue;
-      case TaskPriority.high:
-        return Colors.orange;
-      case TaskPriority.urgent:
-        return Colors.red;
-    }
-  }
-  
-  String _getPriorityLabel(TaskPriority priority) {
-    switch (priority) {
-      case TaskPriority.low:
-        return 'Low Priority';
-      case TaskPriority.medium:
-        return 'Medium Priority';
-      case TaskPriority.high:
-        return 'High Priority';
-      case TaskPriority.urgent:
-        return 'Urgent Priority';
-    }
-  }
-  
-  String _formatDate(DateTime date) {
-    return '${date.day}/${date.month}/${date.year}';
   }
 }

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/glassmorphism_container.dart';
 import '../widgets/standardized_app_bar.dart';
-import '../../core/theme/typography_constants.dart';
 import '../widgets/analytics_widgets.dart';
+import '../../core/theme/typography_constants.dart';
 import '../providers/analytics_providers.dart';
 import '../../services/analytics/analytics_models.dart';
 
@@ -46,15 +46,15 @@ class AnalyticsPage extends ConsumerWidget {
           ),
         ],
       ),
-      body: SafeArea(
+      body: const SafeArea(
         child: Padding(
-          padding: const EdgeInsets.only(
+          padding: EdgeInsets.only(
             top: kToolbarHeight + 8, // App bar height + spacing
             left: 16,
             right: 16,
             bottom: 16,
           ),
-          child: const AnalyticsPageBody(),
+          child: AnalyticsPageBody(),
         ),
       ),
     );
@@ -107,8 +107,6 @@ class AnalyticsPageBody extends ConsumerWidget {
                               subtitle: 'tasks ${selectedPeriod.displayName.toLowerCase()}',
                               icon: Icons.check_circle,
                               color: Colors.green,
-                              trend: _calculateCompletionTrend(metrics),
-                              isPositiveTrend: _isPositiveCompletionTrend(metrics),
                             ),
                           ),
                           const SizedBox(width: 12),
@@ -119,8 +117,6 @@ class AnalyticsPageBody extends ConsumerWidget {
                               subtitle: 'of all tasks',
                               icon: Icons.trending_up,
                               color: Colors.blue,
-                              trend: _calculateRateTrend(metrics),
-                              isPositiveTrend: _isPositiveRateTrend(metrics),
                             ),
                           ),
                         ],
@@ -357,40 +353,6 @@ class AnalyticsPageBody extends ConsumerWidget {
     );
   }
 
-  String? _calculateCompletionTrend(ProductivityMetrics metrics) {
-    if (metrics.weeklyTrend.length >= 2) {
-      final current = metrics.weeklyTrend.last;
-      final previous = metrics.weeklyTrend[metrics.weeklyTrend.length - 2];
-      final diff = current - previous;
-      if (diff != 0) {
-        return '${diff > 0 ? '+' : ''}$diff';
-      }
-    }
-    return null;
-  }
-
-  bool? _isPositiveCompletionTrend(ProductivityMetrics metrics) {
-    if (metrics.weeklyTrend.length >= 2) {
-      final current = metrics.weeklyTrend.last;
-      final previous = metrics.weeklyTrend[metrics.weeklyTrend.length - 2];
-      return current > previous;
-    }
-    return null;
-  }
-
-  String? _calculateRateTrend(ProductivityMetrics metrics) {
-    final weeklyRate = (metrics.weeklyCompletionRate * 100).round();
-    final monthlyRate = (metrics.monthlyCompletionRate * 100).round();
-    final diff = weeklyRate - monthlyRate;
-    if (diff != 0) {
-      return '${diff > 0 ? '+' : ''}$diff%';
-    }
-    return null;
-  }
-
-  bool? _isPositiveRateTrend(ProductivityMetrics metrics) {
-    return metrics.weeklyCompletionRate > metrics.monthlyCompletionRate;
-  }
 
   String _formatDuration(double minutes) {
     if (minutes < 60) {

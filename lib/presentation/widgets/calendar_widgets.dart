@@ -4,7 +4,7 @@ import 'package:table_calendar/table_calendar.dart';
 import '../../domain/entities/calendar_event.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
-import '../providers/calendar_provider.dart';
+import '../providers/calendar_provider.dart' as calendar;
 import '../providers/task_providers.dart';
 import '../../core/theme/typography_constants.dart';
 
@@ -13,10 +13,10 @@ class CalendarWidget extends ConsumerWidget {
   const CalendarWidget({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final calendarState = ref.watch(calendarProvider);
-    final calendarNotifier = ref.read(calendarProvider.notifier);
+    final calendarState = ref.watch(calendar.calendarProvider);
+    final calendarNotifier = ref.read(calendar.calendarProvider.notifier);
 
-    return Container(
+    return SizedBox(
       height: MediaQuery.of(context).size.height * 0.75, // Fixed height to prevent layout issues
       child: Column(
         children: [
@@ -41,242 +41,82 @@ class CalendarWidget extends ConsumerWidget {
 
   Widget _buildCalendarView(
     BuildContext context,
-    CalendarState state,
-    CalendarNotifier notifier,
+    calendar.CalendarState state,
+    calendar.CalendarNotifier notifier,
   ) {
     switch (state.viewMode) {
-      case CalendarViewMode.month:
+      case calendar.CalendarViewMode.month:
         return _MonthCalendarView(state: state, notifier: notifier);
-      case CalendarViewMode.week:
+      case calendar.CalendarViewMode.week:
         return _WeekCalendarView(state: state, notifier: notifier);
-      case CalendarViewMode.day:
+      case calendar.CalendarViewMode.day:
         return _DayCalendarView(state: state, notifier: notifier);
     }
   }
 }
 
-/// Enhanced calendar view mode selector with glassmorphism design
+/// Calendar view mode selector
 class _CalendarViewModeSelector extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final calendarState = ref.watch(calendarProvider);
-    final calendarNotifier = ref.read(calendarProvider.notifier);
-    final theme = Theme.of(context);
+    final calendarState = ref.watch(calendar.calendarProvider);
+    final calendarNotifier = ref.read(calendar.calendarProvider.notifier);
 
-    return Container(
-      padding: const EdgeInsets.all(8),
-      child: Row(
-        children: [
-          // Enhanced Today button with glassmorphism - Fixed width constraints
-          SizedBox(
-            width: 100, // Fixed width to prevent infinite constraints
-            height: 48, // Fixed height for better touch target
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    theme.colorScheme.primary.withOpacity(0.1),
-                    theme.colorScheme.secondary.withOpacity(0.05),
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium),
-                border: Border.all(
-                  color: theme.colorScheme.outline.withOpacity(0.2),
-                  width: 1,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: theme.colorScheme.primary.withOpacity(0.1),
-                    blurRadius: 4,
-                    spreadRadius: 1,
-                  ),
-                ],
-              ),
-              child: TextButton.icon(
-                onPressed: () => calendarNotifier.goToToday(),
-                style: TextButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium),
-                  ),
-                  foregroundColor: theme.colorScheme.primary,
-                  minimumSize: const Size(0, 0), // Allow smaller minimum size
-                ),
-                icon: Icon(
-                  Icons.today_outlined,
-                  size: 16,
-                  color: theme.colorScheme.primary,
-                ),
-                label: Text(
-                  'Today',
-                  style: TextStyle(
-                    fontSize: TypographyConstants.textXS,
-                    fontWeight: FontWeight.w600,
-                    color: theme.colorScheme.primary,
-                  ),
-                ),
-              ),
-            ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        // Today button - compact
+        TextButton(
+          onPressed: () => calendarNotifier.goToToday(),
+          style: TextButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            minimumSize: const Size(60, 32),
           ),
-          
-          const SizedBox(width: 12),
-          
-          // Enhanced view mode selector with glassmorphism
-          Expanded(
-            child: Container(
-              height: 48, // Consistent height
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
-                    theme.colorScheme.surface.withOpacity(0.8),
-                  ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
-                borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium),
-                border: Border.all(
-                  color: theme.colorScheme.outline.withOpacity(0.2),
-                  width: 1,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: theme.colorScheme.shadow.withOpacity(0.1),
-                    blurRadius: 6,
-                    spreadRadius: 1,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium),
-                child: Row(
-                  children: [
-                    _buildViewModeTab(
-                      context: context,
-                      theme: theme,
-                      viewMode: CalendarViewMode.month,
-                      label: 'Month',
-                      icon: Icons.calendar_view_month_outlined,
-                      selectedIcon: Icons.calendar_view_month,
-                      isSelected: calendarState.viewMode == CalendarViewMode.month,
-                      onTap: () => calendarNotifier.changeViewMode(CalendarViewMode.month),
-                    ),
-                    _buildViewModeTab(
-                      context: context,
-                      theme: theme,
-                      viewMode: CalendarViewMode.week,
-                      label: 'Week',
-                      icon: Icons.calendar_view_week_outlined,
-                      selectedIcon: Icons.calendar_view_week,
-                      isSelected: calendarState.viewMode == CalendarViewMode.week,
-                      onTap: () => calendarNotifier.changeViewMode(CalendarViewMode.week),
-                    ),
-                    _buildViewModeTab(
-                      context: context,
-                      theme: theme,
-                      viewMode: CalendarViewMode.day,
-                      label: 'Day',
-                      icon: Icons.calendar_today_outlined,
-                      selectedIcon: Icons.calendar_today,
-                      isSelected: calendarState.viewMode == CalendarViewMode.day,
-                      onTap: () => calendarNotifier.changeViewMode(CalendarViewMode.day),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildViewModeTab({
-    required BuildContext context,
-    required ThemeData theme,
-    required CalendarViewMode viewMode,
-    required String label,
-    required IconData icon,
-    required IconData selectedIcon,
-    required bool isSelected,
-    required VoidCallback onTap,
-  }) {
-    return Expanded(
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        decoration: BoxDecoration(
-          gradient: isSelected ? LinearGradient(
-            colors: [
-              theme.colorScheme.primary,
-              theme.colorScheme.primary.withOpacity(0.8),
-            ],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ) : null,
-          borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
-          boxShadow: isSelected ? [
-            BoxShadow(
-              color: theme.colorScheme.primary.withOpacity(0.3),
-              blurRadius: 8,
-              spreadRadius: 1,
-              offset: const Offset(0, 2),
-            ),
-            BoxShadow(
-              color: theme.colorScheme.primary.withOpacity(0.1),
-              blurRadius: 4,
-              spreadRadius: 0,
-              offset: const Offset(0, 1),
-            ),
-          ] : null,
+          child: Text('Today', style: Theme.of(context).textTheme.bodySmall),
         ),
-        margin: const EdgeInsets.all(4),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: onTap,
-            borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    isSelected ? selectedIcon : icon,
-                    size: 18,
-                    color: isSelected 
-                        ? theme.colorScheme.onPrimary
-                        : theme.colorScheme.onSurfaceVariant,
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    label,
-                    style: TextStyle(
-                      fontSize: TypographyConstants.textXS,
-                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                      color: isSelected 
-                          ? theme.colorScheme.onPrimary
-                          : theme.colorScheme.onSurfaceVariant,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
+        
+        const SizedBox(width: 8),
+        
+        // View mode buttons - compact
+        Expanded(
+          child: SizedBox(
+            height: 32, // Reduced height
+            child: SegmentedButton<calendar.CalendarViewMode>(
+              segments: [
+                ButtonSegment(
+                  value: calendar.CalendarViewMode.month,
+                  label: Text('Month', style: Theme.of(context).textTheme.labelSmall), // Tab label
+                ),
+                ButtonSegment(
+                  value: calendar.CalendarViewMode.week,
+                  label: Text('Week', style: Theme.of(context).textTheme.labelSmall), // Tab label
+                ),
+                ButtonSegment(
+                  value: calendar.CalendarViewMode.day,
+                  label: Text('Day', style: Theme.of(context).textTheme.labelSmall), // Tab label
+                ),
+              ],
+              selected: {calendarState.viewMode},
+              onSelectionChanged: (Set<calendar.CalendarViewMode> selection) {
+                calendarNotifier.changeViewMode(selection.first);
+              },
+              style: ButtonStyle(
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                minimumSize: WidgetStateProperty.all(const Size(60, 40)),
+                padding: WidgetStateProperty.all(const EdgeInsets.symmetric(horizontal: 8, vertical: 4)),
               ),
             ),
           ),
         ),
-      ),
+      ],
     );
   }
 }
 
 /// Month calendar view
 class _MonthCalendarView extends ConsumerWidget {
-  final CalendarState state;
-  final CalendarNotifier notifier;
+  final calendar.CalendarState state;
+  final calendar.CalendarNotifier notifier;
 
   const _MonthCalendarView({
     required this.state,
@@ -285,8 +125,6 @@ class _MonthCalendarView extends ConsumerWidget {
   
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-    
     return TableCalendar<CalendarEvent>(
       firstDay: DateTime.utc(2020, 1, 1),
       lastDay: DateTime.utc(2030, 12, 31),
@@ -295,102 +133,29 @@ class _MonthCalendarView extends ConsumerWidget {
       calendarFormat: state.calendarFormat,
       eventLoader: (day) => notifier.getEventsForDate(day),
       startingDayOfWeek: StartingDayOfWeek.monday,
-      
-      // Enhanced row height to prevent day name cutoff
-      rowHeight: 52, // Increased from default to provide more space
-      
       calendarStyle: CalendarStyle(
         outsideDaysVisible: false,
-        
-        // Reduced font sizes to fit better in cells
-        weekendTextStyle: TextStyle(
-          color: theme.colorScheme.error,
-          fontSize: TypographyConstants.textXS, // Reduced from textSM to textXS
-          fontWeight: FontWeight.w500,
-        ),
-        holidayTextStyle: TextStyle(
-          color: theme.colorScheme.errorContainer,
-          fontSize: TypographyConstants.textXS, // Reduced from textSM to textXS
-          fontWeight: FontWeight.w500,
-        ),
-        defaultTextStyle: TextStyle(
-          color: theme.colorScheme.onSurface,
-          fontSize: TypographyConstants.textXS, // Consistent small text size
-          fontWeight: FontWeight.w500,
-        ),
-        
-        // Enhanced decorations with better sizing
+        weekendTextStyle: TextStyle(color: Theme.of(context).colorScheme.error),
+        holidayTextStyle: TextStyle(color: Theme.of(context).colorScheme.errorContainer),
         markerDecoration: BoxDecoration(
-          color: theme.colorScheme.primary,
+          color: Theme.of(context).primaryColor,
           shape: BoxShape.circle,
         ),
         selectedDecoration: BoxDecoration(
-          color: theme.colorScheme.primary,
+          color: Theme.of(context).primaryColor,
           shape: BoxShape.circle,
-          boxShadow: [
-            BoxShadow(
-              color: theme.colorScheme.primary.withOpacity(0.3),
-              blurRadius: 4,
-              spreadRadius: 1,
-            ),
-          ],
         ),
         todayDecoration: BoxDecoration(
-          color: theme.colorScheme.primary.withOpacity(0.5),
+          color: Theme.of(context).primaryColor.withOpacity(0.5),
           shape: BoxShape.circle,
-          border: Border.all(
-            color: theme.colorScheme.primary,
-            width: 2,
-          ),
         ),
-        
-        // Improved cell margins for better spacing
-        cellMargin: const EdgeInsets.all(2),
-        cellPadding: const EdgeInsets.all(0),
       ),
-      
-      // Enhanced header style with better spacing
-      headerStyle: HeaderStyle(
+      headerStyle: const HeaderStyle(
         formatButtonVisible: false,
         titleCentered: true,
-        leftChevronIcon: Icon(
-          Icons.chevron_left,
-          color: theme.colorScheme.onSurface,
-          size: 24,
-        ),
-        rightChevronIcon: Icon(
-          Icons.chevron_right,
-          color: theme.colorScheme.onSurface,
-          size: 24,
-        ),
-        titleTextStyle: TextStyle(
-          fontSize: TypographyConstants.textLG,
-          fontWeight: FontWeight.w600,
-          color: theme.colorScheme.onSurface,
-        ),
-        headerMargin: const EdgeInsets.only(bottom: 8),
-        headerPadding: const EdgeInsets.symmetric(vertical: 8),
+        leftChevronIcon: Icon(Icons.chevron_left),
+        rightChevronIcon: Icon(Icons.chevron_right),
       ),
-      
-      // Enhanced days of week style to prevent cutoff
-      daysOfWeekStyle: DaysOfWeekStyle(
-        weekdayStyle: TextStyle(
-          fontSize: TypographyConstants.textXS, // Smaller font to prevent cutoff
-          fontWeight: FontWeight.w600,
-          color: theme.colorScheme.onSurfaceVariant,
-        ),
-        weekendStyle: TextStyle(
-          fontSize: TypographyConstants.textXS, // Smaller font to prevent cutoff
-          fontWeight: FontWeight.w600,
-          color: theme.colorScheme.error.withOpacity(0.8),
-        ),
-        dowTextFormatter: (date, locale) {
-          // Use shorter day names to prevent cutoff
-          const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-          return dayNames[date.weekday - 1];
-        },
-      ),
-      
       onDaySelected: (selectedDay, focusedDay) {
         notifier.selectDate(selectedDay);
         notifier.changeFocusedDate(focusedDay);
@@ -406,7 +171,7 @@ class _MonthCalendarView extends ConsumerWidget {
     );
   }
 
-  Widget? _buildTaskDots(BuildContext context, WidgetRef ref, DateTime date, List<CalendarEvent> events, CalendarNotifier notifier) {
+  Widget? _buildTaskDots(BuildContext context, WidgetRef ref, DateTime date, List<CalendarEvent> events, calendar.CalendarNotifier notifier) {
     // Get tasks for this date
     final allTasksAsync = ref.watch(tasksProvider);
     final tasksForDate = allTasksAsync.maybeWhen(
@@ -441,39 +206,39 @@ class _MonthCalendarView extends ConsumerWidget {
             dotColor = Color(int.parse(item.color.replaceFirst('#', '0xFF')));
           } else if (item is TaskModel) {
             // Use priority color for tasks
-            dotColor = _getPriorityColor(context, item.priority);
+            dotColor = _getPriorityColor(item.priority);
             isUrgent = item.priority == TaskPriority.urgent;
           } else {
-            dotColor = Theme.of(context).colorScheme.primary;
+            dotColor = Theme.of(context).primaryColor;
           }
           
           return Container(
             margin: const EdgeInsets.only(left: 2),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 300),
-              width: isUrgent ? 8 : 7, // Exact sizes as requested: 8px urgent, 7px regular
-              height: isUrgent ? 8 : 7,
+              width: isUrgent ? 10 : 8, // Reduced dot size for better balance
+              height: isUrgent ? 10 : 8,
               decoration: BoxDecoration(
                 color: dotColor,
                 shape: BoxShape.circle,
                 border: Border.all(
                   color: Theme.of(context).colorScheme.surface, 
-                  width: 1.0, // Further reduced border width for 7px dots
+                  width: 1.5, // Reduced border width to match smaller dots
                 ),
                 // Optimized glow effects for smaller dots
                 boxShadow: [
                   // Outer glow - reduced for smaller size
                   BoxShadow(
-                    color: dotColor.withOpacity(isUrgent ? 0.6 : 0.4),
-                    blurRadius: isUrgent ? 4 : 3,
-                    spreadRadius: isUrgent ? 0.5 : 0.25,
+                    color: dotColor.withOpacity(isUrgent ? 0.7 : 0.5),
+                    blurRadius: isUrgent ? 6 : 4,
+                    spreadRadius: isUrgent ? 1 : 0.5,
                   ),
                   // Inner highlight for depth
                   BoxShadow(
-                    color: dotColor.withOpacity(0.2),
-                    blurRadius: 1.5,
+                    color: dotColor.withOpacity(0.3),
+                    blurRadius: 2,
                     spreadRadius: 0,
-                    offset: const Offset(0, 0.5),
+                    offset: const Offset(0, 1),
                   ),
                 ],
               ),
@@ -484,37 +249,34 @@ class _MonthCalendarView extends ConsumerWidget {
     );
   }
 
-  Color _getPriorityColor(BuildContext context, TaskPriority priority) {
+  Color _getPriorityColor(TaskPriority priority) {
     switch (priority) {
       case TaskPriority.urgent:
-        return Theme.of(context).colorScheme.error; // Use theme error color
+        return const Color(0xFFFF1744); // Bright red
       case TaskPriority.high:
-        return Theme.of(context).colorScheme.tertiary; // Use theme tertiary color
+        return const Color(0xFFFF9100); // Orange
       case TaskPriority.medium:
-        return Theme.of(context).colorScheme.primary; // Use theme primary color
+        return const Color(0xFF2196F3); // Blue
       case TaskPriority.low:
-        return Theme.of(context).colorScheme.secondary; // Use theme secondary color
+        return const Color(0xFF4CAF50); // Green
     }
   }
 }
 
 /// Week calendar view
-class _WeekCalendarView extends ConsumerWidget {
-  final CalendarState state;
-  final CalendarNotifier notifier;
+class _WeekCalendarView extends StatelessWidget {
+  final calendar.CalendarState state;
+  final calendar.CalendarNotifier notifier;
 
   const _WeekCalendarView({
     required this.state,
     required this.notifier,
   });
-  
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-    
+  Widget build(BuildContext context) {
     return Column(
       children: [
-        // Week header with task dots
+        // Week header - constrained height
         SizedBox(
           height: 120, // Fixed height for week calendar
           child: TableCalendar<CalendarEvent>(
@@ -527,10 +289,6 @@ class _WeekCalendarView extends ConsumerWidget {
             startingDayOfWeek: StartingDayOfWeek.monday,
             headerVisible: true,
             daysOfWeekVisible: true,
-            
-            // Enhanced row height for better task dot visibility
-            rowHeight: 52,
-            
             onDaySelected: (selectedDay, focusedDay) {
               notifier.selectDate(selectedDay);
               notifier.changeFocusedDate(focusedDay);
@@ -538,94 +296,23 @@ class _WeekCalendarView extends ConsumerWidget {
             onPageChanged: (focusedDay) {
               notifier.changeFocusedDate(focusedDay);
             },
-            
             calendarStyle: CalendarStyle(
               outsideDaysVisible: false,
-              
-              // Consistent text styling with month view
-              weekendTextStyle: TextStyle(
-                color: theme.colorScheme.error,
-                fontSize: TypographyConstants.textXS,
-                fontWeight: FontWeight.w500,
-              ),
-              defaultTextStyle: TextStyle(
-                color: theme.colorScheme.onSurface,
-                fontSize: TypographyConstants.textXS,
-                fontWeight: FontWeight.w500,
-              ),
-              
-              // Enhanced decorations
+              weekendTextStyle: TextStyle(color: Theme.of(context).colorScheme.error),
               selectedDecoration: BoxDecoration(
-                color: theme.colorScheme.primary,
+                color: Theme.of(context).primaryColor,
                 shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: theme.colorScheme.primary.withOpacity(0.3),
-                    blurRadius: 4,
-                    spreadRadius: 1,
-                  ),
-                ],
               ),
               todayDecoration: BoxDecoration(
-                color: theme.colorScheme.primary.withOpacity(0.5),
+                color: Theme.of(context).primaryColor.withOpacity(0.5),
                 shape: BoxShape.circle,
-                border: Border.all(
-                  color: theme.colorScheme.primary,
-                  width: 2,
-                ),
               ),
-              
-              // Improved cell spacing
-              cellMargin: const EdgeInsets.all(2),
-              cellPadding: const EdgeInsets.all(0),
             ),
-            
-            // Enhanced header styling
-            headerStyle: HeaderStyle(
+            headerStyle: const HeaderStyle(
               formatButtonVisible: false,
               titleCentered: true,
-              leftChevronIcon: Icon(
-                Icons.chevron_left,
-                color: theme.colorScheme.onSurface,
-                size: 24,
-              ),
-              rightChevronIcon: Icon(
-                Icons.chevron_right,
-                color: theme.colorScheme.onSurface,
-                size: 24,
-              ),
-              titleTextStyle: TextStyle(
-                fontSize: TypographyConstants.textLG,
-                fontWeight: FontWeight.w600,
-                color: theme.colorScheme.onSurface,
-              ),
-              headerMargin: const EdgeInsets.only(bottom: 8),
-              headerPadding: const EdgeInsets.symmetric(vertical: 8),
-            ),
-            
-            // Days of week styling
-            daysOfWeekStyle: DaysOfWeekStyle(
-              weekdayStyle: TextStyle(
-                fontSize: TypographyConstants.textXS,
-                fontWeight: FontWeight.w600,
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-              weekendStyle: TextStyle(
-                fontSize: TypographyConstants.textXS,
-                fontWeight: FontWeight.w600,
-                color: theme.colorScheme.error.withOpacity(0.8),
-              ),
-              dowTextFormatter: (date, locale) {
-                const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-                return dayNames[date.weekday - 1];
-              },
-            ),
-            
-            // Add task dots builder for week view
-            calendarBuilders: CalendarBuilders(
-              markerBuilder: (context, date, events) {
-                return _buildWeekTaskDots(context, ref, date, events, notifier);
-              },
+              leftChevronIcon: Icon(Icons.chevron_left),
+              rightChevronIcon: Icon(Icons.chevron_right),
             ),
           ),
         ),
@@ -639,101 +326,12 @@ class _WeekCalendarView extends ConsumerWidget {
       ],
     );
   }
-
-  /// Build task dots for week view (same as month view)
-  Widget? _buildWeekTaskDots(BuildContext context, WidgetRef ref, DateTime date, List<CalendarEvent> events, CalendarNotifier notifier) {
-    // Get tasks for this date
-    final allTasksAsync = ref.watch(tasksProvider);
-    final tasksForDate = allTasksAsync.maybeWhen(
-      data: (allTasks) => allTasks.where((task) {
-        if (task.dueDate == null) return false;
-        final taskDate = DateTime(task.dueDate!.year, task.dueDate!.month, task.dueDate!.day);
-        final targetDate = DateTime(date.year, date.month, date.day);
-        return taskDate.isAtSameMomentAs(targetDate);
-      }).toList(),
-      orElse: () => <TaskModel>[],
-    );
-    
-    // Combine events and tasks
-    final allItems = <dynamic>[...events, ...tasksForDate];
-    
-    if (allItems.isEmpty) return null;
-
-    // Limit to 3 dots maximum to avoid overcrowding
-    final displayItems = allItems.take(3).toList();
-    
-    return Positioned(
-      right: 2,
-      bottom: 2,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: displayItems.map((item) {
-          Color dotColor;
-          bool isUrgent = false;
-          
-          if (item is CalendarEvent) {
-            // Use event color
-            dotColor = Color(int.parse(item.color.replaceFirst('#', '0xFF')));
-          } else if (item is TaskModel) {
-            // Use priority color for tasks
-            dotColor = _getPriorityColor(context, item.priority);
-            isUrgent = item.priority == TaskPriority.urgent;
-          } else {
-            dotColor = Theme.of(context).colorScheme.primary;
-          }
-          
-          return Container(
-            margin: const EdgeInsets.only(left: 2),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              width: isUrgent ? 8 : 7, // Same sizing as month view
-              height: isUrgent ? 8 : 7,
-              decoration: BoxDecoration(
-                color: dotColor,
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: Theme.of(context).colorScheme.surface, 
-                  width: 1.0,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: dotColor.withOpacity(isUrgent ? 0.6 : 0.4),
-                    blurRadius: isUrgent ? 4 : 3,
-                    spreadRadius: isUrgent ? 0.5 : 0.25,
-                  ),
-                  BoxShadow(
-                    color: dotColor.withOpacity(0.2),
-                    blurRadius: 1.5,
-                    spreadRadius: 0,
-                    offset: const Offset(0, 0.5),
-                  ),
-                ],
-              ),
-            ),
-          );
-        }).toList(),
-      ),
-    );
-  }
-
-  Color _getPriorityColor(BuildContext context, TaskPriority priority) {
-    switch (priority) {
-      case TaskPriority.urgent:
-        return Theme.of(context).colorScheme.error;
-      case TaskPriority.high:
-        return Theme.of(context).colorScheme.tertiary;
-      case TaskPriority.medium:
-        return Theme.of(context).colorScheme.primary;
-      case TaskPriority.low:
-        return Theme.of(context).colorScheme.secondary;
-    }
-  }
 }
 
 /// Day calendar view
 class _DayCalendarView extends StatelessWidget {
-  final CalendarState state;
-  final CalendarNotifier notifier;
+  final calendar.CalendarState state;
+  final calendar.CalendarNotifier notifier;
 
   const _DayCalendarView({
     required this.state,
@@ -759,9 +357,7 @@ class _DayCalendarView extends StatelessWidget {
               ),
               Text(
                 _formatDayHeader(state.selectedDate),
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontSize: TypographyConstants.textXL,
-              ),
+                style: Theme.of(context).textTheme.headlineSmall,
               ),
               IconButton(
                 onPressed: () {
@@ -799,7 +395,7 @@ class _DayCalendarView extends StatelessWidget {
 
 /// Week events view - Enhanced to show both events and tasks
 class _WeekEventsView extends ConsumerWidget {
-  final CalendarState state;
+  final calendar.CalendarState state;
 
   const _WeekEventsView({required this.state});
   
@@ -1007,7 +603,7 @@ class EventCard extends ConsumerWidget {
                   if (event.isAllDay)
                     Chip(
                       label: const Text('All Day'),
-                      backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                      backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
                     ),
                 ],
               ),
@@ -1189,7 +785,7 @@ class _TaskSchedulingWidgetState extends ConsumerState<TaskSchedulingWidget> {
   bool isAllDay = false;
   @override
   Widget build(BuildContext context) {
-    final calendarNotifier = ref.read(calendarProvider.notifier);
+    final calendarNotifier = ref.read(calendar.calendarProvider.notifier);
 
     return AlertDialog(
       title: Text('Schedule: ${widget.task.title}'),
@@ -1278,7 +874,7 @@ class _TaskSchedulingWidgetState extends ConsumerState<TaskSchedulingWidget> {
     );
   }
 
-  Future<void> _scheduleTask(CalendarNotifier calendarNotifier) async {
+  Future<void> _scheduleTask(calendar.CalendarNotifier calendarNotifier) async {
     final DateTime startDateTime;
     final DateTime endDateTime;
 
@@ -1357,13 +953,13 @@ class TaskEventCard extends ConsumerWidget {
             border: Border(
               left: BorderSide(
                 width: 4,
-                color: _getPriorityColor(context, task.priority),
+                color: _getPriorityColor(task.priority),
               ),
             ),
             // Enhanced glow for task cards
             boxShadow: [
               BoxShadow(
-                color: _getPriorityColor(context, task.priority).withOpacity(0.2),
+                color: _getPriorityColor(task.priority).withOpacity(0.2),
                 blurRadius: 4,
                 spreadRadius: 1,
                 offset: const Offset(0, 2),
@@ -1380,23 +976,23 @@ class TaskEventCard extends ConsumerWidget {
                     width: task.priority == TaskPriority.urgent ? 16 : 14,
                     height: task.priority == TaskPriority.urgent ? 16 : 14,
                     decoration: BoxDecoration(
-                      color: _getStatusColor(context, task.status),
+                      color: _getStatusColor(task.status),
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: _getStatusColor(context, task.status).withOpacity(0.8),
+                        color: _getStatusColor(task.status).withOpacity(0.8),
                         width: 2,
                       ),
                       // Multi-layer glow effects for maximum visibility
                       boxShadow: [
                         // Outer glow
                         BoxShadow(
-                          color: _getStatusColor(context, task.status).withOpacity(0.6),
+                          color: _getStatusColor(task.status).withOpacity(0.6),
                           blurRadius: task.status == TaskStatus.inProgress ? 8 : 6,
                           spreadRadius: task.status == TaskStatus.inProgress ? 2 : 1,
                         ),
                         // Inner glow
                         BoxShadow(
-                          color: _getStatusColor(context, task.status).withOpacity(0.4),
+                          color: _getStatusColor(task.status).withOpacity(0.4),
                           blurRadius: 3,
                           spreadRadius: 0,
                         ),
@@ -1419,19 +1015,19 @@ class TaskEventCard extends ConsumerWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
-                      color: _getPriorityColor(context, task.priority).withOpacity(0.15),
+                      color: _getPriorityColor(task.priority).withOpacity(0.15),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
-                        color: _getPriorityColor(context, task.priority),
+                        color: _getPriorityColor(task.priority),
                         width: 1,
                       ),
                     ),
                     child: Text(
                       task.priority.name.toUpperCase(),
                       style: TextStyle(
-                        fontSize: TypographyConstants.textXS,
+                        fontSize: 10,
                         fontWeight: FontWeight.bold,
-                        color: _getPriorityColor(context, task.priority),
+                        color: _getPriorityColor(task.priority),
                       ),
                     ),
                   ),
@@ -1480,7 +1076,7 @@ class TaskEventCard extends ConsumerWidget {
                     child: Text(
                       '#$tag',
                       style: TextStyle(
-                        fontSize: TypographyConstants.textXS,
+                        fontSize: 10,
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
@@ -1494,29 +1090,29 @@ class TaskEventCard extends ConsumerWidget {
     );
   }
 
-  Color _getPriorityColor(BuildContext context, TaskPriority priority) {
+  Color _getPriorityColor(TaskPriority priority) {
     switch (priority) {
       case TaskPriority.urgent:
-        return Theme.of(context).colorScheme.error; // Use theme error color
+        return const Color(0xFFFF1744); // Bright red
       case TaskPriority.high:
-        return Theme.of(context).colorScheme.tertiary; // Use theme tertiary color
+        return const Color(0xFFFF9100); // Orange
       case TaskPriority.medium:
-        return Theme.of(context).colorScheme.primary; // Use theme primary color
+        return const Color(0xFF2196F3); // Blue
       case TaskPriority.low:
-        return Theme.of(context).colorScheme.secondary; // Use theme secondary color
+        return const Color(0xFF4CAF50); // Green
     }
   }
 
-  Color _getStatusColor(BuildContext context, TaskStatus status) {
+  Color _getStatusColor(TaskStatus status) {
     switch (status) {
       case TaskStatus.pending:
-        return Theme.of(context).colorScheme.tertiary; // Orange equivalent
+        return const Color(0xFFFF9800); // Orange
       case TaskStatus.inProgress:
-        return Theme.of(context).colorScheme.primary; // Blue equivalent
+        return const Color(0xFF2196F3); // Blue
       case TaskStatus.completed:
-        return Theme.of(context).colorScheme.secondary; // Green equivalent
+        return const Color(0xFF4CAF50); // Green
       case TaskStatus.cancelled:
-        return Theme.of(context).colorScheme.error; // Red equivalent
+        return const Color(0xFFFF1744); // Red
     }
   }
 

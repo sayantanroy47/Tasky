@@ -40,7 +40,7 @@ class SmartText extends StatefulWidget {
 
 class _SmartTextState extends State<SmartText> {
   bool _isExpanded = false;
-  bool _needsExpansion = false;
+  // final bool _needsExpansion = false;
   TextStyle? _effectiveStyle;
 
   @override
@@ -76,7 +76,7 @@ class _SmartTextState extends State<SmartText> {
 
   @override
   Widget build(BuildContext context) {
-    final effectiveStyle = _effectiveStyle ?? Theme.of(context).textTheme.bodyMedium!;
+    // final effectiveStyle = _effectiveStyle ?? Theme.of(context).textTheme.bodyMedium!;
     
     if (widget.autoSize) {
       return _buildAutoSizeText();

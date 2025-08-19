@@ -5,8 +5,6 @@ import '../../domain/repositories/task_repository.dart';
 import '../../services/task/recurring_task_service.dart';
 import '../../services/dependency_service.dart';
 import '../../services/task/enhanced_task_operations.dart';
-import '../../services/notification/notification_service.dart';
-import '../../services/notification/local_notification_service.dart';
 import '../../core/providers/core_providers.dart';
 import 'task_providers.dart';
 import 'dependency_providers.dart';

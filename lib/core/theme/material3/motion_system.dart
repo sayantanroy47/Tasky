@@ -133,9 +133,9 @@ class ExpressiveHero extends StatelessWidget {
     );
   }
   
-  static CreateRectTween _createExpressiveRectTween = (begin, end) {
+  static Tween<Rect?> _createExpressiveRectTween(Rect? begin, Rect? end) {
     return MaterialRectArcTween(begin: begin, end: end);
-  };
+  }
   
   static Widget _defaultFlightShuttleBuilder(
     BuildContext flightContext,

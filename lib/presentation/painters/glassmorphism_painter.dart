@@ -2,7 +2,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import '../../core/theme/typography_constants.dart';
 
-/// Glassmorphism effect painter
+/// Glassmorphism effect painter with performance optimizations
 class GlassmorphismPainter extends CustomPainter {
   final Color color;
   final double blur;
@@ -10,6 +10,12 @@ class GlassmorphismPainter extends CustomPainter {
   final BorderRadius borderRadius;
   final Color? borderColor;
   final double borderWidth;
+  final bool enableCaching;
+  
+  // Cache painted objects for better performance
+  static Paint? _cachedFillPaint;
+  static Paint? _cachedBorderPaint;
+  static String? _cacheKey;
   
   GlassmorphismPainter({
     this.color = Colors.white,
@@ -18,6 +24,7 @@ class GlassmorphismPainter extends CustomPainter {
     this.borderRadius = const BorderRadius.all(Radius.circular(TypographyConstants.radiusStandard)),
     this.borderColor,
     this.borderWidth = 1.5,
+    this.enableCaching = true,
   });
   
   @override
@@ -25,23 +32,58 @@ class GlassmorphismPainter extends CustomPainter {
     final rect = Rect.fromLTWH(0, 0, size.width, size.height);
     final rrect = borderRadius.toRRect(rect);
     
-    // Draw blur background
-    final paint = Paint()
-      ..color = color.withOpacity(opacity)
-      ..style = PaintingStyle.fill
-      ..maskFilter = MaskFilter.blur(BlurStyle.normal, blur);
+    // Use cached paint objects if caching is enabled
+    final paint = enableCaching ? _getCachedFillPaint() : _createFillPaint();
     
     canvas.drawRRect(rrect, paint);
     
     // Draw border if specified
     if (borderColor != null) {
-      final borderPaint = Paint()
-        ..color = borderColor!
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = borderWidth;
-      
+      final borderPaint = enableCaching ? _getCachedBorderPaint() : _createBorderPaint();
       canvas.drawRRect(rrect, borderPaint);
     }
+  }
+  
+  /// Get or create cached fill paint
+  Paint _getCachedFillPaint() {
+    final currentKey = _buildPaintCacheKey();
+    if (_cacheKey != currentKey || _cachedFillPaint == null) {
+      _cachedFillPaint = _createFillPaint();
+      _cacheKey = currentKey;
+    }
+    return _cachedFillPaint!;
+  }
+  
+  /// Get or create cached border paint
+  Paint _getCachedBorderPaint() {
+    // For border paint, we can reuse if border properties haven't changed
+    if (_cachedBorderPaint == null || 
+        _cachedBorderPaint!.color != borderColor! ||
+        _cachedBorderPaint!.strokeWidth != borderWidth) {
+      _cachedBorderPaint = _createBorderPaint();
+    }
+    return _cachedBorderPaint!;
+  }
+  
+  /// Create fill paint
+  Paint _createFillPaint() {
+    return Paint()
+      ..color = color.withOpacity(opacity)
+      ..style = PaintingStyle.fill
+      ..maskFilter = MaskFilter.blur(BlurStyle.normal, blur);
+  }
+  
+  /// Create border paint
+  Paint _createBorderPaint() {
+    return Paint()
+      ..color = borderColor!
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = borderWidth;
+  }
+  
+  /// Build cache key for paint objects
+  String _buildPaintCacheKey() {
+    return '${color.value}_${opacity}_$blur';
   }
   
   @override

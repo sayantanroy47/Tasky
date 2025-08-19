@@ -7,7 +7,7 @@ import '../widgets/standardized_app_bar.dart';
 import '../widgets/theme_background_widget.dart';
 import '../../core/theme/app_theme_data.dart';
 import '../../core/theme/typography_constants.dart';
-import '../../core/design_system/design_tokens.dart' hide BorderRadius;
+import '../../core/design_system/design_tokens.dart';
 
 /// Ultra-modern theme gallery with glassmorphism design and immersive previews
 class ThemesPage extends ConsumerStatefulWidget {
@@ -390,19 +390,19 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
   Widget _buildThemesGrid(List<AppThemeData> themes, EnhancedThemeState themeState) {
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      sliver: SliverFadeTransition(
-        opacity: _gridAnimation,
-        sliver: SliverGrid(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-            childAspectRatio: 0.85,
+      sliver: SliverGrid(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 16,
+          mainAxisSpacing: 16,
+          childAspectRatio: 0.85,
+        ),
+        delegate: SliverChildBuilderDelegate(
+          (context, index) => FadeTransition(
+            opacity: _gridAnimation,
+            child: _buildThemeCard(themes[index], themeState, index),
           ),
-          delegate: SliverChildBuilderDelegate(
-            (context, index) => _buildThemeCard(themes[index], themeState, index),
-            childCount: themes.length,
-          ),
+          childCount: themes.length,
         ),
       ),
     );
@@ -411,16 +411,16 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
   Widget _buildThemesList(List<AppThemeData> themes, EnhancedThemeState themeState) {
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      sliver: SliverFadeTransition(
-        opacity: _gridAnimation,
-        sliver: SliverList(
-          delegate: SliverChildBuilderDelegate(
-            (context, index) => Padding(
+      sliver: SliverList(
+        delegate: SliverChildBuilderDelegate(
+          (context, index) => FadeTransition(
+            opacity: _gridAnimation,
+            child: Padding(
               padding: const EdgeInsets.only(bottom: 12),
               child: _buildThemeListItem(themes[index], themeState),
             ),
-            childCount: themes.length,
           ),
+          childCount: themes.length,
         ),
       ),
     );
@@ -534,10 +534,9 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
                             
                             const SizedBox(height: 4),
                             
-                            if (theme.metadata.description != null)
-                              Flexible(
-                                child: Text(
-                                  theme.metadata.description!,
+                            Flexible(
+                              child: Text(
+                                theme.metadata.description,
                                   style: TextStyle(
                                     fontSize: TypographyConstants.textXS,
                                     color: Theme.of(context).colorScheme.onSurfaceVariant,
@@ -559,7 +558,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
                                 _buildColorDot(Color(theme.colors.tertiary.value)),
                                 const Spacer(),
                                 if (theme.metadata.popularityScore > 0.8)
-                                  Icon(
+                                  const Icon(
                                     Icons.star,
                                     size: 16,
                                     color: Colors.amber,
@@ -646,18 +645,16 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
                       overflow: TextOverflow.ellipsis,
                     ),
                     
-                    if (theme.metadata.description != null) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        theme.metadata.description!,
-                        style: TextStyle(
-                          fontSize: TypographyConstants.textSM,
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+                    const SizedBox(height: 4),
+                    Text(
+                      theme.metadata.description,
+                      style: TextStyle(
+                        fontSize: TypographyConstants.textSM,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
-                    ],
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ],
                 ),
               ),
@@ -797,10 +794,10 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
                   
                   Row(
                     children: [
-                      Expanded(
+                      const Expanded(
                         child: OutlinedButton(
-                          onPressed: () => setState(() => _previewTheme = null),
-                          child: const Text('Cancel'),
+                          onPressed: null,
+                          child:  Text('Cancel'),
                         ),
                       ),
                       
@@ -832,7 +829,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
     if (_searchQuery.isNotEmpty) {
       filtered = filtered.where((theme) =>
         theme.metadata.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-        (theme.metadata.description != null && theme.metadata.description!.toLowerCase().contains(_searchQuery.toLowerCase()))
+        theme.metadata.description.toLowerCase().contains(_searchQuery.toLowerCase())
       ).toList();
     }
     
@@ -891,15 +888,15 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Row(
+          content: const Row(
             children: [
-              const Icon(
+              Icon(
                 Icons.shuffle_rounded,
                 color: Colors.white,
                 size: 20,
               ),
-              const SizedBox(width: 12),
-              const Text('Random theme applied!'),
+              SizedBox(width: 12),
+              Text('Random theme applied!'),
             ],
           ),
           backgroundColor: Theme.of(context).colorScheme.primary,

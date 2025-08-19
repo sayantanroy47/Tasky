@@ -190,9 +190,22 @@ class AITaskParsingService {
   }
 }
 
+/// Provider for SharedPreferences
+final sharedPreferencesProvider = FutureProvider<SharedPreferences>((ref) async {
+  return await SharedPreferences.getInstance();
+});
+
 /// Provider for AI task parsing service
-final aiTaskParsingServiceProvider = Provider<AITaskParsingService>((ref) {
-  throw UnimplementedError('AITaskParsingService provider must be overridden');
+final aiTaskParsingServiceProvider = FutureProvider<AITaskParsingService>((ref) async {
+  final prefs = await ref.watch(sharedPreferencesProvider.future);
+  
+  return AITaskParsingService(
+    parser: CompositeAITaskParser(
+      preferredService: AIServiceType.composite, // Default to composite parser
+      enableAI: true, // Enable AI with composite parser
+    ),
+    prefs: prefs,
+  );
 });
 
 /// Provider for AI parsing configuration
@@ -210,8 +223,8 @@ class AIParsingConfig {
   final bool autoApplyDueDate;
 
   const AIParsingConfig({
-    this.enabled = false,
-    this.serviceType = AIServiceType.local,
+    this.enabled = true, // Enable AI by default with composite parser
+    this.serviceType = AIServiceType.composite, // Default to composite parser
     this.showConfidence = true,
     this.autoApplyTags = true,
     this.autoApplyPriority = true,

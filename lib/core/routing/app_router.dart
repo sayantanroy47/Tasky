@@ -11,11 +11,13 @@ import '../../presentation/pages/task_detail_page.dart';
 import '../../presentation/pages/voice_demo_page.dart';
 import '../../presentation/pages/data_export_page.dart';
 import '../../presentation/pages/help_page.dart';
+import '../../presentation/pages/task_dependencies_page.dart';
 import '../../presentation/screens/integration_settings_screen.dart';
 import '../../presentation/screens/task_sharing_screen.dart';
+import '../../presentation/screens/pin_setup_screen.dart';
+import '../../presentation/screens/authentication_screen.dart';
 import '../../presentation/widgets/theme_background_widget.dart';
 import 'route_validator.dart';
-import '../errors/app_exceptions.dart';
 
 /// Application router
 class AppRouter {
@@ -183,6 +185,26 @@ class AppRouter {
       case '/add-task':
         return MaterialPageRoute(
           builder: (_) => const ThemeBackgroundWidget(child: TasksPage()), // Will show add task form
+          settings: settings,
+        );
+      case '/setup-pin':
+        return MaterialPageRoute(
+          builder: (_) => const PinSetupScreen(),
+          settings: settings,
+        );
+      case '/change-pin':
+        return MaterialPageRoute(
+          builder: (_) => const PinSetupScreen(isChangingPin: true),
+          settings: settings,
+        );
+      case '/auth':
+        return MaterialPageRoute(
+          builder: (_) => const AuthenticationScreen(),
+          settings: settings,
+        );
+      case '/task-dependencies':
+        return MaterialPageRoute(
+          builder: (_) => const ThemeBackgroundWidget(child: TaskDependenciesPage()),
           settings: settings,
         );
       default:

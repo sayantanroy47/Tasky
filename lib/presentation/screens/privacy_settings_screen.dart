@@ -4,10 +4,15 @@ import '../widgets/enhanced_ux_widgets.dart';
 import '../widgets/standardized_app_bar.dart';
 import '../../services/privacy_service.dart';
 import 'dart:convert';
+import '../widgets/glassmorphism_container.dart';
+import '../../core/design_system/design_tokens.dart';
+import '../../core/theme/typography_constants.dart';
 
 /// Screen for managing privacy settings and data compliance
 class PrivacySettingsScreen extends ConsumerWidget {
   const PrivacySettingsScreen({super.key});
+  
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final privacySettings = ref.watch(privacySettingsProvider);
@@ -49,7 +54,10 @@ class PrivacySettingsScreen extends ConsumerWidget {
           children: [
             // Privacy Principles Section
             _buildSectionHeader(context, 'Privacy Principles'),
-            EnhancedCard(
+            GlassmorphismContainer(
+              level: GlassLevel.content,
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
                   SwitchListTile(
@@ -81,7 +89,10 @@ class PrivacySettingsScreen extends ConsumerWidget {
             
             // Data Collection Section
             _buildSectionHeader(context, 'Data Collection'),
-            EnhancedCard(
+            GlassmorphismContainer(
+              level: GlassLevel.content,
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
                   SwitchListTile(
@@ -138,7 +149,10 @@ class PrivacySettingsScreen extends ConsumerWidget {
             
             // AI and Voice Processing Section
             _buildSectionHeader(context, 'AI & Voice Processing'),
-            EnhancedCard(
+            GlassmorphismContainer(
+              level: GlassLevel.content,
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
                   SwitchListTile(
@@ -174,7 +188,10 @@ class PrivacySettingsScreen extends ConsumerWidget {
             
             // Cloud and Sharing Section
             _buildSectionHeader(context, 'Cloud & Sharing'),
-            EnhancedCard(
+            GlassmorphismContainer(
+              level: GlassLevel.content,
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
                   SwitchListTile(
@@ -224,7 +241,10 @@ class PrivacySettingsScreen extends ConsumerWidget {
             
             // Data Retention Section
             _buildSectionHeader(context, 'Data Retention'),
-            EnhancedCard(
+            GlassmorphismContainer(
+              level: GlassLevel.content,
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
                   ListTile(
@@ -281,7 +301,10 @@ class PrivacySettingsScreen extends ConsumerWidget {
             
             // Data Rights Section
             _buildSectionHeader(context, 'Your Data Rights'),
-            EnhancedCard(
+            GlassmorphismContainer(
+              level: GlassLevel.content,
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
                   ListTile(
@@ -358,12 +381,40 @@ class PrivacySettingsScreen extends ConsumerWidget {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
-          EnhancedButton(
-            onPressed: () {
-              ref.read(privacySettingsProvider.notifier).refresh();
-              ref.read(dataRetentionSettingsProvider.notifier).refresh();
-            },
-            child: const Text('Retry'),
+          GlassmorphismContainer(
+            level: GlassLevel.interactive,
+            borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () {
+                  ref.read(privacySettingsProvider.notifier).refresh();
+                  ref.read(dataRetentionSettingsProvider.notifier).refresh();
+                },
+                borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                        Theme.of(context).colorScheme.primary.withOpacity(0.6),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                  ),
+                  child: const Text(
+                    'Retry',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ),
         ],
       ),

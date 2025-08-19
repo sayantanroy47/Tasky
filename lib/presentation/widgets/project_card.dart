@@ -110,7 +110,7 @@ class ProjectCard extends ConsumerWidget {
                             builder: (context) => Row(
                               children: [
                                 Icon(Icons.delete, color: Theme.of(context).colorScheme.error),
-                                SizedBox(width: 8),
+                                const SizedBox(width: 8),
                                 Text('Delete', style: TextStyle(color: Theme.of(context).colorScheme.error)),
                               ],
                             ),

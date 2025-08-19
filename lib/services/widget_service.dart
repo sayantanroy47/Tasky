@@ -23,131 +23,14 @@ class WidgetService {
   /// Initialize widget service
   Future<void> initialize() async {
     try {
-      await _channel.invokeMethod('initialize');
-      _setupMethodCallHandler();
+      // Skip platform channel initialization for now - requires native implementation
+      if (kDebugMode) {
+        debugPrint('WidgetService: Skipping platform channel initialization (requires native implementation)');
+      }
+      // await _channel.invokeMethod('initialize');
+      // _setupMethodCallHandler();
     } catch (e) {
       debugPrint('Error initializing WidgetService: $e');
-    }
-  }
-
-  /// Setup method call handler for widget interactions
-  void _setupMethodCallHandler() {
-    _channel.setMethodCallHandler((call) async {
-      switch (call.method) {
-        case 'createTaskFromWidget':
-          return await _handleCreateTaskFromWidget(call.arguments);
-        case 'completeTaskFromWidget':
-          return await _handleCompleteTaskFromWidget(call.arguments);
-        case 'getWidgetData':
-          return await _handleGetWidgetData(call.arguments);
-        default:
-          throw PlatformException(
-            code: 'UNIMPLEMENTED',
-            message: 'Method ${call.method} not implemented',
-          );
-      }
-    });
-  }
-
-  /// Handle task creation from widget
-  Future<Map<String, dynamic>> _handleCreateTaskFromWidget(dynamic arguments) async {
-    try {
-      final args = arguments as Map<String, dynamic>;
-      final title = args['title'] as String? ?? 'New Task';
-      final description = args['description'] as String?;
-      final priority = _parsePriority(args['priority'] as String?);
-
-      final task = TaskModel(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        title: title,
-        description: description,
-        createdAt: DateTime.now(),
-        priority: priority,
-        status: TaskStatus.pending,
-        tags: const ['widget'],
-        subTasks: const [],
-        projectId: null,
-        dependencies: const [],
-        metadata: {
-          'source': 'widget',
-          'widget_type': args['widgetType'] ?? 'quick_add',
-        },
-      );
-
-      // Save task to repository
-      if (_taskRepository != null) {
-        await _taskRepository!.createTask(task);
-      } else {
-        debugPrint('Warning: TaskRepository not initialized in WidgetService');
-      }
-
-      // Task created successfully from widget
-
-      return {
-        'success': true,
-        'taskId': task.id,
-        'message': 'Task created successfully',
-      };
-    } catch (e) {
-      debugPrint('Error creating task from widget: $e');
-      return {
-        'success': false,
-        'error': e.toString(),
-      };
-    }
-  }
-
-  /// Handle task completion from widget
-  Future<Map<String, dynamic>> _handleCompleteTaskFromWidget(dynamic arguments) async {
-    try {
-      final args = arguments as Map<String, dynamic>;
-      final taskId = args['taskId'] as String;
-
-      // Update task status in repository
-      if (_taskRepository != null) {
-        final task = await _taskRepository!.getTaskById(taskId);
-        if (task != null) {
-          final completedTask = task.markCompleted();
-          await _taskRepository!.updateTask(completedTask);
-        }
-      } else {
-        debugPrint('Warning: TaskRepository not initialized in WidgetService');
-      }
-
-      // Task completed successfully from widget
-
-      return {
-        'success': true,
-        'message': 'Task completed successfully',
-      };
-    } catch (e) {
-      debugPrint('Error completing task from widget: $e');
-      return {
-        'success': false,
-        'error': e.toString(),
-      };
-    }
-  }
-
-  /// Handle widget data request
-  Future<Map<String, dynamic>> _handleGetWidgetData(dynamic arguments) async {
-    try {
-      final args = arguments as Map<String, dynamic>;
-      final widgetType = args['widgetType'] as String;
-
-      switch (widgetType) {
-        case 'today_tasks':
-          return await _getTodayTasksData();
-        case 'quick_stats':
-          return await _getQuickStatsData();
-        case 'upcoming_tasks':
-          return await _getUpcomingTasksData();
-        default:
-          return {'error': 'Unknown widget type: $widgetType'};
-      }
-    } catch (e) {
-      debugPrint('Error getting widget data: $e');
-      return {'error': e.toString()};
     }
   }
 
@@ -286,19 +169,6 @@ class WidgetService {
     }
   }
 
-  /// Parse priority from string
-  TaskPriority _parsePriority(String? priorityString) {
-    switch (priorityString?.toLowerCase()) {
-      case 'low':
-        return TaskPriority.low;
-      case 'high':
-        return TaskPriority.high;
-      case 'urgent':
-        return TaskPriority.urgent;
-      default:
-        return TaskPriority.medium;
-    }
-  }
 
   /// Configure widget settings
   Future<void> configureWidget(String widgetType, Map<String, dynamic> settings) async {

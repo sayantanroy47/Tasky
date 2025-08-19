@@ -71,7 +71,7 @@ class LocalNotificationService implements NotificationService {
       
       return false;
     } catch (e) {
-      print('Error initializing notifications: $e');
+      debugPrint('Error initializing notifications: $e');
       return false;
     }
   }
@@ -197,7 +197,7 @@ class LocalNotificationService implements NotificationService {
       
       return notificationId;
     } catch (e) {
-      print('Error scheduling task reminder: $e');
+      debugPrint('Error scheduling task reminder: $e');
       return null;
     }
   }
@@ -238,7 +238,7 @@ class LocalNotificationService implements NotificationService {
     
     const notificationId = 999999; // Fixed ID for daily summary
     
-    final androidDetails = AndroidNotificationDetails(
+    const androidDetails = AndroidNotificationDetails(
       _channelId,
       _channelName,
       channelDescription: _channelDescription,
@@ -251,12 +251,20 @@ class LocalNotificationService implements NotificationService {
       categoryIdentifier: 'daily_summary',
     );
     
-    final notificationDetails = NotificationDetails(
+    const notificationDetails = NotificationDetails(
       android: androidDetails,
       iOS: iosDetails,
     );
     
-    final scheduledDate = tz.TZDateTime.from(scheduledTime, tz.local);
+    // Ensure proper timezone conversion
+    tz.TZDateTime? scheduledDate;
+    try {
+      final location = tz.getLocation(tz.local.name);
+      scheduledDate = tz.TZDateTime.from(scheduledTime, location);
+    } catch (e) {
+      debugPrint('Timezone error, using local: $e');
+      scheduledDate = tz.TZDateTime.from(scheduledTime, tz.local);
+    }
     
     // Calculate task counts
     final todayTasks = tasks.where((t) => _isDueToday(t)).toList();
@@ -267,10 +275,13 @@ class LocalNotificationService implements NotificationService {
       _isToday(t.completedAt!)
     ).length;
     
-    final title = 'Daily Task Summary';
+    const title = 'Daily Task Summary';
     final body = 'Today: $completedToday completed, ${todayTasks.length - completedToday} remaining, ${overdueTasks.length} overdue';
     
     try {
+      // Cancel existing daily summary to avoid duplicates
+      await _notificationsPlugin.cancel(notificationId);
+      
       await _notificationsPlugin.zonedSchedule(
         notificationId,
         title,
@@ -283,9 +294,12 @@ class LocalNotificationService implements NotificationService {
         matchDateTimeComponents: DateTimeComponents.time, // Repeat daily
       );
       
+      // Store notification info for persistence
+      await _saveScheduledNotification(notificationId, 'daily_summary', scheduledTime);
+      
       return notificationId;
     } catch (e) {
-      print('Error scheduling daily summary: $e');
+      debugPrint('Error scheduling daily summary: $e');
       return null;
     }
   }
@@ -300,14 +314,14 @@ class LocalNotificationService implements NotificationService {
     
     final notificationId = _generateNotificationId(task.id, 'overdue');
     
-    final androidDetails = AndroidNotificationDetails(
+    const androidDetails = AndroidNotificationDetails(
       _channelId,
       _channelName,
       channelDescription: _channelDescription,
       importance: Importance.high,
       priority: Priority.high,
       icon: '@mipmap/ic_launcher',
-      color: const Color.fromARGB(255, 255, 0, 0),
+      color: Color.fromARGB(255, 255, 0, 0),
     );
     
     const iosDetails = DarwinNotificationDetails(
@@ -315,7 +329,7 @@ class LocalNotificationService implements NotificationService {
       interruptionLevel: InterruptionLevel.timeSensitive,
     );
     
-    final notificationDetails = NotificationDetails(
+    const notificationDetails = NotificationDetails(
       android: androidDetails,
       iOS: iosDetails,
     );
@@ -331,7 +345,7 @@ class LocalNotificationService implements NotificationService {
       
       return notificationId;
     } catch (e) {
-      print('Error scheduling overdue notification: $e');
+      debugPrint('Error scheduling overdue notification: $e');
       return null;
     }
   }
@@ -443,7 +457,7 @@ class LocalNotificationService implements NotificationService {
   }) async {
     final notificationId = DateTime.now().millisecondsSinceEpoch;
     
-    final androidDetails = AndroidNotificationDetails(
+    const androidDetails = AndroidNotificationDetails(
       _channelId,
       _channelName,
       channelDescription: _channelDescription,
@@ -456,7 +470,7 @@ class LocalNotificationService implements NotificationService {
       categoryIdentifier: 'immediate',
     );
     
-    final notificationDetails = NotificationDetails(
+    const notificationDetails = NotificationDetails(
       android: androidDetails,
       iOS: iosDetails,
     );
@@ -701,6 +715,131 @@ class LocalNotificationService implements NotificationService {
       await prefs.setString(_keyNotificationSettings, settingsJson);
     } catch (e) {
       debugPrint('Error saving notification settings: $e');
+    }
+  }
+
+  /// Save scheduled notification info for persistence
+  Future<void> _saveScheduledNotification(int notificationId, String type, DateTime scheduledTime) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final existingNotifications = prefs.getStringList('scheduled_notifications') ?? [];
+      
+      final notificationInfo = jsonEncode({
+        'id': notificationId,
+        'type': type,
+        'scheduledTime': scheduledTime.toIso8601String(),
+        'createdAt': DateTime.now().toIso8601String(),
+      });
+      
+      existingNotifications.add(notificationInfo);
+      
+      // Keep only recent notifications (last 100)
+      if (existingNotifications.length > 100) {
+        existingNotifications.removeRange(0, existingNotifications.length - 100);
+      }
+      
+      await prefs.setStringList('scheduled_notifications', existingNotifications);
+    } catch (e) {
+      debugPrint('Error saving scheduled notification: $e');
+    }
+  }
+
+  /// Load and reschedule persisted notifications on app restart
+  Future<void> loadPersistedNotifications() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final notificationStrings = prefs.getStringList('scheduled_notifications') ?? [];
+      
+      for (final notificationString in notificationStrings) {
+        final notificationData = jsonDecode(notificationString) as Map<String, dynamic>;
+        final scheduledTime = DateTime.parse(notificationData['scheduledTime'] as String);
+        
+        // Only reschedule future notifications
+        if (scheduledTime.isAfter(DateTime.now())) {
+          final type = notificationData['type'] as String;
+          await _reschedulePersistedNotification(notificationData, type);
+        }
+      }
+      
+      // Clear processed notifications
+      await prefs.remove('scheduled_notifications');
+    } catch (e) {
+      debugPrint('Error loading persisted notifications: $e');
+    }
+  }
+
+  /// Reschedule a persisted notification
+  Future<void> _reschedulePersistedNotification(Map<String, dynamic> data, String type) async {
+    try {
+      final scheduledTime = DateTime.parse(data['scheduledTime'] as String);
+      
+      if (type == 'daily_summary') {
+        // Reschedule daily summary - this would need task repository access
+        debugPrint('Would reschedule daily summary for $scheduledTime');
+      }
+      // Add more type handling as needed
+    } catch (e) {
+      debugPrint('Error rescheduling persisted notification: $e');
+    }
+  }
+
+  /// Retry failed notifications with exponential backoff
+  Future<void> retryFailedNotification(int notificationId, String taskId, int attemptCount) async {
+    try {
+      if (attemptCount >= 3) {
+        debugPrint('Max retry attempts reached for notification $notificationId');
+        return;
+      }
+      
+      final delayMinutes = (attemptCount + 1) * 5; // 5, 10, 15 minutes
+      await Future.delayed(Duration(minutes: delayMinutes));
+      
+      // Try to get the task and reschedule
+      final task = await _taskRepository.getTaskById(taskId);
+      if (task != null && task.dueDate != null && task.dueDate!.isAfter(DateTime.now())) {
+        final newScheduleTime = DateTime.now().add(const Duration(minutes: 30));
+        await scheduleTaskReminder(
+          task: task,
+          scheduledTime: newScheduleTime,
+        );
+        debugPrint('Retried notification for task $taskId (attempt ${attemptCount + 1})');
+      }
+    } catch (e) {
+      debugPrint('Error retrying notification: $e');
+      // Schedule another retry
+      if (attemptCount < 2) {
+        Timer(Duration(minutes: (attemptCount + 2) * 10), () {
+          retryFailedNotification(notificationId, taskId, attemptCount + 1);
+        });
+      }
+    }
+  }
+
+  /// Handle immediate overdue notifications on app startup
+  Future<void> processImmediateOverdueNotifications() async {
+    try {
+      final tasks = await _taskRepository.getAllTasks();
+      final overdueTasks = tasks.where((task) => 
+        task.isOverdue && 
+        task.status.isActive &&
+        task.dueDate != null &&
+        task.dueDate!.isBefore(DateTime.now().subtract(const Duration(hours: 1)))
+      );
+
+      for (final task in overdueTasks) {
+        // Check if we've already sent overdue notification recently
+        final recentNotifications = await getTaskNotifications(task.id);
+        final hasRecentOverdue = recentNotifications.any((n) => 
+          n.type == NotificationTypeModel.overdueTask &&
+          n.createdAt.isAfter(DateTime.now().subtract(const Duration(hours: 6)))
+        );
+
+        if (!hasRecentOverdue) {
+          await scheduleOverdueNotification(task: task);
+        }
+      }
+    } catch (e) {
+      debugPrint('Error processing immediate overdue notifications: $e');
     }
   }
   

@@ -74,7 +74,7 @@ class ImportExportPage extends ConsumerWidget {
                     ),
                     borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.file_upload_outlined,
                     color: Colors.white,
                     size: 24,
@@ -216,7 +216,7 @@ class ImportExportPage extends ConsumerWidget {
                     ),
                     borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.file_download_outlined,
                     color: Colors.white,
                     size: 24,
@@ -501,15 +501,15 @@ class ImportExportPage extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Row(
+        title: const Row(
           children: [
             Icon(
               Icons.error,
               color: Colors.red,
               size: 28,
             ),
-            const SizedBox(width: 12),
-            const Text('Error'),
+            SizedBox(width: 12),
+            Text('Error'),
           ],
         ),
         content: Text(message),

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import '../theme/theme_registry.dart';
 import '../theme/app_theme_data.dart';
 import '../theme/theme_factory.dart';
+import '../theme/theme_persistence_service.dart';
 import '../theme/themes/vegeta_blue_theme.dart';
 import '../theme/themes/matrix_theme.dart';
 import '../theme/themes/dracula_ide_theme.dart';
@@ -19,6 +18,9 @@ class EnhancedThemeState {
   final String? error;
   final bool isTransitioning;
   final double transitionProgress;
+  final ThemePreferences preferences;
+  final List<String> favoriteThemes;
+  final Map<String, ThemeUsageStats> usageStats;
 
   const EnhancedThemeState({
     this.currentTheme,
@@ -28,6 +30,15 @@ class EnhancedThemeState {
     this.error,
     this.isTransitioning = false,
     this.transitionProgress = 0.0,
+    this.preferences = const ThemePreferences(
+      autoSwitchEnabled: false,
+      followSystemTheme: true,
+      scheduledChanges: [],
+      animationsEnabled: true,
+      animationDuration: Duration(milliseconds: 300),
+    ),
+    this.favoriteThemes = const [],
+    this.usageStats = const {},
   });
 
   EnhancedThemeState copyWith({
@@ -38,6 +49,9 @@ class EnhancedThemeState {
     String? error,
     bool? isTransitioning,
     double? transitionProgress,
+    ThemePreferences? preferences,
+    List<String>? favoriteThemes,
+    Map<String, ThemeUsageStats>? usageStats,
   }) {
     return EnhancedThemeState(
       currentTheme: currentTheme ?? this.currentTheme,
@@ -47,6 +61,9 @@ class EnhancedThemeState {
       error: error ?? this.error,
       isTransitioning: isTransitioning ?? this.isTransitioning,
       transitionProgress: transitionProgress ?? this.transitionProgress,
+      preferences: preferences ?? this.preferences,
+      favoriteThemes: favoriteThemes ?? this.favoriteThemes,
+      usageStats: usageStats ?? this.usageStats,
     );
   }
 
@@ -58,21 +75,32 @@ class EnhancedThemeState {
 
 /// Enhanced theme notifier with smooth transitions and theme registry integration
 class EnhancedThemeNotifier extends StateNotifier<EnhancedThemeState> {
-  static const String _keyCurrentThemeId = 'current_theme_id';
-  static const String _keyThemeHistory = 'theme_history';
-  static const int _maxHistorySize = 10;
-
   final ThemeRegistry _themeRegistry = ThemeRegistry();
+  late final ThemePersistenceService _persistenceService;
   final List<String> _themeHistory = [];
 
-  EnhancedThemeNotifier() : super(const EnhancedThemeState()) {
+  EnhancedThemeNotifier() : super(_createInitialState()) {
+    _persistenceService = ThemePersistenceService(_themeRegistry);
     _initializeThemes();
     _loadSavedTheme();
   }
 
+  /// Create initial state with default theme to prevent flash
+  static EnhancedThemeState _createInitialState() {
+    // Create a basic default theme to prevent flash
+    final defaultTheme = ExpressiveTheme.createDark();
+    final flutterTheme = ThemeFactory.createFlutterTheme(defaultTheme);
+    
+    return EnhancedThemeState(
+      currentTheme: defaultTheme,
+      flutterTheme: flutterTheme,
+      darkFlutterTheme: flutterTheme,
+      isLoading: true, // Mark as loading since we'll replace it
+    );
+  }
+
   /// Initialize built-in themes
   void _initializeThemes() {
-    debugPrint('🎨 Initializing built-in themes...');
     
     final themes = [
       // Material 3 Expressive themes - DEFAULT
@@ -90,35 +118,46 @@ class EnhancedThemeNotifier extends StateNotifier<EnhancedThemeState> {
       DraculaIDETheme.createDark(),
     ];
     
-    debugPrint('🎨 Registering ${themes.length} themes');
-    for (final theme in themes) {
-      debugPrint('🎨 Registering: ${theme.metadata.id} (${theme.metadata.name})');
-    }
     
     _themeRegistry.registerAll(themes);
     
-    debugPrint('🎨 Theme registry now contains ${_themeRegistry.count} themes');
-    debugPrint('🎨 Available themes: ${_themeRegistry.themes.map((t) => t.metadata.id).join(', ')}');
   }
 
-  /// Load previously saved theme
+  /// Load previously saved theme with enhanced persistence
   Future<void> _loadSavedTheme() async {
     state = state.copyWith(isLoading: true);
     
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final savedThemeId = prefs.getString(_keyCurrentThemeId);
-      final historyJson = prefs.getStringList(_keyThemeHistory) ?? [];
+      // Initialize persistence service
+      await _persistenceService.initialize();
+      
+      // Load saved configuration
+      final savedConfig = await _persistenceService.loadSavedTheme();
+      final preferences = await _persistenceService.loadThemePreferences();
+      final favoriteThemes = await _persistenceService.loadFavoriteThemes();
+      final usageStats = await _persistenceService.getThemeUsageStats();
+      final history = await _persistenceService.getThemeHistory();
+      
+      // Update state with loaded data
+      state = state.copyWith(
+        preferences: preferences,
+        favoriteThemes: favoriteThemes,
+        usageStats: usageStats,
+      );
       
       _themeHistory.clear();
-      _themeHistory.addAll(historyJson);
+      _themeHistory.addAll(history);
       
-      if (savedThemeId != null && _themeRegistry.isRegistered(savedThemeId)) {
-        debugPrint('🎨 Loading saved theme: $savedThemeId');
-        await setTheme(savedThemeId, saveToPrefs: false);
+      // Load custom themes
+      final customThemes = await _persistenceService.loadCustomThemes();
+      for (final theme in customThemes) {
+        _themeRegistry.register(theme);
+      }
+      
+      if (savedConfig != null && _themeRegistry.isRegistered(savedConfig.themeId)) {
+        await setTheme(savedConfig.themeId, saveToPrefs: false);
       } else {
         // Set default theme to Matrix Dark for demo
-        debugPrint('🎨 No saved theme found, setting default to: matrix_dark');
         await setTheme('matrix_dark', saveToPrefs: false);
       }
     } catch (e) {
@@ -127,14 +166,12 @@ class EnhancedThemeNotifier extends StateNotifier<EnhancedThemeState> {
         isLoading: false,
       );
       // Fallback to matrix theme even in error case
-      debugPrint('🎨 Error occurred, falling back to matrix_dark');
       await setTheme('matrix_dark', saveToPrefs: false);
     }
   }
 
   /// Set theme by ID with smooth transition
   Future<void> setTheme(String themeId, {bool saveToPrefs = true}) async {
-    debugPrint('🎨 EnhancedThemeNotifier.setTheme() called with: $themeId');
     
     final theme = _themeRegistry.getTheme(themeId);
     if (theme == null) {
@@ -147,10 +184,6 @@ class EnhancedThemeNotifier extends StateNotifier<EnhancedThemeState> {
     }
     
     debugPrint('✅ Theme found: ${theme.metadata.name} (${theme.metadata.id})');
-    debugPrint('🎨 Background effects enabled: ${theme.effects.backgroundEffects.enableParticles}');
-    debugPrint('🎨 Particle type: ${theme.effects.backgroundEffects.particleType}');
-    debugPrint('🎨 Effect intensity: ${theme.effects.backgroundEffects.effectIntensity}');
-    debugPrint('🎨 Particle opacity: ${theme.effects.backgroundEffects.particleOpacity}');
 
     // Start transition
     state = state.copyWith(
@@ -186,10 +219,9 @@ class EnhancedThemeNotifier extends StateNotifier<EnhancedThemeState> {
         transitionProgress: 1.0,
       );
 
-      // Save to preferences and update history
+      // Save to preferences using persistence service
       if (saveToPrefs) {
-        await _saveThemePreferences(themeId);
-        _updateThemeHistory(themeId);
+        await _persistenceService.saveCurrentTheme(themeId: themeId);
       }
     } catch (e) {
       state = state.copyWith(
@@ -213,32 +245,76 @@ class EnhancedThemeNotifier extends StateNotifier<EnhancedThemeState> {
     }
   }
 
+  /// Save custom theme
+  Future<bool> saveCustomTheme(AppThemeData theme) async {
+    return await _persistenceService.saveCustomTheme(theme);
+  }
+
+  /// Delete custom theme
+  Future<bool> deleteCustomTheme(String themeId) async {
+    final success = await _persistenceService.deleteCustomTheme(themeId);
+    if (success) {
+      // If we deleted the current theme, switch to default
+      if (state.currentTheme?.metadata.id == themeId) {
+        await resetToDefault();
+      }
+    }
+    return success;
+  }
+
   /// Save theme preferences
-  Future<void> _saveThemePreferences(String themeId) async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString(_keyCurrentThemeId, themeId);
-      await prefs.setStringList(_keyThemeHistory, _themeHistory);
-    } catch (e) {
-      // Handle error silently
+  Future<bool> saveThemePreferences(ThemePreferences preferences) async {
+    final success = await _persistenceService.saveThemePreferences(preferences);
+    if (success) {
+      state = state.copyWith(preferences: preferences);
+    }
+    return success;
+  }
+
+  /// Toggle theme as favorite
+  Future<void> toggleFavoriteTheme(String themeId) async {
+    final currentFavorites = List<String>.from(state.favoriteThemes);
+    
+    if (currentFavorites.contains(themeId)) {
+      currentFavorites.remove(themeId);
+    } else {
+      currentFavorites.add(themeId);
+    }
+    
+    final success = await _persistenceService.saveFavoriteThemes(currentFavorites);
+    if (success) {
+      state = state.copyWith(favoriteThemes: currentFavorites);
     }
   }
 
-  /// Update theme history
-  void _updateThemeHistory(String themeId) {
-    _themeHistory.remove(themeId); // Remove if already exists
-    _themeHistory.insert(0, themeId); // Add to beginning
-    
-    // Limit history size
-    if (_themeHistory.length > _maxHistorySize) {
-      _themeHistory.removeRange(_maxHistorySize, _themeHistory.length);
+  /// Export theme data for backup
+  Future<Map<String, dynamic>?> exportThemeData() async {
+    try {
+      return await _persistenceService.exportThemeData();
+    } catch (e) {
+      debugPrint('Error exporting theme data: $e');
+      return null;
+    }
+  }
+
+  /// Import theme data from backup
+  Future<bool> importThemeData(Map<String, dynamic> data) async {
+    try {
+      final success = await _persistenceService.importThemeData(data);
+      if (success) {
+        // Reload everything after import
+        await _loadSavedTheme();
+      }
+      return success;
+    } catch (e) {
+      debugPrint('Error importing theme data: $e');
+      return false;
     }
   }
 
   /// Get all available themes
   List<AppThemeData> getAllThemes() {
     final themes = _themeRegistry.themes.toList();
-    debugPrint('🎨 getAllThemes() called - returning ${themes.length} themes');
     if (themes.isEmpty) {
       debugPrint('🚫 No themes found in registry! Registry count: ${_themeRegistry.count}');
     }
@@ -325,6 +401,56 @@ class EnhancedThemeNotifier extends StateNotifier<EnhancedThemeState> {
   void clearError() {
     state = state.copyWith(error: null);
   }
+
+  /// Get usage statistics for a theme
+  ThemeUsageStats? getThemeUsageStats(String themeId) {
+    return state.usageStats[themeId];
+  }
+
+  /// Check if theme is favorite
+  bool isThemeFavorite(String themeId) {
+    return state.favoriteThemes.contains(themeId);
+  }
+
+  /// Get favorite themes
+  List<AppThemeData> getFavoriteThemes() {
+    return state.favoriteThemes
+        .map((id) => _themeRegistry.getTheme(id))
+        .where((theme) => theme != null)
+        .cast<AppThemeData>()
+        .toList();
+  }
+
+  /// Get most used themes
+  List<AppThemeData> getMostUsedThemes({int limit = 5}) {
+    final sortedUsage = state.usageStats.entries.toList()
+      ..sort((a, b) => b.value.usageCount.compareTo(a.value.usageCount));
+    
+    return sortedUsage
+        .take(limit)
+        .map((entry) => _themeRegistry.getTheme(entry.key))
+        .where((theme) => theme != null)
+        .cast<AppThemeData>()
+        .toList();
+  }
+
+  /// Clear all theme data (for reset)
+  Future<bool> clearAllThemeData() async {
+    final success = await _persistenceService.clearAllData();
+    if (success) {
+      // Reset to default state
+      state = const EnhancedThemeState();
+      await _loadSavedTheme();
+    }
+    return success;
+  }
+
+  /// Dispose resources
+  @override
+  void dispose() {
+    _persistenceService.dispose();
+    super.dispose();
+  }
 }
 
 /// Enhanced theme provider
@@ -384,6 +510,32 @@ final themeStatisticsProvider = Provider<Map<String, dynamic>>((ref) {
   final themeNotifier = ref.watch(enhancedThemeProvider.notifier);
   ref.watch(enhancedThemeProvider); // Watch state changes
   return themeNotifier.getThemeStatistics();
+});
+
+/// Provider for favorite themes
+final favoriteThemesProvider = Provider<List<AppThemeData>>((ref) {
+  final themeNotifier = ref.watch(enhancedThemeProvider.notifier);
+  ref.watch(enhancedThemeProvider); // Watch state changes
+  return themeNotifier.getFavoriteThemes();
+});
+
+/// Provider for most used themes
+final mostUsedThemesProvider = Provider<List<AppThemeData>>((ref) {
+  final themeNotifier = ref.watch(enhancedThemeProvider.notifier);
+  ref.watch(enhancedThemeProvider); // Watch state changes
+  return themeNotifier.getMostUsedThemes();
+});
+
+/// Provider for theme preferences
+final themePreferencesProvider = Provider<ThemePreferences>((ref) {
+  final themeState = ref.watch(enhancedThemeProvider);
+  return themeState.preferences;
+});
+
+/// Provider for theme usage statistics
+final themeUsageStatsProvider = Provider<Map<String, ThemeUsageStats>>((ref) {
+  final themeState = ref.watch(enhancedThemeProvider);
+  return themeState.usageStats;
 });
 
 /// Helper extensions for theme state

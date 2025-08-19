@@ -1,54 +1,87 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../domain/entities/task_model.dart';
 import '../../domain/entities/task_audio_extensions.dart';
 import '../../domain/models/enums.dart';
-import '../../core/theme/material3/motion_system.dart';
-import '../providers/task_providers.dart';
-import '../../core/providers/enhanced_theme_provider.dart';
-import '../../core/design_system/responsive_builder.dart';
-import '../../services/gesture_customization_service.dart';
-import 'animated_priority_chip.dart';
 import '../../core/theme/typography_constants.dart';
-import 'smart_text_widgets.dart';
-import 'enhanced_list_animations.dart';
+import '../../core/design_system/design_tokens.dart';
+import '../../core/theme/material3/motion_system.dart';
 import 'glassmorphism_container.dart';
-import 'gesture_enhancements.dart';
 import 'status_badge_widget.dart';
-import 'audio_widgets.dart';
-import '../../core/accessibility/accessibility_constants.dart';
-import '../../core/accessibility/touch_target_validator.dart';
-import '../../core/design_system/design_tokens.dart' hide BorderRadius;
-import 'dart:math' as math;
+import 'audio_indicator_widget.dart';
+import 'task_dependency_status.dart';
+import 'subtask_progress_indicator.dart';
 
-/// Advanced task card with all Material 3 expressive features
+/// Advanced task card widget with comprehensive features and animations
+/// 
+/// Features:
+/// - Multiple card styles (elevated, filled, outlined, compact, glass, minimal)
+/// - Glassmorphism effects with proper theming
+/// - Audio indicator widgets and playback controls
+/// - Subtask display with progress indicators
+/// - Advanced animations and gesture handling
+/// - Priority indicators and status badges
+/// - Due date formatting and overdue indicators
+/// - Context menu with actions
+/// - Drag handles for reordering
+/// - Swipe actions for quick operations
+/// - Dependency status indicators
+/// - Progress tracking and completion animations
 class AdvancedTaskCard extends ConsumerStatefulWidget {
   final TaskModel task;
+  final TaskCardStyle style;
+  final EdgeInsets? margin;
   final VoidCallback? onTap;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
   final VoidCallback? onShare;
-  final bool showActions;
+  final VoidCallback? onToggleComplete;
+  final VoidCallback? onDuplicate;
+  final Function(TaskPriority)? onPriorityChanged;
+  final Function(TaskStatus)? onStatusChanged;
   final bool showProgress;
   final bool showSubtasks;
+  final bool showAudioIndicator;
+  final bool showDependencyStatus;
+  final bool showDragHandle;
+  final bool enableSwipeActions;
+  final bool enableContextMenu;
+  final bool enableAnimations;
+  final bool showDetailedDate;
+  final bool showProjectInfo;
   final double? elevation;
-  final EdgeInsets? margin;
-  final TaskCardStyle style;
+  final Color? accentColor;
+  final Widget? customContent;
+  final List<Widget>? additionalActions;
 
   const AdvancedTaskCard({
     super.key,
     required this.task,
+    this.style = TaskCardStyle.elevated,
+    this.margin,
     this.onTap,
     this.onEdit,
     this.onDelete,
     this.onShare,
-    this.showActions = true,
-    this.showProgress = true,
+    this.onToggleComplete,
+    this.onDuplicate,
+    this.onPriorityChanged,
+    this.onStatusChanged,
+    this.showProgress = false,
     this.showSubtasks = false,
+    this.showAudioIndicator = true,
+    this.showDependencyStatus = false,
+    this.showDragHandle = false,
+    this.enableSwipeActions = true,
+    this.enableContextMenu = true,
+    this.enableAnimations = true,
+    this.showDetailedDate = false,
+    this.showProjectInfo = false,
     this.elevation,
-    this.margin,
-    this.style = TaskCardStyle.elevated,
+    this.accentColor,
+    this.customContent,
+    this.additionalActions,
   });
 
   @override
@@ -57,1168 +90,1048 @@ class AdvancedTaskCard extends ConsumerStatefulWidget {
 
 class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
     with TickerProviderStateMixin {
-  // OPTIMIZED: Reduced from 6 to 2 animation controllers for better performance
-  late AnimationController _interactionController; // Combined hover/press/complete
-  late AnimationController _progressController; // Progress and priority pulse
+  late AnimationController _scaleController;
+  late AnimationController _slideController;
+  late AnimationController _completionController;
+  late AnimationController _glowController;
+  
+  late Animation<double> _scaleAnimation;
+  late Animation<Offset> _slideAnimation;
+  late Animation<double> _completionAnimation;
+  late Animation<double> _glowAnimation;
 
-  late Animation<double> _hoverAnimation;
-  late Animation<double> _pressAnimation;
-  late Animation<double> _completeAnimation;
-  late Animation<Offset> _swipeAnimation;
-  late Animation<double> _priorityPulseAnimation;
-  late Animation<double> _progressAnimation;
-
-  bool _isHovered = false;
-  double _swipeOffset = 0.0;
-  SwipeDirection? _swipeDirection;
-  bool _showActionsPanel = false;
-  double _completionProgress = 0.0;
 
   @override
   void initState() {
     super.initState();
-    _setupAnimations();
-    _setupInitialState();
+    _initializeAnimations();
   }
 
-  void _setupAnimations() {
-    // OPTIMIZED: Combined interaction controller for hover/press/complete
-    _interactionController = AnimationController(
+  void _initializeAnimations() {
+    _scaleController = AnimationController(
+      duration: ExpressiveMotionSystem.durationShort2,
+      vsync: this,
+    );
+
+    _slideController = AnimationController(
       duration: ExpressiveMotionSystem.durationMedium2,
       vsync: this,
     );
 
-    // OPTIMIZED: Single controller for progress and priority pulse
-    _progressController = AnimationController(
-      duration: ExpressiveMotionSystem.durationLong3,
+    _completionController = AnimationController(
+      duration: ExpressiveMotionSystem.durationMedium3,
       vsync: this,
     );
 
-    // Animation definitions - all based on the 2 controllers
-    _hoverAnimation = Tween<double>(begin: 1.0, end: 1.02).animate(
-      CurvedAnimation(
-        parent: _interactionController, 
-        curve: const Interval(0.0, 0.3, curve: ExpressiveMotionSystem.standard),
-      ),
+    _glowController = AnimationController(
+      duration: const Duration(milliseconds: 2000),
+      vsync: this,
     );
 
-    _pressAnimation = Tween<double>(begin: 1.0, end: 0.98).animate(
-      CurvedAnimation(
-        parent: _interactionController, 
-        curve: const Interval(0.3, 0.6, curve: ExpressiveMotionSystem.emphasizedDecelerate),
-      ),
-    );
+    _scaleAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.95,
+    ).animate(CurvedAnimation(
+      parent: _scaleController,
+      curve: ExpressiveMotionSystem.emphasizedAccelerate,
+    ));
 
-    _completeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _interactionController, 
-        curve: const Interval(0.6, 1.0, curve: Curves.elasticOut),
-      ),
-    );
+    _slideAnimation = Tween<Offset>(
+      begin: Offset.zero,
+      end: const Offset(0.1, 0),
+    ).animate(CurvedAnimation(
+      parent: _slideController,
+      curve: ExpressiveMotionSystem.emphasizedDecelerate,
+    ));
 
-    _swipeAnimation = Tween<Offset>(begin: Offset.zero, end: const Offset(0.3, 0)).animate(
-      CurvedAnimation(
-        parent: _interactionController, 
-        curve: ExpressiveMotionSystem.emphasizedEasing,
-      ),
-    );
+    _completionAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _completionController,
+      curve: ExpressiveMotionSystem.emphasizedDecelerate,
+    ));
 
-    _priorityPulseAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
-      CurvedAnimation(
-        parent: _progressController, 
-        curve: Curves.easeInOut,
-      ),
-    );
+    _glowAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _glowController,
+      curve: Curves.easeInOut,
+    ));
 
-    _progressAnimation = Tween<double>(begin: 0.0, end: _completionProgress).animate(
-      CurvedAnimation(
-        parent: _progressController, 
-        curve: ExpressiveMotionSystem.emphasizedDecelerate,
-      ),
-    );
+    if (widget.task.isCompleted) {
+      _completionController.value = 1.0;
+    }
+
+    if (widget.enableAnimations) {
+      _glowController.repeat(reverse: true);
+    }
   }
 
-  void _setupInitialState() {
-    _completionProgress = _calculateCompletionProgress();
-    _progressController.animateTo(_completionProgress);
+  @override
+  void dispose() {
+    _scaleController.dispose();
+    _slideController.dispose();
+    _completionController.dispose();
+    _glowController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(AdvancedTaskCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
     
-    if (widget.task.priority == TaskPriority.urgent || widget.task.priority == TaskPriority.high) {
-      _progressController.repeat(reverse: true); // Use progress controller for pulse
+    if (oldWidget.task.isCompleted != widget.task.isCompleted) {
+      if (widget.task.isCompleted) {
+        _completionController.forward();
+      } else {
+        _completionController.reverse();
+      }
     }
-
-    if (widget.task.status == TaskStatus.completed) {
-      _interactionController.value = 1.0; // Use interaction controller for completion
-    }
-  }
-
-  Duration _getPriorityPulseDuration() {
-    switch (widget.task.priority) {
-      case TaskPriority.urgent:
-        return const Duration(milliseconds: 800);
-      case TaskPriority.high:
-        return const Duration(milliseconds: 1200);
-      case TaskPriority.medium:
-        return const Duration(milliseconds: 1800);
-      case TaskPriority.low:
-        return const Duration(milliseconds: 2500);
-    }
-  }
-
-  double _calculateCompletionProgress() {
-    if (widget.task.status == TaskStatus.completed) return 1.0;
-    if (widget.task.subTasks.isEmpty) return 0.0;
-    
-    final completedSubtasks = widget.task.subTasks.where((s) => s.isCompleted).length;
-    return completedSubtasks / widget.task.subTasks.length;
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     
-    // Get accessibility-aware animation duration
-    final animationDuration = AccessibilityUtils.getAnimationDuration(
-      context, 
-      ExpressiveMotionSystem.durationMedium2,
-    );
-    
-    // Create semantic label
-    final semanticLabel = _buildSemanticLabel();
-    final semanticHint = _buildSemanticHint();
-    
+    Widget cardWidget = _buildCardContent(theme);
+
+    if (widget.enableSwipeActions) {
+      cardWidget = _buildSwipeableCard(cardWidget);
+    }
+
+    if (widget.enableAnimations) {
+      cardWidget = _buildAnimatedCard(cardWidget);
+    }
+
     return Container(
       margin: widget.margin ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Semantics(
-        label: semanticLabel,
-        hint: semanticHint,
-        button: true,
-        enabled: true,
-        selected: widget.task.isCompleted,
-        onTap: () {
-          _onTap();
-          AccessibilityUtils.announceToScreenReader(
-            context,
-            widget.task.isCompleted 
-                ? AccessibilityConstants.taskCompletedAnnouncement
-                : AccessibilityConstants.taskUncompletedAnnouncement,
-          );
-        },
-        onLongPress: () {
-          if (widget.onEdit != null) {
-            widget.onEdit!();
-            AccessibilityUtils.announceToScreenReader(
-              context,
-              'Opening task editor',
-            );
-          }
-        },
-        child: Focus(
-          child: Builder(
-            builder: (context) {
-              final hasFocus = Focus.of(context).hasFocus;
-              return Container(
-                decoration: hasFocus
-                    ? BoxDecoration(
-                        border: Border.all(
-                          color: AccessibilityConstants.focusIndicatorColor,
-                          width: AccessibilityConstants.focusIndicatorWidth,
-                        ),
-                        borderRadius: BorderRadius.circular(TypographyConstants.taskCardRadius),
-                      )
-                    : null,
-                child: MouseRegion(
-                  onEnter: (_) => _setHovered(true),
-                  onExit: (_) => _setHovered(false),
-                  child: GestureDetector(
-                    onTapDown: _onTapDown,
-                    onTapUp: _onTapUp,
-                    onTapCancel: _onTapCancel,
-                    onTap: _onTap,
-                    onLongPress: widget.onEdit,
-                    onPanStart: _onPanStart,
-                    onPanUpdate: _onPanUpdate,
-                    onPanEnd: _onPanEnd,
-                    child: AnimatedBuilder(
-                      animation: Listenable.merge([
-                        _interactionController,
-                        _progressController,
-                      ]),
-                      builder: (context, child) {
-                        // Reduce or disable animations for accessibility
-                        final shouldReduceMotion = AccessibilityUtils.shouldReduceMotion(context);
-                        final scaleValue = shouldReduceMotion ? 1.0 : _hoverAnimation.value * _pressAnimation.value;
-                        final translateValue = shouldReduceMotion 
-                            ? Offset.zero 
-                            : _swipeAnimation.value * MediaQuery.of(context).size.width;
-                        
-                        return Transform.scale(
-                          scale: scaleValue,
-                          child: Transform.translate(
-                            offset: translateValue,
-                            child: _buildAccessibleCard(theme),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-      ),
+      child: cardWidget,
     );
   }
 
-  /// Build semantic label for screen readers
-  String _buildSemanticLabel() {
-    final priority = widget.task.priority?.toString().split('.').last ?? 'normal';
-    final status = widget.task.isCompleted ? 'completed' : 'incomplete';
-    final dueInfo = widget.task.dueDate != null 
-        ? 'due ${_formatDueDate(widget.task.dueDate!)}'
-        : 'no due date';
-    
-    return 'Task: ${widget.task.title}. Priority: $priority. Status: $status. $dueInfo';
-  }
-  
-  /// Build semantic hint for screen readers
-  String _buildSemanticHint() {
-    if (widget.task.isCompleted) {
-      return AccessibilityConstants.completedTaskSemanticHint;
-    } else {
-      return AccessibilityConstants.incompleteTaskSemanticHint + '. ' + 
-             AccessibilityConstants.deleteTaskSemanticHint;
-    }
-  }
-  
-  /// Format due date for accessibility
-  String _formatDueDate(DateTime dueDate) {
-    final now = DateTime.now();
-    final difference = dueDate.difference(now).inDays;
-    
-    if (difference == 0) return 'today';
-    if (difference == 1) return 'tomorrow';
-    if (difference == -1) return 'yesterday';
-    if (difference > 0) return 'in $difference days';
-    return '${difference.abs()} days ago';
-  }
-  
-  /// Build accessible card with minimum touch targets
-  Widget _buildAccessibleCard(ThemeData theme) {
-    return ConstrainedBox(
-      constraints: const BoxConstraints(
-        minHeight: AccessibilityConstants.minTouchTarget,
-      ),
-      child: _buildCard(theme),
-    );
-  }
-
-  Widget _buildCard(ThemeData theme) {
-    return Stack(
-      children: [
-        // Actions panel (revealed on swipe)
-        if (_showActionsPanel) _buildActionsPanel(theme),
-        
-        // Main card
-        _buildMainCard(theme),
-        
-        // Completion overlay
-        if (_completeAnimation.value > 0)
-          _buildCompletionOverlay(theme),
-      ],
-    );
-  }
-
-  Widget _buildMainCard(ThemeData theme) {
-    return GlassmorphismContainer(
-      level: GlassLevel.content, // Use content level for task cards
-      borderRadius: BorderRadius.circular(TypographyConstants.taskCardRadius),
-      // Let glassmorphism auto-determine tint, keep priority indication via border
-      borderColor: _getPriorityColor().withOpacity(0.3),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(TypographyConstants.taskCardRadius),
-          gradient: _getCardGradient(theme),
-          boxShadow: _isHovered ? [
-            BoxShadow(
-              color: _getPriorityColor().withOpacity(0.3),
-              blurRadius: 16,
-              spreadRadius: 3,
-            ),
-          ] : null,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Progress indicator
-            if (widget.showProgress && _completionProgress > 0)
-              _buildProgressIndicator(theme),
-            
-            // Main content
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Header row
-                  _buildHeaderRow(theme),
-                  
-                  const SizedBox(height: 12),
-                  
-                  // Title and description
-                  _buildTitleSection(theme),
-                  
-                  const SizedBox(height: 12),
-                  
-                  // Tags and metadata
-                  _buildMetadataRow(theme),
-                  
-                  // Subtasks preview
-                  if (widget.showSubtasks && widget.task.subTasks.isNotEmpty)
-                    _buildSubtasksPreview(theme),
-                  
-                  // Actions row
-                  if (widget.showActions)
-                    _buildActionsRow(theme),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildProgressIndicator(ThemeData theme) {
-    return Container(
-      height: 4,
-      child: LinearProgressIndicator(
-        value: _progressAnimation.value,
-        backgroundColor: theme.colorScheme.surfaceVariant,
-        valueColor: AlwaysStoppedAnimation<Color>(_getPriorityColor()),
-      ),
-    );
-  }
-
-  Widget _buildHeaderRow(ThemeData theme) {
-    return Row(
-      children: [
-        // Creation method icon
-        _buildCreationMethodIcon(theme),
-        
-        // Due date with improved hierarchy
-        if (widget.task.dueDate != null) ...[
-          const SizedBox(width: 8),
-          _buildDueDateChip(theme),
-          const SizedBox(width: 8),
-        ] else if (_getCreationMethodIcon() != null) ...[
-          const SizedBox(width: 8),
-        ],
-        
-        const Spacer(),
-        
-        // Enhanced priority indicator with prominent glow
-        PriorityBadgeWidget(
-          priority: widget.task.priority,
-          showText: true,
-          compact: false,
-        ),
-        
-        // 5px gap between priority and status badges
-        const SizedBox(width: 5),
-        
-        // Status badge on the right side
-        StatusBadgeWidget(
-          status: widget.task.status,
-          showText: true,
-          compact: false,
-        ),
-      ],
-    );
-  }
-
-  /// Build creation method icon based on task metadata
-  Widget _buildCreationMethodIcon(ThemeData theme) {
-    final icon = _getCreationMethodIcon();
-    final color = _getCreationMethodColor(theme);
-    final tooltip = _getCreationMethodTooltip();
-    
-    if (icon == null) return const SizedBox.shrink();
-    
-    return Tooltip(
-      message: tooltip,
-      child: Container(
-        padding: const EdgeInsets.all(4),
-        decoration: BoxDecoration(
-          color: color.withOpacity(0.15),
-          borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall),
-          border: Border.all(
-            color: color.withOpacity(0.3),
-            width: 1,
-          ),
-        ),
-        child: Icon(
-          icon,
-          size: 14,
-          color: color,
-        ),
-      ),
-    );
-  }
-
-  /// Get the appropriate icon for the creation method
-  IconData? _getCreationMethodIcon() {
-    final source = widget.task.metadata['source'] as String?;
-    
-    switch (source) {
-      case 'voice':
-        return Icons.mic;
-      case 'voice_to_text':
-        return Icons.mic_none;
-      case 'voice_only':
-        return Icons.record_voice_over;
-      case 'manual':
-        return Icons.edit;
-      default:
-        // If no source is specified, assume manual
-        return Icons.edit;
-    }
-  }
-
-  /// Get the appropriate color for the creation method
-  Color _getCreationMethodColor(ThemeData theme) {
-    final source = widget.task.metadata['source'] as String?;
-    
-    switch (source) {
-      case 'voice':
-      case 'voice_to_text':
-      case 'voice_only':
-        return theme.colorScheme.secondary;
-      case 'manual':
-      default:
-        return theme.colorScheme.primary;
-    }
-  }
-
-  /// Get the tooltip text for the creation method
-  String _getCreationMethodTooltip() {
-    final source = widget.task.metadata['source'] as String?;
-    
-    switch (source) {
-      case 'voice':
-        return 'Created with voice input';
-      case 'voice_to_text':
-        return 'Created with voice-to-text';
-      case 'voice_only':
-        return 'Created with voice recording';
-      case 'manual':
-        return 'Created manually';
-      default:
-        return 'Created manually';
-    }
-  }
-
-  Widget _buildStatusIndicator(ThemeData theme) {
-    final statusColor = _getThemedStatusColor();
-    final statusText = _getStatusText();
-    
-    return AnimatedContainer(
-      duration: ExpressiveMotionSystem.durationMedium2,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: statusColor.withOpacity(0.15),
-        borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium),
-        border: Border.all(color: statusColor, width: 2),
-        // Enhanced glow effects for better visibility
-        boxShadow: [
-          // Outer glow
-          BoxShadow(
-            color: statusColor.withOpacity(0.4),
-            blurRadius: widget.task.status == TaskStatus.inProgress ? 12 : 8,
-            spreadRadius: widget.task.status == TaskStatus.inProgress ? 2 : 1,
-          ),
-          // Inner highlight for Material 3
-          BoxShadow(
-            color: statusColor.withOpacity(0.1),
-            blurRadius: 2,
-            spreadRadius: 0,
-            offset: const Offset(0, 1),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Much larger, more prominent status dot with enhanced glow
-          AnimatedContainer(
-            duration: ExpressiveMotionSystem.durationShort2,
-            width: _getStatusDotSize(),
-            height: _getStatusDotSize(),
-            decoration: BoxDecoration(
-              color: statusColor,
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: statusColor.withOpacity(0.8),
-                width: 2.5,
-              ),
-              // Enhanced multi-layer glow effects
-              boxShadow: [
-                // Outer glow - largest
-                BoxShadow(
-                  color: statusColor.withOpacity(0.4),
-                  blurRadius: widget.task.status == TaskStatus.inProgress ? 16 : 12,
-                  spreadRadius: widget.task.status == TaskStatus.inProgress ? 4 : 2,
-                ),
-                // Middle glow
-                BoxShadow(
-                  color: statusColor.withOpacity(0.6),
-                  blurRadius: widget.task.status == TaskStatus.inProgress ? 8 : 6,
-                  spreadRadius: widget.task.status == TaskStatus.inProgress ? 2 : 1,
-                ),
-                // Inner highlight
-                BoxShadow(
-                  color: statusColor.withOpacity(0.8),
-                  blurRadius: 3,
-                  spreadRadius: 0,
-                  offset: const Offset(0, 1),
-                ),
+  Widget _buildAnimatedCard(Widget child) {
+    return AnimatedBuilder(
+      animation: Listenable.merge([
+        _scaleAnimation,
+        _slideAnimation,
+        _completionAnimation,
+        _glowAnimation,
+      ]),
+      builder: (context, _) {
+        return Transform.scale(
+          scale: _scaleAnimation.value,
+          child: SlideTransition(
+            position: _slideAnimation,
+            child: Stack(
+              children: [
+                child,
+                if (widget.task.priority.isHighPriority && !widget.task.isCompleted)
+                  _buildPriorityGlow(),
+                if (_completionAnimation.value > 0)
+                  _buildCompletionOverlay(),
               ],
             ),
           ),
-          const SizedBox(width: 6),
-          Text(
-            statusText,
-            style: TextStyle(
-              fontSize: 12, // Increased from 10
-              fontWeight: FontWeight.w700, // Bolder text
-              color: statusColor,
-              letterSpacing: 0.5, // Better readability
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
-  
-  String _getStatusText() {
-    switch (widget.task.status) {
-      case TaskStatus.pending:
-        return 'PENDING';
-      case TaskStatus.inProgress:
-        return 'DOING';
-      case TaskStatus.completed:
-        return 'DONE';
-      case TaskStatus.cancelled:
-        return 'CANCELLED';
-    }
-  }
-  
-  Color _getThemedStatusColor() {
-    final theme = Theme.of(context);
-    final themeState = ref.watch(enhancedThemeProvider);
-    final themeId = themeState.currentTheme?.metadata.id ?? '';
-    
-    if (themeId.contains('matrix')) {
-      // Matrix themed status colors
-      switch (widget.task.status) {
-        case TaskStatus.pending:
-          return const Color(0xFF006600);
-        case TaskStatus.inProgress:
-          return const Color(0xFF00FF00);
-        case TaskStatus.completed:
-          return const Color(0xFF00CC00);
-        case TaskStatus.cancelled:
-          return const Color(0xFF990000);
-      }
-    } else if (themeId.contains('vegeta')) {
-      // Vegeta themed status colors
-      switch (widget.task.status) {
-        case TaskStatus.pending:
-          return const Color(0xFF1e3a8a);
-        case TaskStatus.inProgress:
-          return const Color(0xFF60a5fa);
-        case TaskStatus.completed:
-          return const Color(0xFF93c5fd);
-        case TaskStatus.cancelled:
-          return const Color(0xFFdc2626);
-      }
-    } else if (themeId.contains('dracula')) {
-      // Dracula themed status colors
-      switch (widget.task.status) {
-        case TaskStatus.pending:
-          return const Color(0xFF8be9fd); // Cyan
-        case TaskStatus.inProgress:
-          return const Color(0xFFffb86c); // Orange
-        case TaskStatus.completed:
-          return const Color(0xFF50fa7b); // Green
-        case TaskStatus.cancelled:
-          return const Color(0xFFff5555); // Red
-      }
-    }
-    
-    // Default Material 3 colors for expressive and other themes
-    switch (widget.task.status) {
-      case TaskStatus.pending:
-        return theme.colorScheme.outline;
-      case TaskStatus.inProgress:
-        return theme.colorScheme.primary;
-      case TaskStatus.completed:
-        return theme.colorScheme.tertiary;
-      case TaskStatus.cancelled:
-        return theme.colorScheme.error;
-    }
+
+  Widget _buildSwipeableCard(Widget child) {
+    return Dismissible(
+      key: ValueKey(widget.task.id),
+      direction: DismissDirection.horizontal,
+      confirmDismiss: (direction) async {
+        if (direction == DismissDirection.startToEnd) {
+          // Left to right swipe - complete task
+          widget.onToggleComplete?.call();
+          return false;
+        } else {
+          // Right to left swipe - show more actions
+          _showQuickActions();
+          return false;
+        }
+      },
+      background: _buildSwipeBackground(isLeft: true),
+      secondaryBackground: _buildSwipeBackground(isLeft: false),
+      child: child,
+    );
   }
 
-  Widget _buildDueDateChip(ThemeData theme) {
-    final isOverdue = widget.task.dueDate!.isBefore(DateTime.now());
-    final isToday = _isToday(widget.task.dueDate!);
+  Widget _buildSwipeBackground({required bool isLeft}) {
+    final theme = Theme.of(context);
     
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: isOverdue 
-          ? theme.colorScheme.errorContainer 
-          : isToday 
-            ? theme.colorScheme.primaryContainer
-            : theme.colorScheme.surfaceVariant,
-        borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
+        color: isLeft ? Colors.green : Colors.orange,
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       ),
-      child: Text(
-        _formatDueDate(widget.task.dueDate!),
-        style: theme.textTheme.bodySmall?.copyWith(
-          color: isOverdue 
-            ? theme.colorScheme.onErrorContainer 
-            : isToday 
-              ? theme.colorScheme.onPrimaryContainer
-              : theme.colorScheme.onSurfaceVariant,
-          fontWeight: FontWeight.w500,
-        ),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
-    );
-  }
-
-  Widget _buildTitleSection(ThemeData theme) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Task title with improved typography and audio indicator
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                widget.task.title,
-                style: TextStyle(
-                  fontSize: TypographyConstants.textLG, // 18px for better hierarchy
-                  fontWeight: TypographyConstants.semiBold,
-                  color: theme.colorScheme.onSurface,
-                  decoration: widget.task.status == TaskStatus.completed 
-                    ? TextDecoration.lineThrough 
-                    : null,
-                  height: 1.3,
-                ),
-                maxLines: 2, // Allow 2 lines for better readability
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            // Audio indicator for voice tasks
-            if (widget.task.hasAudio) ...[
-              const SizedBox(width: 8),
-              AudioIndicatorWidget(
-                taskId: widget.task.id,
-                audioFilePath: widget.task.audioFilePath,
-                duration: widget.task.audioDuration,
-                size: 22, // Increased from 16 to make it more visible
-                // Remove onTap override - let it use default audio play behavior
-              ),
-            ],
-          ],
-        ),
-        
-        if (widget.task.description != null && widget.task.description!.isNotEmpty) ...[
-          const SizedBox(height: 8),
-          Text(
-            widget.task.description!,
-            style: TextStyle(
-              fontSize: TypographyConstants.textSM, // 14px for description
-              color: theme.colorScheme.onSurfaceVariant,
-              height: 1.4,
-            ),
-            maxLines: 2, // Allow 2 lines for descriptions
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
-      ],
-    );
-  }
-
-  Widget _buildMetadataRow(ThemeData theme) {
-    // Only show tags, no status badges since they're already shown at the top
-    if (widget.task.tags.isEmpty) {
-      return const SizedBox.shrink();
-    }
-    
-    return Wrap(
-      spacing: 8,
-      runSpacing: 4,
-      children: [
-        // Show first 2 tags
-        ...widget.task.tags.take(2).map((tag) => _buildTag(tag, theme)),
-        
-        // Show "more" indicator if there are more than 2 tags
-        if (widget.task.tags.length > 2)
-          _buildMoreTagsIndicator(theme),
-      ],
-    );
-  }
-
-  Widget _buildTag(String tag, ThemeData theme) {
-    return GlassmorphismContainer(
-      level: GlassLevel.interactive, // Use interactive level for tags
-      borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall),
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      // Let glassmorphism auto-determine tint based on theme
-      child: Text(
-        '#$tag',
-        style: theme.textTheme.labelSmall?.copyWith(
-          fontSize: TypographyConstants.textXS, // 12px for tags
-          fontWeight: TypographyConstants.medium,
-          color: theme.colorScheme.onSurfaceVariant,
-        ),
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-      ),
-    );
-  }
-
-  Widget _buildMoreTagsIndicator(ThemeData theme) {
-    return Semantics(
-      label: '${widget.task.tags.length - 3} more tags',
-      hint: 'Tap to view all tags',
-      button: true,
-      child: GestureDetector(
-        onTap: () {
-          _showAllTagsDialog();
-        },
-        child: GlassmorphismContainer(
-          level: GlassLevel.interactive,
-          borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall),
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          glassTint: theme.colorScheme.outline.withOpacity(0.2),
-          child: Text(
-            '+${widget.task.tags.length - 3}',
-            style: TextStyle(
-              fontSize: TypographyConstants.textXS,
-              fontWeight: TypographyConstants.medium,
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSubtasksPreview(ThemeData theme) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Icon(
-              Icons.checklist,
-              size: 16,
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-            const SizedBox(width: 4),
-            Text(
-              '${widget.task.subTasks.where((s) => s.isCompleted).length}/${widget.task.subTasks.length}',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-                fontWeight: FontWeight.w500,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildActionsRow(ThemeData theme) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 12),
-      child: Row(
-        children: [
-          // Complete/Uncomplete button
-          _buildActionButton(
-            icon: widget.task.status == TaskStatus.completed
-              ? Icons.check_circle
-              : Icons.radio_button_unchecked,
-            onPressed: _toggleCompletion,
-            color: widget.task.status == TaskStatus.completed
-              ? _getStatusColor()
-              : theme.colorScheme.onSurfaceVariant,
-          ),
-          
-          const SizedBox(width: 8),
-          
-          // Edit button
-          if (widget.onEdit != null)
-            _buildActionButton(
-              icon: Icons.edit,
-              onPressed: widget.onEdit!,
-              color: theme.colorScheme.primary,
-            ),
-          
-          const SizedBox(width: 8),
-          
-          // Share button
-          if (widget.onShare != null)
-            _buildActionButton(
-              icon: Icons.share,
-              onPressed: widget.onShare!,
-              color: theme.colorScheme.secondary,
-            ),
-          
-          const Spacer(),
-          
-          // Created date
-          Text(
-            _formatCreatedDate(widget.task.createdAt),
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActionButton({
-    required IconData icon,
-    required VoidCallback onPressed,
-    required Color color,
-  }) {
-    return AccessibleIconButton(
-      icon: icon,
-      onPressed: () {
-        HapticFeedback.selectionClick();
-        onPressed();
-      },
-      iconColor: color,
-      iconSize: 20, // Improved icon size for better visibility
-      minTouchTarget: AccessibilityConstants.minTouchTarget,
-      padding: const EdgeInsets.all(2),
-      tooltip: _getActionTooltip(icon),
-    );
-  }
-
-  String _getActionTooltip(IconData icon) {
-    if (icon == Icons.check_circle || icon == Icons.radio_button_unchecked) {
-      return widget.task.status == TaskStatus.completed ? 'Mark as incomplete' : 'Mark as complete';
-    } else if (icon == Icons.edit) {
-      return 'Edit task';
-    } else if (icon == Icons.share) {
-      return 'Share task';
-    }
-    return 'Task action';
-  }
-
-  Widget _buildActionsPanel(ThemeData theme) {
-    return Positioned.fill(
-      child: GlassmorphismContainer(
-        level: GlassLevel.floating, // Use floating level for swipe actions
-        borderRadius: BorderRadius.circular(TypographyConstants.taskCardRadius),
-        glassTint: _swipeDirection == SwipeDirection.left
-          ? theme.colorScheme.error.withOpacity(0.2)
-          : theme.colorScheme.primary.withOpacity(0.2),
-        child: Row(
-          mainAxisAlignment: _swipeDirection == SwipeDirection.left
-            ? MainAxisAlignment.end
-            : MainAxisAlignment.start,
-          children: [
-            if (_swipeDirection == SwipeDirection.right) ...[
-              const SizedBox(width: 16),
+      child: Align(
+        alignment: isLeft ? Alignment.centerLeft : Alignment.centerRight,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
               Icon(
-                Icons.check_circle,
-                color: theme.colorScheme.tertiary,
-                size: 24,
-              ),
-            ],
-            if (_swipeDirection == SwipeDirection.left) ...[
-              Icon(
-                Icons.delete,
-                color: theme.colorScheme.error,
-                size: 24,
-              ),
-              const SizedBox(width: 16),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCompletionOverlay(ThemeData theme) {
-    return Positioned.fill(
-      child: GlassmorphismContainer(
-        level: GlassLevel.floating,
-        borderRadius: BorderRadius.circular(TypographyConstants.taskCardRadius),
-        glassTint: theme.colorScheme.tertiary.withOpacity(0.2 * _completeAnimation.value),
-        child: Center(
-          child: Transform.scale(
-            scale: _completeAnimation.value,
-            child: Container(
-              width: 56,
-              height: 56,
-              decoration: BoxDecoration(
-                color: theme.colorScheme.tertiary,
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: theme.colorScheme.tertiary.withOpacity(0.3),
-                    blurRadius: 8,
-                    spreadRadius: 2,
-                  ),
-                ],
-              ),
-              child: Icon(
-                Icons.check,
-                color: theme.colorScheme.onTertiary,
+                isLeft ? Icons.check_circle : Icons.more_horiz,
+                color: Colors.white,
                 size: 32,
               ),
+              const SizedBox(height: 4),
+              Text(
+                isLeft ? 'Complete' : 'Actions',
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCardContent(ThemeData theme) {
+    switch (widget.style) {
+      case TaskCardStyle.elevated:
+        return _buildElevatedCard(theme);
+      case TaskCardStyle.filled:
+        return _buildFilledCard(theme);
+      case TaskCardStyle.outlined:
+        return _buildOutlinedCard(theme);
+      case TaskCardStyle.compact:
+        return _buildCompactCard(theme);
+      case TaskCardStyle.glass:
+        return _buildGlassCard(theme);
+      case TaskCardStyle.minimal:
+        return _buildMinimalCard(theme);
+    }
+  }
+
+  Widget _buildElevatedCard(ThemeData theme) {
+    return Card(
+      elevation: widget.elevation ?? 4,
+      shadowColor: widget.accentColor?.withOpacity(0.3),
+      child: _buildCardInner(theme),
+    );
+  }
+
+  Widget _buildFilledCard(ThemeData theme) {
+    return Container(
+      decoration: BoxDecoration(
+        color: widget.accentColor?.withOpacity(0.1) ?? theme.colorScheme.surfaceContainer,
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+        border: widget.accentColor != null 
+            ? Border.all(color: widget.accentColor!.withOpacity(0.3))
+            : null,
+      ),
+      child: _buildCardInner(theme),
+    );
+  }
+
+  Widget _buildOutlinedCard(ThemeData theme) {
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        border: Border.all(
+          color: widget.accentColor ?? theme.colorScheme.outline.withOpacity(0.3),
+          width: widget.accentColor != null ? 2 : 1,
+        ),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+      ),
+      child: _buildCardInner(theme),
+    );
+  }
+
+  Widget _buildCompactCard(ThemeData theme) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
+      ),
+      child: _buildCompactContent(theme),
+    );
+  }
+
+  Widget _buildGlassCard(ThemeData theme) {
+    return GlassmorphismContainer(
+      level: GlassLevel.content,
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+      padding: EdgeInsets.zero,
+      borderColor: widget.accentColor?.withOpacity(0.3),
+      child: _buildCardInner(theme),
+    );
+  }
+
+  Widget _buildMinimalCard(ThemeData theme) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+      ),
+      child: _buildMinimalContent(theme),
+    );
+  }
+
+  Widget _buildCardInner(ThemeData theme) {
+    return InkWell(
+      onTap: widget.onTap,
+      onTapDown: (_) => _handleTapDown(),
+      onTapUp: (_) => _handleTapUp(),
+      onTapCancel: () => _handleTapUp(),
+      onLongPress: widget.enableContextMenu ? _showContextMenu : null,
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+      child: MouseRegion(
+        onEnter: (_) => _handleHover(true),
+        onExit: (_) => _handleHover(false),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: _buildMainContent(theme),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMainContent(ThemeData theme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildHeader(theme),
+        if (widget.task.description?.isNotEmpty == true) ...[
+          const SizedBox(height: 8),
+          _buildDescription(theme),
+        ],
+        if (widget.customContent != null) ...[
+          const SizedBox(height: 12),
+          widget.customContent!,
+        ],
+        if (widget.showSubtasks) ...[
+          const SizedBox(height: 12),
+          SubtaskLinearProgressIndicator(
+            taskId: widget.task.id,
+            height: 4,
+            showPercentage: true,
+          ),
+        ],
+        if (widget.showProgress) ...[
+          const SizedBox(height: 12),
+          _buildProgress(theme),
+        ],
+        const SizedBox(height: 12),
+        _buildFooter(theme),
+      ],
+    );
+  }
+
+  Widget _buildCompactContent(ThemeData theme) {
+    return Row(
+      children: [
+        _buildPriorityIndicator(theme, size: 16),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                widget.task.title,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  decoration: widget.task.isCompleted
+                      ? TextDecoration.lineThrough
+                      : null,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              if (widget.task.dueDate != null)
+                Text(
+                  _formatDueDate(widget.task.dueDate!),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: _getDueDateColor(theme),
+                  ),
+                ),
+            ],
+          ),
+        ),
+        if (widget.showAudioIndicator && widget.task.hasVoiceMetadata) ...[
+          const SizedBox(width: 8),
+          AudioIndicatorWidget(
+            task: widget.task,
+            size: 16,
+          ),
+        ],
+        if (widget.showSubtasks) ...[
+          const SizedBox(width: 8),
+          SubtaskProgressIndicator(
+            taskId: widget.task.id,
+            size: 16,
+            showCount: true,
+          ),
+        ],
+        const SizedBox(width: 8),
+        StatusBadgeWidget(
+          status: widget.task.status,
+          compact: true,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMinimalContent(ThemeData theme) {
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            widget.task.title,
+            style: theme.textTheme.bodyLarge?.copyWith(
+              decoration: widget.task.isCompleted
+                  ? TextDecoration.lineThrough
+                  : null,
             ),
           ),
         ),
+        if (widget.task.dueDate != null) ...[
+          const SizedBox(width: 12),
+          Text(
+            _formatDueDate(widget.task.dueDate!),
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: _getDueDateColor(theme),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildHeader(ThemeData theme) {
+    return Row(
+      children: [
+        if (widget.showDragHandle) ...[
+          Icon(
+            Icons.drag_indicator,
+            color: theme.colorScheme.onSurfaceVariant,
+            size: 20,
+          ),
+          const SizedBox(width: 8),
+        ],
+        _buildPriorityIndicator(theme),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      widget.task.title,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        decoration: widget.task.isCompleted
+                            ? TextDecoration.lineThrough
+                            : null,
+                        color: widget.task.isCompleted
+                            ? theme.colorScheme.onSurfaceVariant
+                            : null,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  if (widget.task.isPinned) ...[
+                    const SizedBox(width: 8),
+                    Icon(
+                      Icons.push_pin,
+                      size: 16,
+                      color: widget.accentColor ?? theme.colorScheme.primary,
+                    ),
+                  ],
+                ],
+              ),
+              if (widget.showProjectInfo && widget.task.projectId != null)
+                _buildProjectInfo(theme),
+            ],
+          ),
+        ),
+        if (widget.showAudioIndicator && widget.task.hasVoiceMetadata) ...[
+          const SizedBox(width: 8),
+          AudioIndicatorWidget(
+            task: widget.task,
+          ),
+        ],
+        if (widget.showDependencyStatus) ...[
+          const SizedBox(width: 8),
+          TaskDependencyStatus(
+            task: widget.task,
+            showDetails: true,
+            onTap: () => _showDependencyDetails(context),
+          ),
+        ],
+        const SizedBox(width: 8),
+        StatusBadgeWidget(status: widget.task.status),
+      ],
+    );
+  }
+
+  Widget _buildPriorityIndicator(ThemeData theme, {double size = 24}) {
+    final priorityColor = widget.task.priority.color;
+    
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: priorityColor.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(size / 2),
+        border: Border.all(
+          color: priorityColor,
+          width: 2,
+        ),
+      ),
+      child: Icon(
+        _getPriorityIcon(widget.task.priority),
+        color: priorityColor,
+        size: size * 0.6,
+      ),
+    );
+  }
+
+  Widget _buildProjectInfo(ThemeData theme) {
+    // This would need to be connected to a project provider
+    return Padding(
+      padding: const EdgeInsets.only(top: 4),
+      child: Row(
+        children: [
+          Icon(
+            Icons.folder_outlined,
+            size: 14,
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+          const SizedBox(width: 4),
+          Text(
+            'Project', // Replace with actual project name
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDescription(ThemeData theme) {
+    return Text(
+      widget.task.description!,
+      style: theme.textTheme.bodyMedium?.copyWith(
+        color: theme.colorScheme.onSurfaceVariant,
+      ),
+      maxLines: 3,
+      overflow: TextOverflow.ellipsis,
+    );
+  }
+
+
+  Widget _buildProgress(ThemeData theme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Progress',
+              style: theme.textTheme.labelMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            SubtaskProgressIndicator(
+              taskId: widget.task.id,
+              size: 14,
+              showCount: true,
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        SubtaskLinearProgressIndicator(
+          taskId: widget.task.id,
+          height: 6,
+          showPercentage: false,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFooter(ThemeData theme) {
+    return Row(
+      children: [
+        if (widget.task.dueDate != null) ...[
+          Icon(
+            _getDueDateIcon(),
+            size: 16,
+            color: _getDueDateColor(theme),
+          ),
+          const SizedBox(width: 4),
+          Expanded(
+            child: Text(
+              widget.showDetailedDate 
+                  ? _formatDetailedDate(widget.task.dueDate!)
+                  : _formatDueDate(widget.task.dueDate!),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: _getDueDateColor(theme),
+                fontWeight: _isOverdue() ? FontWeight.w600 : null,
+              ),
+            ),
+          ),
+        ] else
+          const Spacer(),
+        if (widget.task.tags.isNotEmpty) ...[
+          const SizedBox(width: 8),
+          _buildTagsPreview(theme),
+        ],
+        if (widget.additionalActions?.isNotEmpty == true) ...[
+          const SizedBox(width: 8),
+          ...widget.additionalActions!,
+        ],
+        if (widget.enableContextMenu) ...[
+          const SizedBox(width: 8),
+          _buildActionsButton(theme),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildTagsPreview(ThemeData theme) {
+    final tags = widget.task.tags;
+    const maxTags = 2;
+    
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ...tags.take(maxTags).map((tag) => Padding(
+          padding: const EdgeInsets.only(right: 4),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.primaryContainer,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              tag,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.colorScheme.onPrimaryContainer,
+              ),
+            ),
+          ),
+        )),
+        if (tags.length > maxTags)
+          Text(
+            '+${tags.length - maxTags}',
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildActionsButton(ThemeData theme) {
+    return InkWell(
+      onTap: _showContextMenu,
+      borderRadius: BorderRadius.circular(16),
+      child: Padding(
+        padding: const EdgeInsets.all(4),
+        child: Icon(
+          Icons.more_vert,
+          size: 18,
+          color: theme.colorScheme.onSurfaceVariant,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPriorityGlow() {
+    return Positioned.fill(
+      child: AnimatedBuilder(
+        animation: _glowAnimation,
+        builder: (context, child) {
+          return Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+              boxShadow: [
+                BoxShadow(
+                  color: widget.task.priority.color.withOpacity(
+                    0.3 * _glowAnimation.value,
+                  ),
+                  blurRadius: 12 * _glowAnimation.value,
+                  spreadRadius: 2 * _glowAnimation.value,
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildCompletionOverlay() {
+    return Positioned.fill(
+      child: AnimatedBuilder(
+        animation: _completionAnimation,
+        builder: (context, child) {
+          return Container(
+            decoration: BoxDecoration(
+              color: Colors.green.withOpacity(0.1 * _completionAnimation.value),
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+            ),
+            child: Center(
+              child: Transform.scale(
+                scale: _completionAnimation.value,
+                child: const Icon(
+                  Icons.check_circle,
+                  color: Colors.green,
+                  size: 48,
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }
 
   // Helper methods
-  Color _getPriorityColor() {
-    final theme = Theme.of(context);
-    switch (widget.task.priority) {
-      case TaskPriority.urgent:
-        return theme.colorScheme.error;
-      case TaskPriority.high:
-        return theme.colorScheme.errorContainer;
-      case TaskPriority.medium:
-        return theme.colorScheme.primary;
-      case TaskPriority.low:
-        return theme.colorScheme.secondary;
+  void _handleTapDown() {
+    if (widget.enableAnimations) {
+      _scaleController.forward();
     }
   }
 
-  Color _getStatusColor() {
-    final theme = Theme.of(context);
-    switch (widget.task.status) {
-      case TaskStatus.pending:
-        return theme.colorScheme.outline;
-      case TaskStatus.inProgress:
-        return theme.colorScheme.primary;
-      case TaskStatus.completed:
-        return theme.colorScheme.tertiary;
-      case TaskStatus.cancelled:
-        return theme.colorScheme.error;
+  void _handleTapUp() {
+    if (widget.enableAnimations) {
+      _scaleController.reverse();
     }
   }
 
-  double _getCardElevation() {
-    if (widget.elevation != null) return widget.elevation!;
-    if (_isHovered) return 8;
-    return 4;
-  }
-
-  BorderSide _getCardBorder(ThemeData theme) {
-    if (widget.task.status == TaskStatus.completed) {
-      return BorderSide(color: theme.colorScheme.tertiary.withOpacity(0.3), width: 2);
-    }
-    if (_isHovered) {
-      return BorderSide(color: _getPriorityColor().withOpacity(0.3), width: 2);
-    }
-    return BorderSide(color: theme.colorScheme.outline.withOpacity(0.1));
-  }
-
-  Gradient? _getCardGradient(ThemeData theme) {
-    if (widget.style == TaskCardStyle.gradient) {
-      return LinearGradient(
-        colors: [
-          theme.colorScheme.surface,
-          _getPriorityColor().withOpacity(0.05),
-        ],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-      );
-    }
-    return null;
-  }
-
-  bool _isToday(DateTime date) {
-    final now = DateTime.now();
-    return date.year == now.year && date.month == now.month && date.day == now.day;
-  }
-
-
-  String _formatCreatedDate(DateTime date) {
-    final now = DateTime.now();
-    final difference = now.difference(date).inDays;
-    
-    if (difference == 0) return 'Today';
-    if (difference == 1) return 'Yesterday';
-    return '${difference}d ago';
-  }
-
-  // New helper methods for enhanced status indicators
-  double _getStatusDotSize() {
-    switch (widget.task.priority) {
-      case TaskPriority.urgent:
-        return widget.task.status == TaskStatus.inProgress ? 20 : 18; // Much larger for urgent
-      case TaskPriority.high:
-        return widget.task.status == TaskStatus.inProgress ? 18 : 16;
-      case TaskPriority.medium:
-        return widget.task.status == TaskStatus.inProgress ? 16 : 14;
-      case TaskPriority.low:
-        return widget.task.status == TaskStatus.inProgress ? 14 : 12;
-    }
-  }
-
-  double _getPriorityDotSize() {
-    switch (widget.task.priority) {
-      case TaskPriority.urgent:
-        return 10;
-      case TaskPriority.high:
-        return 8;
-      case TaskPriority.medium:
-        return 7;
-      case TaskPriority.low:
-        return 6;
-    }
-  }
-
-  // Event handlers
-  void _setHovered(bool hovered) {
-    if (_isHovered != hovered) {
-      setState(() => _isHovered = hovered);
-      if (hovered) {
-        _interactionController.animateTo(0.3); // Hover to 30% of the interaction
+  void _handleHover(bool isHovered) {
+    if (widget.enableAnimations) {
+      if (isHovered) {
+        _slideController.forward();
       } else {
-        _interactionController.animateTo(0.0);
+        _slideController.reverse();
       }
     }
   }
 
-  void _onTapDown(TapDownDetails details) {
-    _interactionController.animateTo(0.6); // Press to 60% of the interaction
-  }
-
-  void _onTapUp(TapUpDetails details) {
-    _interactionController.animateTo(_isHovered ? 0.3 : 0.0); // Return to hover or idle
-  }
-
-  void _onTapCancel() {
-    _interactionController.animateTo(_isHovered ? 0.3 : 0.0); // Return to hover or idle
-  }
-
-  void _onTap() {
-    HapticFeedback.mediumImpact();
-    widget.onTap?.call();
-  }
-
-  void _onPanStart(DragStartDetails details) {
-    _swipeOffset = 0.0;
-  }
-
-  void _onPanUpdate(DragUpdateDetails details) {
-    setState(() {
-      _swipeOffset += details.delta.dx;
-      _swipeDirection = _swipeOffset > 0 ? SwipeDirection.right : SwipeDirection.left;
-      _showActionsPanel = _swipeOffset.abs() > 50;
-    });
-
-    final progress = (_swipeOffset.abs() / 200).clamp(0.0, 1.0);
-    _interactionController.value = progress; // Use interaction controller for swipe
-  }
-
-  void _onPanEnd(DragEndDetails details) {
-    if (_swipeOffset.abs() > 100) {
-      if (_swipeDirection == SwipeDirection.right) {
-        _toggleCompletion();
-      } else if (_swipeDirection == SwipeDirection.left) {
-        widget.onDelete?.call();
-      }
-    }
-
-    // Reset swipe
-    _interactionController.animateTo(0.0);
-    setState(() {
-      _showActionsPanel = false;
-      _swipeOffset = 0.0;
-      _swipeDirection = null;
-    });
-  }
-
-  void _toggleCompletion() {
-    final newStatus = widget.task.status == TaskStatus.completed
-        ? TaskStatus.pending
-        : TaskStatus.completed;
-    
-    if (newStatus == TaskStatus.completed) {
-      _interactionController.animateTo(1.0); // Complete animation to 100%
-      HapticFeedback.heavyImpact();
-    } else {
-      _interactionController.animateTo(0.0);
-    }
-
-    // Update task status through provider
-    // ref.read(taskOperationsProvider).updateTaskStatus(widget.task.id, newStatus);
-  }
-
-  void _showAllTagsDialog() {
-    showDialog(
+  void _showContextMenu() {
+    showModalBottomSheet(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('All Tags'),
-        content: Wrap(
-          spacing: 8,
-          runSpacing: 4,
-          children: widget.task.tags.map((tag) => 
-            _buildTag(tag, Theme.of(context)),
-          ).toList(),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
+      builder: (context) => _buildContextMenuSheet(),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+    );
+  }
+
+  Widget _buildContextMenuSheet() {
+    final theme = Theme.of(context);
+    
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: theme.colorScheme.onSurfaceVariant,
+              borderRadius: BorderRadius.circular(2),
+            ),
           ),
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              widget.task.title,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const SizedBox(height: 16),
+          _buildMenuTile(
+            icon: widget.task.isCompleted ? Icons.undo : Icons.check_circle,
+            title: widget.task.isCompleted ? 'Mark Incomplete' : 'Mark Complete',
+            onTap: () {
+              Navigator.pop(context);
+              widget.onToggleComplete?.call();
+            },
+          ),
+          if (widget.onEdit != null)
+            _buildMenuTile(
+              icon: Icons.edit,
+              title: 'Edit',
+              onTap: () {
+                Navigator.pop(context);
+                widget.onEdit?.call();
+              },
+            ),
+          if (widget.onDuplicate != null)
+            _buildMenuTile(
+              icon: Icons.copy,
+              title: 'Duplicate',
+              onTap: () {
+                Navigator.pop(context);
+                widget.onDuplicate?.call();
+              },
+            ),
+          if (widget.onShare != null)
+            _buildMenuTile(
+              icon: Icons.share,
+              title: 'Share',
+              onTap: () {
+                Navigator.pop(context);
+                widget.onShare?.call();
+              },
+            ),
+          if (widget.onDelete != null) ...[
+            const Divider(),
+            _buildMenuTile(
+              icon: Icons.delete,
+              title: 'Delete',
+              isDestructive: true,
+              onTap: () {
+                Navigator.pop(context);
+                widget.onDelete?.call();
+              },
+            ),
+          ],
         ],
       ),
     );
   }
 
-  @override
-  void dispose() {
-    // OPTIMIZED: Only 2 controllers to dispose now
-    _interactionController.dispose();
-    _progressController.dispose();
-    super.dispose();
+  Widget _buildMenuTile({
+    required IconData icon,
+    required String title,
+    required VoidCallback onTap,
+    bool isDestructive = false,
+  }) {
+    final theme = Theme.of(context);
+    
+    return ListTile(
+      leading: Icon(
+        icon,
+        color: isDestructive ? theme.colorScheme.error : null,
+      ),
+      title: Text(
+        title,
+        style: TextStyle(
+          color: isDestructive ? theme.colorScheme.error : null,
+        ),
+      ),
+      onTap: onTap,
+    );
+  }
+
+  void _showQuickActions() {
+    // Implementation for quick actions panel
+    // This could be a custom overlay or another bottom sheet
+  }
+
+  void _showDependencyDetails(BuildContext context) {
+    Navigator.of(context).pushNamed('/task-dependencies');
+  }
+
+  IconData _getPriorityIcon(TaskPriority priority) {
+    switch (priority) {
+      case TaskPriority.low:
+        return Icons.keyboard_arrow_down;
+      case TaskPriority.medium:
+        return Icons.remove;
+      case TaskPriority.high:
+        return Icons.keyboard_arrow_up;
+      case TaskPriority.urgent:
+        return Icons.priority_high;
+    }
+  }
+
+  IconData _getDueDateIcon() {
+    if (_isOverdue()) {
+      return Icons.warning;
+    } else if (_isDueToday()) {
+      return Icons.today;
+    } else if (_isDueTomorrow()) {
+      return Icons.schedule;
+    } else {
+      return Icons.calendar_today;
+    }
+  }
+
+  Color _getDueDateColor(ThemeData theme) {
+    if (_isOverdue()) {
+      return theme.colorScheme.error;
+    } else if (_isDueToday()) {
+      return Colors.orange;
+    } else if (_isDueTomorrow()) {
+      return theme.colorScheme.primary;
+    } else {
+      return theme.colorScheme.onSurfaceVariant;
+    }
+  }
+
+  bool _isOverdue() {
+    if (widget.task.dueDate == null || widget.task.isCompleted) return false;
+    return widget.task.dueDate!.isBefore(DateTime.now());
+  }
+
+  bool _isDueToday() {
+    if (widget.task.dueDate == null) return false;
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final dueDate = DateTime(
+      widget.task.dueDate!.year,
+      widget.task.dueDate!.month,
+      widget.task.dueDate!.day,
+    );
+    return dueDate == today;
+  }
+
+  bool _isDueTomorrow() {
+    if (widget.task.dueDate == null) return false;
+    final now = DateTime.now();
+    final tomorrow = DateTime(now.year, now.month, now.day + 1);
+    final dueDate = DateTime(
+      widget.task.dueDate!.year,
+      widget.task.dueDate!.month,
+      widget.task.dueDate!.day,
+    );
+    return dueDate == tomorrow;
+  }
+
+  String _formatDueDate(DateTime dueDate) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final taskDate = DateTime(dueDate.year, dueDate.month, dueDate.day);
+    
+    final difference = taskDate.difference(today).inDays;
+    
+    if (difference == 0) {
+      return 'Today';
+    } else if (difference == 1) {
+      return 'Tomorrow';
+    } else if (difference == -1) {
+      return 'Yesterday';
+    } else if (difference > 1 && difference <= 7) {
+      return 'In $difference days';
+    } else if (difference < -1 && difference >= -7) {
+      return '${-difference} days ago';
+    } else {
+      return '${dueDate.day}/${dueDate.month}';
+    }
+  }
+
+  String _formatDetailedDate(DateTime dueDate) {
+    final weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    final months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+    
+    final weekday = weekdays[dueDate.weekday - 1];
+    final month = months[dueDate.month - 1];
+    final day = dueDate.day;
+    final hour = dueDate.hour;
+    final minute = dueDate.minute.toString().padLeft(2, '0');
+    
+    return '$weekday, $month $day at $hour:$minute';
   }
 }
 
-enum TaskCardStyle {
-  elevated,
-  outlined,
-  gradient,
-  minimal,
+/// Task card size variants
+enum TaskCardSize {
+  small,
+  medium,
+  large;
+  
+  double get height {
+    switch (this) {
+      case TaskCardSize.small:
+        return 80;
+      case TaskCardSize.medium:
+        return 120;
+      case TaskCardSize.large:
+        return 160;
+    }
+  }
 }
 
-enum SwipeDirection {
-  left,
-  right,
+/// Quick task card for minimal displays
+class QuickTaskCard extends StatelessWidget {
+  final TaskModel task;
+  final VoidCallback? onTap;
+  final VoidCallback? onToggleComplete;
+
+  const QuickTaskCard({
+    super.key,
+    required this.task,
+    this.onTap,
+    this.onToggleComplete,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: ListTile(
+        onTap: onTap,
+        leading: IconButton(
+          onPressed: onToggleComplete,
+          icon: Icon(
+            task.isCompleted ? Icons.check_circle : Icons.radio_button_unchecked,
+            color: task.isCompleted ? Colors.green : null,
+          ),
+        ),
+        title: Text(
+          task.title,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            decoration: task.isCompleted ? TextDecoration.lineThrough : null,
+          ),
+        ),
+        subtitle: task.dueDate != null
+            ? Text('Due ${_formatQuickDate(task.dueDate!)}')
+            : null,
+        trailing: Container(
+          width: 12,
+          height: 12,
+          decoration: BoxDecoration(
+            color: task.priority.color,
+            shape: BoxShape.circle,
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _formatQuickDate(DateTime date) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final taskDate = DateTime(date.year, date.month, date.day);
+    
+    final difference = taskDate.difference(today).inDays;
+    
+    if (difference == 0) return 'today';
+    if (difference == 1) return 'tomorrow';
+    if (difference == -1) return 'yesterday';
+    return '${date.day}/${date.month}';
+  }
 }

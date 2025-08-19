@@ -4,6 +4,7 @@ import 'package:local_auth/local_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
+import 'dart:math';
 import 'dart:typed_data';
 
 /// Service for managing app security and authentication
@@ -90,9 +91,9 @@ class SecurityService {
       final isValid = hashedPin == storedHash;
       
       if (isValid) {
-        await _resetFailedAttempts();
+        await resetFailedAttempts();
       } else {
-        await _recordFailedAttempt();
+        await recordFailedAttempt();
       }
       
       return isValid;
@@ -126,7 +127,7 @@ class SecurityService {
     await prefs.setBool(_biometricEnabledKey, false);
     await prefs.remove(_pinHashKey);
     await prefs.remove(_saltKey);
-    await _resetFailedAttempts();
+    await resetFailedAttempts();
   }
 
   /// Get lock timeout duration
@@ -151,7 +152,7 @@ class SecurityService {
     
     final now = DateTime.now().millisecondsSinceEpoch;
     if (now >= lockoutUntil) {
-      await _resetFailedAttempts();
+      await resetFailedAttempts();
       return false;
     }
     
@@ -167,7 +168,7 @@ class SecurityService {
     
     final now = DateTime.now().millisecondsSinceEpoch;
     if (now >= lockoutUntil) {
-      await _resetFailedAttempts();
+      await resetFailedAttempts();
       return null;
     }
     
@@ -192,24 +193,32 @@ class SecurityService {
     await prefs.setInt(_maxAttemptsKey, maxAttempts);
   }
 
-  /// Generate a random salt for PIN hashing
+  /// Generate a cryptographically secure random salt for PIN hashing
   String _generateSalt() {
+    final secureRandom = Random.secure();
     final bytes = Uint8List(32);
     for (int i = 0; i < 32; i++) {
-      bytes[i] = DateTime.now().millisecondsSinceEpoch % 256;
+      bytes[i] = secureRandom.nextInt(256);
     }
     return base64.encode(bytes);
   }
 
-  /// Hash PIN with salt
+  /// Hash PIN with salt using multiple rounds for security
   String _hashPin(String pin, String salt) {
-    final bytes = utf8.encode(pin + salt);
-    final digest = sha256.convert(bytes);
-    return digest.toString();
+    var combined = pin + salt;
+    
+    // Apply multiple rounds of hashing for better security (poor man's PBKDF2)
+    for (int i = 0; i < 10000; i++) {
+      final bytes = utf8.encode(combined);
+      final digest = sha256.convert(bytes);
+      combined = digest.toString();
+    }
+    
+    return combined;
   }
 
   /// Record a failed authentication attempt
-  Future<void> _recordFailedAttempt() async {
+  Future<void> recordFailedAttempt() async {
     final prefs = await SharedPreferences.getInstance();
     final currentAttempts = prefs.getInt(_failedAttemptsKey) ?? 0;
     final maxAttempts = await getMaxAttempts();
@@ -227,7 +236,7 @@ class SecurityService {
   }
 
   /// Reset failed attempts counter
-  Future<void> _resetFailedAttempts() async {
+  Future<void> resetFailedAttempts() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_failedAttemptsKey);
     await prefs.remove(_lastFailedAttemptKey);
@@ -266,6 +275,23 @@ class SecurityService {
     
     return await setupPin(newPin);
   }
+
+  /// Set PIN (alias for setupPin)
+  Future<bool> setPin(String pin) async {
+    return await setupPin(pin);
+  }
+
+  /// Set app lock enabled state
+  Future<void> setAppLockEnabled(bool enabled) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_appLockEnabledKey, enabled);
+  }
+
+  /// Check if user is locked out
+  Future<bool> isUserLockedOut() async {
+    return await isLockedOut();
+  }
+
 
   /// Get security settings
   Future<SecuritySettings> getSecuritySettings() async {
@@ -329,6 +355,15 @@ enum AuthenticationState {
   lockedOut,
   biometricRequired,
   pinRequired,
+}
+
+/// PIN setup steps
+enum PinSetupStep {
+  enterOldPin,
+  enterPin,
+  confirmPin,
+  setupBiometric,
+  completed,
 }
 
 /// Providers for security service

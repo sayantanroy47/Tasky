@@ -282,7 +282,7 @@ class ThemeCategoryQuickSelector extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final categories = ref.watch(themeCategoriesProvider);
-    final currentTheme = ref.watch(enhancedThemeProvider).currentTheme;
+    // final currentTheme = ref.watch(enhancedThemeProvider).currentTheme;
 
     return PopupMenuButton<String>(
       icon: const Icon(Icons.category),

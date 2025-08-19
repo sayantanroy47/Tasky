@@ -176,14 +176,12 @@ class TranscriptionServiceImpl implements TranscriptionService {
 /// This class would integrate with actual transcription services
 class MockExternalTranscriptionService implements TranscriptionService {
   final String? _apiKey;
-  final String _serviceUrl;
   bool _isInitialized = false;
   TranscriptionConfig _config = const TranscriptionConfig();
   
   MockExternalTranscriptionService({
     String? apiKey,
-    String serviceUrl = 'https://api.openai.com/v1/audio/transcriptions',
-  }) : _apiKey = apiKey, _serviceUrl = serviceUrl;
+  }) : _apiKey = apiKey;
 
   @override
   Future<bool> initialize() async {
@@ -222,8 +220,8 @@ class MockExternalTranscriptionService implements TranscriptionService {
       
       final stopwatch = Stopwatch()..start();
       
-      // Read audio file
-      final audioBytes = await file.readAsBytes();
+      // Read audio file (for future API integration)
+      await file.readAsBytes();
       
       // Make API call (structure for OpenAI Whisper API)
       // Uncomment and configure when API key is available:
@@ -256,7 +254,11 @@ class MockExternalTranscriptionService implements TranscriptionService {
       // Fallback to local implementation for now
       final localService = TranscriptionServiceImpl();
       await localService.initialize();
-      return await localService.transcribeAudioFile(audioFilePath);
+      final result = await localService.transcribeAudioFile(audioFilePath);
+      
+      stopwatch.stop();
+      // Note: Processing time will be overridden by the local service's timing
+      return result;
       
     } catch (e) {
       return TranscriptionResult.failure(
@@ -311,10 +313,10 @@ class MockExternalTranscriptionService implements TranscriptionService {
         processingTime: stopwatch.elapsed,
         language: _config.language ?? 'en',
         segments: [
-          TranscriptionSegment(
+          const TranscriptionSegment(
             text: 'Mock transcription result - external API integration needed',
             startTime: Duration.zero,
-            endTime: const Duration(seconds: 2),
+            endTime: Duration(seconds: 2),
             confidence: 0.85,
           ),
         ],

@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/calendar_widgets.dart';
 import '../widgets/standardized_app_bar.dart';
 import '../providers/calendar_provider.dart';
-import '../providers/task_provider.dart';
+import '../providers/task_providers.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/entities/calendar_event.dart';
 import '../../domain/models/enums.dart';
@@ -11,6 +11,7 @@ import '../../domain/models/enums.dart';
 /// Calendar screen with task scheduling and event management
 class CalendarScreen extends ConsumerStatefulWidget {
   const CalendarScreen({super.key});
+
   @override
   ConsumerState<CalendarScreen> createState() => _CalendarScreenState();
 }
@@ -18,6 +19,7 @@ class CalendarScreen extends ConsumerStatefulWidget {
 class _CalendarScreenState extends ConsumerState<CalendarScreen>
     with TickerProviderStateMixin {
   late TabController _tabController;
+
   @override
   void initState() {
     super.initState();

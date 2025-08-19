@@ -4,7 +4,7 @@ import '../../core/theme/typography_constants.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
 import '../../core/providers/core_providers.dart';
-import '../../presentation/providers/task_providers.dart';
+
 
 /// Dialog for creating tasks from shared messages
 class MessageTaskDialog extends ConsumerStatefulWidget {
@@ -130,7 +130,7 @@ class _MessageTaskDialogState extends ConsumerState<MessageTaskDialog> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: colorScheme.surfaceVariant.withOpacity(0.3),
+                color: colorScheme.surfaceContainerHighest.withOpacity(0.3),
                 borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                 border: Border.all(
                   color: colorScheme.outline.withOpacity(0.2),

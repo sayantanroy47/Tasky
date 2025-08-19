@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:developer' as developer;
 
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
@@ -7,6 +8,7 @@ import 'package:path/path.dart' as p;
 
 import 'tables.dart';
 import 'daos/task_dao.dart';
+import 'daos/subtask_dao.dart';
 import 'daos/project_dao.dart';
 import 'daos/tag_dao.dart';
 import 'daos/task_template_dao.dart';
@@ -51,6 +53,7 @@ class AppDatabase extends _$AppDatabase {
 
   // DAOs
   late final TaskDao taskDao = TaskDao(this);
+  late final SubtaskDao subtaskDao = SubtaskDao(this);
   late final ProjectDao projectDao = ProjectDao(this);
   late final TagDao tagDao = TagDao(this);
   late final TaskTemplateDao taskTemplateDao = TaskTemplateDao(this);  @override
@@ -59,21 +62,21 @@ class AppDatabase extends _$AppDatabase {
       onCreate: (Migrator m) async {
         try {
           await m.createAll();
-          print('Database created successfully with schema version $schemaVersion');
+          developer.log('Database created successfully with schema version $schemaVersion', name: 'AppDatabase');
         } catch (e) {
-          print('Error creating database: $e');
+          developer.log('Error creating database: $e', name: 'AppDatabase', level: 1000);
           rethrow;
         }
       },
       onUpgrade: (Migrator m, int from, int to) async {
-        print('Migrating database from version $from to $to');
+        developer.log('Migrating database from version $from to $to', name: 'AppDatabase');
         
         try {
           // Create a transaction for all migrations to ensure atomicity
           await transaction(() async {
             // Migration from version 1 to 2
             if (from <= 1 && to >= 2) {
-              print('Adding TaskTemplates table (v1 -> v2)');
+              developer.log('Adding TaskTemplates table (v1 -> v2)', name: 'AppDatabase');
               await m.createTable(taskTemplates);
             }
 
@@ -88,9 +91,9 @@ class AppDatabase extends _$AppDatabase {
             await _createIndexes();
           });
           
-          print('Database migration completed successfully');
+          developer.log('Database migration completed successfully', name: 'AppDatabase');
         } catch (e) {
-          print('Error during database migration from $from to $to: $e');
+          developer.log('Error during database migration from $from to $to: $e', name: 'AppDatabase', level: 1000);
           rethrow;
         }
       },
@@ -107,9 +110,9 @@ class AppDatabase extends _$AppDatabase {
           await customStatement('PRAGMA cache_size = 10000');
           await customStatement('PRAGMA temp_store = MEMORY');
           
-          print('Database opened successfully with optimized settings');
+          developer.log('Database opened successfully with optimized settings', name: 'AppDatabase');
         } catch (e) {
-          print('Error configuring database: $e');
+          developer.log('Error configuring database: $e', name: 'AppDatabase', level: 1000);
           rethrow;
         }
       },
@@ -148,9 +151,9 @@ class AppDatabase extends _$AppDatabase {
       // Indexes for tags table
       await customStatement('CREATE INDEX IF NOT EXISTS idx_tags_name ON tags(name)');
 
-      print('Database indexes created successfully');
+      developer.log('Database indexes created successfully', name: 'AppDatabase');
     } catch (e) {
-      print('Error creating database indexes: $e');
+      developer.log('Error creating database indexes: $e', name: 'AppDatabase', level: 1000);
       // Don't rethrow - indexes are optional for functionality
     }
   }

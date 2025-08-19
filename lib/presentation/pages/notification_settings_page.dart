@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/standardized_app_bar.dart';
 import '../widgets/theme_background_widget.dart';
+import '../widgets/glassmorphism_container.dart';
+import '../../core/design_system/design_tokens.dart';
 
 import '../providers/notification_providers.dart';
 import '../../services/notification/notification_models.dart' as models;
@@ -29,9 +31,26 @@ class NotificationSettingsPage extends ConsumerWidget {
               const SizedBox(height: 16),
               Text('Error loading settings: $error'),
               const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () => ref.refresh(notificationSettingsProvider),
-                child: const Text('Retry'),
+              GlassmorphismContainer(
+                level: GlassLevel.interactive,
+                borderRadius: BorderRadius.circular(8),
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () => ref.refresh(notificationSettingsProvider),
+                    borderRadius: BorderRadius.circular(8),
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      child: Text(
+                        'Retry',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
@@ -91,9 +110,10 @@ class NotificationSettingsPage extends ConsumerWidget {
     WidgetRef ref,
     AsyncValue<bool> permissionsAsync,
   ) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
+    return GlassmorphismContainer(
+      level: GlassLevel.content,
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+      padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -120,16 +140,43 @@ class NotificationSettingsPage extends ConsumerWidget {
                     ),
                   ),
                   if (!hasPermissions)
-                    ElevatedButton(
-                      onPressed: () => ref.read(notificationPermissionsProvider.notifier).requestPermissions(),
-                      child: const Text('Grant'),
+                    GlassmorphismContainer(
+                      level: GlassLevel.interactive,
+                      borderRadius: BorderRadius.circular(8),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () => ref.read(notificationPermissionsProvider.notifier).requestPermissions(),
+                          borderRadius: BorderRadius.circular(8),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                                  Theme.of(context).colorScheme.primary.withOpacity(0.6),
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Text(
+                              'Grant',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
                 ],
               ),
             ),
           ],
         ),
-      ),
     );
   }
 
@@ -138,9 +185,10 @@ class NotificationSettingsPage extends ConsumerWidget {
     WidgetRef ref,
     models.NotificationSettings settings,
   ) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
+    return GlassmorphismContainer(
+      level: GlassLevel.content,
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+      padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -173,7 +221,6 @@ class NotificationSettingsPage extends ConsumerWidget {
             ),
           ],
         ),
-      ),
     );
   }
 
@@ -182,9 +229,10 @@ class NotificationSettingsPage extends ConsumerWidget {
     WidgetRef ref,
     models.NotificationSettings settings,
   ) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
+    return GlassmorphismContainer(
+      level: GlassLevel.content,
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+      padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -202,7 +250,6 @@ class NotificationSettingsPage extends ConsumerWidget {
             ),
           ],
         ),
-      ),
     );
   }
 
@@ -211,9 +258,10 @@ class NotificationSettingsPage extends ConsumerWidget {
     WidgetRef ref,
     models.NotificationSettings settings,
   ) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
+    return GlassmorphismContainer(
+      level: GlassLevel.content,
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+      padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -241,7 +289,6 @@ class NotificationSettingsPage extends ConsumerWidget {
             ),
           ],
         ),
-      ),
     );
   }
 
@@ -252,9 +299,10 @@ class NotificationSettingsPage extends ConsumerWidget {
   ) {
     final hasQuietHours = settings.quietHoursStart != null && settings.quietHoursEnd != null;
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
+    return GlassmorphismContainer(
+      level: GlassLevel.content,
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+      padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -304,7 +352,6 @@ class NotificationSettingsPage extends ConsumerWidget {
             ],
           ],
         ),
-      ),
     );
   }
 
@@ -313,9 +360,10 @@ class NotificationSettingsPage extends ConsumerWidget {
     WidgetRef ref,
     models.NotificationSettings settings,
   ) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
+    return GlassmorphismContainer(
+      level: GlassLevel.content,
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+      padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -337,14 +385,14 @@ class NotificationSettingsPage extends ConsumerWidget {
             ),
           ],
         ),
-      ),
     );
   }
 
   Widget _buildTestSection(BuildContext context, WidgetRef ref) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
+    return GlassmorphismContainer(
+      level: GlassLevel.content,
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+      padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -353,26 +401,60 @@ class NotificationSettingsPage extends ConsumerWidget {
               style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: () async {
-                  final testNotification = ref.read(testNotificationProvider);
-                  await testNotification();
-                  
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Test notification sent!')),
-                    );
-                  }
-                },
-                icon: const Icon(Icons.notifications_active),
-                label: const Text('Send Test Notification'),
+            GlassmorphismContainer(
+              level: GlassLevel.interactive,
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () async {
+                    final testNotification = ref.read(testNotificationProvider);
+                    await testNotification();
+                    
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Test notification sent!')),
+                      );
+                    }
+                  },
+                  borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                          Theme.of(context).colorScheme.primary.withOpacity(0.6),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                    ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.notifications_active,
+                          color: Colors.white,
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'Send Test Notification',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ),
           ],
         ),
-      ),
     );
   }
 

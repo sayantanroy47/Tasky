@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../core/theme/material3/motion_system.dart';
-import '../../core/design_system/design_tokens.dart' hide BorderRadius;
+import '../../core/design_system/design_tokens.dart';
 import 'glassmorphism_container.dart';
 
 /// A reusable confirmation dialog widget with M3 glassmorphism design
@@ -164,28 +164,75 @@ class _ConfirmationDialogState extends State<ConfirmationDialog>
     return Row(
       children: [
         Expanded(
-          child: OutlinedButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              widget.onCancel?.call();
-            },
-            child: Text(widget.cancelText),
+          child: GlassmorphismContainer(
+            level: GlassLevel.interactive,
+            borderRadius: BorderRadius.circular(8),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () {
+                  Navigator.of(context).pop();
+                  widget.onCancel?.call();
+                },
+                borderRadius: BorderRadius.circular(8),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  child: Center(
+                    child: Text(
+                      widget.cancelText,
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        color: theme.colorScheme.onSurface,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ),
         ),
         const SizedBox(width: 16),
         Expanded(
-          child: FilledButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              widget.onConfirm?.call();
-            },
-            style: widget.isDestructive
-              ? FilledButton.styleFrom(
-                  backgroundColor: theme.colorScheme.error,
-                  foregroundColor: theme.colorScheme.onError,
-                )
-              : null,
-            child: Text(widget.confirmText),
+          child: GlassmorphismContainer(
+            level: GlassLevel.interactive,
+            borderRadius: BorderRadius.circular(8),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () {
+                  Navigator.of(context).pop();
+                  widget.onConfirm?.call();
+                },
+                borderRadius: BorderRadius.circular(8),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: widget.isDestructive
+                        ? [
+                            theme.colorScheme.error.withOpacity(0.8),
+                            theme.colorScheme.error.withOpacity(0.6),
+                          ]
+                        : [
+                            theme.colorScheme.primary.withOpacity(0.8),
+                            theme.colorScheme.primary.withOpacity(0.6),
+                          ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Center(
+                    child: Text(
+                      widget.confirmText,
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ),
         ),
       ],
@@ -212,24 +259,98 @@ class InfoDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      icon: icon != null 
-        ? Icon(
-            icon,
-            color: Theme.of(context).colorScheme.primary,
-          )
-        : null,
-      title: Text(title),
-      content: Text(content),
-      actions: [
-        FilledButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-            onPressed?.call();
-          },
-          child: Text(buttonText),
+    final theme = Theme.of(context);
+    final size = MediaQuery.of(context).size;
+    
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      insetPadding: const EdgeInsets.all(24),
+      child: GlassmorphismContainer(
+        level: GlassLevel.floating,
+        width: size.width * 0.85,
+        borderRadius: BorderRadius.circular(TypographyConstants.dialogRadius),
+        glassTint: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+        borderColor: theme.colorScheme.primary.withOpacity(0.2),
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (icon != null) ...[
+              GlassmorphismContainer(
+                level: GlassLevel.content,
+                width: 56,
+                height: 56,
+                borderRadius: BorderRadius.circular(28),
+                glassTint: theme.colorScheme.primary.withOpacity(0.1),
+                child: Center(
+                  child: Icon(
+                    icon,
+                    color: theme.colorScheme.primary,
+                    size: 28,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
+            Text(
+              title,
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onSurface,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              content,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+                height: 1.5,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            GlassmorphismContainer(
+              level: GlassLevel.interactive,
+              borderRadius: BorderRadius.circular(8),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    onPressed?.call();
+                  },
+                  borderRadius: BorderRadius.circular(8),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          theme.colorScheme.primary.withOpacity(0.8),
+                          theme.colorScheme.primary.withOpacity(0.6),
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Center(
+                      child: Text(
+                        buttonText,
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 }
@@ -285,50 +406,151 @@ class _TextInputDialogState extends State<TextInputDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(widget.title),
-      content: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (widget.content != null) ...[
-              Text(widget.content!),
-              const SizedBox(height: 16),
-            ],
-            TextFormField(
-              controller: _controller,
-              decoration: InputDecoration(
-                hintText: widget.hintText,
-                border: const OutlineInputBorder(),
+    final theme = Theme.of(context);
+    final size = MediaQuery.of(context).size;
+    
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      insetPadding: const EdgeInsets.all(24),
+      child: GlassmorphismContainer(
+        level: GlassLevel.floating,
+        width: size.width * 0.85,
+        borderRadius: BorderRadius.circular(TypographyConstants.dialogRadius),
+        glassTint: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+        borderColor: theme.colorScheme.primary.withOpacity(0.2),
+        padding: const EdgeInsets.all(24),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                widget.title,
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onSurface,
+                ),
               ),
-              validator: widget.validator,
-              maxLines: widget.maxLines,
-              keyboardType: widget.keyboardType,
-              autofocus: true,
-            ),
-          ],
+              const SizedBox(height: 16),
+              if (widget.content != null) ...[
+                Text(
+                  widget.content!,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+              GlassmorphismContainer(
+                level: GlassLevel.interactive,
+                borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                child: TextFormField(
+                  controller: _controller,
+                  decoration: InputDecoration(
+                    hintText: widget.hintText,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                      borderSide: BorderSide.none,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                      borderSide: BorderSide.none,
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                      borderSide: BorderSide(
+                        color: theme.colorScheme.primary,
+                        width: 2,
+                      ),
+                    ),
+                    filled: true,
+                    fillColor: Colors.transparent,
+                  ),
+                  validator: widget.validator,
+                  maxLines: widget.maxLines,
+                  keyboardType: widget.keyboardType,
+                  autofocus: true,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: GlassmorphismContainer(
+                      level: GlassLevel.interactive,
+                      borderRadius: BorderRadius.circular(8),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.of(context).pop();
+                            widget.onCancel?.call();
+                          },
+                          borderRadius: BorderRadius.circular(8),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                            child: Center(
+                              child: Text(
+                                widget.cancelText,
+                                style: theme.textTheme.labelLarge?.copyWith(
+                                  color: theme.colorScheme.onSurface,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: GlassmorphismContainer(
+                      level: GlassLevel.interactive,
+                      borderRadius: BorderRadius.circular(8),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () {
+                            if (_formKey.currentState!.validate()) {
+                              Navigator.of(context).pop();
+                              widget.onConfirm?.call(_controller.text);
+                            }
+                          },
+                          borderRadius: BorderRadius.circular(8),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  theme.colorScheme.primary.withOpacity(0.8),
+                                  theme.colorScheme.primary.withOpacity(0.6),
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Center(
+                              child: Text(
+                                widget.confirmText,
+                                style: theme.textTheme.labelLarge?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
-      actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-            widget.onCancel?.call();
-          },
-          child: Text(widget.cancelText),
-        ),
-        FilledButton(
-          onPressed: () {
-            if (_formKey.currentState!.validate()) {
-              Navigator.of(context).pop();
-              widget.onConfirm?.call(_controller.text);
-            }
-          },
-          child: Text(widget.confirmText),
-        ),
-      ],
     );
   }
 }
@@ -354,39 +576,111 @@ class SelectionDialog<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(title),
-      content: SizedBox(
-        width: double.maxFinite,
-        child: ListView.builder(
-          shrinkWrap: true,
-          itemCount: options.length,
-          itemBuilder: (context, index) {
-            final option = options[index];
-            final isSelected = selectedValue == option;
-            
-            return ListTile(
-              title: Text(getDisplayText(option)),
-              leading: isSelected 
-                ? Icon(
-                    Icons.check_circle,
-                    color: Theme.of(context).colorScheme.primary,
-                  )
-                : const Icon(Icons.radio_button_unchecked),
-              onTap: () {
-                Navigator.of(context).pop();
-                onSelected?.call(option);
-              },
-            );
-          },
+    final theme = Theme.of(context);
+    final size = MediaQuery.of(context).size;
+    
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      insetPadding: const EdgeInsets.all(24),
+      child: GlassmorphismContainer(
+        level: GlassLevel.floating,
+        width: size.width * 0.85,
+        borderRadius: BorderRadius.circular(TypographyConstants.dialogRadius),
+        glassTint: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+        borderColor: theme.colorScheme.primary.withOpacity(0.2),
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              title,
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onSurface,
+              ),
+            ),
+            const SizedBox(height: 16),
+            ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: size.height * 0.4,
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: options.map((option) {
+                    final isSelected = selectedValue == option;
+                    return GlassmorphismContainer(
+                      level: isSelected ? GlassLevel.interactive : GlassLevel.content,
+                      margin: const EdgeInsets.only(bottom: 8),
+                      borderRadius: BorderRadius.circular(8),
+                      glassTint: isSelected ? theme.colorScheme.primary.withOpacity(0.1) : null,
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.of(context).pop();
+                            onSelected?.call(option);
+                          },
+                          borderRadius: BorderRadius.circular(8),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  isSelected 
+                                      ? Icons.check_circle
+                                      : Icons.radio_button_unchecked,
+                                  color: isSelected 
+                                      ? theme.colorScheme.primary
+                                      : theme.colorScheme.onSurfaceVariant,
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: Text(
+                                    getDisplayText(option),
+                                    style: theme.textTheme.bodyLarge?.copyWith(
+                                      color: isSelected 
+                                          ? theme.colorScheme.primary
+                                          : theme.colorScheme.onSurface,
+                                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            GlassmorphismContainer(
+              level: GlassLevel.interactive,
+              borderRadius: BorderRadius.circular(8),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () => Navigator.of(context).pop(),
+                  borderRadius: BorderRadius.circular(8),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    child: Center(
+                      child: Text(
+                        'Cancel',
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          color: theme.colorScheme.onSurface,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
-        ),
-      ],
     );
   }
 }
@@ -404,17 +698,52 @@ class LoadingDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(title),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const CircularProgressIndicator(),
-          if (message != null) ...[
-            const SizedBox(height: 16),
-            Text(message!),
+    final theme = Theme.of(context);
+    final size = MediaQuery.of(context).size;
+    
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      insetPadding: const EdgeInsets.all(24),
+      child: GlassmorphismContainer(
+        level: GlassLevel.floating,
+        width: size.width * 0.7,
+        borderRadius: BorderRadius.circular(TypographyConstants.dialogRadius),
+        glassTint: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+        borderColor: theme.colorScheme.primary.withOpacity(0.2),
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              title,
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onSurface,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            GlassmorphismContainer(
+              level: GlassLevel.content,
+              width: 64,
+              height: 64,
+              borderRadius: BorderRadius.circular(32),
+              child: const Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+            if (message != null) ...[
+              const SizedBox(height: 16),
+              Text(
+                message!,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }

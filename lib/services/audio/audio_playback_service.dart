@@ -14,14 +14,22 @@ class AudioPlaybackService {
   /// Initialize the audio playback service
   Future<bool> initialize() async {
     try {
+      if (kDebugMode) {
+        print('AudioPlaybackService: Attempting to initialize...');
+      }
       _player = FlutterSoundPlayer();
       await _player!.openPlayer();
       _isInitialized = true;
+      if (kDebugMode) {
+        print('AudioPlaybackService: Successfully initialized');
+      }
       return true;
     } catch (e) {
       if (kDebugMode) {
-        print('Failed to initialize audio player: $e');
+        print('AudioPlaybackService: Failed to initialize, continuing without audio support: $e');
       }
+      _player = null;
+      _isInitialized = false;
       return false;
     }
   }
@@ -42,7 +50,10 @@ class AudioPlaybackService {
     VoidCallback? onComplete,
   }) async {
     if (!_isInitialized || _player == null) {
-      throw Exception('Audio player not initialized');
+      if (kDebugMode) {
+        print('AudioPlaybackService: Cannot play audio - service not initialized');
+      }
+      return;
     }
 
     if (_isPlaying) {

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer' as developer;
 
 import 'package:drift/drift.dart';
 
@@ -66,7 +67,7 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
         // Insert task-tag relationships
         for (final tag in task.tags) {
           if (tag.isEmpty) {
-            print('Warning: Skipping empty tag ID for task ${task.id}');
+            developer.log('Warning: Skipping empty tag ID for task ${task.id}', name: 'TaskDao', level: 900);
             continue;
           }
           try {
@@ -75,7 +76,7 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
               tagId: tag,
             ));
           } catch (e) {
-            print('Warning: Failed to insert task-tag relationship (task: ${task.id}, tag: $tag): $e');
+            developer.log('Warning: Failed to insert task-tag relationship (task: ${task.id}, tag: $tag): $e', name: 'TaskDao', level: 900);
             // Continue with other tags
           }
         }
@@ -83,7 +84,7 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
         // Insert task dependencies
         for (final dependencyId in task.dependencies) {
           if (dependencyId.isEmpty || dependencyId == task.id) {
-            print('Warning: Skipping invalid dependency ID: $dependencyId for task ${task.id}');
+            developer.log('Warning: Skipping invalid dependency ID: $dependencyId for task ${task.id}', name: 'TaskDao', level: 900);
             continue;
           }
           try {
@@ -92,13 +93,13 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
               prerequisiteTaskId: dependencyId,
             ));
           } catch (e) {
-            print('Warning: Failed to insert task dependency (dependent: ${task.id}, prerequisite: $dependencyId): $e');
+            developer.log('Warning: Failed to insert task dependency (dependent: ${task.id}, prerequisite: $dependencyId): $e', name: 'TaskDao', level: 900);
             // Continue with other dependencies
           }
         }
       });
     } catch (e) {
-      print('Error creating task ${task.id}: $e');
+      developer.log('Error creating task ${task.id}: $e', name: 'TaskDao', level: 1000);
       rethrow; // Re-throw to let caller handle
     }
   }
@@ -168,7 +169,7 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
         await (delete(taskTags)..where((tt) => tt.taskId.equals(task.id))).go();
         for (final tag in updatedTask.tags) {
           if (tag.isEmpty) {
-            print('Warning: Skipping empty tag ID for task ${task.id}');
+            developer.log('Warning: Skipping empty tag ID for task ${task.id}', name: 'TaskDao', level: 900);
             continue;
           }
           try {
@@ -177,7 +178,7 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
               tagId: tag,
             ));
           } catch (e) {
-            print('Warning: Failed to update task-tag relationship (task: ${task.id}, tag: $tag): $e');
+            developer.log('Warning: Failed to update task-tag relationship (task: ${task.id}, tag: $tag): $e', name: 'TaskDao', level: 900);
             // Continue with other tags
           }
         }
@@ -186,7 +187,7 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
         await (delete(taskDependencies)..where((td) => td.dependentTaskId.equals(task.id))).go();
         for (final dependencyId in updatedTask.dependencies) {
           if (dependencyId.isEmpty || dependencyId == task.id) {
-            print('Warning: Skipping invalid dependency ID: $dependencyId for task ${task.id}');
+            developer.log('Warning: Skipping invalid dependency ID: $dependencyId for task ${task.id}', name: 'TaskDao', level: 900);
             continue;
           }
           try {
@@ -195,7 +196,7 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
               prerequisiteTaskId: dependencyId,
             ));
           } catch (e) {
-            print('Warning: Failed to update task dependency (dependent: ${task.id}, prerequisite: $dependencyId): $e');
+            developer.log('Warning: Failed to update task dependency (dependent: ${task.id}, prerequisite: $dependencyId): $e', name: 'TaskDao', level: 900);
             // Continue with other dependencies
           }
         }
@@ -203,7 +204,7 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
     } on ConcurrentModificationError {
       rethrow; // Re-throw concurrent modification errors as-is
     } catch (e) {
-      print('Error updating task ${task.id}: $e');
+      developer.log('Error updating task ${task.id}: $e', name: 'TaskDao', level: 1000);
       rethrow; // Re-throw to let caller handle
     }
   }
@@ -221,11 +222,11 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
       } on ConcurrentModificationError catch (e) {
         attempts++;
         if (attempts >= maxRetries) {
-          print('Failed to update task ${task.id} after $maxRetries attempts: $e');
+          developer.log('Failed to update task ${task.id} after $maxRetries attempts: $e', name: 'TaskDao', level: 1000);
           rethrow;
         }
         
-        print('Concurrent modification detected for task ${task.id}, retry $attempts/$maxRetries');
+        developer.log('Concurrent modification detected for task ${task.id}, retry $attempts/$maxRetries', name: 'TaskDao', level: 900);
         
         // Wait before retry with exponential backoff
         await Future.delayed(Duration(milliseconds: 100 * attempts));
@@ -239,7 +240,7 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
         // Update the task with the latest timestamp
         task = task.copyWith(updatedAt: latestTask.updatedAt);
       } catch (e) {
-        print('Error during safe task update for ${task.id}: $e');
+        developer.log('Error during safe task update for ${task.id}: $e', name: 'TaskDao', level: 1000);
         rethrow;
       }
     }
@@ -439,11 +440,11 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
         if (decoded is Map) {
           metadata = Map<String, dynamic>.from(decoded);
         } else {
-          print('Warning: Task ${taskRow.id} metadata is not a valid map, using empty metadata');
+          developer.log('Warning: Task ${taskRow.id} metadata is not a valid map, using empty metadata', name: 'TaskDao', level: 900);
         }
       }
     } catch (e) {
-      print('Warning: Failed to parse metadata for task ${taskRow.id}: $e, using empty metadata');
+      developer.log('Warning: Failed to parse metadata for task ${taskRow.id}: $e, using empty metadata', name: 'TaskDao', level: 900);
     }
 
     // Parse recurrence pattern with error handling
@@ -458,10 +459,10 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
             if (decoded is List) {
               daysOfWeek = decoded.whereType<int>().toList();
             } else {
-              print('Warning: Task ${taskRow.id} recurrence days of week is not a valid list, ignoring');
+              developer.log('Warning: Task ${taskRow.id} recurrence days of week is not a valid list, ignoring', name: 'TaskDao', level: 900);
             }
           } catch (e) {
-            print('Warning: Failed to parse recurrence days of week for task ${taskRow.id}: $e');
+            developer.log('Warning: Failed to parse recurrence days of week for task ${taskRow.id}: $e', name: 'TaskDao', level: 900);
           }
         }
 
@@ -474,7 +475,7 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
         );
       }
     } catch (e) {
-      print('Warning: Failed to parse recurrence pattern for task ${taskRow.id}: $e, ignoring recurrence');
+      developer.log('Warning: Failed to parse recurrence pattern for task ${taskRow.id}: $e, ignoring recurrence', name: 'TaskDao', level: 900);
     }
 
     return TaskModel(
@@ -522,7 +523,7 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
     // Validate dates
     if (task.dueDate != null && task.completedAt != null) {
       if (task.completedAt!.isAfter(task.dueDate!)) {
-        print('Warning: Task ${task.id} completed after due date');
+        developer.log('Warning: Task ${task.id} completed after due date', name: 'TaskDao', level: 900);
       }
     }
     if (task.createdAt.isAfter(DateTime.now().add(const Duration(minutes: 1)))) {
@@ -589,10 +590,10 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
 
     // Validate status transitions
     if (task.status == TaskStatus.completed && task.completedAt == null) {
-      print('Warning: Task ${task.id} marked as completed but has no completion date');
+      developer.log('Warning: Task ${task.id} marked as completed but has no completion date', name: 'TaskDao', level: 900);
     }
     if (task.status != TaskStatus.completed && task.completedAt != null) {
-      print('Warning: Task ${task.id} has completion date but is not marked as completed');
+      developer.log('Warning: Task ${task.id} has completion date but is not marked as completed', name: 'TaskDao', level: 900);
     }
 
     // Validate metadata size
@@ -701,11 +702,11 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
         case 3:
           return TaskStatus.cancelled;
         default:
-          print('Warning: Unknown TaskStatus value: $value, defaulting to pending');
+          developer.log('Warning: Unknown TaskStatus value: $value, defaulting to pending', name: 'TaskDao', level: 900);
           return TaskStatus.pending;
       }
     } catch (e) {
-      print('Error converting int to TaskStatus (value: $value): $e');
+      developer.log('Error converting int to TaskStatus (value: $value): $e', name: 'TaskDao', level: 1000);
       return TaskStatus.pending;
     }
   }
@@ -735,11 +736,11 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
         case 3:
           return TaskPriority.urgent;
         default:
-          print('Warning: Unknown TaskPriority value: $value, defaulting to medium');
+          developer.log('Warning: Unknown TaskPriority value: $value, defaulting to medium', name: 'TaskDao', level: 900);
           return TaskPriority.medium;
       }
     } catch (e) {
-      print('Error converting int to TaskPriority (value: $value): $e');
+      developer.log('Error converting int to TaskPriority (value: $value): $e', name: 'TaskDao', level: 1000);
       return TaskPriority.medium;
     }
   }
@@ -777,11 +778,11 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
         case 5:
           return RecurrenceType.custom;
         default:
-          print('Warning: Unknown RecurrenceType value: $value, defaulting to none');
+          developer.log('Warning: Unknown RecurrenceType value: $value, defaulting to none', name: 'TaskDao', level: 900);
           return RecurrenceType.none;
       }
     } catch (e) {
-      print('Error converting int to RecurrenceType (value: $value): $e');
+      developer.log('Error converting int to RecurrenceType (value: $value): $e', name: 'TaskDao', level: 1000);
       return RecurrenceType.none;
     }
   }
@@ -1006,7 +1007,7 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
           taskModels.add(taskModel);
         } catch (e) {
           // Log the error but continue processing other tasks
-          print('Warning: Failed to convert task row to model (ID: ${taskRow.id}): $e');
+          developer.log('Warning: Failed to convert task row to model (ID: ${taskRow.id}): $e', name: 'TaskDao', level: 900);
           continue;
         }
       }
@@ -1025,7 +1026,7 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
 
       return filteredTasks;
     } catch (e) {
-      print('Error in getTasksWithFilter: $e');
+      developer.log('Error in getTasksWithFilter: $e', name: 'TaskDao', level: 1000);
       // Return empty list on error to prevent app crashes
       return <TaskModel>[];
     }

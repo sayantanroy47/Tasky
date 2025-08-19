@@ -63,9 +63,9 @@ final todayTasksProvider = StreamProvider.autoDispose<List<TaskModel>>((ref) {
 
 /// Provider for tasks created today (for better user feedback)
 final tasksCreatedTodayProvider = StreamProvider<List<TaskModel>>((ref) {
-  final allTasksStream = ref.watch(tasksProvider.stream);
+  final repository = ref.watch(taskRepositoryProvider);
   
-  return allTasksStream.asyncMap((allTasks) async {
+  return repository.watchAllTasks().map((allTasks) {
     final today = DateTime.now();
     final startOfDay = DateTime(today.year, today.month, today.day);
     final endOfDay = startOfDay.add(const Duration(days: 1));
@@ -112,7 +112,223 @@ final filteredTasksProvider = FutureProvider.autoDispose<List<TaskModel>>((ref) 
 /// Provider for search query
 final searchQueryProvider = StateProvider.autoDispose<String>((ref) => '');
 
-/// Provider for searched tasks
+/// Enhanced search configuration
+class EnhancedSearchConfig {
+  final String query;
+  final List<String> tags;
+  final TaskPriority? priority;
+  final TaskStatus? status;
+  final DateTime? dueDateFrom;
+  final DateTime? dueDateTo;
+  final bool includeCompleted;
+  final SearchSortBy sortBy;
+  
+  const EnhancedSearchConfig({
+    this.query = '',
+    this.tags = const [],
+    this.priority,
+    this.status,
+    this.dueDateFrom,
+    this.dueDateTo,
+    this.includeCompleted = true,
+    this.sortBy = SearchSortBy.relevance,
+  });
+  
+  EnhancedSearchConfig copyWith({
+    String? query,
+    List<String>? tags,
+    TaskPriority? priority,
+    TaskStatus? status,
+    DateTime? dueDateFrom,
+    DateTime? dueDateTo,
+    bool? includeCompleted,
+    SearchSortBy? sortBy,
+  }) {
+    return EnhancedSearchConfig(
+      query: query ?? this.query,
+      tags: tags ?? this.tags,
+      priority: priority ?? this.priority,
+      status: status ?? this.status,
+      dueDateFrom: dueDateFrom ?? this.dueDateFrom,
+      dueDateTo: dueDateTo ?? this.dueDateTo,
+      includeCompleted: includeCompleted ?? this.includeCompleted,
+      sortBy: sortBy ?? this.sortBy,
+    );
+  }
+  
+  bool get hasActiveFilters => 
+    query.isNotEmpty || 
+    tags.isNotEmpty || 
+    priority != null || 
+    status != null || 
+    dueDateFrom != null || 
+    dueDateTo != null ||
+    !includeCompleted;
+}
+
+enum SearchSortBy {
+  relevance,
+  dateCreated,
+  dateDue,
+  priority,
+  alphabetical,
+}
+
+/// Provider for enhanced search configuration
+final enhancedSearchConfigProvider = StateProvider<EnhancedSearchConfig>((ref) => const EnhancedSearchConfig());
+
+/// Provider for search history (recent searches)
+final searchHistoryProvider = StateNotifierProvider<SearchHistoryNotifier, List<String>>((ref) {
+  return SearchHistoryNotifier();
+});
+
+/// Search history notifier
+class SearchHistoryNotifier extends StateNotifier<List<String>> {
+  SearchHistoryNotifier() : super([]);
+  
+  void addSearch(String query) {
+    if (query.trim().isEmpty) return;
+    
+    final trimmedQuery = query.trim();
+    final updatedHistory = [
+      trimmedQuery,
+      ...state.where((q) => q != trimmedQuery),
+    ].take(10).toList(); // Keep only last 10 searches
+    
+    state = updatedHistory;
+  }
+  
+  void removeSearch(String query) {
+    state = state.where((q) => q != query).toList();
+  }
+  
+  void clearHistory() {
+    state = [];
+  }
+}
+
+/// Provider for search suggestions based on existing task data
+final searchSuggestionsProvider = FutureProvider.family.autoDispose<List<String>, String>((ref, query) async {
+  if (query.length < 2) return [];
+  
+  final repository = ref.watch(taskRepositoryProvider);
+  final allTasks = await repository.getAllTasks();
+  final suggestions = <String>{};
+  
+  final lowercaseQuery = query.toLowerCase();
+  
+  // Add matching task titles
+  for (final task in allTasks) {
+    if (task.title.toLowerCase().contains(lowercaseQuery)) {
+      suggestions.add(task.title);
+    }
+    
+    // Add matching tags
+    for (final tag in task.tags) {
+      if (tag.toLowerCase().contains(lowercaseQuery)) {
+        suggestions.add(tag);
+      }
+    }
+    
+    // Add matching words from descriptions
+    if (task.description != null) {
+      final words = task.description!.toLowerCase().split(RegExp(r'\s+'));
+      for (final word in words) {
+        if (word.contains(lowercaseQuery) && word.length > 2) {
+          suggestions.add(word);
+        }
+      }
+    }
+  }
+  
+  return suggestions.toList()..sort();
+});
+
+/// Provider for enhanced searched tasks
+final enhancedSearchedTasksProvider = FutureProvider.autoDispose<List<TaskModel>>((ref) async {
+  final repository = ref.watch(taskRepositoryProvider);
+  final config = ref.watch(enhancedSearchConfigProvider);
+  
+  if (!config.hasActiveFilters) {
+    return repository.getAllTasks();
+  }
+  
+  List<TaskModel> tasks;
+  
+  // Start with basic search if query exists
+  if (config.query.isNotEmpty) {
+    tasks = await repository.searchTasks(config.query);
+  } else {
+    tasks = await repository.getAllTasks();
+  }
+  
+  // Apply additional filters
+  tasks = tasks.where((task) {
+    // Priority filter
+    if (config.priority != null && task.priority != config.priority) {
+      return false;
+    }
+    
+    // Status filter
+    if (config.status != null && task.status != config.status) {
+      return false;
+    }
+    
+    // Include completed filter
+    if (!config.includeCompleted && task.isCompleted) {
+      return false;
+    }
+    
+    // Tags filter
+    if (config.tags.isNotEmpty) {
+      final hasAnyTag = config.tags.any((tag) => task.tags.contains(tag));
+      if (!hasAnyTag) return false;
+    }
+    
+    // Due date range filter
+    if (config.dueDateFrom != null && task.dueDate != null) {
+      if (task.dueDate!.isBefore(config.dueDateFrom!)) {
+        return false;
+      }
+    }
+    
+    if (config.dueDateTo != null && task.dueDate != null) {
+      if (task.dueDate!.isAfter(config.dueDateTo!)) {
+        return false;
+      }
+    }
+    
+    return true;
+  }).toList();
+  
+  // Apply sorting
+  switch (config.sortBy) {
+    case SearchSortBy.relevance:
+      // Default relevance sorting from repository
+      break;
+    case SearchSortBy.dateCreated:
+      tasks.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      break;
+    case SearchSortBy.dateDue:
+      tasks.sort((a, b) {
+        if (a.dueDate == null && b.dueDate == null) return 0;
+        if (a.dueDate == null) return 1;
+        if (b.dueDate == null) return -1;
+        return a.dueDate!.compareTo(b.dueDate!);
+      });
+      break;
+    case SearchSortBy.priority:
+      tasks.sort((a, b) => b.priority.index.compareTo(a.priority.index));
+      break;
+    case SearchSortBy.alphabetical:
+      tasks.sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
+      break;
+  }
+  
+  return tasks;
+});
+
+/// Provider for searched tasks (maintaining backward compatibility)
 final searchedTasksProvider = FutureProvider.autoDispose<List<TaskModel>>((ref) async {
   final repository = ref.watch(taskRepositoryProvider);
   final query = ref.watch(searchQueryProvider);
@@ -122,6 +338,19 @@ final searchedTasksProvider = FutureProvider.autoDispose<List<TaskModel>>((ref) 
   }
   
   return repository.searchTasks(query);
+});
+
+/// Provider for available search tags
+final availableSearchTagsProvider = FutureProvider.autoDispose<List<String>>((ref) async {
+  final repository = ref.watch(taskRepositoryProvider);
+  final allTasks = await repository.getAllTasks();
+  
+  final tags = <String>{};
+  for (final task in allTasks) {
+    tags.addAll(task.tags);
+  }
+  
+  return tags.toList()..sort();
 });
 
 // TaskOperations provider moved to task_provider.dart to avoid conflicts
@@ -341,10 +570,9 @@ final transcriptionServiceInfoProvider = FutureProvider((ref) async {
 
 /// State synchronization helper that ensures cache and live data consistency
 class StateSynchronizationHelper {
-  final TaskRepository _repository;
   final TaskCacheManager _cache;
   
-  StateSynchronizationHelper(this._repository, this._cache);
+  StateSynchronizationHelper(this._cache);
   
   /// Ensures a cached list is up-to-date with latest data
   Future<List<TaskModel>> ensureListSync(String cacheKey, Future<List<TaskModel>> Function() fetcher) async {
@@ -375,15 +603,8 @@ class StateSynchronizationHelper {
   }
 }
 
-/// Provider for state synchronization helper
-final stateSyncHelperProvider = Provider<StateSynchronizationHelper>((ref) {
-  final repository = ref.watch(taskRepositoryProvider);
-  final cache = ref.watch(cacheStatsProvider); // This gets us access to the cache
-  
-  // Note: In a real implementation, we'd need to access the cache manager directly
-  // For now, this serves as a pattern for state synchronization
-  throw UnimplementedError('StateSynchronizationHelper needs direct cache access');
-});
+// StateSynchronizationHelper provider removed due to implementation complexity
+// Use individual providers for state management instead
 
 // TaskOperations class moved to task_provider.dart to avoid conflicts
 // The consolidated class includes both dependency management and bulk operations

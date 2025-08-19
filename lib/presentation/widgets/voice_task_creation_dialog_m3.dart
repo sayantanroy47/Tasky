@@ -1,37 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/design_system/design_tokens.dart' hide BorderRadius;
 import 'package:speech_to_text/speech_to_text.dart';
-import '../../domain/entities/task_model.dart';
-import '../../domain/entities/recurrence_pattern.dart';
-import '../../domain/models/enums.dart';
-import '../../services/speech/speech_service_impl.dart';
-import '../../services/ai/composite_ai_task_parser.dart';
-import '../providers/task_provider.dart' show taskOperationsProvider;
-import '../providers/audio_providers.dart';
-import '../../services/audio/audio_file_manager.dart';
 import 'glassmorphism_container.dart';
-import '../../core/theme/typography_constants.dart';
 import '../../core/theme/material3/motion_system.dart';
-import 'voice_visualization_painter.dart';
-import 'recurring_task_scheduling_widget.dart';
+import '../../services/audio/audio_recording_service.dart';
 import 'dart:async';
-import 'dart:io';
-import 'theme_aware_dialog_components.dart';
 
-/// Enhanced Voice Task Creation Dialog with M3 design
-class VoiceTaskCreationDialog extends ConsumerStatefulWidget {
-  const VoiceTaskCreationDialog({super.key});
+/// Voice Task Creation Dialog with transcription - M3 Design
+class VoiceTaskCreationDialogM3 extends ConsumerStatefulWidget {
+  const VoiceTaskCreationDialogM3({super.key});
   
   @override
-  ConsumerState<VoiceTaskCreationDialog> createState() => _VoiceTaskCreationDialogState();
+  ConsumerState<VoiceTaskCreationDialogM3> createState() => _VoiceTaskCreationDialogM3State();
 }
 
-class _VoiceTaskCreationDialogState extends ConsumerState<VoiceTaskCreationDialog>
+class _VoiceTaskCreationDialogM3State extends ConsumerState<VoiceTaskCreationDialogM3>
     with TickerProviderStateMixin {
-  final SpeechServiceImpl _speechService = SpeechServiceImpl();
-  final CompositeAITaskParser _aiParser = CompositeAITaskParser();
   
   late AnimationController _fadeController;
   late AnimationController _scaleController;
@@ -42,15 +26,22 @@ class _VoiceTaskCreationDialogState extends ConsumerState<VoiceTaskCreationDialo
   
   bool _isListening = false;
   bool _isProcessing = false;
-  bool _isInitialized = false;
+  bool _hasRecording = false;
+  String _statusMessage = 'Tap to start voice recognition';
   String _transcribedText = '';
-  String _statusMessage = 'Tap the microphone to start';
-  TaskModel? _parsedTask;
+  String? _audioFilePath;
+  Duration _recordingDuration = Duration.zero;
   
-  Timer? _silenceTimer;
+  // Dual stream services
+  late SpeechToText _speechToText;
+  late AudioRecordingService _audioRecorder;
+  bool _speechEnabled = false;
+  bool _audioEnabled = false;
   
-  // Recurring task scheduling
-  RecurrencePattern? _recurrencePattern;
+  // Service states for fallback handling
+  bool _speechRecognitionActive = false;
+  bool _audioRecordingActive = false;
+  
   
   @override
   void initState() {
@@ -67,7 +58,7 @@ class _VoiceTaskCreationDialogState extends ConsumerState<VoiceTaskCreationDialo
     );
     
     _pulseController = AnimationController(
-      duration: const Duration(seconds: 1),
+      duration: const Duration(milliseconds: 1000),
       vsync: this,
     );
     
@@ -88,500 +79,601 @@ class _VoiceTaskCreationDialogState extends ConsumerState<VoiceTaskCreationDialo
     ));
     
     _pulseAnimation = Tween<double>(
-      begin: 1.0,
+      begin: 0.8,
       end: 1.2,
     ).animate(CurvedAnimation(
       parent: _pulseController,
       curve: Curves.easeInOut,
     ));
     
-    _initializeSpeech();
+    _initializeServices();
     _fadeController.forward();
     _scaleController.forward();
   }
   
-  Future<void> _initializeSpeech() async {
+  Future<void> _initializeServices() async {
+    debugPrint('🎤 Initializing dual stream services...');
+    
+    // Initialize speech recognition
     try {
-      _isInitialized = await _speechService.initialize();
-      if (_isInitialized) {
-        setState(() {
-          _statusMessage = 'Ready to listen';
-        });
-      } else {
-        setState(() {
-          _statusMessage = 'Speech recognition not available';
-        });
-      }
+      _speechToText = SpeechToText();
+      _speechEnabled = await _speechToText.initialize(
+        onStatus: _onSpeechStatus,
+        onError: _onSpeechError,
+        debugLogging: true,
+      );
+      debugPrint('🎤 Speech recognition enabled: $_speechEnabled');
     } catch (e) {
+      debugPrint('🎤 Speech recognition initialization failed: $e');
+      _speechEnabled = false;
+    }
+    
+    // Initialize audio recording
+    try {
+      _audioRecorder = AudioRecordingService();
+      _audioEnabled = await _audioRecorder.initialize();
+      debugPrint('🎵 Audio recording enabled: $_audioEnabled');
+    } catch (e) {
+      debugPrint('🎵 Audio recording initialization failed: $e');
+      _audioEnabled = false;
+    }
+    
+    if (mounted) {
       setState(() {
-        _statusMessage = 'Error initializing speech: $e';
+        if (!_speechEnabled && !_audioEnabled) {
+          _statusMessage = 'Voice services not available';
+        } else if (!_speechEnabled) {
+          _statusMessage = 'Only audio recording available (no transcription)';
+        } else if (!_audioEnabled) {
+          _statusMessage = 'Only speech recognition available (no audio file)';
+        } else {
+          _statusMessage = 'Tap to start dual stream recording';
+        }
       });
     }
   }
   
-  @override
-  void dispose() {
-    _fadeController.dispose();
-    _scaleController.dispose();
-    _pulseController.dispose();
-    _silenceTimer?.cancel();
-    super.dispose();
-  }
-  
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final size = MediaQuery.of(context).size;
-    
-    return FadeTransition(
-      opacity: _fadeAnimation,
-      child: ScaleTransition(
-        scale: _scaleAnimation,
-        child: ThemeAwareTaskDialog(
-          title: 'Voice Task Creation',
-          subtitle: 'Speak to create your task',
-          icon: Icons.mic,
-          onBack: () => Navigator.of(context).pop(),
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                
-                // Sound wave visualization
-                Container(
-                  height: 150,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        theme.colorScheme.surfaceContainerHighest.withOpacity(0.2),
-                        theme.colorScheme.surfaceContainerHighest.withOpacity(0.1),
-                      ],
-                    ),
-                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                    border: Border.all(
-                      color: theme.colorScheme.outline.withOpacity(0.2),
-                    ),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                    child: AnimatedSoundWave(
-                      isRecording: _isListening,
-                      colors: [
-                        theme.colorScheme.primary,
-                        theme.colorScheme.secondary,
-                        theme.colorScheme.tertiary,
-                      ],
-                      height: 150,
-                      style: WaveStyle.linear,
-                    ),
-                  ),
-                ),
-                
-                const SizedBox(height: 24),
-                
-                // Microphone button
-                GestureDetector(
-                  onTap: _toggleListening,
-                  child: AnimatedBuilder(
-                    animation: _pulseAnimation,
-                    builder: (context, child) {
-                      return Transform.scale(
-                        scale: _isListening ? _pulseAnimation.value : 1.0,
-                        child: Container(
-                          width: 80,
-                          height: 80,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: _isListening
-                                ? [
-                                    theme.colorScheme.error,
-                                    theme.colorScheme.error.withOpacity(0.7),
-                                  ]
-                                : [
-                                    theme.colorScheme.primary,
-                                    theme.colorScheme.secondary,
-                                  ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: (_isListening
-                                  ? theme.colorScheme.error
-                                  : theme.colorScheme.primary
-                                ).withOpacity(0.4),
-                                blurRadius: 20,
-                                spreadRadius: 5,
-                              ),
-                            ],
-                          ),
-                          child: Icon(
-                            _isListening ? Icons.stop : Icons.mic,
-                            color: Colors.white,
-                            size: 36,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                
-                const SizedBox(height: 16),
-                
-                // Status message
-                Text(
-                  _statusMessage,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                
-                const SizedBox(height: 24),
-                
-                // Transcribed text
-                if (_transcribedText.isNotEmpty)
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
-                      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                      border: Border.all(
-                        color: theme.colorScheme.outline.withOpacity(0.2),
-                      ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.text_fields,
-                              size: 16,
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'Transcription',
-                              style: theme.textTheme.labelMedium?.copyWith(
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          _transcribedText,
-                          style: theme.textTheme.bodyLarge,
-                        ),
-                      ],
-                    ),
-                  ),
-                
-                // Parsed task preview
-                if (_parsedTask != null) ...[
-                  const SizedBox(height: 16),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
-                          theme.colorScheme.surfaceContainerHighest.withOpacity(0.2),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                      border: Border.all(
-                        color: theme.colorScheme.primary.withOpacity(0.3),
-                      ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.auto_awesome,
-                              size: 16,
-                              color: theme.colorScheme.primary,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              'AI Parsed Task',
-                              style: theme.textTheme.labelMedium?.copyWith(
-                                color: theme.colorScheme.primary,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          _parsedTask!.title,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        if (_parsedTask!.description != null) ...[
-                          const SizedBox(height: 4),
-                          Text(
-                            _parsedTask!.description!,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                        if (_parsedTask!.dueDate != null) ...[
-                          const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.schedule,
-                                size: 16,
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                'Due: ${_formatDate(_parsedTask!.dueDate!)}',
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                        if (_parsedTask!.tags.isNotEmpty) ...[
-                          const SizedBox(height: 8),
-                          Wrap(
-                            spacing: 8,
-                            children: _parsedTask!.tags.map((tag) => 
-                              Chip(
-                                label: Text(
-                                  '#$tag',
-                                  style: theme.textTheme.bodySmall,
-                                ),
-                                backgroundColor: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
-                                labelStyle: theme.textTheme.bodySmall?.copyWith(
-                                  color: theme.colorScheme.onPrimaryContainer,
-                                ),
-                                padding: EdgeInsets.zero,
-                                visualDensity: VisualDensity.compact,
-                              ),
-                            ).toList(),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                ],
-                
-                // Universal Recurring Task Scheduling Widget (only show if task is parsed)
-                if (_parsedTask != null) ...[
-                  const SizedBox(height: 24),
-                  RecurringTaskSchedulingWidget(
-                    onRecurrenceChanged: (RecurrencePattern? pattern) {
-                      setState(() {
-                        _recurrencePattern = pattern;
-                      });
-                    },
-                    initiallyEnabled: _recurrencePattern != null,
-                    initialRecurrence: _recurrencePattern,
-                  ),
-                ],
-                
-                const SizedBox(height: 24),
-                
-                // Action buttons - Fixed layout to prevent constraint issues
-                if (_parsedTask != null || _isProcessing)
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      // Continue to Edit button (primary action for voice-to-text flow)
-                      RoundedGlassButton(
-                        width: double.infinity,
-                        label: _isProcessing ? 'Processing...' : 'Continue to Edit',
-                        onPressed: _isProcessing ? null : _continueToEdit,
-                        icon: _isProcessing ? null : Icons.edit,
-                        isPrimary: true,
-                        isLoading: _isProcessing,
-                      ),
-                      
-                      const SizedBox(height: 12),
-                      
-                      // Row for secondary actions
-                      Row(
-                        children: [
-                          // Try Again button - reset and start over
-                          Expanded(
-                            child: RoundedGlassButton(
-                              label: 'Try Again',
-                              onPressed: _isProcessing ? null : _reset,
-                              icon: Icons.refresh,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-        ),
-      ),
-    );
-  }
-  
-  void _toggleListening() async {
-    if (!_isInitialized) {
+  void _onSpeechStatus(String status) {
+    if (mounted) {
       setState(() {
-        _statusMessage = 'Speech recognition not available';
+        _isListening = status == 'listening';
+        if (status == 'listening') {
+          _statusMessage = 'Listening... Speak now';
+          _pulseController.repeat(reverse: true);
+        } else if (status == 'notListening') {
+          if (_hasRecording) {
+            _statusMessage = 'Tap create task or record again';
+          } else {
+            _statusMessage = 'Tap to start voice recognition';
+          }
+          _pulseController.stop();
+          _pulseController.reset();
+        } else if (status == 'done') {
+          _statusMessage = _hasRecording ? 'Processing complete!' : 'No speech detected';
+        }
       });
-      return;
     }
-    
-    if (_isListening) {
-      await _stopListening();
-    } else {
-      await _startListening();
+  }
+  
+  void _onSpeechError(dynamic error) {
+    if (mounted) {
+      setState(() {
+        _isListening = false;
+        _statusMessage = 'Error: ${error.toString()}';
+        _pulseController.stop();
+        _pulseController.reset();
+      });
     }
   }
   
   Future<void> _startListening() async {
-    HapticFeedback.mediumImpact();
-    _pulseController.repeat(reverse: true);
+    if (!_speechEnabled && !_audioEnabled) return;
     
-    setState(() {
-      _isListening = true;
-      _statusMessage = 'Listening... Speak now';
-      _transcribedText = '';
-      _parsedTask = null;
-    });
-    
-    await _speechService.startListening(
-      onResult: (result) {
-        setState(() {
-          _transcribedText = result;
-        });
-        
-        // Reset silence timer
-        _silenceTimer?.cancel();
-        _silenceTimer = Timer(const Duration(seconds: 2), () {
-          if (_isListening) {
-            _stopListening();
+    try {
+      debugPrint('🎯 Starting dual stream recording...');
+      
+      // Clear previous data
+      setState(() {
+        _transcribedText = '';
+        _hasRecording = false;
+        _isListening = true;
+        _audioFilePath = null;
+        _recordingDuration = Duration.zero;
+        _speechRecognitionActive = false;
+        _audioRecordingActive = false;
+        _statusMessage = 'Starting dual stream recording...';
+      });
+      
+      // STEP 1: Start audio recording first (if available)
+      if (_audioEnabled) {
+        debugPrint('🎵 Step 1: Starting audio recording...');
+        try {
+          _audioFilePath = await _audioRecorder.startRecording(
+            onDurationUpdate: (duration) {
+              if (mounted) {
+                setState(() {
+                  _recordingDuration = duration;
+                });
+              }
+            },
+            onMaxDurationReached: () {
+              debugPrint('🎵 Max recording duration reached, stopping...');
+              _stopListening();
+            },
+          );
+          
+          _audioRecordingActive = true;
+          debugPrint('🎵 Audio recording started: $_audioFilePath');
+          
+          if (mounted) {
+            setState(() {
+              _statusMessage = 'Audio recording started, preparing speech recognition...';
+            });
           }
-        });
-      },
-      onError: (error) {
-        setState(() {
-          _statusMessage = 'Error: $error';
-          _isListening = false;
-        });
-        _pulseController.stop();
-      },
-    );
+        } catch (e) {
+          debugPrint('🎵 Audio recording failed: $e');
+          // Continue with speech-only fallback
+        }
+      }
+      
+      // STEP 2: Wait 150ms to avoid microphone resource conflicts
+      await Future.delayed(const Duration(milliseconds: 150));
+      
+      // STEP 3: Start speech recognition (if available)
+      if (_speechEnabled) {
+        debugPrint('🎤 Step 2: Starting speech recognition...');
+        try {
+          await _speechToText.listen(
+            onResult: _onSpeechResult,
+            listenFor: const Duration(seconds: 60),
+            pauseFor: const Duration(seconds: 10),
+            listenOptions: SpeechListenOptions(
+              partialResults: true,
+              cancelOnError: true,
+              listenMode: ListenMode.confirmation,
+            ),
+            onSoundLevelChange: (level) {
+              // Use sound level from speech recognition for visual feedback
+              // since FlutterSound doesn't provide real-time amplitude
+            },
+          );
+          
+          _speechRecognitionActive = true;
+          debugPrint('🎤 Speech recognition started');
+          
+          if (mounted) {
+            setState(() {
+              _statusMessage = 'Recording audio and speech - speak now!';
+            });
+          }
+        } catch (e) {
+          debugPrint('🎤 Speech recognition failed: $e');
+          // Continue with audio-only fallback
+          if (mounted) {
+            setState(() {
+              _statusMessage = _audioRecordingActive 
+                ? 'Audio recording only - speak now!' 
+                : 'Failed to start recording services';
+            });
+          }
+        }
+      } else {
+        // Audio-only mode
+        if (mounted) {
+          setState(() {
+            _statusMessage = 'Audio recording only - speak now!';
+          });
+        }
+      }
+      
+      // If neither service started, show error
+      if (!_audioRecordingActive && !_speechRecognitionActive) {
+        if (mounted) {
+          setState(() {
+            _isListening = false;
+            _statusMessage = 'Failed to start recording services';
+          });
+        }
+      }
+      
+    } catch (e) {
+      debugPrint('🎯 Dual stream start failed: $e');
+      setState(() {
+        _isListening = false;
+        _statusMessage = 'Failed to start recording: $e';
+      });
+    }
+  }
+  
+  void _onSpeechResult(result) {
+    if (mounted) {
+      setState(() {
+        _transcribedText = result.recognizedWords;
+        _hasRecording = _transcribedText.isNotEmpty;
+        
+        // Update status message based on result
+        if (result.finalResult) {
+          _statusMessage = _hasRecording ? 'Transcription complete! Continue or re-record' : 'No speech detected. Try again';
+        } else {
+          _statusMessage = 'Listening... (${_transcribedText.length} chars)';
+        }
+      });
+    }
   }
   
   Future<void> _stopListening() async {
-    HapticFeedback.lightImpact();
-    _pulseController.stop();
-    _silenceTimer?.cancel();
+    if (!_isListening) return;
     
-    await _speechService.stopListening();
+    debugPrint('🎯 Stopping dual stream recording...');
     
     setState(() {
-      _isListening = false;
-      _statusMessage = 'Processing...';
       _isProcessing = true;
+      _statusMessage = 'Processing recording...';
     });
     
-    if (_transcribedText.isNotEmpty) {
-      await _parseTask();
-    } else {
-      setState(() {
-        _statusMessage = 'No speech detected. Try again.';
-        _isProcessing = false;
-      });
-    }
-  }
-  
-  Future<void> _parseTask() async {
+    // Stop both services
+    String? finalAudioPath;
+    bool hasTranscription = false;
+    
     try {
-      final parsedData = await _aiParser.parseTaskFromText(_transcribedText);
+      // Stop speech recognition
+      if (_speechRecognitionActive && _speechEnabled) {
+        debugPrint('🎤 Stopping speech recognition...');
+        await _speechToText.stop();
+        _speechRecognitionActive = false;
+        hasTranscription = _transcribedText.isNotEmpty;
+        debugPrint('🎤 Speech recognition stopped. Has transcription: $hasTranscription');
+      }
       
+      // Stop audio recording
+      if (_audioRecordingActive && _audioEnabled) {
+        debugPrint('🎵 Stopping audio recording...');
+        finalAudioPath = await _audioRecorder.stopRecording();
+        _audioRecordingActive = false;
+        debugPrint('🎵 Audio recording stopped. File: $finalAudioPath');
+      }
+      
+      // Update final state
       setState(() {
-        _parsedTask = TaskModel.create(
-          title: parsedData.title,
-          description: parsedData.description,
-          dueDate: parsedData.dueDate,
-          priority: parsedData.priority,
-          tags: parsedData.suggestedTags,
-          metadata: {
-            'source': 'voice',
-            'transcription': _transcribedText,
-          },
-        );
-        _statusMessage = 'Task parsed successfully!';
+        _isListening = false;
         _isProcessing = false;
+        _audioFilePath = finalAudioPath;
+        _hasRecording = hasTranscription || (finalAudioPath != null);
+        
+        // Update status message based on what we captured
+        if (hasTranscription && finalAudioPath != null) {
+          _statusMessage = 'Dual stream recording complete! Both audio and transcription captured.';
+        } else if (hasTranscription) {
+          _statusMessage = 'Speech transcription complete! (No audio file captured)';
+        } else if (finalAudioPath != null) {
+          _statusMessage = 'Audio recording complete! (No transcription captured)';
+        } else {
+          _statusMessage = 'Recording complete but no data captured. Try again.';
+        }
+        
+        _pulseController.stop();
+        _pulseController.reset();
       });
       
-      HapticFeedback.lightImpact();
+      debugPrint('🎯 Dual stream recording complete:');
+      debugPrint('  - Audio file: $finalAudioPath');
+      debugPrint('  - Transcription: ${_transcribedText.isNotEmpty ? _transcribedText.substring(0, _transcribedText.length > 50 ? 50 : _transcribedText.length) : 'None'}');
+      debugPrint('  - Duration: $_recordingDuration');
+      
     } catch (e) {
+      debugPrint('🎯 Error stopping recording: $e');
       setState(() {
-        _statusMessage = 'Error parsing task: $e';
+        _isListening = false;
         _isProcessing = false;
+        _statusMessage = 'Error stopping recording: $e';
+        _pulseController.stop();
+        _pulseController.reset();
       });
     }
   }
   
-  void _continueToEdit() async {
-    if (_parsedTask == null && _transcribedText.isEmpty) return;
+  void _continueToEdit() {
+    // Allow continuation if we have either transcription OR audio file
+    if (_transcribedText.isEmpty && _audioFilePath == null) return;
     
-    HapticFeedback.lightImpact();
+    setState(() {
+      _isProcessing = true;
+      _statusMessage = 'Preparing task...';
+    });
     
-    // Voice-to-Text does not need audio files - transcription is the output
-    // The original speech is already converted to text, no need to store audio
-    
-    // Return the voice data to populate the unified task creation form
-    final result = {
-      'title': _parsedTask?.title ?? _transcribedText,
-      'description': _parsedTask?.description,
-      'priority': _parsedTask?.priority?.name ?? 'medium',
-      'dueDate': _parsedTask?.dueDate?.toIso8601String(),
-      'tags': _parsedTask?.tags ?? [],
-      'transcription': _transcribedText,
-      'recurrence': _recurrencePattern,
-      'creationMode': 'voiceToText',
-      // No audio data - Voice-to-Text only provides transcription
-    };
-    
-    Navigator.of(context).pop(result);
+    try {
+      debugPrint('🎯 Dual stream: Continuing to edit with:');
+      debugPrint('  - Transcription: ${_transcribedText.isNotEmpty ? _transcribedText.substring(0, _transcribedText.length > 100 ? 100 : _transcribedText.length) : 'None'}');
+      debugPrint('  - Audio file: $_audioFilePath');
+      debugPrint('  - Duration: $_recordingDuration');
+      
+      // Return dual stream data to be used in enhanced task creation dialog
+      final returnData = {
+        'transcribedText': _transcribedText.isNotEmpty ? _transcribedText : '',
+        'creationMode': 'voiceToText',
+        'audioFilePath': _audioFilePath,
+        'audioData': _audioFilePath != null ? {
+          'filePath': _audioFilePath,
+          'format': 'aac', // AudioRecordingService uses AAC format
+          'recordingTimestamp': DateTime.now().toIso8601String(),
+          'transcription': _transcribedText,
+          'duration': _recordingDuration.inSeconds,
+          'hasDualStream': true, // Flag to indicate this came from dual stream
+          'hasAudioFile': _audioFilePath != null,
+          'hasTranscription': _transcribedText.isNotEmpty,
+        } : {
+          'transcription': _transcribedText,
+          'recordingTimestamp': DateTime.now().toIso8601String(),
+          'duration': _recordingDuration.inSeconds,
+          'hasDualStream': false,
+          'hasAudioFile': false,
+          'hasTranscription': _transcribedText.isNotEmpty,
+        },
+      };
+      
+      debugPrint('🎯 Dual stream: Returning data: $returnData');
+      
+      if (mounted) {
+        Navigator.of(context).pop(returnData);
+      }
+    } catch (e) {
+      debugPrint('🎯 Dual stream: Error in _continueToEdit: $e');
+      if (mounted) {
+        setState(() {
+          _statusMessage = 'Error preparing data: $e';
+          _isProcessing = false;
+        });
+      }
+    }
   }
   
-  // Voice-to-Text only provides transcription, no audio files needed
-  
-  void _reset() {
-    HapticFeedback.selectionClick();
+  void _clearRecording() {
     setState(() {
       _transcribedText = '';
-      _parsedTask = null;
-      _statusMessage = 'Ready to listen';
-      _isProcessing = false;
+      _hasRecording = false;
+      _audioFilePath = null;
+      _recordingDuration = Duration.zero;
+      _speechRecognitionActive = false;
+      _audioRecordingActive = false;
+      _statusMessage = _speechEnabled || _audioEnabled 
+        ? 'Tap to start dual stream recording' 
+        : 'Voice services not available';
     });
   }
   
-  String _formatDate(DateTime date) {
-    final now = DateTime.now();
-    final difference = date.difference(now).inDays;
+  @override
+  void dispose() {
+    // Clean up controllers
+    _fadeController.dispose();
+    _scaleController.dispose();
+    _pulseController.dispose();
     
-    if (difference == 0) {
-      return 'Today';
-    } else if (difference == 1) {
-      return 'Tomorrow';
-    } else {
-      return '${date.day}/${date.month}/${date.year}';
+    // Clean up services
+    _speechToText.stop();
+    
+    if (_audioEnabled) {
+      _audioRecorder.dispose();
     }
+    
+    super.dispose();
+  }
+  
+  String _formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    final minutes = twoDigits(duration.inMinutes.remainder(60));
+    final seconds = twoDigits(duration.inSeconds.remainder(60));
+    return '$minutes:$seconds';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      appBar: AppBar(
+        title: const Text('Voice Task Creation'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        actions: [
+          if (_hasRecording && !_isProcessing)
+            TextButton(
+              onPressed: _isProcessing ? null : _continueToEdit,
+              child: _isProcessing 
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Text('Continue'),
+            ),
+        ],
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              colorScheme.surface.withOpacity(0.95),
+              colorScheme.surfaceContainerHighest.withOpacity(0.95),
+            ],
+          ),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                
+                const SizedBox(height: 32),
+                
+                // Voice visualization area
+                Expanded(
+                  flex: 2,
+                  child: FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: ScaleTransition(
+                      scale: _scaleAnimation,
+                      child: GlassmorphismContainer(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            // Voice visualization
+                            AnimatedBuilder(
+                              animation: _pulseAnimation,
+                              builder: (context, child) {
+                                return Transform.scale(
+                                  scale: _isListening ? _pulseAnimation.value : 1.0,
+                                  child: Container(
+                                    width: 120,
+                                    height: 120,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: _isListening 
+                                        ? colorScheme.primary.withOpacity(0.3)
+                                        : colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                                      border: Border.all(
+                                        color: _isListening 
+                                          ? colorScheme.primary
+                                          : colorScheme.outline,
+                                        width: 2,
+                                      ),
+                                    ),
+                                    child: Icon(
+                                      _isListening ? Icons.mic : Icons.mic_none,
+                                      size: 48,
+                                      color: _isListening 
+                                        ? colorScheme.primary
+                                        : colorScheme.onSurface,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                            
+                            const SizedBox(height: 24),
+                            
+                            // Status message
+                            Text(
+                              _statusMessage,
+                              style: theme.textTheme.bodyLarge?.copyWith(
+                                color: colorScheme.onSurface,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            
+                            // Recording duration (when recording)
+                            if (_isListening && _recordingDuration > Duration.zero) ...[ 
+                              const SizedBox(height: 8),
+                              Text(
+                                _formatDuration(_recordingDuration),
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: colorScheme.primary,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                
+                const SizedBox(height: 24),
+                
+                // Transcribed text area
+                if (_transcribedText.isNotEmpty)
+                  Expanded(
+                    child: GlassmorphismContainer(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.text_fields,
+                                  color: colorScheme.primary,
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Transcribed Text',
+                                  style: theme.textTheme.titleSmall?.copyWith(
+                                    color: colorScheme.primary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            Expanded(
+                              child: SingleChildScrollView(
+                                child: Text(
+                                  _transcribedText,
+                                  style: theme.textTheme.bodyMedium,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                
+                const SizedBox(height: 24),
+                
+                
+                // Action buttons
+                if (_hasRecording && !_isProcessing) ...[
+                  // Show Next and Clear buttons after transcription is complete
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: _clearRecording,
+                          icon: const Icon(Icons.clear),
+                          label: const Text('Clear'),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: FilledButton.icon(
+                          onPressed: _continueToEdit,
+                          icon: const Icon(Icons.arrow_forward),
+                          label: const Text('Next'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ] else ...[
+                  // Show recording controls when no transcription yet
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _isProcessing
+                          ? const Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : FilledButton.icon(
+                              onPressed: _isListening ? _stopListening : _startListening,
+                              icon: Icon(_isListening ? Icons.stop : Icons.mic),
+                              label: Text(_isListening ? 'Stop' : 'Start Recording'),
+                            ),
+                      ),
+                    ],
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

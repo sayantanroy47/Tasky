@@ -34,6 +34,16 @@ class NotificationManager {
     final initialized = await _notificationService.initialize();
     
     if (initialized) {
+      // Load persisted notifications first
+      if (_notificationService is LocalNotificationService) {
+        await (_notificationService as LocalNotificationService).loadPersistedNotifications();
+      }
+      
+      // Process immediate overdue notifications
+      if (_notificationService is LocalNotificationService) {
+        await (_notificationService as LocalNotificationService).processImmediateOverdueNotifications();
+      }
+      
       await _setupPeriodicTasks();
       await _rescheduleExistingTaskNotifications();
     }
@@ -57,33 +67,59 @@ class NotificationManager {
     await _notificationService.cancelTaskNotifications(task.id);
     if (!settings.enabled) return;
 
-    // Schedule default reminder
-    final defaultReminderTime = task.dueDate!.subtract(settings.defaultReminder);
-    if (defaultReminderTime.isAfter(DateTime.now())) {
-      await _notificationService.scheduleTaskReminder(
-        task: task,
-        scheduledTime: defaultReminderTime,
-      );
-    }
-
-    // Schedule additional reminders based on priority
-    final additionalReminders = _getAdditionalReminders(task.priority);
-    if (additionalReminders.isNotEmpty) {
-      await _notificationService.scheduleMultipleReminders(
-        task: task,
-        reminderIntervals: additionalReminders,
-      );
-    }
-
-    // Schedule overdue notification if task becomes overdue
-    if (settings.overdueNotifications && task.dueDate!.isAfter(DateTime.now())) {
-      final overdueTime = task.dueDate!.add(const Duration(hours: 1));
-      if (overdueTime.isAfter(DateTime.now())) {
-        // Schedule a proper notification instead of using an unmanaged Timer
-        await _notificationService.scheduleOverdueNotification(
+    try {
+      // Schedule default reminder
+      final defaultReminderTime = task.dueDate!.subtract(settings.defaultReminder);
+      if (defaultReminderTime.isAfter(DateTime.now())) {
+        final notificationId = await _notificationService.scheduleTaskReminder(
           task: task,
+          scheduledTime: defaultReminderTime,
         );
+        
+        if (notificationId == null) {
+          // Retry failed scheduling
+          await _retryScheduleTaskReminder(task, defaultReminderTime, 0);
+        }
       }
+
+      // Schedule additional reminders based on priority
+      final additionalReminders = _getAdditionalReminders(task.priority);
+      if (additionalReminders.isNotEmpty) {
+        final scheduledIds = await _notificationService.scheduleMultipleReminders(
+          task: task,
+          reminderIntervals: additionalReminders,
+        );
+        
+        // Check if any reminders failed and retry
+        if (scheduledIds.length < additionalReminders.length) {
+          await _retryMultipleReminders(task, additionalReminders, scheduledIds);
+        }
+      }
+
+      // Schedule overdue notification if task becomes overdue
+      if (settings.overdueNotifications) {
+        // Check if task is already overdue
+        if (task.dueDate!.isBefore(DateTime.now())) {
+          await _notificationService.scheduleOverdueNotification(task: task);
+        } else {
+          // Schedule overdue check for 1 hour after due date
+          final overdueCheckTime = task.dueDate!.add(const Duration(hours: 1));
+          if (overdueCheckTime.isAfter(DateTime.now())) {
+            Timer(overdueCheckTime.difference(DateTime.now()), () async {
+              final updatedTask = await _taskRepository.getTaskById(task.id);
+              if (updatedTask != null && updatedTask.isOverdue && updatedTask.status.isActive) {
+                await _notificationService.scheduleOverdueNotification(task: updatedTask);
+              }
+            });
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('Error scheduling task notifications: $e');
+      // Attempt to reschedule after a delay
+      Timer(const Duration(minutes: 5), () {
+        scheduleTaskNotifications(task);
+      });
     }
   }
 
@@ -345,16 +381,6 @@ class NotificationManager {
     }
   }
 
-  Future<void> _checkAndScheduleOverdueNotification(String taskId) async {
-    try {
-      final task = await _taskRepository.getTaskById(taskId);
-      if (task != null && task.isOverdue && task.status.isActive) {
-        await _notificationService.scheduleOverdueNotification(task: task);
-      }
-    } catch (e) {
-      debugPrint('Error scheduling overdue notification: $e');
-    }
-  }
 
   Future<void> _completeTaskFromNotification(String taskId) async {
     try {
@@ -496,6 +522,53 @@ class NotificationManager {
     // This would typically save to a database for analytics
     // For now, just log to debug console
     debugPrint('Notification action: $action for task $taskId');
+  }
+
+  /// Retry scheduling a task reminder with exponential backoff
+  Future<void> _retryScheduleTaskReminder(TaskModel task, DateTime scheduledTime, int attemptCount) async {
+    if (attemptCount >= 3) {
+      debugPrint('Max retry attempts reached for task ${task.id} reminder');
+      return;
+    }
+
+    final delayMinutes = (attemptCount + 1) * 2; // 2, 4, 6 minutes
+    await Future.delayed(Duration(minutes: delayMinutes));
+
+    try {
+      final notificationId = await _notificationService.scheduleTaskReminder(
+        task: task,
+        scheduledTime: scheduledTime,
+      );
+
+      if (notificationId != null) {
+        debugPrint('Successfully retried reminder for task ${task.id} (attempt ${attemptCount + 1})');
+      } else {
+        await _retryScheduleTaskReminder(task, scheduledTime, attemptCount + 1);
+      }
+    } catch (e) {
+      debugPrint('Retry attempt ${attemptCount + 1} failed for task ${task.id}: $e');
+      await _retryScheduleTaskReminder(task, scheduledTime, attemptCount + 1);
+    }
+  }
+
+  /// Retry scheduling multiple reminders
+  Future<void> _retryMultipleReminders(TaskModel task, List<Duration> intervals, List<int> scheduledIds) async {
+    final failedCount = intervals.length - scheduledIds.length;
+    debugPrint('Retrying $failedCount failed reminder(s) for task ${task.id}');
+
+    // Wait a bit before retrying
+    await Future.delayed(const Duration(minutes: 1));
+
+    try {
+      final retryIds = await _notificationService.scheduleMultipleReminders(
+        task: task,
+        reminderIntervals: intervals,
+      );
+
+      debugPrint('Retry scheduled ${retryIds.length} reminders for task ${task.id}');
+    } catch (e) {
+      debugPrint('Failed to retry multiple reminders for task ${task.id}: $e');
+    }
   }
 
   void _setupEventHandling() {

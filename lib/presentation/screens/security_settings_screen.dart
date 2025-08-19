@@ -3,6 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:local_auth/local_auth.dart';
 import '../widgets/enhanced_ux_widgets.dart';
 import '../widgets/standardized_app_bar.dart';
+import '../widgets/glassmorphism_container.dart';
+import '../../core/design_system/design_tokens.dart';
+import '../../core/theme/typography_constants.dart';
 import '../../services/security_service.dart';
 
 /// Screen for managing security and privacy settings
@@ -41,9 +44,22 @@ class SecuritySettingsScreen extends ConsumerWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
-              EnhancedButton(
-                onPressed: () => ref.read(securitySettingsProvider.notifier).refresh(),
-                child: const Text('Retry'),
+              GlassmorphismContainer(
+                level: GlassLevel.interactive,
+                borderRadius: BorderRadius.circular(8),
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                glassTint: Theme.of(context).colorScheme.primary.withOpacity(0.7),
+                child: InkWell(
+                  onTap: () => ref.read(securitySettingsProvider.notifier).refresh(),
+                  borderRadius: BorderRadius.circular(8),
+                  child: const Text(
+                    'Retry',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
               ),
             ],
           ),
@@ -64,7 +80,10 @@ class SecuritySettingsScreen extends ConsumerWidget {
           children: [
             // App Lock Section
             _buildSectionHeader(context, 'App Lock'),
-            EnhancedCard(
+            GlassmorphismContainer(
+              level: GlassLevel.content,
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
                   SwitchListTile(
@@ -133,7 +152,10 @@ class SecuritySettingsScreen extends ConsumerWidget {
             
             // Data Protection Section
             _buildSectionHeader(context, 'Data Protection'),
-            EnhancedCard(
+            GlassmorphismContainer(
+              level: GlassLevel.content,
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
                   ListTile(
@@ -177,7 +199,10 @@ class SecuritySettingsScreen extends ConsumerWidget {
             
             // Privacy Section
             _buildSectionHeader(context, 'Privacy'),
-            EnhancedCard(
+            GlassmorphismContainer(
+              level: GlassLevel.content,
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
                   ListTile(
@@ -221,7 +246,10 @@ class SecuritySettingsScreen extends ConsumerWidget {
             
             // Security Actions Section
             _buildSectionHeader(context, 'Security Actions'),
-            EnhancedCard(
+            GlassmorphismContainer(
+              level: GlassLevel.content,
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
                   ListTile(

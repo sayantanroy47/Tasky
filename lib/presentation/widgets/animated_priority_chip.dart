@@ -41,7 +41,7 @@ class _PulsingPriorityChipState extends State<PulsingPriorityChip>
   late Animation<double> _pulseAnimation;
   late Animation<double> _pressAnimation;
   late Animation<double> _glowAnimation;
-  late Animation<Color?> _colorAnimation;
+  // late Animation<Color?> _colorAnimation;
 
   @override
   void initState() {
@@ -113,10 +113,10 @@ class _PulsingPriorityChipState extends State<PulsingPriorityChip>
     ));
 
     // Color animation for smooth priority changes
-    _colorAnimation = ColorTween(
-      begin: _getPriorityColor(),
-      end: _getPriorityColor(),
-    ).animate(_pulseController);
+    // _colorAnimation = ColorTween(
+    //   begin: _getPriorityColor(),
+    //   end: _getPriorityColor(),
+    // ).animate(_pulseController);
   }
 
   Duration _getPulseDuration() {

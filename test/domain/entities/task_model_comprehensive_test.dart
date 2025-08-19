@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:task_tracker_app/domain/entities/task_model.dart';
 import 'package:task_tracker_app/domain/entities/subtask.dart';
 import 'package:task_tracker_app/domain/entities/recurrence_pattern.dart';
-import 'package:task_tracker_app/domain/models/enums.dart';
+import 'package:task_tracker_app/domain/entities/task_enums.dart';
 
 /// COMPREHENSIVE TASK MODEL TESTS - EVERY EDGE CASE AND SCENARIO
 void main() {

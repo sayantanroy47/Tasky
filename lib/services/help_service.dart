@@ -9,7 +9,7 @@ class HelpService {
 
   /// Help topics with content
   final Map<String, HelpTopic> _helpTopics = {
-    'getting_started': HelpTopic(
+    'getting_started': const HelpTopic(
       id: 'getting_started',
       title: 'Getting Started',
       content: '''
@@ -36,7 +36,7 @@ Get started by creating your first task!
       order: 1,
     ),
     
-    'voice_input': HelpTopic(
+    'voice_input': const HelpTopic(
       id: 'voice_input',
       title: 'Voice Input & Speech-to-Text',
       content: '''
@@ -68,11 +68,11 @@ Tasky offers three powerful ways to create tasks with your voice:
       order: 2,
     ),
 
-    'themes': HelpTopic(
+    'themes': const HelpTopic(
       id: 'themes',
       title: 'Themes & Personalization',
       content: '''
-# Personalize Your Experience 🎨
+# Personalize Your Experience
 
 Tasky offers beautiful, creative themes to match your style:
 
@@ -111,7 +111,7 @@ Tasky offers beautiful, creative themes to match your style:
       order: 3,
     ),
 
-    'ai_features': HelpTopic(
+    'ai_features': const HelpTopic(
       id: 'ai_features',
       title: 'AI-Powered Features',
       content: '''
@@ -151,7 +151,7 @@ Tasky uses advanced AI to make task management effortless:
       order: 4,
     ),
 
-    'organization': HelpTopic(
+    'organization': const HelpTopic(
       id: 'organization',
       title: 'Organization & Productivity',
       content: '''
@@ -194,7 +194,7 @@ Tasky offers powerful organization tools to keep you productive:
       order: 5,
     ),
 
-    'notifications': HelpTopic(
+    'notifications': const HelpTopic(
       id: 'notifications',
       title: 'Notifications & Reminders',
       content: '''
@@ -232,7 +232,7 @@ Never miss important tasks with Tasky's intelligent notification system:
       order: 6,
     ),
 
-    'troubleshooting': HelpTopic(
+    'troubleshooting': const HelpTopic(
       id: 'troubleshooting',
       title: 'Troubleshooting',
       content: '''
@@ -282,7 +282,7 @@ Never miss important tasks with Tasky's intelligent notification system:
       order: 7,
     ),
 
-    'privacy_security': HelpTopic(
+    'privacy_security': const HelpTopic(
       id: 'privacy_security',
       title: 'Privacy & Security',
       content: '''

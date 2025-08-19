@@ -3,7 +3,8 @@
 enum AIServiceType {
   openai,
   claude,
-  local;
+  local,
+  composite;
   
   String get displayName {
     switch (this) {
@@ -13,6 +14,8 @@ enum AIServiceType {
         return 'Claude';
       case AIServiceType.local:
         return 'Local';
+      case AIServiceType.composite:
+        return 'Smart Composite';
     }
   }
   
@@ -24,6 +27,8 @@ enum AIServiceType {
         return 'Anthropic Claude models for task parsing';
       case AIServiceType.local:
         return 'Local AI processing (offline)';
+      case AIServiceType.composite:
+        return 'Intelligent AI selection with fallback to local processing';
     }
   }
 }

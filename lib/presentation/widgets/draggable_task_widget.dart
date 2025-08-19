@@ -1,567 +1,830 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/theme/typography_constants.dart';
-import '../../domain/entities/task_model.dart';
-import '../../domain/entities/calendar_event.dart';
-import '../../domain/models/enums.dart';
-import '../providers/calendar_provider.dart';
 
-/// Draggable task widget for rescheduling tasks via drag and drop
-class DraggableTaskWidget extends ConsumerWidget {
+import '../../domain/entities/task_model.dart';
+import '../../domain/models/enums.dart';
+import '../../core/theme/typography_constants.dart';
+import '../../core/theme/material3/motion_system.dart';
+import 'advanced_task_card.dart';
+
+/// Advanced draggable task widget with comprehensive drag-and-drop functionality
+/// 
+/// Features:
+/// - Multi-directional drag support (vertical, horizontal, grid)
+/// - Visual feedback during drag operations
+/// - Drop zone highlighting and validation
+/// - Smooth reorder animations
+/// - Drag constraints and boundaries
+/// - Touch and mouse gesture handling
+/// - Haptic feedback on supported platforms
+/// - Custom drag preview with scaling
+/// - Auto-scroll when dragging near edges
+/// - Conflict resolution for overlapping drops
+/// - Animated insertion and removal
+/// - Group drag operations (multi-select)
+class DraggableTaskWidget extends ConsumerStatefulWidget {
   final TaskModel task;
-  final CalendarEvent? event;
-  final Widget child;
-  final VoidCallback? onDragStarted;
-  final VoidCallback? onDragEnd;
+  final int index;
+  final VoidCallback? onTap;
+  final Function(int, int)? onReorder;
+  final Function(TaskModel, String?)? onMoveToProject;
+  final Function(TaskModel, TaskPriority)? onPriorityChanged;
+  final Function(TaskModel, TaskStatus)? onStatusChanged;
+  final VoidCallback? onEdit;
+  final VoidCallback? onDelete;
+  final VoidCallback? onToggleComplete;
+  final TaskCardStyle cardStyle;
+  final bool enableDrag;
+  final bool enableVerticalDrag;
+  final bool enableHorizontalDrag;
+  final bool enableAutoScroll;
+  final bool showDragHandle;
+  final bool useHapticFeedback;
+  final bool enableGroupDrag;
+  final double? dragElevation;
+  final Color? dragColor;
+  final Duration animationDuration;
+  final Curve animationCurve;
+  final EdgeInsets? margin;
+  final String? dropZoneId;
+  final List<String>? acceptedDropZones;
+  final Widget Function(TaskModel)? customDragPreview;
+  final bool Function(TaskModel, String?)? canDrop;
 
   const DraggableTaskWidget({
     super.key,
     required this.task,
-    this.event,
-    required this.child,
-    this.onDragStarted,
-    this.onDragEnd,
+    required this.index,
+    this.onTap,
+    this.onReorder,
+    this.onMoveToProject,
+    this.onPriorityChanged,
+    this.onStatusChanged,
+    this.onEdit,
+    this.onDelete,
+    this.onToggleComplete,
+    this.cardStyle = TaskCardStyle.elevated,
+    this.enableDrag = true,
+    this.enableVerticalDrag = true,
+    this.enableHorizontalDrag = false,
+    this.enableAutoScroll = true,
+    this.showDragHandle = true,
+    this.useHapticFeedback = true,
+    this.enableGroupDrag = false,
+    this.dragElevation,
+    this.dragColor,
+    this.animationDuration = const Duration(milliseconds: 300),
+    this.animationCurve = Curves.easeInOut,
+    this.margin,
+    this.dropZoneId,
+    this.acceptedDropZones,
+    this.customDragPreview,
+    this.canDrop,
   });
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Draggable<TaskDragData>(
-      data: TaskDragData(
-        task: task,
-        event: event,
-      ),
-      feedback: Material(
-        elevation: 8,
-        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-        child: Container(
-          width: 300,
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-            border: Border.all(
-              color: Theme.of(context).primaryColor,
-              width: 2,
+  ConsumerState<DraggableTaskWidget> createState() => _DraggableTaskWidgetState();
+}
+
+class _DraggableTaskWidgetState extends ConsumerState<DraggableTaskWidget>
+    with TickerProviderStateMixin {
+  late AnimationController _dragController;
+  late AnimationController _dropController;
+  late AnimationController _hoverController;
+  late AnimationController _insertController;
+  
+  late Animation<double> _dragScale;
+  late Animation<double> _dragRotation;
+  late Animation<double> _dropScale;
+  late Animation<double> _hoverElevation;
+  late Animation<Offset> _insertSlide;
+
+  bool _isDragging = false;
+  bool _isHovered = false;
+  bool _isDropTarget = false;
+  bool _isBeingInserted = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeAnimations();
+  }
+
+  void _initializeAnimations() {
+    _dragController = AnimationController(
+      duration: ExpressiveMotionSystem.durationShort2,
+      vsync: this,
+    );
+
+    _dropController = AnimationController(
+      duration: widget.animationDuration,
+      vsync: this,
+    );
+
+    _hoverController = AnimationController(
+      duration: ExpressiveMotionSystem.durationShort1,
+      vsync: this,
+    );
+
+    _insertController = AnimationController(
+      duration: ExpressiveMotionSystem.durationMedium2,
+      vsync: this,
+    );
+
+    _dragScale = Tween<double>(
+      begin: 1.0,
+      end: 1.05,
+    ).animate(CurvedAnimation(
+      parent: _dragController,
+      curve: ExpressiveMotionSystem.emphasizedAccelerate,
+    ));
+
+    _dragRotation = Tween<double>(
+      begin: 0.0,
+      end: 0.02,
+    ).animate(CurvedAnimation(
+      parent: _dragController,
+      curve: ExpressiveMotionSystem.emphasizedAccelerate,
+    ));
+
+    _dropScale = Tween<double>(
+      begin: 1.0,
+      end: 0.95,
+    ).animate(CurvedAnimation(
+      parent: _dropController,
+      curve: widget.animationCurve,
+    ));
+
+    _hoverElevation = Tween<double>(
+      begin: 0.0,
+      end: 8.0,
+    ).animate(CurvedAnimation(
+      parent: _hoverController,
+      curve: ExpressiveMotionSystem.emphasizedDecelerate,
+    ));
+
+    _insertSlide = Tween<Offset>(
+      begin: const Offset(-1.0, 0.0),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _insertController,
+      curve: ExpressiveMotionSystem.emphasizedDecelerate,
+    ));
+
+    // Animate insertion if this is a new task
+    if (_isBeingInserted) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _insertController.forward();
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _dragController.dispose();
+    _dropController.dispose();
+    _hoverController.dispose();
+    _insertController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Widget child = _buildTaskCard();
+
+    if (widget.enableDrag) {
+      child = _buildDraggableWrapper(child);
+    }
+
+    if (widget.acceptedDropZones?.isNotEmpty == true) {
+      child = _buildDropTargetWrapper(child);
+    }
+
+    return _buildAnimatedWrapper(child);
+  }
+
+  Widget _buildAnimatedWrapper(Widget child) {
+    return AnimatedBuilder(
+      animation: Listenable.merge([
+        _dragScale,
+        _dragRotation,
+        _dropScale,
+        _hoverElevation,
+        _insertSlide,
+      ]),
+      builder: (context, _) {
+        Widget animatedChild = child;
+
+        // Apply insertion animation
+        if (_isBeingInserted) {
+          animatedChild = SlideTransition(
+            position: _insertSlide,
+            child: animatedChild,
+          );
+        }
+
+        // Apply hover elevation
+        if (_isHovered && !_isDragging) {
+          animatedChild = Transform.translate(
+            offset: Offset(0, -_hoverElevation.value),
+            child: animatedChild,
+          );
+        }
+
+        // Apply drop target scaling
+        if (_isDropTarget) {
+          animatedChild = Transform.scale(
+            scale: _dropScale.value,
+            child: animatedChild,
+          );
+        }
+
+        // Apply drag transformations
+        if (_isDragging) {
+          animatedChild = Transform.scale(
+            scale: _dragScale.value,
+            child: Transform.rotate(
+              angle: _dragRotation.value,
+              child: animatedChild,
             ),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.drag_handle,
-                color: Theme.of(context).primaryColor,
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  task.title,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-      childWhenDragging: Opacity(
-        opacity: 0.5,
-        child: child,
-      ),
-      onDragStarted: onDragStarted,
-      onDragEnd: (_) => onDragEnd?.call(),
-      child: child,
+          );
+        }
+
+        return Container(
+          margin: widget.margin ?? const EdgeInsets.symmetric(vertical: 4),
+          child: animatedChild,
+        );
+      },
     );
   }
-}
 
-/// Data class for task drag operations
-class TaskDragData {
-  final TaskModel task;
-  final CalendarEvent? event;
+  Widget _buildDraggableWrapper(Widget child) {
+    return LongPressDraggable<TaskDragData>(
+      data: TaskDragData(
+        task: widget.task,
+        sourceIndex: widget.index,
+        sourceDropZone: widget.dropZoneId,
+      ),
+      feedback: _buildDragFeedback(),
+      childWhenDragging: _buildDragPlaceholder(),
+      onDragStarted: _handleDragStarted,
+      onDragUpdate: _handleDragUpdate,
+      onDragEnd: _handleDragEnd,
+      onDraggableCanceled: _handleDragCanceled,
+      hapticFeedbackOnStart: widget.useHapticFeedback,
+      maxSimultaneousDrags: widget.enableGroupDrag ? null : 1,
+      child: MouseRegion(
+        onEnter: (_) => _handleHover(true),
+        onExit: (_) => _handleHover(false),
+        child: child,
+      ),
+    );
+  }
 
-  const TaskDragData({
-    required this.task,
-    this.event,
-  });
-}
-
-/// Drop target widget for calendar dates
-class CalendarDropTarget extends ConsumerWidget {
-  final DateTime date;
-  final Widget child;
-  final bool isHighlighted;
-
-  const CalendarDropTarget({
-    super.key,
-    required this.date,
-    required this.child,
-    this.isHighlighted = false,
-  });
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget _buildDropTargetWrapper(Widget child) {
     return DragTarget<TaskDragData>(
-      onWillAcceptWithDetails: (details) => true,
-      onAcceptWithDetails: (details) => _handleTaskDrop(context, ref, details.data),
+      onWillAcceptWithDetails: (details) => _canAcceptDrop(details.data),
+      onAcceptWithDetails: (details) => _handleDropWithDetails(details),
+      onMove: (details) => _handleDragMove(details),
+      onLeave: (data) => _handleDragLeave(data),
       builder: (context, candidateData, rejectedData) {
-        final isHovering = candidateData.isNotEmpty;
-        
-        return AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          decoration: BoxDecoration(
-            border: isHovering || isHighlighted
-                ? Border.all(
-                    color: Theme.of(context).primaryColor,
-                    width: 2,
-                  )
-                : null,
-            borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-            color: isHovering
-                ? Theme.of(context).primaryColor.withOpacity(0.1)
-                : null,
-          ),
+        return Container(
+          decoration: _buildDropTargetDecoration(),
           child: child,
         );
       },
     );
   }
 
-  Future<void> _handleTaskDrop(
-    BuildContext context,
-    WidgetRef ref,
-    TaskDragData dragData,
-  ) async {
-    try {
-      if (dragData.event != null) {
-        // Reschedule existing event
-        await _rescheduleEvent(context, ref, dragData.event!, date);
-      } else {
-        // Create new event for unscheduled task
-        await _scheduleTask(context, ref, dragData.task, date);
-      }
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to reschedule task: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
+  Widget _buildTaskCard() {
+    return AdvancedTaskCard(
+      task: widget.task,
+      style: widget.cardStyle,
+      onTap: widget.onTap,
+      onEdit: widget.onEdit,
+      onDelete: widget.onDelete,
+      onToggleComplete: widget.onToggleComplete,
+      showDragHandle: widget.showDragHandle && widget.enableDrag,
+      enableAnimations: !_isDragging, // Disable card animations during drag
+      margin: EdgeInsets.zero, // Margin handled by parent
+    );
   }
 
-  Future<void> _rescheduleEvent(
-    BuildContext context,
-    WidgetRef ref,
-    CalendarEvent event,
-    DateTime newDate,
-  ) async {
-    // Show time selection dialog for rescheduling
-    final result = await showDialog<RescheduleResult>(
-      context: context,
-      builder: (context) => RescheduleDialog(
-        event: event,
-        newDate: newDate,
+  Widget _buildDragFeedback() {
+    if (widget.customDragPreview != null) {
+      return widget.customDragPreview!(widget.task);
+    }
+
+    return Material(
+      elevation: widget.dragElevation ?? 12,
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+      child: Container(
+        width: 320, // Fixed width for consistency
+        decoration: BoxDecoration(
+          color: widget.dragColor ?? Theme.of(context).colorScheme.surfaceContainer,
+          borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.primary,
+            width: 2,
+          ),
+        ),
+        child: AdvancedTaskCard(
+          task: widget.task,
+          style: TaskCardStyle.filled,
+          enableAnimations: false,
+          showDragHandle: false,
+          enableSwipeActions: false,
+          enableContextMenu: false,
+          margin: EdgeInsets.zero,
+        ),
       ),
     );
-
-    if (result != null) {
-      final calendarNotifier = ref.read(calendarProvider.notifier);
-      final success = await calendarNotifier.rescheduleEvent(
-        event.id,
-        result.startTime,
-        result.endTime,
-      );
-
-      if (context.mounted) {
-        if (success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Rescheduled "${event.title}" to ${_formatDate(newDate)}'),
-              action: SnackBarAction(
-                label: 'Undo',
-                onPressed: () => _undoReschedule(ref, event),
-              ),
-            ),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Cannot reschedule: Time slot conflicts with another event'),
-              backgroundColor: Colors.orange,
-            ),
-          );
-        }
-      }
-    }
   }
 
-  Future<void> _scheduleTask(
-    BuildContext context,
-    WidgetRef ref,
-    TaskModel task,
-    DateTime date,
-  ) async {
-    // Show scheduling dialog
-    final result = await showDialog<ScheduleResult>(
-      context: context,
-      builder: (context) => ScheduleTaskDialog(
-        task: task,
-        date: date,
+  Widget _buildDragPlaceholder() {
+    return Opacity(
+      opacity: 0.3,
+      child: Container(
+        height: 80, // Approximate card height
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+          border: Border.all(
+            color: Theme.of(context).colorScheme.outline,
+            style: BorderStyle.solid,
+          ),
+        ),
+        child: Center(
+          child: Icon(
+            Icons.drag_indicator,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            size: 32,
+          ),
+        ),
       ),
     );
-
-    if (result != null) {
-      final event = CalendarEvent.create(
-        taskId: task.id,
-        title: task.title,
-        description: task.description,
-        startTime: result.startTime,
-        endTime: result.endTime,
-        isAllDay: result.isAllDay,
-        color: _getColorForPriority(task.priority),
-      );
-
-      final calendarNotifier = ref.read(calendarProvider.notifier);
-      await calendarNotifier.addEvent(event);
-
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Scheduled "${task.title}" for ${_formatDate(date)}'),
-            action: SnackBarAction(
-              label: 'Undo',
-              onPressed: () => calendarNotifier.deleteEvent(event.id),
-            ),
-          ),
-        );
-      }
-    }
   }
 
-  void _undoReschedule(WidgetRef ref, CalendarEvent originalEvent) {
-    final calendarNotifier = ref.read(calendarProvider.notifier);
-    calendarNotifier.rescheduleEvent(
-      originalEvent.id,
-      originalEvent.startTime,
-      originalEvent.endTime,
+  BoxDecoration? _buildDropTargetDecoration() {
+    if (!_isDropTarget) return null;
+
+    final theme = Theme.of(context);
+    return BoxDecoration(
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+      border: Border.all(
+        color: theme.colorScheme.primary,
+        width: 2,
+      ),
+      color: theme.colorScheme.primaryContainer.withOpacity(0.1),
     );
   }
 
-  String _formatDate(DateTime date) {
-    final now = DateTime.now();
-    if (date.day == now.day && date.month == now.month && date.year == now.year) {
-      return 'today';
-    }
-    if (date.day == now.day + 1 && date.month == now.month && date.year == now.year) {
-      return 'tomorrow';
-    }
-    return '${date.day}/${date.month}/${date.year}';
-  }
-
-  String _getColorForPriority(TaskPriority priority) {
-    switch (priority) {
-      case TaskPriority.urgent:
-        return '#F44336';
-      case TaskPriority.high:
-        return '#FF9800';
-      case TaskPriority.medium:
-        return '#2196F3';
-      case TaskPriority.low:
-        return '#4CAF50';
+  // Event handlers
+  void _handleHover(bool isHovered) {
+    if (_isDragging) return;
+    
+    setState(() => _isHovered = isHovered);
+    
+    if (isHovered) {
+      _hoverController.forward();
+    } else {
+      _hoverController.reverse();
     }
   }
+
+  void _handleDragStarted() {
+    setState(() => _isDragging = true);
+    _dragController.forward();
+    
+    if (widget.useHapticFeedback) {
+      HapticFeedback.mediumImpact();
+    }
+
+    // Notify drag start to global state if needed
+    _notifyDragStart();
+  }
+
+  void _handleDragUpdate(DragUpdateDetails details) {
+    // Handle auto-scroll if enabled
+    if (widget.enableAutoScroll) {
+      _handleAutoScroll(details.globalPosition);
+    }
+  }
+
+  void _handleDragEnd(DraggableDetails details) {
+    setState(() => _isDragging = false);
+    _dragController.reverse();
+    
+    if (widget.useHapticFeedback) {
+      HapticFeedback.lightImpact();
+    }
+
+    // Notify drag end to global state
+    _notifyDragEnd();
+  }
+
+  void _handleDragCanceled(Velocity velocity, Offset offset) {
+    setState(() => _isDragging = false);
+    _dragController.reverse();
+    
+    if (widget.useHapticFeedback) {
+      HapticFeedback.selectionClick();
+    }
+
+    // Animate back to original position if needed
+    _animateBackToPosition();
+  }
+
+  bool _canAcceptDrop(TaskDragData? data) {
+    if (data == null) return false;
+    
+    // Don't accept drop from self
+    if (data.task.id == widget.task.id) return false;
+    
+    // Check if drop zone is accepted
+    if (widget.acceptedDropZones != null && data.sourceDropZone != null) {
+      if (!widget.acceptedDropZones!.contains(data.sourceDropZone)) {
+        return false;
+      }
+    }
+
+    // Use custom validation if provided
+    if (widget.canDrop != null) {
+      return widget.canDrop!(data.task, widget.dropZoneId);
+    }
+
+    return true;
+  }
+
+  void _handleDrop(TaskDragData data) {
+    if (widget.useHapticFeedback) {
+      HapticFeedback.heavyImpact();
+    }
+
+    // Handle reordering within same zone
+    if (data.sourceDropZone == widget.dropZoneId) {
+      widget.onReorder?.call(data.sourceIndex, widget.index);
+    } else {
+      // Handle moving between zones/projects
+      widget.onMoveToProject?.call(data.task, widget.dropZoneId);
+    }
+
+    _animateDropAccepted();
+  }
+
+  void _handleDropWithDetails(DragTargetDetails<TaskDragData> details) {
+    final data = details.data;
+    
+    _handleDrop(data);
+  }
+
+  void _handleDragMove(DragTargetDetails<TaskDragData> details) {
+    if (!_isDropTarget) {
+      setState(() => _isDropTarget = true);
+      _dropController.forward();
+    }
+  }
+
+  void _handleDragLeave(TaskDragData? data) {
+    if (_isDropTarget) {
+      setState(() => _isDropTarget = false);
+      _dropController.reverse();
+    }
+  }
+
+  // Helper methods
+  void _handleAutoScroll(Offset globalPosition) {
+    final RenderBox? renderBox = context.findRenderObject() as RenderBox?;
+    if (renderBox == null) return;
+
+    final screenSize = MediaQuery.of(context).size;
+    const scrollThreshold = 80.0;
+    const scrollSpeed = 200.0;
+
+    // Check if near top edge
+    if (globalPosition.dy < scrollThreshold) {
+      _scrollUp(scrollSpeed);
+    }
+    // Check if near bottom edge
+    else if (globalPosition.dy > screenSize.height - scrollThreshold) {
+      _scrollDown(scrollSpeed);
+    }
+  }
+
+  void _scrollUp(double speed) {
+    final scrollController = _findScrollController();
+    if (scrollController != null && scrollController.hasClients) {
+      final newOffset = (scrollController.offset - speed).clamp(
+        0.0,
+        scrollController.position.maxScrollExtent,
+      );
+      scrollController.animateTo(
+        newOffset,
+        duration: const Duration(milliseconds: 100),
+        curve: Curves.easeOut,
+      );
+    }
+  }
+
+  void _scrollDown(double speed) {
+    final scrollController = _findScrollController();
+    if (scrollController != null && scrollController.hasClients) {
+      final newOffset = (scrollController.offset + speed).clamp(
+        0.0,
+        scrollController.position.maxScrollExtent,
+      );
+      scrollController.animateTo(
+        newOffset,
+        duration: const Duration(milliseconds: 100),
+        curve: Curves.easeOut,
+      );
+    }
+  }
+
+  ScrollController? _findScrollController() {
+    // Try to find a scroll controller in the widget tree
+    // This is a simplified implementation
+    return Scrollable.maybeOf(context)?.widget.controller;
+  }
+
+
+  void _animateBackToPosition() {
+    // Animate the task back to its original position after drag cancel
+    _dropController.reverse();
+  }
+
+  void _animateDropAccepted() {
+    // Animate visual feedback for successful drop
+    _dropController.forward().then((_) {
+      _dropController.reverse();
+    });
+  }
+
+  void _notifyDragStart() {
+    // Notify other widgets about drag start if needed
+    // This could trigger hiding certain UI elements or changing layouts
+  }
+
+  void _notifyDragEnd() {
+    // Notify other widgets about drag end
+    // This could trigger showing UI elements or resetting layouts
+  }
+
+  void markAsInserted() {
+    setState(() => _isBeingInserted = true);
+    _insertController.forward();
+  }
+
+  void markAsRemoved() {
+    _insertController.reverse();
+  }
 }
 
-/// Result class for rescheduling operations
-class RescheduleResult {
-  final DateTime startTime;
-  final DateTime endTime;
+/// Data structure for drag operations
+class TaskDragData {
+  final TaskModel task;
+  final int sourceIndex;
+  final String? sourceDropZone;
+  final Map<String, dynamic>? metadata;
 
-  const RescheduleResult({
-    required this.startTime,
-    required this.endTime,
+  const TaskDragData({
+    required this.task,
+    required this.sourceIndex,
+    this.sourceDropZone,
+    this.metadata,
   });
-}
 
-/// Result class for scheduling operations
-class ScheduleResult {
-  final DateTime startTime;
-  final DateTime endTime;
-  final bool isAllDay;
-
-  const ScheduleResult({
-    required this.startTime,
-    required this.endTime,
-    required this.isAllDay,
-  });
-}
-
-/// Dialog for rescheduling existing events
-class RescheduleDialog extends StatefulWidget {
-  final CalendarEvent event;
-  final DateTime newDate;
-
-  const RescheduleDialog({
-    super.key,
-    required this.event,
-    required this.newDate,
-  });
   @override
-  State<RescheduleDialog> createState() => _RescheduleDialogState();
+  String toString() {
+    return 'TaskDragData(task: ${task.title}, sourceIndex: $sourceIndex, sourceDropZone: $sourceDropZone)';
+  }
 }
 
-class _RescheduleDialogState extends State<RescheduleDialog> {
-  late TimeOfDay startTime;
-  late TimeOfDay endTime;
-  late bool isAllDay;
+/// Drop zone configuration
+class TaskDropZone {
+  final String id;
+  final String name;
+  final Color? highlightColor;
+  final IconData? icon;
+  final bool acceptsAll;
+  final List<String>? acceptedTypes;
+  final bool Function(TaskModel)? canAccept;
+
+  const TaskDropZone({
+    required this.id,
+    required this.name,
+    this.highlightColor,
+    this.icon,
+    this.acceptsAll = true,
+    this.acceptedTypes,
+    this.canAccept,
+  });
+}
+
+/// Reorderable list of draggable tasks
+class DraggableTaskList extends ConsumerStatefulWidget {
+  final List<TaskModel> tasks;
+  final Function(int, int)? onReorder;
+  final Function(TaskModel)? onTaskTap;
+  final Function(TaskModel)? onTaskEdit;
+  final Function(TaskModel)? onTaskDelete;
+  final Function(TaskModel)? onTaskToggleComplete;
+  final TaskCardStyle cardStyle;
+  final bool enableDrag;
+  final bool enableAutoScroll;
+  final EdgeInsets? padding;
+  final String? dropZoneId;
+  final Widget? header;
+  final Widget? footer;
+  final Widget? emptyState;
+
+  const DraggableTaskList({
+    super.key,
+    required this.tasks,
+    this.onReorder,
+    this.onTaskTap,
+    this.onTaskEdit,
+    this.onTaskDelete,
+    this.onTaskToggleComplete,
+    this.cardStyle = TaskCardStyle.elevated,
+    this.enableDrag = true,
+    this.enableAutoScroll = true,
+    this.padding,
+    this.dropZoneId,
+    this.header,
+    this.footer,
+    this.emptyState,
+  });
+
+  @override
+  ConsumerState<DraggableTaskList> createState() => _DraggableTaskListState();
+}
+
+class _DraggableTaskListState extends ConsumerState<DraggableTaskList> {
+  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
+  late List<TaskModel> _tasks;
+
   @override
   void initState() {
     super.initState();
-    startTime = TimeOfDay.fromDateTime(widget.event.startTime);
-    endTime = TimeOfDay.fromDateTime(widget.event.endTime);
-    isAllDay = widget.event.isAllDay;
+    _tasks = List.from(widget.tasks);
   }
+
+  @override
+  void didUpdateWidget(DraggableTaskList oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    
+    if (oldWidget.tasks != widget.tasks) {
+      _updateTasks(oldWidget.tasks, widget.tasks);
+    }
+  }
+
+  void _updateTasks(List<TaskModel> oldTasks, List<TaskModel> newTasks) {
+    // Calculate differences and animate insertions/removals
+    final oldIds = oldTasks.map((t) => t.id).toSet();
+    final newIds = newTasks.map((t) => t.id).toSet();
+    
+    // Handle removals
+    final removedIds = oldIds.difference(newIds);
+    for (final id in removedIds) {
+      final index = _tasks.indexWhere((t) => t.id == id);
+      if (index >= 0) {
+        final task = _tasks.removeAt(index);
+        _listKey.currentState?.removeItem(
+          index,
+          (context, animation) => _buildRemovedItem(task, animation),
+        );
+      }
+    }
+
+    // Handle insertions
+    final addedIds = newIds.difference(oldIds);
+    for (final id in addedIds) {
+      final task = newTasks.firstWhere((t) => t.id == id);
+      final index = newTasks.indexOf(task);
+      _tasks.insert(index, task);
+      _listKey.currentState?.insertItem(index);
+    }
+
+    // Update positions for existing items
+    setState(() => _tasks = List.from(newTasks));
+  }
+
+  Widget _buildRemovedItem(TaskModel task, Animation<double> animation) {
+    return SlideTransition(
+      position: animation.drive(
+        Tween<Offset>(
+          begin: const Offset(1.0, 0.0),
+          end: Offset.zero,
+        ),
+      ),
+      child: FadeTransition(
+        opacity: animation,
+        child: DraggableTaskWidget(
+          task: task,
+          index: 0,
+          cardStyle: widget.cardStyle,
+          enableDrag: false,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text('Reschedule: ${widget.event.title}'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            'Moving to ${_formatDate(widget.newDate)}',
-            style: Theme.of(context).textTheme.bodyLarge,
+    if (_tasks.isEmpty && widget.emptyState != null) {
+      return widget.emptyState!;
+    }
+
+    return Column(
+      children: [
+        if (widget.header != null) widget.header!,
+        Expanded(
+          child: AnimatedList(
+            key: _listKey,
+            padding: widget.padding,
+            initialItemCount: _tasks.length,
+            itemBuilder: (context, index, animation) {
+              if (index >= _tasks.length) return const SizedBox.shrink();
+              
+              return SlideTransition(
+                position: animation.drive(
+                  Tween<Offset>(
+                    begin: const Offset(-1.0, 0.0),
+                    end: Offset.zero,
+                  ),
+                ),
+                child: FadeTransition(
+                  opacity: animation,
+                  child: DraggableTaskWidget(
+                    task: _tasks[index],
+                    index: index,
+                    onReorder: widget.onReorder,
+                    onTap: () => widget.onTaskTap?.call(_tasks[index]),
+                    onEdit: () => widget.onTaskEdit?.call(_tasks[index]),
+                    onDelete: () => widget.onTaskDelete?.call(_tasks[index]),
+                    onToggleComplete: () => widget.onTaskToggleComplete?.call(_tasks[index]),
+                    cardStyle: widget.cardStyle,
+                    enableDrag: widget.enableDrag,
+                    enableAutoScroll: widget.enableAutoScroll,
+                    dropZoneId: widget.dropZoneId,
+                  ),
+                ),
+              );
+            },
           ),
-          const SizedBox(height: 16),
-          
-          // All day toggle
-          SwitchListTile(
-            title: const Text('All Day'),
-            value: isAllDay,
-            onChanged: (value) => setState(() => isAllDay = value),
-          ),
-          
-          if (!isAllDay) ...[
-            // Start time picker
-            ListTile(
-              leading: const Icon(Icons.access_time),
-              title: const Text('Start Time'),
-              subtitle: Text(startTime.format(context)),
-              onTap: () async {
-                final time = await showTimePicker(
-                  context: context,
-                  initialTime: startTime,
-                );
-                if (time != null) {
-                  setState(() => startTime = time);
-                }
-              },
-            ),
-            
-            // End time picker
-            ListTile(
-              leading: const Icon(Icons.access_time_filled),
-              title: const Text('End Time'),
-              subtitle: Text(endTime.format(context)),
-              onTap: () async {
-                final time = await showTimePicker(
-                  context: context,
-                  initialTime: endTime,
-                );
-                if (time != null) {
-                  setState(() => endTime = time);
-                }
-              },
-            ),
-          ],
-        ],
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
         ),
-        ElevatedButton(
-          onPressed: () => _confirmReschedule(),
-          child: const Text('Reschedule'),
-        ),
+        if (widget.footer != null) widget.footer!,
       ],
     );
   }
-
-  void _confirmReschedule() {
-    final DateTime startDateTime;
-    final DateTime endDateTime;
-
-    if (isAllDay) {
-      startDateTime = DateTime(widget.newDate.year, widget.newDate.month, widget.newDate.day);
-      endDateTime = startDateTime.add(const Duration(days: 1));
-    } else {
-      startDateTime = DateTime(
-        widget.newDate.year,
-        widget.newDate.month,
-        widget.newDate.day,
-        startTime.hour,
-        startTime.minute,
-      );
-      endDateTime = DateTime(
-        widget.newDate.year,
-        widget.newDate.month,
-        widget.newDate.day,
-        endTime.hour,
-        endTime.minute,
-      );
-    }
-
-    Navigator.of(context).pop(
-      RescheduleResult(
-        startTime: startDateTime,
-        endTime: endDateTime,
-      ),
-    );
-  }
-
-  String _formatDate(DateTime date) {
-    final now = DateTime.now();
-    if (date.day == now.day && date.month == now.month && date.year == now.year) {
-      return 'today';
-    }
-    if (date.day == now.day + 1 && date.month == now.month && date.year == now.year) {
-      return 'tomorrow';
-    }
-    return '${date.day}/${date.month}/${date.year}';
-  }
 }
 
-/// Dialog for scheduling unscheduled tasks
-class ScheduleTaskDialog extends StatefulWidget {
-  final TaskModel task;
-  final DateTime date;
+/// Grid layout for draggable tasks
+class DraggableTaskGrid extends StatelessWidget {
+  final List<TaskModel> tasks;
+  final Function(int, int)? onReorder;
+  final Function(TaskModel)? onTaskTap;
+  final int crossAxisCount;
+  final double childAspectRatio;
+  final EdgeInsets? padding;
+  final double crossAxisSpacing;
+  final double mainAxisSpacing;
 
-  const ScheduleTaskDialog({
+  const DraggableTaskGrid({
     super.key,
-    required this.task,
-    required this.date,
+    required this.tasks,
+    this.onReorder,
+    this.onTaskTap,
+    this.crossAxisCount = 2,
+    this.childAspectRatio = 1.5,
+    this.padding,
+    this.crossAxisSpacing = 8.0,
+    this.mainAxisSpacing = 8.0,
   });
-  @override
-  State<ScheduleTaskDialog> createState() => _ScheduleTaskDialogState();
-}
 
-class _ScheduleTaskDialogState extends State<ScheduleTaskDialog> {
-  TimeOfDay startTime = const TimeOfDay(hour: 9, minute: 0);
-  TimeOfDay endTime = const TimeOfDay(hour: 10, minute: 0);
-  bool isAllDay = false;
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text('Schedule: ${widget.task.title}'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            'Scheduling for ${_formatDate(widget.date)}',
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
-          const SizedBox(height: 16),
-          
-          // All day toggle
-          SwitchListTile(
-            title: const Text('All Day'),
-            value: isAllDay,
-            onChanged: (value) => setState(() => isAllDay = value),
-          ),
-          
-          if (!isAllDay) ...[
-            // Start time picker
-            ListTile(
-              leading: const Icon(Icons.access_time),
-              title: const Text('Start Time'),
-              subtitle: Text(startTime.format(context)),
-              onTap: () async {
-                final time = await showTimePicker(
-                  context: context,
-                  initialTime: startTime,
-                );
-                if (time != null) {
-                  setState(() => startTime = time);
-                }
-              },
-            ),
-            
-            // End time picker
-            ListTile(
-              leading: const Icon(Icons.access_time_filled),
-              title: const Text('End Time'),
-              subtitle: Text(endTime.format(context)),
-              onTap: () async {
-                final time = await showTimePicker(
-                  context: context,
-                  initialTime: endTime,
-                );
-                if (time != null) {
-                  setState(() => endTime = time);
-                }
-              },
-            ),
-          ],
-        ],
+    return GridView.builder(
+      padding: padding,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: crossAxisCount,
+        childAspectRatio: childAspectRatio,
+        crossAxisSpacing: crossAxisSpacing,
+        mainAxisSpacing: mainAxisSpacing,
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
-        ),
-        ElevatedButton(
-          onPressed: () => _confirmSchedule(),
-          child: const Text('Schedule'),
-        ),
-      ],
+      itemCount: tasks.length,
+      itemBuilder: (context, index) {
+        return DraggableTaskWidget(
+          task: tasks[index],
+          index: index,
+          onReorder: onReorder,
+          onTap: () => onTaskTap?.call(tasks[index]),
+          cardStyle: TaskCardStyle.compact,
+          margin: EdgeInsets.zero,
+        );
+      },
     );
-  }
-
-  void _confirmSchedule() {
-    final DateTime startDateTime;
-    final DateTime endDateTime;
-
-    if (isAllDay) {
-      startDateTime = DateTime(widget.date.year, widget.date.month, widget.date.day);
-      endDateTime = startDateTime.add(const Duration(days: 1));
-    } else {
-      startDateTime = DateTime(
-        widget.date.year,
-        widget.date.month,
-        widget.date.day,
-        startTime.hour,
-        startTime.minute,
-      );
-      endDateTime = DateTime(
-        widget.date.year,
-        widget.date.month,
-        widget.date.day,
-        endTime.hour,
-        endTime.minute,
-      );
-    }
-
-    Navigator.of(context).pop(
-      ScheduleResult(
-        startTime: startDateTime,
-        endTime: endDateTime,
-        isAllDay: isAllDay,
-      ),
-    );
-  }
-
-  String _formatDate(DateTime date) {
-    final now = DateTime.now();
-    if (date.day == now.day && date.month == now.month && date.year == now.year) {
-      return 'today';
-    }
-    if (date.day == now.day + 1 && date.month == now.month && date.year == now.year) {
-      return 'tomorrow';
-    }
-    return '${date.day}/${date.month}/${date.year}';
   }
 }

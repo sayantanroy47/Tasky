@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'dart:math' as math;
+
 import '../../core/theme/material3/motion_system.dart';
 import '../../core/theme/typography_constants.dart';
-import '../../core/providers/navigation_provider.dart';
 
 /// Expressive Material 3 Bottom Navigation with theme-aware styling and animations
 class ExpressiveBottomNavigation extends StatefulWidget {
@@ -344,7 +343,7 @@ class _ExpressiveBottomNavigationState extends State<ExpressiveBottomNavigation>
   double _calculateIndicatorPosition(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final itemWidth = _calculateItemWidth(context);
-    final padding = 16.0;
+    const padding = 16.0;
     final availableWidth = screenWidth - (padding * 2);
     final spacing = (availableWidth - (itemWidth * widget.destinations.length)) / (widget.destinations.length - 1);
     
@@ -356,7 +355,7 @@ class _ExpressiveBottomNavigationState extends State<ExpressiveBottomNavigation>
     
     final screenWidth = MediaQuery.of(context).size.width;
     final itemWidth = _calculateItemWidth(context);
-    final padding = 16.0;
+    const padding = 16.0;
     final availableWidth = screenWidth - (padding * 2);
     final spacing = (availableWidth - (itemWidth * widget.destinations.length)) / (widget.destinations.length - 1);
     
@@ -365,7 +364,7 @@ class _ExpressiveBottomNavigationState extends State<ExpressiveBottomNavigation>
 
   double _calculateItemWidth(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final padding = 32.0;
+    const padding = 32.0;
     return (screenWidth - padding) / widget.destinations.length;
   }
 }

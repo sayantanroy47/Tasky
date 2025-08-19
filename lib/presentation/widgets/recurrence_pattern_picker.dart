@@ -103,6 +103,8 @@ class _RecurrencePatternPickerState extends State<RecurrencePatternPicker> {
       case RecurrenceType.daily:
         label = 'Every _ day(s)';
         break;
+      case RecurrenceType.none:
+        return const SizedBox.shrink();
       case RecurrenceType.weekly:
         label = 'Every _ week(s)';
         break;

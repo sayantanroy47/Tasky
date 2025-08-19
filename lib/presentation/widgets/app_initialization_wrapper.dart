@@ -1,11 +1,10 @@
 import 'dart:async';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../main.dart' show shareIntentServiceProvider;
 import '../../core/providers/core_providers.dart';
 import '../providers/initialization_providers.dart';
-import '../providers/task_providers.dart';
+import '../providers/background_service_providers.dart';
 import '../../core/theme/typography_constants.dart';
 
 /// Wrapper widget that handles app initialization with performance monitoring
@@ -26,12 +25,15 @@ class _AppInitializationWrapperState extends ConsumerState<AppInitializationWrap
   void initState() {
     super.initState();
     
-    // Set context for ShareIntentService
+    // Set context for ShareIntentService and initialize background services
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final shareIntentService = ref.read(shareIntentServiceProvider);
       final taskRepository = ref.read(taskRepositoryProvider);
       shareIntentService.setContext(context);
       shareIntentService.setTaskRepository(taskRepository);
+      
+      // Initialize background service processing
+      ref.read(backgroundProcessingProvider);
     });
   }
 

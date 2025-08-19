@@ -144,6 +144,9 @@ class CompositeAITaskParser implements AITaskParser {
         return _claudeParser;
       case AIServiceType.local:
         return _localParser;
+      case AIServiceType.composite:
+        // For composite, return null to use fallback logic
+        return null;
     }
   }
 

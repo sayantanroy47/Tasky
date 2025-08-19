@@ -3,7 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import '../domain/entities/task_model.dart';
 import '../domain/models/enums.dart';
-import '../data/repositories/task_repository.dart';
+import '../domain/repositories/task_repository.dart';
+import '../core/providers/core_providers.dart';
 
 /// Service for managing offline-first data operations
 class OfflineDataService {

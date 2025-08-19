@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import '../domain/entities/task_model.dart';
@@ -22,7 +21,6 @@ class ShareIntentService {
 
   // Wife-specific filtering settings
   final Set<String> _trustedContacts = {'wife', 'Wife', 'WIFE'};
-  final Set<String> _messagingApps = {'whatsapp', 'facebook', 'messenger', 'com.whatsapp', 'com.facebook.orca'};
 
   /// Initialize with task repository for persistence
   void setTaskRepository(TaskRepository taskRepository) {
@@ -44,19 +42,6 @@ class ShareIntentService {
     _trustedContacts.remove(contact.toLowerCase());
   }
 
-  /// Check if message is from a trusted contact
-  bool _isFromTrustedContact(String? source) {
-    if (source == null) return false;
-    final lowerSource = source.toLowerCase();
-    return _trustedContacts.any((contact) => lowerSource.contains(contact));
-  }
-
-  /// Check if message is from a messaging app
-  bool _isFromMessagingApp(String? packageName) {
-    if (packageName == null) return false;
-    final lowerPackage = packageName.toLowerCase();
-    return _messagingApps.any((app) => lowerPackage.contains(app));
-  }
 
   /// Detect if text contains task-like requests (wife-specific patterns)
   bool _isTaskRequest(String text) {

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'standardized_app_bar.dart';
-import '../../core/providers/navigation_provider.dart';
 import '../../core/routing/app_router.dart';
+import '../../core/providers/navigation_provider.dart';
 
 /// Common scaffold widget with consistent navigation
 class AppScaffold extends ConsumerWidget {

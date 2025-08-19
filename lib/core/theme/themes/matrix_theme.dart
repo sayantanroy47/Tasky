@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../app_theme_data.dart' as app_theme_data;
 import '../models/theme_metadata.dart';
 import '../models/theme_colors.dart';
@@ -19,8 +20,8 @@ class MatrixTheme {
         id: isDark ? 'matrix_dark' : 'matrix',
         name: isDark ? 'Matrix Dark' : 'Matrix Light',
         description: isDark 
-          ? 'Enter the digital reality with this cyberpunk theme featuring neon green code on pure black backgrounds'
-          : 'Light variant of the Matrix theme with green code on white terminal backgrounds',
+          ? 'Cinematic Matrix theme with pure black void and cascading neon green code for an authentic digital reality experience'
+          : 'Matrix light variant featuring bright neon green terminals on clean white backgrounds for futuristic readability',
         author: 'Tasky Team',
         version: '1.0.0',
         tags: ['cyberpunk', 'hacker', 'digital', 'green', 'terminal', 'retro'],
@@ -48,120 +49,110 @@ class MatrixTheme {
   /// Create dark variant (standard Matrix)
   static app_theme_data.AppThemeData createDark() => create(isDark: true);
 
-  /// Helper method to reduce color brightness by 25%
-  static Color _reduceBrightness(Color color, double factor) {
-    final hsl = HSLColor.fromColor(color);
-    return hsl.withLightness((hsl.lightness * factor).clamp(0.0, 1.0)).toColor();
-  }
 
-  /// Create Matrix-inspired color palette
+  /// Create Matrix cinematic neon color palette with accuracy
   static ThemeColors _createMatrixColors({bool isDark = true}) {
     if (!isDark) {
-      // Light variant: Use dark theme colors reduced by 25% brightness + light backgrounds
+      // Matrix Light Variant: Cinematic Terminal
       
-      // Get dark theme colors first
-      const darkNeonGreen = Color(0xFF00ff00);      // Dark theme primary
-      const darkGreen = Color(0xFF008000);          // Dark theme secondary  
-      const darkBrightGreen = Color(0xFF39ff14);    // Dark theme highlight
-      const darkTerminalGreen = Color(0xFF00cc00);  // Dark theme accent
+      // Matrix neon colors for light variant
+      const darkNeonGreen = Color(0xFF00FF00);      // Primary neon
+      const darkGreen = Color(0xFF008000);          // Secondary
+      const darkBrightGreen = Color(0xFF39FF14);    // Highlight
+      const darkTerminalGreen = Color(0xFF00CC00);  // Accent
       
-      // Reduce brightness by 25% (factor of 0.75)
-      final lightPrimary = _reduceBrightness(darkNeonGreen, 0.75);
-      final lightSecondary = _reduceBrightness(darkGreen, 0.75);
-      final lightHighlight = _reduceBrightness(darkBrightGreen, 0.75);
-      final lightAccent = _reduceBrightness(darkTerminalGreen, 0.75);
+      // Light terminal backgrounds
+      const lightestGray = Color(0xFFFFFFFF);       // Background white
+      const lightGray = Color(0xFFF3F4F6);          // Surface
+      const paleGreen = Color(0xFFECFDF5);          // Container tint
       
-      // Light backgrounds
-      const lightestGray = Color(0xFFfafafa);       // Background - Brighter white
-      const lightGray = Color(0xFFf5f5f5);          // Surface - Light gray  
-      const paleGreen = Color(0xFFe8f5e8);          // Container - More visible green tint
-      
-      return ThemeColors(
-        // Primary colors - Reduced brightness from dark theme
-        primary: lightPrimary,
-        onPrimary: const Color(0xFFffffff), // White text on colored primary buttons
+      return const ThemeColors(
+        // Primary colors - Dark neon green on light background
+        primary: darkNeonGreen,
+        onPrimary: Color(0xFFFFFFFF), // White text on colored primary buttons
         primaryContainer: paleGreen,
-        onPrimaryContainer: const Color(0xFF003300), // Very dark green text on light containers
+        onPrimaryContainer: Color(0xFF003300), // Very dark green text on light containers
 
-        // Secondary colors - Reduced brightness from dark theme
-        secondary: lightSecondary,
-        onSecondary: const Color(0xFFffffff), // White text on colored secondary buttons
+        // Secondary colors - Dark green variations
+        secondary: darkGreen,
+        onSecondary: Color(0xFFFFFFFF), // White text on colored secondary buttons
         secondaryContainer: paleGreen,
-        onSecondaryContainer: const Color(0xFF003300), // Very dark green text on light containers
+        onSecondaryContainer: Color(0xFF003300), // Very dark green text on light containers
 
-        // Tertiary colors - Reduced brightness from dark theme
-        tertiary: lightHighlight,
-        onTertiary: const Color(0xFFffffff), // White text on colored tertiary buttons
+        // Tertiary colors - Bright green highlights
+        tertiary: darkBrightGreen,
+        onTertiary: Color(0xFFFFFFFF), // White text on colored tertiary buttons
         tertiaryContainer: paleGreen,
-        onTertiaryContainer: const Color(0xFF003300), // Very dark green text on light containers
+        onTertiaryContainer: Color(0xFF003300), // Very dark green text on light containers
 
         // Surface colors - Light backgrounds
         surface: lightGray,
-        onSurface: const Color(0xFF1a1a1a), // Dark text for light surfaces
-        surfaceVariant: const Color(0xFFf5f5f5),
-        onSurfaceVariant: const Color(0xFF2a2a2a), // Dark text for light surfaces
-        inverseSurface: lightSecondary,
+        onSurface: Color(0xFF1a1a1a), // Dark text for light surfaces
+        surfaceVariant: Color(0xFFf5f5f5),
+        onSurfaceVariant: Color(0xFF2a2a2a), // Dark text for light surfaces
+        inverseSurface: darkGreen,
         onInverseSurface: lightestGray,
 
         // Background colors - Lightest gray as requested
         background: lightestGray,
-        onBackground: const Color(0xFF0a0a0a), // Very dark text for light backgrounds
+        onBackground: Color(0xFF0a0a0a), // Very dark text for light backgrounds
 
-        // Error colors - Reduced brightness
-        error: _reduceBrightness(const Color(0xFFff0040), 0.75),
+        // Error colors - Red warnings
+        error: Color(0xFFDC2626),
         onError: lightestGray,
-        errorContainer: const Color(0xFFffebee),
-        onErrorContainer: _reduceBrightness(const Color(0xFFff0040), 0.75),
+        errorContainer: Color(0xFFffebee),
+        onErrorContainer: Color(0xFFDC2626),
 
-        // Special colors - Reduced brightness
-        accent: lightAccent,
-        highlight: lightHighlight,
-        shadow: const Color(0xFF000000),
-        outline: lightSecondary,
-        outlineVariant: lightAccent,
+        // Special colors
+        accent: darkTerminalGreen,
+        highlight: darkBrightGreen,
+        shadow: Color(0xFF000000),
+        outline: darkGreen,
+        outlineVariant: darkTerminalGreen,
 
-        // Task priority colors - Reduced brightness from dark theme
-        taskLowPriority: _reduceBrightness(const Color(0xFF40ff40), 0.75),
-        taskMediumPriority: lightPrimary,
-        taskHighPriority: lightHighlight,
-        taskUrgentPriority: _reduceBrightness(const Color(0xFFff0040), 0.75),
+        // Task priority colors - Green theme variants
+        taskLowPriority: Color(0xFF10B981),
+        taskMediumPriority: darkNeonGreen,
+        taskHighPriority: darkBrightGreen,
+        taskUrgentPriority: Color(0xFFDC2626),
 
-        // Status colors - Reduced brightness
-        success: _reduceBrightness(const Color(0xFF00ff80), 0.75),
-        warning: _reduceBrightness(const Color(0xFFffff00), 0.75),
-        info: lightAccent,
+        // Status colors
+        success: Color(0xFF10B981),
+        warning: Color(0xFFF59E0B),
+        info: darkTerminalGreen,
 
-        // Calendar dot colors - Reduced brightness
-        calendarTodayDot: lightPrimary,
-        calendarOverdueDot: _reduceBrightness(const Color(0xFFff0040), 0.75),
-        calendarFutureDot: lightAccent,
-        calendarCompletedDot: _reduceBrightness(const Color(0xFF00ff80), 0.75),
-        calendarHighPriorityDot: lightHighlight,
+        // Calendar dot colors
+        calendarTodayDot: darkNeonGreen,
+        calendarOverdueDot: Color(0xFFDC2626),
+        calendarFutureDot: darkTerminalGreen,
+        calendarCompletedDot: Color(0xFF10B981),
+        calendarHighPriorityDot: darkBrightGreen,
         
-        // Status badge colors - Reduced brightness
-        statusPendingBadge: lightAccent,
-        statusInProgressBadge: lightHighlight,
-        statusCompletedBadge: _reduceBrightness(const Color(0xFF00ff80), 0.75),
-        statusCancelledBadge: const Color(0xFF9e9e9e),
-        statusOverdueBadge: _reduceBrightness(const Color(0xFFff0040), 0.75),
-        statusOnHoldBadge: _reduceBrightness(const Color(0xFFffff00), 0.75),
+        // Status badge colors
+        statusPendingBadge: darkTerminalGreen,
+        statusInProgressBadge: darkBrightGreen,
+        statusCompletedBadge: Color(0xFF10B981),
+        statusCancelledBadge: Color(0xFF9e9e9e),
+        statusOverdueBadge: Color(0xFFDC2626),
+        statusOnHoldBadge: Color(0xFFF59E0B),
 
-        // Interactive colors - Reduced brightness
-        hover: _reduceBrightness(const Color(0xFF00cc00), 0.75),
-        pressed: _reduceBrightness(const Color(0xFF008000), 0.75),
-        focus: lightHighlight,
-        disabled: const Color(0xFF9e9e9e),
+        // Interactive colors
+        hover: Color(0xFF059669),
+        pressed: Color(0xFF047857),
+        focus: darkBrightGreen,
+        disabled: Color(0xFF9e9e9e),
       );
     }
     
-    // Dark variant: Original Matrix colors
-    const pureBlack = Color(0xFF000000);          // Background - The void
-    const neonGreen = Color(0xFF00ff00);          // Primary - Matrix code
-    const darkGreen = Color(0xFF008000);          // Secondary - Deeper code
-    const brightGreen = Color(0xFF39ff14);        // Highlight - Active code
-    const terminalGreen = Color(0xFF00cc00);      // Accent - Terminal text
-    const darkGray = Color(0xFF0d1b0d);           // Surface - Subtle variation
-    const matrixGreen = Color(0xFF003300);        // Container - Deep matrix
+    // Dark variant: Refined Matrix colors
+    const pureBlack = Color(0xFF000000);          // The void
+    const neonGreen = Color(0xFF00FF00);          // Primary Matrix code
+    const darkGreen = Color(0xFF006400);          // Deeper authentic green
+    const brightGreen = Color(0xFF39FF14);        // Neon highlight
+    const terminalGreen = Color(0xFF00CC00);      // Terminal accent
+    const darkGray = Color(0xFF111827);           // Subtle contrast surface
+    const matrixGreen = Color(0xFF003300);        // Container depth green
+    const shadowEmerald = Color(0xFF064E3B);      // Muted emerald for UI layering
     
     return const ThemeColors(
       // Primary colors - Neon green like Matrix code
@@ -173,19 +164,19 @@ class MatrixTheme {
       // Secondary colors - Dark green variations
       secondary: darkGreen,
       onSecondary: neonGreen,
-      secondaryContainer: Color(0xFF004d00),
+      secondaryContainer: shadowEmerald,
       onSecondaryContainer: terminalGreen,
 
       // Tertiary colors - Bright green highlights
       tertiary: brightGreen,
       onTertiary: pureBlack,
-      tertiaryContainer: Color(0xFF001a00),
+      tertiaryContainer: matrixGreen,
       onTertiaryContainer: brightGreen,
 
       // Surface colors - Dark with green tint
       surface: darkGray,
       onSurface: neonGreen,
-      surfaceVariant: Color(0xFF1a1a1a),
+      surfaceVariant: shadowEmerald,
       onSurfaceVariant: terminalGreen,
       inverseSurface: neonGreen,
       onInverseSurface: pureBlack,
@@ -195,46 +186,46 @@ class MatrixTheme {
       onBackground: neonGreen,
 
       // Error colors - Red warnings in the Matrix
-      error: Color(0xFFff0040),
+      error: Color(0xFFFF0040),
       onError: pureBlack,
       errorContainer: Color(0xFF330008),
-      onErrorContainer: Color(0xFFff6680),
+      onErrorContainer: Color(0xFFFF6680),
 
       // Special colors
       accent: terminalGreen,
       highlight: brightGreen,
       shadow: pureBlack,
-      outline: Color(0xFF004d00),
-      outlineVariant: Color(0xFF002600),
+      outline: shadowEmerald,
+      outlineVariant: matrixGreen,
 
       // Task priority colors - Different shades of green
-      taskLowPriority: Color(0xFF40ff40),    // Light green - Low priority
+      taskLowPriority: Color(0xFF40FF40),    // Light green - Low priority
       taskMediumPriority: neonGreen,         // Standard green - Medium
       taskHighPriority: brightGreen,         // Bright green - High priority
-      taskUrgentPriority: Color(0xFFff0040), // Red - System alert
+      taskUrgentPriority: Color(0xFFFF0040), // Red - System alert
 
       // Status colors
-      success: Color(0xFF00ff80),
-      warning: Color(0xFFffff00),
+      success: Color(0xFF00FF80),
+      warning: Color(0xFFFFFF00),
       info: terminalGreen,
 
       // Calendar dot colors - Matrix green theme
       calendarTodayDot: neonGreen,                    // Bright green for today
-      calendarOverdueDot: Color(0xFFff0040),          // Red for overdue
+      calendarOverdueDot: Color(0xFFFF0040),          // Red for overdue
       calendarFutureDot: terminalGreen,               // Standard green for future
-      calendarCompletedDot: Color(0xFF00ff80),        // Success green for completed
+      calendarCompletedDot: Color(0xFF00FF80),        // Success green for completed
       calendarHighPriorityDot: brightGreen,           // Bright green for high priority
       
       // Status badge colors - Matrix themed
       statusPendingBadge: terminalGreen,              // Standard green for pending
       statusInProgressBadge: brightGreen,             // Bright green for in progress
-      statusCompletedBadge: Color(0xFF00ff80),        // Success green for completed
+      statusCompletedBadge: Color(0xFF00FF80),        // Success green for completed
       statusCancelledBadge: Color(0xFF666666),        // Gray for cancelled
-      statusOverdueBadge: Color(0xFFff0040),          // Red for overdue
-      statusOnHoldBadge: Color(0xFFffff00),           // Yellow for on hold
+      statusOverdueBadge: Color(0xFFFF0040),          // Red for overdue
+      statusOnHoldBadge: Color(0xFFFFFF00),           // Yellow for on hold
 
       // Interactive colors
-      hover: Color(0xFF00cc00),
+      hover: Color(0xFF00CC00),
       pressed: Color(0xFF008000),
       focus: brightGreen,
       disabled: Color(0xFF333333),
@@ -257,154 +248,202 @@ class MatrixTheme {
       baseLineHeight: TypographyConstants.normalLineHeight,
       
       // Use EXACT typography constants for all sizes
-      displayLarge: TypographyConstants.getStyle(
+      displayLarge: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.displayLarge,
         fontWeight: TypographyConstants.light,
-        fontFamily: fontFamily,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      displayMedium: TypographyConstants.getStyle(
+      displayMedium: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.displayMedium,
         fontWeight: TypographyConstants.light,
-        fontFamily: fontFamily,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      displaySmall: TypographyConstants.getStyle(
+      displaySmall: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.displaySmall,
         fontWeight: TypographyConstants.regular,
-        fontFamily: fontFamily,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
       
-      headlineLarge: TypographyConstants.getStyle(
+      headlineLarge: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.headlineLarge,
         fontWeight: TypographyConstants.regular,
-        fontFamily: fontFamily,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      headlineMedium: TypographyConstants.getStyle(
+      headlineMedium: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.headlineMedium,
         fontWeight: TypographyConstants.regular,
-        fontFamily: fontFamily,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      headlineSmall: TypographyConstants.getStyle(
+      headlineSmall: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.headlineSmall,
         fontWeight: TypographyConstants.regular,
-        fontFamily: fontFamily,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
       
-      titleLarge: TypographyConstants.getStyle(
+      titleLarge: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.titleLarge,
         fontWeight: TypographyConstants.medium,
-        fontFamily: fontFamily,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      titleMedium: TypographyConstants.getStyle(
+      titleMedium: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.titleMedium,
         fontWeight: TypographyConstants.medium,
-        fontFamily: fontFamily,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      titleSmall: TypographyConstants.getStyle(
+      titleSmall: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.titleSmall,
         fontWeight: TypographyConstants.medium,
-        fontFamily: fontFamily,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
       
-      bodyLarge: TypographyConstants.getStyle(
+      bodyLarge: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.bodyLarge,
         fontWeight: TypographyConstants.regular,
-        fontFamily: fontFamily,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      bodyMedium: TypographyConstants.getStyle(
+      bodyMedium: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.bodyMedium,
         fontWeight: TypographyConstants.regular,
-        fontFamily: fontFamily,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      bodySmall: TypographyConstants.getStyle(
+      bodySmall: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.bodySmall,
         fontWeight: TypographyConstants.regular,
-        fontFamily: fontFamily,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
       
-      labelLarge: TypographyConstants.getStyle(
+      labelLarge: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.labelLarge,
         fontWeight: TypographyConstants.medium,
-        fontFamily: fontFamily,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      labelMedium: TypographyConstants.getStyle(
+      labelMedium: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.labelMedium,
         fontWeight: TypographyConstants.medium,
-        fontFamily: fontFamily,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      labelSmall: TypographyConstants.getStyle(
+      labelSmall: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.labelSmall,
         fontWeight: TypographyConstants.medium,
-        fontFamily: fontFamily,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
       
       // Custom app styles with exact constants
-      taskTitle: TypographyConstants.getStyle(
+      taskTitle: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.taskTitle,
         fontWeight: TypographyConstants.semiBold,
-        fontFamily: fontFamily,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      taskDescription: TypographyConstants.getStyle(
+      taskDescription: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.taskDescription,
         fontWeight: TypographyConstants.regular,
-        fontFamily: fontFamily,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      taskMeta: TypographyConstants.getStyle(
+      taskMeta: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.taskMeta,
         fontWeight: TypographyConstants.regular,
-        fontFamily: fontFamily,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      cardTitle: TypographyConstants.getStyle(
+      cardTitle: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.titleSmall,
         fontWeight: TypographyConstants.medium,
-        fontFamily: fontFamily,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      cardSubtitle: TypographyConstants.getStyle(
+      cardSubtitle: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.bodySmall,
         fontWeight: TypographyConstants.regular,
-        fontFamily: fontFamily,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      buttonText: TypographyConstants.getStyle(
+      buttonText: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.buttonText,
         fontWeight: TypographyConstants.medium,
-        fontFamily: fontFamily,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      inputText: TypographyConstants.getStyle(
+      inputText: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.inputText,
         fontWeight: TypographyConstants.regular,
-        fontFamily: fontFamily,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      appBarTitle: TypographyConstants.getStyle(
+      appBarTitle: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.appBarTitle,
         fontWeight: TypographyConstants.medium,
-        fontFamily: fontFamily,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      navigationLabel: TypographyConstants.getStyle(
+      navigationLabel: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.navigationLabel,
         fontWeight: TypographyConstants.medium,
-        fontFamily: fontFamily,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
     );

@@ -3,17 +3,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/providers/navigation_provider.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../core/accessibility/accessibility_constants.dart';
-import '../../core/design_system/design_tokens.dart' hide BorderRadius;
+import '../../core/design_system/design_tokens.dart';
 import '../../core/design_system/responsive_builder.dart';
 import '../../core/design_system/responsive_constants.dart';
-import '../../domain/entities/task_model.dart';
+
 import 'home_page_m3.dart';
 import 'calendar_page.dart';
 import 'analytics_page.dart';
 import 'settings_page.dart';
-import '../widgets/unified_task_creation_dialog.dart';
-import '../widgets/voice_task_creation_dialog_m3.dart';
-import '../widgets/voice_only_creation_dialog.dart';
+import 'voice_recording_page.dart';
+import '../widgets/enhanced_task_creation_dialog.dart';
+
 import '../widgets/theme_background_widget.dart';
 import '../widgets/glassmorphism_container.dart';
 import '../widgets/adaptive_navigation.dart';
@@ -496,21 +496,21 @@ class MainScaffold extends ConsumerWidget {
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium),
-          child: Container(
-            height: AccessibilityConstants.minTouchTarget,
-            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 2), // Reduced padding to prevent overflow
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 2),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 // Enhanced icon with larger selection box that covers the icon properly
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  width: 40, // Increased width to properly cover icon
-                  height: 40, // Increased height to properly cover icon
-                  padding: const EdgeInsets.all(8), // Increased padding for better coverage
-                  decoration: isSelected ? BoxDecoration(
-                    color: theme.colorScheme.primary.withOpacity(0.15),
+                Flexible(
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    width: 32,
+                    height: 32,
+                    padding: const EdgeInsets.all(6),
+                    decoration: isSelected ? BoxDecoration(
+                      color: theme.colorScheme.primary.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium), // Larger radius
                     border: Border.all(
                       color: theme.colorScheme.primary.withOpacity(0.3),
@@ -524,14 +524,30 @@ class MainScaffold extends ConsumerWidget {
                       ),
                     ],
                   ) : null,
-                  child: Icon(
-                    isSelected ? item.selectedIcon : item.icon,
-                    size: 24, // Increased icon size for better visibility
-                    color: isSelected 
-                        ? theme.colorScheme.primary 
-                        : theme.colorScheme.onSurfaceVariant,
+                    child: Icon(
+                      isSelected ? item.selectedIcon : item.icon,
+                      size: 20,
+                      color: isSelected 
+                          ? theme.colorScheme.primary 
+                          : theme.colorScheme.onSurfaceVariant,
+                    ),
                   ),
-                )
+                ),
+                const SizedBox(height: 2),
+                Flexible(
+                  child: Text(
+                    item.label,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: isSelected 
+                          ? theme.colorScheme.primary 
+                          : theme.colorScheme.onSurfaceVariant,
+                      fontSize: 10,
+                    ),
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
               ],
             ),
           ),
@@ -540,15 +556,163 @@ class MainScaffold extends ConsumerWidget {
     );
   }
 
-  /// Show streamlined task creation dialog - single unified flow
+  /// Show task creation options menu
   void _showTaskCreationMenu(BuildContext context) {
-    // Navigate to the unified task creation page
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const UnifiedTaskCreationDialog(
-          mode: TaskCreationMode.manual, // Default to manual, but dialog includes voice options
+    final theme = Theme.of(context);
+    
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => GlassmorphismContainer(
+        level: GlassLevel.floating,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        margin: EdgeInsets.zero,
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header
+                Text(
+                  'Create New Task',
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Choose how you\'d like to create your task',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                
+                // Task Creation Options
+                _buildTaskCreationOption(
+                  context: context,
+                  icon: Icons.mic,
+                  iconColor: theme.colorScheme.primary,
+                  title: 'AI Voice Entry',
+                  subtitle: 'Speak your task, we\'ll transcribe it',
+                  onTap: () async {
+                    Navigator.pop(context);
+                    
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const VoiceRecordingPage(),
+                      ),
+                    );
+                  },
+                ),
+                
+                const SizedBox(height: 12),
+                
+                
+                _buildTaskCreationOption(
+                  context: context,
+                  icon: Icons.edit,
+                  iconColor: Colors.green,
+                  title: 'Manual Entry',
+                  subtitle: 'Type your task details manually',
+                  onTap: () {
+                    Navigator.pop(context);
+                    debugPrint('Manual: Showing Enhanced Task Creation Dialog');
+                    try {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          debugPrint('Manual: Building EnhancedTaskCreationDialog');
+                          return const EnhancedTaskCreationDialog(
+                            prePopulatedData: <String, String>{
+                              'creationMode': 'manual',
+                            },
+                          );
+                        },
+                      );
+                    } catch (e) {
+                      debugPrint('Manual: Error showing dialog: $e');
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Dialog error: $e')),
+                      );
+                    }
+                  },
+                ),
+                
+                const SizedBox(height: 16),
+              ],
+            ),
+          ),
         ),
-        fullscreenDialog: true,
+      ),
+    );
+  }
+  
+  /// Build individual task creation option
+  Widget _buildTaskCreationOption({
+    required BuildContext context,
+    required IconData icon,
+    required Color iconColor,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    final theme = Theme.of(context);
+    
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: GlassmorphismContainer(
+        level: GlassLevel.interactive,
+        padding: const EdgeInsets.all(16),
+        borderRadius: BorderRadius.circular(16),
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: iconColor.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(
+                icon,
+                color: iconColor,
+                size: 24,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    subtitle,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.chevron_right,
+              color: theme.colorScheme.onSurfaceVariant,
+              size: 20,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -569,9 +733,13 @@ class CenterDockedFloatingActionButtonLocation extends FloatingActionButtonLocat
     // Calculate horizontal center
     final double fabX = (scaffoldGeometry.scaffoldSize.width - fabSize) / 2.0;
     
+    // Account for bottom insets (system navigation bar)
+    final double bottomInsets = scaffoldGeometry.minInsets.bottom;
+    
     // Calculate vertical center within the bottom navigation bar
     // Position FAB so its center aligns with the center of the 80px toolbar
-    final double fabY = scaffoldGeometry.scaffoldSize.height - bottomNavHeight + (bottomNavHeight - fabSize) / 2.0;
+    // Account for system insets to move FAB up when navigation bar appears
+    final double fabY = scaffoldGeometry.scaffoldSize.height - bottomNavHeight - bottomInsets + (bottomNavHeight - fabSize) / 2.0;
     
     return Offset(fabX, fabY);
   }

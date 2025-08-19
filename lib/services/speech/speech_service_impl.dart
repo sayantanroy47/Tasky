@@ -5,7 +5,6 @@ import 'package:speech_to_text/speech_recognition_result.dart' as stt;
 import 'package:permission_handler/permission_handler.dart';
 import 'speech_service.dart';
 import 'transcription_service.dart';
-import 'transcription_service_impl.dart';
 
 /// Real implementation of SpeechService using speech_to_text package
 class SpeechServiceImpl implements SpeechService {
@@ -115,10 +114,12 @@ class SpeechServiceImpl implements SpeechService {
         localeId: localeId,
         listenFor: listenFor ?? const Duration(minutes: 5), // Increase to 5 minutes
         pauseFor: pauseFor ?? const Duration(seconds: 5), // Increase pause timeout
-        partialResults: true,
+        listenOptions: SpeechListenOptions(
+          partialResults: true,
+          cancelOnError: false, // Don't cancel on error - let user handle it
+          listenMode: ListenMode.dictation, // Change to dictation mode for longer listening
+        ),
         onSoundLevelChange: null, // Could be used for visual feedback
-        cancelOnError: false, // Don't cancel on error - let user handle it
-        listenMode: ListenMode.dictation, // Change to dictation mode for longer listening
       );
       _isListening = true;
       if (kDebugMode) {
@@ -180,28 +181,26 @@ class SpeechServiceImpl implements SpeechService {
 
   @override
   Future<TranscriptionResult> transcribeAudioFile(String audioFilePath) async {
-    // Use the transcription service for audio file processing
-    final transcriptionService = TranscriptionServiceImpl();
-    await transcriptionService.initialize();
-    
-    try {
-      return await transcriptionService.transcribeAudioFile(audioFilePath);
-    } finally {
-      await transcriptionService.dispose();
-    }
+    // Note: Native speech-to-text only works for live audio, not saved files
+    // For file transcription, use the live speech recognition workflow instead
+    return TranscriptionResult.failure(
+      error: const TranscriptionError(
+        message: 'File transcription not supported with native speech-to-text. Use live speech recognition instead.',
+        type: TranscriptionErrorType.serviceUnavailable,
+      ),
+    );
   }
 
   @override
   Future<TranscriptionResult> transcribeAudioData(List<int> audioData) async {
-    // Use the transcription service for audio data processing
-    final transcriptionService = TranscriptionServiceImpl();
-    await transcriptionService.initialize();
-    
-    try {
-      return await transcriptionService.transcribeAudioData(audioData);
-    } finally {
-      await transcriptionService.dispose();
-    }
+    // Note: Native speech-to-text only works for live audio, not audio data
+    // For audio data transcription, use the live speech recognition workflow instead
+    return TranscriptionResult.failure(
+      error: const TranscriptionError(
+        message: 'Audio data transcription not supported with native speech-to-text. Use live speech recognition instead.',
+        type: TranscriptionErrorType.serviceUnavailable,
+      ),
+    );
   }
 
   @override
@@ -209,7 +208,7 @@ class SpeechServiceImpl implements SpeechService {
 
   @override
   Future<void> updateTranscriptionConfig(TranscriptionConfig config) async {
-    // Stub for now
+    // Config updates not needed for native speech-to-text
   }
 
   @override

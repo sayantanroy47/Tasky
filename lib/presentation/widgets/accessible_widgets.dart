@@ -126,7 +126,7 @@ class AccessibleTextField extends ConsumerWidget {
         focusNode: focusNode,
         autofocus: autofocus,
         style: settings.largeTextMode 
-            ? Theme.of(context).textTheme.bodyLarge?.copyWith(fontSize: 18)
+            ? Theme.of(context).textTheme.titleMedium // Use titleMedium (18.0) for large text mode
             : null,
       ),
     );

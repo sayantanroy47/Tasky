@@ -5,10 +5,13 @@ import 'package:local_auth/local_auth.dart';
 import '../widgets/enhanced_ux_widgets.dart';
 import '../../services/security_service.dart';
 import '../../core/theme/typography_constants.dart';
+import '../widgets/glassmorphism_container.dart';
+import '../../core/design_system/design_tokens.dart';
 
 /// Main authentication screen that handles different auth states
 class AuthenticationScreen extends ConsumerStatefulWidget {
   const AuthenticationScreen({super.key});
+
   @override
   ConsumerState<AuthenticationScreen> createState() => _AuthenticationScreenState();
 }
@@ -18,6 +21,7 @@ class _AuthenticationScreenState extends ConsumerState<AuthenticationScreen>
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
+
   @override
   void initState() {
     super.initState();
@@ -44,11 +48,13 @@ class _AuthenticationScreenState extends ConsumerState<AuthenticationScreen>
     
     _animationController.forward();
   }
+
   @override
   void dispose() {
     _animationController.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authenticationStateProvider);
@@ -156,17 +162,18 @@ class _BiometricAuthWidgetState extends ConsumerState<BiometricAuthWidget>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // App logo or icon
-            Container(
+            GlassmorphismContainer(
+              level: GlassLevel.floating,
               width: 80,
               height: 80,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-              ),
-              child: Icon(
-                Icons.security,
-                size: 40,
-                color: Theme.of(context).colorScheme.primary,
+              borderRadius: BorderRadius.circular(40),
+              glassTint: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+              child: Center(
+                child: Icon(
+                  Icons.security,
+                  size: 40,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
               ),
             ),
             
@@ -200,21 +207,20 @@ class _BiometricAuthWidgetState extends ConsumerState<BiometricAuthWidget>
               builder: (context, child) {
                 return Transform.scale(
                   scale: _pulseAnimation.value,
-                  child: Container(
+                  child: GlassmorphismContainer(
+                    level: GlassLevel.floating,
                     width: 120,
                     height: 120,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                      border: Border.all(
+                    borderRadius: BorderRadius.circular(60),
+                    glassTint: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                    borderColor: Theme.of(context).colorScheme.primary,
+                    borderWidth: 2,
+                    child: Center(
+                      child: Icon(
+                        _getBiometricIcon(biometricType),
+                        size: 60,
                         color: Theme.of(context).colorScheme.primary,
-                        width: 2,
                       ),
-                    ),
-                    child: Icon(
-                      _getBiometricIcon(biometricType),
-                      size: 60,
-                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                 );
@@ -238,9 +244,25 @@ class _BiometricAuthWidgetState extends ConsumerState<BiometricAuthWidget>
             const SizedBox(height: 16),
             
             // Fallback to PIN
-            TextButton(
-              onPressed: widget.onFallbackToPin,
-              child: const Text('Use PIN instead'),
+            GlassmorphismContainer(
+              level: GlassLevel.content,
+              borderRadius: BorderRadius.circular(8),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: widget.onFallbackToPin,
+                  borderRadius: BorderRadius.circular(8),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Text(
+                      'Use PIN instead',
+                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ),
           ],
         ),
@@ -323,17 +345,18 @@ class _PinAuthWidgetState extends ConsumerState<PinAuthWidget> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // App logo or icon
-            Container(
+            GlassmorphismContainer(
+              level: GlassLevel.floating,
               width: 80,
               height: 80,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-              ),
-              child: Icon(
-                Icons.lock,
-                size: 40,
-                color: Theme.of(context).colorScheme.primary,
+              borderRadius: BorderRadius.circular(40),
+              glassTint: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+              child: Center(
+                child: Icon(
+                  Icons.lock,
+                  size: 40,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
               ),
             ),
             
@@ -366,16 +389,29 @@ class _PinAuthWidgetState extends ConsumerState<PinAuthWidget> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: List.generate(_pinLength, (index) {
                 final isFilled = index < _enteredPin.length;
-                return Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 8),
+                return GlassmorphismContainer(
+                  level: isFilled ? GlassLevel.interactive : GlassLevel.content,
                   width: 20,
                   height: 20,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: isFilled
-                        ? Theme.of(context).colorScheme.primary
-                        : Theme.of(context).colorScheme.outline,
-                  ),
+                  margin: const EdgeInsets.symmetric(horizontal: 8),
+                  borderRadius: BorderRadius.circular(10),
+                  glassTint: isFilled
+                      ? Theme.of(context).colorScheme.primary.withOpacity(0.8)
+                      : null,
+                  borderColor: Theme.of(context).colorScheme.outline,
+                  child: isFilled
+                      ? Container(
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: RadialGradient(
+                              colors: [
+                                Theme.of(context).colorScheme.primary,
+                                Theme.of(context).colorScheme.primary.withOpacity(0.7),
+                              ],
+                            ),
+                          ),
+                        )
+                      : const SizedBox(),
                 );
               }),
             ),
@@ -457,31 +493,77 @@ class _PinAuthWidgetState extends ConsumerState<PinAuthWidget> {
   }
 
   Widget _buildNumberButton(String number) {
-    return EnhancedButton(
-      onPressed: _isAuthenticating ? null : () => _onNumberPressed(number),
-      style: ElevatedButton.styleFrom(
-        shape: const CircleBorder(),
-        padding: const EdgeInsets.all(20),
-        backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-        foregroundColor: Theme.of(context).colorScheme.onSurfaceVariant,
-      ),
-      child: Text(
-        number,
-        style: TextStyle(fontSize: TypographyConstants.textXL, fontWeight: TypographyConstants.medium),
+    return GlassmorphismContainer(
+      level: GlassLevel.interactive,
+      width: 64,
+      height: 64,
+      borderRadius: BorderRadius.circular(32),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: _isAuthenticating ? null : () => _onNumberPressed(number),
+          borderRadius: BorderRadius.circular(32),
+          child: Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                colors: [
+                  Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.8),
+                  Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.6),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: Center(
+              child: Text(
+                number,
+                style: TextStyle(
+                  fontSize: TypographyConstants.textXL,
+                  fontWeight: TypographyConstants.medium,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
 
   Widget _buildBackspaceButton() {
-    return EnhancedButton(
-      onPressed: _isAuthenticating || _enteredPin.isEmpty ? null : _onBackspacePressed,
-      style: ElevatedButton.styleFrom(
-        shape: const CircleBorder(),
-        padding: const EdgeInsets.all(20),
-        backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-        foregroundColor: Theme.of(context).colorScheme.onSurfaceVariant,
+    return GlassmorphismContainer(
+      level: GlassLevel.interactive,
+      width: 64,
+      height: 64,
+      borderRadius: BorderRadius.circular(32),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: _isAuthenticating || _enteredPin.isEmpty ? null : _onBackspacePressed,
+          borderRadius: BorderRadius.circular(32),
+          child: Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                colors: [
+                  Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.8),
+                  Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.6),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: Center(
+              child: Icon(
+                Icons.backspace,
+                size: 24,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+        ),
       ),
-      child: const Icon(Icons.backspace, size: 24),
     );
   }
 
@@ -582,17 +664,19 @@ class _LockoutWidgetState extends ConsumerState<LockoutWidget> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // Lock icon
-            Container(
+            GlassmorphismContainer(
+              level: GlassLevel.floating,
               width: 120,
               height: 120,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Theme.of(context).colorScheme.error.withOpacity(0.1),
-              ),
-              child: Icon(
-                Icons.lock_clock,
-                size: 60,
-                color: Theme.of(context).colorScheme.error,
+              borderRadius: BorderRadius.circular(60),
+              glassTint: Theme.of(context).colorScheme.error.withOpacity(0.1),
+              borderColor: Theme.of(context).colorScheme.error.withOpacity(0.3),
+              child: Center(
+                child: Icon(
+                  Icons.lock_clock,
+                  size: 60,
+                  color: Theme.of(context).colorScheme.error,
+                ),
               ),
             ),
             
@@ -623,25 +707,25 @@ class _LockoutWidgetState extends ConsumerState<LockoutWidget> {
             
             // Remaining time
             if (_remainingTime != null)
-              EnhancedCard(
-                child: Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Column(
-                    children: [
-                      Text(
-                        'Try again in:',
-                        style: Theme.of(context).textTheme.bodyMedium,
+              GlassmorphismContainer(
+                level: GlassLevel.content,
+                borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  children: [
+                    Text(
+                      'Try again in:',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      _formatDuration(_remainingTime!),
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        _formatDuration(_remainingTime!),
-                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
           ],
@@ -673,17 +757,18 @@ class SetupAuthWidget extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // Security icon
-            Container(
+            GlassmorphismContainer(
+              level: GlassLevel.floating,
               width: 120,
               height: 120,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-              ),
-              child: Icon(
-                Icons.security,
-                size: 60,
-                color: Theme.of(context).colorScheme.primary,
+              borderRadius: BorderRadius.circular(60),
+              glassTint: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+              child: Center(
+                child: Icon(
+                  Icons.security,
+                  size: 60,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
               ),
             ),
             
@@ -720,13 +805,29 @@ class SetupAuthWidget extends ConsumerWidget {
             const SizedBox(height: 16),
             
             // Skip button
-            TextButton(
-              onPressed: () {
-                // For now, we'll need to add a method to skip authentication
-                // This is a temporary workaround
-                Navigator.of(context).pushReplacementNamed('/home');
-              },
-              child: const Text('Skip for now'),
+            GlassmorphismContainer(
+              level: GlassLevel.content,
+              borderRadius: BorderRadius.circular(8),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () {
+                    // For now, we'll need to add a method to skip authentication
+                    // This is a temporary workaround
+                    Navigator.of(context).pushReplacementNamed('/home');
+                  },
+                  borderRadius: BorderRadius.circular(8),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Text(
+                      'Skip for now',
+                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ),
           ],
         ),

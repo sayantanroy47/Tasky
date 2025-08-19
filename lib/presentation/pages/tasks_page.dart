@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:ui';
 import '../widgets/standardized_app_bar.dart';
 import '../widgets/theme_background_widget.dart';
 import '../../core/theme/typography_constants.dart';
@@ -13,6 +14,10 @@ import '../widgets/advanced_task_card.dart';
 import '../widgets/task_form_dialog.dart';
 import '../widgets/loading_error_widgets.dart' as loading_widgets;
 import '../widgets/custom_dialogs.dart';
+import '../widgets/glassmorphism_container.dart';
+import '../../core/design_system/design_tokens.dart';
+import '../widgets/manual_task_creation_dialog.dart';
+import 'voice_recording_page.dart';
 
 class TasksPage extends ConsumerWidget {
   const TasksPage({super.key});
@@ -34,34 +39,239 @@ class TasksPage extends ConsumerWidget {
             ),
           ],
         ),
-        body: SafeArea(
+        body: const SafeArea(
           child: Padding(
-            padding: const EdgeInsets.only(
+            padding: EdgeInsets.only(
               top: kToolbarHeight + 8,
               left: 16,
               right: 16,
               bottom: 16,
             ),
-            child: const TasksPageBody(),
+            child: TasksPageBody(),
+          ),
+        ),
+        floatingActionButton: _buildFloatingActionButton(context),
+      ),
+    );
+  }
+
+
+  void _showFilterDialog(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (context) => _FilterDialog(),
+    );
+  }
+
+  /// Build enhanced floating action button with glassmorphism
+  Widget _buildFloatingActionButton(BuildContext context) {
+    final theme = Theme.of(context);
+    
+    return Container(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        // Outer glow effect
+        boxShadow: [
+          BoxShadow(
+            color: theme.colorScheme.primary.withOpacity(0.3),
+            blurRadius: 20,
+            spreadRadius: 5,
+          ),
+          BoxShadow(
+            color: theme.colorScheme.primary.withOpacity(0.1),
+            blurRadius: 40,
+            spreadRadius: 10,
+          ),
+        ],
+      ),
+      child: ClipOval(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  theme.colorScheme.primary.withOpacity(0.95),
+                  theme.colorScheme.primary.withOpacity(0.85),
+                  theme.colorScheme.secondary.withOpacity(0.1),
+                ],
+                stops: const [0.0, 0.7, 1.0],
+              ),
+              border: Border.all(
+                color: theme.colorScheme.primary.withOpacity(0.3),
+                width: 1.5,
+              ),
+            ),
+            child: FloatingActionButton.large(
+              heroTag: 'tasksFAB',
+              onPressed: () => _showTaskCreationMenu(context),
+              backgroundColor: Colors.transparent,
+              foregroundColor: theme.colorScheme.onPrimary,
+              elevation: 0,
+              shape: const CircleBorder(),
+              child: Container(
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.add,
+                  size: 36,
+                  weight: 600,
+                ),
+              ),
+            ),
           ),
         ),
       ),
     );
   }
 
-  void _showAddTaskDialog(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const TaskFormDialog(),
-        fullscreenDialog: true,
+  /// Show task creation options menu
+  void _showTaskCreationMenu(BuildContext context) {
+    final theme = Theme.of(context);
+    
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => GlassmorphismContainer(
+        level: GlassLevel.floating,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        margin: EdgeInsets.zero,
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header
+                Text(
+                  'Create New Task',
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Choose how you\'d like to create your task',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                
+                // Task Creation Options
+                _buildTaskCreationOption(
+                  context: context,
+                  icon: Icons.mic,
+                  iconColor: theme.colorScheme.primary,
+                  title: 'AI Voice Entry',
+                  subtitle: 'Speak your task, we\'ll transcribe it',
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const VoiceRecordingPage(),
+                      ),
+                    );
+                  },
+                ),
+                
+                const SizedBox(height: 12),
+                
+                
+                _buildTaskCreationOption(
+                  context: context,
+                  icon: Icons.edit,
+                  iconColor: Colors.green,
+                  title: 'Manual Entry',
+                  subtitle: 'Type your task details manually',
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ManualTaskCreationDialog(),
+                      ),
+                    );
+                  },
+                ),
+                
+                const SizedBox(height: 16),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
 
-  void _showFilterDialog(BuildContext context, WidgetRef ref) {
-    showDialog(
-      context: context,
-      builder: (context) => _FilterDialog(),
+  /// Build task creation option tile
+  Widget _buildTaskCreationOption({
+    required BuildContext context,
+    required IconData icon,
+    required Color iconColor,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    final theme = Theme.of(context);
+    
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: GlassmorphismContainer(
+        level: GlassLevel.interactive,
+        padding: const EdgeInsets.all(16),
+        borderRadius: BorderRadius.circular(16),
+        child: Row(
+          children: [
+            GlassmorphismContainer(
+              level: GlassLevel.interactive,
+              width: 48,
+              height: 48,
+              borderRadius: BorderRadius.circular(12),
+              glassTint: iconColor.withOpacity(0.15),
+              child: Icon(
+                icon,
+                color: iconColor,
+                size: 24,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: 16,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -129,25 +339,41 @@ class _SearchBarState extends ConsumerState<_SearchBar> {
   Widget build(BuildContext context) {
     final searchQuery = ref.watch(searchQueryProvider);
     
-    return TextField(
-      controller: _searchController,
-      decoration: InputDecoration(
-        hintText: 'Search tasks by title, description, or tags...',
-        prefixIcon: const Icon(Icons.search),
-        suffixIcon: searchQuery.isNotEmpty
-            ? IconButton(
-                icon: const Icon(Icons.clear),
-                onPressed: () {
-                  _searchController.clear();
-                  ref.read(searchQueryProvider.notifier).state = '';
-                },
-              )
-            : null,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+    return GlassmorphismContainer(
+      level: GlassLevel.interactive,
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+      child: TextField(
+        controller: _searchController,
+        decoration: InputDecoration(
+          hintText: 'Search tasks by title, description, or tags...',
+          prefixIcon: const Icon(Icons.search),
+          suffixIcon: searchQuery.isNotEmpty
+              ? IconButton(
+                  icon: const Icon(Icons.clear),
+                  onPressed: () {
+                    _searchController.clear();
+                    ref.read(searchQueryProvider.notifier).state = '';
+                  },
+                )
+              : null,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+            borderSide: BorderSide.none,
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+            borderSide: BorderSide.none,
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+            borderSide: BorderSide(
+              color: Theme.of(context).colorScheme.primary,
+              width: 2,
+            ),
+          ),
+          filled: true,
+          fillColor: Colors.transparent,
         ),
-        filled: true,
-        fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
       ),
     );
   }
@@ -285,11 +511,44 @@ class _SmartFilterChip extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) {
-    return FilterChip(
-      label: Text(label),
-      selected: isSelected,
-      onSelected: (_) => onTap(),
-      showCheckmark: false,
+    return GlassmorphismContainer(
+      level: isSelected ? GlassLevel.interactive : GlassLevel.content,
+      borderRadius: BorderRadius.circular(20),
+      glassTint: isSelected 
+          ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
+          : null,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(20),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              gradient: isSelected
+                  ? LinearGradient(
+                      colors: [
+                        Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                        Theme.of(context).colorScheme.primary.withOpacity(0.6),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    )
+                  : null,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              label,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                color: isSelected 
+                    ? Colors.white
+                    : Theme.of(context).colorScheme.onSurface,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -320,30 +579,46 @@ class _ActiveFiltersIndicator extends StatelessWidget {
       activeFilters.add('Priority: ${filter.priority!.displayName}');
     }
 
-    return Card(
-      color: Theme.of(context).colorScheme.surfaceContainerHighest,
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Row(
-          children: [
-            Icon(
-              Icons.filter_alt,
-              size: 16,
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
+    return GlassmorphismContainer(
+      level: GlassLevel.content,
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+      padding: const EdgeInsets.all(12),
+      child: Row(
+        children: [
+          Icon(
+            Icons.filter_alt,
+            size: 16,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              'Active filters: ${activeFilters.join(', ')}',
+              style: Theme.of(context).textTheme.bodySmall,
             ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                'Active filters: ${activeFilters.join(', ')}',
-                style: Theme.of(context).textTheme.bodySmall,
+          ),
+          GlassmorphismContainer(
+            level: GlassLevel.interactive,
+            borderRadius: BorderRadius.circular(8),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: onClearFilters,
+                borderRadius: BorderRadius.circular(8),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  child: Text(
+                    'Clear',
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
               ),
             ),
-            TextButton(
-              onPressed: onClearFilters,
-              child: const Text('Clear'),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -393,15 +668,12 @@ class _TaskList extends ConsumerWidget {
       return const _EmptyTaskList();
     }
 
-    final searchQuery = ref.watch(searchQueryProvider);
-
     return Column(
       children: tasks.map((task) => AdvancedTaskCard(
         task: task,
         onTap: () => _navigateToTaskDetail(context, task.id),
         onEdit: () => _editTask(context, task),
         onDelete: () => _deleteTask(context, ref, task),
-        showActions: true,
         showProgress: true,
         showSubtasks: task.subTasks.isNotEmpty,
         style: TaskCardStyle.elevated,
@@ -417,9 +689,6 @@ class _TaskList extends ConsumerWidget {
     );
   }
 
-  void _toggleTaskCompletion(WidgetRef ref, TaskModel task) {
-    ref.read(taskOperationsProvider).toggleTaskCompletion(task);
-  }
 
   void _editTask(BuildContext context, TaskModel task) {
     Navigator.of(context).push(
@@ -503,83 +772,165 @@ class _FilterDialogState extends ConsumerState<_FilterDialog> {
   }
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('Filter Tasks'),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Status',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              children: [
-                FilterChip(
-                  label: const Text('All'),
-                  selected: _currentFilter.status == null,
-                  onSelected: (_) => setState(() {
-                    _currentFilter = _currentFilter.copyWith(status: null);
-                  }),
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      child: GlassmorphismContainer(
+        level: GlassLevel.floating,
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
+        padding: const EdgeInsets.all(24),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Filter Tasks',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
                 ),
-                ...TaskStatus.values.map((status) => FilterChip(
-                  label: Text(status.displayName),
-                  selected: _currentFilter.status == status,
-                  onSelected: (_) => setState(() {
-                    _currentFilter = _currentFilter.copyWith(status: status);
-                  }),
-                )),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Priority',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
               ),
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              children: [
-                FilterChip(
-                  label: const Text('All'),
-                  selected: _currentFilter.priority == null,
-                  onSelected: (_) => setState(() {
-                    _currentFilter = _currentFilter.copyWith(priority: null);
-                  }),
+              const SizedBox(height: 24),
+              Text(
+                'Status',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
                 ),
-                ...TaskPriority.values.map((priority) => FilterChip(
-                  label: Text(priority.displayName),
-                  selected: _currentFilter.priority == priority,
-                  onSelected: (_) => setState(() {
-                    _currentFilter = _currentFilter.copyWith(priority: priority);
-                  }),
-                )),
-              ],
-            ),
-          ],
+              ),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                children: [
+                  _buildFilterChip(
+                    context,
+                    'All',
+                    _currentFilter.status == null,
+                    () => setState(() {
+                      _currentFilter = _currentFilter.copyWith(status: null);
+                    }),
+                  ),
+                  ...TaskStatus.values.map((status) => _buildFilterChip(
+                    context,
+                    status.displayName,
+                    _currentFilter.status == status,
+                    () => setState(() {
+                      _currentFilter = _currentFilter.copyWith(status: status);
+                    }),
+                  )),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Priority',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                children: [
+                  _buildFilterChip(
+                    context,
+                    'All',
+                    _currentFilter.priority == null,
+                    () => setState(() {
+                      _currentFilter = _currentFilter.copyWith(priority: null);
+                    }),
+                  ),
+                  ...TaskPriority.values.map((priority) => _buildFilterChip(
+                    context,
+                    priority.displayName,
+                    _currentFilter.priority == priority,
+                    () => setState(() {
+                      _currentFilter = _currentFilter.copyWith(priority: priority);
+                    }),
+                  )),
+                ],
+              ),
+              const SizedBox(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  GlassmorphismContainer(
+                    level: GlassLevel.interactive,
+                    borderRadius: BorderRadius.circular(8),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () => Navigator.of(context).pop(),
+                        borderRadius: BorderRadius.circular(8),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          child: Text(
+                            'Cancel',
+                            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  GlassmorphismContainer(
+                    level: GlassLevel.interactive,
+                    borderRadius: BorderRadius.circular(8),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: _clearFilters,
+                        borderRadius: BorderRadius.circular(8),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          child: Text(
+                            'Clear',
+                            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                              color: Theme.of(context).colorScheme.error,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  GlassmorphismContainer(
+                    level: GlassLevel.interactive,
+                    borderRadius: BorderRadius.circular(8),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: _applyFilters,
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                                Theme.of(context).colorScheme.primary.withOpacity(0.6),
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            'Apply',
+                            style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
-        ),
-        TextButton(
-          onPressed: _clearFilters,
-          child: const Text('Clear'),
-        ),
-        ElevatedButton(
-          onPressed: _applyFilters,
-          child: const Text('Apply'),
-        ),
-      ],
     );
   }
 
@@ -591,5 +942,47 @@ class _FilterDialogState extends ConsumerState<_FilterDialog> {
   void _applyFilters() {
     ref.read(taskFilterProvider.notifier).state = _currentFilter;
     Navigator.of(context).pop();
+  }
+
+  Widget _buildFilterChip(BuildContext context, String label, bool isSelected, VoidCallback onTap) {
+    return GlassmorphismContainer(
+      level: isSelected ? GlassLevel.interactive : GlassLevel.content,
+      borderRadius: BorderRadius.circular(20),
+      glassTint: isSelected 
+          ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
+          : null,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(20),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              gradient: isSelected
+                  ? LinearGradient(
+                      colors: [
+                        Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                        Theme.of(context).colorScheme.primary.withOpacity(0.6),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    )
+                  : null,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              label,
+              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                color: isSelected 
+                    ? Colors.white
+                    : Theme.of(context).colorScheme.onSurface,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

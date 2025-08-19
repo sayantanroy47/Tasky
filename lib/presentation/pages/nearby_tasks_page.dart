@@ -277,31 +277,6 @@ class _NearbyTasksPageState extends ConsumerState<NearbyTasksPage> {
     );
   }
 
-  void _showCreateLocationTaskDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Create Location Task'),
-        content: const Text(
-          'This feature allows you to create tasks that will remind you when you enter or leave specific locations.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              // Navigate to task creation with location
-              Navigator.of(context).pushNamed('/tasks');
-            },
-            child: const Text('Create Task'),
-          ),
-        ],
-      ),
-    );
-  }
 
   String _formatDistance(double distance) {
     if (distance < 1000) {

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import '../../domain/entities/task_model.dart';
@@ -99,7 +100,7 @@ class SyncQueueService {
       
       return jsonList.map((json) => SyncOperation.fromJson(json)).toList();
     } catch (e) {
-      print('Error loading sync queue: $e');
+      debugPrint('Error loading sync queue: $e');
       return [];
     }
   }
@@ -115,7 +116,7 @@ class SyncQueueService {
       
       await file.writeAsString(jsonString);
     } catch (e) {
-      print('Error saving sync queue: $e');
+      debugPrint('Error saving sync queue: $e');
     }
   }
   

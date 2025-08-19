@@ -540,17 +540,65 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
   }
 
   Future<void> _uploadAllData() async {
-    // Implementation for uploading all local data
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Upload all data functionality coming soon')),
-    );
+    setState(() => _isLoading = true);
+    
+    try {
+      final cloudService = ref.read(cloudSyncServiceProvider);
+      final result = await cloudService.uploadAllLocalData();
+      
+      if (mounted) {
+        if (result.success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Upload completed: ${result.totalSynced} items uploaded'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Upload failed: ${result.error}'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 
   Future<void> _downloadAllData() async {
-    // Implementation for downloading all cloud data
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Download all data functionality coming soon')),
-    );
+    setState(() => _isLoading = true);
+    
+    try {
+      final cloudService = ref.read(cloudSyncServiceProvider);
+      final result = await cloudService.downloadAllCloudData();
+      
+      if (mounted) {
+        if (result.success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Download completed: ${result.totalSynced} items downloaded'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Download failed: ${result.error}'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 
   Future<void> _resetSync() async {
@@ -610,23 +658,50 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
   }
 
   void _showConflictResolutionSettings() {
-    // Show conflict resolution settings
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Conflict resolution settings coming soon')),
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Conflict Resolution'),
+        content: const Text('Configure how sync conflicts are handled automatically or manually.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
     );
   }
 
   void _showDataManagementSettings() {
-    // Show data management settings
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Data management settings coming soon')),
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Data Management'),
+        content: const Text('Manage cloud storage usage and cleanup policies.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
     );
   }
 
   void _showSyncHistory() {
-    // Show sync history
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Sync history coming soon')),
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Sync History'),
+        content: const Text('View detailed sync activity and troubleshoot sync issues.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
     );
   }
 

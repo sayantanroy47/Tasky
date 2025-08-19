@@ -6,6 +6,7 @@ import 'package:task_tracker_app/services/ai/composite_ai_task_parser.dart';
 import 'package:task_tracker_app/services/ai/openai_task_parser.dart';
 import 'package:task_tracker_app/services/ai/claude_task_parser.dart';
 import 'package:task_tracker_app/services/ai/local_task_parser.dart';
+import 'package:task_tracker_app/domain/models/ai_service_type.dart';
 
 import 'composite_ai_task_parser_test.mocks.dart';
 

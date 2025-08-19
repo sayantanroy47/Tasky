@@ -517,10 +517,10 @@ class ListAnimationUtils {
     bool autoStart = true,
   }) {
     return EnhancedStaggeredListView(
-      children: children,
       itemDelay: itemDelay,
       pattern: pattern,
       autoStart: autoStart,
+      children: children,
     );
   }
 
@@ -532,10 +532,10 @@ class ListAnimationUtils {
     AnimationPattern pattern = AnimationPattern.scale,
   }) {
     return EnhancedStaggeredGridView(
-      children: children,
       crossAxisCount: crossAxisCount,
       itemDelay: itemDelay,
       pattern: pattern,
+      children: children,
     );
   }
 }

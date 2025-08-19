@@ -7,6 +7,7 @@ import '../../services/system_calendar_service.dart';
 /// Screen for managing calendar integration settings
 class CalendarIntegrationScreen extends ConsumerStatefulWidget {
   const CalendarIntegrationScreen({super.key});
+
   @override
   ConsumerState<CalendarIntegrationScreen> createState() => _CalendarIntegrationScreenState();
 }
@@ -14,6 +15,7 @@ class CalendarIntegrationScreen extends ConsumerStatefulWidget {
 class _CalendarIntegrationScreenState extends ConsumerState<CalendarIntegrationScreen> {
   bool _isInitializing = false;
   bool _isSyncing = false;
+
   @override
   void initState() {
     super.initState();
@@ -28,6 +30,7 @@ class _CalendarIntegrationScreenState extends ConsumerState<CalendarIntegrationS
     
     setState(() => _isInitializing = false);
   }
+
   @override
   Widget build(BuildContext context) {
     final syncStatusAsync = ref.watch(calendarSyncStatusProvider);

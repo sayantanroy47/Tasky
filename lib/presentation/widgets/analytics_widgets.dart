@@ -86,8 +86,7 @@ class AnalyticsMetricCard extends StatelessWidget {
                     const SizedBox(width: 4),
                     Text(
                       trend!,
-                      style: TextStyle(
-                        fontSize: 12,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: isPositiveTrend == true
                             ? Colors.green
                             : isPositiveTrend == false
@@ -1065,10 +1064,9 @@ class AdvancedProductivityInsightsWidget extends StatelessWidget {
                     ),
                     child: Text(
                       insights.overallScore.grade,
-                      style: const TextStyle(
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
-                        fontSize: 18,
                       ),
                     ),
                   ),

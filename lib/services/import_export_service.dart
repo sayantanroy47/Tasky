@@ -155,8 +155,7 @@ class ImportExportService {
           final taskJson = tasksJson[i] as Map<String, dynamic>;
           
           // Generate new ID to avoid conflicts
-          final originalId = taskJson['id'] as String?;
-          taskJson['id'] = DateTime.now().millisecondsSinceEpoch.toString() + '_$i';
+          taskJson['id'] = '${DateTime.now().millisecondsSinceEpoch}_$i';
           
           final task = TaskModel.fromJson(taskJson);
           importedTasks.add(task);

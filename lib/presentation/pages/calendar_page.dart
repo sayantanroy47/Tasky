@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../widgets/calendar_widgets.dart';
 import '../widgets/glassmorphism_container.dart';
 import '../widgets/standardized_app_bar.dart';
-import '../providers/calendar_provider.dart';
+import '../widgets/enhanced_calendar_widget.dart';
+import '../providers/enhanced_calendar_provider.dart';
 import '../../domain/entities/calendar_event.dart';
 import '../../core/theme/typography_constants.dart';
 
@@ -13,12 +13,32 @@ class CalendarPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final calendarState = ref.watch(enhancedCalendarProvider);
+    
     return Scaffold(
       backgroundColor: Colors.transparent,
       extendBodyBehindAppBar: true,
-      appBar: const StandardizedAppBar(
+      appBar: StandardizedAppBar(
         title: 'Calendar',
         forceBackButton: false,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.sync),
+            onPressed: () {
+              ref.read(enhancedCalendarProvider.notifier).refresh();
+            },
+            tooltip: 'Refresh Calendar',
+          ),
+          IconButton(
+            icon: Icon(
+              calendarState.isLoading ? Icons.sync : Icons.calendar_month,
+            ),
+            onPressed: () {
+              ref.read(enhancedCalendarProvider.notifier).goToToday();
+            },
+            tooltip: 'Go to Today',
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.only(
@@ -27,11 +47,50 @@ class CalendarPage extends ConsumerWidget {
           right: 16.0,
           bottom: 16.0,
         ),
-        child: GlassmorphismContainer(
-          borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-          padding: const EdgeInsets.all(16.0),
-          child: const CalendarWidget(),
-        ),
+        child: calendarState.isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : calendarState.errorMessage != null
+                ? _buildErrorWidget(context, ref, calendarState.errorMessage!)
+                : GlassmorphismContainer(
+                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                    padding: const EdgeInsets.all(16.0),
+                    child: const EnhancedCalendarWidget(),
+                  ),
+      ),
+    );
+  }
+
+  Widget _buildErrorWidget(BuildContext context, WidgetRef ref, String error) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.error_outline,
+            size: 64,
+            color: Theme.of(context).colorScheme.error,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Calendar Error',
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              color: Theme.of(context).colorScheme.error,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            error,
+            style: Theme.of(context).textTheme.bodyMedium,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () {
+              ref.read(enhancedCalendarProvider.notifier).refresh();
+            },
+            child: const Text('Retry'),
+          ),
+        ],
       ),
     );
   }
@@ -228,7 +287,7 @@ class _CreateEventDialogState extends ConsumerState<_CreateEventDialog> {
   }
 
   Future<void> _createEvent() async {
-    final calendarNotifier = ref.read(calendarProvider.notifier);
+    final calendarNotifier = ref.read(enhancedCalendarProvider.notifier);
     
     final DateTime startDateTime;
     final DateTime endDateTime;

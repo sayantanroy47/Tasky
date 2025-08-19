@@ -3,20 +3,24 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/entities/project.dart';
 import '../providers/project_providers.dart';
+import '../../core/theme/typography_constants.dart';
+import 'glassmorphism_container.dart';
+import '../../core/design_system/design_tokens.dart';
 
-/// Dialog for creating or editing projects
+/// Dialog for creating and editing projects
 /// 
-/// Provides a form interface for project creation and editing
-/// with validation and color selection.
+/// Provides a form for entering project details including name,
+/// description, color, and deadline.
 class ProjectFormDialog extends ConsumerStatefulWidget {
-  final Project? project; // null for create, non-null for edit
+  final Project? project; // null for creating new project
   final VoidCallback? onSuccess;
-
+  
   const ProjectFormDialog({
     super.key,
     this.project,
     this.onSuccess,
   });
+  
   @override
   ConsumerState<ProjectFormDialog> createState() => _ProjectFormDialogState();
 }
@@ -26,25 +30,27 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> {
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
   
+  String _selectedColor = '#2196F3'; // Default blue color
   DateTime? _selectedDeadline;
-  String _selectedColor = '#2196F3';
+  bool _isLoading = false;
   
+  // Predefined color options
   final List<String> _colorOptions = [
     '#2196F3', // Blue
     '#4CAF50', // Green
     '#FF9800', // Orange
     '#F44336', // Red
     '#9C27B0', // Purple
-    '#00BCD4', // Cyan
-    '#FFEB3B', // Yellow
-    '#795548', // Brown
     '#607D8B', // Blue Grey
+    '#795548', // Brown
     '#E91E63', // Pink
+    '#00BCD4', // Cyan
+    '#8BC34A', // Light Green
   ];
+  
   @override
   void initState() {
     super.initState();
-    
     if (widget.project != null) {
       _nameController.text = widget.project!.name;
       _descriptionController.text = widget.project!.description ?? '';
@@ -52,244 +58,326 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> {
       _selectedDeadline = widget.project!.deadline;
     }
   }
+  
   @override
   void dispose() {
     _nameController.dispose();
     _descriptionController.dispose();
     super.dispose();
   }
+  
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final formState = ref.watch(projectFormProvider);
+    final isEditing = widget.project != null;
     
-    return AlertDialog(
-      title: Text(widget.project == null ? 'Create Project' : 'Edit Project'),
-      content: SizedBox(
-        width: MediaQuery.of(context).size.width * 0.8,
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Project name
-              TextFormField(
-                controller: _nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Project Name',
-                  hintText: 'Enter project name',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Project name is required';
-                  }
-                  return null;
-                },
-                onChanged: (value) {
-                  ref.read(projectFormProvider.notifier).updateName(value);
-                },
-              ),
-              
-              const SizedBox(height: 16),
-              
-              // Project description
-              TextFormField(
-                controller: _descriptionController,
-                decoration: const InputDecoration(
-                  labelText: 'Description (Optional)',
-                  hintText: 'Enter project description',
-                  border: OutlineInputBorder(),
-                ),
-                maxLines: 3,
-                onChanged: (value) {
-                  ref.read(projectFormProvider.notifier).updateDescription(value);
-                },
-              ),
-              
-              const SizedBox(height: 16),
-              
-              // Color selection
-              Text(
-                'Project Color',
-                style: theme.textTheme.titleSmall,
-              ),
-              const SizedBox(height: 8),
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: _colorOptions.map((color) {
-                  final isSelected = color == _selectedColor;
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _selectedColor = color;
-                      });
-                      ref.read(projectFormProvider.notifier).updateColor(color);
-                    },
-                    child: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: _parseColor(color),
-                        shape: BoxShape.circle,
-                        border: isSelected
-                            ? Border.all(
-                                color: theme.colorScheme.primary,
-                                width: 3,
-                              )
-                            : Border.all(
-                                color: theme.colorScheme.outline,
-                                width: 1,
-                              ),
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      child: GlassmorphismContainer(
+        level: GlassLevel.floating,
+        padding: const EdgeInsets.all(24),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+        child: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header
+                Row(
+                  children: [
+                    Icon(
+                      isEditing ? Icons.edit : Icons.add,
+                      color: _parseColor(_selectedColor),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        isEditing ? 'Edit Project' : 'Create Project',
+                        style: theme.textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                      child: isSelected
-                          ? Icon(
-                              Icons.check,
-                              color: _getContrastColor(_parseColor(color)),
-                              size: 20,
-                            )
-                          : null,
                     ),
-                  );
-                }).toList(),
-              ),
-              
-              const SizedBox(height: 16),
-              
-              // Deadline selection
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      _selectedDeadline == null
-                          ? 'No deadline set'
-                          : 'Deadline: ${_formatDate(_selectedDeadline!)}',
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                  ),
-                  TextButton.icon(
-                    onPressed: _selectDeadline,
-                    icon: const Icon(Icons.calendar_today),
-                    label: Text(_selectedDeadline == null ? 'Set Deadline' : 'Change'),
-                  ),
-                  if (_selectedDeadline != null)
                     IconButton(
-                      onPressed: () {
-                        setState(() {
-                          _selectedDeadline = null;
-                        });
-                        ref.read(projectFormProvider.notifier).updateDeadline(null);
-                      },
-                      icon: const Icon(Icons.clear),
-                      tooltip: 'Remove deadline',
+                      onPressed: () => Navigator.of(context).pop(),
+                      icon: const Icon(Icons.close),
                     ),
-                ],
-              ),
-              
-              // Error message
-              if (formState.error != null)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Text(
-                    formState.error!,
-                    style: TextStyle(
-                      color: theme.colorScheme.error,
-                      fontSize: 12,
+                  ],
+                ),
+                
+                const SizedBox(height: 24),
+                
+                // Project name field
+                TextFormField(
+                  controller: _nameController,
+                  decoration: InputDecoration(
+                    labelText: 'Project Name *',
+                    hintText: 'Enter project name',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                    ),
+                    prefixIcon: const Icon(Icons.folder),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Project name is required';
+                    }
+                    if (value.trim().length < 2) {
+                      return 'Project name must be at least 2 characters';
+                    }
+                    return null;
+                  },
+                  textCapitalization: TextCapitalization.words,
+                ),
+                
+                const SizedBox(height: 16),
+                
+                // Project description field
+                TextFormField(
+                  controller: _descriptionController,
+                  decoration: InputDecoration(
+                    labelText: 'Description',
+                    hintText: 'Enter project description (optional)',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                    ),
+                    prefixIcon: const Icon(Icons.description),
+                  ),
+                  maxLines: 3,
+                  textCapitalization: TextCapitalization.sentences,
+                ),
+                
+                const SizedBox(height: 16),
+                
+                // Color selection
+                Text(
+                  'Project Color',
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: _colorOptions.map((color) {
+                    final isSelected = color == _selectedColor;
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedColor = color;
+                        });
+                      },
+                      child: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: _parseColor(color),
+                          shape: BoxShape.circle,
+                          border: isSelected
+                              ? Border.all(
+                                  color: theme.colorScheme.onSurface,
+                                  width: 3,
+                                )
+                              : Border.all(
+                                  color: theme.colorScheme.outline.withOpacity(0.3),
+                                ),
+                        ),
+                        child: isSelected
+                            ? Icon(
+                                Icons.check,
+                                color: _parseColor(color).computeLuminance() > 0.5
+                                    ? Colors.black
+                                    : Colors.white,
+                                size: 20,
+                              )
+                            : null,
+                      ),
+                    );
+                  }).toList(),
+                ),
+                
+                const SizedBox(height: 16),
+                
+                // Deadline selection
+                InkWell(
+                  onTap: _selectDeadline,
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: theme.colorScheme.outline.withOpacity(0.5),
+                      ),
+                      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.calendar_today,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Deadline',
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                              Text(
+                                _selectedDeadline == null
+                                    ? 'No deadline set'
+                                    : _formatDate(_selectedDeadline!),
+                                style: theme.textTheme.bodyLarge,
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (_selectedDeadline != null)
+                          IconButton(
+                            onPressed: () {
+                              setState(() {
+                                _selectedDeadline = null;
+                              });
+                            },
+                            icon: const Icon(Icons.clear),
+                            tooltip: 'Remove deadline',
+                          ),
+                      ],
                     ),
                   ),
                 ),
-            ],
+                
+                const SizedBox(height: 24),
+                
+                // Action buttons
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
+                      child: const Text('Cancel'),
+                    ),
+                    const SizedBox(width: 12),
+                    ElevatedButton(
+                      onPressed: _isLoading ? null : _saveProject,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _parseColor(_selectedColor),
+                        foregroundColor: _parseColor(_selectedColor).computeLuminance() > 0.5
+                            ? Colors.black
+                            : Colors.white,
+                      ),
+                      child: _isLoading
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : Text(isEditing ? 'Update' : 'Create'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       ),
-      actions: [
-        TextButton(
-          onPressed: formState.isLoading ? null : () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
-        ),
-        ElevatedButton(
-          onPressed: formState.isLoading ? null : _saveProject,
-          child: formState.isLoading
-              ? const SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : Text(widget.project == null ? 'Create' : 'Save'),
-        ),
-      ],
     );
   }
-
+  
   Future<void> _selectDeadline() async {
+    final now = DateTime.now();
     final selectedDate = await showDatePicker(
       context: context,
-      initialDate: _selectedDeadline ?? DateTime.now().add(const Duration(days: 7)),
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 365 * 2)),
+      initialDate: _selectedDeadline ?? now.add(const Duration(days: 7)),
+      firstDate: now,
+      lastDate: now.add(const Duration(days: 365 * 2)), // 2 years from now
     );
-
+    
     if (selectedDate != null) {
       setState(() {
         _selectedDeadline = selectedDate;
       });
-      ref.read(projectFormProvider.notifier).updateDeadline(selectedDate);
     }
   }
-
+  
   Future<void> _saveProject() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
-
-    ref.read(projectFormProvider.notifier).setLoading(true);
-
+    
+    // Store context references before async operations
+    final navigator = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final errorColor = Theme.of(context).colorScheme.error;
+    
+    setState(() {
+      _isLoading = true;
+    });
+    
     try {
-      if (widget.project == null) {
-        // Create new project
-        await ref.read(projectsProvider.notifier).createProject(
-          name: _nameController.text.trim(),
-          description: _descriptionController.text.trim().isEmpty 
-              ? null 
-              : _descriptionController.text.trim(),
-          color: _selectedColor,
-          deadline: _selectedDeadline,
-        );
-      } else {
+      final name = _nameController.text.trim();
+      final description = _descriptionController.text.trim();
+      
+      if (widget.project != null) {
         // Update existing project
-        final updatedProject = widget.project!.update(
-          name: _nameController.text.trim(),
-          description: _descriptionController.text.trim().isEmpty 
-              ? null 
-              : _descriptionController.text.trim(),
+        final updatedProject = widget.project!.copyWith(
+          name: name,
+          description: description.isEmpty ? null : description,
           color: _selectedColor,
           deadline: _selectedDeadline,
+          updatedAt: DateTime.now(),
         );
         
         await ref.read(projectsProvider.notifier).updateProject(updatedProject);
+      } else {
+        // Create new project
+        await ref.read(projectsProvider.notifier).createProject(
+          name: name,
+          description: description.isEmpty ? null : description,
+          color: _selectedColor,
+          deadline: _selectedDeadline,
+        );
       }
-
-      if (mounted) {
-        Navigator.of(context).pop();
+      
+      if (context.mounted) {
+        navigator.pop();
         widget.onSuccess?.call();
         
-        ScaffoldMessenger.of(context).showSnackBar(
+        messenger.showSnackBar(
           SnackBar(
             content: Text(
-              widget.project == null 
-                  ? 'Project created successfully' 
-                  : 'Project updated successfully',
+              widget.project != null
+                  ? 'Project updated successfully'
+                  : 'Project created successfully',
             ),
+            backgroundColor: _parseColor(_selectedColor),
           ),
         );
       }
     } catch (error) {
-      ref.read(projectFormProvider.notifier).setError(error.toString());
+      if (context.mounted) {
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text('Error: $error'),
+            backgroundColor: errorColor,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
-
+  
   Color _parseColor(String colorString) {
     try {
       return Color(int.parse(colorString.replaceFirst('#', '0xFF')));
@@ -297,13 +385,7 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> {
       return Colors.blue;
     }
   }
-
-  Color _getContrastColor(Color color) {
-    // Calculate luminance to determine if we should use black or white text
-    final luminance = color.computeLuminance();
-    return luminance > 0.5 ? Colors.black : Colors.white;
-  }
-
+  
   String _formatDate(DateTime date) {
     return '${date.day}/${date.month}/${date.year}';
   }

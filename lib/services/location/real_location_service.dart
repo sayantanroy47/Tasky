@@ -87,7 +87,7 @@ class RealLocationService implements LocationService {
         longitude: position.longitude,
         accuracy: position.accuracy,
         altitude: position.altitude,
-        timestamp: position.timestamp ?? DateTime.now(),
+        timestamp: position.timestamp,
       );
     } catch (e) {
       if (kDebugMode) {
@@ -119,7 +119,7 @@ class RealLocationService implements LocationService {
             longitude: position.longitude,
             accuracy: position.accuracy,
             altitude: position.altitude,
-            timestamp: position.timestamp ?? DateTime.now(),
+            timestamp: position.timestamp,
           );
           _locationController?.add(locationData);
         },
@@ -210,6 +210,7 @@ class RealLocationService implements LocationService {
   }
 
   /// Check if device is within a geofenced area
+  @override
   bool isWithinGeofence(
     LocationData location,
     GeofenceData geofence,
@@ -232,6 +233,7 @@ class RealLocationService implements LocationService {
   }
 
   /// Get coordinates from address string
+  @override
   Future<LocationData?> getCoordinatesFromAddress(String address) async {
     try {
       final locations = await locationFromAddress(address);
@@ -303,7 +305,6 @@ class RealLocationService implements LocationService {
     );
   }
 
-  @override
   bool isLocationWithinGeofence(
     LocationData location,
     GeofenceData geofence,
@@ -442,7 +443,6 @@ class RealLocationService implements LocationService {
 class EnhancedLocationService extends RealLocationService {
   final Map<String, GeofenceRegion> _geofences = {};
   Timer? _geofenceTimer;
-  LocationData? _lastKnownLocation;
 
   /// Add a geofence region
   void addGeofence(GeofenceRegion region) {
@@ -465,8 +465,6 @@ class EnhancedLocationService extends RealLocationService {
 
   /// Stream of geofence events
   Stream<GeofenceEvent> get geofenceEvents => _geofenceController.stream;
-  final StreamController<GeofenceEvent> _geofenceController = 
-      StreamController<GeofenceEvent>.broadcast();
 
   void _startGeofenceMonitoring() {
     _geofenceTimer?.cancel();
@@ -488,6 +486,7 @@ class EnhancedLocationService extends RealLocationService {
     _geofenceTimer = null;
   }
 
+  @override
   void _checkGeofences(LocationData currentLocation) {
     for (final geofence in _geofences.values) {
       final distance = geolocator.Geolocator.distanceBetween(

@@ -67,6 +67,7 @@ class AudioRecordingService {
   /// Start recording audio
   Future<String?> startRecording({
     Function(Duration)? onDurationUpdate,
+    Function(double)? onAmplitudeUpdate,
     VoidCallback? onMaxDurationReached,
   }) async {
     if (!_isInitialized || _recorder == null) {
@@ -106,10 +107,13 @@ class AudioRecordingService {
       _isRecording = true;
       _recordingDuration = Duration.zero;
 
-      // Start timer to track duration
+      // Start timer to track duration 
       _recordingTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
         _recordingDuration = Duration(seconds: timer.tick);
         onDurationUpdate?.call(_recordingDuration);
+
+        // Note: FlutterSound doesn't provide real-time amplitude
+        // Audio levels will come from speech_to_text onSoundLevelChange
 
         // Stop recording if max duration reached
         if (_recordingDuration >= maxRecordingDuration) {

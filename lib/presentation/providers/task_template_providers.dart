@@ -3,7 +3,7 @@ import '../../domain/entities/task_template.dart';
 import '../../domain/repositories/task_template_repository.dart';
 import '../../data/repositories/task_template_repository_impl.dart';
 import '../../data/datasources/local/task_template_local_datasource.dart';
-import 'task_providers.dart';
+import '../../core/providers/core_providers.dart';
 
 /// Provider for TaskTemplateRepository
 final taskTemplateRepositoryProvider = Provider<TaskTemplateRepository>((ref) {

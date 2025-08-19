@@ -542,6 +542,148 @@ class CloudSyncService {
     // Update local event without triggering sync queue
   }
 
+  /// Upload all local data to cloud
+  Future<FullCloudSyncResult> uploadAllLocalData() async {
+    if (!isAuthenticated) {
+      return const FullCloudSyncResult(
+        success: false,
+        error: 'User not authenticated',
+      );
+    }
+
+    try {
+      final results = <String, CloudSyncResult>{};
+      int totalSynced = 0;
+      final conflicts = <enums.SyncConflict>[];
+
+      // Upload all local tasks
+      final localTasks = await _getAllLocalTasks();
+      for (final task in localTasks) {
+        final result = await syncTasksToCloud([task]);
+        results['task_${task.id}'] = result;
+        if (result.success) {
+          totalSynced++;
+        }
+        conflicts.addAll(result.conflicts);
+      }
+
+      // Upload all local events
+      final localEvents = await _getAllLocalEvents();
+      for (final event in localEvents) {
+        final result = await syncEventsToCloud([event]);
+        results['event_${event.id}'] = result;
+        if (result.success) {
+          totalSynced++;
+        }
+        conflicts.addAll(result.conflicts);
+      }
+
+      return FullCloudSyncResult(
+        success: true,
+        totalSynced: totalSynced,
+        conflicts: conflicts,
+        results: results,
+        message: 'Successfully uploaded $totalSynced items to cloud',
+      );
+
+    } catch (e) {
+      return FullCloudSyncResult(
+        success: false,
+        error: e.toString(),
+      );
+    }
+  }
+
+  /// Download all cloud data to local storage
+  Future<FullCloudSyncResult> downloadAllCloudData() async {
+    if (!isAuthenticated) {
+      return const FullCloudSyncResult(
+        success: false,
+        error: 'User not authenticated',
+      );
+    }
+
+    try {
+      final results = <String, CloudSyncResult>{};
+      int totalSynced = 0;
+      final conflicts = <enums.SyncConflict>[];
+
+      // Download all cloud tasks
+      final cloudTasks = await _supabase
+          .from('tasks')
+          .select()
+          .eq('user_id', currentUserId!);
+
+      for (final taskData in cloudTasks) {
+        try {
+          final task = TaskModel.fromJson(taskData);
+          
+          // Check for local conflicts
+          final localTask = await _getLocalTask(task.id);
+          if (localTask != null) {
+            final conflict = _detectTaskConflict(localTask, task);
+            if (conflict != null) {
+              conflicts.add(conflict);
+              continue;
+            }
+          }
+
+          // Update local task
+          await _updateLocalTaskSilently(task);
+          totalSynced++;
+          
+          results['task_${task.id}'] = const CloudSyncResult(
+            success: true,
+            syncedCount: 1,
+          );
+        } catch (e) {
+          results['task_error'] = CloudSyncResult(
+            success: false,
+            error: e.toString(),
+          );
+        }
+      }
+
+      // Download all cloud events
+      final cloudEvents = await _supabase
+          .from('calendar_events')
+          .select()
+          .eq('user_id', currentUserId!);
+
+      for (final eventData in cloudEvents) {
+        try {
+          final event = CalendarEvent.fromJson(eventData);
+          await _updateLocalEventSilently(event);
+          totalSynced++;
+          
+          results['event_${event.id}'] = const CloudSyncResult(
+            success: true,
+            syncedCount: 1,
+          );
+        } catch (e) {
+          results['event_error'] = CloudSyncResult(
+            success: false,
+            error: e.toString(),
+          );
+        }
+      }
+
+      return FullCloudSyncResult(
+        success: true,
+        totalSynced: totalSynced,
+        conflicts: conflicts,
+        results: results,
+        message: 'Successfully downloaded $totalSynced items from cloud',
+      );
+
+    } catch (e) {
+      return FullCloudSyncResult(
+        success: false,
+        error: e.toString(),
+      );
+    }
+  }
+
   /// Detect conflicts between local and cloud tasks
   enums.SyncConflict? _detectTaskConflict(TaskModel localTask, TaskModel cloudTask) {
     // Simple conflict detection based on update time

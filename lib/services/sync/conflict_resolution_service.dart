@@ -136,7 +136,7 @@ class ConflictResolutionService {
         strategy: ConflictResolutionStrategy.lastModifiedWins,
         conflictType: conflictType,
         wasAutoResolved: true,
-        resolution: 'Local version newer (${localModified}), kept local changes',
+        resolution: 'Local version newer ($localModified), kept local changes',
       );
     } else {
       return ConflictResolution(
@@ -144,7 +144,7 @@ class ConflictResolutionService {
         strategy: ConflictResolutionStrategy.lastModifiedWins,
         conflictType: conflictType,
         wasAutoResolved: true,
-        resolution: 'Remote version newer (${remoteModified}), kept remote changes',
+        resolution: 'Remote version newer ($remoteModified), kept remote changes',
       );
     }
   }

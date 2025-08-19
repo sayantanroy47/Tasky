@@ -3,10 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/services/app_initialization_service.dart';
 import '../../services/error_recovery_service.dart';
 import '../../services/privacy_service.dart';
-import '../../services/database/database.dart';
 import '../../services/share_intent_service.dart';
 import '../../core/providers/core_providers.dart';
-import 'task_providers.dart';
 
 /// Provider for app initialization
 final appInitializationProvider = FutureProvider<void>((ref) async {

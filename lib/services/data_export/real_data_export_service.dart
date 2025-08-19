@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:csv/csv.dart';
@@ -1322,7 +1321,7 @@ class RealDataExportService implements DataExportService {
                                 '${status.name}: $count',
                                 style: pw.TextStyle(font: font, fontSize: 12),
                               );
-                            }).toList(),
+                            }),
                           ],
                         ),
                       ),
@@ -1371,7 +1370,7 @@ class RealDataExportService implements DataExportService {
                         font,
                       ),
                     ],
-                  )).toList(),
+                  )),
                 ],
               ),
 
@@ -1475,7 +1474,7 @@ class RealDataExportService implements DataExportService {
                     ],
                   ],
                 ),
-              )).toList(),
+              )),
             ];
           },
         ),
@@ -1592,7 +1591,7 @@ class RealDataExportService implements DataExportService {
                   ),
                 ],
               ),
-            )).toList(),
+            )),
           ];
         },
       ),

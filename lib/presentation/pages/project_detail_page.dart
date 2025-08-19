@@ -21,21 +21,29 @@ class ProjectDetailPage extends ConsumerStatefulWidget {
   const ProjectDetailPage({
     super.key,
     required this.projectId,
-  });  @override
+  });
+
+  @override
   ConsumerState<ProjectDetailPage> createState() => _ProjectDetailPageState();
 }
 
 class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
     with SingleTickerProviderStateMixin {
-  late TabController _tabController;  @override
+  late TabController _tabController;
+
+  @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-  }  @override
+  }
+
+  @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
-  }  @override
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final projectsAsync = ref.watch(projectsProvider);
@@ -100,32 +108,33 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
             body: Padding(
               padding: const EdgeInsets.only(top: kToolbarHeight + 8),
               child: Column(
-            children: [
-              // Project header with stats
-              _buildProjectHeader(project, projectStatsAsync),
-              
-              // Tabs
-              TabBar(
-                controller: _tabController,
-                tabs: const [
-                  Tab(text: 'Tasks', icon: Icon(Icons.task_alt)),
-                  Tab(text: 'Progress', icon: Icon(Icons.trending_up)),
-                  Tab(text: 'Overview', icon: Icon(Icons.info)),
+                children: [
+                  // Project header with stats
+                  _buildProjectHeader(project, projectStatsAsync),
+                  
+                  // Tabs
+                  TabBar(
+                    controller: _tabController,
+                    tabs: const [
+                      Tab(text: 'Tasks', icon: Icon(Icons.task_alt)),
+                      Tab(text: 'Progress', icon: Icon(Icons.trending_up)),
+                      Tab(text: 'Overview', icon: Icon(Icons.info)),
+                    ],
+                  ),
+                  
+                  // Tab content
+                  Expanded(
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: [
+                        _buildTasksTab(project),
+                        _buildProgressTab(project),
+                        _buildOverviewTab(project),
+                      ],
+                    ),
+                  ),
                 ],
               ),
-              
-              // Tab content
-              Expanded(
-                child: TabBarView(
-                  controller: _tabController,
-                  children: [
-                    _buildTasksTab(project),
-                    _buildProgressTab(project),
-                    _buildOverviewTab(project),
-                  ],
-                ),
-              ),
-            ],
             ),
           ),
         );
@@ -169,10 +178,10 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: _parseColor(project.color).withOpacity( 0.1),
+        color: _parseColor(project.color).withOpacity(0.1),
         border: Border(
           bottom: BorderSide(
-            color: theme.colorScheme.outline.withOpacity( 0.1),
+            color: theme.colorScheme.outline.withOpacity(0.1),
           ),
         ),
       ),
@@ -282,7 +291,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.error.withOpacity( 0.1),
+                      color: theme.colorScheme.error.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                     ),
                     child: Text(
@@ -393,9 +402,9 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: color.withOpacity( 0.1),
+        color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-        border: Border.all(color: color.withOpacity( 0.1)),
+        border: Border.all(color: color.withOpacity(0.1)),
       ),
       child: Column(
         children: [

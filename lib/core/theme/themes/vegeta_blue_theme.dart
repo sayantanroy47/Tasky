@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../app_theme_data.dart' as app_theme_data;
 import '../models/theme_metadata.dart';
 import '../models/theme_colors.dart';
@@ -17,17 +18,17 @@ class VegetaBlueTheme {
     return app_theme_data.AppThemeData(
       metadata: ThemeMetadata(
         id: isDark ? 'vegeta_blue_dark' : 'vegeta_blue',
-        name: isDark ? 'Vegeta Blue Dark' : 'Vegeta Blue',
+        name: isDark ? 'Vegeta SSGSS Dark' : 'Vegeta SSGSS Light',
         description: isDark 
-          ? 'Dark variant of the Saiyan prince theme with deep space backgrounds and brilliant energy auras'
-          : 'Channel your inner Saiyan prince with this powerful, angular theme featuring deep blues and explosive energy',
+          ? 'SSGSS Vegeta theme with cosmic void backgrounds, brilliant azure energy, and royal battle suit aesthetics'
+          : 'Super Saiyan God Super Saiyan theme featuring controlled azure power, golden accents, and clean battlefield aesthetics',
         author: 'Tasky Team',
         version: '1.0.0',
-        tags: ['gaming', 'anime', 'dramatic', 'blue', 'angular', 'energy'],
+        tags: ['anime', 'ssgss', 'cosmic', 'azure', 'royal', 'energy', 'dramatic'],
         category: 'gaming',
         previewIcon: Icons.flash_on,
-        primaryPreviewColor: const Color(0xFF1e3a8a), // Deep royal blue
-        secondaryPreviewColor: const Color(0xFF3b82f6), // Electric blue
+        primaryPreviewColor: const Color(0xFF1E3A8A), // SSGSS battle suit
+        secondaryPreviewColor: const Color(0xFF1F8FFF), // Azure aura core
         createdAt: now,
         isPremium: false,
         popularityScore: 8.5,
@@ -48,196 +49,188 @@ class VegetaBlueTheme {
   /// Create dark variant
   static app_theme_data.AppThemeData createDark() => create(isDark: true);
 
-  /// Helper method to reduce color brightness by 25%
-  static Color _reduceBrightness(Color color, double factor) {
-    final hsl = HSLColor.fromColor(color);
-    return hsl.withLightness((hsl.lightness * factor).clamp(0.0, 1.0)).toColor();
-  }
 
-  /// Create Vegeta-inspired color palette
+  /// Create Vegeta SSGSS-inspired color palette with maximum accuracy
   static ThemeColors _createVegetaColors({bool isDark = false}) {
     if (isDark) {
-      // Dark variant: Deeper space colors with brighter energy
-      const deepSpaceBlue = Color(0xFF0c1527);       // Darker background - Deep space
-      const royalNavy = Color(0xFF1e3a8a);           // Primary - Vegeta's aura (same)
-      const brilliantBlue = Color(0xFF60a5fa);       // Secondary - Brighter energy
-      const silverWhite = Color(0xFFf1f5f9);         // On colors - Armor shine
-      const spaceDark = Color(0xFF0f172a);           // Surface - Space darkness  
-      const energyGlow = Color(0xFF93c5fd);          // Accent - Intense glow
-      const plasmaYellow = Color(0xFFfde047);        // Highlight - Plasma sparks
+      // SSGSS Dark Variant: Cosmic void with brilliant azure energy
+      const deepSpaceBlue = Color(0xFF0A0F1C);       // Cosmic void background
+      const royalNavy = Color(0xFF1E3A8A);           // Vegeta's battle suit
+      const brilliantBlue = Color(0xFF1F8FFF);       // SSJ Blue hair & aura core
+      const energyGlow = Color(0xFF60A5FA);          // Aura edges, glow effects
+      const silverWhite = Color(0xFFE5E9F0);         // Armor shine
+      const plasmaYellow = Color(0xFFFACC15);        // Gold armor accents and sparks
+      const spaceDark = Color(0xFF111827);           // Deep shadows
+      const auraCyan = Color(0xFF38BDF8);            // Extra highlight for glowing energy
+      const voidPurple = Color(0xFF1C1B29);          // Subtle cosmic depth
       
-      return ThemeColors(
-        // Primary colors - Vegeta's aura
+      return const ThemeColors(
+        // Primary colors - SSGSS Battle Suit
         primary: royalNavy,
         onPrimary: silverWhite,
-        primaryContainer: const Color(0xFF1e40af),
+        primaryContainer: brilliantBlue,
         onPrimaryContainer: silverWhite,
 
-        // Secondary colors - Brilliant energy
+        // Secondary colors - Azure Aura Core
         secondary: brilliantBlue,
         onSecondary: deepSpaceBlue,
-        secondaryContainer: const Color(0xFF1d4ed8),
-        onSecondaryContainer: silverWhite,
+        secondaryContainer: auraCyan,
+        onSecondaryContainer: deepSpaceBlue,
 
-        // Tertiary colors - Plasma energy
+        // Tertiary colors - Golden Armor Accents
         tertiary: plasmaYellow,
         onTertiary: deepSpaceBlue,
-        tertiaryContainer: const Color(0xFFca8a04),
+        tertiaryContainer: Color(0xFFD97706),
         onTertiaryContainer: deepSpaceBlue,
 
-        // Surface colors - Space materials
+        // Surface colors - Cosmic Materials
         surface: spaceDark,
         onSurface: silverWhite,
-        surfaceVariant: const Color(0xFF1e293b),
-        onSurfaceVariant: const Color(0xFFcbd5e1),
+        surfaceVariant: voidPurple,
+        onSurfaceVariant: silverWhite,
         inverseSurface: silverWhite,
         onInverseSurface: deepSpaceBlue,
 
-        // Background colors - Deep space
+        // Background colors - Deep Space Void
         background: deepSpaceBlue,
         onBackground: silverWhite,
 
-        // Error colors - Destructive power (same)
-        error: const Color(0xFFf87171),
+        // Error colors - Destructive Ki Energy
+        error: Color(0xFFEF4444),
         onError: deepSpaceBlue,
-        errorContainer: const Color(0xFFdc2626),
+        errorContainer: Color(0xFFDC2626),
         onErrorContainer: silverWhite,
 
-        // Special colors
+        // Special colors - SSGSS Energy System
         accent: energyGlow,
         highlight: plasmaYellow,
-        shadow: const Color(0xFF000000),
-        outline: const Color(0xFF475569),
-        outlineVariant: const Color(0xFF334155),
+        shadow: Color(0xFF000000),
+        outline: auraCyan,
+        outlineVariant: voidPurple,
 
-        // Task priority colors - Enhanced power levels
-        taskLowPriority: const Color(0xFF4ade80),    // Bright green
-        taskMediumPriority: brilliantBlue,           // Brilliant blue
-        taskHighPriority: plasmaYellow,              // Plasma yellow
-        taskUrgentPriority: const Color(0xFFf87171), // Bright red
+        // Task priority colors - Power Level System
+        taskLowPriority: Color(0xFF10B981),      // Calm energy green
+        taskMediumPriority: brilliantBlue,       // SSGSS blue
+        taskHighPriority: plasmaYellow,          // Golden power
+        taskUrgentPriority: Color(0xFFEF4444),   // Destructive red
 
-        // Status colors
-        success: const Color(0xFF22c55e),
-        warning: const Color(0xFFf59e0b),
+        // Status colors - Energy States
+        success: Color(0xFF10B981),
+        warning: plasmaYellow,
         info: energyGlow,
 
-        // Calendar dot colors - Vegeta blue theme (dark)
-        calendarTodayDot: energyGlow,                    // Energy blue for today
-        calendarOverdueDot: const Color(0xFFdc2626),     // Red for overdue
-        calendarFutureDot: deepSpaceBlue,                // Deep blue for future
-        calendarCompletedDot: const Color(0xFF22c55e),   // Green for completed
-        calendarHighPriorityDot: plasmaYellow,           // Yellow for high priority
+        // Calendar dot colors - SSGSS Power System
+        calendarTodayDot: energyGlow,
+        calendarOverdueDot: Color(0xFFEF4444),
+        calendarFutureDot: auraCyan,
+        calendarCompletedDot: Color(0xFF10B981),
+        calendarHighPriorityDot: plasmaYellow,
         
-        // Status badge colors - Vegeta themed (dark)
-        statusPendingBadge: energyGlow,                  // Energy blue for pending
-        statusInProgressBadge: plasmaYellow,             // Yellow for in progress
-        statusCompletedBadge: const Color(0xFF22c55e),   // Green for completed
-        statusCancelledBadge: const Color(0xFF64748b),   // Gray for cancelled
-        statusOverdueBadge: const Color(0xFFdc2626),     // Red for overdue
-        statusOnHoldBadge: const Color(0xFFf59e0b),      // Orange for on hold
+        // Status badge colors - Saiyan Power States
+        statusPendingBadge: energyGlow,
+        statusInProgressBadge: plasmaYellow,
+        statusCompletedBadge: Color(0xFF10B981),
+        statusCancelledBadge: voidPurple,
+        statusOverdueBadge: Color(0xFFEF4444),
+        statusOnHoldBadge: auraCyan,
 
-        // Interactive colors
-        hover: const Color(0xFF3730a3),
-        pressed: const Color(0xFF312e81),
+        // Interactive colors - Energy Responses
+        hover: auraCyan,
+        pressed: royalNavy,
         focus: plasmaYellow,
-        disabled: const Color(0xFF64748b),
+        disabled: voidPurple,
       );
     }
     
-    // Light variant: Use dark theme colors reduced by 25% brightness + light backgrounds
+    // SSGSS Light Variant: Clean battlefield with controlled energy
     
-    // Get dark theme colors first  
-    const darkRoyalNavy = Color(0xFF1e3a8a);          // Dark theme primary
-    const darkBrilliantBlue = Color(0xFF60a5fa);      // Dark theme secondary
-    const darkEnergyGlow = Color(0xFF93c5fd);         // Dark theme accent
-    const darkPlasmaYellow = Color(0xFFfde047);       // Dark theme highlight
+    // Refined SSGSS colors for light variant
+    const darkRoyalNavy = Color(0xFF1E3A8A);          // Strong suit accent
+    const darkBrilliantBlue = Color(0xFF1F8FFF);      // Aura highlight  
+    const darkEnergyGlow = Color(0xFF60A5FA);         // Aura edge glow
+    const darkPlasmaYellow = Color(0xFFFACC15);       // Golden highlight
     
-    // Reduce brightness by 25% (factor of 0.75)
-    final lightPrimary = _reduceBrightness(darkRoyalNavy, 0.75);
-    final lightSecondary = _reduceBrightness(darkBrilliantBlue, 0.75);
-    final lightAccent = _reduceBrightness(darkEnergyGlow, 0.75);
-    final lightHighlight = _reduceBrightness(darkPlasmaYellow, 0.75);
+    // Light variant backgrounds and accents
+    const pureWhite = Color(0xFFFFFFFF);              // Clean background
+    const lightSilver = Color(0xFFF3F4F6);            // Soft armor gray
+    const paleBlue = Color(0xFFDBEAFE);               // Gentle aura tint
+    const auraCyanLight = Color(0xFFBAE6FD);          // Glow highlight
     
-    // Light backgrounds
-    const pureWhite = Color(0xFFfafafa);          // Background - Softer white
-    const lightSilver = Color(0xFFf1f5f9);        // Surface - Light silver
-    const paleBlue = Color(0xFFe0f2fe);           // Container - More visible blue tint
-    
-    return ThemeColors(
-      // Primary colors - Reduced brightness from dark theme
-      primary: lightPrimary,
+    return const ThemeColors(
+      // Primary colors - SSGSS Battle Suit (Light)
+      primary: darkRoyalNavy,
       onPrimary: pureWhite,
       primaryContainer: paleBlue,
-      onPrimaryContainer: lightPrimary,
-
-      // Secondary colors - Reduced brightness from dark theme
-      secondary: lightSecondary,
-      onSecondary: pureWhite,
-      secondaryContainer: paleBlue,
-      onSecondaryContainer: lightSecondary,
-
-      // Tertiary colors - Reduced brightness from dark theme
-      tertiary: lightHighlight,
-      onTertiary: pureWhite,
-      tertiaryContainer: paleBlue,
-      onTertiaryContainer: lightSecondary,
-
-      // Surface colors - Light backgrounds
-      surface: lightSilver,
-      onSurface: const Color(0xFF1a1a1a), // Dark text for light surfaces
-      surfaceVariant: const Color(0xFFe2e8f0),
-      onSurfaceVariant: const Color(0xFF2a2a2a), // Dark text for light surfaces
-      inverseSurface: lightPrimary,
-      onInverseSurface: pureWhite,
-
-      // Background colors - Light backgrounds
-      background: pureWhite,
-      onBackground: const Color(0xFF0a0a0a), // Very dark text for light backgrounds
-
-      // Error colors - Reduced brightness
-      error: _reduceBrightness(const Color(0xFFf87171), 0.75),
-      onError: pureWhite,
-      errorContainer: const Color(0xFFfef2f2),
-      onErrorContainer: _reduceBrightness(const Color(0xFFdc2626), 0.75),
-
-      // Special colors
-      accent: lightAccent,
-      highlight: lightHighlight,
-      shadow: const Color(0xFF000000),
-      outline: _reduceBrightness(const Color(0xFF475569), 0.75),
-      outlineVariant: _reduceBrightness(const Color(0xFF64748b), 0.75),
-
-      // Task priority colors - Reduced brightness power levels
-      taskLowPriority: _reduceBrightness(const Color(0xFF4ade80), 0.75),    // Reduced green
-      taskMediumPriority: lightSecondary,                                   // Reduced blue
-      taskHighPriority: lightHighlight,                                     // Reduced yellow
-      taskUrgentPriority: _reduceBrightness(const Color(0xFFf87171), 0.75), // Reduced red
-
-      // Status colors - Reduced brightness
-      success: _reduceBrightness(const Color(0xFF22c55e), 0.75),
-      warning: _reduceBrightness(const Color(0xFFf59e0b), 0.75),
-      info: lightAccent,
-
-      // Calendar dot colors - Vegeta blue theme (light) - reduced brightness
-      calendarTodayDot: lightAccent,                                        // Reduced energy blue for today
-      calendarOverdueDot: _reduceBrightness(const Color(0xFFdc2626), 0.75), // Reduced red for overdue
-      calendarFutureDot: lightSecondary,                                    // Reduced blue for future
-      calendarCompletedDot: _reduceBrightness(const Color(0xFF22c55e), 0.75), // Reduced green for completed
-      calendarHighPriorityDot: lightHighlight,                             // Reduced yellow for high priority
+      onPrimaryContainer: darkRoyalNavy,
       
-      // Status badge colors - Vegeta themed (light) - reduced brightness
-      statusPendingBadge: lightSecondary,                                   // Reduced blue for pending
-      statusInProgressBadge: lightHighlight,                                // Reduced yellow for in progress
-      statusCompletedBadge: _reduceBrightness(const Color(0xFF22c55e), 0.75), // Reduced green for completed
-      statusCancelledBadge: _reduceBrightness(const Color(0xFF64748b), 0.75), // Reduced gray for cancelled
-      statusOverdueBadge: _reduceBrightness(const Color(0xFFdc2626), 0.75),  // Reduced red for overdue
-      statusOnHoldBadge: _reduceBrightness(const Color(0xFFf59e0b), 0.75),   // Reduced orange for on hold
-
-      // Interactive colors - Reduced brightness
-      hover: _reduceBrightness(const Color(0xFF3730a3), 0.75),
-      pressed: _reduceBrightness(const Color(0xFF312e81), 0.75),
-      focus: lightHighlight,
-      disabled: _reduceBrightness(const Color(0xFF64748b), 0.75),
+      // Secondary colors - Azure Aura (Light)
+      secondary: darkBrilliantBlue,
+      onSecondary: pureWhite,
+      secondaryContainer: auraCyanLight,
+      onSecondaryContainer: darkRoyalNavy,
+      
+      // Tertiary colors - Golden Energy Accents (Light)
+      tertiary: darkPlasmaYellow,
+      onTertiary: darkRoyalNavy,
+      tertiaryContainer: Color(0xFFFEF3C7), // Light yellow container
+      onTertiaryContainer: darkRoyalNavy,
+      
+      // Surface colors - Light battlefield materials
+      surface: lightSilver,
+      onSurface: Color(0xFF1a1a1a), // Dark text for light surfaces
+      surfaceVariant: Color(0xFFE2E8F0), // Light slate
+      onSurfaceVariant: Color(0xFF2a2a2a), // Dark text for light surfaces
+      inverseSurface: darkRoyalNavy,
+      onInverseSurface: pureWhite,
+      
+      // Background colors - Clean battlefield
+      background: pureWhite,
+      onBackground: Color(0xFF0a0a0a), // Very dark text for light backgrounds
+      
+      // Error colors - Destructive energy (light variant)
+      error: Color(0xFFDC2626), // Strong red but not overwhelming
+      onError: pureWhite,
+      errorContainer: Color(0xFFFEF2F2), // Light red container
+      onErrorContainer: Color(0xFF991B1B), // Dark red text
+      
+      // Special colors - SSGSS Light Energy System
+      accent: darkEnergyGlow,
+      highlight: darkPlasmaYellow,
+      shadow: Color(0xFF000000),
+      outline: Color(0xFF64748B), // Slate outline
+      outlineVariant: Color(0xFF94A3B8), // Light slate outline
+      
+      // Task priority colors - Light Power Level System
+      taskLowPriority: Color(0xFF059669),      // Strong green
+      taskMediumPriority: darkBrilliantBlue,   // SSGSS blue
+      taskHighPriority: darkPlasmaYellow,      // Golden power
+      taskUrgentPriority: Color(0xFFDC2626),   // Strong red
+      
+      // Status colors - Light Energy States
+      success: Color(0xFF059669), // Strong green
+      warning: Color(0xFFD97706), // Strong amber
+      info: darkEnergyGlow,
+      
+      // Calendar dot colors - SSGSS Light Power System
+      calendarTodayDot: darkEnergyGlow,
+      calendarOverdueDot: Color(0xFFDC2626),
+      calendarFutureDot: auraCyanLight,
+      calendarCompletedDot: Color(0xFF059669),
+      calendarHighPriorityDot: darkPlasmaYellow,
+      
+      // Status badge colors - Light Saiyan Power States
+      statusPendingBadge: darkEnergyGlow,
+      statusInProgressBadge: darkPlasmaYellow,
+      statusCompletedBadge: Color(0xFF059669),
+      statusCancelledBadge: Color(0xFF64748B), // Neutral slate
+      statusOverdueBadge: Color(0xFFDC2626),
+      statusOnHoldBadge: Color(0xFFD97706), // Amber
+      
+      // Interactive colors - Light Energy Responses
+      hover: auraCyanLight,
+      pressed: darkRoyalNavy,
+      focus: darkPlasmaYellow,
+      disabled: Color(0xFF94A3B8), // Light slate
     );
   }
 
@@ -253,206 +246,206 @@ class VegetaBlueTheme {
       baseSize: TypographyConstants.bodyLarge,
       scaleRatio: 1.0, // No scaling - use exact constants
       baseFontWeight: TypographyConstants.semiBold, // Bold and powerful
-      baseLetterSpacing: 0.5, // Spaced out for dramatic effect
-      baseLineHeight: 1.3, // Tight for intensity
+      baseLetterSpacing: TypographyConstants.normalLetterSpacing, // Consistent spacing
+      baseLineHeight: TypographyConstants.normalLineHeight, // Consistent line height
       
       // Use EXACT typography constants for all sizes
-      displayLarge: TypographyConstants.getStyle(
+      displayLarge: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.displayLarge,
         fontWeight: TypographyConstants.light,
-        fontFamily: fontFamily,
-        letterSpacing: 0.5,
-        height: 1.3,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      displayMedium: TypographyConstants.getStyle(
+      displayMedium: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.displayMedium,
         fontWeight: TypographyConstants.light,
-        fontFamily: fontFamily,
-        letterSpacing: 0.5,
-        height: 1.3,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      displaySmall: TypographyConstants.getStyle(
+      displaySmall: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.displaySmall,
         fontWeight: TypographyConstants.regular,
-        fontFamily: fontFamily,
-        letterSpacing: 0.5,
-        height: 1.3,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
       
-      headlineLarge: TypographyConstants.getStyle(
+      headlineLarge: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.headlineLarge,
         fontWeight: TypographyConstants.medium,
-        fontFamily: fontFamily,
-        letterSpacing: 0.5,
-        height: 1.3,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      headlineMedium: TypographyConstants.getStyle(
+      headlineMedium: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.headlineMedium,
         fontWeight: TypographyConstants.medium,
-        fontFamily: fontFamily,
-        letterSpacing: 0.5,
-        height: 1.3,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      headlineSmall: TypographyConstants.getStyle(
+      headlineSmall: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.headlineSmall,
         fontWeight: TypographyConstants.medium,
-        fontFamily: fontFamily,
-        letterSpacing: 0.5,
-        height: 1.3,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
       
-      titleLarge: TypographyConstants.getStyle(
+      titleLarge: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.titleLarge,
         fontWeight: TypographyConstants.semiBold,
-        fontFamily: fontFamily,
-        letterSpacing: 0.5,
-        height: 1.3,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      titleMedium: TypographyConstants.getStyle(
+      titleMedium: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.titleMedium,
         fontWeight: TypographyConstants.semiBold,
-        fontFamily: fontFamily,
-        letterSpacing: 0.5,
-        height: 1.3,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      titleSmall: TypographyConstants.getStyle(
+      titleSmall: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.titleSmall,
         fontWeight: TypographyConstants.semiBold,
-        fontFamily: fontFamily,
-        letterSpacing: 0.5,
-        height: 1.3,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
       
-      bodyLarge: TypographyConstants.getStyle(
+      bodyLarge: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.bodyLarge,
         fontWeight: TypographyConstants.medium,
-        fontFamily: fontFamily,
-        letterSpacing: 0.5,
-        height: 1.3,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      bodyMedium: TypographyConstants.getStyle(
+      bodyMedium: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.bodyMedium,
         fontWeight: TypographyConstants.medium,
-        fontFamily: fontFamily,
-        letterSpacing: 0.5,
-        height: 1.3,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      bodySmall: TypographyConstants.getStyle(
+      bodySmall: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.bodySmall,
         fontWeight: TypographyConstants.medium,
-        fontFamily: fontFamily,
-        letterSpacing: 0.5,
-        height: 1.3,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
       
-      labelLarge: TypographyConstants.getStyle(
+      labelLarge: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.labelLarge,
         fontWeight: TypographyConstants.semiBold,
-        fontFamily: fontFamily,
-        letterSpacing: 0.5,
-        height: 1.3,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      labelMedium: TypographyConstants.getStyle(
+      labelMedium: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.labelMedium,
         fontWeight: TypographyConstants.semiBold,
-        fontFamily: fontFamily,
-        letterSpacing: 0.5,
-        height: 1.3,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      labelSmall: TypographyConstants.getStyle(
+      labelSmall: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.labelSmall,
         fontWeight: TypographyConstants.semiBold,
-        fontFamily: fontFamily,
-        letterSpacing: 0.5,
-        height: 1.3,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
       
       // Custom app styles with exact constants
-      taskTitle: TypographyConstants.getStyle(
+      taskTitle: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.taskTitle,
         fontWeight: TypographyConstants.bold, // Extra bold for Vegeta
-        fontFamily: fontFamily,
-        letterSpacing: 0.5,
-        height: 1.3,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      taskDescription: TypographyConstants.getStyle(
+      taskDescription: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.taskDescription,
         fontWeight: TypographyConstants.medium,
-        fontFamily: fontFamily,
-        letterSpacing: 0.5,
-        height: 1.3,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      taskMeta: TypographyConstants.getStyle(
+      taskMeta: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.taskMeta,
         fontWeight: TypographyConstants.medium,
-        fontFamily: fontFamily,
-        letterSpacing: 0.5,
-        height: 1.3,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      cardTitle: TypographyConstants.getStyle(
+      cardTitle: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.titleSmall,
         fontWeight: TypographyConstants.semiBold,
-        fontFamily: fontFamily,
-        letterSpacing: 0.5,
-        height: 1.3,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      cardSubtitle: TypographyConstants.getStyle(
+      cardSubtitle: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.bodySmall,
         fontWeight: TypographyConstants.medium,
-        fontFamily: fontFamily,
-        letterSpacing: 0.5,
-        height: 1.3,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      buttonText: TypographyConstants.getStyle(
+      buttonText: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.buttonText,
         fontWeight: TypographyConstants.semiBold,
-        fontFamily: fontFamily,
-        letterSpacing: 0.5,
-        height: 1.3,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      inputText: TypographyConstants.getStyle(
+      inputText: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.inputText,
         fontWeight: TypographyConstants.medium,
-        fontFamily: fontFamily,
-        letterSpacing: 0.5,
-        height: 1.3,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      appBarTitle: TypographyConstants.getStyle(
+      appBarTitle: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.appBarTitle,
         fontWeight: TypographyConstants.semiBold,
-        fontFamily: fontFamily,
-        letterSpacing: 0.5,
-        height: 1.3,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      navigationLabel: TypographyConstants.getStyle(
+      navigationLabel: GoogleFonts.getFont(
+        fontFamily,
         fontSize: TypographyConstants.navigationLabel,
         fontWeight: TypographyConstants.semiBold,
-        fontFamily: fontFamily,
-        letterSpacing: 0.5,
-        height: 1.3,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
     );

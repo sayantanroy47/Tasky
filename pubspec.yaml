@@ -45,6 +45,7 @@ dependencies:
   permission_handler: ^11.0.1
   flutter_sound: ^9.2.13
   just_audio: ^0.9.36
+  ffmpeg_kit_flutter_new: ^3.2.0
   
   # HTTP client for API calls
   http: ^1.1.0

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/repositories/task_repository.dart';
 import '../../domain/models/enums.dart';
@@ -246,7 +247,7 @@ class TaskDependencyService {
       if (validation.isValid && dependent.status == TaskStatus.pending) {
         // Optionally, you could automatically move to in-progress
         // For now, just log that the task is ready
-        print('Task "${dependent.title}" is now ready to start');
+        debugPrint('Task "${dependent.title}" is now ready to start');
       }
     }
   }
