@@ -588,7 +588,7 @@ class _OfflineStatusWidgetState extends ConsumerState<OfflineStatusWidget>
             ),
           ),
         if (_hasRetryableActions()) ...[
-          if (widget.enableManualSync && _hasConnectivity) SizedBox(width: 12),
+          if (widget.enableManualSync && _hasConnectivity) const SizedBox(width: 12),
           Expanded(
             child: OutlinedButton.icon(
               onPressed: _handleRetry,

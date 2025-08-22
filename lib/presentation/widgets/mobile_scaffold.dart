@@ -100,7 +100,7 @@ class _MobileScaffoldState extends State<MobileScaffold> {
                         fontSize: isLargeText 
                             ? TypographyConstants.textXL 
                             : TypographyConstants.textLG,
-                        fontWeight: TypographyConstants.bold,
+                        fontWeight: TypographyConstants.medium,
                         color: theme.colorScheme.onSurface,
                       ),
                     ),
@@ -249,7 +249,7 @@ class _MobileDrawerState extends State<MobileDrawer>
                   fontSize: isLargeText 
                       ? TypographyConstants.text2XL 
                       : TypographyConstants.textXL,
-                  fontWeight: TypographyConstants.bold,
+                  fontWeight: TypographyConstants.medium,
                   color: theme.colorScheme.onSurface,
                 ),
               ),
@@ -309,7 +309,7 @@ class _MobileDrawerState extends State<MobileDrawer>
                             ? TypographyConstants.textBase 
                             : TypographyConstants.textSM,
                         fontWeight: item.isSelected 
-                            ? TypographyConstants.semiBold 
+                            ? TypographyConstants.medium 
                             : TypographyConstants.medium,
                         color: item.isSelected
                             ? theme.colorScheme.primary
@@ -415,7 +415,7 @@ class _MobileTabBarState extends State<MobileTabBar> {
             fontSize: isLargeText 
                 ? TypographyConstants.textSM 
                 : TypographyConstants.textXS,
-            fontWeight: TypographyConstants.semiBold,
+            fontWeight: TypographyConstants.medium,
           ),
           unselectedLabelStyle: TextStyle(
             fontSize: isLargeText 

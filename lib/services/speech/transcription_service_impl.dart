@@ -187,11 +187,11 @@ class MockExternalTranscriptionService implements TranscriptionService {
   Future<bool> initialize() async {
     // Check if API key is available
     _isInitialized = true;
-    return _apiKey != null && _apiKey!.isNotEmpty;
+    return _apiKey != null && _apiKey.isNotEmpty;
   }
 
   @override
-  bool get isAvailable => _apiKey != null && _apiKey!.isNotEmpty;
+  bool get isAvailable => _apiKey != null && _apiKey.isNotEmpty;
 
   @override
   bool get isInitialized => _isInitialized;

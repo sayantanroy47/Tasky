@@ -25,7 +25,7 @@ class _RecurringTaskCreationPageState extends ConsumerState<RecurringTaskCreatio
   TaskPriority _selectedPriority = TaskPriority.medium;
   String? _selectedProjectId;
   final List<String> _selectedTags = [];
-  DateTime? _dueDate;
+  DateTime? _dueDate = DateTime.now();
   TimeOfDay? _dueTime;
   RecurrencePattern _recurrencePattern = const RecurrencePattern(
     type: RecurrenceType.daily,
@@ -134,7 +134,7 @@ class _RecurringTaskCreationPageState extends ConsumerState<RecurringTaskCreatio
           Text(
             'Task Details',
             style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w500,
             ),
           ),
           const SizedBox(height: 16),
@@ -182,7 +182,7 @@ class _RecurringTaskCreationPageState extends ConsumerState<RecurringTaskCreatio
           Text(
             'Recurrence Pattern',
             style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w500,
             ),
           ),
           const SizedBox(height: 16),
@@ -213,10 +213,10 @@ class _RecurringTaskCreationPageState extends ConsumerState<RecurringTaskCreatio
           Text(
             'First Due Date',
             style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w500,
             ),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           
           Row(
             children: [
@@ -229,7 +229,7 @@ class _RecurringTaskCreationPageState extends ConsumerState<RecurringTaskCreatio
                     : 'Select Date'),
                 ),
               ),
-              SizedBox(width: 16),
+              const SizedBox(width: 16),
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: _selectTime,
@@ -256,7 +256,7 @@ class _RecurringTaskCreationPageState extends ConsumerState<RecurringTaskCreatio
           Text(
             'Project Assignment',
             style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w500,
             ),
           ),
           const SizedBox(height: 16),
@@ -284,7 +284,7 @@ class _RecurringTaskCreationPageState extends ConsumerState<RecurringTaskCreatio
           Text(
             'Priority Level',
             style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w500,
             ),
           ),
           const SizedBox(height: 16),
@@ -308,7 +308,7 @@ class _RecurringTaskCreationPageState extends ConsumerState<RecurringTaskCreatio
                 checkmarkColor: color,
                 labelStyle: TextStyle(
                   color: isSelected ? color : theme.colorScheme.onSurface,
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                  fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
                 ),
               );
             }).toList(),

@@ -61,7 +61,7 @@ class TaskCollaborationWidget extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (taskSharedLists.isNotEmpty) ...[
-          Text('This task is shared in:',
+          const Text('This task is shared in:',
             style: TextStyle(fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 8),
@@ -119,7 +119,7 @@ class TaskCollaborationWidget extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Share Task'),
+        title: const Text('Share Task'),
         content: availableLists.isEmpty
             ? const Text('No available shared lists. Create a new one first.')
             : Column(

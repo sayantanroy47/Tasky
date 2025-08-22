@@ -142,7 +142,7 @@ class _ConfirmationDialogState extends State<ConfirmationDialog>
           child: Text(
             widget.title,
             style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w500,
               color: theme.colorScheme.onSurface,
             ),
           ),
@@ -296,7 +296,7 @@ class InfoDialog extends StatelessWidget {
             Text(
               title,
               style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w500,
                 color: theme.colorScheme.onSurface,
               ),
               textAlign: TextAlign.center,
@@ -429,7 +429,7 @@ class _TextInputDialogState extends State<TextInputDialog> {
               Text(
                 widget.title,
                 style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                   color: theme.colorScheme.onSurface,
                 ),
               ),
@@ -596,7 +596,7 @@ class SelectionDialog<T> extends StatelessWidget {
             Text(
               title,
               style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w500,
                 color: theme.colorScheme.onSurface,
               ),
             ),
@@ -718,7 +718,7 @@ class LoadingDialog extends StatelessWidget {
             Text(
               title,
               style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w500,
                 color: theme.colorScheme.onSurface,
               ),
               textAlign: TextAlign.center,

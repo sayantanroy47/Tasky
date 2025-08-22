@@ -442,10 +442,12 @@ class RealDataExportService implements DataExportService {
         return false;
       }
 
-      await Share.shareXFiles(
-        [XFile(filePath)],
-        subject: subject ?? 'Tasky Export',
-        text: 'Exported data from Tasky app',
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(filePath)],
+          subject: subject ?? 'Tasky Export',
+          text: 'Exported data from Tasky app',
+        ),
       );
 
       return true;

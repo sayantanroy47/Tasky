@@ -108,7 +108,7 @@ class EnhancedSearchService {
     }
     
     final startTime = DateTime.now();
-    final allProjects = await _projectRepository!.getAllProjects();
+    final allProjects = await _projectRepository.getAllProjects();
     final processedQuery = _preprocessQuery(query);
     
     final searchResults = <ScoredProjectResult>[];

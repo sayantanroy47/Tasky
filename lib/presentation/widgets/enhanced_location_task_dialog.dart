@@ -32,7 +32,7 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
   final _locationSearchController = TextEditingController();
   
   TaskPriority _priority = TaskPriority.medium;
-  DateTime? _dueDate;
+  DateTime? _dueDate = DateTime.now();
   GeofenceType _triggerType = GeofenceType.enter;
   double _geofenceRadius = 100.0;
   LocationData? _selectedLocation;
@@ -95,7 +95,7 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
     return Dialog(
       backgroundColor: Colors.transparent,
       child: Container(
-        constraints: BoxConstraints(maxWidth: 600, maxHeight: 700),
+        constraints: const BoxConstraints(maxWidth: 600, maxHeight: 700),
         child: GlassmorphismContainer(
           borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
           child: Padding(
@@ -117,7 +117,7 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
                             ? 'Edit Location Task' 
                             : 'Create Location-Based Task',
                           style: theme.textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ),
@@ -181,7 +181,7 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
             fontWeight: FontWeight.w600,
           ),
         ),
-        SizedBox(height: 12),
+        const SizedBox(height: 12),
         
         // Title field
         TextFormField(
@@ -203,7 +203,7 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
           onChanged: (_) => _updateLocationSuggestions(),
         ),
         
-        SizedBox(height: 12),
+        const SizedBox(height: 12),
         
         // Description field
         TextFormField(
@@ -227,7 +227,7 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
           children: [
             Expanded(
               child: DropdownButtonFormField<TaskPriority>(
-                value: _priority,
+                initialValue: _priority,
                 decoration: InputDecoration(
                   labelText: 'Priority',
                   prefixIcon: Icon(PhosphorIcons.flag()),
@@ -254,7 +254,7 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
                 },
               ),
             ),
-            SizedBox(width: 12),
+            const SizedBox(width: 12),
             Expanded(
               child: InkWell(
                 onTap: () => _selectDueDate(context),
@@ -302,7 +302,7 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
                 fontWeight: FontWeight.w600,
               ),
             ),
-            Spacer(),
+            const Spacer(),
             if (_selectedLocation != null)
               TextButton.icon(
                 onPressed: () => setState(() => _selectedLocation = null),
@@ -392,7 +392,7 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
         
         // Selected location display
         if (_selectedLocation != null) ...[
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
@@ -449,11 +449,11 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
             fontWeight: FontWeight.w600,
           ),
         ),
-        SizedBox(height: 12),
+        const SizedBox(height: 12),
         
         // Trigger type selection
         DropdownButtonFormField<GeofenceType>(
-          value: _triggerType,
+          initialValue: _triggerType,
           decoration: InputDecoration(
             labelText: 'Trigger Type',
             prefixIcon: Icon(PhosphorIcons.bell()),
@@ -529,7 +529,7 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
             fontWeight: FontWeight.w600,
           ),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         Wrap(
           spacing: 8,
           runSpacing: 8,
@@ -735,6 +735,15 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
               const SnackBar(
                 content: Text('Unable to determine location permission status.'),
                 backgroundColor: Colors.orange,
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+            break;
+          case LocationPermissionStatus.serviceDisabled:
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Location services are disabled. Please enable them in device settings.'),
+                backgroundColor: Colors.red,
                 behavior: SnackBarBehavior.floating,
               ),
             );

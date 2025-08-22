@@ -82,7 +82,7 @@ class AnalyticsMetricCard extends StatelessWidget {
             Row(
               children: [
                 Icon(icon, color: color ?? Theme.of(context).colorScheme.primary),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 Text(title, style: Theme.of(context).textTheme.titleSmall),
               ],
             ),
@@ -91,7 +91,7 @@ class AnalyticsMetricCard extends StatelessWidget {
               value,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                 color: color ?? Theme.of(context).colorScheme.primary,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w500,
               ),
             ),
             if (subtitle != null) ...[
@@ -156,7 +156,7 @@ class StreakWidget extends StatelessWidget {
               '$streak days',
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                 color: Theme.of(context).colorScheme.primary,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w500,
               ),
             ),
             const SizedBox(height: 8),
@@ -361,7 +361,7 @@ class PeakHoursAnalysisWidget extends StatelessWidget {
               'Peak Hours Analysis',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Row(
               children: [
                 Icon(PhosphorIcons.clock(), color: Theme.of(context).colorScheme.primary),

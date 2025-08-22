@@ -432,7 +432,7 @@ class _GlassEasterEggsState extends State<GlassEasterEggs>
             Container(
               width: 40,
               height: 40,
-              decoration: BoxDecoration(gradient: LinearGradient(
+              decoration: const BoxDecoration(gradient: LinearGradient(
                   colors: [_goldColor, Colors.orange],
                 ),
                 shape: BoxShape.circle,
@@ -452,7 +452,7 @@ class _GlassEasterEggsState extends State<GlassEasterEggs>
                     'Secret Mode Activated!',
                     style: TextStyle(
                       fontSize: TypographyConstants.textSM,
-                      fontWeight: TypographyConstants.bold,
+                      fontWeight: TypographyConstants.medium,
                       color: Colors.white,
                     ),
                   ),

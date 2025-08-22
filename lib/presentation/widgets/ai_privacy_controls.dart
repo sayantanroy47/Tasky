@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/typography_constants.dart';
+import '../../core/accessibility/touch_target_validator.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 
@@ -21,7 +22,7 @@ class AIPrivacyControls extends ConsumerWidget {
                   PhosphorIcons.shieldWarning(),
                   color: Theme.of(context).colorScheme.primary,
                 ),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 Text(
                   'Privacy & Data Control',
                   style: Theme.of(context).textTheme.titleLarge,
@@ -219,55 +220,67 @@ class _DataRetentionDialogState extends State<DataRetentionDialog> {
           ),
           const SizedBox(height: 16),
           
-          RadioListTile<int>(
+          ListTile(
             title: const Text('7 days'),
             subtitle: const Text('Minimal retention'),
-            value: 7,
-            groupValue: _selectedDays,
-            onChanged: (value) {
-              setState(() {
-                _selectedDays = value!;
-              });
-            },
+            leading: AccessibleRadio<int>(
+              value: 7,
+              groupValue: _selectedDays,
+              semanticLabel: '7 days minimal retention',
+              onChanged: (value) {
+                setState(() {
+                  _selectedDays = value!;
+                });
+              },
+            ),
           ),
           
-          RadioListTile<int>(
+          ListTile(
             title: const Text('30 days'),
             subtitle: const Text('Recommended'),
-            value: 30,
-            groupValue: _selectedDays,
-            onChanged: (value) {
-              setState(() {
-                _selectedDays = value!;
-              });
-            },
+            leading: AccessibleRadio<int>(
+              value: 30,
+              groupValue: _selectedDays,
+              semanticLabel: '30 days recommended retention',
+              onChanged: (value) {
+                setState(() {
+                  _selectedDays = value!;
+                });
+              },
+            ),
           ),
           
-          RadioListTile<int>(
+          ListTile(
             title: const Text('90 days'),
             subtitle: const Text('Extended retention'),
-            value: 90,
-            groupValue: _selectedDays,
-            onChanged: (value) {
-              setState(() {
-                _selectedDays = value!;
-              });
-            },
+            leading: AccessibleRadio<int>(
+              value: 90,
+              groupValue: _selectedDays,
+              semanticLabel: '90 days extended retention',
+              onChanged: (value) {
+                setState(() {
+                  _selectedDays = value!;
+                });
+              },
+            ),
           ),
           
-          RadioListTile<int>(
+          ListTile(
             title: const Text('Never delete'),
             subtitle: const Text('Keep data indefinitely'),
-            value: -1,
-            groupValue: _selectedDays,
-            onChanged: (value) {
-              setState(() {
-                _selectedDays = value!;
-              });
-            },
+            leading: AccessibleRadio<int>(
+              value: -1,
+              groupValue: _selectedDays,
+              semanticLabel: 'Never delete, keep data indefinitely',
+              onChanged: (value) {
+                setState(() {
+                  _selectedDays = value!;
+                });
+              },
+            ),
           ),
           
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           
           Container(
             padding: const EdgeInsets.all(12),

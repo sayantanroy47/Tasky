@@ -126,7 +126,7 @@ class _EpicThemePreviewCardState extends State<EpicThemePreviewCard>
               color: colors.primary.withValues(alpha: 0.2),
               blurRadius: 30,
               spreadRadius: 5,
-              offset: Offset(0, 10),
+              offset: const Offset(0, 10),
             ),
         ],
       ),

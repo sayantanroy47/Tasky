@@ -430,7 +430,7 @@ class ColorContrastTester extends StatelessWidget {
             style: TextStyle(
               color: foreground,
               fontSize: isLargeText ? 18 : 14,
-              fontWeight: isLargeText ? FontWeight.bold : FontWeight.normal,
+              fontWeight: isLargeText ? FontWeight.w500 : FontWeight.normal,
             ),
           ),
           const SizedBox(height: 8),

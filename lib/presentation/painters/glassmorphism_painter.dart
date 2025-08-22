@@ -83,7 +83,7 @@ class GlassmorphismPainter extends CustomPainter {
   
   /// Build cache key for paint objects
   String _buildPaintCacheKey() {
-    return '${color.value}_${opacity}_$blur';
+    return '${color.toARGB32()}_${opacity}_$blur';
   }
   
   @override

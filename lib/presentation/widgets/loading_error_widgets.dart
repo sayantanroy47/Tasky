@@ -96,7 +96,7 @@ class ErrorWidget extends StatelessWidget {
               size: 64,
               color: theme.colorScheme.error,
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Text(
               message,
               style: theme.textTheme.titleMedium?.copyWith(

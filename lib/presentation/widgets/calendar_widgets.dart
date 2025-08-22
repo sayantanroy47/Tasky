@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:table_calendar/table_calendar.dart';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../domain/entities/calendar_event.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
@@ -49,7 +49,7 @@ class CalendarWidget extends ConsumerWidget {
       case calendar.CalendarViewMode.month:
         return _MonthCalendarView(state: state, notifier: notifier);
       case calendar.CalendarViewMode.week:
-        return _WeekCalendarView(state: state, notifier: notifier);
+        return _WeekCalendarViewSyncfusion(state: state, notifier: notifier);
       case calendar.CalendarViewMode.day:
         return _DayCalendarView(state: state, notifier: notifier);
     }
@@ -126,127 +126,64 @@ class _MonthCalendarView extends ConsumerWidget {
   
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return TableCalendar<CalendarEvent>(
-      firstDay: DateTime.utc(2020, 1, 1),
-      lastDay: DateTime.utc(2030, 12, 31),
-      focusedDay: state.focusedDate,
-      selectedDayPredicate: (day) => isSameDay(day, state.selectedDate),
-      calendarFormat: state.calendarFormat,
-      eventLoader: (day) => notifier.getEventsForDate(day),
-      startingDayOfWeek: StartingDayOfWeek.monday,
-      calendarStyle: CalendarStyle(
-        outsideDaysVisible: false,
-        weekendTextStyle: TextStyle(color: Theme.of(context).colorScheme.error),
-        holidayTextStyle: TextStyle(color: Theme.of(context).colorScheme.errorContainer),
-        markerDecoration: BoxDecoration(
-          color: Theme.of(context).primaryColor,
-          shape: BoxShape.circle,
-        ),
-        selectedDecoration: BoxDecoration(
-          color: Theme.of(context).primaryColor,
-          shape: BoxShape.circle,
-        ),
-        todayDecoration: BoxDecoration(
-          color: Theme.of(context).primaryColor.withValues(alpha: 0.5),
-          shape: BoxShape.circle,
-        ),
-      ),
-      headerStyle: HeaderStyle(
-        formatButtonVisible: false,
-        titleCentered: true,
-        leftChevronIcon: Icon(PhosphorIcons.caretLeft()),
-        rightChevronIcon: Icon(PhosphorIcons.caretRight()),
-      ),
-      onDaySelected: (selectedDay, focusedDay) {
-        notifier.selectDate(selectedDay);
-        notifier.changeFocusedDate(focusedDay);
-      },
-      onPageChanged: (focusedDay) {
-        notifier.changeFocusedDate(focusedDay);
-      },
-      calendarBuilders: CalendarBuilders(
-        markerBuilder: (context, date, events) {
-          return _buildTaskDots(context, ref, date, events, notifier);
-        },
-      ),
-    );
-  }
-
-  Widget? _buildTaskDots(BuildContext context, WidgetRef ref, DateTime date, List<CalendarEvent> events, calendar.CalendarNotifier notifier) {
-    // Get tasks for this date
+    final appointments = <Appointment>[];
+    
+    // Add events as appointments
+    for (final event in state.events) {
+      appointments.add(Appointment(
+        startTime: event.startTime,
+        endTime: event.endTime,
+        subject: event.title,
+        color: Color(int.parse(event.color.replaceFirst('#', '0xFF'))),
+        isAllDay: event.isAllDay,
+        notes: event.description,
+        location: event.location,
+        id: event.id,
+      ));
+    }
+    
+    // Add tasks as appointments
     final allTasksAsync = ref.watch(tasksProvider);
-    final tasksForDate = allTasksAsync.maybeWhen(
-      data: (allTasks) => allTasks.where((task) {
-        if (task.dueDate == null) return false;
-        final taskDate = DateTime(task.dueDate!.year, task.dueDate!.month, task.dueDate!.day);
-        final targetDate = DateTime(date.year, date.month, date.day);
-        return taskDate.isAtSameMomentAs(targetDate);
-      }).toList(),
-      orElse: () => <TaskModel>[],
-    );
+    allTasksAsync.whenData((allTasks) {
+      for (final task in allTasks) {
+        if (task.dueDate != null) {
+          appointments.add(Appointment(
+            startTime: task.dueDate!,
+            endTime: task.dueDate!.add(const Duration(hours: 1)),
+            subject: task.title,
+            color: _getPriorityColor(task.priority),
+            notes: task.description,
+            id: task.id,
+          ));
+        }
+      }
+    });
     
-    // Combine events and tasks
-    final allItems = <dynamic>[...events, ...tasksForDate];
-    
-    if (allItems.isEmpty) return null;
-
-    // Limit to 3 dots maximum to avoid overcrowding
-    final displayItems = allItems.take(3).toList();
-    
-    return Positioned(
-      right: 2,
-      bottom: 2,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: displayItems.map((item) {
-          Color dotColor;
-          bool isUrgent = false;
-          
-          if (item is CalendarEvent) {
-            // Use event color
-            dotColor = Color(int.parse(item.color.replaceFirst('#', '0xFF')));
-          } else if (item is TaskModel) {
-            // Use priority color for tasks
-            dotColor = _getPriorityColor(item.priority);
-            isUrgent = item.priority == TaskPriority.urgent;
-          } else {
-            dotColor = Theme.of(context).primaryColor;
-          }
-          
-          return Container(
-            margin: const EdgeInsets.only(left: 2),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              width: isUrgent ? 10 : 8, // Reduced dot size for better balance
-              height: isUrgent ? 10 : 8,
-              decoration: BoxDecoration(
-                color: dotColor,
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: Theme.of(context).colorScheme.surface, 
-                  width: 1.5, // Reduced border width to match smaller dots
-                ),
-                // Optimized glow effects for smaller dots
-                boxShadow: [
-                  // Outer glow - reduced for smaller size
-                  BoxShadow(
-                    color: dotColor.withValues(alpha: isUrgent ? 0.7 : 0.5),
-                    blurRadius: isUrgent ? 6 : 4,
-                    spreadRadius: isUrgent ? 1 : 0.5,
-                  ),
-                  // Inner highlight for depth
-                  BoxShadow(
-                    color: dotColor.withValues(alpha: 0.3),
-                    blurRadius: 2,
-                    spreadRadius: 0,
-                    offset: const Offset(0, 1),
-                  ),
-                ],
-              ),
-            ),
-          );
-        }).toList(),
+    return SfCalendar(
+      view: CalendarView.month,
+      initialDisplayDate: state.focusedDate,
+      initialSelectedDate: state.selectedDate,
+      dataSource: MeetingDataSource(appointments),
+      firstDayOfWeek: 1, // Monday
+      headerStyle: const CalendarHeaderStyle(
+        textAlign: TextAlign.center,
       ),
+      monthViewSettings: const MonthViewSettings(
+        appointmentDisplayMode: MonthAppointmentDisplayMode.appointment,
+        showAgenda: false,
+        appointmentDisplayCount: 3,
+      ),
+      onTap: (CalendarTapDetails details) {
+        if (details.date != null) {
+          notifier.selectDate(details.date!);
+          notifier.changeFocusedDate(details.date!);
+        }
+      },
+      onViewChanged: (ViewChangedDetails details) {
+        if (details.visibleDates.isNotEmpty) {
+          notifier.changeFocusedDate(details.visibleDates.first);
+        }
+      },
     );
   }
 
@@ -264,70 +201,98 @@ class _MonthCalendarView extends ConsumerWidget {
   }
 }
 
-/// Week calendar view
-class _WeekCalendarView extends StatelessWidget {
+/// Meeting data source for Syncfusion Calendar
+class MeetingDataSource extends CalendarDataSource {
+  MeetingDataSource(List<Appointment> source) {
+    appointments = source;
+  }
+}
+
+class _WeekCalendarViewSyncfusion extends ConsumerWidget {
   final calendar.CalendarState state;
   final calendar.CalendarNotifier notifier;
 
-  const _WeekCalendarView({
+  const _WeekCalendarViewSyncfusion({
     required this.state,
     required this.notifier,
   });
+
+  MeetingDataSource _getWeekDataSource(WidgetRef ref, calendar.CalendarState state, calendar.CalendarNotifier notifier) {
+    final appointments = <Appointment>[];
+    
+    // Add events as appointments
+    for (final event in state.events) {
+      appointments.add(Appointment(
+        startTime: event.startTime,
+        endTime: event.endTime,
+        subject: event.title,
+        color: Color(int.parse(event.color.replaceFirst('#', '0xFF'))),
+        isAllDay: event.isAllDay,
+        notes: event.description,
+        location: event.location,
+        id: event.id,
+      ));
+    }
+    
+    // Add tasks as appointments
+    final allTasksAsync = ref.watch(tasksProvider);
+    allTasksAsync.whenData((allTasks) {
+      for (final task in allTasks) {
+        if (task.dueDate != null) {
+          appointments.add(Appointment(
+            startTime: task.dueDate!,
+            endTime: task.dueDate!.add(const Duration(hours: 1)),
+            subject: task.title,
+            color: _getPriorityColor(task.priority),
+            notes: task.description,
+            id: task.id,
+          ));
+        }
+      }
+    });
+    
+    return MeetingDataSource(appointments);
+  }
+
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        // Week header - constrained height
-        SizedBox(
-          height: 120, // Fixed height for week calendar
-          child: TableCalendar<CalendarEvent>(
-            firstDay: DateTime.utc(2020, 1, 1),
-            lastDay: DateTime.utc(2030, 12, 31),
-            focusedDay: state.focusedDate,
-            selectedDayPredicate: (day) => isSameDay(day, state.selectedDate),
-            calendarFormat: CalendarFormat.week,
-            eventLoader: (day) => notifier.getEventsForDate(day),
-            startingDayOfWeek: StartingDayOfWeek.monday,
-            headerVisible: true,
-            daysOfWeekVisible: true,
-            onDaySelected: (selectedDay, focusedDay) {
-              notifier.selectDate(selectedDay);
-              notifier.changeFocusedDate(focusedDay);
-            },
-            onPageChanged: (focusedDay) {
-              notifier.changeFocusedDate(focusedDay);
-            },
-            calendarStyle: CalendarStyle(
-              outsideDaysVisible: false,
-              weekendTextStyle: TextStyle(color: Theme.of(context).colorScheme.error),
-              selectedDecoration: BoxDecoration(
-                color: Theme.of(context).primaryColor,
-                shape: BoxShape.circle,
-              ),
-              todayDecoration: BoxDecoration(
-                color: Theme.of(context).primaryColor.withValues(alpha: 0.5),
-                shape: BoxShape.circle,
-              ),
-            ),
-            headerStyle: HeaderStyle(
-              formatButtonVisible: false,
-              titleCentered: true,
-              leftChevronIcon: Icon(PhosphorIcons.caretLeft()),
-              rightChevronIcon: Icon(PhosphorIcons.caretRight()),
-            ),
-          ),
-        ),
-        
-        const SizedBox(height: 8),
-        
-        // Week events list
-        Expanded(
-          child: _WeekEventsView(state: state),
-        ),
-      ],
+  Widget build(BuildContext context, WidgetRef ref) {
+    return SfCalendar(
+      view: CalendarView.week,
+      initialDisplayDate: state.focusedDate,
+      initialSelectedDate: state.selectedDate,
+      dataSource: _getWeekDataSource(ref, state, notifier),
+      firstDayOfWeek: 1,
+      headerStyle: const CalendarHeaderStyle(
+        textAlign: TextAlign.center,
+      ),
+      onTap: (CalendarTapDetails details) {
+        if (details.date != null) {
+          notifier.selectDate(details.date!);
+          notifier.changeFocusedDate(details.date!);
+        }
+      },
+      onViewChanged: (ViewChangedDetails details) {
+        if (details.visibleDates.isNotEmpty) {
+          notifier.changeFocusedDate(details.visibleDates.first);
+        }
+      },
     );
   }
+
+  Color _getPriorityColor(TaskPriority priority) {
+    switch (priority) {
+      case TaskPriority.urgent:
+        return const Color(0xFFFF1744); // Bright red
+      case TaskPriority.high:
+        return const Color(0xFFFF9100); // Orange
+      case TaskPriority.medium:
+        return const Color(0xFF2196F3); // Blue
+      case TaskPriority.low:
+        return const Color(0xFF4CAF50); // Green
+    }
+  }
 }
+
 
 /// Day calendar view
 class _DayCalendarView extends StatelessWidget {
@@ -394,91 +359,7 @@ class _DayCalendarView extends StatelessWidget {
   }
 }
 
-/// Week events view - Enhanced to show both events and tasks
-class _WeekEventsView extends ConsumerWidget {
-  final calendar.CalendarState state;
-
-  const _WeekEventsView({required this.state});
-  
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // Get events for the current week
-    final weekStart = state.focusedDate.subtract(Duration(days: state.focusedDate.weekday - 1));
-    final weekEnd = weekStart.add(const Duration(days: 6));
-    
-    final weekEvents = state.events.where((event) {
-      final eventDate = DateTime(
-        event.startTime.year,
-        event.startTime.month,
-        event.startTime.day,
-      );
-      return eventDate.isAfter(weekStart.subtract(const Duration(days: 1))) &&
-             eventDate.isBefore(weekEnd.add(const Duration(days: 1)));
-    }).toList();
-
-    // Get tasks for the current week
-    final allTasksAsync = ref.watch(tasksProvider);
-    final weekTasks = allTasksAsync.maybeWhen(
-      data: (allTasks) => allTasks.where((task) {
-        if (task.dueDate == null) return false;
-        final taskDate = DateTime(task.dueDate!.year, task.dueDate!.month, task.dueDate!.day);
-        return taskDate.isAfter(weekStart.subtract(const Duration(days: 1))) &&
-               taskDate.isBefore(weekEnd.add(const Duration(days: 1)));
-      }).toList(),
-      orElse: () => <TaskModel>[],
-    );
-
-    // Combine and sort by date
-    final allItems = <dynamic>[...weekEvents, ...weekTasks];
-    allItems.sort((a, b) {
-      final aDate = a is CalendarEvent ? a.startTime : (a as TaskModel).dueDate!;
-      final bDate = b is CalendarEvent ? b.startTime : (b as TaskModel).dueDate!;
-      return aDate.compareTo(bDate);
-    });
-
-    if (allItems.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              PhosphorIcons.calendar(),
-              size: 64,
-              color: Theme.of(context).colorScheme.outline,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'No tasks or events this week',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      itemCount: allItems.length,
-      itemBuilder: (context, index) {
-        final item = allItems[index];
-        if (item is CalendarEvent) {
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: EventCard(event: item),
-          );
-        } else if (item is TaskModel) {
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: TaskEventCard(task: item),
-          );
-        }
-        return const SizedBox.shrink();
-      },
-    );
-  }
-}
+// Removed unused _WeekEventsView class
 
 /// Day events view with time slots - Enhanced to show both events and tasks
 class _DayEventsView extends ConsumerWidget {
@@ -597,13 +478,13 @@ class EventCard extends ConsumerWidget {
                     child: Text(
                       event.title,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),
                   if (event.isAllDay)
                     Chip(
-                      label: Text('All Day'),
+                      label: const Text('All Day'),
                       backgroundColor: Theme.of(context).primaryColor.withValues(alpha: 0.1),
                     ),
                 ],
@@ -628,7 +509,7 @@ class EventCard extends ConsumerWidget {
               ],
               
               if (event.description != null && event.description!.isNotEmpty) ...[
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
                   event.description!,
                   style: Theme.of(context).textTheme.bodySmall,
@@ -814,7 +695,7 @@ class _TaskSchedulingWidgetState extends ConsumerState<TaskSchedulingWidget> {
             
             // All day toggle
             SwitchListTile(
-              title: Text('All Day'),
+              title: const Text('All Day'),
               value: isAllDay,
               onChanged: (value) => setState(() => isAllDay = value),
             ),
@@ -963,7 +844,7 @@ class TaskEventCard extends ConsumerWidget {
                 color: _getPriorityColor(task.priority).withValues(alpha: 0.2),
                 blurRadius: 4,
                 spreadRadius: 1,
-                offset: Offset(0, 2),
+                offset: const Offset(0, 2),
               ),
             ],
           ),
@@ -1005,7 +886,7 @@ class TaskEventCard extends ConsumerWidget {
                     child: Text(
                       task.title,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w500,
                         decoration: task.status == TaskStatus.completed 
                           ? TextDecoration.lineThrough 
                           : null,
@@ -1027,7 +908,7 @@ class TaskEventCard extends ConsumerWidget {
                       task.priority.name.toUpperCase(),
                       style: TextStyle(
                         fontSize: 10,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w500,
                         color: _getPriorityColor(task.priority),
                       ),
                     ),

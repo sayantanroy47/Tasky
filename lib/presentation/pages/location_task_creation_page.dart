@@ -44,7 +44,7 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
   
   // Task properties
   TaskPriority _priority = TaskPriority.medium;
-  DateTime? _dueDate;
+  DateTime? _dueDate = DateTime.now();
   TimeOfDay? _dueTime;
   
   // Location properties
@@ -129,7 +129,8 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
         backgroundColor: Colors.transparent,
         extendBodyBehindAppBar: true,
         body: Stack(
-          children: [// Main content - full screen
+          children: [
+            // Main content - full screen
             SingleChildScrollView(
               padding: EdgeInsets.only(
                 top: MediaQuery.of(context).padding.top + 60, // Account for status bar + floating button
@@ -143,34 +144,35 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
                   key: _formKey,
                   child: Column(
                     children: [
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       
                       // Task Details Section
                       _buildTaskDetailsSection(context, theme),
                       
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       
                       // Location Setup Section
                       _buildLocationSection(context, theme),
                       
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       
                       // Location Trigger Configuration Section
                       _buildTriggerConfigSection(context, theme),
                       
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       
                       // Quick Locations Section
                       _buildQuickLocationsSection(context, theme),
                       
-                      SizedBox(height: 32),
+                      const SizedBox(height: 32),
                       
                       // Create Button
                       _buildCreateButton(context, theme),
                       
-                      SizedBox(height: 100), // Bottom padding
+                      const SizedBox(height: 100), // Bottom padding
                     ],
                   ),
+                ),
               ),
             ),
             
@@ -188,8 +190,10 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
                     BoxShadow(
                       color: Colors.black.withValues(alpha: 0.1),
                       blurRadius: 8,
-                      offset: Offset(0, 2),
-                    )]),
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
                 child: Material(
                   color: Colors.transparent,
                   child: InkWell(
@@ -206,8 +210,7 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
             ),
             
             // Floating clear location button (only show if has location)
-            if (_selectedLocation != null)
-              Positioned(
+            _selectedLocation != null ? Positioned(
                 top: MediaQuery.of(context).padding.top + 16,
                 right: 16,
                 child: Container(
@@ -221,7 +224,9 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
                         color: Colors.black.withValues(alpha: 0.1),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
-                      )]),
+                      ),
+                    ],
+                  ),
                   child: Material(
                     color: Colors.transparent,
                     child: InkWell(
@@ -238,7 +243,9 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
                     ),
                   ),
                 ),
-              )]),
+              ) : const SizedBox.shrink(),
+          ],
+        ),
       ),
     );
   }
@@ -250,21 +257,24 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
       borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [Row(
+        children: [
+          Row(
             children: [
               Icon(
                 PhosphorIcons.mapPin(),
                 size: 24,
                 color: theme.colorScheme.primary,
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text(
                 'Location Task Details',
                 style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: TypographyConstants.medium,
                 ),
-              )]),
-          SizedBox(height: 16),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
           
           // Title field
           TextFormField(
@@ -287,7 +297,7 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
             textCapitalization: TextCapitalization.sentences,
           ),
           
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           
           // Description field
           TextFormField(
@@ -303,7 +313,9 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
             onChanged: (_) => _updateLocationSuggestions(),
             textInputAction: TextInputAction.newline,
             textCapitalization: TextCapitalization.sentences,
-          )]),
+          ),
+        ],
+      ),
     );
   }
   
@@ -314,21 +326,24 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
       borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [Row(
+        children: [
+          Row(
             children: [
               Icon(
                 PhosphorIcons.mapPin(),
                 size: 20,
                 color: theme.colorScheme.primary,
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text(
                 'Location Setup',
                 style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: TypographyConstants.medium,
                 ),
-              )]),
-          SizedBox(height: 12),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
           
           // Location search field
           TextFormField(
@@ -387,7 +402,7 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
                             const SizedBox(width: 8),
                             TextButton(
                               onPressed: _requestLocationPermission,
-                              child: const Text("Enable Location"),
+                              child: const Text('Enable Location'),
                             ),
                           ],
                         ),
@@ -404,7 +419,7 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
           
           // Selected location display
           if (_selectedLocation != null) ...[
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(12),
@@ -422,7 +437,7 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
                     color: theme.colorScheme.primary,
                     size: 20,
                   ),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -431,19 +446,25 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
                           'Selected Location',
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: theme.colorScheme.primary,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: TypographyConstants.medium,
                           ),
                         ),
-                        SizedBox(height: 2),
+                        const SizedBox(height: 2),
                         Text(
                           _formatLocationDisplay(_selectedLocation!),
                           style: theme.textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w500,
+                            fontWeight: TypographyConstants.medium,
                           ),
-                        )]),
-                  )]),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ]]),
+          ],
+        ],
+      ),
     );
   }
   
@@ -454,28 +475,31 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
       borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [Row(
+        children: [
+          Row(
             children: [
               Icon(
                 PhosphorIcons.bell(),
                 size: 20,
                 color: theme.colorScheme.primary,
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text(
                 'Location Trigger',
                 style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: TypographyConstants.medium,
                 ),
-              )]),
-          SizedBox(height: 16),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
           
           // Trigger type and priority row
           Row(
             children: [
               Expanded(
                 child: DropdownButtonFormField<GeofenceType>(
-                  value: _triggerType,
+                  initialValue: _triggerType,
                   decoration: InputDecoration(
                     labelText: 'Trigger Type',
                     border: OutlineInputBorder(
@@ -488,8 +512,10 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
                       child: Row(
                         children: [
                           Icon(_getTriggerTypeIcon(type), size: 16),
-                          SizedBox(width: 8),
-                          Text(_getTriggerTypeDisplay(type))]),
+                          const SizedBox(width: 8),
+                          Text(_getTriggerTypeDisplay(type)),
+                        ],
+                      ),
                     );
                   }).toList(),
                   onChanged: (value) {
@@ -499,10 +525,10 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
                   },
                 ),
               ),
-              SizedBox(width: 16),
+              const SizedBox(width: 16),
               Expanded(
                 child: DropdownButtonFormField<TaskPriority>(
-                  value: _priority,
+                  initialValue: _priority,
                   decoration: InputDecoration(
                     labelText: 'Priority',
                     border: OutlineInputBorder(
@@ -513,9 +539,12 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
                     return DropdownMenuItem(
                       value: priority,
                       child: Row(
-                        children: [Icon(_getPriorityIcon(priority), size: 16),
-                          SizedBox(width: 8),
-                          Text(priority.name.toUpperCase())]),
+                        children: [
+                          Icon(_getPriorityIcon(priority), size: 16),
+                          const SizedBox(width: 8),
+                          Text(priority.name.toUpperCase()),
+                        ],
+                      ),
                     );
                   }).toList(),
                   onChanged: (value) {
@@ -524,20 +553,23 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
                     });
                   },
                 ),
-              )]),
+              ),
+            ],
+          ),
           
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           
           // Due date row
           Row(
-            children: [Expanded(
+            children: [
+              Expanded(
                 child: OutlinedButton.icon(
                   onPressed: () async {
                     final date = await showDatePicker(
                       context: context,
-                      initialDate: _dueDate ?? DateTime.now().add(Duration(days: 1)),
+                      initialDate: _dueDate ?? DateTime.now(),
                       firstDate: DateTime.now(),
-                      lastDate: DateTime.now().add(Duration(days: 365)),
+                      lastDate: DateTime.now().add(const Duration(days: 365)),
                     );
                     if (date != null) {
                       setState(() => _dueDate = date);
@@ -552,13 +584,13 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
                   ),
                 ),
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: _dueDate == null ? null : () async {
                     final time = await showTimePicker(
                       context: context,
-                      initialTime: _dueTime ?? TimeOfDay(hour: 23, minute: 59),
+                      initialTime: _dueTime ?? const TimeOfDay(hour: 23, minute: 59),
                     );
                     if (time != null) {
                       setState(() => _dueTime = time);
@@ -581,22 +613,24 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
                   }),
                   icon: Icon(PhosphorIcons.x()),
                   tooltip: 'Clear due date',
-                )]),
+                ),
+            ],
+          ),
           
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           
           // Geofence radius
           Text(
             'Detection Radius: ${_geofenceRadius.toInt()}m',
             style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
+              fontWeight: TypographyConstants.medium,
             ),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           SliderTheme(
             data: SliderTheme.of(context).copyWith(
               trackHeight: 6,
-              thumbShape: RoundSliderThumbShape(enabledThumbRadius: 10),
+              thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 10),
             ),
             child: Slider(
               value: _geofenceRadius,
@@ -625,7 +659,9 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
               ),
               textAlign: TextAlign.center,
             ),
-          )]),
+          ),
+        ],
+      ),
     );
   }
   
@@ -638,21 +674,24 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
       borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [Row(
+        children: [
+          Row(
             children: [
               Icon(
                 PhosphorIcons.mapPin(),
                 size: 20,
                 color: theme.colorScheme.primary,
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text(
                 'Quick Locations',
                 style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: TypographyConstants.medium,
                 ),
-              )]),
-          SizedBox(height: 12),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
           SizedBox(
             width: double.infinity,
             child: Wrap(
@@ -668,7 +707,9 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
                 );
               }).toList(),
             ),
-          )]),
+          ),
+        ],
+      ),
     );
   }
   
@@ -678,7 +719,7 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
       child: ElevatedButton.icon(
         onPressed: _isCreatingTask ? null : _createLocationTask,
         icon: _isCreatingTask 
-            ? SizedBox(width: 16,
+            ? const SizedBox(width: 16,
                 height: 16,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
@@ -704,7 +745,7 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
   // Location search with debouncing
   void _onLocationSearchChanged(String query) {
     _debounceTimer?.cancel();
-    _debounceTimer = Timer(Duration(milliseconds: 800), () async {
+    _debounceTimer = Timer(const Duration(milliseconds: 800), () async {
       if (query.trim().isEmpty) {
         setState(() => _selectedLocation = null);
         return;
@@ -751,19 +792,53 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
 
   // Use current location
   void _useCurrentLocation() async {
-    final currentLocation = ref.read(currentLocationProvider);
-    currentLocation.when(
-      data: (location) {
+    // Check permissions first
+    final permissionStatus = await ref.read(locationPermissionProvider.future);
+    if (permissionStatus != LocationPermissionStatus.granted) {
+      _requestLocationPermission();
+      return;
+    }
+
+    // Show loading state
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Row(
+          children: [
+            SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+            ),
+            SizedBox(width: 12),
+            Text('Getting your current location...'),
+          ],
+        ),
+        duration: Duration(seconds: 2),
+      ),
+    );
+
+    try {
+      final locationService = ref.read(locationServiceProvider);
+      final location = await locationService.getCurrentLocation();
+      
+      if (mounted) {
         setState(() {
           _selectedLocation = location;
           _locationSearchController.text = _formatLocationDisplay(location);
         });
-      },
-      loading: () {},
-      error: (error, _) {
-        _showError('Failed to get current location: $error');
-      },
-    );
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('✓ Current location selected'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (error) {
+      _showError('Failed to get current location: $error');
+    }
   }
 
   // Select suggested location
@@ -786,8 +861,12 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
     }
   }
 
-  // Request location permission
+  // Request location permission with user-friendly explanation
   void _requestLocationPermission() async {
+    // Show explanation dialog first
+    final shouldProceed = await _showLocationPermissionDialog();
+    if (!shouldProceed) return;
+    
     try {
       final locationService = ref.read(locationServiceProvider);
       final status = await locationService.requestPermission();
@@ -816,6 +895,10 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
             message = 'Unable to determine location permission status';
             color = Colors.orange;
             break;
+          case LocationPermissionStatus.serviceDisabled:
+            message = 'Location service is disabled';
+            color = Colors.red;
+            break;
         }
         
         ScaffoldMessenger.of(context).showSnackBar(
@@ -829,6 +912,89 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
     } catch (e) {
       _showError('Failed to request location permission: $e');
     }
+  }
+
+  // Show location permission explanation dialog
+  Future<bool> _showLocationPermissionDialog() async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Row(
+          children: [
+            Icon(PhosphorIcons.mapPin(), color: Colors.blue, size: 24),
+            const SizedBox(width: 8),
+            const Text('Location Permission'),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'To create location-based tasks with geofencing alerts, this app needs access to your device\'s location.',
+              style: TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.blue.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'What this enables:',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue.shade700,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Icon(PhosphorIcons.bellRinging(), size: 16, color: Colors.blue),
+                      const SizedBox(width: 8),
+                      const Expanded(child: Text('Get notified when you arrive/leave places')),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Icon(PhosphorIcons.target(), size: 16, color: Colors.blue),
+                      const SizedBox(width: 8),
+                      const Expanded(child: Text('Set custom geofence radius for tasks')),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Icon(PhosphorIcons.shieldCheck(), size: 16, color: Colors.blue),
+                      const SizedBox(width: 8),
+                      const Expanded(child: Text('Location data stays on your device')),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton.icon(
+            onPressed: () => Navigator.of(context).pop(true),
+            icon: Icon(PhosphorIcons.check(), size: 18),
+            label: const Text('Enable Location'),
+          ),
+        ],
+      ),
+    );
+    return result ?? false;
   }
 
   // Create location task

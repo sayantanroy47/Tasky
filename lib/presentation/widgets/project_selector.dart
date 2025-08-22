@@ -69,7 +69,7 @@ class ProjectSelector extends ConsumerWidget {
                       ? _parseColor(selectedProject.color)
                       : theme.colorScheme.onSurfaceVariant,
                 ),
-                SizedBox(width: 12),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,7 +110,7 @@ class ProjectSelector extends ConsumerWidget {
         ),
         child: Row(
           children: [
-            SizedBox(width: 20,
+            const SizedBox(width: 20,
               height: 20,
               child: CircularProgressIndicator(strokeWidth: 2),
             ),
@@ -171,7 +171,7 @@ class ProjectSelector extends ConsumerWidget {
             Row(
               children: [
                 Icon(PhosphorIcons.folder()),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     'Select Project',
@@ -204,16 +204,16 @@ class ProjectSelector extends ConsumerWidget {
             
             // Project list
             if (projects.isEmpty)
-              Padding(padding: EdgeInsets.all(32),
+              Padding(padding: const EdgeInsets.all(32),
                 child: Column(
                   children: [
                     Icon(PhosphorIcons.folder(), size: 48, color: Colors.grey),
-                    SizedBox(height: 16),
-                    Text(
+                    const SizedBox(height: 16),
+                    const Text(
                       'No Projects Available',
                       style: TextStyle(color: Colors.grey),
                     ),
-                    Text(
+                    const Text(
                       'Create a project first to assign tasks',
                       style: TextStyle(color: Colors.grey, fontSize: 12),
                     ),
@@ -253,7 +253,7 @@ class ProjectSelector extends ConsumerWidget {
             
             // Create new project option
             if (showCreateOption) ...[
-              Divider(),
+              const Divider(),
               ListTile(
                 leading: Icon(PhosphorIcons.plus()),
                 title: const Text('Create New Project'),
@@ -315,7 +315,7 @@ class CompactProjectSelector extends ConsumerWidget {
         final activeProjects = projects.where((p) => !p.isArchived).toList();
         
         return DropdownButtonFormField<String?>(
-          value: selectedProjectId,
+          initialValue: selectedProjectId,
           decoration: InputDecoration(
             labelText: 'Project',
             border: OutlineInputBorder(
@@ -370,7 +370,7 @@ class CompactProjectSelector extends ConsumerWidget {
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
           ),
-          prefixIcon: SizedBox(width: 24,
+          prefixIcon: const SizedBox(width: 24,
             height: 24,
             child: Padding(
               padding: EdgeInsets.all(10),

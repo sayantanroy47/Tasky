@@ -124,7 +124,7 @@ class AudioConcatenationService {
           debugPrint('✅ Audio concatenation successful!');
           debugPrint('   Command: $ffmpegCommand');
           debugPrint('   Output: $outputPath');
-          debugPrint('   Size: ${fileSize} bytes');
+          debugPrint('   Size: $fileSize bytes');
           debugPrint('   Files concatenated: ${validFiles.length}');
           
           onProgress?.call(1.0); // Complete

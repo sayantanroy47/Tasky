@@ -7,6 +7,7 @@ import '../widgets/glassmorphism_container.dart';
 import '../../core/design_system/design_tokens.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../services/security_service.dart';
+import '../../core/accessibility/touch_target_validator.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Screen for managing security and privacy settings
@@ -17,7 +18,7 @@ class SecuritySettingsScreen extends ConsumerWidget {
     final securitySettings = ref.watch(securitySettingsProvider);
     
     return Scaffold(
-      appBar: StandardizedAppBar(title: 'Security & Privacy',
+      appBar: const StandardizedAppBar(title: 'Security & Privacy',
       ),
       body: securitySettings.when(
         data: (settings) => _buildSecuritySettings(context, ref, settings),
@@ -112,7 +113,7 @@ class SecuritySettingsScreen extends ConsumerWidget {
                         onChanged: (value) => _toggleBiometric(context, ref, value),
                       ),
                     
-                    if (settings.biometricAvailable) Divider(),
+                    if (settings.biometricAvailable) const Divider(),
                     
                     // Change PIN
                     ListTile(
@@ -134,7 +135,7 @@ class SecuritySettingsScreen extends ConsumerWidget {
                       onTap: () => _showLockTimeoutDialog(context, ref, settings),
                     ),
                     
-                    Divider(),
+                    const Divider(),
                     
                     // Max Attempts
                     ListTile(
@@ -149,7 +150,7 @@ class SecuritySettingsScreen extends ConsumerWidget {
               ),
             ),
             
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             
             // Data Protection Section
             _buildSectionHeader(context, 'Data Protection'),
@@ -384,19 +385,22 @@ class SecuritySettingsScreen extends ConsumerWidget {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: timeouts.map((timeout) {
-            return RadioListTile<Duration>(
+            return ListTile(
               title: Text(_formatDuration(timeout)),
-              value: timeout,
-              groupValue: settings.lockTimeout,
-              onChanged: (value) async {
-                if (value != null) {
-                  await ref.read(securitySettingsProvider.notifier)
-                      .setLockTimeout(value);
-                  if (context.mounted) {
-                    Navigator.of(context).pop();
+              leading: AccessibleRadio<Duration>(
+                value: timeout,
+                groupValue: settings.lockTimeout,
+                semanticLabel: 'Set timeout to ${_formatDuration(timeout)}',
+                onChanged: (value) async {
+                  if (value != null) {
+                    await ref.read(securitySettingsProvider.notifier)
+                        .setLockTimeout(value);
+                    if (context.mounted) {
+                      Navigator.of(context).pop();
+                    }
                   }
-                }
-              },
+                },
+              ),
             );
           }).toList(),
         ),
@@ -424,19 +428,22 @@ class SecuritySettingsScreen extends ConsumerWidget {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: attempts.map((attempt) {
-            return RadioListTile<int>(
+            return ListTile(
               title: Text('$attempt attempts'),
-              value: attempt,
-              groupValue: settings.maxAttempts,
-              onChanged: (value) async {
-                if (value != null) {
-                  await ref.read(securitySettingsProvider.notifier)
-                      .setMaxAttempts(value);
-                  if (context.mounted) {
-                    Navigator.of(context).pop();
+              leading: AccessibleRadio<int>(
+                value: attempt,
+                groupValue: settings.maxAttempts,
+                semanticLabel: 'Set maximum attempts to $attempt',
+                onChanged: (value) async {
+                  if (value != null) {
+                    await ref.read(securitySettingsProvider.notifier)
+                        .setMaxAttempts(value);
+                    if (context.mounted) {
+                      Navigator.of(context).pop();
+                    }
                   }
-                }
-              },
+                },
+              ),
             );
           }).toList(),
         ),
@@ -501,7 +508,7 @@ class SecuritySettingsScreen extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Security Checkup'),
+        title: const Text('Security Checkup'),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -565,7 +572,7 @@ class SecuritySettingsScreen extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Security Tips'),
+        title: const Text('Security Tips'),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,

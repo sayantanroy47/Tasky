@@ -29,10 +29,10 @@ class DayPreviewWidget extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [_buildHeader(context, theme),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           tasksAsync.when(
             data: (tasks) => _buildDayView(context, theme, tasks),
-            loading: () => Center(child: Padding(
+            loading: () => const Center(child: Padding(
                 padding: EdgeInsets.all(16),
                 child: CircularProgressIndicator(),
               ),
@@ -56,11 +56,11 @@ class DayPreviewWidget extends ConsumerWidget {
           color: theme.colorScheme.primary,
           size: 20,
         ),
-        SizedBox(width: 8),
+        const SizedBox(width: 8),
         Text(
           isToday ? 'Today' : _getDayName(selectedDate),
           style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w500,
             color: theme.colorScheme.onSurface,
           ),
         ),
@@ -87,14 +87,14 @@ class DayPreviewWidget extends ConsumerWidget {
                 size: 48,
                 color: theme.colorScheme.outline,
               ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               Text(
                 'No tasks scheduled',
                 style: theme.textTheme.titleMedium?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
-              SizedBox(height: 4),
+              const SizedBox(height: 4),
               Text(
                 'Enjoy your free time!',
                 style: theme.textTheme.bodySmall?.copyWith(
@@ -139,7 +139,7 @@ class DayPreviewWidget extends ConsumerWidget {
               child: Text(
                 timeString,
                 style: theme.textTheme.bodySmall?.copyWith(
-                  fontWeight: hasCurrentTime ? FontWeight.bold : FontWeight.normal,
+                  fontWeight: hasCurrentTime ? FontWeight.w500 : FontWeight.normal,
                   color: hasCurrentTime 
                       ? theme.colorScheme.primary 
                       : theme.colorScheme.onSurfaceVariant,
@@ -166,7 +166,7 @@ class DayPreviewWidget extends ConsumerWidget {
           // Tasks column
           Expanded(
             child: hourTasks.isEmpty
-                ? SizedBox(height: 20) // Empty space
+                ? const SizedBox(height: 20) // Empty space
                 : Column(
                     children: hourTasks.map((task) => _buildTaskItem(context, theme, task)).toList(),
                   ),
@@ -226,7 +226,7 @@ class DayPreviewWidget extends ConsumerWidget {
                   : _getPriorityColor(task.priority, theme),
               size: 16,
             ),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -262,7 +262,7 @@ class DayPreviewWidget extends ConsumerWidget {
                   'DONE',
                   style: TextStyle(
                     fontSize: TypographyConstants.labelSmall, // Fixed accessibility violation - was 8px, now 11px
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w500,
                     color: Colors.green.shade700,
                   ),
                 ),
@@ -339,7 +339,7 @@ class DayPreviewWidget extends ConsumerWidget {
               color: isCompleted ? Colors.green : theme.colorScheme.primary,
               size: 20,
             ),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             Expanded(
               child: Text(
                 task.title,
@@ -356,17 +356,17 @@ class DayPreviewWidget extends ConsumerWidget {
               Text(
                 'Description:',
                 style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
-              SizedBox(height: 4),
+              const SizedBox(height: 4),
               Text(
                 task.description!,
                 style: TextStyle(
                   decoration: isCompleted ? TextDecoration.lineThrough : null,
                 ),
               ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
             ],
             
             Row(
@@ -374,7 +374,7 @@ class DayPreviewWidget extends ConsumerWidget {
                 Text(
                   'Priority: ',
                   style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
                 Container(
@@ -387,18 +387,18 @@ class DayPreviewWidget extends ConsumerWidget {
                     task.priority.name.toUpperCase(),
                     style: TextStyle(
                       fontSize: TypographyConstants.labelMedium,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w500,
                       color: _getPriorityColor(task.priority, theme),
                     ),
                   ),
                 )]),
             
             if (task.dueDate != null) ...[
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Row(
                 children: [
                   PhosphorIcon(PhosphorIcons.clock(), size: 16, color: theme.colorScheme.onSurfaceVariant),
-                  SizedBox(width: 4),
+                  const SizedBox(width: 4),
                   Text(
                     'Due: ${task.dueDate!.day}/${task.dueDate!.month}/${task.dueDate!.year} at ${task.dueDate!.hour}:${task.dueDate!.minute.toString().padLeft(2, '0')}',
                     style: theme.textTheme.bodySmall,
@@ -406,15 +406,15 @@ class DayPreviewWidget extends ConsumerWidget {
             ],
             
             if (isCompleted) ...[
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Row(
                 children: [PhosphorIcon(PhosphorIcons.check(), size: 16, color: Colors.green),
-                  SizedBox(width: 4),
+                  const SizedBox(width: 4),
                   Text(
                     'Completed',
                     style: TextStyle(
                       color: Colors.green.shade700,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w500,
                       fontSize: TypographyConstants.labelMedium,
                     ),
                   )]),
@@ -422,7 +422,7 @@ class DayPreviewWidget extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text("Close"),
+            child: const Text('Close'),
           ),
         ],
       ),

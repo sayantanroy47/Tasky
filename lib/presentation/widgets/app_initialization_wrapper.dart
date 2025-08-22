@@ -57,7 +57,7 @@ class _AppInitializationWrapperState extends ConsumerState<AppInitializationWrap
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SizedBox(width: 48,
+                const SizedBox(width: 48,
                   height: 48,
                   child: CircularProgressIndicator(
                     strokeWidth: 3,
@@ -104,7 +104,7 @@ class _AppInitializationWrapperState extends ConsumerState<AppInitializationWrap
                       'Failed to initialize app',
                       style: TextStyle(
                         fontSize: TypographyConstants.headlineMedium,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                     const SizedBox(height: 12),

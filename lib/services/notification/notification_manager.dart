@@ -36,12 +36,12 @@ class NotificationManager {
     if (initialized) {
       // Load persisted notifications first
       if (_notificationService is LocalNotificationService) {
-        await (_notificationService as LocalNotificationService).loadPersistedNotifications();
+        await (_notificationService).loadPersistedNotifications();
       }
       
       // Process immediate overdue notifications
       if (_notificationService is LocalNotificationService) {
-        await (_notificationService as LocalNotificationService).processImmediateOverdueNotifications();
+        await (_notificationService).processImmediateOverdueNotifications();
       }
       
       await _setupPeriodicTasks();
@@ -595,7 +595,7 @@ class NotificationManager {
     _notificationEventSubscription?.cancel();
     
     if (_notificationService is LocalNotificationService) {
-      (_notificationService as LocalNotificationService).dispose();
+      (_notificationService).dispose();
     }
   }
 }

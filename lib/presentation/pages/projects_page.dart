@@ -67,6 +67,11 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
             ),
           ],
         ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: _createProject,
+          tooltip: 'Create Project',
+          child: Icon(PhosphorIcons.plus()),
+        ),
         body: Padding(
           padding: const EdgeInsets.only(top: kToolbarHeight + 48), // Account for TabBar
           child: Column(
@@ -106,7 +111,7 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
                             });
                           },
                           borderRadius: BorderRadius.circular(20),
-                          child: Padding(padding: EdgeInsets.all(8),
+                          child: Padding(padding: const EdgeInsets.all(8),
                             child: Icon(PhosphorIcons.x(), size: 20),
                           ),
                         ),
@@ -467,7 +472,7 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
               Text(
                 'Search Projects',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
               const SizedBox(height: 16),

@@ -39,10 +39,12 @@ class _TaskFormDialogState extends ConsumerState<TaskFormDialog> {
   TaskPriority _selectedPriority = TaskPriority.medium;
   String? _selectedProjectId;
   List<String> _selectedTags = [];
-  DateTime? _dueDate;
+  DateTime? _dueDate = DateTime.now();
   TimeOfDay? _dueTime;
   RecurrencePattern? _recurrencePattern;
   bool _isLoading = false;
+  
+  // Performance optimization: removed unused cached priority options
   
   // Priority options
   static final List<PriorityOption> _priorityOptions = [
@@ -153,7 +155,7 @@ class _TaskFormDialogState extends ConsumerState<TaskFormDialog> {
                   return null;
                 },
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               
               // Description field
               ThemeAwareFormField(

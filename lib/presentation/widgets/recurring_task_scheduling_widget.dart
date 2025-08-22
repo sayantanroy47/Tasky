@@ -23,7 +23,7 @@ class RecurringTaskSchedulingWidget extends ConsumerWidget {
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title: Text('Recurring Tasks'),
+        title: const Text('Recurring Tasks'),
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
@@ -39,7 +39,7 @@ class RecurringTaskSchedulingWidget extends ConsumerWidget {
                 value: 'process',
                 child: ListTile(
                   leading: Icon(PhosphorIcons.arrowsClockwise()),
-                  title: Text('Process Recurring Tasks'),
+                  title: const Text('Process Recurring Tasks'),
                   contentPadding: EdgeInsets.zero,
                 ),
               ),
@@ -47,7 +47,7 @@ class RecurringTaskSchedulingWidget extends ConsumerWidget {
                 value: 'refresh',
                 child: ListTile(
                   leading: Icon(PhosphorIcons.arrowClockwise()),
-                  title: Text('Refresh'),
+                  title: const Text('Refresh'),
                   contentPadding: EdgeInsets.zero,
                 ),
               ),
@@ -113,7 +113,7 @@ class RecurringTaskSchedulingWidget extends ConsumerWidget {
                   Text(
                     'Recurring Tasks Overview',
                     style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ],
@@ -171,7 +171,7 @@ class RecurringTaskSchedulingWidget extends ConsumerWidget {
           Text(
             count.toString(),
             style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w500,
               color: color,
             ),
           ),
@@ -242,7 +242,7 @@ class RecurringTaskSchedulingWidget extends ConsumerWidget {
                         value: 'edit',
                         child: ListTile(
                           leading: Icon(PhosphorIcons.pencil()),
-                          title: Text('Edit Pattern'),
+                          title: const Text('Edit Pattern'),
                           contentPadding: EdgeInsets.zero,
                         ),
                       ),
@@ -250,7 +250,7 @@ class RecurringTaskSchedulingWidget extends ConsumerWidget {
                         value: 'instances',
                         child: ListTile(
                           leading: Icon(PhosphorIcons.list()),
-                          title: Text('View Instances'),
+                          title: const Text('View Instances'),
                           contentPadding: EdgeInsets.zero,
                         ),
                       ),
@@ -258,7 +258,7 @@ class RecurringTaskSchedulingWidget extends ConsumerWidget {
                         value: 'complete',
                         child: ListTile(
                           leading: Icon(PhosphorIcons.checkCircle()),
-                          title: Text('Complete & Generate Next'),
+                          title: const Text('Complete & Generate Next'),
                           contentPadding: EdgeInsets.zero,
                         ),
                       ),
@@ -266,7 +266,7 @@ class RecurringTaskSchedulingWidget extends ConsumerWidget {
                         value: 'stop',
                         child: ListTile(
                           leading: Icon(PhosphorIcons.stop(), color: Colors.red),
-                          title: Text('Stop Recurring', style: TextStyle(color: Colors.red)),
+                          title: const Text('Stop Recurring', style: TextStyle(color: Colors.red)),
                           contentPadding: EdgeInsets.zero,
                         ),
                       ),
@@ -275,7 +275,7 @@ class RecurringTaskSchedulingWidget extends ConsumerWidget {
                 ],
               ),
               
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               
               // Recurrence details
               Text(
@@ -364,7 +364,7 @@ class RecurringTaskSchedulingWidget extends ConsumerWidget {
         recurrence.type.name.toUpperCase(),
         style: TextStyle(
           fontSize: 10,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w500,
           color: chipColor,
         ),
       ),
@@ -452,7 +452,7 @@ class RecurringTaskSchedulingWidget extends ConsumerWidget {
             size: 64,
             color: theme.colorScheme.onSurfaceVariant,
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Text(
             'No Recurring Tasks',
             style: theme.textTheme.titleLarge?.copyWith(

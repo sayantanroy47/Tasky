@@ -296,7 +296,7 @@ class StandardizedErrorWidget extends ConsumerWidget {
                     fontSize: isLargeText 
                         ? TypographyConstants.textXL 
                         : TypographyConstants.textLG,
-                    fontWeight: TypographyConstants.bold,
+                    fontWeight: TypographyConstants.medium,
                     color: theme.colorScheme.onSurface,
                   ),
                   textAlign: TextAlign.center,
@@ -434,7 +434,7 @@ class StandardizedEmptyWidget extends ConsumerWidget {
                     fontSize: isLargeText 
                         ? TypographyConstants.textXL 
                         : TypographyConstants.textLG,
-                    fontWeight: TypographyConstants.bold,
+                    fontWeight: TypographyConstants.medium,
                     color: theme.colorScheme.onSurface,
                   ),
                   textAlign: TextAlign.center,
@@ -568,7 +568,7 @@ class _StandardizedSuccessWidgetState extends ConsumerState<StandardizedSuccessW
                       fontSize: isLargeText 
                           ? TypographyConstants.textXL 
                           : TypographyConstants.textLG,
-                      fontWeight: TypographyConstants.bold,
+                      fontWeight: TypographyConstants.medium,
                       color: theme.colorScheme.onSurface,
                     ),
                     textAlign: TextAlign.center,

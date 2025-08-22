@@ -412,7 +412,7 @@ class _SubTaskItem extends StatelessWidget {
                         value: 'edit',
                         child: ListTile(
                           leading: Icon(PhosphorIcons.pencil()),
-                          title: Text('Edit'),
+                          title: const Text('Edit'),
                           contentPadding: EdgeInsets.zero,
                         ),
                       ),
@@ -420,7 +420,7 @@ class _SubTaskItem extends StatelessWidget {
                         value: 'delete',
                         child: ListTile(
                           leading: Icon(PhosphorIcons.trash()),
-                          title: Text('Delete'),
+                          title: const Text('Delete'),
                           contentPadding: EdgeInsets.zero,
                         ),
                       ),

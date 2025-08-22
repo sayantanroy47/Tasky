@@ -32,7 +32,7 @@ class TasksPage extends ConsumerWidget {
           title: 'Tasks',
           forceBackButton: false, // Tasks is main tab - no back button
           actions: [
-            ThemeToggleButton(),
+            const ThemeToggleButton(),
             IconButton(
               icon: Icon(PhosphorIcons.funnel()),
               onPressed: () => _showFilterDialog(context, ref),
@@ -112,7 +112,7 @@ class TasksPage extends ConsumerWidget {
               backgroundColor: Colors.transparent,
               foregroundColor: theme.colorScheme.onPrimary,
               elevation: 0,
-              shape: CircleBorder(),
+              shape: const CircleBorder(),
               child: Container(
                 decoration: const BoxDecoration(
                   shape: BoxShape.circle,
@@ -153,10 +153,10 @@ class TasksPage extends ConsumerWidget {
                 Text(
                   'Create New Task',
                   style: theme.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Text(
                   'Choose how you\'d like to create your task',
                   style: theme.textTheme.bodyMedium?.copyWith(
@@ -183,7 +183,7 @@ class TasksPage extends ConsumerWidget {
                   },
                 ),
                 
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 
                 
                 _buildTaskCreationOption(
@@ -244,7 +244,7 @@ class TasksPage extends ConsumerWidget {
                 size: 24,
               ),
             ),
-            SizedBox(width: 16),
+            const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -391,7 +391,7 @@ class _SmartFilters extends ConsumerWidget {
         Text(
           'Quick Filters',
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w500,
           ),
         ),
         const SizedBox(height: 8),
@@ -666,7 +666,7 @@ class _TaskList extends ConsumerWidget {
 
   Widget _buildTaskList(BuildContext context, WidgetRef ref, List<TaskModel> tasks) {
     if (tasks.isEmpty) {
-      return _EmptyTaskList();
+      return const _EmptyTaskList();
     }
 
     return Column(
@@ -724,7 +724,7 @@ class _TaskList extends ConsumerWidget {
 }
 
 class _EmptyTaskList extends StatelessWidget {
-  _EmptyTaskList();
+  const _EmptyTaskList();
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -787,14 +787,14 @@ class _FilterDialogState extends ConsumerState<_FilterDialog> {
               Text(
                 'Filter Tasks',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
               const SizedBox(height: 24),
               Text(
                 'Status',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
               const SizedBox(height: 8),
@@ -823,7 +823,7 @@ class _FilterDialogState extends ConsumerState<_FilterDialog> {
               Text(
                 'Priority',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
               const SizedBox(height: 8),

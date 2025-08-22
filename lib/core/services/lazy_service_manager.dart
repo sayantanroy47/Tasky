@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:isolate';
 import 'package:flutter/foundation.dart';
 
 /// Manages lazy initialization of services to improve startup performance
@@ -183,4 +182,6 @@ class ServiceIds {
   static const String errorRecovery = 'error_recovery';
   static const String performance = 'performance';
   static const String themeService = 'theme_service';
+  static const String locationService = 'location_service';
+  static const String geofencingManager = 'geofencing_manager';
 }

@@ -69,5 +69,5 @@ final highPriorityServicesReadyProvider = Provider<bool>((ref) {
 /// Provider for warm up audio service when likely to be needed
 final audioServiceWarmerProvider = Provider<Future<void>>((ref) async {
   final lazyAudio = LazyAudioPlaybackService.instance;
-  return lazyAudio.warmup();
+  await lazyAudio.warmup();
 });

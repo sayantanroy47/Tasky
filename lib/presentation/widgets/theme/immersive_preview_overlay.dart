@@ -433,14 +433,14 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
             ],
           ),
           
-          SizedBox(height: 24),
+          const SizedBox(height: 24),
           
           // Chips
           Wrap(
             spacing: 8,
             children: [
-              const Chip(
-                label: Text('Chip'),
+              Chip(
+                label: const Text('Chip'),
                 avatar: Icon(PhosphorIcons.star(), size: 16),
               ),
               FilterChip(
@@ -471,7 +471,7 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
               fontWeight: FontWeight.w600,
             ),
           ),
-          SizedBox(height: 24),
+          const SizedBox(height: 24),
           
           Card(
             child: Padding(
@@ -541,14 +541,14 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
               fontWeight: FontWeight.w600,
             ),
           ),
-          SizedBox(height: 24),
+          const SizedBox(height: 24),
           
           TextField(
             decoration: InputDecoration(
               labelText: 'Text Field',
               hintText: 'Enter some text',
               prefixIcon: Icon(PhosphorIcons.textAa()),
-              border: OutlineInputBorder(),
+              border: const OutlineInputBorder(),
             ),
           ),
           
@@ -597,7 +597,7 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
               fontWeight: FontWeight.w600,
             ),
           ),
-          SizedBox(height: 24),
+          const SizedBox(height: 24),
           
           Card(
             child: Column(
@@ -608,7 +608,7 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
                   trailing: Icon(PhosphorIcons.caretRight(), size: 16),
                   onTap: () {},
                 ),
-                Divider(height: 1),
+                const Divider(height: 1),
                 ListTile(
                   leading: Icon(PhosphorIcons.gear()),
                   title: const Text('Settings'),
@@ -616,7 +616,7 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
                   trailing: Icon(PhosphorIcons.caretRight(), size: 16),
                   onTap: () {},
                 ),
-                Divider(height: 1),
+                const Divider(height: 1),
                 ListTile(
                   leading: Icon(PhosphorIcons.info()),
                   title: const Text('About'),

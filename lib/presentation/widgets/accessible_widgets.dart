@@ -228,7 +228,7 @@ class AccessibleSwitch extends ConsumerWidget {
           );
         },
         // Ensure good contrast
-        activeColor: settings.highContrastMode 
+        activeThumbColor: settings.highContrastMode 
             ? Colors.black 
             : Theme.of(context).colorScheme.primary,
         inactiveThumbColor: settings.highContrastMode 
@@ -518,20 +518,41 @@ class AccessibleRadio<T> extends ConsumerWidget {
       label: semanticLabel != null ? '$semanticLabel, $stateLabel' : stateLabel,
       inMutuallyExclusiveGroup: true,
       checked: isSelected,
-      child: Radio<T>(
-        value: value,
-        groupValue: groupValue,
-        onChanged: onChanged == null ? null : (newValue) async {
+      child: GestureDetector(
+        onTap: onChanged == null ? null : () async {
           await accessibilityService.provideHapticFeedback(HapticFeedbackType.selection);
-          onChanged!(newValue);
+          onChanged!(value);
           
           // Announce selection
           accessibilityService.announceForScreenReader('Selected');
         },
-        // Ensure good contrast
-        activeColor: settings.highContrastMode 
-            ? Colors.black 
-            : Theme.of(context).colorScheme.primary,
+        child: Container(
+          width: 20,
+          height: 20,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(
+              color: isSelected 
+                  ? (settings.highContrastMode ? Colors.black : Theme.of(context).colorScheme.primary)
+                  : Colors.grey,
+              width: 2,
+            ),
+          ),
+          child: isSelected
+              ? Center(
+                  child: Container(
+                    width: 10,
+                    height: 10,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: settings.highContrastMode 
+                          ? Colors.black 
+                          : Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                )
+              : null,
+        ),
       ),
     );
   }

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/typography_constants.dart';
 import '../../../core/providers/enhanced_theme_provider.dart';
 import '../../../core/theme/app_theme_data.dart';
+import '../../../core/theme/models/theme_colors.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Theme gallery widget with animated previews
@@ -215,11 +216,11 @@ class _ThemePreviewCardState extends State<ThemePreviewCard>
         child: AnimatedBuilder(
           animation: widget.isSelected ? _glowAnimation : kAlwaysCompleteAnimation,
           builder: (context, child) {
-            return AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              transform: Matrix4.identity()
-                ..scale(_isHovered ? 1.05 : 1.0),
-              child: Container(
+            return Transform.scale(
+              scale: _isHovered ? 1.05 : 1.0,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                   boxShadow: [
@@ -244,6 +245,7 @@ class _ThemePreviewCardState extends State<ThemePreviewCard>
                   child: InkWell(
                     onTap: widget.onTap,
                     child: _buildThemePreview(),
+                  ),
                   ),
                 ),
               ),
@@ -367,7 +369,7 @@ class _ThemePreviewCardState extends State<ThemePreviewCard>
     }
   }
 
-  Widget _buildVegetaPattern(colors) {
+  Widget _buildVegetaPattern(ThemeColors colors) {
     return Positioned.fill(
       child: CustomPaint(
         painter: VegetaPatternPainter(
@@ -378,7 +380,7 @@ class _ThemePreviewCardState extends State<ThemePreviewCard>
     );
   }
 
-  Widget _buildMatrixPattern(colors) {
+  Widget _buildMatrixPattern(ThemeColors colors) {
     return Positioned.fill(
       child: CustomPaint(
         painter: MatrixPatternPainter(
@@ -389,7 +391,7 @@ class _ThemePreviewCardState extends State<ThemePreviewCard>
     );
   }
 
-  Widget _buildDraculaPattern(colors) {
+  Widget _buildDraculaPattern(ThemeColors colors) {
     return Positioned.fill(
       child: CustomPaint(
         painter: DraculaPatternPainter(

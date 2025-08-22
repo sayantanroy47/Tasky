@@ -188,7 +188,7 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
                                 fontSize: isLargeText 
                                     ? TypographyConstants.text2XL 
                                     : TypographyConstants.textXL,
-                                fontWeight: TypographyConstants.bold,
+                                fontWeight: TypographyConstants.medium,
                                 color: theme.colorScheme.onSurface,
                               ),
                               textAlign: TextAlign.center,
@@ -285,7 +285,7 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
             // Page indicators
             _buildPageIndicators(theme),
             
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             
             // Navigation buttons
             Row(
@@ -436,7 +436,7 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
                 'Skip Tutorial?',
                 style: TextStyle(
                   fontSize: TypographyConstants.textLG,
-                  fontWeight: TypographyConstants.bold,
+                  fontWeight: TypographyConstants.medium,
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
                 textAlign: TextAlign.center,

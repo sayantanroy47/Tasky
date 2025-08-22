@@ -136,7 +136,7 @@ class _CreateEventDialogState extends ConsumerState<_CreateEventDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Create Event'),
+      title: const Text('Create Event'),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -189,7 +189,7 @@ class _CreateEventDialogState extends ConsumerState<_CreateEventDialog> {
             
             // All day toggle
             SwitchListTile(
-              title: Text('All Day'),
+              title: const Text('All Day'),
               value: isAllDay,
               onChanged: (value) => setState(() => isAllDay = value),
             ),
@@ -228,7 +228,7 @@ class _CreateEventDialogState extends ConsumerState<_CreateEventDialog> {
               ),
             ],
             
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             
             // Color picker
             Column(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/accessibility/accessibility_constants.dart';
+import '../../core/accessibility/touch_target_validator.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../core/validation/form_validators.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -160,7 +161,7 @@ class _StandardizedFormFieldState extends ConsumerState<StandardizedFormField> {
                       text: ' *',
                       style: TextStyle(
                         color: theme.colorScheme.error,
-                        fontWeight: TypographyConstants.bold,
+                        fontWeight: TypographyConstants.medium,
                       ),
                     ),
                 ],
@@ -459,7 +460,7 @@ class StandardizedDropdownField<T> extends ConsumerWidget {
                       text: ' *',
                       style: TextStyle(
                         color: theme.colorScheme.error,
-                        fontWeight: TypographyConstants.bold,
+                        fontWeight: TypographyConstants.medium,
                       ),
                     ),
                 ],
@@ -472,7 +473,7 @@ class StandardizedDropdownField<T> extends ConsumerWidget {
           label: semanticLabel ?? label,
           hint: hint,
           child: DropdownButtonFormField<T>(
-            value: value,
+            initialValue: value,
             items: items.map((item) {
               return DropdownMenuItem<T>(
                 value: item,
@@ -691,7 +692,7 @@ class StandardizedRadioField<T> extends ConsumerWidget {
                       text: ' *',
                       style: TextStyle(
                         color: theme.colorScheme.error,
-                        fontWeight: TypographyConstants.bold,
+                        fontWeight: TypographyConstants.medium,
                       ),
                     ),
                 ],
@@ -739,13 +740,11 @@ class StandardizedRadioField<T> extends ConsumerWidget {
           child: Row(
             mainAxisSize: direction == Axis.horizontal ? MainAxisSize.min : MainAxisSize.max,
             children: [
-              Radio<T>(
+              AccessibleRadio<T>(
                 value: option,
                 groupValue: value,
                 onChanged: onChanged,
-                activeColor: shouldUseHighContrast 
-                    ? AccessibilityConstants.highContrastPrimary
-                    : theme.colorScheme.primary,
+                semanticLabel: 'Radio option: ${optionLabel(option)}',
               ),
               const SizedBox(width: 8),
               Text(

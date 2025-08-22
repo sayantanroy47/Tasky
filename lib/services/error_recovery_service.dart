@@ -455,7 +455,7 @@ class _ErrorRecoveryWrapperState extends ConsumerState<ErrorRecoveryWrapper> {
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             ElevatedButton.icon(
               onPressed: _retry,
               icon: Icon(PhosphorIcons.arrowClockwise()),

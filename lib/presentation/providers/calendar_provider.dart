@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:table_calendar/table_calendar.dart';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../domain/entities/calendar_event.dart';
 import '../../domain/entities/task_model.dart';
 import '../../services/calendar_service.dart';
@@ -14,7 +14,7 @@ class CalendarState {
   final CalendarViewMode viewMode;
   final List<CalendarEvent> events;
   final List<CalendarEvent> selectedDateEvents;
-  final CalendarFormat calendarFormat;
+  final CalendarView calendarFormat;
 
   const CalendarState({
     required this.selectedDate,
@@ -22,7 +22,7 @@ class CalendarState {
     this.viewMode = CalendarViewMode.month,
     this.events = const [],
     this.selectedDateEvents = const [],
-    this.calendarFormat = CalendarFormat.month,
+    this.calendarFormat = CalendarView.month,
   });
 
   CalendarState copyWith({
@@ -31,7 +31,7 @@ class CalendarState {
     CalendarViewMode? viewMode,
     List<CalendarEvent>? events,
     List<CalendarEvent>? selectedDateEvents,
-    CalendarFormat? calendarFormat,
+    CalendarView? calendarFormat,
   }) {
     return CalendarState(
       selectedDate: selectedDate ?? this.selectedDate,
@@ -83,16 +83,16 @@ class CalendarNotifier extends StateNotifier<CalendarState> {
 
   /// Change view mode
   void changeViewMode(CalendarViewMode mode) {
-    CalendarFormat format;
+    CalendarView format;
     switch (mode) {
       case CalendarViewMode.month:
-        format = CalendarFormat.month;
+        format = CalendarView.month;
         break;
       case CalendarViewMode.week:
-        format = CalendarFormat.week;
+        format = CalendarView.week;
         break;
       case CalendarViewMode.day:
-        format = CalendarFormat.week; // Use week format for day view
+        format = CalendarView.day;
         break;
     }
     

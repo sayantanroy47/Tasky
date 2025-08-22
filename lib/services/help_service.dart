@@ -498,7 +498,7 @@ class HelpTopicSheet extends StatelessWidget {
                       child: Text(
                         topic.title,
                         style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ),

@@ -423,7 +423,7 @@ class _AccessibleDropdownFieldState<T> extends State<AccessibleDropdownField<T>>
             borderColor: _getBorderColor(theme),
             borderWidth: _isFocused ? 2.0 : 1.0,
             child: DropdownButtonFormField<T>(
-              value: widget.value,
+              initialValue: widget.value,
               items: widget.items.map((item) {
                 return DropdownMenuItem<T>(
                   value: item.value,

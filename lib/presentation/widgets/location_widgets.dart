@@ -28,6 +28,7 @@ class LocationPermissionWidget extends ConsumerWidget {
           case LocationPermissionStatus.denied:
           case LocationPermissionStatus.deniedForever:
           case LocationPermissionStatus.unableToDetermine:
+          case LocationPermissionStatus.serviceDisabled:
             return permissionDeniedWidget ?? _buildPermissionDeniedWidget(context, ref);
         }
       },
@@ -51,7 +52,7 @@ class LocationPermissionWidget extends ConsumerWidget {
           const SizedBox(height: 16),
           const Text(
             'Location Permission Required',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 8),
           const Text(
@@ -90,7 +91,7 @@ class CurrentLocationWidget extends ConsumerWidget {
 
     return locationAsync.when(
       data: builder,
-      loading: () => loadingWidget ?? Center(child: CircularProgressIndicator()),
+      loading: () => loadingWidget ?? const Center(child: CircularProgressIndicator()),
       error: (error, stack) => errorWidget ?? Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -127,7 +128,7 @@ class LocationStreamWidget extends ConsumerWidget {
 
     return locationStream.when(
       data: builder,
-      loading: () => loadingWidget ?? Center(child: CircularProgressIndicator()),
+      loading: () => loadingWidget ?? const Center(child: CircularProgressIndicator()),
       error: (error, stack) => errorWidget ?? Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -213,7 +214,7 @@ class _GeofenceConfigWidgetState extends ConsumerState<GeofenceConfigWidget> {
                   return null;
                 },
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               TextFormField(
                 controller: _addressController,
                 decoration: InputDecoration(
@@ -255,7 +256,7 @@ class _GeofenceConfigWidgetState extends ConsumerState<GeofenceConfigWidget> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<GeofenceType>(
-                value: _selectedType,
+                initialValue: _selectedType,
                 decoration: const InputDecoration(
                   labelText: 'Trigger Type',
                   border: OutlineInputBorder(),
@@ -274,7 +275,7 @@ class _GeofenceConfigWidgetState extends ConsumerState<GeofenceConfigWidget> {
                   }
                 },
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               if (_selectedLocation != null)
                 Container(
                   padding: const EdgeInsets.all(12),

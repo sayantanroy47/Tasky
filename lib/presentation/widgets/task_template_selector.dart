@@ -49,7 +49,7 @@ class _TaskTemplateSelectorState extends ConsumerState<TaskTemplateSelector>
                   'Select Template',
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
-                Spacer(),
+                const Spacer(),
                 IconButton(
                   onPressed: () => Navigator.of(context).pop(),
                   icon: Icon(PhosphorIcons.x()),
@@ -64,7 +64,7 @@ class _TaskTemplateSelectorState extends ConsumerState<TaskTemplateSelector>
               decoration: InputDecoration(
                 hintText: 'Search templates...',
                 prefixIcon: Icon(PhosphorIcons.magnifyingGlass()),
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
               ),
               onChanged: (value) {
                 setState(() {
@@ -73,7 +73,7 @@ class _TaskTemplateSelectorState extends ConsumerState<TaskTemplateSelector>
               },
             ),
             
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             
             // Tabs
             TabBar(
@@ -199,7 +199,7 @@ class _TaskTemplateSelectorState extends ConsumerState<TaskTemplateSelector>
           children: [
             if (template.description != null)
               Text(template.description!),
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
             Text(
               template.titleTemplate,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -436,7 +436,7 @@ class _TaskTemplateFormDialogState extends State<TaskTemplateFormDialog> {
                     widget.initialTemplate == null ? 'Create Template' : 'Edit Template',
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
-                  Spacer(),
+                  const Spacer(),
                   IconButton(
                     onPressed: () => Navigator.of(context).pop(),
                     icon: Icon(PhosphorIcons.x()),
@@ -519,7 +519,7 @@ class _TaskTemplateFormDialogState extends State<TaskTemplateFormDialog> {
                       
                       // Priority selector
                       DropdownButtonFormField<TaskPriority>(
-                        value: _priority,
+                        initialValue: _priority,
                         decoration: const InputDecoration(
                           labelText: 'Default Priority',
                           border: OutlineInputBorder(),

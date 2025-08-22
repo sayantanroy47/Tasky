@@ -66,7 +66,7 @@ class TaskDependencyStatus extends ConsumerWidget {
               ),
             ),
             if (showDetails && validation.incompleteDependencies.isNotEmpty) ...[
-              SizedBox(width: 4),
+              const SizedBox(width: 4),
               Icon(
                 PhosphorIcons.info(),
                 size: 12,

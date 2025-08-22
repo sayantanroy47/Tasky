@@ -286,7 +286,7 @@ class _VoiceTaskCreationDialogM3State extends ConsumerState<VoiceTaskCreationDia
     }
   }
   
-  void _onSpeechResult(result) {
+  void _onSpeechResult(dynamic result) {
     if (mounted) {
       setState(() {
         _transcribedText = result.recognizedWords;
@@ -474,7 +474,7 @@ class _VoiceTaskCreationDialogM3State extends ConsumerState<VoiceTaskCreationDia
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title: Text('Voice Task Creation'),
+        title: const Text('Voice Task Creation'),
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
@@ -555,7 +555,7 @@ class _VoiceTaskCreationDialogM3State extends ConsumerState<VoiceTaskCreationDia
                               },
                             ),
                             
-                            SizedBox(height: 24),
+                            const SizedBox(height: 24),
                             
                             // Status message
                             Text(

@@ -13,11 +13,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### Code Quality
 - `flutter analyze` - Run static analysis with strict linting rules
 - `flutter test` - Run all unit and widget tests
-- `build_runner` used for code generation: `flutter packages pub run build_runner build`
+- `dart run build_runner build --delete-conflicting-outputs` - Generate code for models, DAOs, and providers
 
 ### Testing
 - Single test file: `flutter test test/path/to/test_file.dart`
-- Test coverage: Tests are organized by layer (unit, widget, integration)
+- Test with coverage: `flutter test --coverage`
+- Generate coverage report: `genhtml coverage/lcov.info -o coverage/html`
+- Update golden tests: `flutter test --update-goldens`
+- Performance tests: `flutter test test/performance/`
+- Integration tests: `flutter test test/integration/`
 
 ## Architecture Overview
 
@@ -46,7 +50,7 @@ This is a Flutter task management app following Clean Architecture with these ke
 ### Code Generation
 Many files use code generation. When modifying models or DAOs, run:
 ```bash
-flutter packages pub run build_runner build --delete-conflicting-outputs
+dart run build_runner build --delete-conflicting-outputs
 ```
 
 ### Key Patterns
@@ -61,6 +65,8 @@ flutter packages pub run build_runner build --delete-conflicting-outputs
 - Widget tests for UI components
 - Integration tests for complete user flows
 - Mock generation using Mockito for dependencies
+- Performance testing with benchmarks (<50ms for AI parsing, <100ms for complex operations)
+- Golden tests for UI consistency across themes
 
 ## Development Notes
 
@@ -75,3 +81,45 @@ Supports multiple AI providers with fallback mechanisms. API keys should be conf
 
 ### Performance Monitoring
 Built-in performance monitoring service tracks app startup times and user interactions.
+
+## Code Quality Standards
+
+### Linting Configuration
+- Strict mode enabled (no implicit casts/dynamic)
+- Single quotes preferred
+- Const constructors enforced
+- Relative imports required
+- Generated files excluded from analysis (.g.dart, .freezed.dart, .mocks.dart)
+
+### Known Architectural Issues
+**God Classes Requiring Refactoring:**
+- `HomePage` (1993 lines) - Split into controller + widgets
+- `RealDataExportService` (1665 lines) - Split by export format
+- `AnalyticsService` (1437 lines) - Split by calculation domain
+- `TaskDetailPage` (1307 lines) - Extract component widgets
+
+### Maintenance Tasks
+**Regular Cleanup Needed:**
+- Backup files: `find lib/ -name "*.backup" -delete` (127 files currently)
+- Unused imports: Run Flutter analyze and clean systematically
+- Generated files: Re-run build_runner after model changes
+
+### Test Coverage Requirements
+- 85%+ line coverage maintained
+- All new features require comprehensive test coverage
+- Performance tests for operations >10ms
+- Golden tests for UI changes across all themes
+- Integration tests for critical user flows
+
+## Performance Benchmarks
+- AI parsing: <50ms for simple text, <500ms for complex
+- Task operations: <100ms for 1000 operations
+- UI rendering: <100ms for complex widgets
+- Memory: No leaks under stress testing (100K operations)
+
+## Development Workflow
+1. Always run `flutter analyze` before commits
+2. Generate code after model changes: `dart run build_runner build --delete-conflicting-outputs`
+3. Run relevant tests: `flutter test test/domain/` for domain changes
+4. Update golden tests if UI modified: `flutter test --update-goldens`
+5. Clean backup files periodically to maintain clean working directory

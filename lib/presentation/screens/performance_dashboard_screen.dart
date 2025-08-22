@@ -77,7 +77,7 @@ class PerformanceDashboardScreen extends ConsumerWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         Row(
           children: [
             Expanded(
@@ -215,7 +215,7 @@ class PerformanceDashboardScreen extends ConsumerWidget {
           Row(
             children: [
               Icon(PhosphorIcons.cpu(), color: theme.colorScheme.primary),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text(
                 'Memory Usage',
                 style: theme.textTheme.titleMedium?.copyWith(

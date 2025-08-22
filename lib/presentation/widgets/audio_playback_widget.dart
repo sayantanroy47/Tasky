@@ -75,7 +75,7 @@ class AudioPlaybackWidget extends ConsumerWidget {
             size: 16,
             color: theme.colorScheme.onSecondaryContainer,
           ),
-          SizedBox(width: 4),
+          const SizedBox(width: 4),
           InkWell(
             onTap: () => _togglePlayback(audioControls),
             child: Icon(
@@ -122,7 +122,7 @@ class AudioPlaybackWidget extends ConsumerWidget {
                   PhosphorIcons.musicNote(),
                   color: theme.colorScheme.primary,
                 ),
-                SizedBox(width: 12),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     'Voice Recording',

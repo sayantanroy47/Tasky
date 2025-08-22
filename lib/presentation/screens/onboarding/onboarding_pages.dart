@@ -237,7 +237,7 @@ class FeatureTutorials {
       title: 'Voice Task Creation',
       description: 'Learn how to create tasks using voice commands',
       icon: PhosphorIcons.microphone(),
-      estimatedDuration: Duration(minutes: 2),
+      estimatedDuration: const Duration(minutes: 2),
       steps: [
         TutorialStep(
           title: 'Find the Voice Button',
@@ -266,7 +266,7 @@ class FeatureTutorials {
       title: 'Task Management',
       description: 'Master the basics of managing your tasks',
       icon: PhosphorIcons.checkSquare(),
-      estimatedDuration: Duration(minutes: 3),
+      estimatedDuration: const Duration(minutes: 3),
       steps: [
         TutorialStep(
           title: 'Complete a Task',
@@ -296,7 +296,7 @@ class FeatureTutorials {
       title: 'Smart Features',
       description: 'Discover AI-powered productivity features',
       icon: PhosphorIcons.sparkle(),
-      estimatedDuration: Duration(minutes: 4),
+      estimatedDuration: const Duration(minutes: 4),
       steps: [
         TutorialStep(
           title: 'Smart Scheduling',

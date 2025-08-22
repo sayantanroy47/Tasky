@@ -3,6 +3,8 @@ import '../../services/error_recovery_service.dart';
 import '../../services/privacy_service.dart';
 import '../../services/database/database.dart';
 import '../../services/share_intent_service.dart';
+import '../../services/location/geofencing_manager.dart';
+import '../../domain/repositories/task_repository.dart';
 
 /// Service for handling app initialization with error recovery
 class AppInitializationService {
@@ -10,13 +12,18 @@ class AppInitializationService {
   final PrivacyService _privacyService;
   final AppDatabase _database;
   final ShareIntentService _shareIntentService;
+  final GeofencingManager? _geofencingManager;
+  final TaskRepository? _taskRepository;
   
   AppInitializationService(
     this._errorRecoveryService,
     this._privacyService,
     this._database,
-    this._shareIntentService,
-  );
+    this._shareIntentService, {
+    GeofencingManager? geofencingManager,
+    TaskRepository? taskRepository,
+  }) : _geofencingManager = geofencingManager,
+       _taskRepository = taskRepository;
   
   /// Initialize the app with comprehensive error handling
   Future<void> initialize() async {
@@ -32,6 +39,9 @@ class AppInitializationService {
       
       // Initialize privacy service
       await _privacyService.initializePrivacyDefaults();
+      
+      // Initialize geofencing manager if available
+      await _initializeGeofencing();
       
       // Attempt to restore app state if recovering from crash
       await _attemptStateRecovery();
@@ -93,6 +103,36 @@ class AppInitializationService {
       // State recovery failed, continue with fresh state
       await _errorRecoveryService.recordError(
         'state_recovery',
+        e,
+        StackTrace.current,
+      );
+    }
+  }
+  
+  /// Initialize geofencing manager
+  Future<void> _initializeGeofencing() async {
+    try {
+      if (_geofencingManager != null && _taskRepository != null) {
+        await _geofencingManager.initialize();
+        
+        // Load existing location triggers from database
+        final tasks = await _taskRepository.getAllTasks();
+        for (final task in tasks) {
+          if (task.locationTrigger != null && task.locationTrigger!.isNotEmpty) {
+            try {
+              // Parse and add location trigger
+              // This would parse the JSON and create LocationTrigger objects
+              // For now, just log that location triggers exist
+            } catch (e) {
+              // Failed to parse location trigger, skip
+            }
+          }
+        }
+      }
+    } catch (e) {
+      // Geofencing initialization failed, but don't block app startup
+      await _errorRecoveryService.recordError(
+        'geofencing_initialization',
         e,
         StackTrace.current,
       );

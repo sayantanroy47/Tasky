@@ -247,9 +247,7 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
   late AudioRecordingService _audioRecorder;
   bool _audioEnabled = false;
   
-  // Service states for fallback handling
-  bool _speechRecognitionActive = false;
-  bool _audioRecordingActive = false;
+  // Service states for fallback handling - removed unused fields
   
   Timer? _durationTimer;
   
@@ -450,7 +448,7 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
               'AI Voice Entry',
               style: theme.textTheme.headlineSmall?.copyWith(
                 color: theme.colorScheme.onSurface,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ),
@@ -519,7 +517,7 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
           ),
           textAlign: TextAlign.center,
         ),
-        SizedBox(height: 20),
+        const SizedBox(height: 20),
         
         // Recording duration (when recording)
         if (_isRecording) ...[
@@ -548,7 +546,7 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
                   _formatDuration(_currentRecordingDuration),
                   style: theme.textTheme.titleMedium?.copyWith(
                     color: Colors.red,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w500,
                     // Use monospace styling for consistent width
                     fontFamily: 'monospace',
                   ),
@@ -622,7 +620,7 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
                 'Live Transcription',
                 style: theme.textTheme.titleSmall?.copyWith(
                   color: theme.colorScheme.secondary,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],
@@ -734,7 +732,7 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
                 'Recording Session',
                 style: theme.textTheme.titleMedium?.copyWith(
                   color: theme.colorScheme.primary,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
               const Spacer(),
@@ -748,7 +746,7 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
                   '${_session.recordings.length}',
                   style: theme.textTheme.labelMedium?.copyWith(
                     color: theme.colorScheme.onPrimary,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
@@ -828,7 +826,7 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
         Text(
           'Recordings (${_session.recordings.length})',
           style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w500,
           ),
         ),
         const SizedBox(height: 12),
@@ -857,13 +855,13 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
                     child: Text(
                       '${index + 1}',
                       style: theme.textTheme.labelMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w500,
                         color: theme.colorScheme.primary,
                       ),
                     ),
                   ),
                 ),
-                SizedBox(width: 12),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -1192,6 +1190,7 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
       });
       
       // Navigate to enhanced task creation dialog
+      if (!mounted) return;
       final result = await showDialog(
         context: context,
         builder: (context) => EnhancedTaskCreationDialog(

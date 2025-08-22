@@ -224,7 +224,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
                     size: 28,
                   ),
                 ),
-                SizedBox(width: 20),
+                const SizedBox(width: 20),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -233,7 +233,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
                         'Theme Gallery',
                         style: TextStyle(
                           fontSize: TypographyConstants.text2XL,
-                          fontWeight: TypographyConstants.bold,
+                          fontWeight: TypographyConstants.medium,
                           color: theme.colorScheme.onSurface,
                           letterSpacing: TypographyConstants.tightLetterSpacing,
                         ),
@@ -310,7 +310,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
                           themeState.currentThemeName,
                           style: TextStyle(
                             fontSize: TypographyConstants.textLG,
-                            fontWeight: TypographyConstants.semiBold,
+                            fontWeight: TypographyConstants.medium,
                             color: theme.colorScheme.onSurface,
                           ),
                         ),
@@ -394,9 +394,9 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
       sliver: SliverGrid(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          crossAxisSpacing: 16,
-          mainAxisSpacing: 16,
-          childAspectRatio: 0.85,
+          crossAxisSpacing: 20,
+          mainAxisSpacing: 20,
+          childAspectRatio: 0.8,
         ),
         delegate: SliverChildBuilderDelegate(
           (context, index) => FadeTransition(
@@ -430,153 +430,161 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
   Widget _buildThemeCard(AppThemeData theme, EnhancedThemeState themeState, int index) {
     final isActive = theme.metadata.id == themeState.currentTheme?.metadata.id;
     
-    return TweenAnimationBuilder<double>(
-      duration: Duration(milliseconds: 600 + (index * 100)),
-      tween: Tween(begin: 0.0, end: 1.0),
-      builder: (context, value, child) {
-        return Transform.translate(
-          offset: Offset(0, 50 * (1 - value)),
-          child: Opacity(
-            opacity: value,
-            child: GlassmorphismContainer(
-              level: isActive ? GlassLevel.floating : GlassLevel.content,
-              borderRadius: BorderRadius.circular(20),
-              padding: const EdgeInsets.all(16),
-              // Let glassmorphism container auto-determine tint, just use border for selection
-              borderColor: isActive 
-                ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.3)
-                : null,
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: () => _selectTheme(theme),
-                  onLongPress: () => _showThemePreview(theme),
-                  borderRadius: BorderRadius.circular(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        border: isActive 
+          ? Border.all(color: Theme.of(context).colorScheme.primary, width: 2)
+          : Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2)),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => _selectTheme(theme),
+          borderRadius: BorderRadius.circular(12),
+          child: Column(
+            children: [
+              // Rectangular preview block
+              Expanded(
+                flex: 3,
+                child: Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    color: Theme.of(context).colorScheme.surfaceContainer,
+                  ),
+                  child: Stack(
                     children: [
-                      // Theme preview
-                      Expanded(
-                        flex: 3,
-                        child: Container(
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                Color(theme.colors.primary.value),
-                                Color(theme.colors.secondary.value),
-                                Color(theme.colors.tertiary.value),
-                              ],
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Color(theme.colors.primary.value).withValues(alpha: 0.3),
-                                blurRadius: 8,
-                                offset: Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: Stack(
-                            children: [
-                              // Subtle pattern
-                              CustomPaint(
-                                size: Size.infinite,
-                                painter: _ThemePatternPainter(
-                                  Color(theme.colors.onPrimary.value).withValues(alpha: 0.1),
-                                ),
-                              ),
-                              
-                              // Active indicator
-                              if (isActive)
-                                Positioned(
-                                  top: 8,
-                                  right: 8,
-                                  child: Container(
-                                    padding: const EdgeInsets.all(4),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white.withValues(alpha: 0.9),
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: Icon(
-                                      PhosphorIcons.check(),
-                                      size: 16,
-                                      color: Color(theme.colors.primary.value),
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      
-                      const SizedBox(height: 12),
-                      
-                      // Theme info
-                      Expanded(
-                        flex: 2,
+                      // UI sections representation
+                      Padding(
+                        padding: const EdgeInsets.all(8),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Flexible(
-                              child: Text(
-                                theme.metadata.name,
-                                style: TextStyle(
-                                  fontSize: TypographyConstants.textBase,
-                                  fontWeight: TypographyConstants.semiBold,
-                                  color: Theme.of(context).colorScheme.onSurface,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+                            // Top section (header/app bar area)
+                            Expanded(
+                              flex: 1,
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    flex: 2,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(4),
+                                        color: theme.colors.primary.withValues(alpha: 0.7),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Expanded(
+                                    flex: 1,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(4),
+                                        color: theme.colors.secondary.withValues(alpha: 0.7),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            
                             const SizedBox(height: 4),
-                            
-                            Flexible(
-                              child: Text(
-                                theme.metadata.description,
-                                  style: TextStyle(
-                                    fontSize: TypographyConstants.textXS,
-                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            // Middle section (calendar/content area)
+                            Expanded(
+                              flex: 2,
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    flex: 1,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(4),
+                                        color: theme.colors.tertiary.withValues(alpha: 0.7),
+                                      ),
+                                    ),
                                   ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
+                                  const SizedBox(width: 4),
+                                  Expanded(
+                                    flex: 2,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(4),
+                                        color: theme.colors.surface,
+                                        border: Border.all(
+                                          color: theme.colors.outline.withValues(alpha: 0.3),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            // Bottom section (text areas)
+                            Expanded(
+                              flex: 1,
+                              child: Container(
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(4),
+                                  color: theme.colors.surfaceVariant,
                                 ),
                               ),
-                            
-                            const Spacer(),
-                            
-                            // Color palette
-                            Row(
-                              children: [
-                                _buildColorDot(Color(theme.colors.primary.value)),
-                                const SizedBox(width: 4),
-                                _buildColorDot(Color(theme.colors.secondary.value)),
-                                const SizedBox(width: 4),
-                                _buildColorDot(Color(theme.colors.tertiary.value)),
-                                const Spacer(),
-                                if (theme.metadata.popularityScore > 0.8)
-                                  Icon(
-                                    PhosphorIcons.star(),
-                                    size: 16,
-                                    color: Colors.amber,
-                                  ),
-                              ],
                             ),
                           ],
                         ),
                       ),
+                      
+                      // Selection indicator
+                      if (isActive)
+                        Positioned(
+                          bottom: 8,
+                          right: 8,
+                          child: Container(
+                            width: 24,
+                            height: 24,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.2),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Icon(
+                              PhosphorIcons.check(),
+                              size: 16,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
+                        ),
                     ],
                   ),
                 ),
               ),
-            ),
+              
+              // Theme name
+              Padding(
+                padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+                child: Text(
+                  theme.metadata.name,
+                  style: TextStyle(
+                    fontSize: TypographyConstants.textSM,
+                    fontWeight: TypographyConstants.medium,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                  maxLines: 2,
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 
@@ -607,23 +615,23 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
                   borderRadius: BorderRadius.circular(30),
                   gradient: LinearGradient(
                     colors: [
-                      Color(theme.colors.primary.value),
-                      Color(theme.colors.secondary.value),
-                      Color(theme.colors.tertiary.value),
+                      theme.colors.primary,
+                      theme.colors.secondary,
+                      theme.colors.tertiary,
                     ],
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Color(theme.colors.primary.value).withValues(alpha: 0.3),
+                      color: theme.colors.primary.withValues(alpha: 0.3),
                       blurRadius: 8,
-                      offset: Offset(0, 4),
+                      offset: const Offset(0, 4),
                     ),
                   ],
                 ),
                 child: isActive
                   ? Icon(
                       PhosphorIcons.check(),
-                      color: Color(theme.colors.onPrimary.value),
+                      color: theme.colors.onPrimary,
                       size: 24,
                     )
                   : null,
@@ -639,21 +647,10 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
                       theme.metadata.name,
                       style: TextStyle(
                         fontSize: TypographyConstants.textLG,
-                        fontWeight: TypographyConstants.semiBold,
+                        fontWeight: TypographyConstants.medium,
                         color: Theme.of(context).colorScheme.onSurface,
                       ),
                       maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    
-                    const SizedBox(height: 4),
-                    Text(
-                      theme.metadata.description,
-                      style: TextStyle(
-                        fontSize: TypographyConstants.textSM,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
-                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],
@@ -663,11 +660,11 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
               // Color palette
               Column(
                 children: [
-                  _buildColorDot(Color(theme.colors.primary.value), size: 12),
+                  _buildColorDot(theme.colors.primary, size: 12),
                   const SizedBox(height: 4),
-                  _buildColorDot(Color(theme.colors.secondary.value), size: 12),
+                  _buildColorDot(theme.colors.secondary, size: 12),
                   const SizedBox(height: 4),
-                  _buildColorDot(Color(theme.colors.tertiary.value), size: 12),
+                  _buildColorDot(theme.colors.tertiary, size: 12),
                 ],
               ),
             ],
@@ -716,7 +713,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
           ),
         ),
         
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         
         GlassmorphismContainer(
           level: GlassLevel.floating,
@@ -757,7 +754,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
                     'Theme Preview',
                     style: TextStyle(
                       fontSize: TypographyConstants.text2XL,
-                      fontWeight: TypographyConstants.bold,
+                      fontWeight: TypographyConstants.medium,
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
@@ -771,9 +768,9 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
                         borderRadius: BorderRadius.circular(16),
                         gradient: LinearGradient(
                           colors: [
-                            Color(_previewTheme!.colors.primary.value),
-                            Color(_previewTheme!.colors.secondary.value),
-                            Color(_previewTheme!.colors.tertiary.value),
+                            _previewTheme!.colors.primary,
+                            _previewTheme!.colors.secondary,
+                            _previewTheme!.colors.tertiary,
                           ],
                         ),
                       ),
@@ -786,7 +783,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
                     _previewTheme!.metadata.name,
                     style: TextStyle(
                       fontSize: TypographyConstants.textXL,
-                      fontWeight: TypographyConstants.semiBold,
+                      fontWeight: TypographyConstants.medium,
                       color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
@@ -867,7 +864,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
             Text('${theme.metadata.name} applied!'),
           ],
         ),
-        backgroundColor: Color(theme.colors.primary.value),
+        backgroundColor: theme.colors.primary,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
@@ -896,8 +893,8 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
                 color: Colors.white,
                 size: 20,
               ),
-              SizedBox(width: 12),
-              Text('Random theme applied!'),
+              const SizedBox(width: 12),
+              const Text('Random theme applied!'),
             ],
           ),
           backgroundColor: Theme.of(context).colorScheme.primary,
@@ -915,7 +912,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Search Themes'),
+        title: const Text('Search Themes'),
         content: TextField(
           decoration: InputDecoration(
             hintText: 'Enter theme name or description...',
@@ -941,7 +938,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Favorite Themes'),
+        title: const Text('Favorite Themes'),
         content: SizedBox(
           width: double.maxFinite,
           height: 400,
@@ -988,36 +985,4 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
   }
 }
 
-/// Custom painter for theme card patterns
-class _ThemePatternPainter extends CustomPainter {
-  final Color color;
-  
-  _ThemePatternPainter(this.color);
-  
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.fill;
-    
-    // Draw subtle geometric pattern
-    for (int i = 0; i < 5; i++) {
-      for (int j = 0; j < 5; j++) {
-        final x = (size.width / 5) * i + (size.width / 10);
-        final y = (size.height / 5) * j + (size.height / 10);
-        
-        if ((i + j) % 2 == 0) {
-          canvas.drawCircle(
-            Offset(x, y),
-            2,
-            paint,
-          );
-        }
-      }
-    }
-  }
-  
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
-}
 

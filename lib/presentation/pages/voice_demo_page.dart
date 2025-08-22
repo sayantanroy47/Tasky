@@ -149,7 +149,7 @@ class _VoiceDemoPageState extends ConsumerState<VoiceDemoPage> {
                 ),
             ],
             
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             
             // Transcription testing section
             GlassmorphismContainer(
@@ -247,7 +247,7 @@ class _VoiceDemoPageState extends ConsumerState<VoiceDemoPage> {
                     
                     // Validation results
                     if (_lastValidationResult != null) ...[
-                      SizedBox(height: 8.0),
+                      const SizedBox(height: 8.0),
                       Container(
                         width: double.infinity,
                         padding: const EdgeInsets.all(12.0),

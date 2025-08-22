@@ -120,7 +120,7 @@ class _DataExportPageState extends ConsumerState<DataExportPage>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          ExportFormatSelector(),
+          const ExportFormatSelector(),
           const SizedBox(height: 16),
           const ExportProgressIndicator(),
           const SizedBox(height: 16),
@@ -213,7 +213,7 @@ class _DataExportPageState extends ConsumerState<DataExportPage>
             },
           ),
           
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           
           // Validation result
           if (_validationResult != null) ...[
@@ -262,7 +262,7 @@ class _DataExportPageState extends ConsumerState<DataExportPage>
                     'Create Backup',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   const Text(
                     'Create a complete backup of all your tasks, projects, and settings.',
                   ),

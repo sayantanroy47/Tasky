@@ -30,6 +30,23 @@ final tasksProvider = StreamProvider<List<TaskModel>>((ref) {
   return repository.watchAllTasks();
 });
 
+/// Provider for a single task by ID (performance optimized using filtered stream)
+final singleTaskProvider = StreamProvider.family<TaskModel?, String>((ref, taskId) {
+  final repository = ref.watch(taskRepositoryProvider);
+  return repository.watchAllTasks().map((tasks) => 
+    tasks.cast<TaskModel?>().firstWhere(
+      (task) => task?.id == taskId,
+      orElse: () => null,
+    )
+  );
+});
+
+/// Provider for a single task (cached) by ID for immediate access
+final cachedTaskProvider = FutureProvider.family<TaskModel?, String>((ref, taskId) async {
+  final repository = ref.read(taskRepositoryProvider);
+  return await repository.getTaskById(taskId);
+});
+
 /// Provider for pending tasks
 final pendingTasksProvider = StreamProvider<List<TaskModel>>((ref) {
   final repository = ref.watch(taskRepositoryProvider);

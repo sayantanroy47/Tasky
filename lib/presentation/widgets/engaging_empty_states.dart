@@ -284,7 +284,7 @@ class EngagingEmptyStateWidget extends ConsumerWidget {
                       fontSize: isLargeText 
                           ? TypographyConstants.text2XL 
                           : TypographyConstants.textXL,
-                      fontWeight: TypographyConstants.bold,
+                      fontWeight: TypographyConstants.medium,
                       color: theme.colorScheme.onSurface,
                     ),
                     textAlign: TextAlign.center,
@@ -372,7 +372,7 @@ class EngagingEmptyStateWidget extends ConsumerWidget {
                       fontSize: isLargeText 
                           ? TypographyConstants.textBase 
                           : TypographyConstants.textSM,
-                      fontWeight: TypographyConstants.semiBold,
+                      fontWeight: TypographyConstants.medium,
                     ),
                   ),
                 ],
@@ -423,7 +423,7 @@ class EngagingEmptyStateWidget extends ConsumerWidget {
                 fontSize: isLargeText 
                     ? TypographyConstants.textBase 
                     : TypographyConstants.textSM,
-                fontWeight: TypographyConstants.semiBold,
+                fontWeight: TypographyConstants.medium,
                 color: theme.colorScheme.primary,
               ),
             ),

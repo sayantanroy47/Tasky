@@ -28,7 +28,7 @@ class _AISettingsPageState extends ConsumerState<AISettingsPage> {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         extendBodyBehindAppBar: true,
-        appBar: StandardizedAppBar(title: 'AI Settings',
+        appBar: const StandardizedAppBar(title: 'AI Settings',
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.only(
@@ -82,7 +82,7 @@ class _AISettingsPageState extends ConsumerState<AISettingsPage> {
                 ),
             ),
 
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
 
             // AI Service Selection
             if (config.enabled) ...[
@@ -249,7 +249,7 @@ class _AISettingsPageState extends ConsumerState<AISettingsPage> {
             children: [
               Text(
                 'AI task parsing helps you create tasks faster by understanding natural language input.',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(fontWeight: FontWeight.w500),
               ),
               SizedBox(height: 16),
               Text('Features:'),
@@ -262,7 +262,7 @@ class _AISettingsPageState extends ConsumerState<AISettingsPage> {
               SizedBox(height: 16),
               Text(
                 'Example:',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(fontWeight: FontWeight.w500),
               ),
               SizedBox(height: 8),
               Text(
@@ -301,7 +301,7 @@ class _AISettingsPageState extends ConsumerState<AISettingsPage> {
             children: [
               Text(
                 'Your Privacy Matters',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(fontWeight: FontWeight.w500),
               ),
               SizedBox(height: 16),
               Text('Local Processing:'),
@@ -323,7 +323,7 @@ class _AISettingsPageState extends ConsumerState<AISettingsPage> {
               SizedBox(height: 16),
               Text(
                 'We recommend using local processing for sensitive tasks.',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(fontWeight: FontWeight.w500),
               ),
             ],
           ),

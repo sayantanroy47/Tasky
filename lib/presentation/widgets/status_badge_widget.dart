@@ -122,25 +122,25 @@ class StatusBadgeWidget extends StatelessWidget {
         return StatusConfig(
           icon: PhosphorIcons.clock(),
           label: 'Pending',
-          color: Color(0xFFFF9800), // Orange
+          color: const Color(0xFFFF9800), // Orange
         );
       case TaskStatus.inProgress:
         return StatusConfig(
           icon: PhosphorIcons.playCircle(),
           label: 'In Progress',
-          color: Color(0xFF2196F3), // Blue
+          color: const Color(0xFF2196F3), // Blue
         );
       case TaskStatus.completed:
         return StatusConfig(
           icon: PhosphorIcons.checkCircle(),
           label: 'Completed',
-          color: Color(0xFF4CAF50), // Green
+          color: const Color(0xFF4CAF50), // Green
         );
       case TaskStatus.cancelled:
         return StatusConfig(
           icon: PhosphorIcons.xCircle(),
           label: 'Cancelled',
-          color: Color(0xFFFF1744), // Red
+          color: const Color(0xFFFF1744), // Red
         );
     }
   }
@@ -261,25 +261,25 @@ class PriorityBadgeWidget extends StatelessWidget {
         return PriorityConfig(
           icon: PhosphorIcons.arrowDown(),
           label: 'Low',
-          color: Color(0xFF4CAF50), // Green
+          color: const Color(0xFF4CAF50), // Green
         );
       case TaskPriority.medium:
         return PriorityConfig(
           icon: PhosphorIcons.minus(),
           label: 'Medium',
-          color: Color(0xFF2196F3), // Blue
+          color: const Color(0xFF2196F3), // Blue
         );
       case TaskPriority.high:
         return PriorityConfig(
           icon: PhosphorIcons.arrowUp(),
           label: 'High',
-          color: Color(0xFFFF9100), // Orange
+          color: const Color(0xFFFF9100), // Orange
         );
       case TaskPriority.urgent:
         return PriorityConfig(
           icon: PhosphorIcons.warningCircle(),
           label: 'Urgent',
-          color: Color(0xFFFF1744), // Red
+          color: const Color(0xFFFF1744), // Red
         );
     }
   }
@@ -330,7 +330,7 @@ class CategoryBadgeWidget extends StatelessWidget {
               '#',
               style: TextStyle(
                 fontSize: fontSize ?? TypographyConstants.textXS,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w500,
                 color: categoryColor,
               ),
             ),
@@ -344,7 +344,7 @@ class CategoryBadgeWidget extends StatelessWidget {
             ),
             
             if (onRemove != null) ...[
-              SizedBox(width: 4),
+              const SizedBox(width: 4),
               GestureDetector(
                 onTap: onRemove,
                 child: Icon(

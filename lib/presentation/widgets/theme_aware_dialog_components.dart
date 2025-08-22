@@ -97,7 +97,7 @@ class ThemeAwareTaskDialog extends ConsumerWidget {
                   Text(
                     title!,
                     style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w500,
                       color: theme.colorScheme.onSurface,
                     ),
                   ),

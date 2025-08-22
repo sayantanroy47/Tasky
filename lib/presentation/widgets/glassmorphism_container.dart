@@ -187,8 +187,6 @@ class GlassmorphismContainer extends StatelessWidget {
         return 12.0;
       case GlassLevel.floating:
         return 16.0;
-      default:
-        return 10.0;
     }
   }
 
@@ -203,8 +201,6 @@ class GlassmorphismContainer extends StatelessWidget {
         return 0.2;
       case GlassLevel.floating:
         return 0.25;
-      default:
-        return 0.2;
     }
   }
 
@@ -219,8 +215,6 @@ class GlassmorphismContainer extends StatelessWidget {
         return 1.0;
       case GlassLevel.floating:
         return 1.2;
-      default:
-        return 1.0;
     }
   }
 

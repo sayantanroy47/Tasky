@@ -85,7 +85,7 @@ class _EnhancedSubTaskListState extends ConsumerState<EnhancedSubTaskList> {
             Text(
               'Subtasks',
               style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w500,
               ),
             ),
             const Spacer(),
@@ -101,7 +101,7 @@ class _EnhancedSubTaskListState extends ConsumerState<EnhancedSubTaskList> {
                   ),
                 );
               },
-              loading: () => SizedBox(),
+              loading: () => const SizedBox(),
               error: (_, __) => const SizedBox(),
             ),
             
@@ -119,8 +119,8 @@ class _EnhancedSubTaskListState extends ConsumerState<EnhancedSubTaskList> {
                     child: Row(
                       children: [
                         Icon(PhosphorIcons.checkCircle()),
-                        SizedBox(width: 8),
-                        Text('Complete All'),
+                        const SizedBox(width: 8),
+                        const Text('Complete All'),
                       ],
                     ),
                   ),
@@ -129,8 +129,8 @@ class _EnhancedSubTaskListState extends ConsumerState<EnhancedSubTaskList> {
                     child: Row(
                       children: [
                         Icon(PhosphorIcons.circle()),
-                        SizedBox(width: 8),
-                        Text('Uncomplete All'),
+                        const SizedBox(width: 8),
+                        const Text('Uncomplete All'),
                       ],
                     ),
                   ),
@@ -139,8 +139,8 @@ class _EnhancedSubTaskListState extends ConsumerState<EnhancedSubTaskList> {
                     child: Row(
                       children: [
                         Icon(PhosphorIcons.trash(), color: Colors.red),
-                        SizedBox(width: 8),
-                        Text('Delete All', style: TextStyle(color: Colors.red)),
+                        const SizedBox(width: 8),
+                        const Text('Delete All', style: TextStyle(color: Colors.red)),
                       ],
                     ),
                   ),

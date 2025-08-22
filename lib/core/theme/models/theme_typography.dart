@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import '../local_fonts.dart';
 
 /// Typography system for themes
 class ThemeTypography {
@@ -87,7 +87,7 @@ class ThemeTypography {
     double baseLineHeight = 1.4,
     required Color textColor,
   }) {
-    // final baseStyle = GoogleFonts.getFont(
+    // final baseStyle = LocalFonts.getFont(
     //   fontFamily,
     //   fontSize: baseSize,
     //   fontWeight: baseFontWeight,
@@ -113,21 +113,21 @@ class ThemeTypography {
       baseLineHeight: baseLineHeight,
 
       // Display styles
-      displayLarge: GoogleFonts.getFont(
+      displayLarge: LocalFonts.getFont(
         displayFont,
         fontSize: sizes['displayLarge']!,
         fontWeight: FontWeight.w300,
         letterSpacing: -1.5,
         color: textColor,
       ),
-      displayMedium: GoogleFonts.getFont(
+      displayMedium: LocalFonts.getFont(
         displayFont,
         fontSize: sizes['displayMedium']!,
         fontWeight: FontWeight.w300,
         letterSpacing: -0.5,
         color: textColor,
       ),
-      displaySmall: GoogleFonts.getFont(
+      displaySmall: LocalFonts.getFont(
         displayFont,
         fontSize: sizes['displaySmall']!,
         fontWeight: FontWeight.w400,
@@ -136,21 +136,21 @@ class ThemeTypography {
       ),
 
       // Headline styles
-      headlineLarge: GoogleFonts.getFont(
+      headlineLarge: LocalFonts.getFont(
         fontFamily,
         fontSize: sizes['headlineLarge']!,
         fontWeight: FontWeight.w400,
         letterSpacing: 0.0,
         color: textColor,
       ),
-      headlineMedium: GoogleFonts.getFont(
+      headlineMedium: LocalFonts.getFont(
         fontFamily,
         fontSize: sizes['headlineMedium']!,
         fontWeight: FontWeight.w400,
         letterSpacing: 0.25,
         color: textColor,
       ),
-      headlineSmall: GoogleFonts.getFont(
+      headlineSmall: LocalFonts.getFont(
         fontFamily,
         fontSize: sizes['headlineSmall']!,
         fontWeight: FontWeight.w400,
@@ -159,21 +159,21 @@ class ThemeTypography {
       ),
 
       // Title styles
-      titleLarge: GoogleFonts.getFont(
+      titleLarge: LocalFonts.getFont(
         fontFamily,
         fontSize: sizes['titleLarge']!,
         fontWeight: FontWeight.w500,
         letterSpacing: 0.0,
         color: textColor,
       ),
-      titleMedium: GoogleFonts.getFont(
+      titleMedium: LocalFonts.getFont(
         fontFamily,
         fontSize: sizes['titleMedium']!,
         fontWeight: FontWeight.w500,
         letterSpacing: 0.15,
         color: textColor,
       ),
-      titleSmall: GoogleFonts.getFont(
+      titleSmall: LocalFonts.getFont(
         fontFamily,
         fontSize: sizes['titleSmall']!,
         fontWeight: FontWeight.w500,
@@ -182,21 +182,21 @@ class ThemeTypography {
       ),
 
       // Body styles
-      bodyLarge: GoogleFonts.getFont(
+      bodyLarge: LocalFonts.getFont(
         fontFamily,
         fontSize: sizes['bodyLarge']!,
         fontWeight: FontWeight.w400,
         letterSpacing: 0.5,
         color: textColor,
       ),
-      bodyMedium: GoogleFonts.getFont(
+      bodyMedium: LocalFonts.getFont(
         fontFamily,
         fontSize: sizes['bodyMedium']!,
         fontWeight: FontWeight.w400,
         letterSpacing: 0.25,
         color: textColor,
       ),
-      bodySmall: GoogleFonts.getFont(
+      bodySmall: LocalFonts.getFont(
         fontFamily,
         fontSize: sizes['bodySmall']!,
         fontWeight: FontWeight.w400,
@@ -205,21 +205,21 @@ class ThemeTypography {
       ),
 
       // Label styles
-      labelLarge: GoogleFonts.getFont(
+      labelLarge: LocalFonts.getFont(
         fontFamily,
         fontSize: sizes['labelLarge']!,
         fontWeight: FontWeight.w500,
         letterSpacing: 1.25,
         color: textColor,
       ),
-      labelMedium: GoogleFonts.getFont(
+      labelMedium: LocalFonts.getFont(
         fontFamily,
         fontSize: sizes['labelMedium']!,
         fontWeight: FontWeight.w500,
         letterSpacing: 1.5,
         color: textColor,
       ),
-      labelSmall: GoogleFonts.getFont(
+      labelSmall: LocalFonts.getFont(
         fontFamily,
         fontSize: sizes['labelSmall']!,
         fontWeight: FontWeight.w500,
@@ -228,63 +228,63 @@ class ThemeTypography {
       ),
 
       // Custom app styles
-      taskTitle: GoogleFonts.getFont(
+      taskTitle: LocalFonts.getFont(
         fontFamily,
         fontSize: sizes['titleMedium']!,
         fontWeight: FontWeight.w600,
         letterSpacing: 0.1,
         color: textColor,
       ),
-      taskDescription: GoogleFonts.getFont(
+      taskDescription: LocalFonts.getFont(
         fontFamily,
         fontSize: sizes['bodySmall']!,
         fontWeight: FontWeight.w400,
         letterSpacing: 0.25,
         color: textColor.withValues(alpha: 0.8),
       ),
-      taskMeta: GoogleFonts.getFont(
+      taskMeta: LocalFonts.getFont(
         monoFont,
         fontSize: sizes['labelSmall']!,
         fontWeight: FontWeight.w400,
         letterSpacing: 0.5,
         color: textColor.withValues(alpha: 0.6),
       ),
-      cardTitle: GoogleFonts.getFont(
+      cardTitle: LocalFonts.getFont(
         fontFamily,
         fontSize: sizes['titleSmall']!,
         fontWeight: FontWeight.w500,
         letterSpacing: 0.1,
         color: textColor,
       ),
-      cardSubtitle: GoogleFonts.getFont(
+      cardSubtitle: LocalFonts.getFont(
         fontFamily,
         fontSize: sizes['bodySmall']!,
         fontWeight: FontWeight.w400,
         letterSpacing: 0.25,
         color: textColor.withValues(alpha: 0.8),
       ),
-      buttonText: GoogleFonts.getFont(
+      buttonText: LocalFonts.getFont(
         fontFamily,
         fontSize: sizes['labelLarge']!,
         fontWeight: FontWeight.w500,
         letterSpacing: 1.0,
         color: textColor,
       ),
-      inputText: GoogleFonts.getFont(
+      inputText: LocalFonts.getFont(
         fontFamily,
         fontSize: sizes['bodyLarge']!,
         fontWeight: FontWeight.w400,
         letterSpacing: 0.25,
         color: textColor,
       ),
-      appBarTitle: GoogleFonts.getFont(
+      appBarTitle: LocalFonts.getFont(
         fontFamily,
         fontSize: sizes['titleLarge']!,
         fontWeight: FontWeight.w500,
         letterSpacing: 0.15,
         color: textColor,
       ),
-      navigationLabel: GoogleFonts.getFont(
+      navigationLabel: LocalFonts.getFont(
         fontFamily,
         fontSize: sizes['labelMedium']!,
         fontWeight: FontWeight.w500,

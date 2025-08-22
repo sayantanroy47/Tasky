@@ -138,7 +138,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
             TextButton.icon(
               onPressed: _isLoading ? null : _saveTask,
               icon: _isLoading 
-                ? SizedBox(width: 16,
+                ? const SizedBox(width: 16,
                     height: 16,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
@@ -178,7 +178,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
                     decoration: InputDecoration(
                       labelText: 'Task Title *',
                       hintText: 'Enter a clear, actionable task title...',
-                      border: OutlineInputBorder(),
+                      border: const OutlineInputBorder(),
                       prefixIcon: Icon(PhosphorIcons.checkSquare()),
                       helperText: 'Required field',
                     ),
@@ -195,7 +195,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
                     },
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 
                 // Description field
                 SizedBox(
@@ -205,7 +205,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
                     decoration: InputDecoration(
                       labelText: 'Description',
                       hintText: 'Add details, context, or notes about this task...',
-                      border: OutlineInputBorder(),
+                      border: const OutlineInputBorder(),
                       prefixIcon: Icon(PhosphorIcons.fileText()),
                       alignLabelWithHint: true,
                     ),
@@ -243,7 +243,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
                     decoration: InputDecoration(
                       labelText: 'Additional Notes',
                       hintText: 'Any extra information or reminders...',
-                      border: OutlineInputBorder(),
+                      border: const OutlineInputBorder(),
                       prefixIcon: Icon(PhosphorIcons.note()),
                       alignLabelWithHint: true,
                     ),
@@ -298,7 +298,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       textStyle: TypographyConstants.getStyle(
                         fontSize: TypographyConstants.buttonText,
-                        fontWeight: TypographyConstants.semiBold,
+                        fontWeight: TypographyConstants.medium,
                       ),
                     ),
                   ),
@@ -338,17 +338,17 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
           'Priority Level',
           style: TypographyConstants.getStyle(
             fontSize: TypographyConstants.titleMedium,
-            fontWeight: TypographyConstants.semiBold,
+            fontWeight: TypographyConstants.medium,
             color: theme.colorScheme.onSurface,
           ),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         SizedBox(
           width: double.infinity,
           child: DropdownButtonFormField<TaskPriority>(
-            value: _selectedPriority,
+            initialValue: _selectedPriority,
             decoration: InputDecoration(
-              border: OutlineInputBorder(),
+              border: const OutlineInputBorder(),
               prefixIcon: Icon(PhosphorIcons.flag()),
             ),
             items: priorities.map((priority) {
@@ -388,11 +388,11 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
           'Project',
           style: TypographyConstants.getStyle(
             fontSize: TypographyConstants.titleMedium,
-            fontWeight: TypographyConstants.semiBold,
+            fontWeight: TypographyConstants.medium,
             color: theme.colorScheme.onSurface,
           ),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         Consumer(
           builder: (context, ref, child) {
             final projects = ref.watch(projectsProvider);
@@ -401,9 +401,9 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
                 return SizedBox(
                   width: double.infinity,
                   child: DropdownButtonFormField<String>(
-                    value: _selectedProjectId,
+                    initialValue: _selectedProjectId,
                     decoration: InputDecoration(
-                      border: OutlineInputBorder(),
+                      border: const OutlineInputBorder(),
                       prefixIcon: Icon(PhosphorIcons.folder()),
                       hintText: 'Select a project (optional)',
                     ),
@@ -468,7 +468,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
           'Due Date & Time',
           style: TypographyConstants.getStyle(
             fontSize: TypographyConstants.titleMedium,
-            fontWeight: TypographyConstants.semiBold,
+            fontWeight: TypographyConstants.medium,
             color: theme.colorScheme.onSurface,
           ),
         ),
@@ -561,11 +561,11 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
           'Tags',
           style: TypographyConstants.getStyle(
             fontSize: TypographyConstants.titleMedium,
-            fontWeight: TypographyConstants.semiBold,
+            fontWeight: TypographyConstants.medium,
             color: theme.colorScheme.onSurface,
           ),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         SizedBox(
           width: double.infinity,
           child: TextFormField(
@@ -608,7 +608,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
           ),
         ),
         if (_tags.isNotEmpty) ...[
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           SizedBox(
             width: double.infinity,
             child: Wrap(
@@ -640,17 +640,17 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
           'Recurring Task',
           style: TypographyConstants.getStyle(
             fontSize: TypographyConstants.titleMedium,
-            fontWeight: TypographyConstants.semiBold,
+            fontWeight: TypographyConstants.medium,
             color: theme.colorScheme.onSurface,
           ),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         SizedBox(
           width: double.infinity,
           child: DropdownButtonFormField<RecurrenceType?>(
-            value: _recurrencePattern?.type,
+            initialValue: _recurrencePattern?.type,
             decoration: InputDecoration(
-              border: OutlineInputBorder(),
+              border: const OutlineInputBorder(),
               prefixIcon: Icon(PhosphorIcons.repeat()),
               hintText: 'Select recurrence (optional)',
             ),

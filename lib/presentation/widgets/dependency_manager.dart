@@ -98,7 +98,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager>
           color: theme.colorScheme.primary,
           size: 24,
         ),
-        SizedBox(width: 12),
+        const SizedBox(width: 12),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -399,7 +399,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager>
                   color: _getPriorityColor(task.priority),
                   size: 14,
                 ),
-                SizedBox(width: 4),
+                const SizedBox(width: 4),
                 Text(
                   task.priority.name.toUpperCase(),
                   style: theme.textTheme.labelSmall,
@@ -420,7 +420,10 @@ class _DependencyManagerState extends ConsumerState<DependencyManager>
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            StatusBadgeWidget(status: task.status),
+            StatusBadgeWidget(
+              status: task.status,
+              compact: true,
+            ),
             IconButton(
               onPressed: () => _removeDependency(task.id, isPrerequisite),
               icon: Icon(PhosphorIcons.minusCircle()),
@@ -468,7 +471,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager>
                   color: isCurrentTask 
                       ? theme.colorScheme.onPrimary
                       : theme.colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ),
@@ -501,7 +504,10 @@ class _DependencyManagerState extends ConsumerState<DependencyManager>
                 ],
               ],
             ),
-            trailing: StatusBadgeWidget(status: task.status),
+            trailing: StatusBadgeWidget(
+              status: task.status,
+              compact: true,
+            ),
             onTap: () => _navigateToTask(task.id),
           ),
         );
@@ -548,7 +554,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager>
             value,
             style: theme.textTheme.titleLarge?.copyWith(
               color: color,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w500,
             ),
           ),
           Text(
@@ -596,7 +602,10 @@ class _DependencyManagerState extends ConsumerState<DependencyManager>
               ),
             ],
           ),
-          trailing: StatusBadgeWidget(status: task.status),
+          trailing: StatusBadgeWidget(
+            status: task.status,
+            compact: true,
+          ),
           onTap: () => _navigateToTask(task.id),
         ),
       )).toList(),
@@ -901,7 +910,7 @@ class SimpleDependencyWidget extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         canCompleteAsync.when(
-          loading: () => SizedBox(width: 16,
+          loading: () => const SizedBox(width: 16,
             height: 16,
             child: CircularProgressIndicator(strokeWidth: 2),
           ),

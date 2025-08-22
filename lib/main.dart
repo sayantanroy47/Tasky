@@ -17,6 +17,7 @@ import 'services/audio/audio_file_manager.dart';
 import 'services/audio/lazy_audio_playback_service.dart';
 import 'services/background/simple_background_service.dart';
 import 'services/performance_service.dart';
+import 'services/location/location_service_impl.dart';
 import 'core/services/lazy_service_manager.dart';
 
 /// Global navigator key for accessing context from services
@@ -133,6 +134,27 @@ Future<void> _registerServices() async {
       return LazyAudioPlaybackService.instance;
     },
   );
+  
+  // Location services (medium priority - needed for location-based tasks)
+  serviceManager.registerService<LocationServiceImpl>(
+    serviceId: ServiceIds.locationService,
+    priority: ServicePriority.medium,
+    initializer: () async {
+      final service = LocationServiceImpl.getInstance();
+      // Pre-initialize location permissions if possible
+      try {
+        await service.checkPermission();
+      } catch (e) {
+        if (kDebugMode) {
+          debugPrint('Location permission check failed during initialization: $e');
+        }
+      }
+      return service as LocationServiceImpl;
+    },
+  );
+  
+  // Note: GeofencingManager initialization is deferred to avoid circular dependencies
+  // with Riverpod providers. It will be initialized when first accessed via providers.
 }
 
 /// Initialize background services without blocking startup

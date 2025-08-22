@@ -453,7 +453,7 @@ class _UltraModernThemeCardState extends State<UltraModernThemeCard>
                     BoxShadow(
                       color: colors.primary.withValues(alpha: 0.3),
                       blurRadius: 8 + (_hoverAnimation.value * 4),
-                      offset: Offset(0, 2),
+                      offset: const Offset(0, 2),
                     ),
                   ],
                 ),

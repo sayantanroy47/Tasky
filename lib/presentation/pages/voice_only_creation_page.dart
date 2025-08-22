@@ -11,6 +11,7 @@ import '../widgets/theme_background_widget.dart';
 import '../../core/design_system/design_tokens.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../core/theme/material3/motion_system.dart';
+import 'task_detail_page.dart';
 
 /// Ultra-modern full-screen voice-only task creation page
 class VoiceOnlyCreationPage extends ConsumerStatefulWidget {
@@ -82,7 +83,8 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
         backgroundColor: Colors.transparent,
         extendBodyBehindAppBar: true,
         body: Stack(
-          children: [// Main content - full screen
+          children: [
+            // Main content - full screen
             SingleChildScrollView(
               padding: EdgeInsets.only(
                 top: MediaQuery.of(context).padding.top + 60, // Account for status bar + floating button
@@ -94,30 +96,31 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
                 opacity: _fadeAnimation,
                 child: Column(
                   children: [
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     
                     // Title Section
                     _buildTitleSection(context, theme),
                     
-                    SizedBox(height: 32),
+                    const SizedBox(height: 32),
                     
                     // Priority Section
                     _buildPrioritySection(context, theme),
                     
-                    SizedBox(height: 32),
+                    const SizedBox(height: 32),
                     
                     // Recording Section - Main focal point
                     _buildRecordingSection(context, theme),
                     
-                    SizedBox(height: 32),
+                    const SizedBox(height: 32),
                     
                     // Action Buttons
                     if (_hasRecording)
                       _buildActionButtons(context, theme),
                     
-                    SizedBox(height: 100), // Bottom padding
+                    const SizedBox(height: 100), // Bottom padding
                   ],
                 ),
+              ),
             ),
             
             // Floating navigation buttons
@@ -134,8 +137,10 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
                     BoxShadow(
                       color: Colors.black.withValues(alpha: 0.1),
                       blurRadius: 8,
-                      offset: Offset(0, 2),
-                    )]),
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
                 child: Material(
                   color: Colors.transparent,
                   child: InkWell(
@@ -152,8 +157,7 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
             ),
             
             // Floating clear button (only show if has recording)
-            if (_hasRecording)
-              Positioned(
+            _hasRecording ? Positioned(
                 top: MediaQuery.of(context).padding.top + 16,
                 right: 16,
                 child: Container(
@@ -167,7 +171,9 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
                         color: Colors.black.withValues(alpha: 0.1),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
-                      )]),
+                      ),
+                    ],
+                  ),
                   child: Material(
                     color: Colors.transparent,
                     child: InkWell(
@@ -181,7 +187,9 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
                     ),
                   ),
                 ),
-              )]),
+              ) : const SizedBox.shrink(),
+          ],
+        ),
       ),
     );
   }
@@ -193,21 +201,24 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
       borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [Row(
+        children: [
+          Row(
             children: [
               Icon(
                 PhosphorIcons.chatCircle(),
                 size: 24,
                 color: theme.colorScheme.primary,
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text(
                 'Voice Note',
                 style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: TypographyConstants.medium,
                 ),
-              )]),
-          SizedBox(height: 12),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
           TextFormField(
             controller: _titleController,
             decoration: InputDecoration(
@@ -218,7 +229,9 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
             ),
             enabled: !_isProcessing && !_isRecording,
             textCapitalization: TextCapitalization.sentences,
-          )]),
+          ),
+        ],
+      ),
     );
   }
   
@@ -229,21 +242,24 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
       borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [Row(
+        children: [
+          Row(
             children: [
               Icon(
                 PhosphorIcons.flag(),
                 size: 20,
                 color: theme.colorScheme.primary,
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text(
                 'Priority',
                 style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: TypographyConstants.medium,
                 ),
-              )]),
-          SizedBox(height: 12),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
           Row(
             children: TaskPriority.values.map((priority) {
               final isSelected = _priority == priority;
@@ -279,21 +295,25 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
                               color: isSelected ? color : theme.colorScheme.onSurfaceVariant,
                               size: 20,
                             ),
-                            SizedBox(height: 4),
+                            const SizedBox(height: 4),
                             Text(
                               priority.name.toUpperCase(),
                               style: theme.textTheme.bodySmall?.copyWith(
-                                fontWeight: FontWeight.bold,
+                                fontWeight: TypographyConstants.medium,
                                 color: isSelected ? color : theme.colorScheme.onSurfaceVariant,
                               ),
-                            )]),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
               );
             }).toList(),
-          )]),
+          ),
+        ],
+      ),
     );
   }
   
@@ -303,11 +323,12 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
       padding: const EdgeInsets.all(32),
       borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
       child: Column(
-        children: [// Status text
+        children: [
+          // Status text
           Text(
             _getStatusText(),
             style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
+              fontWeight: TypographyConstants.medium,
               color: _isRecording
                   ? theme.colorScheme.error
                   : _hasRecording
@@ -317,7 +338,7 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
             textAlign: TextAlign.center,
           ),
           
-          SizedBox(height: 32),
+          const SizedBox(height: 32),
           
           // Recording button
           ScaleTransition(
@@ -335,7 +356,9 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
                     color: _getRecordingButtonColors(theme)[0].withValues(alpha: 0.3),
                     blurRadius: 20,
                     spreadRadius: 5,
-                  )]),
+                  ),
+                ],
+              ),
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
@@ -343,7 +366,7 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
                   onTap: _isProcessing ? null : _toggleRecording,
                   child: Center(
                     child: _isProcessing 
-                        ? SizedBox(width: 32,
+                        ? const SizedBox(width: 32,
                             height: 32,
                             child: CircularProgressIndicator(
                               color: Colors.white,
@@ -361,14 +384,14 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
             ),
           ),
           
-          SizedBox(height: 24),
+          const SizedBox(height: 24),
           
           // Duration display
           Text(
             _formatDuration(_recordingDuration),
             style: theme.textTheme.headlineSmall?.copyWith(
               fontFamily: 'Courier',
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w500,
               color: _isRecording
                   ? theme.colorScheme.error
                   : theme.colorScheme.primary,
@@ -376,7 +399,7 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
           ),
           
           if (_hasRecording && !_isRecording) ...[ 
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -384,29 +407,36 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
                   child: OutlinedButton.icon(
                     onPressed: _deleteRecording,
                     icon: PhosphorIcon(PhosphorIcons.trash(), size: 18),
-                    label: Text('Delete'),
+                    label: const Text('Delete'),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: theme.colorScheme.error,
                     ),
                   ),
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: _playRecording,
                     icon: PhosphorIcon(PhosphorIcons.play(), size: 18),
-                    label: const Text(""), ))]),
-          ]]),
+                    label: const Text('Play'),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ],
+      ),
     );
   }
   
   Widget _buildActionButtons(BuildContext context, ThemeData theme) {
     return Row(
-      children: [Expanded(
+      children: [
+        Expanded(
           child: OutlinedButton.icon(
             onPressed: () => Navigator.of(context).pop(),
             icon: PhosphorIcon(PhosphorIcons.x()),
-            label: Text('Cancel'),
+            label: const Text('Cancel'),
             style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
@@ -415,13 +445,13 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
             ),
           ),
         ),
-        SizedBox(width: 16),
+        const SizedBox(width: 16),
         Expanded(
           flex: 2,
           child: ElevatedButton.icon(
             onPressed: _canCreateTask() && !_isProcessing ? _createVoiceTask : null,
             icon: _isProcessing
-                ? SizedBox(width: 16,
+                ? const SizedBox(width: 16,
                     height: 16,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
@@ -437,7 +467,9 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
               ),
             ),
           ),
-        )]);
+        ),
+      ],
+    );
   }
 
   Future<void> _toggleRecording() async {
@@ -460,7 +492,7 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
 
       _pulseController.repeat(reverse: true);
 
-      _recordingTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+      _recordingTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
         if (mounted) {
           setState(() {
             _recordingDuration = Duration(seconds: timer.tick);
@@ -541,9 +573,20 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
       await ref.read(taskOperationsProvider).createTask(task);
 
       if (mounted) {
-        Navigator.of(context).pop();
+        // REQ 7: Guide to task edit page after recording (consistent UX flow)
+        Navigator.of(context).pop(); // Pop the voice creation page
+        
+        // Navigate to task detail page for editing
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => TaskDetailPage(taskId: task.id),
+          ),
+        );
+        
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Voice note created successfully!'),
+          const SnackBar(
+            content: Text('Voice note created! You can now add more details.'),
             behavior: SnackBarBehavior.floating,
           ),
         );

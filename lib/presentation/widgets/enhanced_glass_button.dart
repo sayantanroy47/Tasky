@@ -256,7 +256,7 @@ class _EnhancedGlassButtonState extends State<EnhancedGlassButton>
                       pressedGlassTint,
                       _glassIntensityAnimation.value - 1.0,
                     )?.withValues(alpha: 
-                      (baseGlassTint.opacity * _glassIntensityAnimation.value)
+                      (baseGlassTint.a * _glassIntensityAnimation.value)
                           .clamp(0.0, 1.0),
                     ),
                     child: Container(

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/legacy.dart' as legacy;
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
@@ -27,7 +26,7 @@ class WeekPreviewPreferences {
 }
 
 /// Provider for week preview preferences
-final weekPreviewPreferencesProvider = legacy.StateProvider<WeekPreviewPreferences>((ref) {
+final weekPreviewPreferencesProvider = StateProvider<WeekPreviewPreferences>((ref) {
   return const WeekPreviewPreferences();
 });
 
@@ -54,10 +53,10 @@ class WeekPreviewWidget extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [_buildHeader(context, theme, preferences),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           tasksAsync.when(
             data: (tasks) => _buildWeekView(context, theme, tasks, preferences),
-            loading: () => Center(child: Padding(
+            loading: () => const Center(child: Padding(
                 padding: EdgeInsets.all(16),
                 child: CircularProgressIndicator(),
               ),
@@ -79,15 +78,15 @@ class WeekPreviewWidget extends ConsumerWidget {
           color: theme.colorScheme.primary,
           size: 20,
         ),
-        SizedBox(width: 8),
+        const SizedBox(width: 8),
         Text(
           'Week Preview',
           style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w500,
             color: theme.colorScheme.onSurface,
           ),
         ),
-        Spacer(),
+        const Spacer(),
         if (!preferences.showCompactView)
           Consumer(
             builder: (context, ref, child) {
@@ -95,7 +94,7 @@ class WeekPreviewWidget extends ConsumerWidget {
                 icon: PhosphorIcon(PhosphorIcons.gear(), size: 16),
                 onPressed: () => _showPreferencesDialog(context, ref),
                 tooltip: 'Customize week preview',
-                constraints: BoxConstraints(minWidth: 32, minHeight: 32),
+                constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
                 padding: EdgeInsets.zero,
               );
             },
@@ -146,19 +145,19 @@ class WeekPreviewWidget extends ConsumerWidget {
                   children: [Text(
                       _getDayName(date).substring(0, 1),
                       style: theme.textTheme.bodySmall?.copyWith(
-                        fontWeight: isToday ? FontWeight.bold : FontWeight.w500,
+                        fontWeight: isToday ? FontWeight.w500 : FontWeight.w500,
                         color: isToday ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     Text(
                       '${date.day}',
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
+                        fontWeight: isToday ? FontWeight.w500 : FontWeight.normal,
                         color: isToday ? theme.colorScheme.primary : theme.colorScheme.onSurface,
                       ),
                     ),
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     if (preferences.showTaskCount)
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
@@ -171,7 +170,7 @@ class WeekPreviewWidget extends ConsumerWidget {
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: Colors.white,
                             fontSize: TypographyConstants.labelSmall,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       )]),
@@ -215,19 +214,19 @@ class WeekPreviewWidget extends ConsumerWidget {
                     Text(
                       _getDayName(date),
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        fontWeight: isToday ? FontWeight.bold : FontWeight.w500,
+                        fontWeight: isToday ? FontWeight.w500 : FontWeight.w500,
                         color: isToday ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
                     Text(
                       '${date.day}',
                       style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w500,
                         color: isToday ? theme.colorScheme.primary : theme.colorScheme.onSurface,
                       ),
                     )]),
               ),
-              SizedBox(width: 12),
+              const SizedBox(width: 12),
               
               // Task summary
               Expanded(
@@ -242,7 +241,7 @@ class WeekPreviewWidget extends ConsumerWidget {
                             size: 14,
                             color: theme.colorScheme.onSurfaceVariant,
                           ),
-                          SizedBox(width: 4),
+                          const SizedBox(width: 4),
                           Text(
                             '${dayTasks.length} ${dayTasks.length == 1 ? 'task' : 'tasks'}',
                             style: theme.textTheme.bodySmall?.copyWith(
@@ -268,7 +267,7 @@ class WeekPreviewWidget extends ConsumerWidget {
                 icon: PhosphorIcon(PhosphorIcons.caretRight(), size: 16),
                 onPressed: () => _showDayTasks(context, date, dayTasks),
                 tooltip: 'View day tasks',
-                constraints: BoxConstraints(minWidth: 32, minHeight: 32),
+                constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
               )]),
         );
       }),
@@ -304,7 +303,7 @@ class WeekPreviewWidget extends ConsumerWidget {
           '$label:$count',
           style: TextStyle(
             fontSize: TypographyConstants.labelSmall,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w500,
             color: color,
           ),
         ),
@@ -326,12 +325,12 @@ class WeekPreviewWidget extends ConsumerWidget {
             size: 12,
             color: theme.colorScheme.error,
           ),
-          SizedBox(width: 4),
+          const SizedBox(width: 4),
           Text(
             '$overdueTasks overdue',
             style: TextStyle(
               fontSize: TypographyConstants.labelSmall,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w500,
               color: theme.colorScheme.error,
             ),
           )]);
@@ -380,8 +379,8 @@ class WeekPreviewWidget extends ConsumerWidget {
       final taskDay = DateTime(taskDate.year, taskDate.month, taskDate.day);
       
       // Only include tasks within this week
-      if (taskDay.isAfter(startOfWeek.subtract(Duration(days: 1))) && 
-          taskDay.isBefore(startOfWeek.add(Duration(days: 7)))) {
+      if (taskDay.isAfter(startOfWeek.subtract(const Duration(days: 1))) && 
+          taskDay.isBefore(startOfWeek.add(const Duration(days: 7)))) {
         weekData[taskDay]?.add(task);
       }
     }
@@ -395,7 +394,7 @@ class WeekPreviewWidget extends ConsumerWidget {
       builder: (context) => AlertDialog(
         title: Text('${_getDayName(date)}, ${date.day}'),
         content: tasks.isEmpty 
-            ? Text('No tasks for this day')
+            ? const Text('No tasks for this day')
             : SizedBox(
                 width: double.maxFinite,
                 child: Column(
@@ -427,7 +426,7 @@ class WeekPreviewWidget extends ConsumerWidget {
                                 : _getPriorityColor(task.priority, theme),
                             size: 20,
                           ),
-                          SizedBox(width: 12),
+                          const SizedBox(width: 12),
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -435,7 +434,7 @@ class WeekPreviewWidget extends ConsumerWidget {
                                 Text(
                                   task.title,
                                   style: TextStyle(
-                                    fontWeight: FontWeight.w600,
+                                    fontWeight: FontWeight.w500,
                                     color: isCompleted 
                                         ? theme.colorScheme.onSurfaceVariant
                                         : theme.colorScheme.onSurface,
@@ -481,7 +480,7 @@ class WeekPreviewWidget extends ConsumerWidget {
                                 'DONE',
                                 style: TextStyle(
                                   fontSize: TypographyConstants.labelSmall,
-                                  fontWeight: FontWeight.bold,
+                                  fontWeight: FontWeight.w500,
                                   color: Colors.green.shade700,
                                 ),
                               ),
@@ -493,7 +492,9 @@ class WeekPreviewWidget extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text("")]),
+            child: const Text('Cancel'),
+          ),
+        ],
       ),
     );
   }
@@ -618,8 +619,9 @@ class _WeekPreviewPreferencesDialogState extends ConsumerState<_WeekPreviewPrefe
             ref.read(weekPreviewPreferencesProvider.notifier).state = preferences;
             Navigator.of(context).pop();
           },
-          child: const Text("Save"),
+          child: const Text('Save'),
         ),
+      ],
     );
   }
 }

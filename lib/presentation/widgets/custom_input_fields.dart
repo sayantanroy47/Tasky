@@ -273,7 +273,7 @@ class CustomDropdownField<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<T>(
-      value: value,
+      initialValue: value,
       items: items,
       onChanged: enabled ? onChanged : null,
       decoration: InputDecoration(
@@ -340,7 +340,7 @@ class _TagInputFieldState extends State<TagInputField> {
             widget.label!,
             style: Theme.of(context).textTheme.bodyMedium,
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
         ],
         
         // Tags display

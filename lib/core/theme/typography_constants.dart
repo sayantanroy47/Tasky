@@ -47,12 +47,11 @@ class TypographyConstants {
   static const double taskDescription = bodyMedium;   // 13.0  
   static const double taskMeta = bodySmall;           // 11.0
 
-  // Font weight constants
+  // Font weight constants - NO BOLD fonts per REQ 20 (maximum w500)
   static const FontWeight light = FontWeight.w300;
   static const FontWeight regular = FontWeight.w400;
   static const FontWeight medium = FontWeight.w500;
-  static const FontWeight semiBold = FontWeight.w600;
-  static const FontWeight bold = FontWeight.w700;
+  // semiBold and bold removed - maximum weight is medium (w500)
 
   // Line height constants
   static const double tightLineHeight = 1.2;
@@ -75,7 +74,7 @@ class TypographyConstants {
   static const double radiusRound = 999.0;     // Fully rounded components
 
   // Default radius for backwards compatibility
-  static const double radiusStandard = radiusSmall; // Default to 8px
+  static const double radiusStandard = radiusMedium; // Standard 12px button radius
 
   // Specialized radius for specific components - HIERARCHY-BASED
   static const double taskCardRadius = radiusSmall;        // 8px for cards

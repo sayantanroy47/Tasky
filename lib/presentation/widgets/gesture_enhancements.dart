@@ -237,7 +237,7 @@ class _MultiTouchGestureAreaState extends State<MultiTouchGestureArea> {
                   '${(_currentScale * 100).round()}%',
                   style: TextStyle(
                     fontSize: TypographyConstants.textSM,
-                    fontWeight: TypographyConstants.semiBold,
+                    fontWeight: TypographyConstants.medium,
                     color: theme.colorScheme.onSurface,
                   ),
                 ),

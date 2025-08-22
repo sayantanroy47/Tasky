@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/enhanced_ux_widgets.dart';
 import '../widgets/standardized_app_bar.dart';
 import '../../services/privacy_service.dart';
+import '../../core/accessibility/touch_target_validator.dart';
 import 'dart:convert';
 import '../widgets/glassmorphism_container.dart';
 import '../../core/design_system/design_tokens.dart';
@@ -63,7 +64,7 @@ class PrivacySettingsScreen extends ConsumerWidget {
                 children: [
                   SwitchListTile(
                     secondary: Icon(PhosphorIcons.minus()),
-                    title: Text('Data Minimization'),
+                    title: const Text('Data Minimization'),
                     subtitle: const Text('Collect only necessary data for app functionality'),
                     value: privacy.dataMinimization,
                     onChanged: (value) => _updatePrivacySetting(
@@ -264,7 +265,7 @@ class PrivacySettingsScreen extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  Divider(),
+                  const Divider(),
                   ListTile(
                     leading: Icon(PhosphorIcons.checkSquare()),
                     title: const Text('Task Retention'),
@@ -283,7 +284,7 @@ class PrivacySettingsScreen extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  Divider(),
+                  const Divider(),
                   SwitchListTile(
                     secondary: Icon(PhosphorIcons.trash()),
                     title: const Text('Auto-delete Completed Tasks'),
@@ -498,19 +499,29 @@ class PrivacySettingsScreen extends ConsumerWidget {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: VoiceDataRetention.values.map((retention) {
-            return RadioListTile<VoiceDataRetention>(
+            return ListTile(
+              leading: AccessibleRadio<VoiceDataRetention>(
+                value: retention,
+                groupValue: settings.voiceDataRetention,
+                onChanged: (value) {
+                  if (value != null) {
+                    _updatePrivacySetting(
+                      ref,
+                      settings.copyWith(voiceDataRetention: value),
+                    );
+                    Navigator.of(context).pop();
+                  }
+                },
+                semanticLabel: 'Voice retention: ${_getVoiceRetentionName(retention)}',
+              ),
               title: Text(_getVoiceRetentionName(retention)),
               subtitle: Text(_getVoiceRetentionDescription(retention)),
-              value: retention,
-              groupValue: settings.voiceDataRetention,
-              onChanged: (value) {
-                if (value != null) {
-                  _updatePrivacySetting(
-                    ref,
-                    settings.copyWith(voiceDataRetention: value),
-                  );
-                  Navigator.of(context).pop();
-                }
+              onTap: () {
+                _updatePrivacySetting(
+                  ref,
+                  settings.copyWith(voiceDataRetention: retention),
+                );
+                Navigator.of(context).pop();
               },
             );
           }).toList(),
@@ -541,15 +552,22 @@ class PrivacySettingsScreen extends ConsumerWidget {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: options.map((days) {
-            return RadioListTile<int>(
+            return ListTile(
+              leading: AccessibleRadio<int>(
+                value: days,
+                groupValue: currentDays,
+                onChanged: (value) {
+                  if (value != null) {
+                    onChanged(value);
+                    Navigator.of(context).pop();
+                  }
+                },
+                semanticLabel: 'Retention period: ${days == 0 ? 'Never delete' : '$days days'}',
+              ),
               title: Text(days == 0 ? 'Never delete' : '$days days'),
-              value: days,
-              groupValue: currentDays,
-              onChanged: (value) {
-                if (value != null) {
-                  onChanged(value);
-                  Navigator.of(context).pop();
-                }
+              onTap: () {
+                onChanged(days);
+                Navigator.of(context).pop();
               },
             );
           }).toList(),

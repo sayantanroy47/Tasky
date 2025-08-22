@@ -83,7 +83,7 @@ class _MessageTaskDialogState extends ConsumerState<MessageTaskDialog> {
         borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       ),
       child: Container(
-        constraints: BoxConstraints(maxWidth: 400, maxHeight: 600),
+        constraints: const BoxConstraints(maxWidth: 400, maxHeight: 600),
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -105,7 +105,7 @@ class _MessageTaskDialogState extends ConsumerState<MessageTaskDialog> {
                       Text(
                         'Create Task from Message',
                         style: theme.textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                       if (widget.sourceName != null || widget.sourceApp != null)
@@ -125,7 +125,7 @@ class _MessageTaskDialogState extends ConsumerState<MessageTaskDialog> {
               ],
             ),
             
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             
             // Original message preview
             Container(
@@ -143,7 +143,7 @@ class _MessageTaskDialogState extends ConsumerState<MessageTaskDialog> {
                   Text(
                     'Original Message:',
                     style: theme.textTheme.labelMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w500,
                       color: colorScheme.onSurfaceVariant,
                     ),
                   ),
@@ -208,17 +208,17 @@ class _MessageTaskDialogState extends ConsumerState<MessageTaskDialog> {
                       segments: [
                         ButtonSegment<TaskPriority>(
                           value: TaskPriority.low,
-                          label: Text('Low'),
+                          label: const Text('Low'),
                           icon: Icon(PhosphorIcons.arrowDown()),
                         ),
                         ButtonSegment<TaskPriority>(
                           value: TaskPriority.medium,
-                          label: Text('Medium'),
+                          label: const Text('Medium'),
                           icon: Icon(PhosphorIcons.minus()),
                         ),
                         ButtonSegment<TaskPriority>(
                           value: TaskPriority.high,
-                          label: Text('High'),
+                          label: const Text('High'),
                           icon: Icon(PhosphorIcons.arrowUp()),
                         ),
                       ],
@@ -230,7 +230,7 @@ class _MessageTaskDialogState extends ConsumerState<MessageTaskDialog> {
                       },
                     ),
                     
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     
                     // Due date picker
                     ListTile(
@@ -265,7 +265,7 @@ class _MessageTaskDialogState extends ConsumerState<MessageTaskDialog> {
                       },
                     ),
                     
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     
                     // Tags display
                     if (_tags.isNotEmpty)
@@ -290,7 +290,7 @@ class _MessageTaskDialogState extends ConsumerState<MessageTaskDialog> {
               ),
             ),
             
-            SizedBox(height: 24),
+            const SizedBox(height: 24),
             
             // Action buttons
             Row(

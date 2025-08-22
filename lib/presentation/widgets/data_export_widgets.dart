@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 // import 'package:file_picker/file_picker.dart';
 import '../../core/theme/typography_constants.dart';
+import '../../core/accessibility/touch_target_validator.dart';
 
 import '../../services/data_export/data_export_models.dart';
 import '../providers/data_export_providers.dart';
@@ -25,15 +26,21 @@ class ExportFormatSelector extends ConsumerWidget {
             ),
             const SizedBox(height: 12),
             ...ExportFormat.values.map((format) {
-              return RadioListTile<ExportFormat>(
+              return ListTile(
+                leading: AccessibleRadio<ExportFormat>(
+                  value: format,
+                  groupValue: selectedFormat,
+                  onChanged: (value) {
+                    if (value != null) {
+                      ref.read(selectedExportFormatProvider.notifier).state = value;
+                    }
+                  },
+                  semanticLabel: 'Export format: ${_getFormatDisplayName(format)}',
+                ),
                 title: Text(_getFormatDisplayName(format)),
                 subtitle: Text(_getFormatDescription(format)),
-                value: format,
-                groupValue: selectedFormat,
-                onChanged: (value) {
-                  if (value != null) {
-                    ref.read(selectedExportFormatProvider.notifier).state = value;
-                  }
+                onTap: () {
+                  ref.read(selectedExportFormatProvider.notifier).state = format;
                 },
               );
             }),
@@ -261,7 +268,7 @@ class FilePickerWidget extends ConsumerWidget {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             if (subtitle != null) ...[
-              SizedBox(height: 4),
+              const SizedBox(height: 4),
               Text(
                 subtitle!,
                 style: Theme.of(context).textTheme.bodyMedium,
@@ -418,7 +425,7 @@ class ImportValidationWidget extends ConsumerWidget {
 
             // Errors
             if (validationResult.errors.isNotEmpty) ...[
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               Text(
                 'Errors',
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
@@ -500,17 +507,17 @@ class BackupListWidget extends ConsumerWidget {
       data: (backups) {
         if (backups.isEmpty) {
           return Card(child: Padding(
-              padding: EdgeInsets.all(32.0),
+              padding: const EdgeInsets.all(32.0),
               child: Column(
                 children: [
                   Icon(PhosphorIcons.cloudArrowUp(), size: 48, color: Colors.grey),
-                  SizedBox(height: 16),
-                  Text(
+                  const SizedBox(height: 16),
+                  const Text(
                     'No backups found',
                     style: TextStyle(fontSize: 16, color: Colors.grey),
                   ),
-                  SizedBox(height: 8),
-                  Text(
+                  const SizedBox(height: 8),
+                  const Text(
                     'Create your first backup to get started',
                     style: TextStyle(color: Colors.grey),
                   ),
@@ -524,7 +531,7 @@ class BackupListWidget extends ConsumerWidget {
           children: backups.map((backup) => BackupListItem(backup: backup)).toList(),
         );
       },
-      loading: () => Center(child: CircularProgressIndicator()),
+      loading: () => const Center(child: CircularProgressIndicator()),
       error: (error, stack) => Card(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -594,7 +601,7 @@ class BackupListItem extends ConsumerWidget {
               value: 'restore',
               child: ListTile(
                 leading: Icon(PhosphorIcons.arrowClockwise()),
-                title: Text('Restore'),
+                title: const Text('Restore'),
                 contentPadding: EdgeInsets.zero,
               ),
             ),
@@ -602,7 +609,7 @@ class BackupListItem extends ConsumerWidget {
               value: 'delete',
               child: ListTile(
                 leading: Icon(PhosphorIcons.trash()),
-                title: Text('Delete'),
+                title: const Text('Delete'),
                 contentPadding: EdgeInsets.zero,
               ),
             ),

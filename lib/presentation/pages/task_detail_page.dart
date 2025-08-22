@@ -32,7 +32,7 @@ class TaskDetailPage extends ConsumerWidget {
     final allTasksAsync = ref.watch(tasksProvider);
     
     return allTasksAsync.when(
-      loading: () => ThemeBackgroundWidget(child: Scaffold(
+      loading: () => const ThemeBackgroundWidget(child: Scaffold(
           backgroundColor: Colors.transparent,
           extendBodyBehindAppBar: true,
           appBar: StandardizedAppBar(title: 'Task Details'),
@@ -72,7 +72,7 @@ class TaskDetailPage extends ConsumerWidget {
             child: Scaffold(
               backgroundColor: Colors.transparent,
               extendBodyBehindAppBar: true,
-              appBar: StandardizedAppBar(title: 'Task Details'),
+              appBar: const StandardizedAppBar(title: 'Task Details'),
               body: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -120,7 +120,7 @@ class _TaskDetailView extends ConsumerWidget {
                   value: 'duplicate',
                   child: ListTile(
                     leading: Icon(PhosphorIcons.copy()),
-                    title: Text('Duplicate'),
+                    title: const Text('Duplicate'),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
@@ -128,7 +128,7 @@ class _TaskDetailView extends ConsumerWidget {
                   value: 'share',
                   child: ListTile(
                     leading: Icon(PhosphorIcons.share()),
-                    title: Text('Share'),
+                    title: const Text('Share'),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
@@ -136,7 +136,7 @@ class _TaskDetailView extends ConsumerWidget {
                   value: 'delete',
                   child: ListTile(
                     leading: Icon(PhosphorIcons.trash(), color: Colors.red),
-                    title: Text('Delete', style: TextStyle(color: Colors.red)),
+                    title: const Text('Delete', style: TextStyle(color: Colors.red)),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
@@ -173,17 +173,27 @@ class _TaskDetailView extends ConsumerWidget {
                 showHeader: true,
               ),
               
-              // Attachments section
+              // Lazy-loaded sections for better performance
               const SizedBox(height: 24),
-              _buildAttachmentsSection(context, theme, task),
+              _LazySection(
+                title: 'Attachments',
+                icon: PhosphorIcons.paperclip(),
+                builder: () => _buildAttachmentsSection(context, theme, task),
+              ),
               
-              // History section
               const SizedBox(height: 24),
-              _buildHistorySection(context, theme, task),
+              _LazySection(
+                title: 'Activity History',
+                icon: PhosphorIcons.clockCounterClockwise(),
+                builder: () => _buildHistorySection(context, theme, task),
+              ),
               
-              // Collaboration section
               const SizedBox(height: 24),
-              _buildCollaborationSection(context, theme, task, ref),
+              _LazySection(
+                title: 'Collaboration',
+                icon: PhosphorIcons.users(),
+                builder: () => _buildCollaborationSection(context, theme, task, ref),
+              ),
             ],
           ),
         ),
@@ -319,7 +329,7 @@ class _TaskDetailView extends ConsumerWidget {
                 color: theme.colorScheme.primary,
                 size: 20,
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text(
                 'Attachments',
                 style: theme.textTheme.titleMedium?.copyWith(
@@ -512,7 +522,7 @@ class _TaskDetailView extends ConsumerWidget {
                 color: theme.colorScheme.primary,
                 size: 20,
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text(
                 'Collaboration',
                 style: theme.textTheme.titleMedium?.copyWith(
@@ -639,7 +649,7 @@ class _TaskDetailView extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Invite Collaborator'),
+        title: const Text('Invite Collaborator'),
         content: TextField(
           decoration: InputDecoration(
             hintText: 'Enter email address...',
@@ -799,11 +809,11 @@ class _TaskHeader extends StatelessWidget {
                 child: Text(
                   task.title,
                   style: theme.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
-              SizedBox(width: 12),
+              const SizedBox(width: 12),
               StatusBadgeWidget(status: task.status),
             ],
           ),
@@ -922,7 +932,7 @@ class _VoiceTranscriptionDisplay extends StatelessWidget {
               Text(
                 'Voice Transcription',
                 style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                   color: theme.colorScheme.secondary,
                 ),
               ),
@@ -1029,11 +1039,11 @@ class _FullAudioPlayerState extends ConsumerState<_FullAudioPlayer> {
                 size: 20,
                 color: theme.colorScheme.tertiary,
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text(
                 'Voice Recording',
                 style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                   color: theme.colorScheme.tertiary,
                 ),
               ),
@@ -1151,7 +1161,7 @@ class _TaskDependencies extends ConsumerWidget {
               Text(
                 'Task Dependencies',
                 style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                   color: theme.colorScheme.secondary,
                 ),
               ),
@@ -1197,6 +1207,101 @@ class _TaskDependencies extends ConsumerWidget {
   }
 }
 
+/// Lazy loading widget that only builds content when expanded
+class _LazySection extends StatefulWidget {
+  final String title;
+  final IconData icon;
+  final Widget Function() builder;
 
+  const _LazySection({
+    required this.title,
+    required this.icon,
+    required this.builder,
+  });
 
+  @override
+  State<_LazySection> createState() => _LazySectionState();
+}
 
+class _LazySectionState extends State<_LazySection> {
+  bool _isExpanded = false;
+  Widget? _cachedContent;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
+    return GlassmorphismContainer(
+      level: GlassLevel.content,
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          // Expandable header
+          InkWell(
+            onTap: () {
+              setState(() {
+                _isExpanded = !_isExpanded;
+                if (_isExpanded && _cachedContent == null) {
+                  // Build content only when first expanded
+                  _cachedContent = widget.builder();
+                }
+              });
+            },
+            borderRadius: BorderRadius.circular(8),
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Row(
+                children: [
+                  Icon(
+                    widget.icon,
+                    color: theme.colorScheme.primary,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      widget.title,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  AnimatedRotation(
+                    turns: _isExpanded ? 0.25 : 0,
+                    duration: const Duration(milliseconds: 200),
+                    child: Icon(
+                      PhosphorIcons.caretRight(),
+                      size: 16,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          
+          // Expandable content
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            height: _isExpanded ? null : 0,
+            child: AnimatedOpacity(
+              opacity: _isExpanded ? 1.0 : 0.0,
+              duration: const Duration(milliseconds: 200),
+              child: _isExpanded && _cachedContent != null
+                  ? Column(
+                      children: [
+                        const SizedBox(height: 8),
+                        const Divider(),
+                        const SizedBox(height: 8),
+                        _cachedContent!,
+                      ],
+                    )
+                  : const SizedBox.shrink(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

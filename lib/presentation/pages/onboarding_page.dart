@@ -384,13 +384,13 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage>
               ? _getLocalizedString(l10n, step.title)
               : step.title,
           style: theme.textTheme.headlineMedium?.copyWith(
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w500,
             fontSize: config.isMobile ? 28 : 36,
           ),
           textAlign: TextAlign.center,
         ),
 
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
 
         // Subtitle
         Text(
@@ -500,7 +500,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage>
           // Previous button
           AnimatedOpacity(
             opacity: _currentPage > 0 ? 1.0 : 0.0,
-            duration: Duration(milliseconds: 200),
+            duration: const Duration(milliseconds: 200),
             child: GestureDetector(
               onTap: _currentPage > 0 ? _previousPage : null,
               child: GlassmorphismContainer(
@@ -561,7 +561,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage>
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: config.isMobile ? 14 : 16,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                     const SizedBox(width: 8),

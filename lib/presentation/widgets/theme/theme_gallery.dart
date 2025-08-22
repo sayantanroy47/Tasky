@@ -105,7 +105,7 @@ class _ThemeGalleryState extends ConsumerState<ThemeGallery>
         decoration: InputDecoration(
           hintText: 'Search themes...',
           prefixIcon: Icon(PhosphorIcons.magnifyingGlass()),
-          border: OutlineInputBorder(),
+          border: const OutlineInputBorder(),
         ),
         onChanged: (value) {
           setState(() {

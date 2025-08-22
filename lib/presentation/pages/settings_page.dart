@@ -15,7 +15,6 @@ import 'location_settings_page.dart';
 import 'nearby_tasks_page.dart';
 import 'notification_settings_page.dart';
 import 'notification_history_page.dart';
-import 'voice_demo_page.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../core/routing/app_router.dart';
 import '../../services/background/simple_background_service.dart';
@@ -62,7 +61,7 @@ class SettingsPage extends ConsumerWidget {
     return Scaffold(
       backgroundColor: Colors.transparent,
       extendBodyBehindAppBar: true, // Show phone status bar
-      appBar: StandardizedAppBar(title: 'Settings',
+      appBar: const StandardizedAppBar(title: 'Settings',
         forceBackButton: false, // Settings is main tab - no back button
         actions: [
           ThemeToggleButton(),
@@ -87,7 +86,7 @@ class SettingsPage extends ConsumerWidget {
                 Text(
                   'Navigation',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -123,7 +122,7 @@ class SettingsPage extends ConsumerWidget {
             ),
           ),
           
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           
           // Appearance section
           GlassmorphismContainer(
@@ -135,7 +134,7 @@ class SettingsPage extends ConsumerWidget {
                 Text(
                   'Appearance',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -157,7 +156,7 @@ class SettingsPage extends ConsumerWidget {
             ),
           ),
           
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           
           // AI & Voice section
           GlassmorphismContainer(
@@ -169,7 +168,7 @@ class SettingsPage extends ConsumerWidget {
                 Text(
                   'AI & Voice',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -187,25 +186,11 @@ class SettingsPage extends ConsumerWidget {
                     );
                   },
                 ),
-                
-                _buildListTile(
-                  context: context,
-                  leadingIcon: PhosphorIcons.microphone(),
-                  title: 'Voice Demo',
-                  subtitle: 'Test voice recognition features',
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const VoiceDemoPage(),
-                      ),
-                    );
-                  },
-                ),
               ],
             ),
           ),
           
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           
           // Location section
           GlassmorphismContainer(
@@ -217,7 +202,7 @@ class SettingsPage extends ConsumerWidget {
                 Text(
                   'Location',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -253,7 +238,7 @@ class SettingsPage extends ConsumerWidget {
             ),
           ),
           
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           
           // Tasks section
           GlassmorphismContainer(
@@ -265,7 +250,7 @@ class SettingsPage extends ConsumerWidget {
                   Text(
                     'Tasks',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -397,7 +382,7 @@ class SettingsPage extends ConsumerWidget {
             ),
           ),
           
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           
           // Data section
           GlassmorphismContainer(
@@ -409,7 +394,7 @@ class SettingsPage extends ConsumerWidget {
                 Text(
                   'Data',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -445,7 +430,7 @@ class SettingsPage extends ConsumerWidget {
             ),
           ),
           
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           
           // System section
           GlassmorphismContainer(
@@ -457,7 +442,7 @@ class SettingsPage extends ConsumerWidget {
                 Text(
                   'System',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -490,7 +475,7 @@ class SettingsPage extends ConsumerWidget {
                 Text(
                   'About',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -562,7 +547,7 @@ class SettingsPage extends ConsumerWidget {
                   : Colors.grey,
                 size: 20,
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text(
                 'Background Services',
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
@@ -610,7 +595,7 @@ class SettingsPage extends ConsumerWidget {
                 ),
               ],
             ),
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
           ],
           
           if (lastReminderCheck != null) ...[
@@ -718,7 +703,7 @@ class SettingsPage extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Platform Capabilities'),
+        title: const Text('Platform Capabilities'),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,

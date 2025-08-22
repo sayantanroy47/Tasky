@@ -77,7 +77,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
                       child: Row(
                         children: [
                           Icon(project.isArchived ? PhosphorIcons.archive() : PhosphorIcons.archive()),
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
                           Text(project.isArchived ? 'Unarchive' : 'Archive'),
                         ],
                       ),
@@ -87,8 +87,8 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
                       child: Row(
                         children: [
                           Icon(PhosphorIcons.copy()),
-                          SizedBox(width: 8),
-                          Text('Duplicate'),
+                          const SizedBox(width: 8),
+                          const Text('Duplicate'),
                         ],
                       ),
                     ),
@@ -97,8 +97,8 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
                       child: Row(
                         children: [
                           Icon(PhosphorIcons.trash(), color: Colors.red),
-                          SizedBox(width: 8),
-                          Text('Delete', style: TextStyle(color: Colors.red)),
+                          const SizedBox(width: 8),
+                          const Text('Delete', style: TextStyle(color: Colors.red)),
                         ],
                       ),
                     ),
@@ -140,7 +140,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
           ),
         );
       },
-      loading: () => Scaffold(body: Center(child: CircularProgressIndicator()),
+      loading: () => const Scaffold(body: Center(child: CircularProgressIndicator()),
       ),
       error: (error, stackTrace) => Scaffold(
         appBar: const StandardizedAppBar(title: 'Error'),
@@ -199,7 +199,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
                   borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                 ),
               ),
-              SizedBox(width: 12),
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -341,7 +341,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
           ],
         ),
         
-        SizedBox(height: 12),
+        const SizedBox(height: 12),
         
         // Stats grid
         Row(
@@ -453,7 +453,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
           children: [
             if (pendingTasks.isNotEmpty) ...[
               _buildTaskSection('Pending Tasks', pendingTasks, PhosphorIcons.clock(), Colors.orange),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
             ],
             if (inProgressTasks.isNotEmpty) ...[
               _buildTaskSection('In Progress', inProgressTasks, PhosphorIcons.playCircle(), Colors.blue),
@@ -512,13 +512,13 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(PhosphorIcons.trendUp(), size: 64, color: Colors.grey),
-          SizedBox(height: 16),
-          Text(
+          const SizedBox(height: 16),
+          const Text(
             'Progress Charts',
             style: TextStyle(fontSize: TypographyConstants.headlineSmall, color: Colors.grey),
           ),
-          SizedBox(height: 8),
-          Text(
+          const SizedBox(height: 8),
+          const Text(
             'Coming soon - detailed progress tracking and analytics',
             style: TextStyle(color: Colors.grey),
             textAlign: TextAlign.center,
@@ -547,7 +547,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 _buildDetailRow('Created', _formatDate(project.createdAt)),
                 if (project.updatedAt != null)
                   _buildDetailRow('Last Updated', _formatDate(project.updatedAt!)),
@@ -647,7 +647,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
               size: 64,
               color: theme.colorScheme.onSurfaceVariant,
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Text(
               'No Tasks Yet',
               style: theme.textTheme.headlineSmall?.copyWith(

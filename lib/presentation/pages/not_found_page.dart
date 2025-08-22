@@ -14,7 +14,7 @@ class NotFoundPage extends ConsumerWidget {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         extendBodyBehindAppBar: true,
-        appBar: StandardizedAppBar(title: 'Page Not Found'),
+        appBar: const StandardizedAppBar(title: 'Page Not Found'),
         body: Center(
           child: Padding(
             padding: const EdgeInsets.only(
@@ -36,7 +36,7 @@ class NotFoundPage extends ConsumerWidget {
                 '404',
                 style: Theme.of(context).textTheme.displayLarge?.copyWith(
                   color: Theme.of(context).colorScheme.error,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
               const SizedBox(height: 16),

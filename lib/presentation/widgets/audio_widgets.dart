@@ -54,7 +54,7 @@ class AudioControlBar extends ConsumerWidget {
                 color: theme.colorScheme.primary,
               ),
               
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               
               // Time display
               Expanded(

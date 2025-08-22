@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import '../local_fonts.dart';
 import '../app_theme_data.dart' as app_theme_data;
 import '../models/theme_metadata.dart';
 import '../models/theme_colors.dart';
@@ -258,7 +258,7 @@ class DraculaIDETheme {
       baseLineHeight: TypographyConstants.normalLineHeight, // Consistent line height
       
       // Use EXACT typography constants for all sizes
-      displayLarge: GoogleFonts.getFont(
+      displayLarge: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.displayLarge,
         fontWeight: TypographyConstants.light,
@@ -266,7 +266,7 @@ class DraculaIDETheme {
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      displayMedium: GoogleFonts.getFont(
+      displayMedium: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.displayMedium,
         fontWeight: TypographyConstants.light,
@@ -274,7 +274,7 @@ class DraculaIDETheme {
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      displaySmall: GoogleFonts.getFont(
+      displaySmall: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.displaySmall,
         fontWeight: TypographyConstants.regular,
@@ -283,7 +283,7 @@ class DraculaIDETheme {
         color: colors.onBackground,
       ),
       
-      headlineLarge: GoogleFonts.getFont(
+      headlineLarge: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.headlineLarge,
         fontWeight: TypographyConstants.regular,
@@ -291,7 +291,7 @@ class DraculaIDETheme {
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      headlineMedium: GoogleFonts.getFont(
+      headlineMedium: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.headlineMedium,
         fontWeight: TypographyConstants.regular,
@@ -299,7 +299,7 @@ class DraculaIDETheme {
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      headlineSmall: GoogleFonts.getFont(
+      headlineSmall: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.headlineSmall,
         fontWeight: TypographyConstants.regular,
@@ -308,7 +308,7 @@ class DraculaIDETheme {
         color: colors.onBackground,
       ),
       
-      titleLarge: GoogleFonts.getFont(
+      titleLarge: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.titleLarge,
         fontWeight: TypographyConstants.medium,
@@ -316,7 +316,7 @@ class DraculaIDETheme {
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      titleMedium: GoogleFonts.getFont(
+      titleMedium: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.titleMedium,
         fontWeight: TypographyConstants.medium,
@@ -324,7 +324,7 @@ class DraculaIDETheme {
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      titleSmall: GoogleFonts.getFont(
+      titleSmall: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.titleSmall,
         fontWeight: TypographyConstants.medium,
@@ -333,7 +333,7 @@ class DraculaIDETheme {
         color: colors.onBackground,
       ),
       
-      bodyLarge: GoogleFonts.getFont(
+      bodyLarge: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.bodyLarge,
         fontWeight: TypographyConstants.regular,
@@ -341,7 +341,7 @@ class DraculaIDETheme {
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      bodyMedium: GoogleFonts.getFont(
+      bodyMedium: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.bodyMedium,
         fontWeight: TypographyConstants.regular,
@@ -349,7 +349,7 @@ class DraculaIDETheme {
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      bodySmall: GoogleFonts.getFont(
+      bodySmall: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.bodySmall,
         fontWeight: TypographyConstants.regular,
@@ -358,7 +358,7 @@ class DraculaIDETheme {
         color: colors.onBackground,
       ),
       
-      labelLarge: GoogleFonts.getFont(
+      labelLarge: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.labelLarge,
         fontWeight: TypographyConstants.medium,
@@ -366,7 +366,7 @@ class DraculaIDETheme {
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      labelMedium: GoogleFonts.getFont(
+      labelMedium: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.labelMedium,
         fontWeight: TypographyConstants.medium,
@@ -374,7 +374,7 @@ class DraculaIDETheme {
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      labelSmall: GoogleFonts.getFont(
+      labelSmall: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.labelSmall,
         fontWeight: TypographyConstants.medium,
@@ -384,15 +384,15 @@ class DraculaIDETheme {
       ),
       
       // Custom app styles with exact constants
-      taskTitle: GoogleFonts.getFont(
+      taskTitle: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.taskTitle,
-        fontWeight: TypographyConstants.semiBold,
+        fontWeight: TypographyConstants.medium,
         letterSpacing: TypographyConstants.normalLetterSpacing,
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      taskDescription: GoogleFonts.getFont(
+      taskDescription: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.taskDescription,
         fontWeight: TypographyConstants.regular,
@@ -400,7 +400,7 @@ class DraculaIDETheme {
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      taskMeta: GoogleFonts.getFont(
+      taskMeta: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.taskMeta,
         fontWeight: TypographyConstants.regular,
@@ -408,7 +408,7 @@ class DraculaIDETheme {
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      cardTitle: GoogleFonts.getFont(
+      cardTitle: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.titleSmall,
         fontWeight: TypographyConstants.medium,
@@ -416,7 +416,7 @@ class DraculaIDETheme {
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      cardSubtitle: GoogleFonts.getFont(
+      cardSubtitle: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.bodySmall,
         fontWeight: TypographyConstants.regular,
@@ -424,7 +424,7 @@ class DraculaIDETheme {
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      buttonText: GoogleFonts.getFont(
+      buttonText: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.buttonText,
         fontWeight: TypographyConstants.medium,
@@ -432,7 +432,7 @@ class DraculaIDETheme {
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      inputText: GoogleFonts.getFont(
+      inputText: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.inputText,
         fontWeight: TypographyConstants.regular,
@@ -440,7 +440,7 @@ class DraculaIDETheme {
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      appBarTitle: GoogleFonts.getFont(
+      appBarTitle: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.appBarTitle,
         fontWeight: TypographyConstants.medium,
@@ -448,7 +448,7 @@ class DraculaIDETheme {
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
       ),
-      navigationLabel: GoogleFonts.getFont(
+      navigationLabel: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.navigationLabel,
         fontWeight: TypographyConstants.medium,

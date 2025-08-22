@@ -268,7 +268,7 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
     return EnhancedButton(
       onPressed: _isProcessing || currentPin.isEmpty ? null : _onBackspacePressed,
       style: ElevatedButton.styleFrom(
-        shape: CircleBorder(),
+        shape: const CircleBorder(),
         padding: const EdgeInsets.all(20),
         backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
         foregroundColor: Theme.of(context).colorScheme.onSurfaceVariant,

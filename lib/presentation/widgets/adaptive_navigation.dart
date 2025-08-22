@@ -172,7 +172,7 @@ class AdaptiveNavigation extends ConsumerWidget {
                   Text(
                     'Task Tracker',
                     style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ],
@@ -271,7 +271,7 @@ class AdaptiveNavigation extends ConsumerWidget {
                     color: isSelected 
                       ? theme.colorScheme.primary 
                       : theme.colorScheme.onSurfaceVariant,
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                    fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -298,7 +298,7 @@ class AdaptiveNavigation extends ConsumerWidget {
               color: isSelected 
                 ? theme.colorScheme.primary 
                 : theme.colorScheme.onSurfaceVariant,
-              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
             ),
           ) : null,
           selected: isSelected,

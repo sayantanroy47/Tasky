@@ -19,7 +19,7 @@ class CalendarWidget extends ConsumerWidget {
               'Calendar View',
               style: Theme.of(context).textTheme.titleLarge,
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Container(
               height: 300,
               decoration: BoxDecoration(

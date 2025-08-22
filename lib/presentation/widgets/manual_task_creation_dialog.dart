@@ -42,7 +42,7 @@ class _ManualTaskCreationDialogState extends ConsumerState<ManualTaskCreationDia
   TaskPriority _selectedPriority = TaskPriority.medium;
   String? _selectedProjectId;
   List<String> _selectedTags = [];
-  DateTime? _dueDate;
+  DateTime? _dueDate = DateTime.now();
   TimeOfDay? _dueTime;
   RecurrencePattern? _recurrencePattern;
   bool _isLoading = false;
@@ -117,7 +117,7 @@ class _ManualTaskCreationDialogState extends ConsumerState<ManualTaskCreationDia
           TextButton(
             onPressed: _isLoading ? null : _saveTask,
             child: _isLoading 
-              ? SizedBox(width: 20,
+              ? const SizedBox(width: 20,
                   height: 20,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
@@ -152,7 +152,7 @@ class _ManualTaskCreationDialogState extends ConsumerState<ManualTaskCreationDia
                         return null;
                       },
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     
                     // Description field
                     ThemeAwareFormField(
@@ -188,7 +188,7 @@ class _ManualTaskCreationDialogState extends ConsumerState<ManualTaskCreationDia
                         });
                       },
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     
                     // Due date picker
                     _buildDueDatePicker(context, theme),
@@ -213,7 +213,7 @@ class _ManualTaskCreationDialogState extends ConsumerState<ManualTaskCreationDia
                               Text(
                                 'Recurring Task',
                                 style: theme.textTheme.titleSmall?.copyWith(
-                                  fontWeight: FontWeight.bold,
+                                  fontWeight: FontWeight.w500,
                                   color: theme.colorScheme.primary,
                                 ),
                               ),
@@ -262,7 +262,7 @@ class _ManualTaskCreationDialogState extends ConsumerState<ManualTaskCreationDia
               color: theme.colorScheme.onSurface,
             ),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Row(
             children: [
               Expanded(
@@ -303,7 +303,7 @@ class _ManualTaskCreationDialogState extends ConsumerState<ManualTaskCreationDia
                   ),
                 ),
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Expanded(
                 child: InkWell(
                   onTap: _dueDate != null ? _selectDueTime : null,

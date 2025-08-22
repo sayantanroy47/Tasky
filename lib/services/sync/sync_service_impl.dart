@@ -80,7 +80,7 @@ class SyncServiceImpl {
     if (enabled) {
       _autoSyncTimer = Timer.periodic(interval, (_) async {
         final connectivityResult = await _connectivity.checkConnectivity();
-        if (connectivityResult != ConnectivityResult.none) {
+        if (!connectivityResult.contains(ConnectivityResult.none)) {
           await syncToCloud();
         }
       });
@@ -94,7 +94,7 @@ class SyncServiceImpl {
 
       // Check connectivity
       final connectivityResult = await _connectivity.checkConnectivity();
-      if (connectivityResult == ConnectivityResult.none) {
+      if (connectivityResult.contains(ConnectivityResult.none) && connectivityResult.length == 1) {
         throw const NetworkException('No internet connection');
       }
 
@@ -163,7 +163,7 @@ class SyncServiceImpl {
 
       // Check connectivity
       final connectivityResult = await _connectivity.checkConnectivity();
-      if (connectivityResult == ConnectivityResult.none) {
+      if (connectivityResult.contains(ConnectivityResult.none) && connectivityResult.length == 1) {
         throw const NetworkException('No internet connection');
       }
 
@@ -224,7 +224,8 @@ class SyncServiceImpl {
   }
 
   /// Handles connectivity changes
-  void _onConnectivityChanged(ConnectivityResult result) {
+  void _onConnectivityChanged(List<ConnectivityResult> results) {
+    final result = results.isNotEmpty ? results.first : ConnectivityResult.none;
     if (result != ConnectivityResult.none && _isAutoSyncEnabled) {
       // Delay sync to allow connection to stabilize
       Timer(const Duration(seconds: 2), () async {

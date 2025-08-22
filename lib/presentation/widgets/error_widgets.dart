@@ -95,7 +95,7 @@ class EnhancedErrorDialog extends StatelessWidget {
             size: isLargeText ? 28 : 24,
           ),
         ),
-        SizedBox(width: 12),
+        const SizedBox(width: 12),
         Expanded(
           child: Text(
             customTitle ?? 'Error Occurred',
@@ -285,7 +285,7 @@ class CriticalErrorScreen extends StatelessWidget {
                     customTitle ?? 'Critical Error',
                     style: theme.textTheme.headlineMedium?.copyWith(
                       color: theme.colorScheme.onSurface,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w500,
                       fontSize: isLargeText ? 32 : null,
                     ),
                     textAlign: TextAlign.center,
@@ -327,7 +327,7 @@ class CriticalErrorScreen extends StatelessWidget {
           isPrimary: true,
           semanticHint: 'Restart the application to recover from error',
         ),
-        SizedBox(height: 12),
+        const SizedBox(height: 12),
         _AccessibleButton(
           label: 'Report Issue',
           icon: PhosphorIcons.bug(),
@@ -514,7 +514,7 @@ class _LoadingErrorWidgetState extends State<LoadingErrorWidget>
                       );
                     },
                   ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Text(
               widget.message,
               style: theme.textTheme.bodyMedium?.copyWith(

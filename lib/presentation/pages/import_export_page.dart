@@ -81,7 +81,7 @@ class ImportExportPage extends ConsumerWidget {
                     size: 24,
                   ),
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -89,7 +89,7 @@ class ImportExportPage extends ConsumerWidget {
                       Text(
                         'Export Tasks',
                         style: theme.textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                       Text(
@@ -174,7 +174,7 @@ class ImportExportPage extends ConsumerWidget {
               Text(
                 title,
                 style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -223,7 +223,7 @@ class ImportExportPage extends ConsumerWidget {
                     size: 24,
                   ),
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -231,7 +231,7 @@ class ImportExportPage extends ConsumerWidget {
                       Text(
                         'Import Tasks',
                         style: theme.textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                       Text(
@@ -320,7 +320,7 @@ class ImportExportPage extends ConsumerWidget {
                 Text(
                   'Important Information',
                   style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
@@ -384,7 +384,7 @@ class ImportExportPage extends ConsumerWidget {
               Text(
                 title,
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
               Text(
@@ -509,8 +509,8 @@ class ImportExportPage extends ConsumerWidget {
               color: Colors.red,
               size: 28,
             ),
-            SizedBox(width: 12),
-            Text('Error'),
+            const SizedBox(width: 12),
+            const Text('Error'),
           ],
         ),
         content: Text(message),
@@ -553,7 +553,7 @@ class ImportExportPage extends ConsumerWidget {
                 const SizedBox(height: 16),
                 const Text(
                   'Errors:',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(fontWeight: FontWeight.w500),
                 ),
                 const SizedBox(height: 8),
                 ...result.errors.take(5).map((error) => 

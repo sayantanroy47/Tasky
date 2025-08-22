@@ -807,7 +807,7 @@ class _GenericEmptyPainter extends CustomPainter {
         style: TextStyle(
           color: primaryColor,
           fontSize: radius,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w500,
         ),
       ),
       textDirection: TextDirection.ltr,

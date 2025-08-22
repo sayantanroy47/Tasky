@@ -179,8 +179,7 @@ class TypographyTokens {
   static FontWeight get light => TypographyConstants.light;
   static FontWeight get regular => TypographyConstants.regular;
   static FontWeight get medium => TypographyConstants.medium;
-  static FontWeight get semibold => TypographyConstants.semiBold;
-  static FontWeight get bold => TypographyConstants.bold;
+  // semiBold and bold removed per REQ 20 - maximum weight is medium (w500)
 
   // Font sizes (referencing typography_constants.dart)
   static double get xs => TypographyConstants.textXS;

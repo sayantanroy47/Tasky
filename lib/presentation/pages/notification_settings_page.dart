@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/standardized_app_bar.dart';
 import '../widgets/theme_background_widget.dart';
 import '../widgets/glassmorphism_container.dart';
+import '../widgets/modern_radio_widgets.dart';
 import '../../core/design_system/design_tokens.dart';
 
 import '../providers/notification_providers.dart';
@@ -22,7 +23,7 @@ class NotificationSettingsPage extends ConsumerWidget {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         extendBodyBehindAppBar: true,
-        appBar: StandardizedAppBar(title: 'Notification Settings'),
+        appBar: const StandardizedAppBar(title: 'Notification Settings'),
         body: settingsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(
@@ -119,7 +120,7 @@ class NotificationSettingsPage extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Permissions',
+            const Text('Permissions',
               style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
@@ -237,7 +238,7 @@ class NotificationSettingsPage extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Task Reminders',
+            const Text('Task Reminders',
               style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
@@ -265,7 +266,7 @@ class NotificationSettingsPage extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Daily Summary',
+            const Text('Daily Summary',
               style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
@@ -305,7 +306,7 @@ class NotificationSettingsPage extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Quiet Hours',
+            const Text('Quiet Hours',
               style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
@@ -437,8 +438,8 @@ class NotificationSettingsPage extends ConsumerWidget {
                           PhosphorIcons.bell(),
                           color: Colors.white,
                         ),
-                        SizedBox(width: 8),
-                        Text(
+                        const SizedBox(width: 8),
+                        const Text(
                           'Send Test Notification',
                           style: TextStyle(
                             color: Colors.white,
@@ -491,16 +492,15 @@ class NotificationSettingsPage extends ConsumerWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Default Reminder Time'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: durations.map((duration) {
-            return RadioListTile<Duration>(
-              title: Text(_formatDuration(duration)),
+        content: ModernRadioGroup<Duration>(
+          groupValue: settings.defaultReminder,
+          onChanged: (value) => Navigator.of(context).pop(value),
+          options: durations.map((duration) => 
+            ModernRadioOption<Duration>(
               value: duration,
-              groupValue: settings.defaultReminder,
-              onChanged: (value) => Navigator.of(context).pop(value),
-            );
-          }).toList(),
+              title: Text(_formatDuration(duration)),
+            )
+          ).toList(),
         ),
         actions: [
           TextButton(
@@ -540,7 +540,7 @@ class NotificationSettingsPage extends ConsumerWidget {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: Text('Set Quiet Hours'),
+          title: const Text('Set Quiet Hours'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -561,7 +561,7 @@ class NotificationSettingsPage extends ConsumerWidget {
                 },
               ),
               ListTile(
-                title: Text('End Time'),
+                title: const Text('End Time'),
                 subtitle: Text(endTime != null ? _formatNotificationTime(endTime!) : 'Not set'),
                 trailing: Icon(PhosphorIcons.clock()),
                 onTap: () async {

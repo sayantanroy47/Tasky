@@ -157,7 +157,7 @@ class _IntegrationSettingsScreenState extends ConsumerState<IntegrationSettingsS
             Row(
               children: [
                 Icon(PhosphorIcons.lightning(), color: Theme.of(context).primaryColor),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 const Text(
                   'Quick Actions',
                   style: TextStyle(fontWeight: FontWeight.bold),
@@ -171,20 +171,20 @@ class _IntegrationSettingsScreenState extends ConsumerState<IntegrationSettingsS
             const SizedBox(height: 16),
             ListTile(
               leading: Icon(PhosphorIcons.gear()),
-              title: Text('Quick Settings Tile'),
-              subtitle: Text('Add quick task tile to notification panel'),
+              title: const Text('Quick Settings Tile'),
+              subtitle: const Text('Add quick task tile to notification panel'),
               trailing: Icon(PhosphorIcons.checkCircle(), color: Colors.green),
             ),
             ListTile(
               leading: Icon(PhosphorIcons.lightning()),
-              title: Text('App Shortcuts'),
-              subtitle: Text('Long press app icon for quick actions'),
+              title: const Text('App Shortcuts'),
+              subtitle: const Text('Long press app icon for quick actions'),
               trailing: Icon(PhosphorIcons.checkCircle(), color: Colors.green),
             ),
             ListTile(
               leading: Icon(PhosphorIcons.microphoneStage()),
-              title: Text('Voice Shortcuts'),
-              subtitle: Text('Create tasks using voice commands'),
+              title: const Text('Voice Shortcuts'),
+              subtitle: const Text('Create tasks using voice commands'),
               trailing: Icon(PhosphorIcons.checkCircle(), color: Colors.green),
             ),
           ],
@@ -206,7 +206,7 @@ class _IntegrationSettingsScreenState extends ConsumerState<IntegrationSettingsS
             Row(
               children: [
                 Icon(PhosphorIcons.square(), color: Theme.of(context).primaryColor),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 const Text(
                   'Home Screen Widgets',
                   style: TextStyle(fontWeight: FontWeight.bold),
@@ -243,7 +243,7 @@ class _IntegrationSettingsScreenState extends ConsumerState<IntegrationSettingsS
             Row(
               children: [
                 Icon(PhosphorIcons.bug(), color: Theme.of(context).primaryColor),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 const Text(
                   'Test Integration',
                   style: TextStyle(fontWeight: FontWeight.bold),

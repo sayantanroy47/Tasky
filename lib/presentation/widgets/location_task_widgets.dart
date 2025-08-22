@@ -54,7 +54,7 @@ class LocationTaskCard extends ConsumerWidget {
               ),
               
               if (task.description?.isNotEmpty == true) ...[
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Text(
                   task.description!,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -389,7 +389,7 @@ class LocationStatisticsWidget extends ConsumerWidget {
                   'Location Statistics',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 _buildStatRow(
                   'Total Location Triggers',
                   stats.totalLocationTriggers.toString(),
@@ -441,7 +441,7 @@ class LocationStatisticsWidget extends ConsumerWidget {
           Expanded(child: Text(label)),
           Text(
             value,
-            style: const TextStyle(fontWeight: FontWeight.bold),
+            style: const TextStyle(fontWeight: FontWeight.w500),
           ),
         ],
       ),

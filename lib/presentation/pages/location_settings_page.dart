@@ -118,7 +118,7 @@ class LocationSettingsPage extends ConsumerWidget {
                   ),
                   const SizedBox(height: 16),
                   DropdownButtonFormField<LocationAccuracy>(
-                    value: locationSettings.locationAccuracy,
+                    initialValue: locationSettings.locationAccuracy,
                     decoration: const InputDecoration(
                       labelText: 'Accuracy Level',
                       border: OutlineInputBorder(),
@@ -179,7 +179,7 @@ class LocationSettingsPage extends ConsumerWidget {
                   ],
                 ),
             ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
 
           // Location Triggers
           GlassmorphismContainer(
@@ -279,7 +279,7 @@ class LocationSettingsPage extends ConsumerWidget {
           status,
           style: TextStyle(
             color: color,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w500,
           ),
         ),
       ],
@@ -305,6 +305,8 @@ class LocationSettingsPage extends ConsumerWidget {
         return 'Permanently Denied';
       case LocationPermissionStatus.unableToDetermine:
         return 'Unknown';
+      case LocationPermissionStatus.serviceDisabled:
+        return 'Service Disabled';
     }
   }
 

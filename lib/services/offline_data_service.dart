@@ -19,9 +19,9 @@ class OfflineDataService {
 
   /// Initialize connectivity listener
   void _initializeConnectivityListener() {
-    Connectivity().onConnectivityChanged.listen((ConnectivityResult result) {
+    Connectivity().onConnectivityChanged.listen((List<ConnectivityResult> results) {
       final wasOnline = _isOnline;
-      _isOnline = result != ConnectivityResult.none;
+      _isOnline = results.isNotEmpty && results.first != ConnectivityResult.none;
       
       if (!wasOnline && _isOnline) {
         // Just came online, process sync queue
@@ -36,7 +36,7 @@ class OfflineDataService {
   /// Check initial connectivity status
   Future<void> _checkInitialConnectivity() async {
     final result = await Connectivity().checkConnectivity();
-    _isOnline = result != ConnectivityResult.none;
+    _isOnline = !result.contains(ConnectivityResult.none);
   }
 
   /// Get current online status

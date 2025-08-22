@@ -32,7 +32,7 @@ class BackgroundServiceStatusWidget extends ConsumerWidget {
                 PhosphorIcons.wrench(),
                 color: theme.colorScheme.primary,
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text(
                 'Background Services',
                 style: theme.textTheme.titleMedium?.copyWith(
@@ -92,7 +92,7 @@ class BackgroundServiceStatusWidget extends ConsumerWidget {
               color: isRunning ? Colors.green : Colors.orange,
               size: 20,
             ),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             Text(
               isRunning ? 'Running' : 'Stopped',
               style: theme.textTheme.bodyMedium?.copyWith(

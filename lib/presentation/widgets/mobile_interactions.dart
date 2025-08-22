@@ -683,7 +683,7 @@ class _GlassBottomSheetState extends State<GlassBottomSheet>
                                   fontSize: isLargeText 
                                       ? TypographyConstants.textXL 
                                       : TypographyConstants.textLG,
-                                  fontWeight: TypographyConstants.bold,
+                                  fontWeight: TypographyConstants.medium,
                                   color: theme.colorScheme.onSurface,
                                 ),
                               ),

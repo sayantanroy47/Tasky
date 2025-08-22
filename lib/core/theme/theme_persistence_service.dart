@@ -597,10 +597,10 @@ class ThemePersistenceService {
         'createdAt': theme.metadata.createdAt.toIso8601String(),
       },
       'colors': {
-        'primary': theme.colors.primary.value,
-        'secondary': theme.colors.secondary.value,
-        'background': theme.colors.background.value,
-        'surface': theme.colors.surface.value,
+        'primary': theme.colors.primary.toARGB32(),
+        'secondary': theme.colors.secondary.toARGB32(),
+        'background': theme.colors.background.toARGB32(),
+        'surface': theme.colors.surface.toARGB32(),
       },
       // Add more theme properties as needed
     };

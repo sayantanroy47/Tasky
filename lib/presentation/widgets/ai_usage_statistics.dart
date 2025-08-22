@@ -24,7 +24,7 @@ class AIUsageStatistics extends ConsumerWidget {
                   PhosphorIcons.chartBar(),
                   color: Theme.of(context).colorScheme.primary,
                 ),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 Text(
                   'Usage Statistics',
                   style: Theme.of(context).textTheme.titleLarge,
@@ -79,7 +79,7 @@ class AIUsageStatistics extends ConsumerWidget {
               ],
             ),
 
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
 
             // Current Service Status
             Container(
@@ -131,7 +131,7 @@ class AIUsageStatistics extends ConsumerWidget {
               ),
             ),
 
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
 
             // Quick Actions
             Row(
@@ -252,7 +252,7 @@ class _StatCard extends StatelessWidget {
                 value,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   color: color,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],
@@ -333,7 +333,7 @@ class DetailedStatsDialog extends StatelessWidget {
         Text(
           title,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w500,
           ),
         ),
         const SizedBox(height: 8),

@@ -39,7 +39,7 @@ class AccessibilitySettingsScreen extends ConsumerWidget {
               children: [
                 AccessibleListTile(
                   leading: Icon(PhosphorIcons.circleHalf()),
-                  title: Text('High Contrast Mode'),
+                  title: const Text('High Contrast Mode'),
                   subtitle: const Text('Increase contrast for better visibility'),
                   trailing: AccessibleSwitch(
                     value: settings.highContrastMode,

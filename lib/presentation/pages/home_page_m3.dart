@@ -108,7 +108,7 @@ class _HomePageState extends ConsumerState<HomePage>
         title: 'Home',
         forceBackButton: false, // Home is main tab - no back button
         actions: [
-          ThemeToggleButton(),
+          const ThemeToggleButton(),
           IconButton(
             icon: Icon(PhosphorIcons.chartLine()),
             onPressed: () => _showTaskInsights(context),
@@ -173,10 +173,10 @@ class _HomePageState extends ConsumerState<HomePage>
             Text(
               'Search Tasks',
               style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w500,
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             GlassmorphismContainer(
               level: GlassLevel.interactive,
               borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
@@ -255,21 +255,21 @@ class _HomePageState extends ConsumerState<HomePage>
                                 value: 'edit',
                                 child: ListTile(
                                   leading: Icon(PhosphorIcons.pencil()),
-                                  title: Text('Edit'),
+                                  title: const Text('Edit'),
                                 ),
                               ),
                               PopupMenuItem(
                                 value: 'share',
                                 child: ListTile(
                                   leading: Icon(PhosphorIcons.share()),
-                                  title: Text('Share'),
+                                  title: const Text('Share'),
                                 ),
                               ),
                               PopupMenuItem(
                                 value: 'delete',
                                 child: ListTile(
                                   leading: Icon(PhosphorIcons.trash()),
-                                  title: Text('Delete'),
+                                  title: const Text('Delete'),
                                 ),
                               ),
                             ],
@@ -312,7 +312,7 @@ class _HomePageState extends ConsumerState<HomePage>
                 Text(
                   'Task Insights',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -339,16 +339,6 @@ class _HomePageState extends ConsumerState<HomePage>
                                 _buildInsightRow('Pending', '$pendingTasks', PhosphorIcons.clock(), color: Colors.orange),
                                 _buildInsightRow('Urgent', '$urgentTasks', PhosphorIcons.arrowUp(), color: Colors.red),
                                 _buildInsightRow('Overdue', '$overdueTasks', PhosphorIcons.warning(), color: Colors.red),
-                                const SizedBox(height: 16),
-                                const Text('Completion Rate', style: TextStyle(fontWeight: FontWeight.bold)),
-                                const SizedBox(height: 8),
-                                LinearProgressIndicator(
-                                  value: tasks.isEmpty ? 0 : completedTasks / tasks.length,
-                                  backgroundColor: Colors.grey[300],
-                                  valueColor: const AlwaysStoppedAnimation<Color>(Colors.green),
-                                ),
-                                const SizedBox(height: 8),
-                                Text('${tasks.isEmpty ? 0 : ((completedTasks / tasks.length) * 100).toInt()}% Complete'),
                               ],
                             ),
                           );
@@ -383,7 +373,7 @@ class _HomePageState extends ConsumerState<HomePage>
           Icon(icon, color: color),
           const SizedBox(width: 12),
           Expanded(child: Text(label)),
-          Text(value, style: TextStyle(fontWeight: FontWeight.bold, color: color)),
+          Text(value, style: TextStyle(fontWeight: FontWeight.w500, color: color)),
         ],
       ),
     );
@@ -392,7 +382,7 @@ class _HomePageState extends ConsumerState<HomePage>
   void _showTaskContextMenu(BuildContext context, TaskModel task) {
     showModalBottomSheet(
       context: context,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
       builder: (context) => Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
@@ -436,7 +426,7 @@ class _HomePageState extends ConsumerState<HomePage>
                 _shareTask(task);
               },
             ),
-            Divider(),
+            const Divider(),
             ListTile(
               leading: Icon(PhosphorIcons.trash(), color: Colors.red),
               title: const Text('Delete Task', style: TextStyle(color: Colors.red)),
@@ -455,7 +445,7 @@ class _HomePageState extends ConsumerState<HomePage>
   Widget _buildWelcomeSection(BuildContext context, ThemeData theme) {
     return SlideTransition(
       position: Tween<Offset>(
-        begin: Offset(0, -0.2),
+        begin: const Offset(0, -0.2),
         end: Offset.zero,
       ).animate(CurvedAnimation(
         parent: _slideController,
@@ -487,47 +477,26 @@ class _HomePageState extends ConsumerState<HomePage>
             mainAxisSize: MainAxisSize.min,
             children: [
               // Welcome Header
-              Row(
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  GlassmorphismContainer(
-                    level: GlassLevel.content,
-                    borderRadius: BorderRadius.circular(12),
-                    glassTint: theme.colorScheme.primary.withValues(alpha: 0.15),
-                    child: SizedBox(
-                      width: 36,
-                      height: 36,
-                      child: Icon(
-                        PhosphorIcons.hand(),
-                        color: theme.colorScheme.primary,
-                        size: 20,
-                      ),
+                  Text(
+                    'Good ${_getTimeOfDay()}!',
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w500,
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Good ${_getTimeOfDay()}!',
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.w700,
-                            color: theme.colorScheme.onSurface,
-                          ),
-                        ),
-                        Text(
-                          'Here\'s your task overview',
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
+                  Text(
+                    'Here\'s your task overview',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],
               ),
               
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               
               // Text-based Task Summary with Bullets
               GlassmorphismContainer(
@@ -680,18 +649,7 @@ class _HomePageState extends ConsumerState<HomePage>
     final completedTasks = ref.watch(completedTasksProvider);
     
     final summaryCards = [
-      // Card 1: Completion Streak
-      _buildTodaySummaryCard(
-        theme: theme,
-        title: 'Streak',
-        subtitle: _getCompletionStreakText(completedTasks),
-        count: _getCompletionStreakDays(completedTasks),
-        icon: PhosphorIcons.fire(),
-        iconColor: Colors.orange,
-        onTap: () => AppRouter.navigateToRoute(context, AppRouter.analytics),
-      ),
-      
-      // Card 2: Total Completed Tasks
+      // Card 1: Total Completed Tasks
       _buildTodaySummaryCard(
         theme: theme,
         title: 'Finished',
@@ -723,7 +681,7 @@ class _HomePageState extends ConsumerState<HomePage>
           child: Text(
             'Insights',
             style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w500,
               color: theme.colorScheme.onSurface,
             ),
           ),
@@ -832,45 +790,6 @@ class _HomePageState extends ConsumerState<HomePage>
   
   // Helper methods for new summary cards
   
-  int _getCompletionStreakDays(AsyncValue<List<TaskModel>> completedTasksAsync) {
-    return completedTasksAsync.maybeWhen(
-      data: (tasks) {
-        int streak = 0;
-        final now = DateTime.now();
-        
-        // Check each day backwards from today
-        for (int i = 0; i < 30; i++) { // Check last 30 days maximum
-          final checkDate = now.subtract(Duration(days: i));
-          final dayStart = DateTime(checkDate.year, checkDate.month, checkDate.day);
-          final dayEnd = dayStart.add(const Duration(days: 1));
-          
-          final hasCompletedTask = tasks.any((task) => 
-            task.completedAt != null &&
-            task.completedAt!.isAfter(dayStart) &&
-            task.completedAt!.isBefore(dayEnd)
-          );
-          
-          if (hasCompletedTask) {
-            streak++;
-          } else if (i > 0) { // Don't break streak for today if it's still early
-            break;
-          }
-        }
-        
-        return streak;
-      },
-      orElse: () => 0,
-    );
-  }
-  
-  String _getCompletionStreakText(AsyncValue<List<TaskModel>> completedTasksAsync) {
-    final streak = _getCompletionStreakDays(completedTasksAsync);
-    if (streak == 0) return 'Start today!';
-    if (streak == 1) return 'Keep it up!';
-    if (streak < 7) return 'Building momentum';
-    if (streak < 30) return 'On fire!';
-    return 'Unstoppable!';
-  }
   
   /// Get total completed tasks count
   int _getTotalCompletedCount(AsyncValue<List<TaskModel>> completedTasksAsync) {
@@ -980,7 +899,7 @@ class _HomePageState extends ConsumerState<HomePage>
                   Text(
                     count.toString(),
                     style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w500,
                       color: theme.colorScheme.onSurface,
                       fontSize: TypographyConstants.textXL,
                     ),
@@ -1045,7 +964,7 @@ class _HomePageState extends ConsumerState<HomePage>
           Text(
             'Ready to get started?',
             style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w500,
             ),
             textAlign: TextAlign.center,
             maxLines: 1,
@@ -1106,12 +1025,12 @@ class _HomePageState extends ConsumerState<HomePage>
             size: 48,
             color: theme.colorScheme.error,
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Text(
             'Something went wrong',
             style: theme.textTheme.titleSmall?.copyWith(
               color: theme.colorScheme.error,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w500,
             ),
             textAlign: TextAlign.center,
             maxLines: 1,
@@ -1160,7 +1079,7 @@ class _HomePageState extends ConsumerState<HomePage>
               Text(
                 'Delete Task',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
               const SizedBox(height: 16),
@@ -1223,9 +1142,11 @@ Shared from Tasky - Task Management App
 ''';
     
     // Use the platform's native sharing capabilities
-    Share.share(
-      shareText,
-      subject: 'Task: ${task.title}',
+    SharePlus.instance.share(
+      ShareParams(
+        text: shareText,
+        subject: 'Task: ${task.title}',
+      ),
     );
   }
   
@@ -1254,7 +1175,7 @@ Shared from Tasky - Task Management App
                     color: theme.colorScheme.primary.withValues(alpha: 0.4),  // Increased opacity for better visibility
                     blurRadius: 8.0,  // Increased blur for more prominent glow
                     spreadRadius: 1.0,  // Added spread for wider glow effect
-                    offset: Offset(0, 2),  // Slightly larger offset for depth
+                    offset: const Offset(0, 2),  // Slightly larger offset for depth
                   ),
                   // Additional subtle inner glow
                   BoxShadow(
@@ -1930,7 +1851,7 @@ Shared from Tasky - Task Management App
             count.toString(),
             style: TextStyle(
               fontSize: TypographyConstants.textLG,
-              fontWeight: TypographyConstants.bold,
+              fontWeight: TypographyConstants.medium,
               color: theme.colorScheme.onSurface,
             ),
           ),

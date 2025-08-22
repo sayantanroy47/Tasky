@@ -256,7 +256,7 @@ class _ThemeAwareGlassState extends State<ThemeAwareGlass>
     final intensity = widget.enablePulseEffects ? _pulseAnimation.value : 1.0;
     
     return baseBorder.withValues(alpha: 
-      baseBorder.opacity * intensity * (widget.enableHoverEnhancements && _isHovered ? 1.5 : 1.0),
+      baseBorder.a * intensity * (widget.enableHoverEnhancements && _isHovered ? 1.5 : 1.0),
     );
   }
 

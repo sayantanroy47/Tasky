@@ -519,7 +519,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
             color: theme.colorScheme.onSurfaceVariant,
             size: 20,
           ),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
         ],
         _buildPriorityIndicator(theme),
         const SizedBox(width: 12),
@@ -575,7 +575,10 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
           ),
         ],
         const SizedBox(width: 8),
-        StatusBadgeWidget(status: widget.task.status),
+        StatusBadgeWidget(
+          status: widget.task.status,
+          compact: true,
+        ),
       ],
     );
   }
@@ -854,7 +857,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
               borderRadius: BorderRadius.circular(2),
             ),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
@@ -903,7 +906,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
               },
             ),
           if (widget.onDelete != null) ...[
-            Divider(),
+            const Divider(),
             _buildMenuTile(
               icon: PhosphorIcons.trash(),
               title: 'Delete',

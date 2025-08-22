@@ -1,10 +1,14 @@
 import 'dart:async';
 import 'dart:math' as math;
+import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart' as geolocator;
 import 'package:geocoding/geocoding.dart';
-import 'package:flutter/foundation.dart';
 import 'location_service.dart';
 import 'location_models.dart';
+
+// Platform-specific geolocator imports
+import 'dart:io' show Platform;
+const kIsWeb = identical(0, 0.0);
 
 /// Real implementation of LocationService using geolocator
 class RealLocationService implements LocationService {
@@ -44,8 +48,23 @@ class RealLocationService implements LocationService {
   @override
   Future<LocationPermissionStatus> requestPermission() async {
     try {
+      // First check if location services are enabled
+      final serviceEnabled = await isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        if (kDebugMode) {
+          print('Location services are disabled');
+        }
+        return LocationPermissionStatus.serviceDisabled;
+      }
+
       final permission = await geolocator.Geolocator.requestPermission();
-      return _mapGeolocatorPermission(permission);
+      final status = _mapGeolocatorPermission(permission);
+      
+      if (kDebugMode) {
+        print('Location permission requested: $permission -> $status');
+      }
+      
+      return status;
     } catch (e) {
       if (kDebugMode) {
         print('Error requesting location permission: $e');
@@ -76,10 +95,31 @@ class RealLocationService implements LocationService {
         throw Exception('Location permissions are permanently denied');
       }
 
-      // Get current position
+      // Get current position with platform-specific settings
+      late geolocator.LocationSettings locationSettings;
+      
+      if (!kIsWeb && Platform.isAndroid) {
+        locationSettings = const geolocator.LocationSettings(
+          accuracy: geolocator.LocationAccuracy.high,
+          distanceFilter: 0,
+        );
+      } else if (!kIsWeb && Platform.isIOS) {
+        locationSettings = const geolocator.LocationSettings(
+          accuracy: geolocator.LocationAccuracy.high,
+          distanceFilter: 0,
+        );
+      } else {
+        locationSettings = const geolocator.LocationSettings(
+          accuracy: geolocator.LocationAccuracy.high,
+          distanceFilter: 0,
+        );
+      }
+      
       final position = await geolocator.Geolocator.getCurrentPosition(
-        desiredAccuracy: geolocator.LocationAccuracy.high,
-        timeLimit: const Duration(seconds: 10),
+        locationSettings: locationSettings,
+      ).timeout(
+        const Duration(seconds: 10),
+        onTimeout: () => throw Exception('Location request timed out after 10 seconds'),
       );
 
       return LocationData(

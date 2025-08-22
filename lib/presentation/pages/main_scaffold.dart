@@ -12,6 +12,8 @@ import 'calendar_page.dart';
 import 'analytics_page.dart';
 import 'settings_page.dart';
 import 'voice_recording_page.dart';
+import 'voice_only_creation_page.dart';
+import 'location_task_creation_page.dart';
 import '../widgets/enhanced_task_creation_dialog.dart';
 
 import '../widgets/theme_background_widget.dart';
@@ -30,36 +32,36 @@ class MainScaffold extends ConsumerWidget {
 
     // Define the pages
     final pages = [
-      HomePage(),
+      const HomePage(),
       const CalendarPage(),
       const AnalyticsPage(),
       const SettingsPage(),
     ];
 
-    // Define navigation items
+    // Define navigation items (labels removed for mobile bottom nav per REQ 0)
     final navigationItems = [
       AdaptiveNavigationItem(
         icon: PhosphorIcons.house(),
         selectedIcon: PhosphorIcons.house(),
-        label: 'Home',
+        label: '',
         tooltip: 'Go to home screen',
       ),
       AdaptiveNavigationItem(
         icon: PhosphorIcons.calendar(),
         selectedIcon: PhosphorIcons.calendar(),
-        label: 'Calendar',
+        label: '',
         tooltip: 'Go to calendar view',
       ),
       AdaptiveNavigationItem(
         icon: PhosphorIcons.chartBar(),
         selectedIcon: PhosphorIcons.chartBar(),
-        label: 'Analytics',
+        label: '',
         tooltip: 'Go to analytics and insights',
       ),
       AdaptiveNavigationItem(
         icon: PhosphorIcons.gear(),
         selectedIcon: PhosphorIcons.gear(),
-        label: 'Settings',
+        label: '',
         tooltip: 'Go to settings and menu',
       ),
     ];
@@ -237,7 +239,7 @@ class MainScaffold extends ConsumerWidget {
                         Text(
                           'Task Tracker',
                           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ],
@@ -275,7 +277,7 @@ class MainScaffold extends ConsumerWidget {
                                   color: isSelected 
                                     ? Theme.of(context).colorScheme.primary 
                                     : Theme.of(context).colorScheme.onSurfaceVariant,
-                                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                  fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
                                 ),
                               ),
                               selected: isSelected,
@@ -434,6 +436,11 @@ class MainScaffold extends ConsumerWidget {
               child: Container(
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
+                  // Theme border around FAB
+                  border: Border.all(
+                    color: theme.colorScheme.outline.withValues(alpha: 0.3),
+                    width: 1.5,
+                  ),
                   // Enhanced glassmorphism effect
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
@@ -445,11 +452,6 @@ class MainScaffold extends ConsumerWidget {
                     ],
                     stops: const [0.0, 0.7, 1.0],
                   ),
-                  // Subtle border for definition
-                  border: Border.all(
-                    color: theme.colorScheme.primary.withValues(alpha: 0.3),
-                    width: 1.5,
-                  ),
                 ),
                 child: FloatingActionButton.large(
                   heroTag: 'mainFAB',
@@ -457,7 +459,7 @@ class MainScaffold extends ConsumerWidget {
                   backgroundColor: Colors.transparent, // Use container gradient
                   foregroundColor: theme.colorScheme.onPrimary,
                   elevation: 0, // Remove default elevation to use custom shadow
-                  shape: CircleBorder(),
+                  shape: const CircleBorder(),
                   child: Container(
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
@@ -503,51 +505,40 @@ class MainScaffold extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Enhanced icon with larger selection box that covers the icon properly
+                // Enhanced icon with perfectly centered selection rectangle (REQ 0 alignment fix)
                 Flexible(
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    width: 32,
-                    height: 32,
-                    padding: const EdgeInsets.all(6),
+                  child: Container(
+                    width: 36,
+                    height: 36,
+                    alignment: Alignment.center,
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      width: 32,
+                      height: 32,
                     decoration: isSelected ? BoxDecoration(
                       color: theme.colorScheme.primary.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium), // Larger radius
-                    border: Border.all(
-                      color: theme.colorScheme.primary.withValues(alpha: 0.3),
-                      width: 1.5, // Slightly thicker border
-                    ),
-                    boxShadow: [
-                      BoxShadow(
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
                         color: theme.colorScheme.primary.withValues(alpha: 0.3),
-                        blurRadius: 6,
-                        spreadRadius: 2,
+                        width: 1.5,
                       ),
-                    ],
-                  ) : null,
+                      boxShadow: [
+                        BoxShadow(
+                          color: theme.colorScheme.primary.withValues(alpha: 0.25),
+                          blurRadius: 8,
+                          spreadRadius: 0,
+                        ),
+                      ],
+                    ) : null,
                     child: Icon(
                       isSelected ? item.selectedIcon : item.icon,
-                      size: 20,
+                      size: 24,
                       color: isSelected 
                           ? theme.colorScheme.primary 
                           : theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ),
-                const SizedBox(height: 2),
-                Flexible(
-                  child: Text(
-                    item.label,
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: isSelected 
-                          ? theme.colorScheme.primary 
-                          : theme.colorScheme.onSurfaceVariant,
-                      fontSize: 10,
-                    ),
-                    textAlign: TextAlign.center,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
                 ),
               ],
             ),
@@ -580,10 +571,10 @@ class MainScaffold extends ConsumerWidget {
                 Text(
                   'Create New Task',
                   style: theme.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Text(
                   'Choose how you\'d like to create your task',
                   style: theme.textTheme.bodyMedium?.copyWith(
@@ -592,7 +583,7 @@ class MainScaffold extends ConsumerWidget {
                 ),
                 const SizedBox(height: 24),
                 
-                // Task Creation Options
+                // Task Creation Options in order: AI, Voice-Only, Location, Manual
                 _buildTaskCreationOption(
                   context: context,
                   icon: PhosphorIcons.microphone(),
@@ -611,8 +602,47 @@ class MainScaffold extends ConsumerWidget {
                   },
                 ),
                 
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 
+                _buildTaskCreationOption(
+                  context: context,
+                  icon: PhosphorIcons.waveform(),
+                  iconColor: Colors.orange,
+                  title: 'Voice-Only',
+                  subtitle: 'Record audio notes without transcription',
+                  onTap: () async {
+                    Navigator.pop(context);
+                    
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const VoiceOnlyCreationPage(),
+                      ),
+                    );
+                  },
+                ),
+                
+                const SizedBox(height: 12),
+                
+                _buildTaskCreationOption(
+                  context: context,
+                  icon: PhosphorIcons.mapPin(),
+                  iconColor: Colors.blue,
+                  title: 'Location-Based',
+                  subtitle: 'Create task with geofencing alerts',
+                  onTap: () async {
+                    Navigator.pop(context);
+                    
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LocationTaskCreationPage(),
+                      ),
+                    );
+                  },
+                ),
+                
+                const SizedBox(height: 12),
                 
                 _buildTaskCreationOption(
                   context: context,
@@ -686,7 +716,7 @@ class MainScaffold extends ConsumerWidget {
                 size: 24,
               ),
             ),
-            SizedBox(width: 16),
+            const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

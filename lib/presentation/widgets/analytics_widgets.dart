@@ -43,7 +43,7 @@ class AnalyticsMetricCard extends StatelessWidget {
               Row(
                 children: [
                   Icon(icon, color: color, size: 20),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       title,
@@ -59,7 +59,7 @@ class AnalyticsMetricCard extends StatelessWidget {
                 value,
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   color: color,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
               Text(
@@ -94,7 +94,7 @@ class AnalyticsMetricCard extends StatelessWidget {
                             : isPositiveTrend == false
                                 ? Colors.red
                                 : Colors.grey,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ],
@@ -303,7 +303,7 @@ class CategoryItem extends StatelessWidget {
             Text(
               '$percentage%',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ],
@@ -594,7 +594,7 @@ class _StreakMetric extends StatelessWidget {
               value,
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                 color: isActive ? Colors.orange : Theme.of(context).colorScheme.primary,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w500,
               ),
             ),
             const SizedBox(width: 4),
@@ -715,7 +715,7 @@ class ProductivityPatternsWidget extends StatelessWidget {
               'Productivity Patterns',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             
             // Consistency score
             Row(
@@ -728,7 +728,7 @@ class ProductivityPatternsWidget extends StatelessWidget {
                 ),
               ],
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             
             // Peak hours
             if (patterns.peaks.isNotEmpty) ...[
@@ -786,7 +786,7 @@ class ProductivityPatternsWidget extends StatelessWidget {
                         Text(
                           '${(entry.value * 100).round()}%',
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ],
@@ -842,7 +842,7 @@ class PeakHoursAnalysisWidget extends StatelessWidget {
               'Peak Hours Analysis',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             
             // Peak hours
             Row(
@@ -961,7 +961,7 @@ class AdvancedCategoryAnalyticsWidget extends StatelessWidget {
               'Advanced Category Analytics',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             
             // Performance ranking
             if (analytics.ranking.topPerformingCategories.isNotEmpty) ...[
@@ -987,7 +987,7 @@ class AdvancedCategoryAnalyticsWidget extends StatelessWidget {
                       Text(
                         '${(score * 100).round()}%',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],
@@ -1080,7 +1080,7 @@ class AdvancedProductivityInsightsWidget extends StatelessWidget {
                       insights.overallScore.grade,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         color: Colors.white,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),
@@ -1096,7 +1096,7 @@ class AdvancedProductivityInsightsWidget extends StatelessWidget {
                         Text(
                           '${insights.overallScore.overall.round()}/100',
                           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ],
@@ -1105,7 +1105,7 @@ class AdvancedProductivityInsightsWidget extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             
             // Score breakdown
             Row(
@@ -1273,7 +1273,7 @@ class _MetricCard extends StatelessWidget {
           Text(
             value,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],
@@ -1306,7 +1306,7 @@ class _ScoreItem extends StatelessWidget {
         Text(
           '${score.round()}%',
           style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w500,
           ),
         ),
       ],
@@ -1341,7 +1341,7 @@ class AnalyticsExportWidget extends StatelessWidget {
               'Export Analytics',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Row(
               children: [
                 Expanded(

@@ -309,7 +309,7 @@ class _AccessibleButtonState extends State<AccessibleButton>
                 : TypographyConstants.textBase,
             fontWeight: widget.isSecondary 
                 ? TypographyConstants.medium 
-                : TypographyConstants.semiBold,
+                : TypographyConstants.medium,
             color: foregroundColor,
           ),
           textAlign: TextAlign.center,

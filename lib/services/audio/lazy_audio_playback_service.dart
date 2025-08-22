@@ -96,10 +96,8 @@ class LazyAudioPlaybackService {
       if (onProgress != null) {
         _playbackSubscription = _player!.onProgress!.listen(
           (disposition) {
-            if (disposition.position != null && disposition.duration != null) {
-              onProgress(disposition.position!, disposition.duration!);
-            }
-          },
+            onProgress(disposition.position, disposition.duration);
+                    },
         );
       }
 
@@ -240,6 +238,40 @@ class LazyAudioPlaybackService {
   /// Useful for warming up the service when you know it will be needed soon
   Future<bool> warmup() async {
     return await _ensureInitialized();
+  }
+
+  /// Get the duration of an audio file without playing it
+  Future<Duration?> getAudioDuration(String filePath) async {
+    final file = File(filePath);
+    if (!await file.exists()) {
+      if (kDebugMode) {
+        print('Audio file does not exist: $filePath');
+      }
+      return null;
+    }
+
+    // Ensure the service is initialized
+    final initialized = await _ensureInitialized();
+    if (!initialized) {
+      if (kDebugMode) {
+        print('Failed to initialize LazyAudioPlaybackService for duration check');
+      }
+      return null;
+    }
+
+    try {
+      // For now, return null as flutter_sound doesn't provide duration without playback
+      // Real implementation would require additional audio processing libraries
+      if (kDebugMode) {
+        print('LazyAudioPlaybackService: Duration check requested for $filePath');
+      }
+      return null;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error getting audio duration in LazyAudioPlaybackService: $e');
+      }
+      return null;
+    }
   }
 
   /// Get service status for debugging

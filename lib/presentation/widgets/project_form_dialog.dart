@@ -92,7 +92,7 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> {
                       isEditing ? PhosphorIcons.pencil() : PhosphorIcons.plus(),
                       color: _parseColor(_selectedColor),
                     ),
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         isEditing ? 'Edit Project' : 'Create Project',
@@ -133,7 +133,7 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> {
                   textCapitalization: TextCapitalization.words,
                 ),
                 
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 
                 // Project description field
                 TextFormField(
@@ -200,7 +200,7 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> {
                   }).toList(),
                 ),
                 
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 
                 // Deadline selection
                 InkWell(

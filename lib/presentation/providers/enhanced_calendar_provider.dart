@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:table_calendar/table_calendar.dart';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../domain/entities/calendar_event.dart';
 import '../../domain/entities/calendar_event_extensions.dart';
 import '../../domain/entities/task_model.dart';
@@ -18,7 +18,7 @@ class EnhancedCalendarState {
   final List<CalendarEvent> events;
   final List<TaskModel> tasksForSelectedDate;
   final List<TaskModel> allTasks;
-  final CalendarFormat calendarFormat;
+  final CalendarView calendarFormat;
   final bool isLoading;
   final String? errorMessage;
 
@@ -29,7 +29,7 @@ class EnhancedCalendarState {
     this.events = const [],
     this.tasksForSelectedDate = const [],
     this.allTasks = const [],
-    this.calendarFormat = CalendarFormat.month,
+    this.calendarFormat = CalendarView.month,
     this.isLoading = false,
     this.errorMessage,
   });
@@ -41,7 +41,7 @@ class EnhancedCalendarState {
     List<CalendarEvent>? events,
     List<TaskModel>? tasksForSelectedDate,
     List<TaskModel>? allTasks,
-    CalendarFormat? calendarFormat,
+    CalendarView? calendarFormat,
     bool? isLoading,
     String? errorMessage,
   }) {
@@ -127,21 +127,26 @@ class EnhancedCalendarNotifier extends StateNotifier<EnhancedCalendarState> {
 
   /// Change focused date (for navigation)
   void changeFocusedDate(DateTime date) {
-    state = state.copyWith(focusedDate: date);
+    // Safety check to prevent duplicate updates
+    if (state.focusedDate.day != date.day || 
+        state.focusedDate.month != date.month || 
+        state.focusedDate.year != date.year) {
+      state = state.copyWith(focusedDate: date);
+    }
   }
 
   /// Change view mode
   void changeViewMode(CalendarViewMode mode) {
-    CalendarFormat format;
+    CalendarView format;
     switch (mode) {
       case CalendarViewMode.month:
-        format = CalendarFormat.month;
+        format = CalendarView.month;
         break;
       case CalendarViewMode.week:
-        format = CalendarFormat.week;
+        format = CalendarView.week;
         break;
       case CalendarViewMode.day:
-        format = CalendarFormat.week; // Use week format for day view
+        format = CalendarView.day;
         break;
     }
     

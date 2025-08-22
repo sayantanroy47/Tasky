@@ -50,7 +50,7 @@ class ProjectCard extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                     ),
                   ),
-                  SizedBox(width: 12),
+                  const SizedBox(width: 12),
                   
                   // Project name and description
                   Expanded(
@@ -91,8 +91,8 @@ class ProjectCard extends ConsumerWidget {
                           child: Row(
                             children: [
                               Icon(PhosphorIcons.pencil()),
-                              SizedBox(width: 8),
-                              Text('Edit'),
+                              const SizedBox(width: 8),
+                              const Text('Edit'),
                             ],
                           ),
                         ),
@@ -151,7 +151,7 @@ class ProjectCard extends ConsumerWidget {
                     label: '${project.taskCount} tasks',
                   ),
                   
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   
                   // Deadline
                   if (project.hasDeadline)

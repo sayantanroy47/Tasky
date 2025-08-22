@@ -134,7 +134,7 @@ class AnalyticsPageBody extends ConsumerWidget {
                               color: Colors.orange,
                             ),
                           ),
-                          SizedBox(width: 12),
+                          const SizedBox(width: 12),
                           Expanded(
                             child: AnalyticsMetricCard(
                               title: 'Avg Duration',

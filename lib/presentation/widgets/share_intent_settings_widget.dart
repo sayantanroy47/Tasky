@@ -94,7 +94,7 @@ class _ShareIntentSettingsWidgetState extends ConsumerState<ShareIntentSettingsW
               },
             ),
             
-            Divider(),
+            const Divider(),
             
             // Trusted Contacts Section
             const Text(

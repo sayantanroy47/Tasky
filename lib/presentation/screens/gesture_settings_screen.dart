@@ -37,7 +37,7 @@ class GestureSettingsScreen extends ConsumerWidget {
                 child: Column(
                   children: [
                     SwitchListTile(
-                      title: Text('Enable Haptic Feedback'),
+                      title: const Text('Enable Haptic Feedback'),
                       subtitle: const Text('Provide tactile feedback for interactions'),
                       value: hapticSettings.enabled,
                       onChanged: (value) => hapticNotifier.toggleHapticFeedback(value),
@@ -149,7 +149,7 @@ class GestureSettingsScreen extends ConsumerWidget {
                 ),
               ),
               
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
               
               // Test Gestures Section
               _buildSectionHeader(context, 'Test Gestures'),
@@ -332,7 +332,7 @@ class GestureSettingsScreen extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Gesture Tutorial'),
+        title: const Text('Gesture Tutorial'),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,

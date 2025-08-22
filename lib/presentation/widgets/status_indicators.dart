@@ -33,7 +33,7 @@ class _NetworkStatusIndicatorState extends ConsumerState<NetworkStatusIndicator>
   late Animation<double> _pulseAnimation;
 
   ConnectivityResult _connectionStatus = ConnectivityResult.none;
-  StreamSubscription<ConnectivityResult>? _connectivitySubscription;
+  StreamSubscription<List<ConnectivityResult>>? _connectivitySubscription;
   bool _isVisible = false;
   String _connectionSpeed = '';
 
@@ -75,8 +75,7 @@ class _NetworkStatusIndicatorState extends ConsumerState<NetworkStatusIndicator>
   Future<void> _initConnectivity() async {
     late List<ConnectivityResult> results;
     try {
-      final result = await Connectivity().checkConnectivity();
-      results = [result];
+      results = await Connectivity().checkConnectivity();
     } catch (e) {
       results = [ConnectivityResult.none];
     }
@@ -85,7 +84,7 @@ class _NetworkStatusIndicatorState extends ConsumerState<NetworkStatusIndicator>
 
     _updateConnectionStatus(results);
 
-    _connectivitySubscription = Connectivity().onConnectivityChanged.listen((result) => _updateConnectionStatus([result]));
+    _connectivitySubscription = Connectivity().onConnectivityChanged.listen(_updateConnectionStatus);
   }
 
   void _updateConnectionStatus(List<ConnectivityResult> results) {
@@ -248,7 +247,6 @@ class _NetworkStatusIndicatorState extends ConsumerState<NetworkStatusIndicator>
       case ConnectivityResult.other:
         return PhosphorIcons.circuitry();
       case ConnectivityResult.none:
-      default:
         return PhosphorIcons.wifiSlash();
     }
   }
@@ -265,7 +263,6 @@ class _NetworkStatusIndicatorState extends ConsumerState<NetworkStatusIndicator>
       case ConnectivityResult.other:
         return Colors.orange;
       case ConnectivityResult.none:
-      default:
         return Colors.red;
     }
   }
@@ -285,7 +282,6 @@ class _NetworkStatusIndicatorState extends ConsumerState<NetworkStatusIndicator>
       case ConnectivityResult.other:
         return 'Connected';
       case ConnectivityResult.none:
-      default:
         return 'No Connection';
     }
   }
@@ -534,7 +530,7 @@ class _BatteryStatusIndicatorState extends State<BatteryStatusIndicator>
                         alignment: Alignment.center,
                         children: [
                           Icon(
-                            PhosphorIcons.battery(),
+                            PhosphorIcons.batteryFull(),
                             size: config.isMobile ? 20 : 24,
                             color: _getBatteryColor(),
                           ),
@@ -766,7 +762,6 @@ class _ToastWidgetState extends State<_ToastWidget>
       case ToastType.warning:
         return PhosphorIcons.warning();
       case ToastType.info:
-      default:
         return PhosphorIcons.info();
     }
   }
@@ -780,7 +775,6 @@ class _ToastWidgetState extends State<_ToastWidget>
       case ToastType.warning:
         return Colors.orange;
       case ToastType.info:
-      default:
         return Colors.blue;
     }
   }

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:table_calendar/table_calendar.dart';
+import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../domain/entities/task_model.dart';
-import '../../domain/entities/calendar_event.dart';
 import '../../domain/models/enums.dart';
 import '../providers/enhanced_calendar_provider.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -69,7 +68,7 @@ class EnhancedCalendarWidget extends ConsumerWidget {
         Text(
           value,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w500,
             color: color,
           ),
         ),
@@ -111,7 +110,7 @@ class EnhancedCalendarWidget extends ConsumerWidget {
                   color: isSelected 
                       ? Theme.of(context).colorScheme.onPrimary
                       : Theme.of(context).colorScheme.onSurfaceVariant,
-                  fontWeight: isSelected ? FontWeight.bold : null,
+                  fontWeight: isSelected ? FontWeight.w500 : null,
                 ),
               ),
             ),
@@ -140,131 +139,114 @@ class EnhancedCalendarWidget extends ConsumerWidget {
     final tasksByDate = notifier.getTasksByDate();
     final eventsByDate = notifier.getEventsByDate();
 
-    return TableCalendar<TaskModel>(
-      firstDay: DateTime.utc(2020, 1, 1),
-      lastDay: DateTime.utc(2030, 12, 31),
-      focusedDay: state.focusedDate,
-      selectedDayPredicate: (day) => isSameDay(state.selectedDate, day),
-      calendarFormat: state.calendarFormat,
-      
-      // Event loader - combine tasks and events
-      eventLoader: (day) {
-        final tasks = tasksByDate[DateTime(day.year, day.month, day.day)] ?? [];
-        return tasks;
-      },
-      
-      // Styling
-      calendarStyle: CalendarStyle(
-        outsideDaysVisible: false,
-        weekendTextStyle: TextStyle(
-          color: Theme.of(context).colorScheme.error,
-        ),
-        holidayTextStyle: TextStyle(
-          color: Theme.of(context).colorScheme.error,
-        ),
-        selectedDecoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.primary,
-          shape: BoxShape.circle,
-        ),
-        todayDecoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.secondary,
-          shape: BoxShape.circle,
-        ),
-        markerDecoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.tertiary,
-          shape: BoxShape.circle,
-        ),
-        markersMaxCount: 3,
-        markersAlignment: Alignment.bottomCenter,
-      ),
-      
-      // Header styling
-      headerStyle: HeaderStyle(
-        formatButtonVisible: false,
-        titleCentered: true,
-        titleTextStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
-          fontWeight: FontWeight.bold,
-        ) ?? TextStyle(),
-        leftChevronIcon: Icon(
-          PhosphorIcons.caretLeft(),
-          color: Theme.of(context).colorScheme.onSurfaceVariant,
-        ),
-        rightChevronIcon: Icon(
-          PhosphorIcons.caretRight(),
-          color: Theme.of(context).colorScheme.onSurfaceVariant,
-        ),
-      ),
-
-      // Day cell builder to show task indicators
-      calendarBuilders: CalendarBuilders(
-        markerBuilder: (context, day, events) {
-          final tasks = tasksByDate[DateTime(day.year, day.month, day.day)] ?? [];
-          final calendarEvents = eventsByDate[DateTime(day.year, day.month, day.day)] ?? [];
-          
-          if (tasks.isEmpty && calendarEvents.isEmpty) return null;
-          
-          return Positioned(
-            bottom: 1,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                if (tasks.isNotEmpty)
-                  _buildTaskMarker(context, tasks),
-                if (calendarEvents.isNotEmpty) ...[
-                  if (tasks.isNotEmpty) const SizedBox(width: 2),
-                  _buildEventMarker(context, calendarEvents),
-                ],
-              ],
-            ),
-          );
-        },
-      ),
-      
-      // Callbacks
-      onDaySelected: (selectedDay, focusedDay) {
-        notifier.selectDate(selectedDay);
-        notifier.changeFocusedDate(focusedDay);
-      },
-      
-      onPageChanged: (focusedDay) {
-        notifier.changeFocusedDate(focusedDay);
-      },
-    );
-  }
-
-  Widget _buildTaskMarker(BuildContext context, List<TaskModel> tasks) {
-    final completedCount = tasks.where((t) => t.status == TaskStatus.completed).length;
-    final totalCount = tasks.length;
+    // Convert tasks to calendar appointments
+    final appointments = <Appointment>[];
     
-    Color markerColor;
-    if (completedCount == totalCount) {
-      markerColor = Colors.green;
-    } else if (completedCount > 0) {
-      markerColor = Colors.orange;
-    } else {
-      markerColor = Theme.of(context).colorScheme.primary;
+    // Add tasks as appointments
+    for (final entry in tasksByDate.entries) {
+      for (final task in entry.value) {
+        appointments.add(Appointment(
+          startTime: entry.key,
+          endTime: entry.key.add(const Duration(hours: 1)),
+          subject: task.title,
+          color: _getTaskColor(task),
+          notes: task.description ?? '',
+        ));
+      }
     }
     
-    return Container(
-      width: 6,
-      height: 6,
-      decoration: BoxDecoration(
-        color: markerColor,
-        shape: BoxShape.circle,
+    // Add events as appointments
+    for (final entry in eventsByDate.entries) {
+      for (final event in entry.value) {
+        appointments.add(Appointment(
+          startTime: event.startTime,
+          endTime: event.endTime,
+          subject: event.title,
+          color: Colors.blue,
+          notes: event.description ?? '',
+        ));
+      }
+    }
+
+    return SfCalendar(
+      view: _getCalendarView(state.calendarFormat),
+      initialDisplayDate: state.focusedDate,
+      initialSelectedDate: state.selectedDate,
+      dataSource: MeetingDataSource(appointments),
+      monthViewSettings: MonthViewSettings(
+        appointmentDisplayMode: MonthAppointmentDisplayMode.indicator,
+        showAgenda: false,
+        dayFormat: 'EEE',
+        monthCellStyle: MonthCellStyle(
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          todayBackgroundColor: Theme.of(context).colorScheme.primaryContainer,
+          leadingDatesBackgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+          trailingDatesBackgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+        ),
       ),
+      headerStyle: CalendarHeaderStyle(
+        textAlign: TextAlign.center,
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        textStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      selectionDecoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.primary,
+          width: 2,
+        ),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      todayHighlightColor: Theme.of(context).colorScheme.secondary,
+      onTap: (CalendarTapDetails details) {
+        if (details.date != null) {
+          // Defer state updates to ensure they happen outside build cycle
+          Future(() {
+            notifier.selectDate(details.date!);
+            notifier.changeFocusedDate(details.date!);
+          });
+        }
+      },
+      onViewChanged: (ViewChangedDetails details) {
+        if (details.visibleDates.isNotEmpty) {
+          // Defer state update to avoid modifying provider during build
+          Future(() => notifier.changeFocusedDate(details.visibleDates.first));
+        }
+      },
     );
   }
 
-  Widget _buildEventMarker(BuildContext context, List<CalendarEvent> events) {
-    return Container(
-      width: 6,
-      height: 6,
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.secondary,
-        shape: BoxShape.rectangle,
-      ),
-    );
+  CalendarView _getCalendarView(CalendarView format) {
+    switch (format) {
+      case CalendarView.month:
+        return CalendarView.month;
+      case CalendarView.week:
+        return CalendarView.week;
+      case CalendarView.workWeek:
+        return CalendarView.workWeek;
+      case CalendarView.day:
+        return CalendarView.day;
+      default:
+        return CalendarView.month;
+    }
   }
+
+  Color _getTaskColor(TaskModel task) {
+    switch (task.priority) {
+      case TaskPriority.urgent:
+        return Colors.red;
+      case TaskPriority.high:
+        return Colors.orange;
+      case TaskPriority.medium:
+        return Colors.blue;
+      case TaskPriority.low:
+        return Colors.green;
+    }
+  }
+
+  // Removed unused marker methods
 
   Widget _buildSelectedDateDetails(
     BuildContext context,
@@ -285,7 +267,7 @@ class EnhancedCalendarWidget extends ConsumerWidget {
           Text(
             'Tasks for ${_formatDate(state.selectedDate)}',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w500,
             ),
           ),
           const SizedBox(height: 8),
@@ -322,7 +304,7 @@ class EnhancedCalendarWidget extends ConsumerWidget {
               color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           ElevatedButton.icon(
             onPressed: () => _showCreateTaskDialog(context, date),
             icon: Icon(PhosphorIcons.plus()),
@@ -465,7 +447,7 @@ class _CreateTaskDialogState extends ConsumerState<_CreateTaskDialog> {
           const SizedBox(height: 16),
           
           DropdownButtonFormField<TaskPriority>(
-            value: _selectedPriority,
+            initialValue: _selectedPriority,
             decoration: const InputDecoration(
               labelText: 'Priority',
               border: OutlineInputBorder(),
@@ -541,6 +523,38 @@ class _CreateTaskDialogState extends ConsumerState<_CreateTaskDialog> {
       'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
     ];
     return '${months[date.month - 1]} ${date.day}, ${date.year}';
+  }
+}
+
+/// Data source for Syncfusion Calendar
+class MeetingDataSource extends CalendarDataSource {
+  MeetingDataSource(List<Appointment> source) {
+    appointments = source;
+  }
+
+  @override
+  DateTime getStartTime(int index) {
+    return appointments![index].startTime;
+  }
+
+  @override
+  DateTime getEndTime(int index) {
+    return appointments![index].endTime;
+  }
+
+  @override
+  String getSubject(int index) {
+    return appointments![index].subject;
+  }
+
+  @override
+  Color getColor(int index) {
+    return appointments![index].color;
+  }
+
+  @override
+  bool isAllDay(int index) {
+    return appointments![index].isAllDay;
   }
 }
 

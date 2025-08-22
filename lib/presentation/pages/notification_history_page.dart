@@ -29,7 +29,7 @@ class NotificationHistoryPage extends ConsumerWidget {
           ],
         ),
         body: scheduledNotificationsAsync.when(
-        loading: () => Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -100,8 +100,8 @@ class NotificationHistoryPage extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Notification Statistics',
-              style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.bold),
+            const Text('Notification Statistics',
+              style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 16),
             Row(
@@ -182,7 +182,7 @@ class NotificationHistoryPage extends ConsumerWidget {
           value,
           style: const TextStyle(
             fontSize: TypographyConstants.displaySmall,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w500,
           ),
         ),
         Text(
@@ -234,7 +234,7 @@ class NotificationHistoryPage extends ConsumerWidget {
             padding: EdgeInsets.all(16),
             child: Text(
               'Scheduled Notifications',
-              style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.w500),
             ),
           ),
           ListView.separated(
@@ -294,7 +294,7 @@ class NotificationHistoryPage extends ConsumerWidget {
               color: notification.sent ? Colors.grey[500] : Colors.grey[700],
             ),
           ),
-          SizedBox(height: 4),
+          const SizedBox(height: 4),
           Row(
             children: [
               Icon(
@@ -365,8 +365,8 @@ class NotificationHistoryPage extends ConsumerWidget {
                   child: Row(
                     children: [
                       Icon(PhosphorIcons.xCircle(), size: 18),
-                      SizedBox(width: 8),
-                      Text('Cancel'),
+                      const SizedBox(width: 8),
+                      const Text('Cancel'),
                     ],
                   ),
                 ),
@@ -375,8 +375,8 @@ class NotificationHistoryPage extends ConsumerWidget {
                   child: Row(
                     children: [
                       Icon(PhosphorIcons.clock(), size: 18),
-                      SizedBox(width: 8),
-                      Text('Reschedule'),
+                      const SizedBox(width: 8),
+                      const Text('Reschedule'),
                     ],
                   ),
                 ),

@@ -280,14 +280,15 @@ class _AnimatedMenuItemState extends State<_AnimatedMenuItem>
                   if (widget.item.icon != null)
                     AnimatedContainer(
                       duration: const Duration(milliseconds: 150),
-                      transform: Matrix4.identity()
-                        ..scale(_isHovered ? 1.1 : 1.0),
-                      child: Icon(
-                        widget.item.icon,
-                        size: 20,
-                        color: widget.item.enabled
-                            ? (widget.item.iconColor ?? theme.colorScheme.onSurface)
-                            : theme.colorScheme.onSurface.withValues(alpha: 0.38),
+                      child: Transform.scale(
+                        scale: _isHovered ? 1.1 : 1.0,
+                        child: Icon(
+                          widget.item.icon,
+                          size: 20,
+                          color: widget.item.enabled
+                              ? (widget.item.iconColor ?? theme.colorScheme.onSurface)
+                              : theme.colorScheme.onSurface.withValues(alpha: 0.38),
+                        ),
                       ),
                     ),
                   

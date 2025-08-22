@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../domain/entities/recurrence_pattern.dart';
 import '../../domain/entities/task_enums.dart';
+import 'modern_radio_widgets.dart';
 
 /// Widget for configuring recurrence patterns
 class RecurrencePatternPicker extends StatefulWidget {
@@ -78,7 +79,7 @@ class _RecurrencePatternPickerState extends State<RecurrencePatternPicker> {
         ),
         const SizedBox(height: 8),
         DropdownButtonFormField<RecurrenceType>(
-          value: _selectedType,
+          initialValue: _selectedType,
           decoration: const InputDecoration(
             border: OutlineInputBorder(),
             contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -259,32 +260,37 @@ class _RecurrencePatternPickerState extends State<RecurrencePatternPicker> {
         ),
         const SizedBox(height: 8),
         
-        // Never ends option
-        RadioListTile<String>(
-          title: const Text('Never'),
-          value: 'never',
+        ModernRadioGroup<String>(
           groupValue: _getEndConditionValue(),
           onChanged: (value) {
             setState(() {
-              _endDate = null;
-              _maxOccurrences = null;
+              if (value == 'never') {
+                _endDate = null;
+                _maxOccurrences = null;
+              } else if (value == 'date') {
+                _endDate = DateTime.now().add(const Duration(days: 30));
+                _maxOccurrences = null;
+              } else if (value == 'count') {
+                _endDate = null;
+                _maxOccurrences = 10;
+              }
               _updatePattern();
             });
           },
-        ),
-        
-        // End date option
-        RadioListTile<String>(
-          title: const Text('On date'),
-          value: 'date',
-          groupValue: _getEndConditionValue(),
-          onChanged: (value) {
-            setState(() {
-              _endDate = DateTime.now().add(const Duration(days: 30));
-              _maxOccurrences = null;
-              _updatePattern();
-            });
-          },
+          options: const [
+            ModernRadioOption<String>(
+              value: 'never',
+              title: Text('Never'),
+            ),
+            ModernRadioOption<String>(
+              value: 'date',
+              title: Text('On date'),
+            ),
+            ModernRadioOption<String>(
+              value: 'count',
+              title: Text('After number of occurrences'),
+            ),
+          ],
         ),
         
         if (_endDate != null) ...[
@@ -304,20 +310,6 @@ class _RecurrencePatternPickerState extends State<RecurrencePatternPicker> {
             ),
           ),
         ],
-        
-        // Max occurrences option
-        RadioListTile<String>(
-          title: const Text('After number of occurrences'),
-          value: 'count',
-          groupValue: _getEndConditionValue(),
-          onChanged: (value) {
-            setState(() {
-              _endDate = null;
-              _maxOccurrences = 10;
-              _updatePattern();
-            });
-          },
-        ),
         
         if (_maxOccurrences != null) ...[
           Padding(

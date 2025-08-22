@@ -210,7 +210,7 @@ class _NearbyTasksPageState extends ConsumerState<NearbyTasksPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Filter Options'),
+        title: const Text('Filter Options'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

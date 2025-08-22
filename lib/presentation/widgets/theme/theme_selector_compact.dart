@@ -36,7 +36,7 @@ class CompactThemeSelector extends ConsumerWidget {
         size: 20,
       ),
       tooltip: 'Select Theme',
-      offset: Offset(0, 40),
+      offset: const Offset(0, 40),
       itemBuilder: (context) => [
         if (showCurrentTheme && themeState.currentTheme != null) ...[
           PopupMenuItem<String>(
@@ -59,7 +59,7 @@ class CompactThemeSelector extends ConsumerWidget {
               const Text('Random Theme'),
               const Spacer(),
               Icon(
-                PhosphorIcons.dice(),
+                PhosphorIcons.shuffle(),
                 size: 16,
                 color: Theme.of(context).colorScheme.primary,
               ),
@@ -126,7 +126,7 @@ class CompactThemeSelector extends ConsumerWidget {
             size: 16,
             color: theme.colors.primary,
           ),
-          SizedBox(width: 12),
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -247,7 +247,7 @@ class ThemeHistorySelector extends ConsumerWidget {
             ),
           ),
         ),
-        PopupMenuDivider(),
+        const PopupMenuDivider(),
         ...history.map((theme) => PopupMenuItem<String>(
               value: theme.metadata.id,
               child: Row(

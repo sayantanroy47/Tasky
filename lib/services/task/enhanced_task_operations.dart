@@ -53,7 +53,7 @@ class EnhancedTaskOperations {
 
       // Schedule notification if needed
       if (task.dueDate != null && _notificationService != null) {
-        await _notificationService!.scheduleTaskReminder(
+        await _notificationService.scheduleTaskReminder(
           task: task,
           scheduledTime: task.dueDate ?? DateTime.now().add(const Duration(hours: 1)),
         );
@@ -130,9 +130,9 @@ class EnhancedTaskOperations {
 
       // Update notifications if needed
       if (updatedTask.dueDate != original?.dueDate && _notificationService != null) {
-        await _notificationService!.cancelTaskNotifications(updatedTask.id);
+        await _notificationService.cancelTaskNotifications(updatedTask.id);
         if (updatedTask.dueDate != null) {
-          await _notificationService!.scheduleTaskReminder(
+          await _notificationService.scheduleTaskReminder(
             task: updatedTask,
             scheduledTime: updatedTask.dueDate!,
           );
@@ -218,12 +218,12 @@ class EnhancedTaskOperations {
 
         // Cancel notification
         if (_notificationService != null) {
-          await _notificationService!.cancelTaskNotifications(updatedTask.id);
+          await _notificationService.cancelTaskNotifications(updatedTask.id);
         }
       } else {
         // Re-schedule notification if uncompleted
         if (updatedTask.dueDate != null && _notificationService != null) {
-          await _notificationService!.scheduleTaskReminder(
+          await _notificationService.scheduleTaskReminder(
             task: updatedTask,
             scheduledTime: updatedTask.dueDate!,
           );
@@ -314,7 +314,7 @@ class EnhancedTaskOperations {
 
       // Cancel notifications
       if (_notificationService != null) {
-        await _notificationService!.cancelTaskNotifications(task.id);
+        await _notificationService.cancelTaskNotifications(task.id);
       }
 
       // Show feedback

@@ -84,7 +84,7 @@ class _HelpPageState extends State<HelpPage> with SingleTickerProviderStateMixin
                               Text(
                                 'Welcome to Tasky Help',
                                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                  fontWeight: FontWeight.bold,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                               const SizedBox(height: 4),
@@ -170,7 +170,7 @@ class _HelpPageState extends State<HelpPage> with SingleTickerProviderStateMixin
             contentPadding: const EdgeInsets.all(16.0),
             title: Text(
               topic.title,
-              style: TextStyle(fontWeight: FontWeight.w600),
+              style: const TextStyle(fontWeight: FontWeight.w600),
             ),
             subtitle: Text(
               _getTopicPreview(topic.content),
@@ -209,7 +209,7 @@ class _HelpPageState extends State<HelpPage> with SingleTickerProviderStateMixin
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Send Feedback'),
+        title: const Text('Send Feedback'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -221,16 +221,16 @@ class _HelpPageState extends State<HelpPage> with SingleTickerProviderStateMixin
             Row(
               children: [
                 Icon(PhosphorIcons.envelope(), size: 16),
-                SizedBox(width: 8),
-                Text('Settings → Send Feedback'),
+                const SizedBox(width: 8),
+                const Text('Settings → Send Feedback'),
               ],
             ),
             const SizedBox(height: 8),
             Row(
               children: [
                 Icon(PhosphorIcons.bug(), size: 16),
-                SizedBox(width: 8),
-                Text('Report bugs or suggest features'),
+                const SizedBox(width: 8),
+                const Text('Report bugs or suggest features'),
               ],
             ),
           ],

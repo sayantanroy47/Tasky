@@ -10,7 +10,7 @@ import 'notification_providers.dart';
 
 // Location service provider
 final locationServiceProvider = Provider<LocationService>((ref) {
-  return LocationServiceImpl();
+  return LocationServiceImpl.getInstance();
 });
 
 // Current location provider

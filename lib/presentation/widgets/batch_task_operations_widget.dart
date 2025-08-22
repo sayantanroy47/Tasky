@@ -8,6 +8,7 @@ import '../providers/project_providers.dart';
 import 'glassmorphism_container.dart';
 import 'loading_error_widgets.dart' as loading_widgets;
 import '../../core/theme/typography_constants.dart';
+import '../../core/accessibility/touch_target_validator.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Comprehensive batch operations widget for managing multiple tasks
@@ -63,7 +64,7 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
                   value: 'complete',
                   child: ListTile(
                     leading: Icon(PhosphorIcons.checkCircle(), color: Colors.green),
-                    title: Text('Mark as Complete'),
+                    title: const Text('Mark as Complete'),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
@@ -71,7 +72,7 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
                   value: 'incomplete',
                   child: ListTile(
                     leading: Icon(PhosphorIcons.circle()),
-                    title: Text('Mark as Incomplete'),
+                    title: const Text('Mark as Incomplete'),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
@@ -79,7 +80,7 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
                   value: 'priority',
                   child: ListTile(
                     leading: Icon(PhosphorIcons.flag()),
-                    title: Text('Change Priority'),
+                    title: const Text('Change Priority'),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
@@ -87,7 +88,7 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
                   value: 'project',
                   child: ListTile(
                     leading: Icon(PhosphorIcons.folder()),
-                    title: Text('Move to Project'),
+                    title: const Text('Move to Project'),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
@@ -95,7 +96,7 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
                   value: 'duplicate',
                   child: ListTile(
                     leading: Icon(PhosphorIcons.copy()),
-                    title: Text('Duplicate Tasks'),
+                    title: const Text('Duplicate Tasks'),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
@@ -103,7 +104,7 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
                   value: 'export',
                   child: ListTile(
                     leading: Icon(PhosphorIcons.download()),
-                    title: Text('Export Tasks'),
+                    title: const Text('Export Tasks'),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
@@ -111,7 +112,7 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
                   value: 'delete',
                   child: ListTile(
                     leading: Icon(PhosphorIcons.trash(), color: Colors.red),
-                    title: Text('Delete Tasks', style: TextStyle(color: Colors.red)),
+                    title: const Text('Delete Tasks', style: TextStyle(color: Colors.red)),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
@@ -321,7 +322,7 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
                     onChanged: (_) => _toggleTaskSelection(task.id),
                   ),
                   
-                  SizedBox(width: 12),
+                  const SizedBox(width: 12),
                   
                   // Task content
                   Expanded(
@@ -597,9 +598,10 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
           children: [
             ListTile(
               title: const Text('All Status'),
-              leading: Radio<TaskStatus?>(
+              leading: AccessibleRadio<TaskStatus?>(
                 value: null,
                 groupValue: _filterStatus,
+                semanticLabel: 'All Status',
                 onChanged: (value) {
                   setState(() => _filterStatus = value);
                   Navigator.pop(context);
@@ -608,9 +610,10 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
             ),
             ...TaskStatus.values.map((status) => ListTile(
               title: Text(status.displayName),
-              leading: Radio<TaskStatus?>(
+              leading: AccessibleRadio<TaskStatus?>(
                 value: status,
                 groupValue: _filterStatus,
+                semanticLabel: 'Filter by ${status.displayName}',
                 onChanged: (value) {
                   setState(() => _filterStatus = value);
                   Navigator.pop(context);
@@ -634,9 +637,10 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
           children: [
             ListTile(
               title: const Text('All Priorities'),
-              leading: Radio<TaskPriority?>(
+              leading: AccessibleRadio<TaskPriority?>(
                 value: null,
                 groupValue: _filterPriority,
+                semanticLabel: 'All Priorities',
                 onChanged: (value) {
                   setState(() => _filterPriority = value);
                   Navigator.pop(context);
@@ -645,9 +649,10 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
             ),
             ...TaskPriority.values.map((priority) => ListTile(
               title: Text(priority.displayName),
-              leading: Radio<TaskPriority?>(
+              leading: AccessibleRadio<TaskPriority?>(
                 value: priority,
                 groupValue: _filterPriority,
+                semanticLabel: 'Filter by ${priority.displayName}',
                 onChanged: (value) {
                   setState(() => _filterPriority = value);
                   Navigator.pop(context);
@@ -674,9 +679,10 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
               children: [
                 ListTile(
                   title: const Text('All Projects'),
-                  leading: Radio<String?>(
+                  leading: AccessibleRadio<String?>(
                     value: null,
                     groupValue: _filterProject,
+                    semanticLabel: 'All Projects',
                     onChanged: (value) {
                       setState(() => _filterProject = value);
                       Navigator.pop(context);
@@ -685,9 +691,10 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
                 ),
                 ...projects.map((project) => ListTile(
                   title: Text(project.name),
-                  leading: Radio<String?>(
+                  leading: AccessibleRadio<String?>(
                     value: project.id,
                     groupValue: _filterProject,
+                    semanticLabel: 'Filter by project ${project.name}',
                     onChanged: (value) {
                       setState(() => _filterProject = value);
                       Navigator.pop(context);

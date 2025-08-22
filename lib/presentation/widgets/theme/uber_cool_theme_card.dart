@@ -45,7 +45,7 @@ class _UberCoolThemeCardState extends State<UberCoolThemeCard>
 
   void _initializeAnimation() {
     _hoverController = AnimationController(
-      duration: Duration(milliseconds: 200),
+      duration: const Duration(milliseconds: 200),
       vsync: this,
     );
     
@@ -127,7 +127,7 @@ class _UberCoolThemeCardState extends State<UberCoolThemeCard>
           children: [// Base background with theme surface
             Container(
               decoration: BoxDecoration(
-                color: Color(colors.surface.value),
+                color: colors.surface,
                 border: widget.isSelected 
                     ? Border.all(color: colors.primary.withValues(alpha: 0.4), width: 2)
                     : Border.all(color: theme.colorScheme.outline.withValues(alpha: 0.1)),
@@ -163,20 +163,20 @@ class _UberCoolThemeCardState extends State<UberCoolThemeCard>
       child: Row(
         children: [Expanded(
             flex: 2,
-            child: Container(color: Color(colors.primary.value)),
+            child: Container(color: colors.primary),
           ),
           Expanded(
             flex: 2,
-            child: Container(color: Color(colors.secondary.value)),
+            child: Container(color: colors.secondary),
           ),
           Expanded(
             flex: 1,
-            child: Container(color: Color(colors.accent.value)),
+            child: Container(color: colors.accent),
           ),
           if (colors.tertiary != colors.accent) ...[
             Expanded(
               flex: 1,
-              child: Container(color: Color(colors.tertiary.value)),
+              child: Container(color: colors.tertiary),
             ),]]),
     );
   }
@@ -205,7 +205,7 @@ class _UberCoolThemeCardState extends State<UberCoolThemeCard>
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [SizedBox(height: 8), // Space for color strip
+        children: [const SizedBox(height: 8), // Space for color strip
           
           // Theme name - smaller, 2-line, centered
           Center(
@@ -214,7 +214,7 @@ class _UberCoolThemeCardState extends State<UberCoolThemeCard>
               TextStyle(
                 fontSize: TypographyConstants.textBase,
                 fontWeight: FontWeight.w600,
-                color: Color(colors.onSurface.value),
+                color: colors.onSurface,
                 letterSpacing: 0.2,
                 height: 1.2,
               ),
@@ -265,7 +265,7 @@ class _UberCoolThemeCardState extends State<UberCoolThemeCard>
           TextSpan(
             text: text.substring(queryIndex, queryIndex + query.length),
             style: style.copyWith(
-              backgroundColor: Color(widget.theme.colors.primary.value).withValues(alpha: 0.3),
+              backgroundColor: widget.theme.colors.primary.withValues(alpha: 0.3),
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -283,29 +283,29 @@ class _UberCoolThemeCardState extends State<UberCoolThemeCard>
               child: Container(
                 height: 32,
                 decoration: BoxDecoration(
-                  color: Color(colors.primary.value),
+                  color: colors.primary,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Center(
                   child: Icon(
                     PhosphorIcons.circle(),
-                    color: Color(colors.onPrimary.value),
+                    color: colors.onPrimary,
                     size: 14,
                   ),
                 ),
               ),
             ),
-            SizedBox(width: 6),
+            const SizedBox(width: 6),
             // Surface color demo
             Expanded(
               flex: 3,
               child: Container(
                 height: 32,
                 decoration: BoxDecoration(
-                  color: Color(colors.surface.value),
+                  color: colors.surface,
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: Color(colors.outline.value).withValues(alpha: 0.2),
+                    color: colors.outline.withValues(alpha: 0.2),
                     width: 1,
                   ),
                 ),
@@ -317,7 +317,7 @@ class _UberCoolThemeCardState extends State<UberCoolThemeCard>
                         width: 12,
                         height: 3,
                         decoration: BoxDecoration(
-                          color: Color(colors.onSurface.value).withValues(alpha: 0.6),
+                          color: colors.onSurface.withValues(alpha: 0.6),
                           borderRadius: BorderRadius.circular(2),
                         ),
                       ),
@@ -325,21 +325,21 @@ class _UberCoolThemeCardState extends State<UberCoolThemeCard>
                         width: 16,
                         height: 3,
                         decoration: BoxDecoration(
-                          color: Color(colors.onSurface.value).withValues(alpha: 0.6),
+                          color: colors.onSurface.withValues(alpha: 0.6),
                           borderRadius: BorderRadius.circular(2),
                         ),
                       )]),
                 ),
               ),
             ),
-            SizedBox(width: 6),
+            const SizedBox(width: 6),
             // Accent color demo
             Expanded(
               flex: 1,
               child: Container(
                 height: 32,
                 decoration: BoxDecoration(
-                  color: Color(colors.accent.value),
+                  color: colors.accent,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Center(
@@ -347,19 +347,19 @@ class _UberCoolThemeCardState extends State<UberCoolThemeCard>
                     width: 8,
                     height: 8,
                     decoration: BoxDecoration(
-                      color: Color(colors.onSecondary.value),
+                      color: colors.onSecondary,
                       shape: BoxShape.circle,
                     ),
                   ),
                 ),
               ),
             )]),
-        SizedBox(height: 6),
+        const SizedBox(height: 6),
         // Secondary color demo - full width, shorter
         Container(
           height: 20,
           decoration: BoxDecoration(
-            color: Color(colors.secondary.value),
+            color: colors.secondary,
             borderRadius: BorderRadius.circular(6),
           ),
           child: Row(
@@ -369,7 +369,7 @@ class _UberCoolThemeCardState extends State<UberCoolThemeCard>
                 width: 4,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Color(colors.onSecondary.value),
+                  color: colors.onSecondary,
                   shape: BoxShape.circle,
                 ),
               ),
@@ -377,7 +377,7 @@ class _UberCoolThemeCardState extends State<UberCoolThemeCard>
                 width: 4,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Color(colors.onSecondary.value),
+                  color: colors.onSecondary,
                   shape: BoxShape.circle,
                 ),
               ),
@@ -385,7 +385,7 @@ class _UberCoolThemeCardState extends State<UberCoolThemeCard>
                 width: 4,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Color(colors.onSecondary.value),
+                  color: colors.onSecondary,
                   shape: BoxShape.circle,
                 ),
               )]),
@@ -399,17 +399,17 @@ class _UberCoolThemeCardState extends State<UberCoolThemeCard>
       child: Container(
         padding: const EdgeInsets.all(6),
         decoration: BoxDecoration(
-          color: Color(widget.theme.colors.primary.value),
+          color: widget.theme.colors.primary,
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: Color(widget.theme.colors.primary.value).withValues(alpha: 0.4),
+              color: widget.theme.colors.primary.withValues(alpha: 0.4),
               blurRadius: 8,
               spreadRadius: 1,
             )]),
         child: Icon(
           PhosphorIcons.check(),
-          color: Color(widget.theme.colors.onPrimary.value),
+          color: widget.theme.colors.onPrimary,
           size: 14,
         ),
       ),
@@ -422,7 +422,7 @@ class _UberCoolThemeCardState extends State<UberCoolThemeCard>
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: Color(colors.primary.value).withValues(alpha: 0.3 * _hoverAnimation.value),
+            color: colors.primary.withValues(alpha: 0.3 * _hoverAnimation.value),
             width: 1,
           ),
         ),

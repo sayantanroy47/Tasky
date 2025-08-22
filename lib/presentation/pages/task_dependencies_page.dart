@@ -25,7 +25,7 @@ class TaskDependenciesPage extends ConsumerWidget {
                 Text(
                   'Manage Task Dependencies',
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
                 const SizedBox(height: 8),

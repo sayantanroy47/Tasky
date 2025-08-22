@@ -94,13 +94,13 @@ class TaskSchedulingView extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(PhosphorIcons.checkCircle(), size: 64, color: Colors.green),
-                SizedBox(height: 16),
-                Text(
+                const SizedBox(height: 16),
+                const Text(
                   'All tasks are scheduled!',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 8),
-                Text('Great job staying organized!'),
+                const SizedBox(height: 8),
+                const Text('Great job staying organized!'),
               ],
             ),
           );
@@ -161,7 +161,7 @@ class UnscheduledTaskCard extends ConsumerWidget {
         ),
         title: Text(
           task.title,
-          style: TextStyle(fontWeight: FontWeight.bold),
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -382,7 +382,7 @@ class _CreateEventDialogState extends ConsumerState<CreateEventDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Create Event'),
+      title: const Text('Create Event'),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -438,7 +438,7 @@ class _CreateEventDialogState extends ConsumerState<CreateEventDialog> {
             
             // All day toggle
             SwitchListTile(
-              title: Text('All Day'),
+              title: const Text('All Day'),
               value: isAllDay,
               onChanged: (value) => setState(() => isAllDay = value),
             ),
@@ -478,7 +478,7 @@ class _CreateEventDialogState extends ConsumerState<CreateEventDialog> {
             ],
             
             // Color picker
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             const Text('Event Color'),
             const SizedBox(height: 8),
             Wrap(

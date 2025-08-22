@@ -58,7 +58,7 @@ void main() {
 
   group('NavigationState Tests', () {
     test('should create default navigation state', () {
-      const state = NavigationState();
+      final state = NavigationState();
       
       expect(state.currentDestination, AppNavigationDestination.home);
       expect(state.selectedIndex, 0);
@@ -66,7 +66,7 @@ void main() {
     });
 
     test('should create navigation state with custom values', () {
-      const state = NavigationState(
+      final state = NavigationState(
         currentDestination: AppNavigationDestination.calendar,
         selectedIndex: 1,
         canPop: true,
@@ -78,7 +78,7 @@ void main() {
     });
 
     test('should copy with new values', () {
-      const originalState = NavigationState();
+      final originalState = NavigationState();
       final newState = originalState.copyWith(
         currentDestination: AppNavigationDestination.analytics,
         selectedIndex: 2,
@@ -96,19 +96,19 @@ void main() {
     });
 
     test('should have correct equality', () {
-      const state1 = NavigationState(
+      final state1 = NavigationState(
         currentDestination: AppNavigationDestination.calendar,
         selectedIndex: 1,
         canPop: true,
       );
       
-      const state2 = NavigationState(
+      final state2 = NavigationState(
         currentDestination: AppNavigationDestination.calendar,
         selectedIndex: 1,
         canPop: true,
       );
       
-      const state3 = NavigationState(
+      final state3 = NavigationState(
         currentDestination: AppNavigationDestination.home,
         selectedIndex: 0,
         canPop: false,
@@ -124,7 +124,7 @@ void main() {
       final container = ProviderContainer();
       
       // Set navigation state with invalid index
-      container.read(navigationProvider.notifier).state = const NavigationState(
+      container.read(navigationProvider.notifier).state = NavigationState(
         currentDestination: AppNavigationDestination.home,
         selectedIndex: 5, // Invalid index - out of bounds
         canPop: false,
@@ -141,7 +141,7 @@ void main() {
       final container = ProviderContainer();
       
       // Set navigation state with negative index
-      container.read(navigationProvider.notifier).state = const NavigationState(
+      container.read(navigationProvider.notifier).state = NavigationState(
         currentDestination: AppNavigationDestination.home,
         selectedIndex: -1, // Invalid negative index
         canPop: false,

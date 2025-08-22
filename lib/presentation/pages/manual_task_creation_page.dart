@@ -39,7 +39,7 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
   
   // Task properties
   TaskPriority _priority = TaskPriority.medium;
-  DateTime? _dueDate;
+  DateTime? _dueDate = DateTime.now();
   TimeOfDay? _dueTime;
   DateTime? _reminderDate;
   TimeOfDay? _reminderTime;
@@ -89,7 +89,7 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
       return time != null ? 'Today at ${time.format(context)}' : 'Today';
     }
     
-    final tomorrow = now.add(Duration(days: 1));
+    final tomorrow = now.add(const Duration(days: 1));
     if (dateTime.day == tomorrow.day && dateTime.month == tomorrow.month && dateTime.year == tomorrow.year) {
       return time != null ? 'Tomorrow at ${time.format(context)}' : 'Tomorrow';
     }
@@ -144,7 +144,8 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Task created successfully!'),
+          const SnackBar(
+            content: Text('Task created successfully!'),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -188,7 +189,7 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
                         height: 16,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : const Text("Create"),
+                    : const Text('Create'),
               ),
             ),
           ],
@@ -201,39 +202,41 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
               child: Form(
                 key: _formKey,
                 child: Column(
-                  children: [SizedBox(height: 20),
+                  children: [
+                    const SizedBox(height: 20),
                     
                     // Title Section
                     _buildTitleSection(context, theme),
                     
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     
                     // Description Section
                     _buildDescriptionSection(context, theme),
                     
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     
                     // Priority Section
                     _buildPrioritySection(context, theme),
                     
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     
                     // Due Date Section
                     _buildDueDateSection(context, theme),
                     
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     
                     // Reminder Section
                     _buildReminderSection(context, theme),
                     
-                    SizedBox(height: 32),
+                    const SizedBox(height: 32),
                     
                     // Create Button
                     _buildCreateButton(context, theme),
                     
-                    SizedBox(height: 100), // Bottom padding
+                    const SizedBox(height: 100), // Bottom padding
                   ],
                 ),
+              ),
             ),
           ),
         ),
@@ -248,21 +251,24 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
       borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [Row(
+        children: [
+          Row(
             children: [
               Icon(
                 PhosphorIcons.listChecks(),
                 size: 24,
                 color: theme.colorScheme.primary,
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text(
                 'Task Title',
                 style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                 ),
-              )]),
-          SizedBox(height: 12),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
           TextFormField(
             controller: _titleController,
             decoration: InputDecoration(
@@ -278,7 +284,9 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
               return null;
             },
             textInputAction: TextInputAction.next,
-          )]),
+          ),
+        ],
+      ),
     );
   }
   
@@ -296,21 +304,23 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
                 size: 20,
                 color: theme.colorScheme.primary,
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text(
                 'Description',
                 style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text(
                 '(Optional)',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
-              )]),
-          SizedBox(height: 12),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
           TextFormField(
             controller: _descriptionController,
             decoration: InputDecoration(
@@ -321,7 +331,9 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
             ),
             maxLines: 3,
             textInputAction: TextInputAction.newline,
-          )]),
+          ),
+        ],
+      ),
     );
   }
   
@@ -339,14 +351,16 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
                 size: 20,
                 color: theme.colorScheme.primary,
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text(
                 'Priority',
                 style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                 ),
-              )]),
-          SizedBox(height: 12),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
           Row(
             children: TaskPriority.values.map((priority) {
               final isSelected = _priority == priority;
@@ -382,21 +396,25 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
                               color: isSelected ? color : theme.colorScheme.onSurfaceVariant,
                               size: 20,
                             ),
-                            SizedBox(height: 4),
+                            const SizedBox(height: 4),
                             Text(
                               priority.name.toUpperCase(),
                               style: theme.textTheme.bodySmall?.copyWith(
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.w500,
                                 color: isSelected ? color : theme.colorScheme.onSurfaceVariant,
                               ),
-                            )]),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
               );
             }).toList(),
-          )]),
+          ),
+        ],
+      ),
     );
   }
   
@@ -414,21 +432,23 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
                 size: 20,
                 color: theme.colorScheme.primary,
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text(
                 'Due Date',
                 style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text(
                 '(Optional)',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
-              )]),
-          SizedBox(height: 12),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
           
           Row(
             children: [
@@ -437,9 +457,9 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
                   onPressed: () async {
                     final date = await showDatePicker(
                       context: context,
-                      initialDate: _dueDate ?? DateTime.now().add(Duration(days: 1)),
+                      initialDate: _dueDate ?? DateTime.now(),
                       firstDate: DateTime.now(),
-                      lastDate: DateTime.now().add(Duration(days: 365)),
+                      lastDate: DateTime.now().add(const Duration(days: 365)),
                     );
                     if (date != null) {
                       setState(() => _dueDate = date);
@@ -454,13 +474,13 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
                   ),
                 ),
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: _dueDate == null ? null : () async {
                     final time = await showTimePicker(
                       context: context,
-                      initialTime: _dueTime ?? TimeOfDay(hour: 23, minute: 59),
+                      initialTime: _dueTime ?? const TimeOfDay(hour: 23, minute: 59),
                     );
                     if (time != null) {
                       setState(() => _dueTime = time);
@@ -483,10 +503,12 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
                   }),
                   icon: Icon(PhosphorIcons.x()),
                   tooltip: 'Clear due date',
-                )]),
+                ),
+            ],
+          ),
           
           if (_dueDate != null) ...[
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
@@ -519,21 +541,23 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
                 size: 20,
                 color: theme.colorScheme.primary,
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text(
                 'Reminder',
                 style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text(
                 '(Optional)',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
-              )]),
-          SizedBox(height: 12),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
           
           Row(
             children: [
@@ -544,7 +568,7 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
                       context: context,
                       initialDate: _reminderDate ?? DateTime.now(),
                       firstDate: DateTime.now(),
-                      lastDate: DateTime.now().add(Duration(days: 365)),
+                      lastDate: DateTime.now().add(const Duration(days: 365)),
                     );
                     if (date != null) {
                       setState(() => _reminderDate = date);
@@ -559,13 +583,13 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
                   ),
                 ),
               ),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: _reminderDate == null ? null : () async {
                     final time = await showTimePicker(
                       context: context,
-                      initialTime: _reminderTime ?? TimeOfDay(hour: 9, minute: 0),
+                      initialTime: _reminderTime ?? const TimeOfDay(hour: 9, minute: 0),
                     );
                     if (time != null) {
                       setState(() => _reminderTime = time);
@@ -588,10 +612,12 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
                   }),
                   icon: Icon(PhosphorIcons.x()),
                   tooltip: 'Clear reminder',
-                )]),
+                ),
+            ],
+          ),
           
           if (_reminderDate != null) ...[
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
@@ -616,7 +642,8 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
       child: ElevatedButton.icon(
         onPressed: _isCreating ? null : _createTask,
         icon: _isCreating 
-            ? SizedBox(width: 16,
+            ? const SizedBox(
+                width: 16,
                 height: 16,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,

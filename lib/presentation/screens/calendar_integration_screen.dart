@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:device_calendar/device_calendar.dart';
 import '../widgets/standardized_app_bar.dart';
 import '../../services/system_calendar_service.dart';
+import '../../core/accessibility/touch_target_validator.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Screen for managing calendar integration settings
@@ -44,7 +45,7 @@ class _CalendarIntegrationScreenState extends ConsumerState<CalendarIntegrationS
           IconButton(
             onPressed: _isSyncing ? null : _performSync,
             icon: _isSyncing 
-                ? SizedBox(width: 20,
+                ? const SizedBox(width: 20,
                     height: 20,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
@@ -177,7 +178,7 @@ class _CalendarIntegrationScreenState extends ConsumerState<CalendarIntegrationS
               'Calendar Permission',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Row(
               children: [
                 Icon(
@@ -235,7 +236,28 @@ class _CalendarIntegrationScreenState extends ConsumerState<CalendarIntegrationS
               ...availableCalendars.map((calendar) {
                 final isReadOnly = calendar.isReadOnly ?? false;
                 
-                return RadioListTile<String>(
+                return ListTile(
+                  leading: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      AccessibleRadio<String>(
+                        value: calendar.id!,
+                        groupValue: selectedCalendarId,
+                        onChanged: isReadOnly ? null : (value) {
+                          if (value != null) {
+                            service.setSelectedCalendar(value);
+                            ref.invalidate(calendarSyncStatusProvider);
+                          }
+                        },
+                        semanticLabel: 'Select ${calendar.name ?? 'Unnamed Calendar'}',
+                      ),
+                      const SizedBox(width: 8),
+                      Icon(
+                        PhosphorIcons.calendar(),
+                        color: isReadOnly ? Colors.grey : null,
+                      ),
+                    ],
+                  ),
                   title: Text(calendar.name ?? 'Unnamed Calendar'),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -251,18 +273,10 @@ class _CalendarIntegrationScreenState extends ConsumerState<CalendarIntegrationS
                         ),
                     ],
                   ),
-                  value: calendar.id!,
-                  groupValue: selectedCalendarId,
-                  onChanged: isReadOnly ? null : (value) {
-                    if (value != null) {
-                      service.setSelectedCalendar(value);
-                      ref.invalidate(calendarSyncStatusProvider);
-                    }
+                  onTap: isReadOnly ? null : () {
+                    service.setSelectedCalendar(calendar.id!);
+                    ref.invalidate(calendarSyncStatusProvider);
                   },
-                  secondary: Icon(
-                    PhosphorIcons.calendar(),
-                    color: isReadOnly ? Colors.grey : null,
-                  ),
                 );
               }),
           ],
@@ -300,7 +314,7 @@ class _CalendarIntegrationScreenState extends ConsumerState<CalendarIntegrationS
               },
             ),
             ListTile(
-              title: Text('Sync Frequency'),
+              title: const Text('Sync Frequency'),
               subtitle: const Text('Every 15 minutes'),
               trailing: Icon(PhosphorIcons.caretRight()),
               onTap: () {
@@ -325,7 +339,7 @@ class _CalendarIntegrationScreenState extends ConsumerState<CalendarIntegrationS
               'Sync Actions',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             ListTile(
               leading: Icon(PhosphorIcons.arrowsClockwise()),
               title: const Text('Sync Now'),
@@ -368,7 +382,7 @@ class _CalendarIntegrationScreenState extends ConsumerState<CalendarIntegrationS
               'Help & Information',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             ListTile(
               leading: Icon(PhosphorIcons.info()),
               title: const Text('How it works'),
@@ -518,29 +532,45 @@ class _CalendarIntegrationScreenState extends ConsumerState<CalendarIntegrationS
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            RadioListTile<String>(
+            ListTile(
+              leading: AccessibleRadio<String>(
+                value: 'manual',
+                groupValue: 'every_15_min',
+                onChanged: (value) => Navigator.of(context).pop(),
+                semanticLabel: 'Manual only sync frequency',
+              ),
               title: const Text('Manual only'),
-              value: 'manual',
-              groupValue: 'every_15_min',
-              onChanged: (value) => Navigator.of(context).pop(),
+              onTap: () => Navigator.of(context).pop(),
             ),
-            RadioListTile<String>(
+            ListTile(
+              leading: AccessibleRadio<String>(
+                value: 'every_15_min',
+                groupValue: 'every_15_min',
+                onChanged: (value) => Navigator.of(context).pop(),
+                semanticLabel: 'Every 15 minutes sync frequency',
+              ),
               title: const Text('Every 15 minutes'),
-              value: 'every_15_min',
-              groupValue: 'every_15_min',
-              onChanged: (value) => Navigator.of(context).pop(),
+              onTap: () => Navigator.of(context).pop(),
             ),
-            RadioListTile<String>(
+            ListTile(
+              leading: AccessibleRadio<String>(
+                value: 'hourly',
+                groupValue: 'every_15_min',
+                onChanged: (value) => Navigator.of(context).pop(),
+                semanticLabel: 'Every hour sync frequency',
+              ),
               title: const Text('Every hour'),
-              value: 'hourly',
-              groupValue: 'every_15_min',
-              onChanged: (value) => Navigator.of(context).pop(),
+              onTap: () => Navigator.of(context).pop(),
             ),
-            RadioListTile<String>(
+            ListTile(
+              leading: AccessibleRadio<String>(
+                value: 'daily',
+                groupValue: 'every_15_min',
+                onChanged: (value) => Navigator.of(context).pop(),
+                semanticLabel: 'Daily sync frequency',
+              ),
               title: const Text('Daily'),
-              value: 'daily',
-              groupValue: 'every_15_min',
-              onChanged: (value) => Navigator.of(context).pop(),
+              onTap: () => Navigator.of(context).pop(),
             ),
           ],
         ),

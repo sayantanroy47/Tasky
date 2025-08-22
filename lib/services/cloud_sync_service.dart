@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' hide Provider;
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../domain/entities/task_model.dart';
 import '../domain/entities/calendar_event.dart';
 import '../domain/models/enums.dart' as enums;
@@ -428,24 +428,26 @@ class CloudSyncService {
       final userId = currentUserId!;
 
       // Count cloud tasks
-      final tasksCount = await _supabase
+      final tasksCountResult = await _supabase
           .from('tasks')
-          .select('id', const FetchOptions(count: CountOption.exact))
-          .eq('user_id', userId);
+          .select('id')
+          .eq('user_id', userId)
+          .count(CountOption.exact);
 
       // Count cloud events
-      final eventsCount = await _supabase
+      final eventsCountResult = await _supabase
           .from('calendar_events')
-          .select('id', const FetchOptions(count: CountOption.exact))
-          .eq('user_id', userId);
+          .select('id')
+          .eq('user_id', userId)
+          .count(CountOption.exact);
 
       // Get last sync time (would be stored locally)
       final lastSyncTime = await _getLastSyncTime();
 
       return CloudSyncStats(
         isAuthenticated: true,
-        totalCloudTasks: tasksCount.count ?? 0,
-        totalCloudEvents: eventsCount.count ?? 0,
+        totalCloudTasks: tasksCountResult.count,
+        totalCloudEvents: eventsCountResult.count,
         lastSyncTime: lastSyncTime,
       );
 

@@ -27,7 +27,7 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
             IconButton(
               onPressed: _isLoading ? null : _performFullSync,
               icon: _isLoading 
-                  ? SizedBox(width: 20,
+                  ? const SizedBox(width: 20,
                       height: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
@@ -99,7 +99,7 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
             size: 80,
             color: Colors.grey,
           ),
-          SizedBox(height: 24),
+          const SizedBox(height: 24),
           Text(
             'Cloud Sync Not Connected',
             style: Theme.of(context).textTheme.headlineSmall,
@@ -160,7 +160,7 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
               'Benefits of Cloud Sync',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             _buildBenefitItem(
               PhosphorIcons.devices(),
               'Access your tasks on all devices',
@@ -264,7 +264,7 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
               ],
             ),
             
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             
             if (stats.lastSyncTime != null) ...[
               Row(
@@ -373,7 +373,7 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
               'Sync Actions',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             
             ListTile(
               leading: Icon(PhosphorIcons.cloudArrowUp()),
@@ -421,7 +421,7 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
               'Advanced Settings',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             
             ListTile(
               leading: Icon(PhosphorIcons.gitMerge()),
@@ -734,7 +734,7 @@ class _SignInDialogState extends ConsumerState<SignInDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Sign In'),
+      title: const Text('Sign In'),
       content: Form(
         key: _formKey,
         child: Column(
@@ -758,7 +758,7 @@ class _SignInDialogState extends ConsumerState<SignInDialog> {
                 return null;
               },
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TextFormField(
               controller: _passwordController,
               decoration: InputDecoration(
@@ -863,7 +863,7 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Create Account'),
+      title: const Text('Create Account'),
       content: Form(
         key: _formKey,
         child: Column(
@@ -887,7 +887,7 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
                 return null;
               },
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TextFormField(
               controller: _passwordController,
               decoration: InputDecoration(
@@ -910,7 +910,7 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
                 return null;
               },
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             TextFormField(
               controller: _confirmPasswordController,
               decoration: InputDecoration(

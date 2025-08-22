@@ -255,7 +255,7 @@ class NotFoundScreen extends StatelessWidget {
     final theme = Theme.of(context);
     
     return Scaffold(
-      appBar: StandardizedAppBar(title: 'Page Not Found',
+      appBar: const StandardizedAppBar(title: 'Page Not Found',
       ),
       body: Center(
         child: Padding(
@@ -273,7 +273,7 @@ class NotFoundScreen extends StatelessWidget {
                 'Page Not Found',
                 style: TextStyle(
                   fontSize: TypographyConstants.textXL,
-                  fontWeight: TypographyConstants.bold,
+                  fontWeight: TypographyConstants.medium,
                   color: theme.colorScheme.onSurface,
                 ),
                 textAlign: TextAlign.center,
@@ -320,7 +320,7 @@ class RouteErrorScreen extends StatelessWidget {
     final theme = Theme.of(context);
     
     return Scaffold(
-      appBar: StandardizedAppBar(title: 'Route Error',
+      appBar: const StandardizedAppBar(title: 'Route Error',
       ),
       body: Center(
         child: Padding(
@@ -338,7 +338,7 @@ class RouteErrorScreen extends StatelessWidget {
                 'Invalid Route Parameters',
                 style: TextStyle(
                   fontSize: TypographyConstants.textXL,
-                  fontWeight: TypographyConstants.bold,
+                  fontWeight: TypographyConstants.medium,
                   color: theme.colorScheme.onSurface,
                 ),
                 textAlign: TextAlign.center,

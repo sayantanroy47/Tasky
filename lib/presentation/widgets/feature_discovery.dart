@@ -61,7 +61,7 @@ class FeatureDiscovery {
     // Auto hide if duration is specified
     if (autoHideDuration != null) {
       Future.delayed(autoHideDuration, () {
-        if (_activeSpotlights.containsKey(featureId)) {
+        if (_activeSpotlights.containsKey(featureId) && context.mounted) {
           _dismissFeature(featureId);
           Navigator.of(context).pop();
         }
@@ -295,7 +295,7 @@ class _FeatureSpotlightOverlayState extends State<FeatureSpotlightOverlay>
                     fontSize: isLargeText 
                         ? TypographyConstants.textXL 
                         : TypographyConstants.textLG,
-                    fontWeight: TypographyConstants.bold,
+                    fontWeight: TypographyConstants.medium,
                     color: theme.colorScheme.onSurface,
                   ),
                   textAlign: TextAlign.center,
@@ -334,7 +334,7 @@ class _FeatureSpotlightOverlayState extends State<FeatureSpotlightOverlay>
                         semanticHint: 'Skip this feature introduction',
                       ),
                     ),
-                    SizedBox(width: 12),
+                    const SizedBox(width: 12),
                   ],
                   
                   Expanded(
@@ -504,7 +504,7 @@ class _ContextualHintState extends State<ContextualHint>
                             size: 16,
                             color: theme.colorScheme.onPrimaryContainer,
                           ),
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
                         ],
                         Flexible(
                           child: Text(

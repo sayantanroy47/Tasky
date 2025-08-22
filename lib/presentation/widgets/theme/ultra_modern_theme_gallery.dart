@@ -304,7 +304,7 @@ class _UltraModernThemeGalleryState extends ConsumerState<UltraModernThemeGaller
                   ),
                   prefixIcon: AnimatedRotation(
                     turns: _searchAnimation.value * 0.5,
-                    duration: Duration(milliseconds: 400),
+                    duration: const Duration(milliseconds: 400),
                     child: Icon(
                       PhosphorIcons.magnifyingGlass(),
                       color: theme.colorScheme.primary.withValues(alpha: 
@@ -322,7 +322,7 @@ class _UltraModernThemeGalleryState extends ConsumerState<UltraModernThemeGaller
                         ),
                       IconButton(
                         icon: Icon(
-                          _showFilters ? PhosphorIcons.funnelSlash() : PhosphorIcons.funnel(),
+                          _showFilters ? PhosphorIcons.funnelSimpleX() : PhosphorIcons.funnel(),
                           color: _showFilters ? theme.colorScheme.primary : null,
                         ),
                         onPressed: _toggleFilters,
@@ -397,7 +397,7 @@ class _UltraModernThemeGalleryState extends ConsumerState<UltraModernThemeGaller
             color: theme.colorScheme.onSurfaceVariant,
           ),
         ),
-        SizedBox(height: 8),
+        const SizedBox(height: 8),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
@@ -553,7 +553,7 @@ class _UltraModernThemeGalleryState extends ConsumerState<UltraModernThemeGaller
                 ),
               ),
             
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             
             // Scroll to top
             GestureDetector(

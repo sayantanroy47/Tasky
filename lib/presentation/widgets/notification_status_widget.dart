@@ -37,7 +37,7 @@ class NotificationStatusWidget extends StatelessWidget {
             ),
           ),
           if (todayTasks.isNotEmpty || upcomingTasks.isNotEmpty)
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
         ],
         
         if (todayTasks.isNotEmpty) ...[
@@ -55,7 +55,7 @@ class NotificationStatusWidget extends StatelessWidget {
             ),
           ),
           if (upcomingTasks.isNotEmpty)
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
         ],
         
         if (upcomingTasks.isNotEmpty) ...[

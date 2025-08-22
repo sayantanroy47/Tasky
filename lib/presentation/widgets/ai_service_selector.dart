@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/typography_constants.dart';
+import '../../core/accessibility/touch_target_validator.dart';
 
 import '../../services/ai/ai_task_parsing_service.dart';
 import '../../services/security/api_key_manager.dart';
@@ -42,48 +43,57 @@ class AIServiceSelector extends ConsumerWidget {
             const SizedBox(height: 16),
             
             // Local Processing Option
-            RadioListTile<AIServiceType>(
+            ListTile(
               title: const Text('Local Processing'),
               subtitle: const Text('Privacy-focused, works offline'),
-              value: AIServiceType.local,
-              groupValue: config.serviceType,
-              onChanged: (value) {
-                if (value != null) {
-                  configNotifier.setServiceType(value);
-                }
-              },
-              secondary: Icon(PhosphorIcons.shield()),
+              leading: AccessibleRadio<AIServiceType>(
+                value: AIServiceType.local,
+                groupValue: config.serviceType,
+                semanticLabel: 'Local Processing - Privacy-focused, works offline',
+                onChanged: (value) {
+                  if (value != null) {
+                    configNotifier.setServiceType(value);
+                  }
+                },
+              ),
+              trailing: Icon(PhosphorIcons.shield()),
             ),
             
             // OpenAI Option
-            RadioListTile<AIServiceType>(
+            ListTile(
               title: const Text('OpenAI GPT-4o'),
               subtitle: const Text('Advanced AI parsing, requires API key'),
-              value: AIServiceType.openai,
-              groupValue: config.serviceType,
-              onChanged: (value) {
-                if (value != null) {
-                  configNotifier.setServiceType(value);
-                }
-              },
-              secondary: Icon(PhosphorIcons.brain()),
+              leading: AccessibleRadio<AIServiceType>(
+                value: AIServiceType.openai,
+                groupValue: config.serviceType,
+                semanticLabel: 'OpenAI GPT-4o - Advanced AI parsing, requires API key',
+                onChanged: (value) {
+                  if (value != null) {
+                    configNotifier.setServiceType(value);
+                  }
+                },
+              ),
+              trailing: Icon(PhosphorIcons.brain()),
             ),
             
             // Claude Option
-            RadioListTile<AIServiceType>(
+            ListTile(
               title: const Text('Claude 3'),
               subtitle: const Text('Anthropic\'s AI model, requires API key'),
-              value: AIServiceType.claude,
-              groupValue: config.serviceType,
-              onChanged: (value) {
-                if (value != null) {
-                  configNotifier.setServiceType(value);
-                }
-              },
-              secondary: Icon(PhosphorIcons.robot()),
+              leading: AccessibleRadio<AIServiceType>(
+                value: AIServiceType.claude,
+                groupValue: config.serviceType,
+                semanticLabel: 'Claude 3 - Anthropic AI model, requires API key',
+                onChanged: (value) {
+                  if (value != null) {
+                    configNotifier.setServiceType(value);
+                  }
+                },
+              ),
+              trailing: Icon(PhosphorIcons.robot()),
             ),
             
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             
             // API Key Configuration
             if (config.serviceType != AIServiceType.local) ...[
@@ -378,7 +388,7 @@ class _APIConfigDialogState extends State<APIConfigDialog> {
                     hintText: hasSavedKey 
                       ? 'Current: ${APIKeyManager.getMaskedApiKey(currentApiKey)}'
                       : 'Enter your ${widget.serviceType.displayName} API key',
-                    border: OutlineInputBorder(),
+                    border: const OutlineInputBorder(),
                     suffixIcon: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -402,7 +412,7 @@ class _APIConfigDialogState extends State<APIConfigDialog> {
                 );
               },
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             
             // Base URL Field (Advanced)
             ExpansionTile(

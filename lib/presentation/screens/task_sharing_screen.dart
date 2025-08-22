@@ -94,7 +94,7 @@ class _TaskSharingScreenState extends ConsumerState<TaskSharingScreen> {
             Row(
               children: [
                 Icon(PhosphorIcons.share(), color: Theme.of(context).primaryColor),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 const Text(
                   'Create Shared Task List',
                   style: TextStyle(
@@ -156,7 +156,7 @@ class _TaskSharingScreenState extends ConsumerState<TaskSharingScreen> {
             Row(
               children: [
                 Icon(PhosphorIcons.userPlus(), color: Theme.of(context).primaryColor),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 const Text(
                   'Join Shared List',
                   style: TextStyle(
@@ -202,7 +202,7 @@ class _TaskSharingScreenState extends ConsumerState<TaskSharingScreen> {
             Row(
               children: [
                 Icon(PhosphorIcons.list(), color: Theme.of(context).primaryColor),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 const Text(
                   'Your Shared Lists',
                   style: TextStyle(
@@ -216,12 +216,12 @@ class _TaskSharingScreenState extends ConsumerState<TaskSharingScreen> {
             if (_sharedLists.isEmpty)
               Center(
                 child: Padding(
-                  padding: EdgeInsets.all(32.0),
+                  padding: const EdgeInsets.all(32.0),
                   child: Column(
                     children: [
                       Icon(PhosphorIcons.folder(), size: 64, color: Colors.grey),
-                      SizedBox(height: 16),
-                      Text(
+                      const SizedBox(height: 16),
+                      const Text(
                         'No shared lists yet',
                         style: TextStyle(
                           fontSize: 16,
@@ -264,7 +264,7 @@ class _TaskSharingScreenState extends ConsumerState<TaskSharingScreen> {
       ),
       title: Text(
         sharedList.name,
-        style: TextStyle(fontWeight: FontWeight.bold),
+        style: const TextStyle(fontWeight: FontWeight.bold),
       ),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -280,7 +280,7 @@ class _TaskSharingScreenState extends ConsumerState<TaskSharingScreen> {
                 '${sharedList.collaborators.length} collaborators',
                 style: TextStyle(color: Colors.grey[600], fontSize: 12),
               ),
-              SizedBox(width: 12),
+              const SizedBox(width: 12),
               Icon(PhosphorIcons.checkSquare(), size: 16, color: Colors.grey[600]),
               const SizedBox(width: 4),
               Text(
@@ -289,7 +289,7 @@ class _TaskSharingScreenState extends ConsumerState<TaskSharingScreen> {
               ),
             ],
           ),
-          SizedBox(height: 4),
+          const SizedBox(height: 4),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
             decoration: BoxDecoration(
@@ -314,7 +314,7 @@ class _TaskSharingScreenState extends ConsumerState<TaskSharingScreen> {
             value: 'view',
             child: ListTile(
               leading: Icon(PhosphorIcons.eye()),
-              title: Text('View Details'),
+              title: const Text('View Details'),
               contentPadding: EdgeInsets.zero,
             ),
           ),
@@ -323,7 +323,7 @@ class _TaskSharingScreenState extends ConsumerState<TaskSharingScreen> {
               value: 'share',
               child: ListTile(
                 leading: Icon(PhosphorIcons.share()),
-                title: Text('Share Link'),
+                title: const Text('Share Link'),
                 contentPadding: EdgeInsets.zero,
               ),
             ),
@@ -332,7 +332,7 @@ class _TaskSharingScreenState extends ConsumerState<TaskSharingScreen> {
               value: 'manage',
               child: ListTile(
                 leading: Icon(PhosphorIcons.gear()),
-                title: Text('Manage'),
+                title: const Text('Manage'),
                 contentPadding: EdgeInsets.zero,
               ),
             ),
@@ -340,7 +340,7 @@ class _TaskSharingScreenState extends ConsumerState<TaskSharingScreen> {
             value: 'export',
             child: ListTile(
               leading: Icon(PhosphorIcons.download()),
-              title: Text('Export'),
+              title: const Text('Export'),
               contentPadding: EdgeInsets.zero,
             ),
           ),
@@ -349,7 +349,7 @@ class _TaskSharingScreenState extends ConsumerState<TaskSharingScreen> {
               value: 'leave',
               child: ListTile(
                 leading: Icon(PhosphorIcons.signOut(), color: Colors.red),
-                title: Text('Leave', style: TextStyle(color: Colors.red)),
+                title: const Text('Leave', style: TextStyle(color: Colors.red)),
                 contentPadding: EdgeInsets.zero,
               ),
             ),

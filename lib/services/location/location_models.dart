@@ -174,6 +174,7 @@ enum LocationPermissionStatus {
   whileInUse,
   always,
   unableToDetermine,
+  serviceDisabled,
 }
 
 enum LocationAccuracy {

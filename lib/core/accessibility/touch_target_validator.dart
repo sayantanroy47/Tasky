@@ -406,10 +406,31 @@ class AccessibleRadio<T> extends StatelessWidget {
       child: SizedBox(
         width: minTouchTarget,
         height: minTouchTarget,
-        child: Radio<T>(
-          value: value,
-          groupValue: groupValue,
-          onChanged: onChanged,
+        child: GestureDetector(
+          onTap: onChanged != null ? () => onChanged!(value) : null,
+          child: Container(
+            width: 20,
+            height: 20,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: isSelected ? Colors.blue : Colors.grey,
+                width: 2,
+              ),
+            ),
+            child: isSelected
+                ? Center(
+                    child: Container(
+                      width: 10,
+                      height: 10,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.blue,
+                      ),
+                    ),
+                  )
+                : null,
+          ),
         ),
       ),
     );

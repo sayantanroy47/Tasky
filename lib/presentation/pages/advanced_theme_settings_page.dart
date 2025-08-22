@@ -80,7 +80,7 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
               Text(
                 'Current Theme',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],
@@ -116,7 +116,7 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
               Text(
                 'Theme Preferences',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],
@@ -186,7 +186,7 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
               Text(
                 'Favorite Themes',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
               const Spacer(),
@@ -198,7 +198,7 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
               ),
             ],
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           if (favoriteThemes.isEmpty)
             Center(
               child: Padding(
@@ -231,7 +231,7 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
                     theme.metadata.name.substring(0, 1).toUpperCase(),
                     style: TextStyle(
                       color: Theme.of(context).colorScheme.onPrimaryContainer,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),
@@ -273,7 +273,7 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
               Text(
                 'Usage Statistics',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],
@@ -336,7 +336,7 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
                           '${stats.usageCount}',
                           style: TextStyle(
                             color: Theme.of(context).colorScheme.onPrimaryContainer,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w500,
                             fontSize: 12,
                           ),
                         ),
@@ -360,11 +360,11 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
           Row(
             children: [
               Icon(PhosphorIcons.database(), color: Theme.of(context).colorScheme.primary),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text(
                 'Data Management',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],
@@ -423,11 +423,11 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
           Row(
             children: [
               Icon(PhosphorIcons.wrench(), color: Theme.of(context).colorScheme.primary),
-              SizedBox(width: 8),
+              const SizedBox(width: 8),
               Text(
                 'Advanced Actions',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],

@@ -5,6 +5,7 @@ import '../../services/error_recovery_service.dart';
 import '../../services/privacy_service.dart';
 import '../../services/share_intent_service.dart';
 import '../../core/providers/core_providers.dart';
+import 'location_providers.dart';
 
 /// Provider for app initialization
 final appInitializationProvider = FutureProvider<void>((ref) async {
@@ -13,6 +14,7 @@ final appInitializationProvider = FutureProvider<void>((ref) async {
   final privacyService = PrivacyService();
   final shareIntentService = ShareIntentService();
   final taskRepository = ref.watch(taskRepositoryProvider);
+  final geofencingManager = ref.watch(geofencingManagerProvider);
   
   // Set up ShareIntentService with repository
   shareIntentService.setTaskRepository(taskRepository);
@@ -22,6 +24,8 @@ final appInitializationProvider = FutureProvider<void>((ref) async {
     privacyService,
     database,
     shareIntentService,
+    geofencingManager: geofencingManager,
+    taskRepository: taskRepository,
   );
   
   await initService.initialize();

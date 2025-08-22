@@ -101,7 +101,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
             Row(
               children: [
                 Icon(PhosphorIcons.userPlus(), color: Theme.of(context).primaryColor),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 const Text(
                   'Add Collaborator',
                   style: TextStyle(
@@ -221,7 +221,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
                   value: 'change_to_view',
                   child: ListTile(
                     leading: Icon(PhosphorIcons.eye()),
-                    title: Text('Change to Viewer'),
+                    title: const Text('Change to Viewer'),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
@@ -229,7 +229,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
                   value: 'change_to_edit',
                   child: ListTile(
                     leading: Icon(PhosphorIcons.pencil()),
-                    title: Text('Change to Editor'),
+                    title: const Text('Change to Editor'),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
@@ -237,7 +237,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
                   value: 'change_to_admin',
                   child: ListTile(
                     leading: Icon(PhosphorIcons.shieldCheck()),
-                    title: Text('Change to Admin'),
+                    title: const Text('Change to Admin'),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
@@ -245,7 +245,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
                   value: 'remove',
                   child: ListTile(
                     leading: Icon(PhosphorIcons.minusCircle(), color: Colors.red),
-                    title: Text('Remove', style: TextStyle(color: Colors.red)),
+                    title: const Text('Remove', style: TextStyle(color: Colors.red)),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
@@ -280,7 +280,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
             Row(
               children: [
                 Icon(PhosphorIcons.gear(), color: Theme.of(context).primaryColor),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 const Text(
                   'List Settings',
                   style: TextStyle(
@@ -332,7 +332,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
             Row(
               children: [
                 Icon(PhosphorIcons.share(), color: Theme.of(context).primaryColor),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 const Text(
                   'Sharing Settings',
                   style: TextStyle(
@@ -385,8 +385,8 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
             Row(
               children: [
                 Icon(PhosphorIcons.warning(), color: Colors.red),
-                SizedBox(width: 8),
-                Text(
+                const SizedBox(width: 8),
+                const Text(
                   'Danger Zone',
                   style: TextStyle(
                     fontSize: 18,
@@ -396,7 +396,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
                 ),
               ],
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             ListTile(
               title: const Text('Delete Shared List'),
               subtitle: const Text('Permanently delete this shared list and remove all collaborators'),
@@ -412,15 +412,15 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
 
   Widget _buildActivityTab() {
     return _isLoading
-        ? Center(child: CircularProgressIndicator())
+        ? const Center(child: CircularProgressIndicator())
         : _changeHistory.isEmpty
             ? Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(PhosphorIcons.clockCounterClockwise(), size: 64, color: Colors.grey),
-                    SizedBox(height: 16),
-                    Text(
+                    const SizedBox(height: 16),
+                    const Text(
                       'No activity yet',
                       style: TextStyle(fontSize: 16, color: Colors.grey),
                     ),
@@ -987,7 +987,7 @@ class _SharedTaskListTasksScreen extends StatelessWidget {
                     value: 'remove',
                     child: ListTile(
                       leading: Icon(PhosphorIcons.minusCircle(), color: Colors.red),
-                      title: Text('Remove from list'),
+                      title: const Text('Remove from list'),
                       contentPadding: EdgeInsets.zero,
                     ),
                   ),

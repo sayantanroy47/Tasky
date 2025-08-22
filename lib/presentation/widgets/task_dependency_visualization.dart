@@ -62,7 +62,7 @@ class TaskDependencyVisualization extends ConsumerWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
@@ -259,7 +259,7 @@ class TaskDependencyVisualization extends ConsumerWidget {
                     task.description!,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
-                  SizedBox(height: 12),
+                  const SizedBox(height: 12),
                 ],
                 
                 // Prerequisites
@@ -319,7 +319,7 @@ class TaskDependencyVisualization extends ConsumerWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        SizedBox(height: 4),
+        const SizedBox(height: 4),
         ...prerequisites.map((prereq) => Padding(
           padding: const EdgeInsets.only(left: 8, bottom: 2),
           child: Row(
@@ -359,7 +359,7 @@ class TaskDependencyVisualization extends ConsumerWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        SizedBox(height: 4),
+        const SizedBox(height: 4),
         ...dependents.map((dependent) => Padding(
           padding: const EdgeInsets.only(left: 8, bottom: 2),
           child: Row(
@@ -435,7 +435,7 @@ class TaskDependencyVisualization extends ConsumerWidget {
               ),
             ),
             Icon(PhosphorIcons.arrowRight(), color: Colors.grey),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -590,7 +590,7 @@ class TaskDependencyManagementDialog extends ConsumerWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Expanded(
               child: dependencyChainAsync.when(
                 data: (dependencies) => ListView.builder(
@@ -607,7 +607,7 @@ class TaskDependencyManagementDialog extends ConsumerWidget {
                     );
                   },
                 ),
-                loading: () => Center(child: CircularProgressIndicator()),
+                loading: () => const Center(child: CircularProgressIndicator()),
                 error: (_, __) => const Text('Failed to load dependencies'),
               ),
             ),
@@ -716,7 +716,7 @@ class _AddDependencyDialogState extends ConsumerState<AddDependencyDialog> {
           // Select dependent task
           DropdownButtonFormField<TaskModel>(
             decoration: const InputDecoration(labelText: 'Dependent Task'),
-            value: selectedDependent,
+            initialValue: selectedDependent,
             items: widget.availableTasks.map((task) => DropdownMenuItem(
               value: task,
               child: Text(task.title),
@@ -729,7 +729,7 @@ class _AddDependencyDialogState extends ConsumerState<AddDependencyDialog> {
           // Select prerequisite task
           DropdownButtonFormField<TaskModel>(
             decoration: const InputDecoration(labelText: 'Prerequisite Task'),
-            value: selectedPrerequisite,
+            initialValue: selectedPrerequisite,
             items: widget.availableTasks
                 .where((task) => task != selectedDependent)
                 .map((task) => DropdownMenuItem(

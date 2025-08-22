@@ -214,8 +214,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(PhosphorIcons.arrowLeft(), size: 18),
-                          SizedBox(width: 8),
-                          Text('Previous'),
+                          const SizedBox(width: 8),
+                          const Text('Previous'),
                         ],
                       ),
                     )
@@ -250,7 +250,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(_currentPage == _totalPages - 1 ? 'Get Started' : 'Next'),
-                        SizedBox(width: 8),
+                        const SizedBox(width: 8),
                         Icon(
                           _currentPage == _totalPages - 1 
                               ? PhosphorIcons.check() 
@@ -370,7 +370,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
           title: 'Auto-tagging',
           description: 'Automatically categorizes your tasks',
         ),
-        SizedBox(height: 12),
+        const SizedBox(height: 12),
         _buildFeatureItem(
           icon: PhosphorIcons.arrowUp(),
           title: 'Smart priorities',
