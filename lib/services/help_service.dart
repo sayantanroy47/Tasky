@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../core/theme/typography_constants.dart';
 
 /// Service for managing help and documentation
@@ -503,7 +504,7 @@ class HelpTopicSheet extends StatelessWidget {
                     ),
                     IconButton(
                       onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.close),
+                      icon: const Icon(PhosphorIcons.x()),
                     ),
                   ],
                 ),
@@ -545,7 +546,7 @@ class HelpSearchDelegate extends SearchDelegate<String> {
         onPressed: () {
           query = '';
         },
-        icon: const Icon(Icons.clear),
+        icon: const Icon(PhosphorIcons.x()),
       ),
     ];
   }
@@ -556,7 +557,7 @@ class HelpSearchDelegate extends SearchDelegate<String> {
       onPressed: () {
         close(context, '');
       },
-      icon: const Icon(Icons.arrow_back),
+      icon: const Icon(PhosphorIcons.arrowLeft()),
     );
   }
 

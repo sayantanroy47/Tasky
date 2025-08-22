@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'glassmorphism_container.dart';
 import '../../core/theme/material3/motion_system.dart';
@@ -637,7 +638,7 @@ class _VoiceTaskCreationDialogM3State extends ConsumerState<VoiceTaskCreationDia
                       Expanded(
                         child: OutlinedButton.icon(
                           onPressed: _clearRecording,
-                          icon: const Icon(Icons.clear),
+                          icon: const Icon(PhosphorIcons.x()),
                           label: const Text('Clear'),
                         ),
                       ),
@@ -645,7 +646,7 @@ class _VoiceTaskCreationDialogM3State extends ConsumerState<VoiceTaskCreationDia
                       Expanded(
                         child: FilledButton.icon(
                           onPressed: _continueToEdit,
-                          icon: const Icon(Icons.arrow_forward),
+                          icon: const Icon(PhosphorIcons.arrowRight()),
                           label: const Text('Next'),
                         ),
                       ),

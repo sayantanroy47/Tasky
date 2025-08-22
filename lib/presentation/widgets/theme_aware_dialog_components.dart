@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../core/design_system/design_tokens.dart';
 import 'glassmorphism_container.dart';
@@ -66,7 +67,7 @@ class ThemeAwareTaskDialog extends ConsumerWidget {
                 borderColor: theme.colorScheme.outline.withOpacity(0.2),
                 child: IconButton(
                   onPressed: onBack,
-                  icon: const Icon(Icons.arrow_back),
+                  icon: const Icon(PhosphorIcons.arrowLeft()),
                   padding: EdgeInsets.zero,
                   iconSize: 24,
                   color: theme.colorScheme.onSurface,

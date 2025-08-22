@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:task_tracker_app/presentation/pages/home_page_m3.dart';
 
 void main() {
@@ -45,8 +46,8 @@ void main() {
 
       // Verify app bar elements
       expect(find.text('Task Tracker'), findsOneWidget);
-      expect(find.byIcon(Icons.search), findsAtLeastNWidgets(1)); // Allow multiple instances
-      expect(find.byIcon(Icons.settings), findsAtLeastNWidgets(1)); // Allow multiple instances
+      expect(find.byIcon(PhosphorIcons.magnifyingGlass()), findsAtLeastNWidgets(1)); // Allow multiple instances
+      expect(find.byIcon(PhosphorIcons.gear()), findsAtLeastNWidgets(1)); // Allow multiple instances
     });
 
     testWidgets('should use Material 3 theme', (WidgetTester tester) async {

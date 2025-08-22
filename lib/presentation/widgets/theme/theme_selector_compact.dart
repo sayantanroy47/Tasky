@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 // import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../core/theme/typography_constants.dart';
 import '../../../core/providers/enhanced_theme_provider.dart';
 import '../../../core/theme/app_theme_data.dart';
@@ -53,7 +54,7 @@ class CompactThemeSelector extends ConsumerWidget {
           value: '__random__',
           child: Row(
             children: [
-              const Icon(Icons.shuffle, size: 16),
+              const Icon(PhosphorIcons.shuffle(), size: 16),
               const SizedBox(width: 12),
               const Text('Random Theme'),
               const Spacer(),
@@ -233,7 +234,7 @@ class ThemeHistorySelector extends ConsumerWidget {
     }
 
     return PopupMenuButton<String>(
-      icon: const Icon(Icons.history),
+      icon: const Icon(PhosphorIcons.clockCounterClockwise()),
       tooltip: 'Theme History',
       itemBuilder: (context) => [
         const PopupMenuItem<String>(
@@ -285,7 +286,7 @@ class ThemeCategoryQuickSelector extends ConsumerWidget {
     // final currentTheme = ref.watch(enhancedThemeProvider).currentTheme;
 
     return PopupMenuButton<String>(
-      icon: const Icon(Icons.category),
+      icon: const Icon(PhosphorIcons.squares()),
       tooltip: 'Browse by Category',
       itemBuilder: (context) => [
         const PopupMenuItem<String>(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../core/theme/typography_constants.dart';
 import '../../../core/providers/enhanced_theme_provider.dart';
 import '../../../core/theme/app_theme_data.dart';
@@ -316,7 +317,7 @@ class _UltraModernThemeGalleryState extends ConsumerState<UltraModernThemeGaller
                     children: [
                       if (_searchQuery.isNotEmpty)
                         IconButton(
-                          icon: const Icon(Icons.clear_rounded),
+                          icon: const Icon(PhosphorIcons.x()),
                           onPressed: _clearSearch,
                         ),
                       IconButton(

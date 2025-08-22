@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../core/theme/typography_constants.dart';
 
 /// Widget that provides voice recording UI with visual feedback
@@ -271,7 +272,7 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget>
               HapticFeedback.lightImpact();
               widget.onCancelRecording?.call();
             },
-            icon: const Icon(Icons.close),
+            icon: const Icon(PhosphorIcons.x()),
             iconSize: 32.0,
             style: IconButton.styleFrom(
               backgroundColor: colorScheme.errorContainer,
@@ -286,7 +287,7 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget>
               HapticFeedback.mediumImpact();
               widget.onStopRecording?.call();
             },
-            icon: const Icon(Icons.stop),
+            icon: const Icon(PhosphorIcons.stop()),
             iconSize: 32.0,
             style: IconButton.styleFrom(
               backgroundColor: colorScheme.primary,
@@ -304,7 +305,7 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget>
         HapticFeedback.mediumImpact();
         widget.onStartRecording?.call();
       },
-      icon: const Icon(Icons.mic),
+      icon: const Icon(PhosphorIcons.microphone()),
       iconSize: 32.0,
       style: IconButton.styleFrom(
         backgroundColor: colorScheme.primary,

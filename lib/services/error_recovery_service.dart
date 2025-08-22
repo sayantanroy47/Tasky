@@ -4,6 +4,7 @@ import 'dart:developer' as developer;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Service for handling app reliability and error recovery
@@ -457,7 +458,7 @@ class _ErrorRecoveryWrapperState extends ConsumerState<ErrorRecoveryWrapper> {
             const SizedBox(height: 16),
             ElevatedButton.icon(
               onPressed: _retry,
-              icon: const Icon(Icons.refresh),
+              icon: const Icon(PhosphorIcons.arrowClockwise()),
               label: const Text('Try Again'),
             ),
           ],

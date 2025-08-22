@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../core/theme/app_theme_data.dart';
 
 import 'ultra_modern_theme_card.dart';
@@ -298,7 +299,7 @@ class _MasonryThemeGridState extends State<MasonryThemeGrid>
               onPressed: () {
                 // This would trigger clearing the search in the parent
               },
-              icon: const Icon(Icons.clear),
+              icon: const Icon(PhosphorIcons.x()),
               label: const Text('Clear Search'),
             ),
           ],

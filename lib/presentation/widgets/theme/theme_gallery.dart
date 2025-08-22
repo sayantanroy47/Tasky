@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../standardized_app_bar.dart';
 import '../../../core/providers/enhanced_theme_provider.dart';
 import '../../../core/theme/app_theme_data.dart';
@@ -70,7 +71,7 @@ class _ThemeGalleryState extends ConsumerState<ThemeGallery>
         title: 'Theme Gallery (Legacy)',
         actions: [
           IconButton(
-            icon: const Icon(Icons.shuffle),
+            icon: const Icon(PhosphorIcons.shuffle()),
             onPressed: () {
               ref.read(enhancedThemeProvider.notifier).applyRandomTheme();
               widget.onThemeSelected?.call();
@@ -103,7 +104,7 @@ class _ThemeGalleryState extends ConsumerState<ThemeGallery>
       child: TextField(
         decoration: const InputDecoration(
           hintText: 'Search themes...',
-          prefixIcon: Icon(Icons.search),
+          prefixIcon: Icon(PhosphorIcons.magnifyingGlass()),
           border: OutlineInputBorder(),
         ),
         onChanged: (value) {
