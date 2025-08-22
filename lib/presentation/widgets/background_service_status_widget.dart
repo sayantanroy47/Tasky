@@ -4,6 +4,7 @@ import '../providers/background_service_providers.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../core/design_system/design_tokens.dart';
 import 'glassmorphism_container.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Widget to display background service status and controls
 class BackgroundServiceStatusWidget extends ConsumerWidget {
@@ -28,10 +29,10 @@ class BackgroundServiceStatusWidget extends ConsumerWidget {
           Row(
             children: [
               Icon(
-                Icons.engineering,
+                PhosphorIcons.wrench(),
                 color: theme.colorScheme.primary,
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Text(
                 'Background Services',
                 style: theme.textTheme.titleMedium?.copyWith(
@@ -41,7 +42,7 @@ class BackgroundServiceStatusWidget extends ConsumerWidget {
               const Spacer(),
               IconButton(
                 onPressed: () => backgroundServiceNotifier.refreshStatus(),
-                icon: const Icon(Icons.refresh),
+                icon: Icon(PhosphorIcons.arrowClockwise()),
                 tooltip: 'Refresh status',
               ),
             ],
@@ -87,11 +88,11 @@ class BackgroundServiceStatusWidget extends ConsumerWidget {
         Row(
           children: [
             Icon(
-              isRunning ? Icons.play_circle : Icons.pause_circle,
+              isRunning ? PhosphorIcons.playCircle() : PhosphorIcons.pauseCircle(),
               color: isRunning ? Colors.green : Colors.orange,
               size: 20,
             ),
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
             Text(
               isRunning ? 'Running' : 'Stopped',
               style: theme.textTheme.bodyMedium?.copyWith(
@@ -115,7 +116,7 @@ class BackgroundServiceStatusWidget extends ConsumerWidget {
             theme,
             'Last Cleanup',
             _formatDateTime(status['last_cleanup']),
-            Icons.cleaning_services,
+            PhosphorIcons.broom(),
           ),
           const SizedBox(height: 8),
         ],
@@ -125,7 +126,7 @@ class BackgroundServiceStatusWidget extends ConsumerWidget {
             theme,
             'Analytics Cleanup',
             _formatDateTime(status['analytics_cleanup']),
-            Icons.analytics,
+            PhosphorIcons.chartBar(),
           ),
           const SizedBox(height: 8),
         ],
@@ -135,7 +136,7 @@ class BackgroundServiceStatusWidget extends ConsumerWidget {
             theme,
             'Last Manual Processing',
             _formatDateTime(status['last_manual_processing']),
-            Icons.refresh,
+            PhosphorIcons.arrowClockwise(),
           ),
           const SizedBox(height: 8),
         ],
@@ -148,7 +149,7 @@ class BackgroundServiceStatusWidget extends ConsumerWidget {
             Expanded(
               child: OutlinedButton.icon(
                 onPressed: () => notifier.forceProcessRecurringTasks(),
-                icon: const Icon(Icons.repeat, size: 16),
+                icon: Icon(PhosphorIcons.repeat(), size: 16),
                 label: const Text('Process Recurring'),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
@@ -162,7 +163,7 @@ class BackgroundServiceStatusWidget extends ConsumerWidget {
             Expanded(
               child: OutlinedButton.icon(
                 onPressed: () => _showServiceDetails(context, status),
-                icon: const Icon(Icons.info, size: 16),
+                icon: Icon(PhosphorIcons.info(), size: 16),
                 label: const Text('Details'),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
@@ -188,7 +189,7 @@ class BackgroundServiceStatusWidget extends ConsumerWidget {
       child: Row(
         children: [
           Icon(
-            Icons.error_outline,
+            PhosphorIcons.warningCircle(),
             color: theme.colorScheme.error,
           ),
           const SizedBox(width: 8),
@@ -303,3 +304,4 @@ class BackgroundServiceStatusWidget extends ConsumerWidget {
     }
   }
 }
+

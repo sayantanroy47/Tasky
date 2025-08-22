@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Navigation destination class
 class AppNavigationDestination {
@@ -7,58 +8,58 @@ class AppNavigationDestination {
   final IconData icon;
   final String route;
 
-  const AppNavigationDestination({
+  AppNavigationDestination({
     required this.label,
     required this.icon,
     required this.route,
   });
 
   /// All available destinations - aligned with AppRouter and bottom navigation
-  static const List<AppNavigationDestination> values = [
+  static final List<AppNavigationDestination> values = [
     AppNavigationDestination(
       label: 'Home',
-      icon: Icons.home,
+      icon: PhosphorIcons.house(),
       route: '/',
     ),
     AppNavigationDestination(
       label: 'Calendar',
-      icon: Icons.calendar_today,
+      icon: PhosphorIcons.calendar(),
       route: '/calendar',
     ),
     AppNavigationDestination(
       label: 'Analytics',
-      icon: Icons.analytics,
+      icon: PhosphorIcons.chartBar(),
       route: '/analytics',
     ),
     AppNavigationDestination(
       label: 'Settings',
-      icon: Icons.settings,
+      icon: PhosphorIcons.gear(),
       route: '/settings',
     ),
   ];
 
   /// Predefined destinations - aligned with AppRouter
-  static const AppNavigationDestination home = AppNavigationDestination(
+  static final AppNavigationDestination home = AppNavigationDestination(
     label: 'Home',
-    icon: Icons.home,
+    icon: PhosphorIcons.house(),
     route: '/',
   );
 
-  static const AppNavigationDestination calendar = AppNavigationDestination(
+  static final AppNavigationDestination calendar = AppNavigationDestination(
     label: 'Calendar',
-    icon: Icons.calendar_today,
+    icon: PhosphorIcons.calendar(),
     route: '/calendar',
   );
 
-  static const AppNavigationDestination analytics = AppNavigationDestination(
+  static final AppNavigationDestination analytics = AppNavigationDestination(
     label: 'Analytics',
-    icon: Icons.analytics,
+    icon: PhosphorIcons.chartBar(),
     route: '/analytics',
   );
 
-  static const AppNavigationDestination settings = AppNavigationDestination(
+  static final AppNavigationDestination settings = AppNavigationDestination(
     label: 'Settings',
-    icon: Icons.settings,
+    icon: PhosphorIcons.gear(),
     route: '/settings',
   );
 
@@ -100,11 +101,11 @@ class NavigationState {
   final int selectedIndex;
   final bool canPop;
 
-  const NavigationState({
-    this.currentDestination = AppNavigationDestination.home,
+  NavigationState({
+    AppNavigationDestination? currentDestination,
     this.selectedIndex = 0,
     this.canPop = false,
-  });
+  }) : currentDestination = currentDestination ?? AppNavigationDestination.home;
 
   NavigationState copyWith({
     AppNavigationDestination? currentDestination,
@@ -131,7 +132,7 @@ class NavigationState {
 
 /// Navigation notifier for managing navigation state
 class NavigationNotifier extends StateNotifier<NavigationState> {
-  NavigationNotifier() : super(const NavigationState());
+  NavigationNotifier() : super(NavigationState());
 
   /// Navigate to a destination by index
   void navigateToIndex(int index) {
@@ -168,7 +169,7 @@ class NavigationNotifier extends StateNotifier<NavigationState> {
 
   /// Reset to home
   void resetToHome() {
-    state = const NavigationState(
+    state = NavigationState(
       currentDestination: AppNavigationDestination.home,
       selectedIndex: 0,
       canPop: false,
@@ -199,3 +200,6 @@ final canPopProvider = Provider<bool>((ref) {
   final navigationState = ref.watch(navigationProvider);
   return navigationState.canPop;
 });
+
+
+

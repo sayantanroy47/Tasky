@@ -270,18 +270,18 @@ class GlassmorphismContainer extends StatelessWidget {
     final defaultGlassTint = effectiveHighContrast 
         ? (isDarkTheme 
             ? AccessibilityConstants.highContrastSurface
-            : AccessibilityConstants.highContrastBackground.withOpacity(0.95))
+            : AccessibilityConstants.highContrastBackground.withValues(alpha: 0.95))
         : (isDarkTheme 
-            ? Colors.white.withOpacity(effectiveOpacityValue)
-            : Colors.black.withOpacity(effectiveOpacityValue * 1.0));
+            ? Colors.white.withValues(alpha: effectiveOpacityValue)
+            : Colors.black.withValues(alpha: effectiveOpacityValue * 1.0));
     
     final defaultBorderColor = effectiveHighContrast 
         ? (isDarkTheme 
-            ? AccessibilityConstants.highContrastText.withOpacity(0.8)
-            : AccessibilityConstants.highContrastText.withOpacity(0.6))
+            ? AccessibilityConstants.highContrastText.withValues(alpha: 0.8)
+            : AccessibilityConstants.highContrastText.withValues(alpha: 0.6))
         : (isDarkTheme 
-            ? Colors.white.withOpacity(0.45)
-            : Colors.black.withOpacity(0.35));
+            ? Colors.white.withValues(alpha: 0.45)
+            : Colors.black.withValues(alpha: 0.35));
     
     // Increase border width for high contrast mode
     final effectiveBorderWidth = effectiveHighContrast ? (borderWidth * 2.0).clamp(1.0, 3.0) : borderWidth;
@@ -307,16 +307,16 @@ class GlassmorphismContainer extends StatelessWidget {
       end: Alignment.bottomRight,
       colors: isDarkTheme 
         ? [
-            Colors.white.withOpacity(effectiveOpacityValue * 1.4),
-            Colors.white.withOpacity(effectiveOpacityValue * 0.6),
-            Colors.white.withOpacity(effectiveOpacityValue * 0.3),
-            Colors.white.withOpacity(effectiveOpacityValue * 1.1),
+            Colors.white.withValues(alpha: effectiveOpacityValue * 1.4),
+            Colors.white.withValues(alpha: effectiveOpacityValue * 0.6),
+            Colors.white.withValues(alpha: effectiveOpacityValue * 0.3),
+            Colors.white.withValues(alpha: effectiveOpacityValue * 1.1),
           ]
         : [
-            Colors.black.withOpacity(effectiveOpacityValue * 0.7),
-            Colors.black.withOpacity(effectiveOpacityValue * 0.5),
-            Colors.grey.withOpacity(effectiveOpacityValue * 0.8),
-            Colors.black.withOpacity(effectiveOpacityValue * 0.6),
+            Colors.black.withValues(alpha: effectiveOpacityValue * 0.7),
+            Colors.black.withValues(alpha: effectiveOpacityValue * 0.5),
+            Colors.grey.withValues(alpha: effectiveOpacityValue * 0.8),
+            Colors.black.withValues(alpha: effectiveOpacityValue * 0.6),
           ],
       stops: const [0.0, 0.4, 0.8, 1.0],
     );
@@ -393,7 +393,7 @@ class GlassProjectCard extends StatelessWidget {
       margin: const EdgeInsets.all(SpacingTokens.sm),
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       borderWidth: adaptiveProperties.borderWidth,
-      glassTint: accentColor?.withOpacity(0.1), // Keep accent color tinting
+      glassTint: accentColor?.withValues(alpha: 0.1), // Keep accent color tinting
       child: child,
     );
     
@@ -480,7 +480,7 @@ class GlassButton extends StatelessWidget {
       padding: padding ?? const EdgeInsets.all(SpacingTokens.sm),
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       borderWidth: adaptiveProperties.borderWidth,
-      glassTint: color?.withOpacity(0.1),
+      glassTint: color?.withValues(alpha: 0.1),
       child: Material(
         color: Colors.transparent,
         child: InkWell(

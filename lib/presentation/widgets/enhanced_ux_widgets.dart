@@ -10,7 +10,8 @@ import '../../core/design_system/design_tokens.dart';
 class ResponsiveWidget extends ConsumerWidget {
   final Widget Function(BuildContext context, ResponsiveLayoutConfig config) builder;
 
-  const ResponsiveWidget({super.key, required this.builder});  @override
+  const ResponsiveWidget({super.key, required this.builder});
+  @override
   Widget build(BuildContext context, WidgetRef ref) {
     final service = ref.read(responsiveDesignServiceProvider);
     final screenSize = MediaQuery.of(context).size;
@@ -39,14 +40,16 @@ class EnhancedButton extends ConsumerStatefulWidget {
     this.enableHaptics = true,
     this.enableRipple = true,
     this.animationDuration = const Duration(milliseconds: 200),
-  });  @override
+  });
+  @override
   ConsumerState<EnhancedButton> createState() => _EnhancedButtonState();
 }
 
 class _EnhancedButtonState extends ConsumerState<EnhancedButton>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
-  late Animation<double> _scaleAnimation;  @override
+  late Animation<double> _scaleAnimation;
+  @override
   void initState() {
     super.initState();
     _animationController = AnimationController(
@@ -60,11 +63,13 @@ class _EnhancedButtonState extends ConsumerState<EnhancedButton>
       parent: _animationController,
       curve: Curves.easeInOut,
     ));
-  }  @override
+  }
+  @override
   void dispose() {
     _animationController.dispose();
     super.dispose();
-  }  @override
+  }
+  @override
   Widget build(BuildContext context) {
     final accessibilityService = ref.read(accessibilityServiceProvider);
     final settings = ref.watch(accessibilitySettingsProvider);
@@ -107,8 +112,8 @@ class _EnhancedButtonState extends ConsumerState<EnhancedButton>
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              Theme.of(context).colorScheme.primary.withOpacity(0.8),
-                              Theme.of(context).colorScheme.primary.withOpacity(0.6),
+                              Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
+                              Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
                             ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
@@ -160,7 +165,8 @@ class EnhancedCard extends ConsumerStatefulWidget {
     this.elevation,
     this.enableHoverEffect = true,
     this.enablePressEffect = true,
-  });  @override
+  });
+  @override
   ConsumerState<EnhancedCard> createState() => _EnhancedCardState();
 }
 
@@ -169,7 +175,8 @@ class _EnhancedCardState extends ConsumerState<EnhancedCard>
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
 
-  bool _isPressed = false;  @override
+  bool _isPressed = false;
+  @override
   void initState() {
     super.initState();
     _animationController = AnimationController(
@@ -184,11 +191,13 @@ class _EnhancedCardState extends ConsumerState<EnhancedCard>
       parent: _animationController,
       curve: Curves.easeInOut,
     ));
-  }  @override
+  }
+  @override
   void dispose() {
     _animationController.dispose();
     super.dispose();
-  }  @override
+  }
+  @override
   Widget build(BuildContext context) {
     final accessibilityService = ref.read(accessibilityServiceProvider);
     final settings = ref.watch(accessibilitySettingsProvider);
@@ -208,7 +217,7 @@ class _EnhancedCardState extends ConsumerState<EnhancedCard>
                 child: GlassmorphismContainer(
                   level: GlassLevel.content,
                   margin: widget.margin ?? config.margin,
-                  glassTint: widget.color?.withOpacity(0.1),
+                  glassTint: widget.color?.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                   child: Material(
                     color: Colors.transparent,
@@ -282,7 +291,8 @@ class EnhancedGestureDetector extends ConsumerWidget {
     this.onSwipeDown,
     this.semanticLabel,
     this.enableHaptics = true,
-  });  @override
+  });
+  @override
   Widget build(BuildContext context, WidgetRef ref) {
     final accessibilityService = ref.read(accessibilityServiceProvider);
 
@@ -396,7 +406,8 @@ class EnhancedTextField extends ConsumerStatefulWidget {
     this.autofocus = false,
     this.prefixIcon,
     this.suffixIcon,
-  });  @override
+  });
+  @override
   ConsumerState<EnhancedTextField> createState() => _EnhancedTextFieldState();
 }
 
@@ -405,7 +416,8 @@ class _EnhancedTextFieldState extends ConsumerState<EnhancedTextField>
   late AnimationController _animationController;
   late Animation<Color?> _borderColorAnimation;
   late FocusNode _focusNode;
-  bool _isFocused = false;  @override
+  bool _isFocused = false;
+  @override
   void initState() {
     super.initState();
     _focusNode = widget.focusNode ?? FocusNode();
@@ -415,7 +427,8 @@ class _EnhancedTextFieldState extends ConsumerState<EnhancedTextField>
     );
     
     _focusNode.addListener(_onFocusChange);
-  }  @override
+  }
+  @override
   void dispose() {
     _focusNode.removeListener(_onFocusChange);
     if (widget.focusNode == null) {
@@ -432,7 +445,8 @@ class _EnhancedTextFieldState extends ConsumerState<EnhancedTextField>
     } else {
       _animationController.reverse();
     }
-  }  @override
+  }
+  @override
   Widget build(BuildContext context) {
     final accessibilityService = ref.read(accessibilityServiceProvider);
     final settings = ref.watch(accessibilitySettingsProvider);
@@ -531,7 +545,8 @@ class EnhancedLoadingIndicator extends ConsumerStatefulWidget {
     this.color,
     this.size = 40.0,
     this.type = LoadingIndicatorType.circular,
-  });  @override
+  });
+  @override
   ConsumerState<EnhancedLoadingIndicator> createState() => _EnhancedLoadingIndicatorState();
 }
 
@@ -540,7 +555,8 @@ class _EnhancedLoadingIndicatorState extends ConsumerState<EnhancedLoadingIndica
   late AnimationController _rotationController;
   late AnimationController _pulseController;
   late Animation<double> _rotationAnimation;
-  late Animation<double> _pulseAnimation;  @override
+  late Animation<double> _pulseAnimation;
+  @override
   void initState() {
     super.initState();
     _rotationController = AnimationController(
@@ -565,12 +581,14 @@ class _EnhancedLoadingIndicatorState extends ConsumerState<EnhancedLoadingIndica
       parent: _pulseController,
       curve: Curves.easeInOut,
     ));
-  }  @override
+  }
+  @override
   void dispose() {
     _rotationController.dispose();
     _pulseController.dispose();
     super.dispose();
-  }  @override
+  }
+  @override
   Widget build(BuildContext context) {
     final settings = ref.watch(accessibilitySettingsProvider);
 
@@ -645,14 +663,14 @@ class _EnhancedLoadingIndicatorState extends ConsumerState<EnhancedLoadingIndica
                 width: widget.size,
                 height: widget.size,
                 borderRadius: BorderRadius.circular(widget.size / 2),
-                glassTint: (widget.color ?? Theme.of(context).colorScheme.primary).withOpacity(0.3),
+                glassTint: (widget.color ?? Theme.of(context).colorScheme.primary).withValues(alpha: 0.3),
                 child: Container(
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: RadialGradient(
                       colors: [
-                        (widget.color ?? Theme.of(context).colorScheme.primary).withOpacity(0.8),
-                        (widget.color ?? Theme.of(context).colorScheme.primary).withOpacity(0.4),
+                        (widget.color ?? Theme.of(context).colorScheme.primary).withValues(alpha: 0.8),
+                        (widget.color ?? Theme.of(context).colorScheme.primary).withValues(alpha: 0.4),
                       ],
                     ),
                   ),
@@ -686,14 +704,14 @@ class _EnhancedLoadingIndicatorState extends ConsumerState<EnhancedLoadingIndica
                 height: widget.size / 4,
                 margin: const EdgeInsets.symmetric(horizontal: 2),
                 borderRadius: BorderRadius.circular(widget.size / 8),
-                glassTint: (widget.color ?? Theme.of(context).colorScheme.primary).withOpacity(0.2),
+                glassTint: (widget.color ?? Theme.of(context).colorScheme.primary).withValues(alpha: 0.2),
                 child: Container(
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: RadialGradient(
                       colors: [
-                        (widget.color ?? Theme.of(context).colorScheme.primary).withOpacity(0.9),
-                        (widget.color ?? Theme.of(context).colorScheme.primary).withOpacity(0.6),
+                        (widget.color ?? Theme.of(context).colorScheme.primary).withValues(alpha: 0.9),
+                        (widget.color ?? Theme.of(context).colorScheme.primary).withValues(alpha: 0.6),
                       ],
                     ),
                   ),
@@ -728,7 +746,8 @@ class EnhancedFAB extends ConsumerStatefulWidget {
     this.foregroundColor,
     this.mini = false,
     this.enablePulseAnimation = false,
-  });  @override
+  });
+  @override
   ConsumerState<EnhancedFAB> createState() => _EnhancedFABState();
 }
 
@@ -736,7 +755,8 @@ class _EnhancedFABState extends ConsumerState<EnhancedFAB>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
-  late Animation<double> _pulseAnimation;  @override
+  late Animation<double> _pulseAnimation;
+  @override
   void initState() {
     super.initState();
     _animationController = AnimationController(
@@ -763,11 +783,13 @@ class _EnhancedFABState extends ConsumerState<EnhancedFAB>
     if (widget.enablePulseAnimation) {
       _animationController.repeat(reverse: true);
     }
-  }  @override
+  }
+  @override
   void dispose() {
     _animationController.dispose();
     super.dispose();
-  }  @override
+  }
+  @override
   Widget build(BuildContext context) {
     final accessibilityService = ref.read(accessibilityServiceProvider);
     final settings = ref.watch(accessibilitySettingsProvider);
@@ -811,8 +833,8 @@ class _EnhancedFABState extends ConsumerState<EnhancedFAB>
                       shape: BoxShape.circle,
                       gradient: LinearGradient(
                         colors: [
-                          (widget.backgroundColor ?? Theme.of(context).colorScheme.primary).withOpacity(0.9),
-                          (widget.backgroundColor ?? Theme.of(context).colorScheme.primary).withOpacity(0.7),
+                          (widget.backgroundColor ?? Theme.of(context).colorScheme.primary).withValues(alpha: 0.9),
+                          (widget.backgroundColor ?? Theme.of(context).colorScheme.primary).withValues(alpha: 0.7),
                         ],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,

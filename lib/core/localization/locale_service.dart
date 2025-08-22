@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'app_localizations_delegate.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Service for managing app locale and language preferences
 class LocaleService {
@@ -265,7 +266,7 @@ class LocaleSelector extends ConsumerWidget {
         return ListTile(
           leading: showFlags ? Text(
             SupportedLocales.getFlag(locale),
-            style: const TextStyle(fontSize: 24),
+            style: TextStyle(fontSize: 24),
           ) : null,
           title: Text(
             showNativeNames 
@@ -277,7 +278,7 @@ class LocaleSelector extends ConsumerWidget {
             style: Theme.of(context).textTheme.bodySmall,
           ) : null,
           trailing: isSelected ? Icon(
-            Icons.check,
+            PhosphorIcons.check(),
             color: Theme.of(context).colorScheme.primary,
           ) : null,
           selected: isSelected,
@@ -324,3 +325,4 @@ class LocaleTransition extends ConsumerWidget {
     );
   }
 }
+

@@ -5,6 +5,7 @@ import '../../core/accessibility/accessibility_constants.dart';
 import '../../core/theme/typography_constants.dart';
 import 'glassmorphism_container.dart';
 import 'theme_background_widget.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Mobile-optimized scaffold with glassmorphism design
 class MobileScaffold extends StatefulWidget {
@@ -259,7 +260,7 @@ class _MobileDrawerState extends State<MobileDrawer>
               widget.onClose?.call();
               Navigator.of(context).pop();
             },
-            icon: const Icon(Icons.close),
+            icon: Icon(PhosphorIcons.x()),
             tooltip: 'Close navigation drawer',
           ),
         ],
@@ -401,7 +402,7 @@ class _MobileTabBarState extends State<MobileTabBar> {
             gradient: LinearGradient(
               colors: [
                 theme.colorScheme.primary,
-                theme.colorScheme.primary.withOpacity(0.8),
+                theme.colorScheme.primary.withValues(alpha: 0.8),
               ],
             ),
             borderRadius: BorderRadius.circular(20),
@@ -553,7 +554,7 @@ class _MobileSearchBarState extends State<MobileSearchBar>
                 child: Row(
                   children: [
                     Icon(
-                      Icons.search,
+                      PhosphorIcons.magnifyingGlass(),
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
                     const SizedBox(width: 12),
@@ -574,7 +575,7 @@ class _MobileSearchBarState extends State<MobileSearchBar>
                               fontSize: isLargeText 
                                   ? TypographyConstants.textBase 
                                   : TypographyConstants.textSM,
-                              color: theme.colorScheme.onSurfaceVariant.withOpacity(0.6),
+                              color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
                             ),
                             border: InputBorder.none,
                           ),
@@ -602,7 +603,7 @@ class _MobileSearchBarState extends State<MobileSearchBar>
                           child: Container(
                             padding: const EdgeInsets.all(4),
                             child: Icon(
-                              Icons.clear,
+                              PhosphorIcons.x(),
                               size: 18,
                               color: theme.colorScheme.onSurfaceVariant,
                             ),
@@ -650,3 +651,4 @@ class _MobileSearchBarState extends State<MobileSearchBar>
     );
   }
 }
+

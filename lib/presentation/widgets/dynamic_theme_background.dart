@@ -148,7 +148,7 @@ class _DynamicThemeBackgroundState extends State<DynamicThemeBackground>
                     end: Alignment.bottomRight,
                     colors: [
                       Colors.transparent,
-                      _themeConfig.accentColor.withOpacity(
+                      _themeConfig.accentColor.withValues(alpha: 
                         0.05 + _blurController.value * 0.03,
                       ),
                       Colors.transparent,
@@ -231,7 +231,7 @@ class _ParticleSystemPainter extends CustomPainter {
     final effectiveOpacity = particle.opacity * (0.7 + pulseMultiplier * 0.3);
 
     final paint = Paint()
-      ..color = particle.color.withOpacity(effectiveOpacity)
+      ..color = particle.color.withValues(alpha: effectiveOpacity)
       ..style = PaintingStyle.fill;
 
     switch (particleStyle) {
@@ -243,7 +243,7 @@ class _ParticleSystemPainter extends CustomPainter {
       case ParticleStyle.glowing:
         // Particles with glow effect
         final glowPaint = Paint()
-          ..color = particle.color.withOpacity(effectiveOpacity * 0.3)
+          ..color = particle.color.withValues(alpha: effectiveOpacity * 0.3)
           ..style = PaintingStyle.fill
           ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3.0);
         
@@ -276,7 +276,7 @@ class _ParticleSystemPainter extends CustomPainter {
           text: TextSpan(
             text: _getMatrixChar(),
             style: TextStyle(
-              color: particle.color.withOpacity(effectiveOpacity),
+              color: particle.color.withValues(alpha: effectiveOpacity),
               fontSize: effectiveSize,
               fontFamily: 'Courier',
               fontWeight: FontWeight.bold,

@@ -49,7 +49,7 @@ class SoundWavePainter extends CustomPainter {
         colors[colorIndex],
         colors[nextColorIndex],
         colorProgress,
-      )!.withOpacity(isActive ? 0.8 : 0.3);
+      )!.withValues(alpha: isActive ? 0.8 : 0.3);
       
       // Draw wave bar
       final rect = RRect.fromRectAndRadius(
@@ -141,8 +141,8 @@ class CircularSoundWavePainter extends CustomPainter {
         ..style = PaintingStyle.fill
         ..shader = RadialGradient(
           colors: [
-            colors.first.withOpacity(0.8),
-            colors.last.withOpacity(0.3),
+            colors.first.withValues(alpha: 0.8),
+            colors.last.withValues(alpha: 0.3),
           ],
         ).createShader(Rect.fromCircle(center: center, radius: radius / 3));
       

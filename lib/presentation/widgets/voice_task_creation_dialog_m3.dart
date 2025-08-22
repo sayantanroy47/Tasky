@@ -474,7 +474,7 @@ class _VoiceTaskCreationDialogM3State extends ConsumerState<VoiceTaskCreationDia
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title: const Text('Voice Task Creation'),
+        title: Text('Voice Task Creation'),
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
@@ -497,8 +497,8 @@ class _VoiceTaskCreationDialogM3State extends ConsumerState<VoiceTaskCreationDia
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              colorScheme.surface.withOpacity(0.95),
-              colorScheme.surfaceContainerHighest.withOpacity(0.95),
+              colorScheme.surface.withValues(alpha: 0.95),
+              colorScheme.surfaceContainerHighest.withValues(alpha: 0.95),
             ],
           ),
         ),
@@ -534,8 +534,8 @@ class _VoiceTaskCreationDialogM3State extends ConsumerState<VoiceTaskCreationDia
                                     decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       color: _isListening 
-                                        ? colorScheme.primary.withOpacity(0.3)
-                                        : colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                                        ? colorScheme.primary.withValues(alpha: 0.3)
+                                        : colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                                       border: Border.all(
                                         color: _isListening 
                                           ? colorScheme.primary
@@ -544,7 +544,7 @@ class _VoiceTaskCreationDialogM3State extends ConsumerState<VoiceTaskCreationDia
                                       ),
                                     ),
                                     child: Icon(
-                                      _isListening ? Icons.mic : Icons.mic_none,
+                                      _isListening ? PhosphorIcons.microphone() : PhosphorIcons.microphoneSlash(),
                                       size: 48,
                                       color: _isListening 
                                         ? colorScheme.primary
@@ -555,7 +555,7 @@ class _VoiceTaskCreationDialogM3State extends ConsumerState<VoiceTaskCreationDia
                               },
                             ),
                             
-                            const SizedBox(height: 24),
+                            SizedBox(height: 24),
                             
                             // Status message
                             Text(
@@ -599,7 +599,7 @@ class _VoiceTaskCreationDialogM3State extends ConsumerState<VoiceTaskCreationDia
                             Row(
                               children: [
                                 Icon(
-                                  Icons.text_fields,
+                                  PhosphorIcons.textAa(),
                                   color: colorScheme.primary,
                                   size: 20,
                                 ),
@@ -638,7 +638,7 @@ class _VoiceTaskCreationDialogM3State extends ConsumerState<VoiceTaskCreationDia
                       Expanded(
                         child: OutlinedButton.icon(
                           onPressed: _clearRecording,
-                          icon: const Icon(PhosphorIcons.x()),
+                          icon: Icon(PhosphorIcons.x()),
                           label: const Text('Clear'),
                         ),
                       ),
@@ -646,7 +646,7 @@ class _VoiceTaskCreationDialogM3State extends ConsumerState<VoiceTaskCreationDia
                       Expanded(
                         child: FilledButton.icon(
                           onPressed: _continueToEdit,
-                          icon: const Icon(PhosphorIcons.arrowRight()),
+                          icon: Icon(PhosphorIcons.arrowRight()),
                           label: const Text('Next'),
                         ),
                       ),
@@ -663,7 +663,7 @@ class _VoiceTaskCreationDialogM3State extends ConsumerState<VoiceTaskCreationDia
                             )
                           : FilledButton.icon(
                               onPressed: _isListening ? _stopListening : _startListening,
-                              icon: Icon(_isListening ? Icons.stop : Icons.mic),
+                              icon: Icon(_isListening ? PhosphorIcons.stop() : PhosphorIcons.microphone()),
                               label: Text(_isListening ? 'Stop' : 'Start Recording'),
                             ),
                       ),
@@ -678,3 +678,5 @@ class _VoiceTaskCreationDialogM3State extends ConsumerState<VoiceTaskCreationDia
     );
   }
 }
+
+

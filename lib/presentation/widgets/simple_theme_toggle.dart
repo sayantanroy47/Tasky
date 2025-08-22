@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/providers/enhanced_theme_provider.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Simple theme toggle button that switches between light/dark variants of the same theme
 class ThemeToggleButton extends ConsumerWidget {
@@ -19,7 +20,7 @@ class ThemeToggleButton extends ConsumerWidget {
                            currentTheme.metadata.id.contains('_dark');
     
     return IconButton(
-      icon: Icon(isCurrentlyDark ? Icons.light_mode : Icons.dark_mode),
+      icon: Icon(isCurrentlyDark ? PhosphorIcons.sun() : PhosphorIcons.moon()),
       tooltip: isCurrentlyDark ? 'Switch to light variant' : 'Switch to dark variant',
       onPressed: () => _toggleThemeVariant(ref, currentTheme.metadata.id),
     );
@@ -58,3 +59,4 @@ class ThemeToggleButton extends ConsumerWidget {
     ref.read(enhancedThemeProvider.notifier).setTheme(targetThemeId);
   }
 }
+

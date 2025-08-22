@@ -8,10 +8,12 @@ import '../../core/design_system/design_tokens.dart';
 import '../providers/notification_providers.dart';
 import '../../services/notification/notification_models.dart' as models;
 import '../../core/theme/typography_constants.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Page for configuring notification settings
 class NotificationSettingsPage extends ConsumerWidget {
-  const NotificationSettingsPage({super.key});  @override
+  const NotificationSettingsPage({super.key});
+  @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settingsAsync = ref.watch(notificationSettingsProvider);
     final permissionsAsync = ref.watch(notificationPermissionsProvider);
@@ -20,14 +22,14 @@ class NotificationSettingsPage extends ConsumerWidget {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         extendBodyBehindAppBar: true,
-        appBar: const StandardizedAppBar(title: 'Notification Settings'),
+        appBar: StandardizedAppBar(title: 'Notification Settings'),
         body: settingsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.error_outline, size: 64, color: Colors.red),
+              Icon(PhosphorIcons.warningCircle(), size: 64, color: Colors.red),
               const SizedBox(height: 16),
               Text('Error loading settings: $error'),
               const SizedBox(height: 16),
@@ -117,8 +119,7 @@ class NotificationSettingsPage extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Permissions',
+            Text('Permissions',
               style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
@@ -128,7 +129,7 @@ class NotificationSettingsPage extends ConsumerWidget {
               data: (hasPermissions) => Row(
                 children: [
                   Icon(
-                    hasPermissions ? Icons.check_circle : Icons.error,
+                    hasPermissions ? PhosphorIcons.checkCircle() : PhosphorIcons.warningCircle(),
                     color: hasPermissions ? Colors.green : Colors.red,
                   ),
                   const SizedBox(width: 8),
@@ -153,8 +154,8 @@ class NotificationSettingsPage extends ConsumerWidget {
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
                                 colors: [
-                                  Theme.of(context).colorScheme.primary.withOpacity(0.8),
-                                  Theme.of(context).colorScheme.primary.withOpacity(0.6),
+                                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
+                                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
                                 ],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
@@ -236,15 +237,14 @@ class NotificationSettingsPage extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Task Reminders',
+            Text('Task Reminders',
               style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             ListTile(
               title: const Text('Default Reminder Time'),
               subtitle: Text(_formatDuration(settings.defaultReminder)),
-              trailing: const Icon(Icons.chevron_right),
+              trailing: Icon(PhosphorIcons.caretRight()),
               enabled: settings.enabled,
               onTap: settings.enabled ? () => _showReminderTimePicker(context, ref, settings) : null,
             ),
@@ -265,8 +265,7 @@ class NotificationSettingsPage extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Daily Summary',
+            Text('Daily Summary',
               style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
@@ -281,7 +280,7 @@ class NotificationSettingsPage extends ConsumerWidget {
             ListTile(
               title: const Text('Summary Time'),
               subtitle: Text(_formatNotificationTime(settings.dailySummaryTime)),
-              trailing: const Icon(Icons.chevron_right),
+              trailing: Icon(PhosphorIcons.caretRight()),
               enabled: settings.enabled && settings.dailySummary,
               onTap: settings.enabled && settings.dailySummary
                   ? () => _showTimePicker(context, ref, settings.dailySummaryTime)
@@ -306,8 +305,7 @@ class NotificationSettingsPage extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Quiet Hours',
+            Text('Quiet Hours',
               style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
@@ -315,7 +313,7 @@ class NotificationSettingsPage extends ConsumerWidget {
               ListTile(
                 title: const Text('Start Time'),
                 subtitle: Text(_formatNotificationTime(settings.quietHoursStart!)),
-                trailing: const Icon(Icons.chevron_right),
+                trailing: Icon(PhosphorIcons.caretRight()),
                 enabled: settings.enabled,
                 onTap: settings.enabled
                     ? () => _showQuietHoursStartPicker(context, ref, settings)
@@ -324,7 +322,7 @@ class NotificationSettingsPage extends ConsumerWidget {
               ListTile(
                 title: const Text('End Time'),
                 subtitle: Text(_formatNotificationTime(settings.quietHoursEnd!)),
-                trailing: const Icon(Icons.chevron_right),
+                trailing: Icon(PhosphorIcons.caretRight()),
                 enabled: settings.enabled,
                 onTap: settings.enabled
                     ? () => _showQuietHoursEndPicker(context, ref, settings)
@@ -332,7 +330,7 @@ class NotificationSettingsPage extends ConsumerWidget {
               ),
               ListTile(
                 title: const Text('Remove Quiet Hours'),
-                leading: const Icon(Icons.delete_outline),
+                leading: Icon(PhosphorIcons.trash()),
                 enabled: settings.enabled,
                 onTap: settings.enabled
                     ? () => ref.read(notificationSettingsProvider.notifier).setQuietHours(null, null)
@@ -342,8 +340,8 @@ class NotificationSettingsPage extends ConsumerWidget {
               ListTile(
                 title: const Text('Set Quiet Hours'),
                 subtitle: const Text('No notifications during specified hours'),
-                leading: const Icon(Icons.bedtime),
-                trailing: const Icon(Icons.chevron_right),
+                leading: Icon(PhosphorIcons.moon()),
+                trailing: Icon(PhosphorIcons.caretRight()),
                 enabled: settings.enabled,
                 onTap: settings.enabled
                     ? () => _showQuietHoursSetup(context, ref)
@@ -424,19 +422,19 @@ class NotificationSettingsPage extends ConsumerWidget {
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          Theme.of(context).colorScheme.primary.withOpacity(0.8),
-                          Theme.of(context).colorScheme.primary.withOpacity(0.6),
+                          Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
+                          Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
                         ],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
                       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                     ),
-                    child: const Row(
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
-                          Icons.notifications_active,
+                          PhosphorIcons.bell(),
                           color: Colors.white,
                         ),
                         SizedBox(width: 8),
@@ -542,14 +540,14 @@ class NotificationSettingsPage extends ConsumerWidget {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setState) => AlertDialog(
-          title: const Text('Set Quiet Hours'),
+          title: Text('Set Quiet Hours'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
                 title: const Text('Start Time'),
                 subtitle: Text(startTime != null ? _formatNotificationTime(startTime!) : 'Not set'),
-                trailing: const Icon(Icons.access_time),
+                trailing: Icon(PhosphorIcons.clock()),
                 onTap: () async {
                   final time = await showTimePicker(
                     context: context,
@@ -563,9 +561,9 @@ class NotificationSettingsPage extends ConsumerWidget {
                 },
               ),
               ListTile(
-                title: const Text('End Time'),
+                title: Text('End Time'),
                 subtitle: Text(endTime != null ? _formatNotificationTime(endTime!) : 'Not set'),
-                trailing: const Icon(Icons.access_time),
+                trailing: Icon(PhosphorIcons.clock()),
                 onTap: () async {
                   final time = await showTimePicker(
                     context: context,
@@ -639,3 +637,5 @@ class NotificationSettingsPage extends ConsumerWidget {
     }
   }
 }
+
+

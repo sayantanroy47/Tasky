@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../domain/entities/task_model.dart';
 
 /// Widget that displays notification status with proper icons instead of emojis
@@ -23,7 +24,7 @@ class NotificationStatusWidget extends StatelessWidget {
       children: [
         if (overdueTasks.isNotEmpty) ...[
           Icon(
-            Icons.warning_rounded,
+            PhosphorIcons.warning(),
             size: 16,
             color: theme.colorScheme.error,
           ),
@@ -36,12 +37,12 @@ class NotificationStatusWidget extends StatelessWidget {
             ),
           ),
           if (todayTasks.isNotEmpty || upcomingTasks.isNotEmpty)
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
         ],
         
         if (todayTasks.isNotEmpty) ...[
           Icon(
-            Icons.today_rounded,
+            PhosphorIcons.calendarBlank(),
             size: 16,
             color: theme.colorScheme.primary,
           ),
@@ -54,12 +55,12 @@ class NotificationStatusWidget extends StatelessWidget {
             ),
           ),
           if (upcomingTasks.isNotEmpty)
-            const SizedBox(width: 8),
+            SizedBox(width: 8),
         ],
         
         if (upcomingTasks.isNotEmpty) ...[
           Icon(
-            Icons.schedule_rounded,
+            PhosphorIcons.clock(),
             size: 16,
             color: theme.colorScheme.secondary,
           ),
@@ -126,34 +127,34 @@ class TaskStatusIcon extends StatelessWidget {
     
     switch (type.toLowerCase()) {
       case 'priority':
-        iconData = Icons.priority_high_rounded;
+        iconData = PhosphorIcons.warning();
         iconColor = color ?? theme.colorScheme.error;
         break;
       case 'due':
-        iconData = Icons.schedule_rounded;
+        iconData = PhosphorIcons.clock();
         iconColor = color ?? theme.colorScheme.primary;
         break;
       case 'tags':
-        iconData = Icons.local_offer_rounded;
+        iconData = PhosphorIcons.tag();
         iconColor = color ?? theme.colorScheme.secondary;
         break;
       case 'location':
-        iconData = Icons.location_on_rounded;
+        iconData = PhosphorIcons.mapPin();
         iconColor = color ?? theme.colorScheme.tertiary;
         break;
       case 'home':
-        iconData = Icons.home_rounded;
+        iconData = PhosphorIcons.house();
         break;
       case 'urgent':
-        iconData = Icons.warning_rounded;
+        iconData = PhosphorIcons.warning();
         iconColor = color ?? theme.colorScheme.error;
         break;
       case 'suggestion':
-        iconData = Icons.lightbulb_rounded;
+        iconData = PhosphorIcons.lightbulb();
         iconColor = color ?? theme.colorScheme.primary;
         break;
       default:
-        iconData = Icons.info_rounded;
+        iconData = PhosphorIcons.info();
     }
     
     return Icon(

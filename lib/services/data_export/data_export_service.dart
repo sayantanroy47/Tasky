@@ -225,7 +225,8 @@ class DataExportServiceImpl implements DataExportService {
 }
 
 /// Stub implementation fallback when export packages are not available
-class _StubDataExportService implements DataExportService {  @override
+class _StubDataExportService implements DataExportService {
+  @override
   Future<ExportResult> exportTasks(
     List<TaskModel> tasks, {
     ExportFormat format = ExportFormat.csv,
@@ -241,7 +242,8 @@ class _StubDataExportService implements DataExportService {  @override
       filePath: null,
       fileSize: 0,
     );
-  }  @override
+  }
+  @override
   Future<ExportResult> exportProjects(
     List<Project> projects, {
     ExportFormat format = ExportFormat.csv,
@@ -257,7 +259,8 @@ class _StubDataExportService implements DataExportService {  @override
       filePath: null,
       fileSize: 0,
     );
-  }  @override
+  }
+  @override
   Future<ExportResult> exportFullBackup({
     ExportOptions? options,
   }) async {
@@ -271,7 +274,8 @@ class _StubDataExportService implements DataExportService {  @override
       filePath: null,
       fileSize: 0,
     );
-  }  @override
+  }
+  @override
   Future<ImportResultData> importTasks(
     String filePath, {
     ImportOptions? options,
@@ -287,7 +291,8 @@ class _StubDataExportService implements DataExportService {  @override
       skippedCount: 0,
       errors: ['Import not available in stub mode'],
     );
-  }  @override
+  }
+  @override
   Future<ImportResultData> importProjects(
     String filePath, {
     ImportOptions? options,
@@ -303,7 +308,8 @@ class _StubDataExportService implements DataExportService {  @override
       skippedCount: 0,
       errors: ['Import not available in stub mode'],
     );
-  }  @override
+  }
+  @override
   Future<ImportResultData> importFullBackup(
     String filePath, {
     ImportOptions? options,
@@ -319,13 +325,15 @@ class _StubDataExportService implements DataExportService {  @override
       skippedCount: 0,
       errors: ['Import not available in stub mode'],
     );
-  }  @override
+  }
+  @override
   Future<bool> shareFile(String filePath, {String? subject}) async {
     if (kDebugMode) {
       // print('Stub: Would share file $filePath');
     }
     return false;
-  }  @override
+  }
+  @override
   Future<String?> pickImportFile({
     List<String>? allowedExtensions,
   }) async {
@@ -333,33 +341,40 @@ class _StubDataExportService implements DataExportService {  @override
       // print('Stub: Would pick import file');
     }
     return null;
-  }  @override
+  }
+  @override
   Future<List<ExportFormat>> getSupportedFormats() async {
     return [ExportFormat.csv, ExportFormat.json]; // Return basic formats
-  }  @override
+  }
+  @override
   Future<bool> hasStoragePermission() async {
     return false; // Always false for stub
-  }  @override
+  }
+  @override
   Future<bool> requestStoragePermission() async {
     return false; // Always false for stub
-  }  @override
+  }
+  @override
   Future<String> getExportDirectory() async {
     final directory = await getApplicationDocumentsDirectory();
     return path.join(directory.path, 'exports');
-  }  @override
+  }
+  @override
   Future<void> cleanupOldExports({int maxAgeInDays = 30}) async {
     if (kDebugMode) {
       // print('Stub: Would cleanup exports older than $maxAgeInDays days');
     }
   }
 
-  // Additional methods called by providers  @override
+  // Additional methods called by providers
+  @override
   Future<bool> requestStoragePermissions() async {
     if (kDebugMode) {
       // print('Stub: Would request storage permissions');
     }
     return false;
-  }  @override
+  }
+  @override
   Stream<ExportProgress> exportData({
     required ExportFormat format,
     String? filePath,
@@ -375,7 +390,8 @@ class _StubDataExportService implements DataExportService {  @override
       currentOperation: 'Export not available',
       progress: 0.0,
     );
-  }  @override
+  }
+  @override
   Future<void> shareData({
     required ExportFormat format,
     List<String>? taskIds,
@@ -384,7 +400,8 @@ class _StubDataExportService implements DataExportService {  @override
     if (kDebugMode) {
       // print('Stub: Would share data in $format format');
     }
-  }  @override
+  }
+  @override
   Future<ImportValidationResult> validateImportFile(String filePath) async {
     if (kDebugMode) {
       // print('Stub: Would validate import file $filePath');
@@ -397,7 +414,8 @@ class _StubDataExportService implements DataExportService {  @override
       projectCount: 0,
       tagCount: 0,
     );
-  }  @override
+  }
+  @override
   Stream<ImportProgress> importData({
     required String filePath,
     ImportOptions? options,
@@ -411,24 +429,28 @@ class _StubDataExportService implements DataExportService {  @override
       currentOperation: 'Import not available',
       progress: 0.0,
     );
-  }  @override
+  }
+  @override
   Future<List<BackupMetadata>> getAvailableBackups() async {
     if (kDebugMode) {
       // print('Stub: Would get available backups');
     }
     return [];
-  }  @override
+  }
+  @override
   Future<String> createBackup() async {
     if (kDebugMode) {
       // print('Stub: Would create backup');
     }
     return '';
-  }  @override
+  }
+  @override
   Future<void> restoreBackup(String backupPath) async {
     if (kDebugMode) {
       // print('Stub: Would restore backup from $backupPath');
     }
-  }  @override
+  }
+  @override
   Future<void> deleteBackup(String backupId) async {
     if (kDebugMode) {
       // print('Stub: Would delete backup $backupId');

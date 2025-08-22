@@ -5,6 +5,7 @@ import '../widgets/share_intent_settings_widget.dart';
 import '../../services/integration_service.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class IntegrationSettingsScreen extends ConsumerStatefulWidget {
   const IntegrationSettingsScreen({super.key});
@@ -94,7 +95,7 @@ class _IntegrationSettingsScreenState extends ConsumerState<IntegrationSettingsS
           children: [
             Row(
               children: [
-                Icon(Icons.message, color: Theme.of(context).primaryColor),
+                Icon(PhosphorIcons.chatCircle(), color: Theme.of(context).primaryColor),
                 const SizedBox(width: 8),
                 const Text(
                   'Messaging App Integration',
@@ -116,12 +117,12 @@ class _IntegrationSettingsScreenState extends ConsumerState<IntegrationSettingsS
 
   List<Widget> _buildMessagingAppsList() {
     final appInfo = {
-      'com.whatsapp': {'name': 'WhatsApp', 'icon': Icons.chat},
-      'com.facebook.orca': {'name': 'Facebook Messenger', 'icon': Icons.messenger},
-      'com.telegram.messenger': {'name': 'Telegram', 'icon': Icons.telegram},
-      'com.discord': {'name': 'Discord', 'icon': Icons.discord},
-      'com.slack': {'name': 'Slack', 'icon': Icons.work},
-      'com.microsoft.teams': {'name': 'Microsoft Teams', 'icon': Icons.groups},
+      'com.whatsapp': {'name': 'WhatsApp', 'icon': PhosphorIcons.chatCircle()},
+      'com.facebook.orca': {'name': 'Facebook Messenger', 'icon': PhosphorIcons.messengerLogo()},
+      'com.telegram.messenger': {'name': 'Telegram', 'icon': PhosphorIcons.telegramLogo()},
+      'com.discord': {'name': 'Discord', 'icon': PhosphorIcons.discordLogo()},
+      'com.slack': {'name': 'Slack', 'icon': PhosphorIcons.briefcase()},
+      'com.microsoft.teams': {'name': 'Microsoft Teams', 'icon': PhosphorIcons.users()},
     };
 
     return appInfo.entries.map((entry) {
@@ -155,8 +156,8 @@ class _IntegrationSettingsScreenState extends ConsumerState<IntegrationSettingsS
           children: [
             Row(
               children: [
-                Icon(Icons.flash_on, color: Theme.of(context).primaryColor),
-                const SizedBox(width: 8),
+                Icon(PhosphorIcons.lightning(), color: Theme.of(context).primaryColor),
+                SizedBox(width: 8),
                 const Text(
                   'Quick Actions',
                   style: TextStyle(fontWeight: FontWeight.bold),
@@ -168,23 +169,23 @@ class _IntegrationSettingsScreenState extends ConsumerState<IntegrationSettingsS
               'Quick ways to create tasks from outside the app:',
             ),
             const SizedBox(height: 16),
-            const ListTile(
-              leading: Icon(Icons.settings),
+            ListTile(
+              leading: Icon(PhosphorIcons.gear()),
               title: Text('Quick Settings Tile'),
               subtitle: Text('Add quick task tile to notification panel'),
-              trailing: Icon(Icons.check_circle, color: Colors.green),
+              trailing: Icon(PhosphorIcons.checkCircle(), color: Colors.green),
             ),
-            const ListTile(
-              leading: Icon(Icons.shortcut),
+            ListTile(
+              leading: Icon(PhosphorIcons.lightning()),
               title: Text('App Shortcuts'),
               subtitle: Text('Long press app icon for quick actions'),
-              trailing: Icon(Icons.check_circle, color: Colors.green),
+              trailing: Icon(PhosphorIcons.checkCircle(), color: Colors.green),
             ),
-            const ListTile(
-              leading: Icon(Icons.voice_chat),
+            ListTile(
+              leading: Icon(PhosphorIcons.microphoneStage()),
               title: Text('Voice Shortcuts'),
               subtitle: Text('Create tasks using voice commands'),
-              trailing: Icon(Icons.check_circle, color: Colors.green),
+              trailing: Icon(PhosphorIcons.checkCircle(), color: Colors.green),
             ),
           ],
         ),
@@ -204,8 +205,8 @@ class _IntegrationSettingsScreenState extends ConsumerState<IntegrationSettingsS
           children: [
             Row(
               children: [
-                Icon(Icons.widgets, color: Theme.of(context).primaryColor),
-                const SizedBox(width: 8),
+                Icon(PhosphorIcons.square(), color: Theme.of(context).primaryColor),
+                SizedBox(width: 8),
                 const Text(
                   'Home Screen Widgets',
                   style: TextStyle(fontWeight: FontWeight.bold),
@@ -218,7 +219,7 @@ class _IntegrationSettingsScreenState extends ConsumerState<IntegrationSettingsS
             ),
             const SizedBox(height: 16),
             ...widgetTypes.map((widget) => ListTile(
-              leading: const Icon(Icons.widgets_outlined),
+              leading: Icon(PhosphorIcons.square()),
               title: Text(widget['name'] as String),
               subtitle: Text(widget['description'] as String),
               trailing: TextButton(
@@ -241,8 +242,8 @@ class _IntegrationSettingsScreenState extends ConsumerState<IntegrationSettingsS
           children: [
             Row(
               children: [
-                Icon(Icons.bug_report, color: Theme.of(context).primaryColor),
-                const SizedBox(width: 8),
+                Icon(PhosphorIcons.bug(), color: Theme.of(context).primaryColor),
+                SizedBox(width: 8),
                 const Text(
                   'Test Integration',
                   style: TextStyle(fontWeight: FontWeight.bold),
@@ -260,17 +261,17 @@ class _IntegrationSettingsScreenState extends ConsumerState<IntegrationSettingsS
               children: [
                 ElevatedButton.icon(
                   onPressed: _testShareIntent,
-                  icon: const Icon(Icons.share),
+                  icon: Icon(PhosphorIcons.share()),
                   label: const Text('Test Share'),
                 ),
                 ElevatedButton.icon(
                   onPressed: _testQuickTask,
-                  icon: const Icon(Icons.add_task),
+                  icon: Icon(PhosphorIcons.plus()),
                   label: const Text('Test Quick Task'),
                 ),
                 ElevatedButton.icon(
                   onPressed: _testWidgetUpdate,
-                  icon: const Icon(Icons.refresh),
+                  icon: Icon(PhosphorIcons.arrowClockwise()),
                   label: const Text('Update Widgets'),
                 ),
               ],
@@ -394,3 +395,4 @@ class _IntegrationSettingsScreenState extends ConsumerState<IntegrationSettingsS
     );
   }
 }
+

@@ -269,9 +269,9 @@ class _MasonryThemeGridState extends State<MasonryThemeGrid>
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            Icons.palette_outlined,
+            PhosphorIcons.palette(),
             size: 64,
-            color: theme.colorScheme.onSurfaceVariant.withOpacity(0.5),
+            color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
           ),
           const SizedBox(height: 16),
           Text(
@@ -289,7 +289,7 @@ class _MasonryThemeGridState extends State<MasonryThemeGrid>
                 ? 'Try adjusting your search terms or filters'
                 : 'Themes will appear here once loaded',
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant.withOpacity(0.7),
+              color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
             ),
             textAlign: TextAlign.center,
           ),
@@ -299,7 +299,7 @@ class _MasonryThemeGridState extends State<MasonryThemeGrid>
               onPressed: () {
                 // This would trigger clearing the search in the parent
               },
-              icon: const Icon(PhosphorIcons.x()),
+              icon: Icon(PhosphorIcons.x()),
               label: const Text('Clear Search'),
             ),
           ],
@@ -353,3 +353,4 @@ extension ThemeAnalysis on AppThemeData {
     return metadata.createdAt.isAfter(thirtyDaysAgo);
   }
 }
+

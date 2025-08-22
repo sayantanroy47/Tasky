@@ -145,7 +145,7 @@ class _UltraModernThemeGalleryState extends ConsumerState<UltraModernThemeGaller
     final themes = _getFilteredAndSortedThemes();
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.surface.withOpacity(0.95),
+      backgroundColor: theme.colorScheme.surface.withValues(alpha: 0.95),
       body: Stack(
         children: [
           // Background with subtle pattern
@@ -209,14 +209,14 @@ class _UltraModernThemeGalleryState extends ConsumerState<UltraModernThemeGaller
           end: Alignment.bottomRight,
           colors: [
             theme.colorScheme.surface,
-            theme.colorScheme.surface.withOpacity(0.8),
-            theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+            theme.colorScheme.surface.withValues(alpha: 0.8),
+            theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
           ],
         ),
       ),
       child: CustomPaint(
         painter: _ModernPatternPainter(
-          color: theme.colorScheme.outline.withOpacity(0.02),
+          color: theme.colorScheme.outline.withValues(alpha: 0.02),
         ),
         size: Size.infinite,
       ),
@@ -263,7 +263,7 @@ class _UltraModernThemeGalleryState extends ConsumerState<UltraModernThemeGaller
               scale: 1.0 - (_searchAnimation.value * 0.3),
               child: IconButton(
                 icon: Icon(
-                  Icons.shuffle_rounded,
+                  PhosphorIcons.shuffle(),
                   color: theme.colorScheme.primary,
                 ),
                 onPressed: _applyRandomTheme,
@@ -300,14 +300,14 @@ class _UltraModernThemeGalleryState extends ConsumerState<UltraModernThemeGaller
                 decoration: InputDecoration(
                   hintText: 'Search themes by name, mood, or color...',
                   hintStyle: theme.textTheme.bodyLarge?.copyWith(
-                    color: theme.colorScheme.onSurface.withOpacity(0.5),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                   ),
                   prefixIcon: AnimatedRotation(
                     turns: _searchAnimation.value * 0.5,
-                    duration: const Duration(milliseconds: 400),
+                    duration: Duration(milliseconds: 400),
                     child: Icon(
-                      Icons.search_rounded,
-                      color: theme.colorScheme.primary.withOpacity(
+                      PhosphorIcons.magnifyingGlass(),
+                      color: theme.colorScheme.primary.withValues(alpha: 
                         0.7 + (_searchAnimation.value * 0.3),
                       ),
                     ),
@@ -317,12 +317,12 @@ class _UltraModernThemeGalleryState extends ConsumerState<UltraModernThemeGaller
                     children: [
                       if (_searchQuery.isNotEmpty)
                         IconButton(
-                          icon: const Icon(PhosphorIcons.x()),
+                          icon: Icon(PhosphorIcons.x()),
                           onPressed: _clearSearch,
                         ),
                       IconButton(
                         icon: Icon(
-                          _showFilters ? Icons.filter_list_off : Icons.filter_list,
+                          _showFilters ? PhosphorIcons.funnelSlash() : PhosphorIcons.funnel(),
                           color: _showFilters ? theme.colorScheme.primary : null,
                         ),
                         onPressed: _toggleFilters,
@@ -397,16 +397,16 @@ class _UltraModernThemeGalleryState extends ConsumerState<UltraModernThemeGaller
             color: theme.colorScheme.onSurfaceVariant,
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
             children: [
-              _buildSortChip('popularity', 'Popular', Icons.trending_up),
+              _buildSortChip('popularity', 'Popular', PhosphorIcons.trendUp()),
               const SizedBox(width: 8),
-              _buildSortChip('name', 'Name', Icons.sort_by_alpha),
+              _buildSortChip('name', 'Name', PhosphorIcons.sortAscending()),
               const SizedBox(width: 8),
-              _buildSortChip('recent', 'Recent', Icons.access_time),
+              _buildSortChip('recent', 'Recent', PhosphorIcons.clock()),
             ],
           ),
         ),
@@ -430,13 +430,13 @@ class _UltraModernThemeGalleryState extends ConsumerState<UltraModernThemeGaller
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected 
-              ? theme.colorScheme.primary.withOpacity(0.15)
-              : theme.colorScheme.surface.withOpacity(0.5),
+              ? theme.colorScheme.primary.withValues(alpha: 0.15)
+              : theme.colorScheme.surface.withValues(alpha: 0.5),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: isSelected 
-                ? theme.colorScheme.primary.withOpacity(0.3)
-                : theme.colorScheme.outline.withOpacity(0.1),
+                ? theme.colorScheme.primary.withValues(alpha: 0.3)
+                : theme.colorScheme.outline.withValues(alpha: 0.1),
             width: isSelected ? 1.0 : 0.1,
           ),
         ),
@@ -508,12 +508,12 @@ class _UltraModernThemeGalleryState extends ConsumerState<UltraModernThemeGaller
         decoration: BoxDecoration(
           color: isSelected 
               ? theme.colorScheme.primary
-              : theme.colorScheme.surface.withOpacity(0.7),
+              : theme.colorScheme.surface.withValues(alpha: 0.7),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isSelected 
                 ? theme.colorScheme.primary
-                : theme.colorScheme.outline.withOpacity(0.2),
+                : theme.colorScheme.outline.withValues(alpha: 0.2),
             width: 0.1,
           ),
         ),
@@ -547,13 +547,13 @@ class _UltraModernThemeGalleryState extends ConsumerState<UltraModernThemeGaller
                 borderWidth: 0.1,
                 padding: const EdgeInsets.all(12),
                 child: Icon(
-                  Icons.preview_rounded,
+                  PhosphorIcons.eye(),
                   color: theme.colorScheme.primary,
                   size: 24,
                 ),
               ),
             
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             
             // Scroll to top
             GestureDetector(
@@ -564,7 +564,7 @@ class _UltraModernThemeGalleryState extends ConsumerState<UltraModernThemeGaller
                 borderWidth: 0.1,
                 padding: const EdgeInsets.all(16),
                 child: Icon(
-                  Icons.keyboard_arrow_up_rounded,
+                  PhosphorIcons.caretUp(),
                   color: theme.colorScheme.primary,
                   size: 28,
                 ),
@@ -703,3 +703,4 @@ class _ModernPatternPainter extends CustomPainter {
     return oldDelegate.color != color;
   }
 }
+

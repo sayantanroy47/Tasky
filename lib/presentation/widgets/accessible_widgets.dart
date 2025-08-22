@@ -433,7 +433,7 @@ class AccessibleSlider extends ConsumerWidget {
             : Theme.of(context).colorScheme.primary,
         inactiveColor: settings.highContrastMode 
             ? Colors.grey[400] 
-            : Theme.of(context).colorScheme.onSurface.withOpacity(0.24),
+            : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.24),
       ),
     );
   }
@@ -604,7 +604,7 @@ class AccessibleTabBar extends ConsumerWidget {
             : Theme.of(context).colorScheme.primary,
         unselectedLabelColor: settings.highContrastMode 
             ? Colors.grey[600] 
-            : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+            : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
         indicatorColor: settings.highContrastMode 
             ? Colors.black 
             : Theme.of(context).colorScheme.primary,

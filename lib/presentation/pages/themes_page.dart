@@ -8,6 +8,7 @@ import '../widgets/theme_background_widget.dart';
 import '../../core/theme/app_theme_data.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../core/design_system/design_tokens.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Ultra-modern theme gallery with glassmorphism design and immersive previews
 class ThemesPage extends ConsumerStatefulWidget {
@@ -115,7 +116,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
             borderRadius: BorderRadius.circular(20),
             margin: const EdgeInsets.only(right: 4),
             child: IconButton(
-              icon: const Icon(Icons.search, size: 18),
+              icon: Icon(PhosphorIcons.magnifyingGlass(), size: 18),
               onPressed: () => _showSearchDialog(context),
               tooltip: 'Search themes',
               padding: EdgeInsets.zero,
@@ -129,7 +130,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
             borderRadius: BorderRadius.circular(20),
             margin: const EdgeInsets.only(right: 12),
             child: IconButton(
-              icon: Icon(_isGridView ? Icons.view_list : Icons.grid_view, size: 18),
+              icon: Icon(_isGridView ? PhosphorIcons.list() : PhosphorIcons.gridNine(), size: 18),
               onPressed: () {
                 setState(() {
                   _isGridView = !_isGridView;
@@ -218,12 +219,12 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
                   borderRadius: BorderRadius.circular(16),
                   // Let glassmorphism container auto-determine tint based on theme
                   child: Icon(
-                    Icons.palette_rounded,
+                    PhosphorIcons.palette(),
                     color: theme.colorScheme.primary,
                     size: 28,
                   ),
                 ),
-                const SizedBox(width: 20),
+                SizedBox(width: 20),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -277,14 +278,14 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: theme.colorScheme.primary.withOpacity(0.3),
+                          color: theme.colorScheme.primary.withValues(alpha: 0.3),
                           blurRadius: 12,
                           offset: const Offset(0, 4),
                         ),
                       ],
                     ),
                     child: Icon(
-                      Icons.brush_rounded,
+                      PhosphorIcons.paintBrush(),
                       color: theme.colorScheme.onPrimary,
                       size: 24,
                     ),
@@ -324,7 +325,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
                     height: 44,
                     borderRadius: BorderRadius.circular(22),
                     child: IconButton(
-                      icon: const Icon(Icons.shuffle_rounded, size: 20),
+                      icon: Icon(PhosphorIcons.shuffle(), size: 20),
                       onPressed: () => _applyRandomTheme(),
                       tooltip: 'Random theme',
                     ),
@@ -348,7 +349,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
         child: Row(
           children: [
             Icon(
-              Icons.filter_alt_rounded,
+              PhosphorIcons.funnel(),
               size: 18,
               color: Theme.of(context).colorScheme.primary,
             ),
@@ -371,7 +372,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
               height: 32,
               borderRadius: BorderRadius.circular(16),
               child: IconButton(
-                icon: const Icon(Icons.close, size: 16),
+                icon: Icon(PhosphorIcons.x(), size: 16),
                 onPressed: () {
                   setState(() {
                     _searchQuery = '';
@@ -443,7 +444,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
               padding: const EdgeInsets.all(16),
               // Let glassmorphism container auto-determine tint, just use border for selection
               borderColor: isActive 
-                ? Theme.of(context).colorScheme.primary.withOpacity(0.3)
+                ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.3)
                 : null,
               child: Material(
                 color: Colors.transparent,
@@ -472,9 +473,9 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: Color(theme.colors.primary.value).withOpacity(0.3),
+                                color: Color(theme.colors.primary.value).withValues(alpha: 0.3),
                                 blurRadius: 8,
-                                offset: const Offset(0, 4),
+                                offset: Offset(0, 4),
                               ),
                             ],
                           ),
@@ -484,7 +485,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
                               CustomPaint(
                                 size: Size.infinite,
                                 painter: _ThemePatternPainter(
-                                  Color(theme.colors.onPrimary.value).withOpacity(0.1),
+                                  Color(theme.colors.onPrimary.value).withValues(alpha: 0.1),
                                 ),
                               ),
                               
@@ -496,11 +497,11 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
                                   child: Container(
                                     padding: const EdgeInsets.all(4),
                                     decoration: BoxDecoration(
-                                      color: Colors.white.withOpacity(0.9),
+                                      color: Colors.white.withValues(alpha: 0.9),
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: Icon(
-                                      Icons.check,
+                                      PhosphorIcons.check(),
                                       size: 16,
                                       color: Color(theme.colors.primary.value),
                                     ),
@@ -558,8 +559,8 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
                                 _buildColorDot(Color(theme.colors.tertiary.value)),
                                 const Spacer(),
                                 if (theme.metadata.popularityScore > 0.8)
-                                  const Icon(
-                                    Icons.star,
+                                  Icon(
+                                    PhosphorIcons.star(),
                                     size: 16,
                                     color: Colors.amber,
                                   ),
@@ -588,7 +589,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
       padding: const EdgeInsets.all(16),
       // Let glassmorphism container auto-determine tint, just use border for selection
       borderColor: isActive 
-        ? Theme.of(context).colorScheme.primary.withOpacity(0.3)
+        ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.3)
         : null,
       child: Material(
         color: Colors.transparent,
@@ -613,15 +614,15 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Color(theme.colors.primary.value).withOpacity(0.3),
+                      color: Color(theme.colors.primary.value).withValues(alpha: 0.3),
                       blurRadius: 8,
-                      offset: const Offset(0, 4),
+                      offset: Offset(0, 4),
                     ),
                   ],
                 ),
                 child: isActive
                   ? Icon(
-                      Icons.check,
+                      PhosphorIcons.check(),
                       color: Color(theme.colors.onPrimary.value),
                       size: 24,
                     )
@@ -685,7 +686,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
         borderRadius: BorderRadius.circular(size / 2),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.4),
+            color: color.withValues(alpha: 0.4),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -709,13 +710,13 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
             backgroundColor: Colors.transparent,
             elevation: 0,
             child: Icon(
-              Icons.shuffle_rounded,
+              PhosphorIcons.shuffle(),
               color: theme.colorScheme.primary,
             ),
           ),
         ),
         
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         
         GlassmorphismContainer(
           level: GlassLevel.floating,
@@ -728,7 +729,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
             backgroundColor: Colors.transparent,
             elevation: 0,
             child: Icon(
-              Icons.favorite_rounded,
+              PhosphorIcons.heart(),
               color: theme.colorScheme.secondary,
             ),
           ),
@@ -742,7 +743,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
       child: GestureDetector(
         onTap: () => setState(() => _previewTheme = null),
         child: Container(
-          color: Colors.black.withOpacity(0.7),
+          color: Colors.black.withValues(alpha: 0.7),
           child: Center(
             child: GlassmorphismContainer(
               level: GlassLevel.floating,
@@ -857,8 +858,8 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
       SnackBar(
         content: Row(
           children: [
-            const Icon(
-              Icons.brush_rounded,
+            Icon(
+              PhosphorIcons.paintBrush(),
               color: Colors.white,
               size: 20,
             ),
@@ -888,10 +889,10 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Row(
+          content: Row(
             children: [
               Icon(
-                Icons.shuffle_rounded,
+                PhosphorIcons.shuffle(),
                 color: Colors.white,
                 size: 20,
               ),
@@ -914,11 +915,11 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Search Themes'),
+        title: Text('Search Themes'),
         content: TextField(
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             hintText: 'Enter theme name or description...',
-            prefixIcon: Icon(Icons.search),
+            prefixIcon: Icon(PhosphorIcons.magnifyingGlass()),
           ),
           onSubmitted: (query) {
             setState(() => _searchQuery = query);
@@ -940,7 +941,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Favorite Themes'),
+        title: Text('Favorite Themes'),
         content: SizedBox(
           width: double.maxFinite,
           height: 400,
@@ -954,7 +955,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
-                        Icons.favorite_outline,
+                        PhosphorIcons.heart(),
                         size: 48,
                         color: Theme.of(context).colorScheme.primary,
                       ),
@@ -1019,3 +1020,4 @@ class _ThemePatternPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
+

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:device_calendar/device_calendar.dart';
 import '../widgets/standardized_app_bar.dart';
 import '../../services/system_calendar_service.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Screen for managing calendar integration settings
 class CalendarIntegrationScreen extends ConsumerStatefulWidget {
@@ -43,12 +44,11 @@ class _CalendarIntegrationScreenState extends ConsumerState<CalendarIntegrationS
           IconButton(
             onPressed: _isSyncing ? null : _performSync,
             icon: _isSyncing 
-                ? const SizedBox(
-                    width: 20,
+                ? SizedBox(width: 20,
                     height: 20,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
-                : const Icon(Icons.sync),
+                : Icon(PhosphorIcons.arrowsClockwise()),
             tooltip: 'Sync Now',
           ),
         ],
@@ -62,7 +62,7 @@ class _CalendarIntegrationScreenState extends ConsumerState<CalendarIntegrationS
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.error, size: 64, color: Colors.red),
+                    Icon(PhosphorIcons.warningCircle(), size: 64, color: Colors.red),
                     const SizedBox(height: 16),
                     Text('Error: $error'),
                     const SizedBox(height: 16),
@@ -129,7 +129,7 @@ class _CalendarIntegrationScreenState extends ConsumerState<CalendarIntegrationS
             Row(
               children: [
                 Icon(
-                  isEnabled ? Icons.check_circle : Icons.error,
+                  isEnabled ? PhosphorIcons.checkCircle() : PhosphorIcons.warningCircle(),
                   color: isEnabled ? Colors.green : Colors.orange,
                 ),
                 const SizedBox(width: 8),
@@ -177,11 +177,11 @@ class _CalendarIntegrationScreenState extends ConsumerState<CalendarIntegrationS
               'Calendar Permission',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Row(
               children: [
                 Icon(
-                  syncStatus.hasPermission ? Icons.check : Icons.close,
+                  syncStatus.hasPermission ? PhosphorIcons.check() : PhosphorIcons.x(),
                   color: syncStatus.hasPermission ? Colors.green : Colors.red,
                 ),
                 const SizedBox(width: 8),
@@ -260,7 +260,7 @@ class _CalendarIntegrationScreenState extends ConsumerState<CalendarIntegrationS
                     }
                   },
                   secondary: Icon(
-                    Icons.calendar_today,
+                    PhosphorIcons.calendar(),
                     color: isReadOnly ? Colors.grey : null,
                   ),
                 );
@@ -300,9 +300,9 @@ class _CalendarIntegrationScreenState extends ConsumerState<CalendarIntegrationS
               },
             ),
             ListTile(
-              title: const Text('Sync Frequency'),
+              title: Text('Sync Frequency'),
               subtitle: const Text('Every 15 minutes'),
-              trailing: const Icon(Icons.chevron_right),
+              trailing: Icon(PhosphorIcons.caretRight()),
               onTap: () {
                 // Show sync frequency options
                 _showSyncFrequencyDialog();
@@ -325,28 +325,28 @@ class _CalendarIntegrationScreenState extends ConsumerState<CalendarIntegrationS
               'Sync Actions',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             ListTile(
-              leading: const Icon(Icons.sync),
+              leading: Icon(PhosphorIcons.arrowsClockwise()),
               title: const Text('Sync Now'),
               subtitle: const Text('Manually sync all changes'),
               onTap: _performSync,
             ),
             ListTile(
-              leading: const Icon(Icons.download),
+              leading: Icon(PhosphorIcons.download()),
               title: const Text('Import Events'),
               subtitle: const Text('Import events from calendar'),
               onTap: _importEvents,
             ),
             ListTile(
-              leading: const Icon(Icons.upload),
+              leading: Icon(PhosphorIcons.upload()),
               title: const Text('Export Tasks'),
               subtitle: const Text('Export all tasks to calendar'),
               onTap: _exportTasks,
             ),
             const Divider(),
             ListTile(
-              leading: const Icon(Icons.warning, color: Colors.orange),
+              leading: Icon(PhosphorIcons.warning(), color: Colors.orange),
               title: const Text('Reset Sync'),
               subtitle: const Text('Clear sync data and start fresh'),
               onTap: _resetSync,
@@ -368,15 +368,15 @@ class _CalendarIntegrationScreenState extends ConsumerState<CalendarIntegrationS
               'Help & Information',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             ListTile(
-              leading: const Icon(Icons.info),
+              leading: Icon(PhosphorIcons.info()),
               title: const Text('How it works'),
               subtitle: const Text('Learn about calendar integration'),
               onTap: _showHelpDialog,
             ),
             ListTile(
-              leading: const Icon(Icons.bug_report),
+              leading: Icon(PhosphorIcons.bug()),
               title: const Text('Troubleshooting'),
               subtitle: const Text('Fix common sync issues'),
               onTap: _showTroubleshootingDialog,
@@ -617,3 +617,4 @@ class _CalendarIntegrationScreenState extends ConsumerState<CalendarIntegrationS
            '${dateTime.minute.toString().padLeft(2, '0')}';
   }
 }
+

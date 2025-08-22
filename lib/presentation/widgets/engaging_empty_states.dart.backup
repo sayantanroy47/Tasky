@@ -1,0 +1,467 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/design_system/design_tokens.dart';
+import '../../core/accessibility/accessibility_constants.dart';
+import '../../core/theme/typography_constants.dart';
+import 'glassmorphism_container.dart';
+import 'accessible_button.dart';
+import 'empty_state_illustrations.dart';
+
+/// Engaging empty states with beautiful illustrations and clear calls to action
+class EngagingEmptyStates {
+  /// Create a tasks empty state
+  static Widget tasks({
+    VoidCallback? onCreateTask,
+    VoidCallback? onImportTasks,
+    String? customMessage,
+  }) {
+    return EngagingEmptyStateWidget(
+      type: 'tasks',
+      title: 'No Tasks Yet',
+      message: customMessage ?? 'Start organizing your life by creating your first task. Break down big goals into manageable steps.',
+      primaryAction: EngagingEmptyAction(
+        text: 'Create First Task',
+        icon: Icons.add_task,
+        onPressed: onCreateTask,
+      ),
+      secondaryAction: onImportTasks != null ? EngagingEmptyAction(
+        text: 'Import Tasks',
+        icon: Icons.upload_file,
+        onPressed: onImportTasks,
+        isSecondary: true,
+      ) : null,
+      tips: const [
+        'Use natural language like "Buy groceries tomorrow at 3 PM"',
+        'Set priorities to focus on what matters most',
+        'Add location reminders for tasks on the go',
+      ],
+    );
+  }
+
+  /// Create a projects empty state
+  static Widget projects({
+    VoidCallback? onCreateProject,
+    VoidCallback? onBrowseTemplates,
+    String? customMessage,
+  }) {
+    return EngagingEmptyStateWidget(
+      type: 'projects',
+      title: 'No Projects Yet',
+      message: customMessage ?? 'Organize your tasks into projects to track progress and collaborate with your team.',
+      primaryAction: EngagingEmptyAction(
+        text: 'Create Project',
+        icon: Icons.create_new_folder,
+        onPressed: onCreateProject,
+      ),
+      secondaryAction: onBrowseTemplates != null ? EngagingEmptyAction(
+        text: 'Browse Templates',
+        icon: Icons.article_outlined,
+        onPressed: onBrowseTemplates,
+        isSecondary: true,
+      ) : null,
+      tips: const [
+        'Use projects to group related tasks together',
+        'Set project deadlines and milestones',
+        'Track progress with visual indicators',
+      ],
+    );
+  }
+
+  /// Create a calendar empty state
+  static Widget calendar({
+    VoidCallback? onScheduleTask,
+    VoidCallback? onConnectCalendar,
+    String? customMessage,
+  }) {
+    return EngagingEmptyStateWidget(
+      type: 'calendar',
+      title: 'No Scheduled Tasks',
+      message: customMessage ?? 'Schedule your tasks to better manage your time and never miss important deadlines.',
+      primaryAction: EngagingEmptyAction(
+        text: 'Schedule a Task',
+        icon: Icons.schedule,
+        onPressed: onScheduleTask,
+      ),
+      secondaryAction: onConnectCalendar != null ? EngagingEmptyAction(
+        text: 'Connect Calendar',
+        icon: Icons.sync,
+        onPressed: onConnectCalendar,
+        isSecondary: true,
+      ) : null,
+      tips: const [
+        'Add due dates and reminders to tasks',
+        'Use recurring tasks for regular activities',
+        'Sync with your existing calendar apps',
+      ],
+    );
+  }
+
+  /// Create a search empty state
+  static Widget searchResults({
+    required String query,
+    VoidCallback? onClearSearch,
+    VoidCallback? onCreateFromSearch,
+  }) {
+    return EngagingEmptyStateWidget(
+      type: 'search',
+      title: 'No Results Found',
+      message: 'We couldn\'t find any tasks matching "$query". Try adjusting your search terms or create a new task.',
+      primaryAction: onCreateFromSearch != null ? EngagingEmptyAction(
+        text: 'Create "$query" Task',
+        icon: Icons.add,
+        onPressed: onCreateFromSearch,
+      ) : null,
+      secondaryAction: onClearSearch != null ? EngagingEmptyAction(
+        text: 'Clear Search',
+        icon: Icons.clear,
+        onPressed: onClearSearch,
+        isSecondary: true,
+      ) : null,
+      tips: const [
+        'Try using different keywords',
+        'Check for typos in your search',
+        'Use filters to narrow down results',
+      ],
+    );
+  }
+
+  /// Create a notifications empty state
+  static Widget notifications({
+    VoidCallback? onEnableNotifications,
+    VoidCallback? onViewSettings,
+  }) {
+    return EngagingEmptyStateWidget(
+      type: 'notifications',
+      title: 'No Notifications',
+      message: 'You\'re all caught up! Enable notifications to stay informed about important task updates and deadlines.',
+      primaryAction: onEnableNotifications != null ? EngagingEmptyAction(
+        text: 'Enable Notifications',
+        icon: Icons.notifications_active,
+        onPressed: onEnableNotifications,
+      ) : null,
+      secondaryAction: onViewSettings != null ? EngagingEmptyAction(
+        text: 'Notification Settings',
+        icon: Icons.settings_outlined,
+        onPressed: onViewSettings,
+        isSecondary: true,
+      ) : null,
+      tips: const [
+        'Get reminded before task deadlines',
+        'Receive updates on shared projects',
+        'Customize notification preferences',
+      ],
+    );
+  }
+
+  /// Create an analytics empty state
+  static Widget analytics({
+    VoidCallback? onCreateTasks,
+    VoidCallback? onViewGoals,
+  }) {
+    return EngagingEmptyStateWidget(
+      type: 'analytics',
+      title: 'No Data to Analyze',
+      message: 'Complete some tasks to see insights about your productivity patterns and progress over time.',
+      primaryAction: onCreateTasks != null ? EngagingEmptyAction(
+        text: 'Create Tasks',
+        icon: Icons.add_task,
+        onPressed: onCreateTasks,
+      ) : null,
+      secondaryAction: onViewGoals != null ? EngagingEmptyAction(
+        text: 'Set Goals',
+        icon: Icons.flag_outlined,
+        onPressed: onViewGoals,
+        isSecondary: true,
+      ) : null,
+      tips: const [
+        'Track completion rates and trends',
+        'See your most productive times',
+        'Monitor progress toward goals',
+      ],
+    );
+  }
+
+  /// Create a connection error empty state
+  static Widget connectionError({
+    VoidCallback? onRetry,
+    VoidCallback? onOfflineMode,
+  }) {
+    return EngagingEmptyStateWidget(
+      type: 'connection',
+      title: 'Connection Issue',
+      message: 'We\'re having trouble connecting to our servers. Check your internet connection and try again.',
+      primaryAction: onRetry != null ? EngagingEmptyAction(
+        text: 'Try Again',
+        icon: Icons.refresh,
+        onPressed: onRetry,
+      ) : null,
+      secondaryAction: onOfflineMode != null ? EngagingEmptyAction(
+        text: 'Work Offline',
+        icon: Icons.offline_bolt,
+        onPressed: onOfflineMode,
+        isSecondary: true,
+      ) : null,
+      tips: const [
+        'Check your internet connection',
+        'Changes sync when connection returns',
+        'Most features work offline',
+      ],
+    );
+  }
+}
+
+/// Action button configuration for empty states
+class EngagingEmptyAction {
+  final String text;
+  final IconData icon;
+  final VoidCallback? onPressed;
+  final bool isSecondary;
+  final Color? color;
+
+  const EngagingEmptyAction({
+    required this.text,
+    required this.icon,
+    this.onPressed,
+    this.isSecondary = false,
+    this.color,
+  });
+}
+
+/// Main empty state widget with engaging design
+class EngagingEmptyStateWidget extends ConsumerWidget {
+  final String type;
+  final String title;
+  final String message;
+  final EngagingEmptyAction? primaryAction;
+  final EngagingEmptyAction? secondaryAction;
+  final List<String> tips;
+  final bool showTips;
+  final bool animate;
+
+  const EngagingEmptyStateWidget({
+    super.key,
+    required this.type,
+    required this.title,
+    required this.message,
+    this.primaryAction,
+    this.secondaryAction,
+    this.tips = const [],
+    this.showTips = true,
+    this.animate = true,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final isLargeText = AccessibilityUtils.isLargeTextEnabled(context);
+    final shouldReduceMotion = AccessibilityUtils.shouldReduceMotion(context);
+    final effectiveAnimate = animate && !shouldReduceMotion;
+    
+    return Semantics(
+      label: '$title: $message',
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 400),
+            child: GlassmorphismContainer(
+              level: GlassLevel.content,
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
+              padding: const EdgeInsets.all(32),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Illustration
+                  _buildIllustration(context, theme, effectiveAnimate),
+                  
+                  const SizedBox(height: 32),
+                  
+                  // Title
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: isLargeText 
+                          ? TypographyConstants.text2XL 
+                          : TypographyConstants.textXL,
+                      fontWeight: TypographyConstants.bold,
+                      color: theme.colorScheme.onSurface,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  
+                  const SizedBox(height: 12),
+                  
+                  // Message
+                  Text(
+                    message,
+                    style: TextStyle(
+                      fontSize: isLargeText 
+                          ? TypographyConstants.textBase 
+                          : TypographyConstants.textSM,
+                      color: theme.colorScheme.onSurfaceVariant,
+                      height: 1.5,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  
+                  const SizedBox(height: 32),
+                  
+                  // Action buttons
+                  _buildActionButtons(context, theme, isLargeText),
+                  
+                  // Tips section
+                  if (showTips && tips.isNotEmpty) ...[
+                    const SizedBox(height: 32),
+                    _buildTipsSection(context, theme, isLargeText),
+                  ],
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildIllustration(BuildContext context, ThemeData theme, bool animate) {
+    final size = EmptyStateIllustrations.getAppropriateSize(context);
+    
+    return EmptyStateIllustrations.createCustomIllustration(
+      type: type,
+      size: size,
+      primaryColor: theme.colorScheme.primary,
+      backgroundColor: theme.colorScheme.surfaceContainerHighest,
+      animate: animate,
+    );
+  }
+
+  Widget _buildActionButtons(BuildContext context, ThemeData theme, bool isLargeText) {
+    if (primaryAction == null && secondaryAction == null) {
+      return const SizedBox.shrink();
+    }
+
+    return Column(
+      children: [
+        // Primary action
+        if (primaryAction != null)
+          SizedBox(
+            width: double.infinity,
+            child: AccessibleButton(
+              label: primaryAction!.text,
+              onPressed: primaryAction!.onPressed,
+              semanticHint: primaryAction!.text,
+              color: primaryAction!.color ?? theme.colorScheme.primary,
+              textColor: theme.colorScheme.onPrimary,
+              padding: EdgeInsets.symmetric(
+                vertical: isLargeText ? 16 : 14,
+                horizontal: 24,
+              ),
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    primaryAction!.icon,
+                    size: isLargeText ? 24 : 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    primaryAction!.text,
+                    style: TextStyle(
+                      fontSize: isLargeText 
+                          ? TypographyConstants.textBase 
+                          : TypographyConstants.textSM,
+                      fontWeight: TypographyConstants.semiBold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        
+        // Secondary action
+        if (secondaryAction != null) ...[
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: AccessibleButton(
+              label: secondaryAction!.text,
+              onPressed: secondaryAction!.onPressed,
+              semanticHint: secondaryAction!.text,
+              textColor: secondaryAction!.color ?? theme.colorScheme.primary,
+              padding: EdgeInsets.symmetric(
+                vertical: isLargeText ? 16 : 14,
+                horizontal: 24,
+              ),
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+              isSecondary: true,
+              icon: secondaryAction!.icon,
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildTipsSection(BuildContext context, ThemeData theme, bool isLargeText) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Tips header
+        Row(
+          children: [
+            Icon(
+              Icons.lightbulb_outline,
+              size: isLargeText ? 24 : 20,
+              color: theme.colorScheme.primary,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              'Tips',
+              style: TextStyle(
+                fontSize: isLargeText 
+                    ? TypographyConstants.textBase 
+                    : TypographyConstants.textSM,
+                fontWeight: TypographyConstants.semiBold,
+                color: theme.colorScheme.primary,
+              ),
+            ),
+          ],
+        ),
+        
+        const SizedBox(height: 12),
+        
+        // Tips list
+        ...tips.asMap().entries.map((entry) => Padding(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 6,
+                height: 6,
+                margin: const EdgeInsets.only(top: 6, right: 12),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary.withValues(alpha: 0.6),
+                  shape: BoxShape.circle,
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  entry.value,
+                  style: TextStyle(
+                    fontSize: isLargeText 
+                        ? TypographyConstants.textSM 
+                        : TypographyConstants.textXS,
+                    color: theme.colorScheme.onSurfaceVariant,
+                    height: 1.4,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        )),
+      ],
+    );
+  }
+}

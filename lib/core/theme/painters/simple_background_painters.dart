@@ -18,8 +18,8 @@ class SimpleMatrixRainPainter extends CustomPainter {
     // Matrix characters
     final textStyle = TextStyle(
       color: isDark 
-          ? const Color(0xFF00FF00).withOpacity(0.6)
-          : const Color(0xFF006600).withOpacity(0.3),
+          ? const Color(0xFF00FF00).withValues(alpha: 0.6)
+          : const Color(0xFF006600).withValues(alpha: 0.3),
       fontSize: 12,
       fontFamily: 'monospace',
     );
@@ -62,14 +62,14 @@ class SimpleVegetaMeshPainter extends CustomPainter {
         end: Alignment.bottomRight,
         colors: isDark 
           ? [
-              const Color(0xFF1e3a8a).withOpacity(0.4),
-              const Color(0xFF60a5fa).withOpacity(0.6),
-              const Color(0xFF93c5fd).withOpacity(0.3),
+              const Color(0xFF1e3a8a).withValues(alpha: 0.4),
+              const Color(0xFF60a5fa).withValues(alpha: 0.6),
+              const Color(0xFF93c5fd).withValues(alpha: 0.3),
             ]
           : [
-              const Color(0xFF1e3a8a).withOpacity(0.1),
-              const Color(0xFF60a5fa).withOpacity(0.15),
-              const Color(0xFF93c5fd).withOpacity(0.08),
+              const Color(0xFF1e3a8a).withValues(alpha: 0.1),
+              const Color(0xFF60a5fa).withValues(alpha: 0.15),
+              const Color(0xFF93c5fd).withValues(alpha: 0.08),
             ],
       ).createShader(Rect.fromLTWH(0, 0, size.width, size.height));
 
@@ -102,18 +102,18 @@ class SimpleDraculaFloatingPainter extends CustomPainter {
     // Dracula colors
     final colors = isDark 
       ? [
-          const Color(0xFFff79c6).withOpacity(0.3),
-          const Color(0xFFbd93f9).withOpacity(0.25),
-          const Color(0xFF8be9fd).withOpacity(0.2),
-          const Color(0xFF50fa7b).withOpacity(0.15),
-          const Color(0xFFffb86c).withOpacity(0.2),
+          const Color(0xFFff79c6).withValues(alpha: 0.3),
+          const Color(0xFFbd93f9).withValues(alpha: 0.25),
+          const Color(0xFF8be9fd).withValues(alpha: 0.2),
+          const Color(0xFF50fa7b).withValues(alpha: 0.15),
+          const Color(0xFFffb86c).withValues(alpha: 0.2),
         ]
       : [
-          const Color(0xFFff79c6).withOpacity(0.08),
-          const Color(0xFFbd93f9).withOpacity(0.06),
-          const Color(0xFF8be9fd).withOpacity(0.05),
-          const Color(0xFF50fa7b).withOpacity(0.04),
-          const Color(0xFFffb86c).withOpacity(0.05),
+          const Color(0xFFff79c6).withValues(alpha: 0.08),
+          const Color(0xFFbd93f9).withValues(alpha: 0.06),
+          const Color(0xFF8be9fd).withValues(alpha: 0.05),
+          const Color(0xFF50fa7b).withValues(alpha: 0.04),
+          const Color(0xFFffb86c).withValues(alpha: 0.05),
         ];
 
     // Draw floating elements
@@ -152,8 +152,8 @@ class SimpleExpressiveGeometricPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
       ..color = isDark 
-        ? Colors.white.withOpacity(0.05)
-        : Colors.black.withOpacity(0.03);
+        ? Colors.white.withValues(alpha: 0.05)
+        : Colors.black.withValues(alpha: 0.03);
 
     // Modern geometric patterns
     for (int i = 0; i < 12; i++) {
@@ -170,7 +170,7 @@ class SimpleExpressiveGeometricPainter extends CustomPainter {
 
     // Additional diagonal lines
     final linePaint = Paint()
-      ..color = (isDark ? Colors.white : Colors.black).withOpacity(0.02)
+      ..color = (isDark ? Colors.white : Colors.black).withValues(alpha: 0.02)
       ..strokeWidth = 1;
 
     for (int i = 0; i < 8; i++) {

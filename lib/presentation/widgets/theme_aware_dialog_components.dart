@@ -52,7 +52,7 @@ class ThemeAwareTaskDialog extends ConsumerWidget {
         level: GlassLevel.content,
         borderRadius: BorderRadius.zero, // No radius for full-page dialogs
         padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
-        glassTint: theme.colorScheme.primary.withOpacity(0.1),
+        glassTint: theme.colorScheme.primary.withValues(alpha: 0.1),
         borderColor: Colors.transparent,
         child: Row(
           children: [
@@ -63,11 +63,11 @@ class ThemeAwareTaskDialog extends ConsumerWidget {
                 width: 48,
                 height: 48,
                 borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
-                glassTint: theme.colorScheme.surface.withOpacity(0.8),
-                borderColor: theme.colorScheme.outline.withOpacity(0.2),
+                glassTint: theme.colorScheme.surface.withValues(alpha: 0.8),
+                borderColor: theme.colorScheme.outline.withValues(alpha: 0.2),
                 child: IconButton(
                   onPressed: onBack,
-                  icon: const Icon(PhosphorIcons.arrowLeft()),
+                  icon: Icon(PhosphorIcons.arrowLeft()),
                   padding: EdgeInsets.zero,
                   iconSize: 24,
                   color: theme.colorScheme.onSurface,
@@ -81,8 +81,8 @@ class ThemeAwareTaskDialog extends ConsumerWidget {
                 width: 48,
                 height: 48,
                 borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
-                glassTint: theme.colorScheme.primary.withOpacity(0.2),
-                borderColor: theme.colorScheme.primary.withOpacity(0.3),
+                glassTint: theme.colorScheme.primary.withValues(alpha: 0.2),
+                borderColor: theme.colorScheme.primary.withValues(alpha: 0.3),
                 child: Icon(
                   icon!,
                   color: theme.colorScheme.primary,
@@ -126,7 +126,7 @@ class ThemeAwareTaskDialog extends ConsumerWidget {
         level: GlassLevel.content,
         borderRadius: BorderRadius.zero, // No radius for full-page dialogs
         padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
-        glassTint: theme.colorScheme.surface.withOpacity(0.8),
+        glassTint: theme.colorScheme.surface.withValues(alpha: 0.8),
         borderColor: Colors.transparent,
         child: Row(
           children: actions!
@@ -173,8 +173,8 @@ class ThemeAwareFormField extends ConsumerWidget {
     return GlassmorphismContainer(
       level: GlassLevel.interactive,
       borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
-      glassTint: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
-      borderColor: theme.colorScheme.outline.withOpacity(0.2),
+      glassTint: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+      borderColor: theme.colorScheme.outline.withValues(alpha: 0.2),
       padding: const EdgeInsets.all(2),
       child: TextFormField(
         controller: controller,
@@ -205,7 +205,7 @@ class ThemeAwareFormField extends ConsumerWidget {
             color: theme.colorScheme.onSurfaceVariant,
           ),
           hintStyle: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant.withOpacity(0.6),
+            color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
           ),
         ),
       ),
@@ -252,11 +252,11 @@ class ThemeAwarePrioritySelector extends ConsumerWidget {
               child: GlassmorphismContainer(
                 level: isSelected ? GlassLevel.interactive : GlassLevel.content,
                 glassTint: isSelected 
-                    ? priority.color.withOpacity(0.3)
+                    ? priority.color.withValues(alpha: 0.3)
                     : null,
                 borderColor: isSelected 
                     ? priority.color 
-                    : theme.colorScheme.outline.withOpacity(0.3),
+                    : theme.colorScheme.outline.withValues(alpha: 0.3),
                 borderWidth: isSelected ? 2.0 : 1.0,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
@@ -378,11 +378,11 @@ class RoundedGlassButton extends ConsumerWidget {
       height: height ?? 56,
       borderRadius: BorderRadius.circular(28), // Fully rounded
       glassTint: isPrimary 
-          ? theme.colorScheme.primary.withOpacity(0.3)
-          : theme.colorScheme.surface.withOpacity(0.8),
+          ? theme.colorScheme.primary.withValues(alpha: 0.3)
+          : theme.colorScheme.surface.withValues(alpha: 0.8),
       borderColor: isPrimary 
-          ? theme.colorScheme.primary.withOpacity(0.5)
-          : theme.colorScheme.outline.withOpacity(0.3),
+          ? theme.colorScheme.primary.withValues(alpha: 0.5)
+          : theme.colorScheme.outline.withValues(alpha: 0.3),
       borderWidth: isPrimary ? 2.0 : 1.0,
       child: Material(
         color: Colors.transparent,

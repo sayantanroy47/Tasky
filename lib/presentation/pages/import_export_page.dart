@@ -6,6 +6,7 @@ import '../providers/task_providers.dart';
 import '../widgets/standardized_app_bar.dart';
 import '../widgets/theme_background_widget.dart';
 import '../../core/theme/typography_constants.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Import/Export page for managing task data
 class ImportExportPage extends ConsumerWidget {
@@ -74,13 +75,13 @@ class ImportExportPage extends ConsumerWidget {
                     ),
                     borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                   ),
-                  child: const Icon(
-                    Icons.file_upload_outlined,
+                  child: Icon(
+                    PhosphorIcons.upload(),
                     color: Colors.white,
                     size: 24,
                   ),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -115,7 +116,7 @@ class ImportExportPage extends ConsumerWidget {
                     theme,
                     'JSON Format',
                     'Structured data format',
-                    Icons.data_object_outlined,
+                    PhosphorIcons.code(),
                     ExportFormat.json,
                   ),
                 ),
@@ -127,7 +128,7 @@ class ImportExportPage extends ConsumerWidget {
                     theme,
                     'CSV Format',
                     'Spreadsheet compatible',
-                    Icons.table_chart_outlined,
+                    PhosphorIcons.table(),
                     ExportFormat.csv,
                   ),
                 ),
@@ -216,13 +217,13 @@ class ImportExportPage extends ConsumerWidget {
                     ),
                     borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                   ),
-                  child: const Icon(
-                    Icons.file_download_outlined,
+                  child: Icon(
+                    PhosphorIcons.download(),
                     color: Colors.white,
                     size: 24,
                   ),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -252,7 +253,7 @@ class ImportExportPage extends ConsumerWidget {
               width: double.infinity,
               child: FilledButton.icon(
                 onPressed: () => _handleImport(context, ref),
-                icon: const Icon(Icons.upload_file_outlined),
+                icon: Icon(PhosphorIcons.upload()),
                 label: const Text('Select File to Import'),
                 style: FilledButton.styleFrom(
                   padding: const EdgeInsets.all(16),
@@ -269,13 +270,13 @@ class ImportExportPage extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
               ),
               child: Row(
                 children: [
                   Icon(
-                    Icons.info_outline,
+                    PhosphorIcons.info(),
                     size: 16,
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -311,7 +312,7 @@ class ImportExportPage extends ConsumerWidget {
             Row(
               children: [
                 Icon(
-                  Icons.help_outline,
+                  PhosphorIcons.question(),
                   color: theme.colorScheme.primary,
                   size: 24,
                 ),
@@ -477,8 +478,8 @@ class ImportExportPage extends ConsumerWidget {
       builder: (context) => AlertDialog(
         title: Row(
           children: [
-            const Icon(
-              Icons.check_circle,
+            Icon(
+              PhosphorIcons.checkCircle(),
               color: Colors.green,
               size: 28,
             ),
@@ -501,10 +502,10 @@ class ImportExportPage extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Row(
+        title: Row(
           children: [
             Icon(
-              Icons.error,
+              PhosphorIcons.warningCircle(),
               color: Colors.red,
               size: 28,
             ),
@@ -530,7 +531,7 @@ class ImportExportPage extends ConsumerWidget {
         title: Row(
           children: [
             Icon(
-              result.isSuccessful ? Icons.check_circle : Icons.warning,
+              result.isSuccessful ? PhosphorIcons.checkCircle() : PhosphorIcons.warning(),
               color: result.isSuccessful ? Colors.green : Colors.orange,
               size: 28,
             ),
@@ -598,3 +599,4 @@ class _LoadingDialog extends StatelessWidget {
     );
   }
 }
+

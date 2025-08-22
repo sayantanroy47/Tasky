@@ -9,6 +9,7 @@ import '../../core/theme/typography_constants.dart';
 import '../../core/design_system/design_tokens.dart';
 import '../../core/theme/material3/motion_system.dart';
 import 'glassmorphism_container.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Comprehensive offline status widget with connectivity monitoring
 /// 
@@ -267,7 +268,7 @@ class _OfflineStatusWidgetState extends ConsumerState<OfflineStatusWidget>
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               decoration: BoxDecoration(
-                color: _getStatusColor(theme).withOpacity(0.1),
+                color: _getStatusColor(theme).withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
                   color: _getStatusColor(theme),
@@ -359,7 +360,7 @@ class _OfflineStatusWidgetState extends ConsumerState<OfflineStatusWidget>
               child: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: _getStatusColor(theme).withOpacity(0.2),
+                  color: _getStatusColor(theme).withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Icon(
@@ -514,7 +515,7 @@ class _OfflineStatusWidgetState extends ConsumerState<OfflineStatusWidget>
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: theme.colorScheme.errorContainer.withOpacity(0.5),
+        color: theme.colorScheme.errorContainer.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
       ),
       child: Column(
@@ -523,7 +524,7 @@ class _OfflineStatusWidgetState extends ConsumerState<OfflineStatusWidget>
           Row(
             children: [
               Icon(
-                Icons.warning,
+                PhosphorIcons.warning(),
                 color: theme.colorScheme.error,
                 size: 16,
               ),
@@ -587,11 +588,11 @@ class _OfflineStatusWidgetState extends ConsumerState<OfflineStatusWidget>
             ),
           ),
         if (_hasRetryableActions()) ...[
-          if (widget.enableManualSync && _hasConnectivity) const SizedBox(width: 12),
+          if (widget.enableManualSync && _hasConnectivity) SizedBox(width: 12),
           Expanded(
             child: OutlinedButton.icon(
               onPressed: _handleRetry,
-              icon: const Icon(Icons.refresh),
+              icon: Icon(PhosphorIcons.arrowClockwise()),
               label: const Text('Retry Failed'),
               style: OutlinedButton.styleFrom(
                 foregroundColor: theme.colorScheme.error,
@@ -607,7 +608,7 @@ class _OfflineStatusWidgetState extends ConsumerState<OfflineStatusWidget>
   Widget _buildSyncIndicator(ThemeData theme, {double size = 20}) {
     if (!_isSyncing && _pendingSyncItems == 0) {
       return Icon(
-        Icons.check_circle,
+        PhosphorIcons.checkCircle(),
         color: Colors.green,
         size: size,
       );
@@ -619,7 +620,7 @@ class _OfflineStatusWidgetState extends ConsumerState<OfflineStatusWidget>
         return Transform.rotate(
           angle: _syncRotation.value * 2 * 3.14159,
           child: Icon(
-            Icons.sync,
+            PhosphorIcons.arrowsClockwise(),
             color: theme.colorScheme.primary,
             size: size,
           ),
@@ -639,7 +640,7 @@ class _OfflineStatusWidgetState extends ConsumerState<OfflineStatusWidget>
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            Icons.data_usage,
+            PhosphorIcons.chartPie(),
             size: 12,
             color: theme.colorScheme.onSurfaceVariant,
           ),
@@ -672,13 +673,13 @@ class _OfflineStatusWidgetState extends ConsumerState<OfflineStatusWidget>
   IconData _getStatusIcon() {
     switch (_currentStatus) {
       case OfflineStatus.online:
-        return Icons.wifi;
+        return PhosphorIcons.wifiHigh();
       case OfflineStatus.offline:
-        return Icons.wifi_off;
+        return PhosphorIcons.wifiSlash();
       case OfflineStatus.syncing:
-        return Icons.sync;
+        return PhosphorIcons.arrowsClockwise();
       case OfflineStatus.error:
-        return Icons.wifi_tethering_error;
+        return PhosphorIcons.wifiSlash();
     }
   }
 
@@ -910,4 +911,6 @@ class OfflineStatusNotifier extends StateNotifier<OfflineStatus> {
 final offlineStatusProvider = StateNotifierProvider<OfflineStatusNotifier, OfflineStatus>(
   (ref) => OfflineStatusNotifier(),
 );
+
+
 

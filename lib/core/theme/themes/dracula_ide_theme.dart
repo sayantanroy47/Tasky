@@ -7,6 +7,7 @@ import '../models/theme_typography.dart';
 import '../models/theme_animations.dart';
 import '../models/theme_effects.dart' as theme_effects;
 import '../typography_constants.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Dracula IDE Theme - "Developer's Dream"
 /// A sophisticated dark theme inspired by the popular Dracula color scheme
@@ -26,7 +27,7 @@ class DraculaIDETheme {
         version: '1.0.0',
         tags: ['developer', 'ide', 'dark', 'purple', 'pink', 'elegant', 'syntax'],
         category: 'developer',
-        previewIcon: Icons.code,
+        previewIcon: PhosphorIcons.code(),
         primaryPreviewColor: isDark ? const Color(0xFF282a36) : const Color(0xFFf8f8f2), // Dark purple or light
         secondaryPreviewColor: const Color(0xFFff79c6), // Pink (same)
         createdAt: now,
@@ -592,3 +593,5 @@ class _DraculaColorsHelper {
   Color get primary => const Color(0xFFff79c6);  // Pink in both variants
   Color get secondary => isDark ? const Color(0xFFbd93f9) : const Color(0xFF9d6fd9);
 }
+
+

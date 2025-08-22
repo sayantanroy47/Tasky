@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Metadata information for a theme
 class ThemeMetadata {
@@ -17,7 +18,7 @@ class ThemeMetadata {
   final bool isPremium;
   final double popularityScore;
 
-  const ThemeMetadata({
+  ThemeMetadata({
     required this.id,
     required this.name,
     required this.description,
@@ -25,14 +26,14 @@ class ThemeMetadata {
     this.version = '1.0.0',
     this.tags = const [],
     this.category = 'general',
-    this.previewIcon = Icons.palette,
+    IconData? previewIcon,
     required this.primaryPreviewColor,
     required this.secondaryPreviewColor,
     required this.createdAt,
     this.updatedAt,
     this.isPremium = false,
     this.popularityScore = 0.0,
-  });
+  }) : previewIcon = previewIcon ?? PhosphorIcons.palette();
 
   ThemeMetadata copyWith({
     String? id,
@@ -85,20 +86,40 @@ class ThemeMetadata {
 
 /// Theme categories for organization
 enum ThemeCategory {
-  general('General', Icons.palette, 'Standard themes'),
-  gaming('Gaming', Icons.gamepad, 'Themes inspired by games and anime'),
-  professional('Professional', Icons.business, 'Clean themes for work'),
-  developer('Developer', Icons.code, 'Themes for developers and coding'),
-  dark('Dark', Icons.dark_mode, 'Dark mode themes'),
-  light('Light', Icons.light_mode, 'Light mode themes'),
-  colorful('Colorful', Icons.color_lens, 'Vibrant and colorful themes'),
-  minimal('Minimal', Icons.minimize, 'Clean and minimal themes');
+  general('General', 'Standard themes'),
+  gaming('Gaming', 'Themes inspired by games and anime'),
+  professional('Professional', 'Clean themes for work'),
+  developer('Developer', 'Themes for developers and coding'),
+  dark('Dark', 'Dark mode themes'),
+  light('Light', 'Light mode themes'),
+  colorful('Colorful', 'Vibrant and colorful themes'),
+  minimal('Minimal', 'Clean and minimal themes');
 
-  const ThemeCategory(this.displayName, this.icon, this.description);
+  const ThemeCategory(this.displayName, this.description);
 
   final String displayName;
-  final IconData icon;
   final String description;
+  
+  IconData get icon {
+    switch (this) {
+      case ThemeCategory.general:
+        return PhosphorIcons.palette();
+      case ThemeCategory.gaming:
+        return PhosphorIcons.gameController();
+      case ThemeCategory.professional:
+        return PhosphorIcons.buildings();
+      case ThemeCategory.developer:
+        return PhosphorIcons.code();
+      case ThemeCategory.dark:
+        return PhosphorIcons.moon();
+      case ThemeCategory.light:
+        return PhosphorIcons.sun();
+      case ThemeCategory.colorful:
+        return PhosphorIcons.palette();
+      case ThemeCategory.minimal:
+        return PhosphorIcons.minus();
+    }
+  }
 
   static ThemeCategory fromString(String category) {
     return ThemeCategory.values.firstWhere(
@@ -107,3 +128,4 @@ enum ThemeCategory {
     );
   }
 }
+

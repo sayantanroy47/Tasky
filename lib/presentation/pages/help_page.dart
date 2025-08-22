@@ -4,6 +4,7 @@ import '../widgets/theme_background_widget.dart';
 import '../widgets/glassmorphism_container.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../services/help_service.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Help and documentation page
 class HelpPage extends StatefulWidget {
@@ -42,7 +43,7 @@ class _HelpPageState extends State<HelpPage> with SingleTickerProviderStateMixin
           title: 'Help & Support',
           actions: [
             IconButton(
-              icon: const Icon(Icons.search),
+              icon: Icon(PhosphorIcons.magnifyingGlass()),
               onPressed: () {
                 _helpService.showHelpSearch(context);
               },
@@ -71,7 +72,7 @@ class _HelpPageState extends State<HelpPage> with SingleTickerProviderStateMixin
                     Row(
                       children: [
                         Icon(
-                          Icons.help_outline,
+                          PhosphorIcons.question(),
                           size: 32,
                           color: Theme.of(context).colorScheme.primary,
                         ),
@@ -106,7 +107,7 @@ class _HelpPageState extends State<HelpPage> with SingleTickerProviderStateMixin
                             onPressed: () {
                               _helpService.showHelpTopic(context, 'getting_started');
                             },
-                            icon: const Icon(Icons.play_arrow),
+                            icon: Icon(PhosphorIcons.play()),
                             label: const Text('Quick Start'),
                           ),
                         ),
@@ -116,7 +117,7 @@ class _HelpPageState extends State<HelpPage> with SingleTickerProviderStateMixin
                             onPressed: () {
                               _showFeedbackDialog(context);
                             },
-                            icon: const Icon(Icons.feedback),
+                            icon: Icon(PhosphorIcons.chatCircle()),
                             label: const Text('Feedback'),
                           ),
                         ),
@@ -169,7 +170,7 @@ class _HelpPageState extends State<HelpPage> with SingleTickerProviderStateMixin
             contentPadding: const EdgeInsets.all(16.0),
             title: Text(
               topic.title,
-              style: const TextStyle(fontWeight: FontWeight.w600),
+              style: TextStyle(fontWeight: FontWeight.w600),
             ),
             subtitle: Text(
               _getTopicPreview(topic.content),
@@ -179,7 +180,7 @@ class _HelpPageState extends State<HelpPage> with SingleTickerProviderStateMixin
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
-            trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+            trailing: Icon(PhosphorIcons.caretRight(), size: 16),
             onTap: () {
               _helpService.showHelpTopic(context, topic.id);
             },
@@ -208,26 +209,26 @@ class _HelpPageState extends State<HelpPage> with SingleTickerProviderStateMixin
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Send Feedback'),
-        content: const Column(
+        title: Text('Send Feedback'),
+        content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('We\'d love to hear from you!'),
-            SizedBox(height: 16),
-            Text('You can send feedback through:'),
-            SizedBox(height: 12),
+            const Text('We\'d love to hear from you!'),
+            const SizedBox(height: 16),
+            const Text('You can send feedback through:'),
+            const SizedBox(height: 12),
             Row(
               children: [
-                Icon(Icons.email, size: 16),
+                Icon(PhosphorIcons.envelope(), size: 16),
                 SizedBox(width: 8),
                 Text('Settings → Send Feedback'),
               ],
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Row(
               children: [
-                Icon(Icons.bug_report, size: 16),
+                Icon(PhosphorIcons.bug(), size: 16),
                 SizedBox(width: 8),
                 Text('Report bugs or suggest features'),
               ],
@@ -251,3 +252,4 @@ class _HelpPageState extends State<HelpPage> with SingleTickerProviderStateMixin
     );
   }
 }
+

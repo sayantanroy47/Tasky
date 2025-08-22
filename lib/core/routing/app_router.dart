@@ -18,6 +18,7 @@ import '../../presentation/screens/pin_setup_screen.dart';
 import '../../presentation/screens/authentication_screen.dart';
 import '../../presentation/widgets/theme_background_widget.dart';
 import 'route_validator.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Application router
 class AppRouter {
@@ -89,20 +90,20 @@ class AppRouter {
 
   /// Bottom navigation destinations
   static List<NavigationDestination> get bottomNavigationDestinations => [
-    const NavigationDestination(
-      icon: Icon(Icons.home),
+    NavigationDestination(
+      icon: Icon(PhosphorIcons.house()),
       label: 'Home',
     ),
-    const NavigationDestination(
-      icon: Icon(Icons.calendar_today),
+    NavigationDestination(
+      icon: Icon(PhosphorIcons.calendar()),
       label: 'Calendar',
     ),
-    const NavigationDestination(
-      icon: Icon(Icons.analytics),
+    NavigationDestination(
+      icon: Icon(PhosphorIcons.chartBar()),
       label: 'Analytics',
     ),
-    const NavigationDestination(
-      icon: Icon(Icons.settings),
+    NavigationDestination(
+      icon: Icon(PhosphorIcons.gear()),
       label: 'Settings',
     ),
   ];
@@ -254,8 +255,7 @@ class NotFoundScreen extends StatelessWidget {
     final theme = Theme.of(context);
     
     return Scaffold(
-      appBar: const StandardizedAppBar(
-        title: 'Page Not Found',
+      appBar: StandardizedAppBar(title: 'Page Not Found',
       ),
       body: Center(
         child: Padding(
@@ -264,7 +264,7 @@ class NotFoundScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                Icons.error_outline,
+                PhosphorIcons.warningCircle(),
                 size: 64,
                 color: theme.colorScheme.error,
               ),
@@ -320,8 +320,7 @@ class RouteErrorScreen extends StatelessWidget {
     final theme = Theme.of(context);
     
     return Scaffold(
-      appBar: const StandardizedAppBar(
-        title: 'Route Error',
+      appBar: StandardizedAppBar(title: 'Route Error',
       ),
       body: Center(
         child: Padding(
@@ -330,7 +329,7 @@ class RouteErrorScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                Icons.warning_outlined,
+                PhosphorIcons.warningCircle(),
                 size: 64,
                 color: theme.colorScheme.error,
               ),
@@ -396,3 +395,4 @@ class RouteErrorScreen extends StatelessWidget {
     );
   }
 }
+

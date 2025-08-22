@@ -240,14 +240,14 @@ class ThemeTypography {
         fontSize: sizes['bodySmall']!,
         fontWeight: FontWeight.w400,
         letterSpacing: 0.25,
-        color: textColor.withOpacity(0.8),
+        color: textColor.withValues(alpha: 0.8),
       ),
       taskMeta: GoogleFonts.getFont(
         monoFont,
         fontSize: sizes['labelSmall']!,
         fontWeight: FontWeight.w400,
         letterSpacing: 0.5,
-        color: textColor.withOpacity(0.6),
+        color: textColor.withValues(alpha: 0.6),
       ),
       cardTitle: GoogleFonts.getFont(
         fontFamily,
@@ -261,7 +261,7 @@ class ThemeTypography {
         fontSize: sizes['bodySmall']!,
         fontWeight: FontWeight.w400,
         letterSpacing: 0.25,
-        color: textColor.withOpacity(0.8),
+        color: textColor.withValues(alpha: 0.8),
       ),
       buttonText: GoogleFonts.getFont(
         fontFamily,

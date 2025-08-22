@@ -3,6 +3,7 @@ import '../../core/theme/typography_constants.dart';
 import '../../core/theme/material3/motion_system.dart';
 import '../../core/design_system/design_tokens.dart';
 import 'glassmorphism_container.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// A reusable confirmation dialog widget with M3 glassmorphism design
 class ConfirmationDialog extends StatefulWidget {
@@ -95,8 +96,8 @@ class _ConfirmationDialogState extends State<ConfirmationDialog>
             level: GlassLevel.floating,
             width: size.width * 0.85,
             borderRadius: BorderRadius.circular(TypographyConstants.dialogRadius),
-            glassTint: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
-            borderColor: theme.colorScheme.primary.withOpacity(0.2),
+            glassTint: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+            borderColor: theme.colorScheme.primary.withValues(alpha: 0.2),
             padding: const EdgeInsets.all(24),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -124,7 +125,7 @@ class _ConfirmationDialogState extends State<ConfirmationDialog>
               gradient: LinearGradient(
                 colors: [
                   widget.isDestructive ? theme.colorScheme.error : theme.colorScheme.primary,
-                  widget.isDestructive ? theme.colorScheme.error.withOpacity(0.8) : theme.colorScheme.secondary,
+                  widget.isDestructive ? theme.colorScheme.error.withValues(alpha: 0.8) : theme.colorScheme.secondary,
                 ],
               ),
               borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
@@ -209,12 +210,12 @@ class _ConfirmationDialogState extends State<ConfirmationDialog>
                     gradient: LinearGradient(
                       colors: widget.isDestructive
                         ? [
-                            theme.colorScheme.error.withOpacity(0.8),
-                            theme.colorScheme.error.withOpacity(0.6),
+                            theme.colorScheme.error.withValues(alpha: 0.8),
+                            theme.colorScheme.error.withValues(alpha: 0.6),
                           ]
                         : [
-                            theme.colorScheme.primary.withOpacity(0.8),
-                            theme.colorScheme.primary.withOpacity(0.6),
+                            theme.colorScheme.primary.withValues(alpha: 0.8),
+                            theme.colorScheme.primary.withValues(alpha: 0.6),
                           ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -269,8 +270,8 @@ class InfoDialog extends StatelessWidget {
         level: GlassLevel.floating,
         width: size.width * 0.85,
         borderRadius: BorderRadius.circular(TypographyConstants.dialogRadius),
-        glassTint: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
-        borderColor: theme.colorScheme.primary.withOpacity(0.2),
+        glassTint: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+        borderColor: theme.colorScheme.primary.withValues(alpha: 0.2),
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -281,7 +282,7 @@ class InfoDialog extends StatelessWidget {
                 width: 56,
                 height: 56,
                 borderRadius: BorderRadius.circular(28),
-                glassTint: theme.colorScheme.primary.withOpacity(0.1),
+                glassTint: theme.colorScheme.primary.withValues(alpha: 0.1),
                 child: Center(
                   child: Icon(
                     icon,
@@ -327,8 +328,8 @@ class InfoDialog extends StatelessWidget {
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          theme.colorScheme.primary.withOpacity(0.8),
-                          theme.colorScheme.primary.withOpacity(0.6),
+                          theme.colorScheme.primary.withValues(alpha: 0.8),
+                          theme.colorScheme.primary.withValues(alpha: 0.6),
                         ],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
@@ -416,8 +417,8 @@ class _TextInputDialogState extends State<TextInputDialog> {
         level: GlassLevel.floating,
         width: size.width * 0.85,
         borderRadius: BorderRadius.circular(TypographyConstants.dialogRadius),
-        glassTint: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
-        borderColor: theme.colorScheme.primary.withOpacity(0.2),
+        glassTint: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+        borderColor: theme.colorScheme.primary.withValues(alpha: 0.2),
         padding: const EdgeInsets.all(24),
         child: Form(
           key: _formKey,
@@ -523,8 +524,8 @@ class _TextInputDialogState extends State<TextInputDialog> {
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
                                 colors: [
-                                  theme.colorScheme.primary.withOpacity(0.8),
-                                  theme.colorScheme.primary.withOpacity(0.6),
+                                  theme.colorScheme.primary.withValues(alpha: 0.8),
+                                  theme.colorScheme.primary.withValues(alpha: 0.6),
                                 ],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
@@ -586,8 +587,8 @@ class SelectionDialog<T> extends StatelessWidget {
         level: GlassLevel.floating,
         width: size.width * 0.85,
         borderRadius: BorderRadius.circular(TypographyConstants.dialogRadius),
-        glassTint: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
-        borderColor: theme.colorScheme.primary.withOpacity(0.2),
+        glassTint: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+        borderColor: theme.colorScheme.primary.withValues(alpha: 0.2),
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -612,7 +613,7 @@ class SelectionDialog<T> extends StatelessWidget {
                       level: isSelected ? GlassLevel.interactive : GlassLevel.content,
                       margin: const EdgeInsets.only(bottom: 8),
                       borderRadius: BorderRadius.circular(8),
-                      glassTint: isSelected ? theme.colorScheme.primary.withOpacity(0.1) : null,
+                      glassTint: isSelected ? theme.colorScheme.primary.withValues(alpha: 0.1) : null,
                       child: Material(
                         color: Colors.transparent,
                         child: InkWell(
@@ -627,8 +628,8 @@ class SelectionDialog<T> extends StatelessWidget {
                               children: [
                                 Icon(
                                   isSelected 
-                                      ? Icons.check_circle
-                                      : Icons.radio_button_unchecked,
+                                      ? PhosphorIcons.checkCircle()
+                                      : PhosphorIcons.circle(),
                                   color: isSelected 
                                       ? theme.colorScheme.primary
                                       : theme.colorScheme.onSurfaceVariant,
@@ -708,8 +709,8 @@ class LoadingDialog extends StatelessWidget {
         level: GlassLevel.floating,
         width: size.width * 0.7,
         borderRadius: BorderRadius.circular(TypographyConstants.dialogRadius),
-        glassTint: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
-        borderColor: theme.colorScheme.primary.withOpacity(0.2),
+        glassTint: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+        borderColor: theme.colorScheme.primary.withValues(alpha: 0.2),
         padding: const EdgeInsets.all(32),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -869,3 +870,4 @@ class DialogUtils {
     Navigator.of(context).pop();
   }
 }
+

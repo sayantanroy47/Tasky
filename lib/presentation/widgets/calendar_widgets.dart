@@ -7,6 +7,7 @@ import '../../domain/models/enums.dart';
 import '../providers/calendar_provider.dart' as calendar;
 import '../providers/task_providers.dart';
 import '../../core/theme/typography_constants.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Main calendar widget with month/week/day views
 class CalendarWidget extends ConsumerWidget {
@@ -146,15 +147,15 @@ class _MonthCalendarView extends ConsumerWidget {
           shape: BoxShape.circle,
         ),
         todayDecoration: BoxDecoration(
-          color: Theme.of(context).primaryColor.withOpacity(0.5),
+          color: Theme.of(context).primaryColor.withValues(alpha: 0.5),
           shape: BoxShape.circle,
         ),
       ),
-      headerStyle: const HeaderStyle(
+      headerStyle: HeaderStyle(
         formatButtonVisible: false,
         titleCentered: true,
-        leftChevronIcon: Icon(Icons.chevron_left),
-        rightChevronIcon: Icon(Icons.chevron_right),
+        leftChevronIcon: Icon(PhosphorIcons.caretLeft()),
+        rightChevronIcon: Icon(PhosphorIcons.caretRight()),
       ),
       onDaySelected: (selectedDay, focusedDay) {
         notifier.selectDate(selectedDay);
@@ -229,13 +230,13 @@ class _MonthCalendarView extends ConsumerWidget {
                 boxShadow: [
                   // Outer glow - reduced for smaller size
                   BoxShadow(
-                    color: dotColor.withOpacity(isUrgent ? 0.7 : 0.5),
+                    color: dotColor.withValues(alpha: isUrgent ? 0.7 : 0.5),
                     blurRadius: isUrgent ? 6 : 4,
                     spreadRadius: isUrgent ? 1 : 0.5,
                   ),
                   // Inner highlight for depth
                   BoxShadow(
-                    color: dotColor.withOpacity(0.3),
+                    color: dotColor.withValues(alpha: 0.3),
                     blurRadius: 2,
                     spreadRadius: 0,
                     offset: const Offset(0, 1),
@@ -304,15 +305,15 @@ class _WeekCalendarView extends StatelessWidget {
                 shape: BoxShape.circle,
               ),
               todayDecoration: BoxDecoration(
-                color: Theme.of(context).primaryColor.withOpacity(0.5),
+                color: Theme.of(context).primaryColor.withValues(alpha: 0.5),
                 shape: BoxShape.circle,
               ),
             ),
-            headerStyle: const HeaderStyle(
+            headerStyle: HeaderStyle(
               formatButtonVisible: false,
               titleCentered: true,
-              leftChevronIcon: Icon(Icons.chevron_left),
-              rightChevronIcon: Icon(Icons.chevron_right),
+              leftChevronIcon: Icon(PhosphorIcons.caretLeft()),
+              rightChevronIcon: Icon(PhosphorIcons.caretRight()),
             ),
           ),
         ),
@@ -353,7 +354,7 @@ class _DayCalendarView extends StatelessWidget {
                   notifier.selectDate(previousDay);
                   notifier.changeFocusedDate(previousDay);
                 },
-                icon: const Icon(Icons.chevron_left),
+                icon: Icon(PhosphorIcons.caretLeft()),
               ),
               Text(
                 _formatDayHeader(state.selectedDate),
@@ -365,7 +366,7 @@ class _DayCalendarView extends StatelessWidget {
                   notifier.selectDate(nextDay);
                   notifier.changeFocusedDate(nextDay);
                 },
-                icon: const Icon(Icons.chevron_right),
+                icon: Icon(PhosphorIcons.caretRight()),
               ),
             ],
           ),
@@ -441,7 +442,7 @@ class _WeekEventsView extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.event_available,
+              PhosphorIcons.calendar(),
               size: 64,
               color: Theme.of(context).colorScheme.outline,
             ),
@@ -512,7 +513,7 @@ class _DayEventsView extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.today,
+              PhosphorIcons.calendar(),
               size: 64,
               color: Theme.of(context).colorScheme.outline,
             ),
@@ -602,8 +603,8 @@ class EventCard extends ConsumerWidget {
                   ),
                   if (event.isAllDay)
                     Chip(
-                      label: const Text('All Day'),
-                      backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
+                      label: Text('All Day'),
+                      backgroundColor: Theme.of(context).primaryColor.withValues(alpha: 0.1),
                     ),
                 ],
               ),
@@ -613,7 +614,7 @@ class EventCard extends ConsumerWidget {
                 Row(
                   children: [
                     Icon(
-                      Icons.access_time,
+                      PhosphorIcons.clock(),
                       size: 16,
                       color: Theme.of(context).textTheme.bodySmall?.color,
                     ),
@@ -627,7 +628,7 @@ class EventCard extends ConsumerWidget {
               ],
               
               if (event.description != null && event.description!.isNotEmpty) ...[
-                const SizedBox(height: 4),
+                SizedBox(height: 4),
                 Text(
                   event.description!,
                   style: Theme.of(context).textTheme.bodySmall,
@@ -641,7 +642,7 @@ class EventCard extends ConsumerWidget {
                 Row(
                   children: [
                     Icon(
-                      Icons.location_on,
+                      PhosphorIcons.mapPin(),
                       size: 16,
                       color: Theme.of(context).textTheme.bodySmall?.color,
                     ),
@@ -795,7 +796,7 @@ class _TaskSchedulingWidgetState extends ConsumerState<TaskSchedulingWidget> {
           children: [
             // Date picker
             ListTile(
-              leading: const Icon(Icons.calendar_today),
+              leading: Icon(PhosphorIcons.calendar()),
               title: const Text('Date'),
               subtitle: Text('${selectedDate.day}/${selectedDate.month}/${selectedDate.year}'),
               onTap: () async {
@@ -813,7 +814,7 @@ class _TaskSchedulingWidgetState extends ConsumerState<TaskSchedulingWidget> {
             
             // All day toggle
             SwitchListTile(
-              title: const Text('All Day'),
+              title: Text('All Day'),
               value: isAllDay,
               onChanged: (value) => setState(() => isAllDay = value),
             ),
@@ -821,7 +822,7 @@ class _TaskSchedulingWidgetState extends ConsumerState<TaskSchedulingWidget> {
             if (!isAllDay) ...[
               // Start time picker
               ListTile(
-                leading: const Icon(Icons.access_time),
+                leading: Icon(PhosphorIcons.clock()),
                 title: const Text('Start Time'),
                 subtitle: Text(startTime.format(context)),
                 onTap: () async {
@@ -837,7 +838,7 @@ class _TaskSchedulingWidgetState extends ConsumerState<TaskSchedulingWidget> {
               
               // End time picker
               ListTile(
-                leading: const Icon(Icons.access_time_filled),
+                leading: Icon(PhosphorIcons.clock()),
                 title: const Text('End Time'),
                 subtitle: Text(endTime.format(context)),
                 onTap: () async {
@@ -959,10 +960,10 @@ class TaskEventCard extends ConsumerWidget {
             // Enhanced glow for task cards
             boxShadow: [
               BoxShadow(
-                color: _getPriorityColor(task.priority).withOpacity(0.2),
+                color: _getPriorityColor(task.priority).withValues(alpha: 0.2),
                 blurRadius: 4,
                 spreadRadius: 1,
-                offset: const Offset(0, 2),
+                offset: Offset(0, 2),
               ),
             ],
           ),
@@ -979,20 +980,20 @@ class TaskEventCard extends ConsumerWidget {
                       color: _getStatusColor(task.status),
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: _getStatusColor(task.status).withOpacity(0.8),
+                        color: _getStatusColor(task.status).withValues(alpha: 0.8),
                         width: 2,
                       ),
                       // Multi-layer glow effects for maximum visibility
                       boxShadow: [
                         // Outer glow
                         BoxShadow(
-                          color: _getStatusColor(task.status).withOpacity(0.6),
+                          color: _getStatusColor(task.status).withValues(alpha: 0.6),
                           blurRadius: task.status == TaskStatus.inProgress ? 8 : 6,
                           spreadRadius: task.status == TaskStatus.inProgress ? 2 : 1,
                         ),
                         // Inner glow
                         BoxShadow(
-                          color: _getStatusColor(task.status).withOpacity(0.4),
+                          color: _getStatusColor(task.status).withValues(alpha: 0.4),
                           blurRadius: 3,
                           spreadRadius: 0,
                         ),
@@ -1015,7 +1016,7 @@ class TaskEventCard extends ConsumerWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
-                      color: _getPriorityColor(task.priority).withOpacity(0.15),
+                      color: _getPriorityColor(task.priority).withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
                         color: _getPriorityColor(task.priority),
@@ -1039,7 +1040,7 @@ class TaskEventCard extends ConsumerWidget {
                 Row(
                   children: [
                     Icon(
-                      Icons.schedule,
+                      PhosphorIcons.clock(),
                       size: 16,
                       color: Theme.of(context).textTheme.bodySmall?.color,
                     ),
@@ -1205,3 +1206,5 @@ class TaskDetailsDialog extends ConsumerWidget {
     return '$date $time';
   }
 }
+
+

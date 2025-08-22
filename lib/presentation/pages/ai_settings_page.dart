@@ -9,14 +9,17 @@ import '../../services/ai/ai_task_parsing_service.dart';
 import '../widgets/ai_service_selector.dart';
 import '../widgets/ai_privacy_controls.dart';
 import '../widgets/ai_usage_statistics.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Settings page for AI task parsing configuration and privacy controls
 class AISettingsPage extends ConsumerStatefulWidget {
-  const AISettingsPage({super.key});  @override
+  const AISettingsPage({super.key});
+  @override
   ConsumerState<AISettingsPage> createState() => _AISettingsPageState();
 }
 
-class _AISettingsPageState extends ConsumerState<AISettingsPage> {  @override
+class _AISettingsPageState extends ConsumerState<AISettingsPage> {
+  @override
   Widget build(BuildContext context) {
     final config = ref.watch(aiParsingConfigProvider);
     final configNotifier = ref.read(aiParsingConfigProvider.notifier);
@@ -25,8 +28,7 @@ class _AISettingsPageState extends ConsumerState<AISettingsPage> {  @override
       child: Scaffold(
         backgroundColor: Colors.transparent,
         extendBodyBehindAppBar: true,
-        appBar: const StandardizedAppBar(
-          title: 'AI Settings',
+        appBar: StandardizedAppBar(title: 'AI Settings',
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.only(
@@ -48,7 +50,7 @@ class _AISettingsPageState extends ConsumerState<AISettingsPage> {  @override
                     Row(
                       children: [
                         Icon(
-                          Icons.psychology,
+                          PhosphorIcons.brain(),
                           color: Theme.of(context).colorScheme.primary,
                         ),
                         const SizedBox(width: 8),
@@ -80,7 +82,7 @@ class _AISettingsPageState extends ConsumerState<AISettingsPage> {  @override
                 ),
             ),
 
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             // AI Service Selection
             if (config.enabled) ...[
@@ -98,7 +100,7 @@ class _AISettingsPageState extends ConsumerState<AISettingsPage> {  @override
                     Row(
                       children: [
                         Icon(
-                          Icons.auto_fix_high,
+                          PhosphorIcons.sparkle(),
                           color: Theme.of(context).colorScheme.primary,
                         ),
                         const SizedBox(width: 8),
@@ -154,7 +156,7 @@ class _AISettingsPageState extends ConsumerState<AISettingsPage> {  @override
                     Row(
                       children: [
                         Icon(
-                          Icons.visibility,
+                          PhosphorIcons.eye(),
                           color: Theme.of(context).colorScheme.primary,
                         ),
                         const SizedBox(width: 8),
@@ -200,7 +202,7 @@ class _AISettingsPageState extends ConsumerState<AISettingsPage> {  @override
                     Row(
                       children: [
                         Icon(
-                          Icons.help_outline,
+                          PhosphorIcons.question(),
                           color: Theme.of(context).colorScheme.primary,
                         ),
                         const SizedBox(width: 8),
@@ -212,17 +214,17 @@ class _AISettingsPageState extends ConsumerState<AISettingsPage> {  @override
                     ),
                     const SizedBox(height: 16),
                     ListTile(
-                      leading: const Icon(Icons.info_outline),
+                      leading: Icon(PhosphorIcons.info()),
                       title: const Text('How AI Parsing Works'),
                       subtitle: const Text('Learn about AI task parsing features'),
-                      trailing: const Icon(Icons.arrow_forward_ios),
+                      trailing: Icon(PhosphorIcons.caretRight()),
                       onTap: () => _showHelpDialog(context),
                     ),
                     ListTile(
-                      leading: const Icon(Icons.privacy_tip_outlined),
+                      leading: Icon(PhosphorIcons.shieldWarning()),
                       title: const Text('Privacy Policy'),
                       subtitle: const Text('View our AI data handling policy'),
-                      trailing: const Icon(Icons.arrow_forward_ios),
+                      trailing: Icon(PhosphorIcons.caretRight()),
                       onTap: () => _showPrivacyDialog(context),
                     ),
                   ],
@@ -336,3 +338,5 @@ class _AISettingsPageState extends ConsumerState<AISettingsPage> {  @override
     );
   }
 }
+
+

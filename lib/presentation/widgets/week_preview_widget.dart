@@ -87,7 +87,7 @@ class WeekPreviewWidget extends ConsumerWidget {
             color: theme.colorScheme.onSurface,
           ),
         ),
-        const Spacer(),
+        Spacer(),
         if (!preferences.showCompactView)
           Consumer(
             builder: (context, ref, child) {
@@ -395,7 +395,7 @@ class WeekPreviewWidget extends ConsumerWidget {
       builder: (context) => AlertDialog(
         title: Text('${_getDayName(date)}, ${date.day}'),
         content: tasks.isEmpty 
-            ? const Text('No tasks for this day')
+            ? Text('No tasks for this day')
             : SizedBox(
                 width: double.maxFinite,
                 child: Column(
@@ -461,7 +461,7 @@ class WeekPreviewWidget extends ConsumerWidget {
                                   Padding(
                                     padding: const EdgeInsets.only(top: 4),
                                     child: Text(
-                                      'Due: ${task.dueDate!.day}/${task.dueDate!.month} ${task.dueDate!.hour}:${task.dueDate!.minute.value.padLeft(2, '0')}',
+                                      'Due: ${task.dueDate!.day}/${task.dueDate!.month} ${task.dueDate!.hour}:${task.dueDate!.minute.toString().padLeft(2, '0')}',
                                       style: TextStyle(
                                         fontSize: TypographyConstants.labelSmall,
                                         color: theme.colorScheme.onSurfaceVariant,
@@ -618,7 +618,9 @@ class _WeekPreviewPreferencesDialogState extends ConsumerState<_WeekPreviewPrefe
             ref.read(weekPreviewPreferencesProvider.notifier).state = preferences;
             Navigator.of(context).pop();
           },
-          child: const Text("")]),
+          child: const Text("Save"),
+        ),
     );
   }
 }
+

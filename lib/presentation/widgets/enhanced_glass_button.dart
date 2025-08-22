@@ -222,7 +222,7 @@ class _EnhancedGlassButtonState extends State<EnhancedGlassButton>
     // Determine glass tint colors
     final baseGlassTint = widget.glassTint ?? _getDefaultGlassTint(theme);
     final pressedGlassTint = widget.pressedGlassTint ?? 
-        (widget.glassTint?.withOpacity(0.3) ?? _getDefaultPressedGlassTint(theme));
+        (widget.glassTint?.withValues(alpha: 0.3) ?? _getDefaultPressedGlassTint(theme));
 
     return MouseRegion(
       onEnter: (_) => _handleHover(true),
@@ -255,7 +255,7 @@ class _EnhancedGlassButtonState extends State<EnhancedGlassButton>
                       baseGlassTint,
                       pressedGlassTint,
                       _glassIntensityAnimation.value - 1.0,
-                    )?.withOpacity(
+                    )?.withValues(alpha: 
                       (baseGlassTint.opacity * _glassIntensityAnimation.value)
                           .clamp(0.0, 1.0),
                     ),
@@ -282,7 +282,7 @@ class _EnhancedGlassButtonState extends State<EnhancedGlassButton>
                                 style: TextStyle(
                                   color: isEnabled 
                                       ? theme.colorScheme.onSurface
-                                      : theme.colorScheme.onSurface.withOpacity(0.38),
+                                      : theme.colorScheme.onSurface.withValues(alpha: 0.38),
                                 ),
                                 child: widget.child,
                               ),
@@ -299,7 +299,7 @@ class _EnhancedGlassButtonState extends State<EnhancedGlassButton>
                         child: CustomPaint(
                           painter: _RipplePainter(
                             progress: _rippleAnimation.value,
-                            color: theme.colorScheme.onSurface.withOpacity(0.1),
+                            color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
                           ),
                         ),
                       ),
@@ -316,26 +316,26 @@ class _EnhancedGlassButtonState extends State<EnhancedGlassButton>
   Color _getDefaultGlassTint(ThemeData theme) {
     switch (widget.level) {
       case GlassLevel.floating:
-        return theme.colorScheme.primary.withOpacity(0.2);
+        return theme.colorScheme.primary.withValues(alpha: 0.2);
       case GlassLevel.interactive:
-        return theme.colorScheme.surfaceContainerHighest.withOpacity(0.3);
+        return theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3);
       case GlassLevel.content:
-        return theme.colorScheme.surface.withOpacity(0.2);
+        return theme.colorScheme.surface.withValues(alpha: 0.2);
       case GlassLevel.background:
-        return theme.colorScheme.surface.withOpacity(0.1);
+        return theme.colorScheme.surface.withValues(alpha: 0.1);
     }
   }
 
   Color _getDefaultPressedGlassTint(ThemeData theme) {
     switch (widget.level) {
       case GlassLevel.floating:
-        return theme.colorScheme.primary.withOpacity(0.4);
+        return theme.colorScheme.primary.withValues(alpha: 0.4);
       case GlassLevel.interactive:
-        return theme.colorScheme.surfaceContainerHighest.withOpacity(0.5);
+        return theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5);
       case GlassLevel.content:
-        return theme.colorScheme.surface.withOpacity(0.4);
+        return theme.colorScheme.surface.withValues(alpha: 0.4);
       case GlassLevel.background:
-        return theme.colorScheme.surface.withOpacity(0.2);
+        return theme.colorScheme.surface.withValues(alpha: 0.2);
     }
   }
 }
@@ -356,7 +356,7 @@ class _RipplePainter extends CustomPainter {
     final radius = (size.width > size.height ? size.width : size.height) * progress;
     
     final paint = Paint()
-      ..color = color.withOpacity((1.0 - progress) * 0.3)
+      ..color = color.withValues(alpha: (1.0 - progress) * 0.3)
       ..style = PaintingStyle.fill;
 
     canvas.drawCircle(center, radius, paint);

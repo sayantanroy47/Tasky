@@ -5,6 +5,7 @@ import '../../domain/models/enums.dart';
 import '../providers/task_dependency_providers.dart';
 import '../providers/task_providers.dart';
 import 'glassmorphism_container.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Widget for visualizing and managing task dependencies
 class TaskDependencyVisualization extends ConsumerWidget {
@@ -61,7 +62,7 @@ class TaskDependencyVisualization extends ConsumerWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
@@ -69,7 +70,7 @@ class TaskDependencyVisualization extends ConsumerWidget {
                     context,
                     'Total Tasks',
                     stats.totalTasks.toString(),
-                    Icons.task_alt,
+                    PhosphorIcons.checkSquare(),
                     Theme.of(context).colorScheme.primary,
                   ),
                 ),
@@ -79,7 +80,7 @@ class TaskDependencyVisualization extends ConsumerWidget {
                     context,
                     'Ready',
                     stats.readyTasks.toString(),
-                    Icons.play_circle,
+                    PhosphorIcons.playCircle(),
                     Colors.green,
                   ),
                 ),
@@ -89,7 +90,7 @@ class TaskDependencyVisualization extends ConsumerWidget {
                     context,
                     'Blocked',
                     stats.blockedTasks.toString(),
-                    Icons.block,
+                    PhosphorIcons.prohibit(),
                     Colors.orange,
                   ),
                 ),
@@ -99,7 +100,7 @@ class TaskDependencyVisualization extends ConsumerWidget {
                     context,
                     'Dependencies',
                     stats.totalDependencies.toString(),
-                    Icons.account_tree,
+                    PhosphorIcons.tree(),
                     Theme.of(context).colorScheme.secondary,
                   ),
                 ),
@@ -115,9 +116,9 @@ class TaskDependencyVisualization extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(
         children: [
@@ -198,9 +199,9 @@ class TaskDependencyVisualization extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              title.contains('Ready') ? Icons.check_circle : Icons.block,
+              title.contains('Ready') ? PhosphorIcons.checkCircle() : PhosphorIcons.prohibit(),
               size: 64,
-              color: color.withOpacity(0.5),
+              color: color.withValues(alpha: 0.5),
             ),
             const SizedBox(height: 16),
             Text(
@@ -258,7 +259,7 @@ class TaskDependencyVisualization extends ConsumerWidget {
                     task.description!,
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12),
                 ],
                 
                 // Prerequisites
@@ -285,7 +286,7 @@ class TaskDependencyVisualization extends ConsumerWidget {
                   children: [
                     TextButton.icon(
                       onPressed: () => _showManageDependenciesDialog(context, ref, task),
-                      icon: const Icon(Icons.edit),
+                      icon: Icon(PhosphorIcons.pencil()),
                       label: const Text('Manage'),
                     ),
                     const SizedBox(width: 8),
@@ -318,13 +319,13 @@ class TaskDependencyVisualization extends ConsumerWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        const SizedBox(height: 4),
+        SizedBox(height: 4),
         ...prerequisites.map((prereq) => Padding(
           padding: const EdgeInsets.only(left: 8, bottom: 2),
           child: Row(
             children: [
               Icon(
-                prereq.status == TaskStatus.completed ? Icons.check_circle : Icons.radio_button_unchecked,
+                prereq.status == TaskStatus.completed ? PhosphorIcons.checkCircle() : PhosphorIcons.circle(),
                 size: 16,
                 color: prereq.status == TaskStatus.completed ? Colors.green : Colors.grey,
               ),
@@ -358,13 +359,13 @@ class TaskDependencyVisualization extends ConsumerWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        const SizedBox(height: 4),
+        SizedBox(height: 4),
         ...dependents.map((dependent) => Padding(
           padding: const EdgeInsets.only(left: 8, bottom: 2),
           child: Row(
             children: [
-              const Icon(
-                Icons.block,
+              Icon(
+                PhosphorIcons.prohibit(),
                 size: 16,
                 color: Colors.orange,
               ),
@@ -401,7 +402,7 @@ class TaskDependencyVisualization extends ConsumerWidget {
           padding: const EdgeInsets.all(16),
           child: ElevatedButton.icon(
             onPressed: () => _showAddDependencyDialog(context, ref, graphData.allTasks),
-            icon: const Icon(Icons.add),
+            icon: Icon(PhosphorIcons.plus()),
             label: const Text('Add Dependency'),
           ),
         ),
@@ -433,8 +434,8 @@ class TaskDependencyVisualization extends ConsumerWidget {
                 ],
               ),
             ),
-            const Icon(Icons.arrow_forward, color: Colors.grey),
-            const SizedBox(width: 8),
+            Icon(PhosphorIcons.arrowRight(), color: Colors.grey),
+            SizedBox(width: 8),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -446,7 +447,7 @@ class TaskDependencyVisualization extends ConsumerWidget {
                   Row(
                     children: [
                       Icon(
-                        dependency.prerequisite.status == TaskStatus.completed ? Icons.check_circle : Icons.radio_button_unchecked,
+                        dependency.prerequisite.status == TaskStatus.completed ? PhosphorIcons.checkCircle() : PhosphorIcons.circle(),
                         size: 16,
                         color: dependency.prerequisite.status == TaskStatus.completed ? Colors.green : Colors.orange,
                       ),
@@ -472,9 +473,9 @@ class TaskDependencyVisualization extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            Icons.account_tree,
+            PhosphorIcons.tree(),
             size: 64,
-            color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.5),
+            color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
           ),
           const SizedBox(height: 16),
           Text(
@@ -502,7 +503,7 @@ class TaskDependencyVisualization extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            Icons.error_outline,
+            PhosphorIcons.warningCircle(),
             size: 48,
             color: Theme.of(context).colorScheme.error,
           ),
@@ -589,7 +590,7 @@ class TaskDependencyManagementDialog extends ConsumerWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             Expanded(
               child: dependencyChainAsync.when(
                 data: (dependencies) => ListView.builder(
@@ -600,13 +601,13 @@ class TaskDependencyManagementDialog extends ConsumerWidget {
                       title: Text(dependency.title),
                       subtitle: Text(dependency.status.name),
                       trailing: IconButton(
-                        icon: const Icon(Icons.remove_circle, color: Colors.red),
+                        icon: Icon(PhosphorIcons.minusCircle(), color: Colors.red),
                         onPressed: () => _removeDependency(context, ref, task.id, dependency.id),
                       ),
                     );
                   },
                 ),
-                loading: () => const Center(child: CircularProgressIndicator()),
+                loading: () => Center(child: CircularProgressIndicator()),
                 error: (_, __) => const Text('Failed to load dependencies'),
               ),
             ),
@@ -636,7 +637,7 @@ class TaskDependencyManagementDialog extends ConsumerWidget {
                         title: Text(availableTask.title),
                         subtitle: Text(availableTask.status.name),
                         trailing: IconButton(
-                          icon: const Icon(Icons.add_circle, color: Colors.green),
+                          icon: Icon(PhosphorIcons.plusCircle(), color: Colors.green),
                           onPressed: () => _addDependency(context, ref, task.id, availableTask.id),
                         ),
                       );
@@ -778,3 +779,4 @@ class _AddDependencyDialogState extends ConsumerState<AddDependencyDialog> {
     }
   }
 }
+

@@ -88,7 +88,7 @@ class ThemeEffects {
       case ShadowStyle.subtle:
         return [
           BoxShadow(
-            color: shadowColor.withOpacity(0.1),
+            color: shadowColor.withValues(alpha: 0.1),
             offset: Offset(0, elevation * 0.5),
             blurRadius: elevation * 2,
             spreadRadius: 0,
@@ -98,13 +98,13 @@ class ThemeEffects {
       case ShadowStyle.soft:
         return [
           BoxShadow(
-            color: shadowColor.withOpacity(0.15),
+            color: shadowColor.withValues(alpha: 0.15),
             offset: Offset(0, elevation * 0.5),
             blurRadius: elevation * 3,
             spreadRadius: elevation * 0.5,
           ),
           BoxShadow(
-            color: shadowColor.withOpacity(0.05),
+            color: shadowColor.withValues(alpha: 0.05),
             offset: Offset(0, elevation),
             blurRadius: elevation * 6,
             spreadRadius: 0,
@@ -114,13 +114,13 @@ class ThemeEffects {
       case ShadowStyle.dramatic:
         return [
           BoxShadow(
-            color: shadowColor.withOpacity(0.3),
+            color: shadowColor.withValues(alpha: 0.3),
             offset: Offset(0, elevation),
             blurRadius: elevation * 4,
             spreadRadius: elevation * 0.5,
           ),
           BoxShadow(
-            color: shadowColor.withOpacity(0.1),
+            color: shadowColor.withValues(alpha: 0.1),
             offset: Offset(0, elevation * 2),
             blurRadius: elevation * 8,
             spreadRadius: 0,

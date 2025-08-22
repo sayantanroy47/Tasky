@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import '../../core/theme/typography_constants.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Standardized AppBar widget for consistent design across all screens
 class StandardizedAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -43,7 +44,7 @@ class StandardizedAppBar extends StatelessWidget implements PreferredSizeWidget 
       // Force back button or use provided leading widget
       leading: leading ?? (forceBackButton && Navigator.of(context).canPop() 
           ? IconButton(
-              icon: const Icon(Icons.arrow_back),
+              icon: Icon(PhosphorIcons.arrowLeft()),
               onPressed: () => Navigator.of(context).pop(),
               tooltip: 'Back',
             )
@@ -69,13 +70,13 @@ class StandardizedAppBar extends StatelessWidget implements PreferredSizeWidget 
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              theme.colorScheme.surface.withOpacity(0.9),
-              theme.colorScheme.surface.withOpacity(0.7),
+              theme.colorScheme.surface.withValues(alpha: 0.9),
+              theme.colorScheme.surface.withValues(alpha: 0.7),
             ],
           ),
           border: Border(
             bottom: BorderSide(
-              color: theme.colorScheme.outline.withOpacity(0.2),
+              color: theme.colorScheme.outline.withValues(alpha: 0.2),
               width: 0.5,
             ),
           ),
@@ -84,7 +85,7 @@ class StandardizedAppBar extends StatelessWidget implements PreferredSizeWidget 
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
             child: Container(
-              color: theme.colorScheme.surface.withOpacity(0.1),
+              color: theme.colorScheme.surface.withValues(alpha: 0.1),
             ),
           ),
         ),
@@ -97,3 +98,4 @@ class StandardizedAppBar extends StatelessWidget implements PreferredSizeWidget 
     kToolbarHeight + (bottom?.preferredSize.height ?? 0.0),
   );
 }
+

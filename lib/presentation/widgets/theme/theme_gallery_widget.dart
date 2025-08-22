@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/typography_constants.dart';
 import '../../../core/providers/enhanced_theme_provider.dart';
 import '../../../core/theme/app_theme_data.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Theme gallery widget with animated previews
 class ThemeGalleryWidget extends ConsumerStatefulWidget {
@@ -224,14 +225,14 @@ class _ThemePreviewCardState extends State<ThemePreviewCard>
                   boxShadow: [
                     if (widget.isSelected)
                       BoxShadow(
-                        color: widget.theme.colors.primary.withOpacity(
+                        color: widget.theme.colors.primary.withValues(alpha: 
                           0.4 * _glowAnimation.value,
                         ),
                         blurRadius: 20.0,
                         spreadRadius: 2.0,
                       ),
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
+                      color: Colors.black.withValues(alpha: 0.1),
                       blurRadius: 8.0,
                       offset: const Offset(0, 4),
                     ),
@@ -303,7 +304,7 @@ class _ThemePreviewCardState extends State<ThemePreviewCard>
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
-                          Icons.check,
+                          PhosphorIcons.check(),
                           color: colors.onPrimary,
                           size: 16.0,
                         ),
@@ -330,7 +331,7 @@ class _ThemePreviewCardState extends State<ThemePreviewCard>
                 Text(
                   theme.metadata.category.toUpperCase(),
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: colors.onBackground.withOpacity(0.7),
+                    color: colors.onBackground.withValues(alpha: 0.7),
                     fontWeight: FontWeight.w500,
                     letterSpacing: 0.5,
                   ),
@@ -418,7 +419,7 @@ class _ThemePreviewCardState extends State<ThemePreviewCard>
             color: color,
             borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
             border: Border.all(
-              color: colors.outline.withOpacity(0.3),
+              color: colors.outline.withValues(alpha: 0.3),
               width: 0.5,
             ),
           ),
@@ -446,7 +447,7 @@ class VegetaPatternPainter extends CustomPainter {
 
     // Draw angular energy lines
     for (int i = 0; i < 3; i++) {
-      paint.color = primaryColor.withOpacity(0.1 - (i * 0.03));
+      paint.color = primaryColor.withValues(alpha: 0.1 - (i * 0.03));
       final path = Path();
       path.moveTo(size.width * 0.2 + (i * 10), 0);
       path.lineTo(size.width * 0.8 - (i * 10), size.height * 0.4);
@@ -472,7 +473,7 @@ class MatrixPatternPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = codeColor.withOpacity(0.1)
+      ..color = codeColor.withValues(alpha: 0.1)
       ..style = PaintingStyle.fill;
 
     // Draw falling code columns
@@ -482,7 +483,7 @@ class MatrixPatternPainter extends CustomPainter {
         final y = (j * size.height / 5);
         canvas.drawRect(
           Rect.fromLTWH(x, y, 2.0, 8.0),
-          paint..color = codeColor.withOpacity(0.1 - (j * 0.015)),
+          paint..color = codeColor.withValues(alpha: 0.1 - (j * 0.015)),
         );
       }
     }
@@ -504,7 +505,7 @@ class DraculaPatternPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = accentColor.withOpacity(0.08)
+      ..color = accentColor.withValues(alpha: 0.08)
       ..style = PaintingStyle.fill;
 
     // Draw subtle geometric pattern
@@ -521,9 +522,10 @@ class DraculaPatternPainter extends CustomPainter {
     path.lineTo(size.width * 0.4, size.height);
     path.lineTo(0, size.height);
     path.close();
-    canvas.drawPath(path, paint..color = accentColor.withOpacity(0.05));
+    canvas.drawPath(path, paint..color = accentColor.withValues(alpha: 0.05));
   }
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
+

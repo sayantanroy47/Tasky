@@ -7,6 +7,7 @@ import '../../core/localization/app_localizations.dart';
 import '../../services/onboarding_service.dart';
 import '../widgets/glassmorphism_container.dart';
 import '../widgets/theme_background_widget.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Comprehensive onboarding page for new users
 class OnboardingPage extends ConsumerStatefulWidget {
@@ -31,43 +32,43 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage>
   bool _isAnimating = false;
 
   final List<OnboardingStep> _steps = [
-    const OnboardingStep(
+    OnboardingStep(
       title: 'onboarding_welcome',
       subtitle: 'onboarding_subtitle',
       description: 'Welcome to your personal task management companion. Organize your life with style and efficiency.',
-      icon: Icons.waving_hand_rounded,
+      icon: PhosphorIcons.handWaving(),
       gradient: [Colors.blue, Colors.purple],
       features: ['AI-powered task parsing', 'Voice commands', 'Smart scheduling'],
     ),
-    const OnboardingStep(
+    OnboardingStep(
       title: 'Voice-Powered Tasks',
       subtitle: 'Speak Your Mind',
       description: 'Create tasks by simply speaking. Our AI understands context and creates perfect tasks from your voice.',
-      icon: Icons.mic_rounded,
+      icon: PhosphorIcons.microphone(),
       gradient: [Colors.green, Colors.teal],
       features: ['Natural language processing', 'Context awareness', 'Multi-language support'],
     ),
-    const OnboardingStep(
+    OnboardingStep(
       title: 'Smart Organization',
       subtitle: 'Intelligent Categorization',
       description: 'Tasks are automatically categorized, prioritized, and scheduled using advanced AI algorithms.',
-      icon: Icons.auto_awesome_rounded,
+      icon: PhosphorIcons.sparkle(),
       gradient: [Colors.orange, Colors.red],
       features: ['Auto-categorization', 'Smart priorities', 'Deadline management'],
     ),
-    const OnboardingStep(
+    OnboardingStep(
       title: 'Beautiful Themes',
       subtitle: 'Express Yourself',
       description: 'Choose from stunning themes that adapt to your mood and environment.',
-      icon: Icons.palette_rounded,
+      icon: PhosphorIcons.palette(),
       gradient: [Colors.pink, Colors.indigo],
       features: ['Dynamic themes', 'Dark/Light modes', 'Custom color schemes'],
     ),
-    const OnboardingStep(
+    OnboardingStep(
       title: 'Cross-Platform Sync',
       subtitle: 'Always Connected',
       description: 'Your tasks sync seamlessly across all your devices with end-to-end encryption.',
-      icon: Icons.sync_rounded,
+      icon: PhosphorIcons.arrowsClockwise(),
       gradient: [Colors.cyan, Colors.blue],
       features: ['Real-time sync', 'Offline support', 'Secure encryption'],
     ),
@@ -302,8 +303,8 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage>
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    step.gradient[0].withOpacity(0.3),
-                    step.gradient[1].withOpacity(0.1),
+                    step.gradient[0].withValues(alpha: 0.3),
+                    step.gradient[1].withValues(alpha: 0.1),
                     Colors.transparent,
                   ],
                 ),
@@ -357,7 +358,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage>
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: gradient[0].withOpacity(opacity),
+                  color: gradient[0].withValues(alpha: opacity),
                   width: 2,
                 ),
               ),
@@ -389,7 +390,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage>
           textAlign: TextAlign.center,
         ),
 
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
 
         // Subtitle
         Text(
@@ -436,7 +437,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage>
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      Icons.check_circle,
+                      PhosphorIcons.checkCircle(),
                       size: 16,
                       color: theme.colorScheme.primary,
                     ),
@@ -475,7 +476,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage>
                 borderRadius: BorderRadius.circular(BorderRadiusTokens.xs),
                 color: _currentPage == index
                     ? Theme.of(context).colorScheme.primary
-                    : Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                    : Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
               ),
             );
           }),
@@ -499,7 +500,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage>
           // Previous button
           AnimatedOpacity(
             opacity: _currentPage > 0 ? 1.0 : 0.0,
-            duration: const Duration(milliseconds: 200),
+            duration: Duration(milliseconds: 200),
             child: GestureDetector(
               onTap: _currentPage > 0 ? _previousPage : null,
               child: GlassmorphismContainer(
@@ -513,7 +514,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage>
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      Icons.arrow_back,
+                      PhosphorIcons.arrowLeft(),
                       size: config.isMobile ? 18 : 20,
                     ),
                     const SizedBox(width: 8),
@@ -566,8 +567,8 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage>
                     const SizedBox(width: 8),
                     Icon(
                       _currentPage == _steps.length - 1
-                          ? Icons.check
-                          : Icons.arrow_forward,
+                          ? PhosphorIcons.check()
+                          : PhosphorIcons.arrowRight(),
                       color: Colors.white,
                       size: config.isMobile ? 18 : 20,
                     ),
@@ -640,3 +641,4 @@ class OnboardingStep {
     this.features = const [],
   });
 }
+

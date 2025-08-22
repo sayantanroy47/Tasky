@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/task_model.dart';
 import '../../services/task/task_dependency_service.dart';
 import '../providers/task_dependency_providers.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Widget that shows dependency status for a task
 class TaskDependencyStatus extends ConsumerWidget {
@@ -35,16 +36,16 @@ class TaskDependencyStatus extends ConsumerWidget {
   Widget _buildDependencyStatus(BuildContext context, DependencyValidationResult validation) {
     final isBlocked = !validation.isValid;
     final color = isBlocked ? Colors.orange : Colors.green;
-    final icon = isBlocked ? Icons.block : Icons.check_circle;
+    final icon = isBlocked ? PhosphorIcons.prohibit() : PhosphorIcons.checkCircle();
     
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
+          color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: color.withOpacity(0.3)),
+          border: Border.all(color: color.withValues(alpha: 0.3)),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -65,9 +66,9 @@ class TaskDependencyStatus extends ConsumerWidget {
               ),
             ),
             if (showDetails && validation.incompleteDependencies.isNotEmpty) ...[
-              const SizedBox(width: 4),
+              SizedBox(width: 4),
               Icon(
-                Icons.info_outline,
+                PhosphorIcons.info(),
                 size: 12,
                 color: color,
               ),
@@ -119,7 +120,7 @@ class TaskDependencyStatus extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            Icons.error_outline,
+            PhosphorIcons.warningCircle(),
             size: 14,
             color: Theme.of(context).colorScheme.onErrorContainer,
           ),
@@ -204,7 +205,7 @@ class TaskDependencyIndicator extends ConsumerWidget {
         return TaskDependencyTooltip(
           task: task,
           child: Icon(
-            isBlocked ? Icons.link_off : Icons.link,
+            isBlocked ? PhosphorIcons.link() : PhosphorIcons.link(),
             size: size,
             color: isBlocked 
                 ? Colors.orange 
@@ -213,15 +214,16 @@ class TaskDependencyIndicator extends ConsumerWidget {
         );
       },
       loading: () => Icon(
-        Icons.link,
+        PhosphorIcons.link(),
         size: size,
-        color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.5),
+        color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
       ),
       error: (_, __) => Icon(
-        Icons.link_off,
+        PhosphorIcons.link(),
         size: size,
         color: Theme.of(context).colorScheme.error,
       ),
     );
   }
 }
+

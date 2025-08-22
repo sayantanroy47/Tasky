@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../core/theme/app_theme_data.dart';
 import '../../../core/theme/typography_constants.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 
 /// Ultra-modern theme card with refined design and micro-interactions
@@ -204,7 +205,7 @@ class _UltraModernThemeCardState extends State<UltraModernThemeCard>
               boxShadow: [
                 // Primary shadow
                 BoxShadow(
-                  color: colors.shadow.withOpacity(0.1 + (_hoverAnimation.value * 0.15)),
+                  color: colors.shadow.withValues(alpha: 0.1 + (_hoverAnimation.value * 0.15)),
                   blurRadius: _elevationAnimation.value * 2,
                   spreadRadius: _hoverAnimation.value * 2,
                   offset: Offset(0, _elevationAnimation.value),
@@ -212,7 +213,7 @@ class _UltraModernThemeCardState extends State<UltraModernThemeCard>
                 // Selection glow
                 if (widget.isSelected)
                   BoxShadow(
-                    color: colors.primary.withOpacity(0.3 + (_selectionAnimation.value * 0.2)),
+                    color: colors.primary.withValues(alpha: 0.3 + (_selectionAnimation.value * 0.2)),
                     blurRadius: 20 + (_selectionAnimation.value * 10),
                     spreadRadius: 2 + (_selectionAnimation.value * 3),
                     offset: const Offset(0, 0),
@@ -276,8 +277,8 @@ class _UltraModernThemeCardState extends State<UltraModernThemeCard>
               end: Alignment.bottomRight,
               colors: [
                 colors.surface,
-                colors.surface.withOpacity(0.8),
-                colors.primary.withOpacity(0.05 + (_effectAnimation.value * 0.03)),
+                colors.surface.withValues(alpha: 0.8),
+                colors.primary.withValues(alpha: 0.05 + (_effectAnimation.value * 0.03)),
               ],
             ),
           ),
@@ -312,8 +313,8 @@ class _UltraModernThemeCardState extends State<UltraModernThemeCard>
               center: Alignment.topRight,
               radius: 1.2 + (_effectAnimation.value * 0.3),
               colors: [
-                colors.primary.withOpacity(0.15 + (_effectAnimation.value * 0.05)),
-                colors.secondary.withOpacity(0.1),
+                colors.primary.withValues(alpha: 0.15 + (_effectAnimation.value * 0.05)),
+                colors.secondary.withValues(alpha: 0.1),
                 colors.surface,
               ],
             ),
@@ -327,11 +328,11 @@ class _UltraModernThemeCardState extends State<UltraModernThemeCard>
             width: 8 + (_effectAnimation.value * 4),
             height: 8 + (_effectAnimation.value * 4),
             decoration: BoxDecoration(
-              color: colors.accent.withOpacity(0.6),
+              color: colors.accent.withValues(alpha: 0.6),
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: colors.accent.withOpacity(0.4),
+                  color: colors.accent.withValues(alpha: 0.4),
                   blurRadius: 10 + (_effectAnimation.value * 5),
                   spreadRadius: 2,
                 ),
@@ -351,7 +352,7 @@ class _UltraModernThemeCardState extends State<UltraModernThemeCard>
           end: Alignment.bottomCenter,
           colors: [
             colors.surface,
-            colors.primary.withOpacity(0.08 + (_effectAnimation.value * 0.02)),
+            colors.primary.withValues(alpha: 0.08 + (_effectAnimation.value * 0.02)),
             colors.surface,
           ],
         ),
@@ -364,8 +365,8 @@ class _UltraModernThemeCardState extends State<UltraModernThemeCard>
             child: Transform.rotate(
               angle: _effectAnimation.value * math.pi * 2,
               child: Icon(
-                Icons.nightlight_round,
-                color: colors.accent.withOpacity(0.3 + (_effectAnimation.value * 0.2)),
+                PhosphorIcons.moon(),
+                color: colors.accent.withValues(alpha: 0.3 + (_effectAnimation.value * 0.2)),
                 size: 20,
               ),
             ),
@@ -383,9 +384,9 @@ class _UltraModernThemeCardState extends State<UltraModernThemeCard>
           startAngle: _effectAnimation.value * math.pi * 2,
           colors: [
             colors.surface,
-            colors.primary.withOpacity(0.1),
-            colors.secondary.withOpacity(0.08),
-            colors.tertiary.withOpacity(0.12),
+            colors.primary.withValues(alpha: 0.1),
+            colors.secondary.withValues(alpha: 0.08),
+            colors.tertiary.withValues(alpha: 0.12),
             colors.surface,
           ],
         ),
@@ -401,7 +402,7 @@ class _UltraModernThemeCardState extends State<UltraModernThemeCard>
           end: Alignment.bottomRight,
           colors: [
             colors.surface,
-            colors.surfaceContainerHighest.withOpacity(0.3),
+            colors.surfaceContainerHighest.withValues(alpha: 0.3),
             colors.surface,
           ],
         ),
@@ -418,7 +419,7 @@ class _UltraModernThemeCardState extends State<UltraModernThemeCard>
             end: Alignment.bottomCenter,
             colors: [
               Colors.transparent,
-              theme.colorScheme.surface.withOpacity(0.85 + (_hoverAnimation.value * 0.1)),
+              theme.colorScheme.surface.withValues(alpha: 0.85 + (_hoverAnimation.value * 0.1)),
             ],
             stops: const [0.4, 1.0],
           ),
@@ -443,16 +444,16 @@ class _UltraModernThemeCardState extends State<UltraModernThemeCard>
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      colors.primary.withOpacity(0.8 + (_hoverAnimation.value * 0.2)),
-                      colors.secondary.withOpacity(0.6),
+                      colors.primary.withValues(alpha: 0.8 + (_hoverAnimation.value * 0.2)),
+                      colors.secondary.withValues(alpha: 0.6),
                     ],
                   ),
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
-                      color: colors.primary.withOpacity(0.3),
+                      color: colors.primary.withValues(alpha: 0.3),
                       blurRadius: 8 + (_hoverAnimation.value * 4),
-                      offset: const Offset(0, 2),
+                      offset: Offset(0, 2),
                     ),
                   ],
                 ),
@@ -469,10 +470,10 @@ class _UltraModernThemeCardState extends State<UltraModernThemeCard>
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: colors.primary.withOpacity(0.15),
+                  color: colors.primary.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: colors.primary.withOpacity(0.3),
+                    color: colors.primary.withValues(alpha: 0.3),
                     width: 0.1,
                   ),
                 ),
@@ -480,7 +481,7 @@ class _UltraModernThemeCardState extends State<UltraModernThemeCard>
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      Icons.star_rounded,
+                      PhosphorIcons.star(),
                       color: colors.primary,
                       size: 12,
                     ),
@@ -505,15 +506,15 @@ class _UltraModernThemeCardState extends State<UltraModernThemeCard>
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: theme.colorScheme.surface.withOpacity(0.9),
+              color: theme.colorScheme.surface.withValues(alpha: 0.9),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: theme.colorScheme.outline.withOpacity(0.1),
+                color: theme.colorScheme.outline.withValues(alpha: 0.1),
                 width: 0.1,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: theme.colorScheme.shadow.withOpacity(0.05),
+                  color: theme.colorScheme.shadow.withValues(alpha: 0.05),
                   blurRadius: 8,
                   offset: const Offset(0, 2),
                 ),
@@ -548,10 +549,10 @@ class _UltraModernThemeCardState extends State<UltraModernThemeCard>
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                       decoration: BoxDecoration(
-                        color: colors.primary.withOpacity(0.1),
+                        color: colors.primary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: colors.primary.withOpacity(0.2),
+                          color: colors.primary.withValues(alpha: 0.2),
                           width: 0.1,
                         ),
                       ),
@@ -574,7 +575,7 @@ class _UltraModernThemeCardState extends State<UltraModernThemeCard>
                 _buildHighlightedText(
                   metadata.description,
                   theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurface.withOpacity(0.7),
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                     height: 1.3,
                   ),
                   maxLines: 2,
@@ -620,7 +621,7 @@ class _UltraModernThemeCardState extends State<UltraModernThemeCard>
           TextSpan(
             text: text.substring(queryIndex, queryIndex + query.length),
             style: style?.copyWith(
-              backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+              backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -638,12 +639,12 @@ class _UltraModernThemeCardState extends State<UltraModernThemeCard>
         color: color,
         borderRadius: BorderRadius.circular(4),
         border: Border.all(
-          color: Colors.white.withOpacity(0.2),
+          color: Colors.white.withValues(alpha: 0.2),
           width: 0.1,
         ),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.3),
+            color: color.withValues(alpha: 0.3),
             blurRadius: 3,
             offset: const Offset(0, 1),
           ),
@@ -668,14 +669,14 @@ class _UltraModernThemeCardState extends State<UltraModernThemeCard>
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: colors.primary.withOpacity(0.5),
+                    color: colors.primary.withValues(alpha: 0.5),
                     blurRadius: 8 + (_selectionAnimation.value * 4),
                     spreadRadius: 1 + (_selectionAnimation.value * 2),
                   ),
                 ],
               ),
               child: Icon(
-                Icons.check_rounded,
+                PhosphorIcons.check(),
                 color: colors.onPrimary,
                 size: 16,
               ),
@@ -693,8 +694,8 @@ class _UltraModernThemeCardState extends State<UltraModernThemeCard>
           borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard * 1.5),
           border: Border.all(
             color: widget.isSelected 
-                ? colors.primary.withOpacity(0.6 + (_selectionAnimation.value * 0.4))
-                : colors.outline.withOpacity(0.1 + (_hoverAnimation.value * 0.2)),
+                ? colors.primary.withValues(alpha: 0.6 + (_selectionAnimation.value * 0.4))
+                : colors.outline.withValues(alpha: 0.1 + (_hoverAnimation.value * 0.2)),
             width: widget.isSelected 
                 ? 0.3 + (_selectionAnimation.value * 0.5)
                 : _borderAnimation.value,
@@ -712,11 +713,11 @@ class _UltraModernThemeCardState extends State<UltraModernThemeCard>
         width: 8,
         height: 8,
         decoration: BoxDecoration(
-          color: colors.primary.withOpacity(0.6),
+          color: colors.primary.withValues(alpha: 0.6),
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: colors.primary.withOpacity(0.4),
+              color: colors.primary.withValues(alpha: 0.4),
               blurRadius: 6,
               spreadRadius: 1,
             ),
@@ -726,3 +727,4 @@ class _UltraModernThemeCardState extends State<UltraModernThemeCard>
     );
   }
 }
+

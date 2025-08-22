@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/providers/collaboration_provider.dart';
 import '../../services/collaboration_service.dart';
 import '../../domain/entities/task_model.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class TaskCollaborationWidget extends ConsumerWidget {
   final TaskModel task;
@@ -23,7 +24,7 @@ class TaskCollaborationWidget extends ConsumerWidget {
           children: [
             Row(
               children: [
-                Icon(Icons.people, color: Theme.of(context).primaryColor),
+                Icon(PhosphorIcons.users(), color: Theme.of(context).primaryColor),
                 const SizedBox(width: 8),
                 const Text(
                   'Collaboration',
@@ -60,8 +61,7 @@ class TaskCollaborationWidget extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (taskSharedLists.isNotEmpty) ...[
-          const Text(
-            'This task is shared in:',
+          Text('This task is shared in:',
             style: TextStyle(fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 8),
@@ -73,7 +73,7 @@ class TaskCollaborationWidget extends ConsumerWidget {
             Expanded(
               child: ElevatedButton.icon(
                 onPressed: () => _showShareTaskDialog(context, ref, sharedLists),
-                icon: const Icon(Icons.share),
+                icon: Icon(PhosphorIcons.share()),
                 label: const Text('Share Task'),
               ),
             ),
@@ -81,7 +81,7 @@ class TaskCollaborationWidget extends ConsumerWidget {
             Expanded(
               child: OutlinedButton.icon(
                 onPressed: () => _createNewSharedList(context, ref),
-                icon: const Icon(Icons.add),
+                icon: Icon(PhosphorIcons.plus()),
                 label: const Text('New List'),
               ),
             ),
@@ -96,12 +96,12 @@ class TaskCollaborationWidget extends ConsumerWidget {
       padding: const EdgeInsets.only(bottom: 4.0),
       child: Chip(
         avatar: Icon(
-          sharedList.isPublic ? Icons.public : Icons.group,
+          sharedList.isPublic ? PhosphorIcons.globe() : PhosphorIcons.users(),
           size: 16,
         ),
         label: Text(sharedList.name),
         onDeleted: () => _showRemoveFromListDialog(context, sharedList),
-        deleteIcon: const Icon(Icons.close, size: 16),
+        deleteIcon: Icon(PhosphorIcons.x(), size: 16),
       ),
     );
   }
@@ -119,7 +119,7 @@ class TaskCollaborationWidget extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Share Task'),
+        title: Text('Share Task'),
         content: availableLists.isEmpty
             ? const Text('No available shared lists. Create a new one first.')
             : Column(
@@ -129,7 +129,7 @@ class TaskCollaborationWidget extends ConsumerWidget {
                   const SizedBox(height: 16),
                   ...availableLists.map((sharedList) => ListTile(
                     leading: Icon(
-                      sharedList.isPublic ? Icons.public : Icons.group,
+                      sharedList.isPublic ? PhosphorIcons.globe() : PhosphorIcons.users(),
                     ),
                     title: Text(sharedList.name),
                     subtitle: Text('${sharedList.collaborators.length} collaborators'),
@@ -241,3 +241,5 @@ class TaskCollaborationWidget extends ConsumerWidget {
     }
   }
 }
+
+

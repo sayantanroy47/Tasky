@@ -400,7 +400,7 @@ class _GlassMorphTransition extends StatelessWidget {
     }
 
     return Container(
-      color: Colors.black.withOpacity(0.3 * animation.value),
+      color: Colors.black.withValues(alpha: 0.3 * animation.value),
       child: Center(child: content),
     );
   }

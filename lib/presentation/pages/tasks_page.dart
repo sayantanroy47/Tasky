@@ -18,6 +18,7 @@ import '../widgets/glassmorphism_container.dart';
 import '../../core/design_system/design_tokens.dart';
 import '../widgets/manual_task_creation_dialog.dart';
 import 'voice_recording_page.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class TasksPage extends ConsumerWidget {
   const TasksPage({super.key});
@@ -31,9 +32,9 @@ class TasksPage extends ConsumerWidget {
           title: 'Tasks',
           forceBackButton: false, // Tasks is main tab - no back button
           actions: [
-            const ThemeToggleButton(),
+            ThemeToggleButton(),
             IconButton(
-              icon: const Icon(Icons.filter_list),
+              icon: Icon(PhosphorIcons.funnel()),
               onPressed: () => _showFilterDialog(context, ref),
               tooltip: 'Filter tasks',
             ),
@@ -73,12 +74,12 @@ class TasksPage extends ConsumerWidget {
         // Outer glow effect
         boxShadow: [
           BoxShadow(
-            color: theme.colorScheme.primary.withOpacity(0.3),
+            color: theme.colorScheme.primary.withValues(alpha: 0.3),
             blurRadius: 20,
             spreadRadius: 5,
           ),
           BoxShadow(
-            color: theme.colorScheme.primary.withOpacity(0.1),
+            color: theme.colorScheme.primary.withValues(alpha: 0.1),
             blurRadius: 40,
             spreadRadius: 10,
           ),
@@ -94,14 +95,14 @@ class TasksPage extends ConsumerWidget {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  theme.colorScheme.primary.withOpacity(0.95),
-                  theme.colorScheme.primary.withOpacity(0.85),
-                  theme.colorScheme.secondary.withOpacity(0.1),
+                  theme.colorScheme.primary.withValues(alpha: 0.95),
+                  theme.colorScheme.primary.withValues(alpha: 0.85),
+                  theme.colorScheme.secondary.withValues(alpha: 0.1),
                 ],
                 stops: const [0.0, 0.7, 1.0],
               ),
               border: Border.all(
-                color: theme.colorScheme.primary.withOpacity(0.3),
+                color: theme.colorScheme.primary.withValues(alpha: 0.3),
                 width: 1.5,
               ),
             ),
@@ -111,13 +112,13 @@ class TasksPage extends ConsumerWidget {
               backgroundColor: Colors.transparent,
               foregroundColor: theme.colorScheme.onPrimary,
               elevation: 0,
-              shape: const CircleBorder(),
+              shape: CircleBorder(),
               child: Container(
                 decoration: const BoxDecoration(
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
-                  Icons.add,
+                child: Icon(
+                  PhosphorIcons.plus(),
                   size: 36,
                   weight: 600,
                 ),
@@ -155,7 +156,7 @@ class TasksPage extends ConsumerWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 Text(
                   'Choose how you\'d like to create your task',
                   style: theme.textTheme.bodyMedium?.copyWith(
@@ -167,7 +168,7 @@ class TasksPage extends ConsumerWidget {
                 // Task Creation Options
                 _buildTaskCreationOption(
                   context: context,
-                  icon: Icons.mic,
+                  icon: PhosphorIcons.microphone(),
                   iconColor: theme.colorScheme.primary,
                   title: 'AI Voice Entry',
                   subtitle: 'Speak your task, we\'ll transcribe it',
@@ -182,12 +183,12 @@ class TasksPage extends ConsumerWidget {
                   },
                 ),
                 
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 
                 
                 _buildTaskCreationOption(
                   context: context,
-                  icon: Icons.edit,
+                  icon: PhosphorIcons.pencil(),
                   iconColor: Colors.green,
                   title: 'Manual Entry',
                   subtitle: 'Type your task details manually',
@@ -236,14 +237,14 @@ class TasksPage extends ConsumerWidget {
               width: 48,
               height: 48,
               borderRadius: BorderRadius.circular(12),
-              glassTint: iconColor.withOpacity(0.15),
+              glassTint: iconColor.withValues(alpha: 0.15),
               child: Icon(
                 icon,
                 color: iconColor,
                 size: 24,
               ),
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -265,7 +266,7 @@ class TasksPage extends ConsumerWidget {
               ),
             ),
             Icon(
-              Icons.arrow_forward_ios,
+              PhosphorIcons.caretRight(),
               size: 16,
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -346,10 +347,10 @@ class _SearchBarState extends ConsumerState<_SearchBar> {
         controller: _searchController,
         decoration: InputDecoration(
           hintText: 'Search tasks by title, description, or tags...',
-          prefixIcon: const Icon(Icons.search),
+          prefixIcon: Icon(PhosphorIcons.magnifyingGlass()),
           suffixIcon: searchQuery.isNotEmpty
               ? IconButton(
-                  icon: const Icon(Icons.clear),
+                  icon: Icon(PhosphorIcons.x()),
                   onPressed: () {
                     _searchController.clear();
                     ref.read(searchQueryProvider.notifier).state = '';
@@ -515,7 +516,7 @@ class _SmartFilterChip extends StatelessWidget {
       level: isSelected ? GlassLevel.interactive : GlassLevel.content,
       borderRadius: BorderRadius.circular(20),
       glassTint: isSelected 
-          ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
+          ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
           : null,
       child: Material(
         color: Colors.transparent,
@@ -528,8 +529,8 @@ class _SmartFilterChip extends StatelessWidget {
               gradient: isSelected
                   ? LinearGradient(
                       colors: [
-                        Theme.of(context).colorScheme.primary.withOpacity(0.8),
-                        Theme.of(context).colorScheme.primary.withOpacity(0.6),
+                        Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
+                        Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
                       ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -586,7 +587,7 @@ class _ActiveFiltersIndicator extends StatelessWidget {
       child: Row(
         children: [
           Icon(
-            Icons.filter_alt,
+            PhosphorIcons.funnel(),
             size: 16,
             color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
@@ -665,7 +666,7 @@ class _TaskList extends ConsumerWidget {
 
   Widget _buildTaskList(BuildContext context, WidgetRef ref, List<TaskModel> tasks) {
     if (tasks.isEmpty) {
-      return const _EmptyTaskList();
+      return _EmptyTaskList();
     }
 
     return Column(
@@ -723,7 +724,7 @@ class _TaskList extends ConsumerWidget {
 }
 
 class _EmptyTaskList extends StatelessWidget {
-  const _EmptyTaskList();
+  _EmptyTaskList();
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -731,7 +732,7 @@ class _EmptyTaskList extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            Icons.task_outlined,
+            PhosphorIcons.checkSquare(),
             size: 64,
             color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
@@ -906,8 +907,8 @@ class _FilterDialogState extends ConsumerState<_FilterDialog> {
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               colors: [
-                                Theme.of(context).colorScheme.primary.withOpacity(0.8),
-                                Theme.of(context).colorScheme.primary.withOpacity(0.6),
+                                Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
+                                Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
                               ],
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
@@ -949,7 +950,7 @@ class _FilterDialogState extends ConsumerState<_FilterDialog> {
       level: isSelected ? GlassLevel.interactive : GlassLevel.content,
       borderRadius: BorderRadius.circular(20),
       glassTint: isSelected 
-          ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
+          ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
           : null,
       child: Material(
         color: Colors.transparent,
@@ -962,8 +963,8 @@ class _FilterDialogState extends ConsumerState<_FilterDialog> {
               gradient: isSelected
                   ? LinearGradient(
                       colors: [
-                        Theme.of(context).colorScheme.primary.withOpacity(0.8),
-                        Theme.of(context).colorScheme.primary.withOpacity(0.6),
+                        Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
+                        Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
                       ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -986,3 +987,6 @@ class _FilterDialogState extends ConsumerState<_FilterDialog> {
     );
   }
 }
+
+
+

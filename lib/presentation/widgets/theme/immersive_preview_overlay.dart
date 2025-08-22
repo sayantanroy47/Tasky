@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../../../core/theme/app_theme_data.dart';
 
 import '../glassmorphism_container.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Immersive full-screen theme preview overlay with live UI component showcase
 class ImmersivePreviewOverlay extends StatefulWidget {
@@ -113,7 +114,7 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
                       sigmaY: 20 * _overlayAnimation.value,
                     ),
                     child: Container(
-                      color: Colors.black.withOpacity(0.3 * _overlayAnimation.value),
+                      color: Colors.black.withValues(alpha: 0.3 * _overlayAnimation.value),
                     ),
                   ),
                 ),
@@ -222,8 +223,8 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            widget.theme.colors.primary.withOpacity(0.1),
-            widget.theme.colors.secondary.withOpacity(0.05),
+            widget.theme.colors.primary.withValues(alpha: 0.1),
+            widget.theme.colors.secondary.withValues(alpha: 0.05),
           ],
         ),
         borderRadius: const BorderRadius.only(
@@ -245,7 +246,7 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: widget.theme.colors.primary.withOpacity(0.3),
+                      color: widget.theme.colors.primary.withValues(alpha: 0.3),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),
@@ -275,7 +276,7 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
                     Text(
                       metadata.description,
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurface.withOpacity(0.7),
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                       ),
                     ),
                   ],
@@ -332,12 +333,12 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
               color: color,
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color: Colors.white.withOpacity(0.2),
+                color: Colors.white.withValues(alpha: 0.2),
                 width: 0.1,
               ),
               boxShadow: [
                 BoxShadow(
-                  color: color.withOpacity(0.3),
+                  color: color.withValues(alpha: 0.3),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
                 ),
@@ -396,7 +397,7 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
               Expanded(
                 child: FilledButton.icon(
                   onPressed: () {},
-                  icon: const Icon(Icons.play_arrow),
+                  icon: Icon(PhosphorIcons.play()),
                   label: const Text('Primary'),
                 ),
               ),
@@ -404,7 +405,7 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: () {},
-                  icon: const Icon(Icons.favorite_outline),
+                  icon: Icon(PhosphorIcons.heart()),
                   label: const Text('Outlined'),
                 ),
               ),
@@ -419,7 +420,7 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
               Expanded(
                 child: TextButton.icon(
                   onPressed: () {},
-                  icon: const Icon(Icons.share),
+                  icon: Icon(PhosphorIcons.share()),
                   label: const Text('Text Button'),
                 ),
               ),
@@ -427,12 +428,12 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
               FloatingActionButton(
                 mini: true,
                 onPressed: () {},
-                child: const Icon(Icons.add),
+                child: Icon(PhosphorIcons.plus()),
               ),
             ],
           ),
           
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
           
           // Chips
           Wrap(
@@ -440,7 +441,7 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
             children: [
               const Chip(
                 label: Text('Chip'),
-                avatar: Icon(Icons.star, size: 16),
+                avatar: Icon(PhosphorIcons.star(), size: 16),
               ),
               FilterChip(
                 label: const Text('Filter'),
@@ -470,7 +471,7 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
           
           Card(
             child: Padding(
@@ -483,7 +484,7 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
                       CircleAvatar(
                         backgroundColor: Theme.of(context).colorScheme.primary,
                         child: Icon(
-                          Icons.person,
+                          PhosphorIcons.user(),
                           color: Theme.of(context).colorScheme.onPrimary,
                         ),
                       ),
@@ -540,13 +541,13 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
           
-          const TextField(
+          TextField(
             decoration: InputDecoration(
               labelText: 'Text Field',
               hintText: 'Enter some text',
-              prefixIcon: Icon(Icons.text_fields),
+              prefixIcon: Icon(PhosphorIcons.textAa()),
               border: OutlineInputBorder(),
             ),
           ),
@@ -596,30 +597,30 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
           
           Card(
             child: Column(
               children: [
                 ListTile(
-                  leading: const Icon(Icons.home),
+                  leading: Icon(PhosphorIcons.house()),
                   title: const Text('Home'),
-                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  trailing: Icon(PhosphorIcons.caretRight(), size: 16),
                   onTap: () {},
                 ),
-                const Divider(height: 1),
+                Divider(height: 1),
                 ListTile(
-                  leading: const Icon(Icons.settings),
+                  leading: Icon(PhosphorIcons.gear()),
                   title: const Text('Settings'),
                   subtitle: const Text('App preferences'),
-                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  trailing: Icon(PhosphorIcons.caretRight(), size: 16),
                   onTap: () {},
                 ),
-                const Divider(height: 1),
+                Divider(height: 1),
                 ListTile(
-                  leading: const Icon(Icons.info),
+                  leading: Icon(PhosphorIcons.info()),
                   title: const Text('About'),
-                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  trailing: Icon(PhosphorIcons.caretRight(), size: 16),
                   onTap: () {},
                 ),
               ],
@@ -646,7 +647,7 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
               widget.onClose();
             },
             child: Icon(
-              Icons.close_rounded,
+              PhosphorIcons.x(),
               color: Theme.of(context).colorScheme.onSurface,
               size: 24,
             ),
@@ -671,7 +672,7 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
                 decoration: BoxDecoration(
                   color: _selectedComponentIndex == index
                       ? Theme.of(context).colorScheme.primary
-                      : Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                      : Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
                   shape: BoxShape.circle,
                 ),
               ),
@@ -698,7 +699,7 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
                 await _exitAnimation();
                 widget.onClose();
               },
-              icon: const Icon(Icons.arrow_back),
+              icon: Icon(PhosphorIcons.arrowLeft()),
               label: const Text('Back to Gallery'),
               style: OutlinedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 48),
@@ -720,7 +721,7 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
                 await _exitAnimation();
                 widget.onApply();
               },
-              icon: const Icon(Icons.check_rounded),
+              icon: Icon(PhosphorIcons.check()),
               label: const Text('Apply Theme'),
               style: FilledButton.styleFrom(
                 minimumSize: const Size(double.infinity, 48),
@@ -732,3 +733,4 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
     );
   }
 }
+

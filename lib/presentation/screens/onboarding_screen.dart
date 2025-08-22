@@ -4,6 +4,7 @@ import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/typography_constants.dart';
 import '../widgets/enhanced_ux_widgets.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 
 /// Onboarding screen with tutorial system
@@ -24,34 +25,34 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
   final int _totalPages = 5;
 
   final List<OnboardingPage> _pages = [
-    const OnboardingPage(
+    OnboardingPage(
       title: 'Welcome to Task Tracker',
       description: 'Your intelligent task management companion that helps you stay organized and productive.',
-      icon: Icons.task_alt,
+      icon: PhosphorIcons.checkSquare(),
       color: Colors.blue,
     ),
-    const OnboardingPage(
+    OnboardingPage(
       title: 'Voice-Powered Tasks',
       description: 'Create tasks using your voice. Just speak naturally and let AI parse your intentions.',
-      icon: Icons.mic,
+      icon: PhosphorIcons.microphone(),
       color: Colors.green,
     ),
-    const OnboardingPage(
+    OnboardingPage(
       title: 'Smart Organization',
       description: 'Automatically categorize tasks, set priorities, and get intelligent suggestions.',
-      icon: Icons.auto_awesome,
+      icon: PhosphorIcons.sparkle(),
       color: Colors.purple,
     ),
-    const OnboardingPage(
+    OnboardingPage(
       title: 'Calendar Integration',
       description: 'Schedule tasks, view them in calendar format, and sync with your device calendar.',
-      icon: Icons.calendar_today,
+      icon: PhosphorIcons.calendar(),
       color: Colors.orange,
     ),
-    const OnboardingPage(
+    OnboardingPage(
       title: 'Offline & Sync',
       description: 'Work offline and sync across devices. Your data is always available when you need it.',
-      icon: Icons.cloud_sync,
+      icon: PhosphorIcons.cloudArrowUp(),
       color: Colors.teal,
     ),
   ];
@@ -209,10 +210,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                         backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                         foregroundColor: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.arrow_back, size: 18),
+                          Icon(PhosphorIcons.arrowLeft(), size: 18),
                           SizedBox(width: 8),
                           Text('Previous'),
                         ],
@@ -249,11 +250,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(_currentPage == _totalPages - 1 ? 'Get Started' : 'Next'),
-                        const SizedBox(width: 8),
+                        SizedBox(width: 8),
                         Icon(
                           _currentPage == _totalPages - 1 
-                              ? Icons.check 
-                              : Icons.arrow_forward,
+                              ? PhosphorIcons.check() 
+                              : PhosphorIcons.arrowRight(),
                           size: 18,
                         ),
                       ],
@@ -280,7 +281,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
             height: 120,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: page.color.withOpacity(0.1),
+              color: page.color.withValues(alpha: 0.1),
             ),
             child: Icon(
               page.icon,
@@ -331,7 +332,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
         child: Row(
           children: [
             Icon(
-              Icons.mic,
+              PhosphorIcons.microphone(),
               color: Theme.of(context).colorScheme.primary,
             ),
             const SizedBox(width: 12),
@@ -365,19 +366,19 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
     return Column(
       children: [
         _buildFeatureItem(
-          icon: Icons.label,
+          icon: PhosphorIcons.tag(),
           title: 'Auto-tagging',
           description: 'Automatically categorizes your tasks',
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12),
         _buildFeatureItem(
-          icon: Icons.priority_high,
+          icon: PhosphorIcons.arrowUp(),
           title: 'Smart priorities',
           description: 'Detects urgency from your language',
         ),
         const SizedBox(height: 12),
         _buildFeatureItem(
-          icon: Icons.schedule,
+          icon: PhosphorIcons.clock(),
           title: 'Date parsing',
           description: 'Understands "next Friday" or "in 2 hours"',
         ),
@@ -394,7 +395,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
             Row(
               children: [
                 Icon(
-                  Icons.calendar_view_week,
+                  PhosphorIcons.calendar(),
                   color: Theme.of(context).colorScheme.primary,
                 ),
                 const SizedBox(width: 12),
@@ -491,3 +492,6 @@ class OnboardingPage {
     required this.color,
   });
 }
+
+
+

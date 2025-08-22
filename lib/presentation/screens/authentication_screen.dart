@@ -7,6 +7,7 @@ import '../../services/security_service.dart';
 import '../../core/theme/typography_constants.dart';
 import '../widgets/glassmorphism_container.dart';
 import '../../core/design_system/design_tokens.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Main authentication screen that handles different auth states
 class AuthenticationScreen extends ConsumerStatefulWidget {
@@ -167,10 +168,10 @@ class _BiometricAuthWidgetState extends ConsumerState<BiometricAuthWidget>
               width: 80,
               height: 80,
               borderRadius: BorderRadius.circular(40),
-              glassTint: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+              glassTint: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
               child: Center(
                 child: Icon(
-                  Icons.security,
+                  PhosphorIcons.shield(),
                   size: 40,
                   color: Theme.of(context).colorScheme.primary,
                 ),
@@ -212,7 +213,7 @@ class _BiometricAuthWidgetState extends ConsumerState<BiometricAuthWidget>
                     width: 120,
                     height: 120,
                     borderRadius: BorderRadius.circular(60),
-                    glassTint: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                    glassTint: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                     borderColor: Theme.of(context).colorScheme.primary,
                     borderWidth: 2,
                     child: Center(
@@ -312,14 +313,14 @@ class _BiometricAuthWidgetState extends ConsumerState<BiometricAuthWidget>
   IconData _getBiometricIcon(BiometricType type) {
     switch (type) {
       case BiometricType.face:
-        return Icons.face;
+        return PhosphorIcons.user();
       case BiometricType.fingerprint:
-        return Icons.fingerprint;
+        return PhosphorIcons.fingerprint();
       case BiometricType.iris:
-        return Icons.visibility;
+        return PhosphorIcons.eye();
       case BiometricType.strong:
       case BiometricType.weak:
-        return Icons.security;
+        return PhosphorIcons.shield();
     }
   }
 }
@@ -350,10 +351,10 @@ class _PinAuthWidgetState extends ConsumerState<PinAuthWidget> {
               width: 80,
               height: 80,
               borderRadius: BorderRadius.circular(40),
-              glassTint: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+              glassTint: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
               child: Center(
                 child: Icon(
-                  Icons.lock,
+                  PhosphorIcons.lock(),
                   size: 40,
                   color: Theme.of(context).colorScheme.primary,
                 ),
@@ -396,7 +397,7 @@ class _PinAuthWidgetState extends ConsumerState<PinAuthWidget> {
                   margin: const EdgeInsets.symmetric(horizontal: 8),
                   borderRadius: BorderRadius.circular(10),
                   glassTint: isFilled
-                      ? Theme.of(context).colorScheme.primary.withOpacity(0.8)
+                      ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.8)
                       : null,
                   borderColor: Theme.of(context).colorScheme.outline,
                   child: isFilled
@@ -406,7 +407,7 @@ class _PinAuthWidgetState extends ConsumerState<PinAuthWidget> {
                             gradient: RadialGradient(
                               colors: [
                                 Theme.of(context).colorScheme.primary,
-                                Theme.of(context).colorScheme.primary.withOpacity(0.7),
+                                Theme.of(context).colorScheme.primary.withValues(alpha: 0.7),
                               ],
                             ),
                           ),
@@ -508,8 +509,8 @@ class _PinAuthWidgetState extends ConsumerState<PinAuthWidget> {
               shape: BoxShape.circle,
               gradient: LinearGradient(
                 colors: [
-                  Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.8),
-                  Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.6),
+                  Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.8),
+                  Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.6),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -547,8 +548,8 @@ class _PinAuthWidgetState extends ConsumerState<PinAuthWidget> {
               shape: BoxShape.circle,
               gradient: LinearGradient(
                 colors: [
-                  Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.8),
-                  Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.6),
+                  Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.8),
+                  Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.6),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -556,7 +557,7 @@ class _PinAuthWidgetState extends ConsumerState<PinAuthWidget> {
             ),
             child: Center(
               child: Icon(
-                Icons.backspace,
+                PhosphorIcons.backspace(),
                 size: 24,
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
@@ -669,11 +670,11 @@ class _LockoutWidgetState extends ConsumerState<LockoutWidget> {
               width: 120,
               height: 120,
               borderRadius: BorderRadius.circular(60),
-              glassTint: Theme.of(context).colorScheme.error.withOpacity(0.1),
-              borderColor: Theme.of(context).colorScheme.error.withOpacity(0.3),
+              glassTint: Theme.of(context).colorScheme.error.withValues(alpha: 0.1),
+              borderColor: Theme.of(context).colorScheme.error.withValues(alpha: 0.3),
               child: Center(
                 child: Icon(
-                  Icons.lock_clock,
+                  PhosphorIcons.lockKey(),
                   size: 60,
                   color: Theme.of(context).colorScheme.error,
                 ),
@@ -762,10 +763,10 @@ class SetupAuthWidget extends ConsumerWidget {
               width: 120,
               height: 120,
               borderRadius: BorderRadius.circular(60),
-              glassTint: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+              glassTint: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
               child: Center(
                 child: Icon(
-                  Icons.security,
+                  PhosphorIcons.shield(),
                   size: 60,
                   color: Theme.of(context).colorScheme.primary,
                 ),
@@ -835,3 +836,5 @@ class SetupAuthWidget extends ConsumerWidget {
     );
   }
 }
+
+

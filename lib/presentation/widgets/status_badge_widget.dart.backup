@@ -1,0 +1,453 @@
+import 'package:flutter/material.dart';
+import '../../domain/models/enums.dart';
+import '../../core/theme/typography_constants.dart';
+import '../../core/design_system/design_tokens.dart';
+import 'glassmorphism_container.dart';
+
+/// Enhanced status badge widget with icon and text
+class StatusBadgeWidget extends StatelessWidget {
+  final TaskStatus status;
+  final TaskPriority? priority;
+  final bool showText;
+  final bool compact;
+  final double? fontSize;
+
+  const StatusBadgeWidget({
+    super.key,
+    required this.status,
+    this.priority,
+    this.showText = true,
+    this.compact = false,
+    this.fontSize,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final statusConfig = _getStatusConfig(status);
+    
+    if (compact) {
+      return _buildCompactBadge(theme, statusConfig);
+    } else {
+      return _buildFullBadge(theme, statusConfig);
+    }
+  }
+
+  Widget _buildFullBadge(ThemeData theme, StatusConfig config) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: showText ? 10 : 8,
+        vertical: 6,
+      ),
+      decoration: BoxDecoration(
+        // Filled colored background
+        color: config.color,
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
+        // Glow effect with multiple shadow layers
+        boxShadow: [
+          // Outer glow
+          BoxShadow(
+            color: config.color.withValues(alpha: 0.4),
+            blurRadius: 8,
+            spreadRadius: 2,
+            offset: const Offset(0, 2),
+          ),
+          // Inner glow
+          BoxShadow(
+            color: config.color.withValues(alpha: 0.2),
+            blurRadius: 4,
+            spreadRadius: 1,
+            offset: const Offset(0, 1),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Status icon
+          Icon(
+            config.icon,
+            color: Colors.white,
+            size: 12,
+          ),
+          
+          if (showText) ...[
+            const SizedBox(width: 4),
+            Text(
+              config.label,
+              style: TextStyle(
+                fontSize: fontSize ?? TypographyConstants.textXS,
+                fontWeight: FontWeight.w600,
+                color: Colors.white, // White text on colored background
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCompactBadge(ThemeData theme, StatusConfig config) {
+    return Container(
+      width: 24,
+      height: 24,
+      decoration: BoxDecoration(
+        color: config.color,
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: config.color.withValues(alpha: 0.4),
+            blurRadius: 6,
+            spreadRadius: 2,
+          ),
+          BoxShadow(
+            color: config.color.withValues(alpha: 0.2),
+            blurRadius: 3,
+            spreadRadius: 1,
+          ),
+        ],
+      ),
+      child: Icon(
+        config.icon,
+        color: Colors.white,
+        size: 14,
+      ),
+    );
+  }
+
+  StatusConfig _getStatusConfig(TaskStatus status) {
+    switch (status) {
+      case TaskStatus.pending:
+        return const StatusConfig(
+          icon: Icons.schedule,
+          label: 'Pending',
+          color: Color(0xFFFF9800), // Orange
+        );
+      case TaskStatus.inProgress:
+        return const StatusConfig(
+          icon: Icons.play_circle_filled,
+          label: 'In Progress',
+          color: Color(0xFF2196F3), // Blue
+        );
+      case TaskStatus.completed:
+        return const StatusConfig(
+          icon: Icons.check_circle,
+          label: 'Completed',
+          color: Color(0xFF4CAF50), // Green
+        );
+      case TaskStatus.cancelled:
+        return const StatusConfig(
+          icon: Icons.cancel,
+          label: 'Cancelled',
+          color: Color(0xFFFF1744), // Red
+        );
+    }
+  }
+}
+
+/// Priority badge widget with icon and text
+class PriorityBadgeWidget extends StatelessWidget {
+  final TaskPriority priority;
+  final bool showText;
+  final bool compact;
+  final double? fontSize;
+
+  const PriorityBadgeWidget({
+    super.key,
+    required this.priority,
+    this.showText = true,
+    this.compact = false,
+    this.fontSize,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final priorityConfig = _getPriorityConfig(priority);
+    
+    if (compact) {
+      return _buildCompactBadge(theme, priorityConfig);
+    } else {
+      return _buildFullBadge(theme, priorityConfig);
+    }
+  }
+
+  Widget _buildFullBadge(ThemeData theme, PriorityConfig config) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: showText ? 10 : 8,
+        vertical: 6,
+      ),
+      decoration: BoxDecoration(
+        // Filled colored background
+        color: config.color,
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
+        // Glow effect with multiple shadow layers
+        boxShadow: [
+          // Outer glow
+          BoxShadow(
+            color: config.color.withValues(alpha: 0.4),
+            blurRadius: 8,
+            spreadRadius: 2,
+            offset: const Offset(0, 2),
+          ),
+          // Inner glow
+          BoxShadow(
+            color: config.color.withValues(alpha: 0.2),
+            blurRadius: 4,
+            spreadRadius: 1,
+            offset: const Offset(0, 1),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Priority icon
+          Icon(
+            config.icon,
+            color: Colors.white,
+            size: 12,
+          ),
+          
+          if (showText) ...[
+            const SizedBox(width: 4),
+            Text(
+              config.label,
+              style: TextStyle(
+                fontSize: fontSize ?? TypographyConstants.textXS,
+                fontWeight: FontWeight.w600,
+                color: Colors.white, // White text on colored background
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCompactBadge(ThemeData theme, PriorityConfig config) {
+    return Container(
+      width: 24,
+      height: 24,
+      decoration: BoxDecoration(
+        color: config.color,
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: config.color.withValues(alpha: 0.4),
+            blurRadius: 6,
+            spreadRadius: 2,
+          ),
+          BoxShadow(
+            color: config.color.withValues(alpha: 0.2),
+            blurRadius: 3,
+            spreadRadius: 1,
+          ),
+        ],
+      ),
+      child: Icon(
+        config.icon,
+        color: Colors.white,
+        size: 14,
+      ),
+    );
+  }
+
+  PriorityConfig _getPriorityConfig(TaskPriority priority) {
+    switch (priority) {
+      case TaskPriority.low:
+        return const PriorityConfig(
+          icon: Icons.low_priority,
+          label: 'Low',
+          color: Color(0xFF4CAF50), // Green
+        );
+      case TaskPriority.medium:
+        return const PriorityConfig(
+          icon: Icons.remove,
+          label: 'Medium',
+          color: Color(0xFF2196F3), // Blue
+        );
+      case TaskPriority.high:
+        return const PriorityConfig(
+          icon: Icons.priority_high,
+          label: 'High',
+          color: Color(0xFFFF9100), // Orange
+        );
+      case TaskPriority.urgent:
+        return const PriorityConfig(
+          icon: Icons.error,
+          label: 'Urgent',
+          color: Color(0xFFFF1744), // Red
+        );
+    }
+  }
+}
+
+/// Category/Tag badge widget
+class CategoryBadgeWidget extends StatelessWidget {
+  final String name;
+  final String? color;
+  final bool compact;
+  final double? fontSize;
+  final VoidCallback? onTap;
+  final VoidCallback? onRemove;
+
+  const CategoryBadgeWidget({
+    super.key,
+    required this.name,
+    this.color,
+    this.compact = false,
+    this.fontSize,
+    this.onTap,
+    this.onRemove,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final categoryColor = color != null 
+        ? Color(int.parse(color!.replaceFirst('#', '0xFF')))
+        : theme.colorScheme.primary;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: GlassmorphismContainer(
+        level: GlassLevel.content,
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
+        padding: EdgeInsets.symmetric(
+          horizontal: compact ? 6 : 8,
+          vertical: compact ? 2 : 4,
+        ),
+        glassTint: categoryColor.withValues(alpha: 0.15),
+        borderColor: categoryColor.withValues(alpha: 0.3),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Hash symbol for category
+            Text(
+              '#',
+              style: TextStyle(
+                fontSize: fontSize ?? TypographyConstants.textXS,
+                fontWeight: FontWeight.bold,
+                color: categoryColor,
+              ),
+            ),
+            Text(
+              name,
+              style: TextStyle(
+                fontSize: fontSize ?? TypographyConstants.textXS,
+                fontWeight: FontWeight.w500,
+                color: categoryColor,
+              ),
+            ),
+            
+            if (onRemove != null) ...[
+              const SizedBox(width: 4),
+              GestureDetector(
+                onTap: onRemove,
+                child: Icon(
+                  Icons.close,
+                  size: 12,
+                  color: categoryColor,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Combined status and category badges in a row (priority badge handled separately)
+class TaskBadgesWidget extends StatelessWidget {
+  final TaskStatus status;
+  final TaskPriority priority; // Keep for backward compatibility but don't display
+  final List<String> categories;
+  final bool compact;
+  final int maxCategories;
+  final CrossAxisAlignment alignment;
+
+  const TaskBadgesWidget({
+    super.key,
+    required this.status,
+    required this.priority, // Required for backward compatibility
+    this.categories = const [],
+    this.compact = false,
+    this.maxCategories = 2,
+    this.alignment = CrossAxisAlignment.start,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 6,
+      runSpacing: 4,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      children: [
+        // Status badge only (priority badge is handled separately to avoid duplication)
+        StatusBadgeWidget(
+          status: status,
+          compact: compact,
+          showText: !compact,
+        ),
+        
+        // Category badges (limited number)
+        ...categories.take(maxCategories).map((category) =>
+          CategoryBadgeWidget(
+            name: category,
+            compact: compact,
+          ),
+        ),
+        
+        // Show count if there are more categories
+        if (categories.length > maxCategories)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall),
+              border: Border.all(
+                color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
+              ),
+            ),
+            child: Text(
+              '+${categories.length - maxCategories}',
+              style: TextStyle(
+                fontSize: TypographyConstants.textXS,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+/// Configuration class for status badges
+class StatusConfig {
+  final IconData icon;
+  final String label;
+  final Color color;
+
+  const StatusConfig({
+    required this.icon,
+    required this.label,
+    required this.color,
+  });
+}
+
+/// Configuration class for priority badges
+class PriorityConfig {
+  final IconData icon;
+  final String label;
+  final Color color;
+
+  const PriorityConfig({
+    required this.icon,
+    required this.label,
+    required this.color,
+  });
+}

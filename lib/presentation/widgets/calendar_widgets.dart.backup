@@ -4,7 +4,7 @@ import 'package:table_calendar/table_calendar.dart';
 import '../../domain/entities/calendar_event.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
-import '../providers/calendar_provider.dart';
+import '../providers/calendar_provider.dart' as calendar;
 import '../providers/task_providers.dart';
 import '../../core/theme/typography_constants.dart';
 
@@ -13,10 +13,10 @@ class CalendarWidget extends ConsumerWidget {
   const CalendarWidget({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final calendarState = ref.watch(calendarProvider);
-    final calendarNotifier = ref.read(calendarProvider.notifier);
+    final calendarState = ref.watch(calendar.calendarProvider);
+    final calendarNotifier = ref.read(calendar.calendarProvider.notifier);
 
-    return Container(
+    return SizedBox(
       height: MediaQuery.of(context).size.height * 0.75, // Fixed height to prevent layout issues
       child: Column(
         children: [
@@ -41,15 +41,15 @@ class CalendarWidget extends ConsumerWidget {
 
   Widget _buildCalendarView(
     BuildContext context,
-    CalendarState state,
-    CalendarNotifier notifier,
+    calendar.CalendarState state,
+    calendar.CalendarNotifier notifier,
   ) {
     switch (state.viewMode) {
-      case CalendarViewMode.month:
+      case calendar.CalendarViewMode.month:
         return _MonthCalendarView(state: state, notifier: notifier);
-      case CalendarViewMode.week:
+      case calendar.CalendarViewMode.week:
         return _WeekCalendarView(state: state, notifier: notifier);
-      case CalendarViewMode.day:
+      case calendar.CalendarViewMode.day:
         return _DayCalendarView(state: state, notifier: notifier);
     }
   }
@@ -59,8 +59,8 @@ class CalendarWidget extends ConsumerWidget {
 class _CalendarViewModeSelector extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final calendarState = ref.watch(calendarProvider);
-    final calendarNotifier = ref.read(calendarProvider.notifier);
+    final calendarState = ref.watch(calendar.calendarProvider);
+    final calendarNotifier = ref.read(calendar.calendarProvider.notifier);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -72,7 +72,7 @@ class _CalendarViewModeSelector extends ConsumerWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             minimumSize: const Size(60, 32),
           ),
-          child: const Text('Today', style: TextStyle(fontSize: 12)),
+          child: Text('Today', style: Theme.of(context).textTheme.bodySmall),
         ),
         
         const SizedBox(width: 8),
@@ -81,23 +81,23 @@ class _CalendarViewModeSelector extends ConsumerWidget {
         Expanded(
           child: SizedBox(
             height: 32, // Reduced height
-            child: SegmentedButton<CalendarViewMode>(
+            child: SegmentedButton<calendar.CalendarViewMode>(
               segments: [
                 ButtonSegment(
-                  value: CalendarViewMode.month,
-                  label: Text('Month', style: TextStyle(fontSize: 10)), // Smaller text
+                  value: calendar.CalendarViewMode.month,
+                  label: Text('Month', style: Theme.of(context).textTheme.labelSmall), // Tab label
                 ),
                 ButtonSegment(
-                  value: CalendarViewMode.week,
-                  label: Text('Week', style: TextStyle(fontSize: 10)), // Smaller text
+                  value: calendar.CalendarViewMode.week,
+                  label: Text('Week', style: Theme.of(context).textTheme.labelSmall), // Tab label
                 ),
                 ButtonSegment(
-                  value: CalendarViewMode.day,
-                  label: Text('Day', style: TextStyle(fontSize: 10)), // Smaller text
+                  value: calendar.CalendarViewMode.day,
+                  label: Text('Day', style: Theme.of(context).textTheme.labelSmall), // Tab label
                 ),
               ],
               selected: {calendarState.viewMode},
-              onSelectionChanged: (Set<CalendarViewMode> selection) {
+              onSelectionChanged: (Set<calendar.CalendarViewMode> selection) {
                 calendarNotifier.changeViewMode(selection.first);
               },
               style: ButtonStyle(
@@ -115,8 +115,8 @@ class _CalendarViewModeSelector extends ConsumerWidget {
 
 /// Month calendar view
 class _MonthCalendarView extends ConsumerWidget {
-  final CalendarState state;
-  final CalendarNotifier notifier;
+  final calendar.CalendarState state;
+  final calendar.CalendarNotifier notifier;
 
   const _MonthCalendarView({
     required this.state,
@@ -146,7 +146,7 @@ class _MonthCalendarView extends ConsumerWidget {
           shape: BoxShape.circle,
         ),
         todayDecoration: BoxDecoration(
-          color: Theme.of(context).primaryColor.withOpacity(0.5),
+          color: Theme.of(context).primaryColor.withValues(alpha: 0.5),
           shape: BoxShape.circle,
         ),
       ),
@@ -171,7 +171,7 @@ class _MonthCalendarView extends ConsumerWidget {
     );
   }
 
-  Widget? _buildTaskDots(BuildContext context, WidgetRef ref, DateTime date, List<CalendarEvent> events, CalendarNotifier notifier) {
+  Widget? _buildTaskDots(BuildContext context, WidgetRef ref, DateTime date, List<CalendarEvent> events, calendar.CalendarNotifier notifier) {
     // Get tasks for this date
     final allTasksAsync = ref.watch(tasksProvider);
     final tasksForDate = allTasksAsync.maybeWhen(
@@ -229,13 +229,13 @@ class _MonthCalendarView extends ConsumerWidget {
                 boxShadow: [
                   // Outer glow - reduced for smaller size
                   BoxShadow(
-                    color: dotColor.withOpacity(isUrgent ? 0.7 : 0.5),
+                    color: dotColor.withValues(alpha: isUrgent ? 0.7 : 0.5),
                     blurRadius: isUrgent ? 6 : 4,
                     spreadRadius: isUrgent ? 1 : 0.5,
                   ),
                   // Inner highlight for depth
                   BoxShadow(
-                    color: dotColor.withOpacity(0.3),
+                    color: dotColor.withValues(alpha: 0.3),
                     blurRadius: 2,
                     spreadRadius: 0,
                     offset: const Offset(0, 1),
@@ -265,8 +265,8 @@ class _MonthCalendarView extends ConsumerWidget {
 
 /// Week calendar view
 class _WeekCalendarView extends StatelessWidget {
-  final CalendarState state;
-  final CalendarNotifier notifier;
+  final calendar.CalendarState state;
+  final calendar.CalendarNotifier notifier;
 
   const _WeekCalendarView({
     required this.state,
@@ -304,7 +304,7 @@ class _WeekCalendarView extends StatelessWidget {
                 shape: BoxShape.circle,
               ),
               todayDecoration: BoxDecoration(
-                color: Theme.of(context).primaryColor.withOpacity(0.5),
+                color: Theme.of(context).primaryColor.withValues(alpha: 0.5),
                 shape: BoxShape.circle,
               ),
             ),
@@ -330,8 +330,8 @@ class _WeekCalendarView extends StatelessWidget {
 
 /// Day calendar view
 class _DayCalendarView extends StatelessWidget {
-  final CalendarState state;
-  final CalendarNotifier notifier;
+  final calendar.CalendarState state;
+  final calendar.CalendarNotifier notifier;
 
   const _DayCalendarView({
     required this.state,
@@ -395,7 +395,7 @@ class _DayCalendarView extends StatelessWidget {
 
 /// Week events view - Enhanced to show both events and tasks
 class _WeekEventsView extends ConsumerWidget {
-  final CalendarState state;
+  final calendar.CalendarState state;
 
   const _WeekEventsView({required this.state});
   
@@ -603,7 +603,7 @@ class EventCard extends ConsumerWidget {
                   if (event.isAllDay)
                     Chip(
                       label: const Text('All Day'),
-                      backgroundColor: Theme.of(context).primaryColor.withOpacity(0.1),
+                      backgroundColor: Theme.of(context).primaryColor.withValues(alpha: 0.1),
                     ),
                 ],
               ),
@@ -785,7 +785,7 @@ class _TaskSchedulingWidgetState extends ConsumerState<TaskSchedulingWidget> {
   bool isAllDay = false;
   @override
   Widget build(BuildContext context) {
-    final calendarNotifier = ref.read(calendarProvider.notifier);
+    final calendarNotifier = ref.read(calendar.calendarProvider.notifier);
 
     return AlertDialog(
       title: Text('Schedule: ${widget.task.title}'),
@@ -874,7 +874,7 @@ class _TaskSchedulingWidgetState extends ConsumerState<TaskSchedulingWidget> {
     );
   }
 
-  Future<void> _scheduleTask(CalendarNotifier calendarNotifier) async {
+  Future<void> _scheduleTask(calendar.CalendarNotifier calendarNotifier) async {
     final DateTime startDateTime;
     final DateTime endDateTime;
 
@@ -959,7 +959,7 @@ class TaskEventCard extends ConsumerWidget {
             // Enhanced glow for task cards
             boxShadow: [
               BoxShadow(
-                color: _getPriorityColor(task.priority).withOpacity(0.2),
+                color: _getPriorityColor(task.priority).withValues(alpha: 0.2),
                 blurRadius: 4,
                 spreadRadius: 1,
                 offset: const Offset(0, 2),
@@ -979,20 +979,20 @@ class TaskEventCard extends ConsumerWidget {
                       color: _getStatusColor(task.status),
                       shape: BoxShape.circle,
                       border: Border.all(
-                        color: _getStatusColor(task.status).withOpacity(0.8),
+                        color: _getStatusColor(task.status).withValues(alpha: 0.8),
                         width: 2,
                       ),
                       // Multi-layer glow effects for maximum visibility
                       boxShadow: [
                         // Outer glow
                         BoxShadow(
-                          color: _getStatusColor(task.status).withOpacity(0.6),
+                          color: _getStatusColor(task.status).withValues(alpha: 0.6),
                           blurRadius: task.status == TaskStatus.inProgress ? 8 : 6,
                           spreadRadius: task.status == TaskStatus.inProgress ? 2 : 1,
                         ),
                         // Inner glow
                         BoxShadow(
-                          color: _getStatusColor(task.status).withOpacity(0.4),
+                          color: _getStatusColor(task.status).withValues(alpha: 0.4),
                           blurRadius: 3,
                           spreadRadius: 0,
                         ),
@@ -1015,7 +1015,7 @@ class TaskEventCard extends ConsumerWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
-                      color: _getPriorityColor(task.priority).withOpacity(0.15),
+                      color: _getPriorityColor(task.priority).withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
                         color: _getPriorityColor(task.priority),
@@ -1070,7 +1070,7 @@ class TaskEventCard extends ConsumerWidget {
                   children: task.tags.take(3).map((tag) => Container(
                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceVariant,
+                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -1183,7 +1183,7 @@ class TaskDetailsDialog extends ConsumerWidget {
                 spacing: 8,
                 children: task.tags.map((tag) => Chip(
                   label: Text('#$tag'),
-                  backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+                  backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                 )).toList(),
               ),
             ],

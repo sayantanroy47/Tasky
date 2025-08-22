@@ -29,7 +29,8 @@ class VoiceRecordingWidget extends StatefulWidget {
     this.transcriptionText,
     this.soundLevel,
     this.errorMessage,
-  });  @override
+  });
+  @override
   State<VoiceRecordingWidget> createState() => _VoiceRecordingWidgetState();
 }
 
@@ -38,7 +39,8 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget>
   late AnimationController _pulseController;
   late AnimationController _waveController;
   late Animation<double> _pulseAnimation;
-  late Animation<double> _waveAnimation;  @override
+  late Animation<double> _waveAnimation;
+  @override
   void initState() {
     super.initState();
     _setupAnimations();
@@ -70,7 +72,8 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget>
       parent: _waveController,
       curve: Curves.linear,
     ));
-  }  @override
+  }
+  @override
   void didUpdateWidget(VoiceRecordingWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
     
@@ -91,12 +94,14 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget>
     _waveController.stop();
     _pulseController.reset();
     _waveController.reset();
-  }  @override
+  }
+  @override
   void dispose() {
     _pulseController.dispose();
     _waveController.dispose();
     super.dispose();
-  }  @override
+  }
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
@@ -108,7 +113,7 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget>
         borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
         boxShadow: [
           BoxShadow(
-            color: colorScheme.shadow.withOpacity( 0.1),
+            color: colorScheme.shadow.withValues(alpha:  0.1),
             blurRadius: 8.0,
             offset: const Offset(0, 2),
           ),
@@ -197,10 +202,10 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget>
       width: double.infinity,
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
-        color: theme.colorScheme.primaryContainer.withOpacity( 0.1),
+        color: theme.colorScheme.primaryContainer.withValues(alpha:  0.1),
         borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
         border: Border.all(
-          color: theme.colorScheme.outline.withOpacity( 0.1),
+          color: theme.colorScheme.outline.withValues(alpha:  0.1),
         ),
       ),
       child: Column(
@@ -209,7 +214,7 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget>
           Text(
             'Transcription:',
             style: theme.textTheme.labelMedium?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity( 0.1),
+              color: theme.colorScheme.onSurface.withValues(alpha:  0.1),
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -230,16 +235,16 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget>
       width: double.infinity,
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
-        color: theme.colorScheme.errorContainer.withOpacity( 0.1),
+        color: theme.colorScheme.errorContainer.withValues(alpha:  0.1),
         borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
         border: Border.all(
-          color: theme.colorScheme.error.withOpacity( 0.1),
+          color: theme.colorScheme.error.withValues(alpha:  0.1),
         ),
       ),
       child: Row(
         children: [
           Icon(
-            Icons.error_outline,
+            PhosphorIcons.warningCircle(),
             color: theme.colorScheme.error,
             size: 20.0,
           ),
@@ -272,7 +277,7 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget>
               HapticFeedback.lightImpact();
               widget.onCancelRecording?.call();
             },
-            icon: const Icon(PhosphorIcons.x()),
+            icon: Icon(PhosphorIcons.x()),
             iconSize: 32.0,
             style: IconButton.styleFrom(
               backgroundColor: colorScheme.errorContainer,
@@ -287,7 +292,7 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget>
               HapticFeedback.mediumImpact();
               widget.onStopRecording?.call();
             },
-            icon: const Icon(PhosphorIcons.stop()),
+            icon: Icon(PhosphorIcons.stop()),
             iconSize: 32.0,
             style: IconButton.styleFrom(
               backgroundColor: colorScheme.primary,
@@ -305,7 +310,7 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget>
         HapticFeedback.mediumImpact();
         widget.onStartRecording?.call();
       },
-      icon: const Icon(PhosphorIcons.microphone()),
+      icon: Icon(PhosphorIcons.microphone()),
       iconSize: 32.0,
       style: IconButton.styleFrom(
         backgroundColor: colorScheme.primary,
@@ -336,7 +341,8 @@ class VoiceVisualizerPainter extends CustomPainter {
     required this.primaryColor,
     required this.surfaceColor,
     required this.onSurfaceColor,
-  });  @override
+  });
+  @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
     final baseRadius = size.width / 4;
@@ -352,14 +358,14 @@ class VoiceVisualizerPainter extends CustomPainter {
 
   void _drawIdleIndicator(Canvas canvas, Offset center, double baseRadius) {
     final paint = Paint()
-      ..color = onSurfaceColor.withOpacity( 0.1)
+      ..color = onSurfaceColor.withValues(alpha:  0.1)
       ..style = PaintingStyle.fill;
 
     canvas.drawCircle(center, baseRadius, paint);
 
     // Microphone icon representation
     final micPaint = Paint()
-      ..color = onSurfaceColor.withOpacity( 0.1)
+      ..color = onSurfaceColor.withValues(alpha:  0.1)
       ..style = PaintingStyle.fill;
 
     canvas.drawCircle(center, baseRadius * 0.4, micPaint);
@@ -368,7 +374,7 @@ class VoiceVisualizerPainter extends CustomPainter {
   void _drawRecordingIndicator(Canvas canvas, Offset center, double baseRadius) {
     // Pulsing outer circle
     final outerPaint = Paint()
-      ..color = primaryColor.withOpacity( 0.1)
+      ..color = primaryColor.withValues(alpha:  0.1)
       ..style = PaintingStyle.fill;
 
     canvas.drawCircle(center, baseRadius * pulseValue, outerPaint);
@@ -376,7 +382,7 @@ class VoiceVisualizerPainter extends CustomPainter {
     // Sound level visualization
     final soundRadius = baseRadius * (0.6 + soundLevel * 0.4);
     final soundPaint = Paint()
-      ..color = primaryColor.withOpacity( 0.1)
+      ..color = primaryColor.withValues(alpha:  0.1)
       ..style = PaintingStyle.fill;
 
     canvas.drawCircle(center, soundRadius, soundPaint);
@@ -394,7 +400,7 @@ class VoiceVisualizerPainter extends CustomPainter {
 
   void _drawProcessingIndicator(Canvas canvas, Offset center, double baseRadius) {
     final paint = Paint()
-      ..color = primaryColor.withOpacity( 0.1)
+      ..color = primaryColor.withValues(alpha:  0.1)
       ..style = PaintingStyle.fill;
 
     canvas.drawCircle(center, baseRadius, paint);
@@ -417,7 +423,7 @@ class VoiceVisualizerPainter extends CustomPainter {
 
   void _drawWaveAnimation(Canvas canvas, Offset center, double baseRadius) {
     final wavePaint = Paint()
-      ..color = primaryColor.withOpacity( 0.1)
+      ..color = primaryColor.withValues(alpha:  0.1)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.0;
 
@@ -426,7 +432,8 @@ class VoiceVisualizerPainter extends CustomPainter {
           (1.0 + math.sin(waveValue + i * math.pi / 3) * 0.1);
       canvas.drawCircle(center, waveRadius, wavePaint);
     }
-  }  @override
+  }
+  @override
   bool shouldRepaint(VoiceVisualizerPainter oldDelegate) {
     return oldDelegate.isRecording != isRecording ||
         oldDelegate.isProcessing != isProcessing ||
@@ -435,3 +442,5 @@ class VoiceVisualizerPainter extends CustomPainter {
         oldDelegate.waveValue != waveValue;
   }
 }
+
+

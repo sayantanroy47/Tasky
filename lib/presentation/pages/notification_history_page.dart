@@ -6,6 +6,7 @@ import '../widgets/theme_background_widget.dart';
 import '../providers/notification_providers.dart';
 import '../../services/notification/notification_models.dart';
 import '../../core/theme/typography_constants.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Page for viewing notification history and statistics
 class NotificationHistoryPage extends ConsumerWidget {
@@ -22,18 +23,18 @@ class NotificationHistoryPage extends ConsumerWidget {
           title: 'Notification History',
           actions: [
             IconButton(
-              icon: const Icon(Icons.refresh),
+              icon: Icon(PhosphorIcons.arrowClockwise()),
               onPressed: () => ref.refresh(scheduledNotificationsProvider),
             ),
           ],
         ),
         body: scheduledNotificationsAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => Center(child: CircularProgressIndicator()),
         error: (error, stack) => Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.error_outline, size: 64, color: Colors.red),
+              Icon(PhosphorIcons.warningCircle(), size: 64, color: Colors.red),
               const SizedBox(height: 16),
               Text('Error loading notifications: $error'),
               const SizedBox(height: 16),
@@ -99,8 +100,7 @@ class NotificationHistoryPage extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Notification Statistics',
+            Text('Notification Statistics',
               style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
@@ -110,7 +110,7 @@ class NotificationHistoryPage extends ConsumerWidget {
                   child: _buildStatItem(
                     'Total',
                     notifications.length.toString(),
-                    Icons.notifications,
+                    PhosphorIcons.bell(),
                     Colors.blue,
                   ),
                 ),
@@ -118,7 +118,7 @@ class NotificationHistoryPage extends ConsumerWidget {
                   child: _buildStatItem(
                     'Today',
                     todayNotifications.toString(),
-                    Icons.today,
+                    PhosphorIcons.calendar(),
                     Colors.green,
                   ),
                 ),
@@ -131,7 +131,7 @@ class NotificationHistoryPage extends ConsumerWidget {
                   child: _buildStatItem(
                     'Pending',
                     pendingNotifications.toString(),
-                    Icons.schedule,
+                    PhosphorIcons.clock(),
                     Colors.orange,
                   ),
                 ),
@@ -139,7 +139,7 @@ class NotificationHistoryPage extends ConsumerWidget {
                   child: _buildStatItem(
                     'Sent',
                     sentNotifications.toString(),
-                    Icons.check_circle,
+                    PhosphorIcons.checkCircle(),
                     Colors.green,
                   ),
                 ),
@@ -204,7 +204,7 @@ class NotificationHistoryPage extends ConsumerWidget {
           child: Column(
             children: [
               Icon(
-                Icons.notifications_off,
+                PhosphorIcons.bellSlash(),
                 size: 64,
                 color: Colors.grey[400],
               ),
@@ -262,10 +262,10 @@ class NotificationHistoryPage extends ConsumerWidget {
     return ListTile(
       leading: CircleAvatar(
         backgroundColor: notification.sent 
-            ? Colors.green.withOpacity(0.2)
+            ? Colors.green.withValues(alpha: 0.2)
             : isPast 
-                ? Colors.red.withOpacity(0.2)
-                : Colors.blue.withOpacity(0.2),
+                ? Colors.red.withValues(alpha: 0.2)
+                : Colors.blue.withValues(alpha: 0.2),
         child: Icon(
           _getNotificationTypeIcon(notification.type),
           color: notification.sent 
@@ -294,11 +294,11 @@ class NotificationHistoryPage extends ConsumerWidget {
               color: notification.sent ? Colors.grey[500] : Colors.grey[700],
             ),
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: 4),
           Row(
             children: [
               Icon(
-                Icons.access_time,
+                PhosphorIcons.clock(),
                 size: 14,
                 color: Colors.grey[500],
               ),
@@ -313,7 +313,7 @@ class NotificationHistoryPage extends ConsumerWidget {
               if (notification.sent) ...[
                 const SizedBox(width: 8),
                 Icon(
-                  Icons.check_circle,
+                  PhosphorIcons.checkCircle(),
                   size: 14,
                   color: Colors.green[600],
                 ),
@@ -328,7 +328,7 @@ class NotificationHistoryPage extends ConsumerWidget {
               ] else if (isPast) ...[
                 const SizedBox(width: 8),
                 Icon(
-                  Icons.error,
+                  PhosphorIcons.warningCircle(),
                   size: 14,
                   color: Colors.red[600],
                 ),
@@ -360,21 +360,21 @@ class NotificationHistoryPage extends ConsumerWidget {
                 }
               },
               itemBuilder: (context) => [
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'cancel',
                   child: Row(
                     children: [
-                      Icon(Icons.cancel, size: 18),
+                      Icon(PhosphorIcons.xCircle(), size: 18),
                       SizedBox(width: 8),
                       Text('Cancel'),
                     ],
                   ),
                 ),
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'reschedule',
                   child: Row(
                     children: [
-                      Icon(Icons.schedule, size: 18),
+                      Icon(PhosphorIcons.clock(), size: 18),
                       SizedBox(width: 8),
                       Text('Reschedule'),
                     ],
@@ -388,25 +388,25 @@ class NotificationHistoryPage extends ConsumerWidget {
   IconData _getNotificationTypeIcon(NotificationTypeModel type) {
     switch (type) {
       case NotificationTypeModel.taskReminder:
-        return Icons.alarm;
+        return PhosphorIcons.alarm();
       case NotificationTypeModel.dailySummary:
-        return Icons.summarize;
+        return PhosphorIcons.listBullets();
       case NotificationTypeModel.overdueTask:
-        return Icons.warning;
+        return PhosphorIcons.warning();
       case NotificationTypeModel.taskCompleted:
-        return Icons.check_circle;
+        return PhosphorIcons.checkCircle();
       case NotificationTypeModel.locationReminder:
-        return Icons.location_on;
+        return PhosphorIcons.mapPin();
       case NotificationTypeModel.locationBased:
-        return Icons.location_on;
+        return PhosphorIcons.mapPin();
       case NotificationTypeModel.emergency:
-        return Icons.emergency;
+        return PhosphorIcons.warning();
       case NotificationTypeModel.smartSuggestion:
-        return Icons.lightbulb;
+        return PhosphorIcons.lightbulb();
       case NotificationTypeModel.collaboration:
-        return Icons.group;
+        return PhosphorIcons.users();
       case NotificationTypeModel.automationTrigger:
-        return Icons.auto_awesome;
+        return PhosphorIcons.sparkle();
     }
   }
 
@@ -424,3 +424,5 @@ class NotificationHistoryPage extends ConsumerWidget {
     }
   }
 }
+
+

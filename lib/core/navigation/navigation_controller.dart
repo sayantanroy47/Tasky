@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../accessibility/accessibility_constants.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Centralized navigation controller for consistent navigation patterns
 class NavigationController extends ChangeNotifier {
@@ -263,35 +264,35 @@ final canNavigateBackProvider = Provider<bool>((ref) {
 /// Navigation configuration for the app
 class AppNavigationConfig {
   static List<NavigationItem> get items => [
-    const NavigationItem(
+    NavigationItem(
       route: '/home',
       label: 'Home',
-      icon: Icons.home_outlined,
-      activeIcon: Icons.home,
+      icon: PhosphorIcons.house(),
+      activeIcon: PhosphorIcons.house(),
       semanticLabel: 'Home screen',
       semanticHint: 'View your tasks and quick overview',
     ),
-    const NavigationItem(
+    NavigationItem(
       route: '/calendar',
       label: 'Calendar',
-      icon: Icons.calendar_today_outlined,
-      activeIcon: Icons.calendar_today,
+      icon: PhosphorIcons.calendar(),
+      activeIcon: PhosphorIcons.calendar(),
       semanticLabel: 'Calendar screen',
       semanticHint: 'View tasks in calendar format',
     ),
-    const NavigationItem(
+    NavigationItem(
       route: '/analytics',
       label: 'Analytics',
-      icon: Icons.analytics_outlined,
-      activeIcon: Icons.analytics,
+      icon: PhosphorIcons.chartBar(),
+      activeIcon: PhosphorIcons.chartBar(),
       semanticLabel: 'Analytics screen',
       semanticHint: 'View productivity insights and statistics',
     ),
-    const NavigationItem(
+    NavigationItem(
       route: '/settings',
       label: 'Settings',
-      icon: Icons.settings_outlined,
-      activeIcon: Icons.settings,
+      icon: PhosphorIcons.gear(),
+      activeIcon: PhosphorIcons.gear(),
       semanticLabel: 'Settings screen',
       semanticHint: 'Configure app preferences and account',
     ),
@@ -302,3 +303,5 @@ class AppNavigationConfig {
     controller.initialize(items);
   }
 }
+
+

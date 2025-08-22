@@ -5,6 +5,7 @@ import 'glassmorphism_container.dart';
 import '../../core/design_system/design_tokens.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../core/theme/material3/motion_system.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Advanced gesture controller with beautiful glassmorphism feedback
 class AdvancedGestureController extends StatefulWidget {
@@ -376,7 +377,7 @@ class _AdvancedGestureControllerState extends State<AdvancedGestureController>
                       painter: _GlassRipplePainter(
                         center: _tapPosition,
                         progress: _rippleAnimation.value,
-                        color: theme.colorScheme.primary.withOpacity(0.3),
+                        color: theme.colorScheme.primary.withValues(alpha: 0.3),
                       ),
                     ),
                   ),
@@ -389,7 +390,7 @@ class _AdvancedGestureControllerState extends State<AdvancedGestureController>
                         borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
                         boxShadow: [
                           BoxShadow(
-                            color: theme.colorScheme.primary.withOpacity(
+                            color: theme.colorScheme.primary.withValues(alpha: 
                               0.4 * _glowAnimation.value,
                             ),
                             blurRadius: 20 * _glowAnimation.value,
@@ -424,7 +425,7 @@ class _AdvancedGestureControllerState extends State<AdvancedGestureController>
     return GlassmorphismContainer(
       level: GlassLevel.interactive,
       borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
-      glassTint: theme.colorScheme.primary.withOpacity(0.1 * glassIntensity),
+      glassTint: theme.colorScheme.primary.withValues(alpha: 0.1 * glassIntensity),
       child: widget.child,
     );
   }
@@ -435,19 +436,19 @@ class _AdvancedGestureControllerState extends State<AdvancedGestureController>
     
     switch (_swipeDirection!) {
       case SwipeDirection.left:
-        icon = Icons.arrow_back;
+        icon = PhosphorIcons.arrowLeft();
         color = Colors.red;
         break;
       case SwipeDirection.right:
-        icon = Icons.arrow_forward;
+        icon = PhosphorIcons.arrowRight();
         color = Colors.green;
         break;
       case SwipeDirection.up:
-        icon = Icons.keyboard_arrow_up;
+        icon = PhosphorIcons.caretUp();
         color = Colors.blue;
         break;
       case SwipeDirection.down:
-        icon = Icons.keyboard_arrow_down;
+        icon = PhosphorIcons.caretDown();
         color = Colors.orange;
         break;
     }
@@ -458,7 +459,7 @@ class _AdvancedGestureControllerState extends State<AdvancedGestureController>
         width: 60,
         height: 60,
         borderRadius: BorderRadius.circular(30),
-        glassTint: color.withOpacity(0.3),
+        glassTint: color.withValues(alpha: 0.3),
         child: Icon(
           icon,
           color: color,
@@ -477,7 +478,7 @@ class _AdvancedGestureControllerState extends State<AdvancedGestureController>
         height: 30,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: theme.colorScheme.primary.withOpacity(0.3),
+          color: theme.colorScheme.primary.withValues(alpha: 0.3),
           border: Border.all(
             color: theme.colorScheme.primary,
             width: 2,
@@ -506,7 +507,7 @@ class _GlassRipplePainter extends CustomPainter {
     final radius = maxRadius * progress;
     
     final paint = Paint()
-      ..color = color.withOpacity((1.0 - progress) * 0.5)
+      ..color = color.withValues(alpha: (1.0 - progress) * 0.5)
       ..style = PaintingStyle.fill;
 
     // Draw expanding circle with glassmorphism effect
@@ -514,7 +515,7 @@ class _GlassRipplePainter extends CustomPainter {
     
     // Draw ring effect
     final ringPaint = Paint()
-      ..color = color.withOpacity((1.0 - progress) * 0.8)
+      ..color = color.withValues(alpha: (1.0 - progress) * 0.8)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3.0;
     
@@ -543,3 +544,4 @@ enum SwipeDirection {
   up,
   down,
 }
+

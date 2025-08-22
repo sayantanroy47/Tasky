@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/standardized_app_bar.dart';
 import '../widgets/theme_background_widget.dart';
 import '../../core/routing/app_router.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// 404 Not Found page for invalid routes
 class NotFoundPage extends ConsumerWidget {
@@ -13,7 +14,7 @@ class NotFoundPage extends ConsumerWidget {
       child: Scaffold(
         backgroundColor: Colors.transparent,
         extendBodyBehindAppBar: true,
-        appBar: const StandardizedAppBar(title: 'Page Not Found'),
+        appBar: StandardizedAppBar(title: 'Page Not Found'),
         body: Center(
           child: Padding(
             padding: const EdgeInsets.only(
@@ -26,7 +27,7 @@ class NotFoundPage extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                Icons.error_outline,
+                PhosphorIcons.warningCircle(),
                 size: 120,
                 color: Theme.of(context).colorScheme.error,
               ),
@@ -60,7 +61,7 @@ class NotFoundPage extends ConsumerWidget {
                     AppRouter.home,
                   );
                 },
-                icon: const Icon(Icons.home),
+                icon: Icon(PhosphorIcons.house()),
                 label: const Text('Go to Home'),
               ),
               const SizedBox(height: 16),
@@ -75,7 +76,7 @@ class NotFoundPage extends ConsumerWidget {
                     );
                   }
                 },
-                icon: const Icon(Icons.arrow_back),
+                icon: Icon(PhosphorIcons.arrowLeft()),
                 label: const Text('Go Back'),
               ),
             ],
@@ -86,3 +87,5 @@ class NotFoundPage extends ConsumerWidget {
     );
   }
 }
+
+

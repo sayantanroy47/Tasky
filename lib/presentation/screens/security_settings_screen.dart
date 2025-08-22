@@ -7,16 +7,17 @@ import '../widgets/glassmorphism_container.dart';
 import '../../core/design_system/design_tokens.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../services/security_service.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Screen for managing security and privacy settings
 class SecuritySettingsScreen extends ConsumerWidget {
-  const SecuritySettingsScreen({super.key});  @override
+  const SecuritySettingsScreen({super.key});
+  @override
   Widget build(BuildContext context, WidgetRef ref) {
     final securitySettings = ref.watch(securitySettingsProvider);
     
     return Scaffold(
-      appBar: const StandardizedAppBar(
-        title: 'Security & Privacy',
+      appBar: StandardizedAppBar(title: 'Security & Privacy',
       ),
       body: securitySettings.when(
         data: (settings) => _buildSecuritySettings(context, ref, settings),
@@ -26,7 +27,7 @@ class SecuritySettingsScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                Icons.error_outline,
+                PhosphorIcons.warningCircle(),
                 size: 64,
                 color: Theme.of(context).colorScheme.error,
               ),
@@ -48,7 +49,7 @@ class SecuritySettingsScreen extends ConsumerWidget {
                 level: GlassLevel.interactive,
                 borderRadius: BorderRadius.circular(8),
                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                glassTint: Theme.of(context).colorScheme.primary.withOpacity(0.7),
+                glassTint: Theme.of(context).colorScheme.primary.withValues(alpha: 0.7),
                 child: InkWell(
                   onTap: () => ref.read(securitySettingsProvider.notifier).refresh(),
                   borderRadius: BorderRadius.circular(8),
@@ -87,7 +88,7 @@ class SecuritySettingsScreen extends ConsumerWidget {
               child: Column(
                 children: [
                   SwitchListTile(
-                    secondary: const Icon(Icons.lock),
+                    secondary: Icon(PhosphorIcons.lock()),
                     title: const Text('App Lock'),
                     subtitle: Text(settings.appLockEnabled 
                         ? 'App is protected with PIN/biometrics'
@@ -111,14 +112,14 @@ class SecuritySettingsScreen extends ConsumerWidget {
                         onChanged: (value) => _toggleBiometric(context, ref, value),
                       ),
                     
-                    if (settings.biometricAvailable) const Divider(),
+                    if (settings.biometricAvailable) Divider(),
                     
                     // Change PIN
                     ListTile(
-                      leading: const Icon(Icons.pin),
+                      leading: Icon(PhosphorIcons.pushPin()),
                       title: const Text('Change PIN'),
                       subtitle: const Text('Update your security PIN'),
-                      trailing: const Icon(Icons.arrow_forward_ios),
+                      trailing: Icon(PhosphorIcons.caretRight()),
                       onTap: () => _changePIN(context),
                     ),
                     
@@ -126,21 +127,21 @@ class SecuritySettingsScreen extends ConsumerWidget {
                     
                     // Lock Timeout
                     ListTile(
-                      leading: const Icon(Icons.timer),
+                      leading: Icon(PhosphorIcons.timer()),
                       title: const Text('Auto-lock Timeout'),
                       subtitle: Text('Lock app after ${_formatDuration(settings.lockTimeout)} of inactivity'),
-                      trailing: const Icon(Icons.arrow_forward_ios),
+                      trailing: Icon(PhosphorIcons.caretRight()),
                       onTap: () => _showLockTimeoutDialog(context, ref, settings),
                     ),
                     
-                    const Divider(),
+                    Divider(),
                     
                     // Max Attempts
                     ListTile(
-                      leading: const Icon(Icons.security),
+                      leading: Icon(PhosphorIcons.shield()),
                       title: const Text('Maximum Attempts'),
                       subtitle: Text('Lock app after ${settings.maxAttempts} failed attempts'),
-                      trailing: const Icon(Icons.arrow_forward_ios),
+                      trailing: Icon(PhosphorIcons.caretRight()),
                       onTap: () => _showMaxAttemptsDialog(context, ref, settings),
                     ),
                   ],
@@ -148,7 +149,7 @@ class SecuritySettingsScreen extends ConsumerWidget {
               ),
             ),
             
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
             
             // Data Protection Section
             _buildSectionHeader(context, 'Data Protection'),
@@ -159,11 +160,11 @@ class SecuritySettingsScreen extends ConsumerWidget {
               child: Column(
                 children: [
                   ListTile(
-                    leading: const Icon(Icons.lock),
+                    leading: Icon(PhosphorIcons.lock()),
                     title: const Text('Local Data Encryption'),
                     subtitle: const Text('Your data is encrypted on this device'),
                     trailing: Icon(
-                      Icons.check_circle,
+                      PhosphorIcons.checkCircle(),
                       color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
@@ -171,11 +172,11 @@ class SecuritySettingsScreen extends ConsumerWidget {
                   const Divider(),
                   
                   ListTile(
-                    leading: const Icon(Icons.cloud_off),
+                    leading: Icon(PhosphorIcons.cloudSlash()),
                     title: const Text('Offline-First'),
                     subtitle: const Text('Your data stays on your device by default'),
                     trailing: Icon(
-                      Icons.check_circle,
+                      PhosphorIcons.checkCircle(),
                       color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
@@ -183,11 +184,11 @@ class SecuritySettingsScreen extends ConsumerWidget {
                   const Divider(),
                   
                   ListTile(
-                    leading: const Icon(Icons.delete_forever),
+                    leading: Icon(PhosphorIcons.trash()),
                     title: const Text('Secure Data Deletion'),
                     subtitle: const Text('Deleted data is securely wiped'),
                     trailing: Icon(
-                      Icons.check_circle,
+                      PhosphorIcons.checkCircle(),
                       color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
@@ -206,11 +207,11 @@ class SecuritySettingsScreen extends ConsumerWidget {
               child: Column(
                 children: [
                   ListTile(
-                    leading: const Icon(Icons.analytics),
+                    leading: Icon(PhosphorIcons.chartBar()),
                     title: const Text('Analytics'),
                     subtitle: const Text('No analytics or tracking data is collected'),
                     trailing: Icon(
-                      Icons.check_circle,
+                      PhosphorIcons.checkCircle(),
                       color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
@@ -218,11 +219,11 @@ class SecuritySettingsScreen extends ConsumerWidget {
                   const Divider(),
                   
                   ListTile(
-                    leading: const Icon(Icons.location_off),
+                    leading: Icon(PhosphorIcons.mapPin()),
                     title: const Text('Location Privacy'),
                     subtitle: const Text('Location data is processed locally only'),
                     trailing: Icon(
-                      Icons.check_circle,
+                      PhosphorIcons.checkCircle(),
                       color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
@@ -230,11 +231,11 @@ class SecuritySettingsScreen extends ConsumerWidget {
                   const Divider(),
                   
                   ListTile(
-                    leading: const Icon(Icons.mic_off),
+                    leading: Icon(PhosphorIcons.microphoneSlash()),
                     title: const Text('Voice Privacy'),
                     subtitle: const Text('Voice data can be processed locally'),
                     trailing: Icon(
-                      Icons.check_circle,
+                      PhosphorIcons.checkCircle(),
                       color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
@@ -254,12 +255,12 @@ class SecuritySettingsScreen extends ConsumerWidget {
                 children: [
                   ListTile(
                     leading: Icon(
-                      Icons.security,
+                      PhosphorIcons.shield(),
                       color: Theme.of(context).colorScheme.primary,
                     ),
                     title: const Text('Security Checkup'),
                     subtitle: const Text('Review your security settings'),
-                    trailing: const Icon(Icons.arrow_forward_ios),
+                    trailing: Icon(PhosphorIcons.caretRight()),
                     onTap: () => _showSecurityCheckup(context, settings),
                   ),
                   
@@ -267,12 +268,12 @@ class SecuritySettingsScreen extends ConsumerWidget {
                   
                   ListTile(
                     leading: Icon(
-                      Icons.help_outline,
+                      PhosphorIcons.question(),
                       color: Theme.of(context).colorScheme.primary,
                     ),
                     title: const Text('Security Tips'),
                     subtitle: const Text('Learn how to keep your data safe'),
-                    trailing: const Icon(Icons.arrow_forward_ios),
+                    trailing: Icon(PhosphorIcons.caretRight()),
                     onTap: () => _showSecurityTips(context),
                   ),
                   
@@ -281,12 +282,12 @@ class SecuritySettingsScreen extends ConsumerWidget {
                     
                     ListTile(
                       leading: Icon(
-                        Icons.lock_open,
+                        PhosphorIcons.lockOpen(),
                         color: Theme.of(context).colorScheme.error,
                       ),
                       title: const Text('Disable App Lock'),
                       subtitle: const Text('Remove PIN and biometric protection'),
-                      trailing: const Icon(Icons.arrow_forward_ios),
+                      trailing: Icon(PhosphorIcons.caretRight()),
                       onTap: () => _showDisableAppLockDialog(context, ref),
                     ),
                   ],
@@ -500,7 +501,7 @@ class SecuritySettingsScreen extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Security Checkup'),
+        title: Text('Security Checkup'),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -510,7 +511,7 @@ class SecuritySettingsScreen extends ConsumerWidget {
                 Row(
                   children: [
                     Icon(
-                      Icons.check_circle,
+                      PhosphorIcons.checkCircle(),
                       color: Theme.of(context).colorScheme.primary,
                     ),
                     const SizedBox(width: 8),
@@ -528,7 +529,7 @@ class SecuritySettingsScreen extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Icon(
-                        Icons.info_outline,
+                        PhosphorIcons.info(),
                         size: 16,
                         color: Theme.of(context).colorScheme.primary,
                       ),
@@ -564,7 +565,7 @@ class SecuritySettingsScreen extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Security Tips'),
+        title: Text('Security Tips'),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -575,7 +576,7 @@ class SecuritySettingsScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Icon(
-                    Icons.lightbulb_outline,
+                    PhosphorIcons.lightbulb(),
                     size: 16,
                     color: Theme.of(context).colorScheme.primary,
                   ),
@@ -606,11 +607,11 @@ class SecuritySettingsScreen extends ConsumerWidget {
 
   IconData _getBiometricIcon(List<BiometricType> types) {
     if (types.contains(BiometricType.face)) {
-      return Icons.face;
+      return PhosphorIcons.user();
     } else if (types.contains(BiometricType.fingerprint)) {
-      return Icons.fingerprint;
+      return PhosphorIcons.fingerprint();
     } else {
-      return Icons.security;
+      return PhosphorIcons.shield();
     }
   }
 
@@ -624,3 +625,4 @@ class SecuritySettingsScreen extends ConsumerWidget {
     }
   }
 }
+

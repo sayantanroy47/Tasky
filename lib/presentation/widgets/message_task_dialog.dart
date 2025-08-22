@@ -4,6 +4,7 @@ import '../../core/theme/typography_constants.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
 import '../../core/providers/core_providers.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 
 /// Dialog for creating tasks from shared messages
@@ -82,7 +83,7 @@ class _MessageTaskDialogState extends ConsumerState<MessageTaskDialog> {
         borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       ),
       child: Container(
-        constraints: const BoxConstraints(maxWidth: 400, maxHeight: 600),
+        constraints: BoxConstraints(maxWidth: 400, maxHeight: 600),
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -92,7 +93,7 @@ class _MessageTaskDialogState extends ConsumerState<MessageTaskDialog> {
             Row(
               children: [
                 Icon(
-                  Icons.message_outlined,
+                  PhosphorIcons.chatCircle(),
                   color: colorScheme.primary,
                   size: 28,
                 ),
@@ -119,21 +120,21 @@ class _MessageTaskDialogState extends ConsumerState<MessageTaskDialog> {
                 ),
                 IconButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  icon: const Icon(Icons.close),
+                  icon: Icon(PhosphorIcons.x()),
                 ),
               ],
             ),
             
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
             
             // Original message preview
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                 border: Border.all(
-                  color: colorScheme.outline.withOpacity(0.2),
+                  color: colorScheme.outline.withValues(alpha: 0.2),
                 ),
               ),
               child: Column(
@@ -175,7 +176,7 @@ class _MessageTaskDialogState extends ConsumerState<MessageTaskDialog> {
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                         ),
-                        prefixIcon: const Icon(Icons.title),
+                        prefixIcon: Icon(PhosphorIcons.textT()),
                       ),
                       maxLines: 1,
                     ),
@@ -190,7 +191,7 @@ class _MessageTaskDialogState extends ConsumerState<MessageTaskDialog> {
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                         ),
-                        prefixIcon: const Icon(Icons.description),
+                        prefixIcon: Icon(PhosphorIcons.fileText()),
                       ),
                       maxLines: 3,
                     ),
@@ -204,21 +205,21 @@ class _MessageTaskDialogState extends ConsumerState<MessageTaskDialog> {
                     ),
                     const SizedBox(height: 8),
                     SegmentedButton<TaskPriority>(
-                      segments: const [
+                      segments: [
                         ButtonSegment<TaskPriority>(
                           value: TaskPriority.low,
                           label: Text('Low'),
-                          icon: Icon(Icons.low_priority),
+                          icon: Icon(PhosphorIcons.arrowDown()),
                         ),
                         ButtonSegment<TaskPriority>(
                           value: TaskPriority.medium,
                           label: Text('Medium'),
-                          icon: Icon(Icons.remove),
+                          icon: Icon(PhosphorIcons.minus()),
                         ),
                         ButtonSegment<TaskPriority>(
                           value: TaskPriority.high,
                           label: Text('High'),
-                          icon: Icon(Icons.priority_high),
+                          icon: Icon(PhosphorIcons.arrowUp()),
                         ),
                       ],
                       selected: {_selectedPriority},
@@ -229,19 +230,19 @@ class _MessageTaskDialogState extends ConsumerState<MessageTaskDialog> {
                       },
                     ),
                     
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     
                     // Due date picker
                     ListTile(
                       contentPadding: EdgeInsets.zero,
-                      leading: const Icon(Icons.calendar_today),
+                      leading: Icon(PhosphorIcons.calendar()),
                       title: Text(_selectedDueDate == null 
                         ? 'No due date' 
                         : 'Due: ${_selectedDueDate!.day}/${_selectedDueDate!.month}/${_selectedDueDate!.year}'
                       ),
                       trailing: _selectedDueDate != null 
                         ? IconButton(
-                            icon: const Icon(Icons.clear),
+                            icon: Icon(PhosphorIcons.x()),
                             onPressed: () {
                               setState(() {
                                 _selectedDueDate = null;
@@ -264,7 +265,7 @@ class _MessageTaskDialogState extends ConsumerState<MessageTaskDialog> {
                       },
                     ),
                     
-                    const SizedBox(height: 8),
+                    SizedBox(height: 8),
                     
                     // Tags display
                     if (_tags.isNotEmpty)
@@ -276,7 +277,7 @@ class _MessageTaskDialogState extends ConsumerState<MessageTaskDialog> {
                           labelStyle: TextStyle(
                             color: colorScheme.onPrimaryContainer,
                           ),
-                          deleteIcon: const Icon(Icons.close, size: 16),
+                          deleteIcon: Icon(PhosphorIcons.x(), size: 16),
                           onDeleted: () {
                             setState(() {
                               _tags.remove(tag);
@@ -289,7 +290,7 @@ class _MessageTaskDialogState extends ConsumerState<MessageTaskDialog> {
               ),
             ),
             
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
             
             // Action buttons
             Row(
@@ -302,7 +303,7 @@ class _MessageTaskDialogState extends ConsumerState<MessageTaskDialog> {
                 const SizedBox(width: 12),
                 FilledButton.icon(
                   onPressed: _createTask,
-                  icon: const Icon(Icons.add_task),
+                  icon: Icon(PhosphorIcons.plus()),
                   label: const Text('Create Task'),
                 ),
               ],
@@ -379,3 +380,4 @@ class _MessageTaskDialogState extends ConsumerState<MessageTaskDialog> {
     }
   }
 }
+

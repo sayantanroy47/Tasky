@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Task priority levels
 enum TaskPriority {
@@ -548,13 +549,13 @@ enum TaskCreationMode {
   IconData get icon {
     switch (this) {
       case TaskCreationMode.manual:
-        return Icons.edit_outlined;
+        return PhosphorIcons.pencil();
       case TaskCreationMode.voice:
-        return Icons.mic_outlined;
+        return PhosphorIcons.microphone();
       case TaskCreationMode.ai:
-        return Icons.psychology_outlined;
+        return PhosphorIcons.brain();
       case TaskCreationMode.template:
-        return Icons.library_books_outlined;
+        return PhosphorIcons.books();
     }
   }
 }

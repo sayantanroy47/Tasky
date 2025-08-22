@@ -11,6 +11,7 @@ import '../providers/task_providers.dart';
 import '../widgets/advanced_task_card.dart';
 import '../widgets/project_form_dialog.dart';
 import '../../core/theme/typography_constants.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Detailed view of a single project
 /// 
@@ -65,7 +66,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
               actions: [
                 IconButton(
                   onPressed: () => _editProject(project),
-                  icon: const Icon(Icons.edit),
+                  icon: Icon(PhosphorIcons.pencil()),
                   tooltip: 'Edit Project',
                 ),
                 PopupMenuButton<String>(
@@ -75,27 +76,27 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
                       value: project.isArchived ? 'unarchive' : 'archive',
                       child: Row(
                         children: [
-                          Icon(project.isArchived ? Icons.unarchive : Icons.archive),
-                          const SizedBox(width: 8),
+                          Icon(project.isArchived ? PhosphorIcons.archive() : PhosphorIcons.archive()),
+                          SizedBox(width: 8),
                           Text(project.isArchived ? 'Unarchive' : 'Archive'),
                         ],
                       ),
                     ),
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: 'duplicate',
                       child: Row(
                         children: [
-                          Icon(Icons.copy),
+                          Icon(PhosphorIcons.copy()),
                           SizedBox(width: 8),
                           Text('Duplicate'),
                         ],
                       ),
                     ),
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: 'delete',
                       child: Row(
                         children: [
-                          Icon(Icons.delete, color: Colors.red),
+                          Icon(PhosphorIcons.trash(), color: Colors.red),
                           SizedBox(width: 8),
                           Text('Delete', style: TextStyle(color: Colors.red)),
                         ],
@@ -115,10 +116,10 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
                   // Tabs
                   TabBar(
                     controller: _tabController,
-                    tabs: const [
-                      Tab(text: 'Tasks', icon: Icon(Icons.task_alt)),
-                      Tab(text: 'Progress', icon: Icon(Icons.trending_up)),
-                      Tab(text: 'Overview', icon: Icon(Icons.info)),
+                    tabs: [
+                      Tab(text: 'Tasks', icon: Icon(PhosphorIcons.checkSquare())),
+                      Tab(text: 'Progress', icon: Icon(PhosphorIcons.trendUp())),
+                      Tab(text: 'Overview', icon: Icon(PhosphorIcons.info())),
                     ],
                   ),
                   
@@ -139,8 +140,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
           ),
         );
       },
-      loading: () => const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
+      loading: () => Scaffold(body: Center(child: CircularProgressIndicator()),
       ),
       error: (error, stackTrace) => Scaffold(
         appBar: const StandardizedAppBar(title: 'Error'),
@@ -149,7 +149,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                Icons.error_outline,
+                PhosphorIcons.warningCircle(),
                 size: 64,
                 color: theme.colorScheme.error,
               ),
@@ -178,10 +178,10 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: _parseColor(project.color).withOpacity(0.1),
+        color: _parseColor(project.color).withValues(alpha: 0.1),
         border: Border(
           bottom: BorderSide(
-            color: theme.colorScheme.outline.withOpacity(0.1),
+            color: theme.colorScheme.outline.withValues(alpha: 0.1),
           ),
         ),
       ),
@@ -199,7 +199,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
                   borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -234,7 +234,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
-                        Icons.archive,
+                        PhosphorIcons.archive(),
                         size: 16,
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
@@ -270,7 +270,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
             Row(
               children: [
                 Icon(
-                  Icons.schedule,
+                  PhosphorIcons.clock(),
                   size: 16,
                   color: project.isOverdue 
                       ? theme.colorScheme.error 
@@ -291,7 +291,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.error.withOpacity(0.1),
+                      color: theme.colorScheme.error.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                     ),
                     child: Text(
@@ -341,7 +341,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
           ],
         ),
         
-        const SizedBox(height: 12),
+        SizedBox(height: 12),
         
         // Stats grid
         Row(
@@ -350,7 +350,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
               child: _buildStatCard(
                 'Total',
                 stats.totalTasks.toString(),
-                Icons.task_alt,
+                PhosphorIcons.checkSquare(),
                 theme.colorScheme.primary,
               ),
             ),
@@ -359,7 +359,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
               child: _buildStatCard(
                 'Completed',
                 stats.completedTasks.toString(),
-                Icons.check_circle,
+                PhosphorIcons.checkCircle(),
                 Colors.green,
               ),
             ),
@@ -368,7 +368,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
               child: _buildStatCard(
                 'In Progress',
                 stats.inProgressTasks.toString(),
-                Icons.play_circle,
+                PhosphorIcons.playCircle(),
                 Colors.blue,
               ),
             ),
@@ -377,7 +377,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
               child: _buildStatCard(
                 'Pending',
                 stats.pendingTasks.toString(),
-                Icons.pending,
+                PhosphorIcons.clock(),
                 Colors.orange,
               ),
             ),
@@ -387,7 +387,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
                 child: _buildStatCard(
                   'Overdue',
                   stats.overdueTasks.toString(),
-                  Icons.warning,
+                  PhosphorIcons.warning(),
                   Colors.red,
                 ),
               ),
@@ -402,9 +402,9 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-        border: Border.all(color: color.withOpacity(0.1)),
+        border: Border.all(color: color.withValues(alpha: 0.1)),
       ),
       child: Column(
         children: [
@@ -452,15 +452,15 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
           padding: const EdgeInsets.all(16),
           children: [
             if (pendingTasks.isNotEmpty) ...[
-              _buildTaskSection('Pending Tasks', pendingTasks, Icons.pending, Colors.orange),
-              const SizedBox(height: 16),
+              _buildTaskSection('Pending Tasks', pendingTasks, PhosphorIcons.clock(), Colors.orange),
+              SizedBox(height: 16),
             ],
             if (inProgressTasks.isNotEmpty) ...[
-              _buildTaskSection('In Progress', inProgressTasks, Icons.play_circle, Colors.blue),
+              _buildTaskSection('In Progress', inProgressTasks, PhosphorIcons.playCircle(), Colors.blue),
               const SizedBox(height: 16),
             ],
             if (completedTasks.isNotEmpty) ...[
-              _buildTaskSection('Completed Tasks', completedTasks, Icons.check_circle, Colors.green),
+              _buildTaskSection('Completed Tasks', completedTasks, PhosphorIcons.checkCircle(), Colors.green),
               const SizedBox(height: 80), // Account for FAB
             ],
           ],
@@ -507,11 +507,11 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
   Widget _buildProgressTab(Project project) {
     // This would show charts and progress tracking
     // For now, we'll show a placeholder
-    return const Center(
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.trending_up, size: 64, color: Colors.grey),
+          Icon(PhosphorIcons.trendUp(), size: 64, color: Colors.grey),
           SizedBox(height: 16),
           Text(
             'Progress Charts',
@@ -547,7 +547,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 _buildDetailRow('Created', _formatDate(project.createdAt)),
                 if (project.updatedAt != null)
                   _buildDetailRow('Last Updated', _formatDate(project.updatedAt!)),
@@ -582,17 +582,17 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
                   children: [
                     ElevatedButton.icon(
                       onPressed: () => _createTaskForProject(project),
-                      icon: const Icon(Icons.add_task),
+                      icon: Icon(PhosphorIcons.plus()),
                       label: const Text('Add Task'),
                     ),
                     OutlinedButton.icon(
                       onPressed: () => _editProject(project),
-                      icon: const Icon(Icons.edit),
+                      icon: Icon(PhosphorIcons.pencil()),
                       label: const Text('Edit Project'),
                     ),
                     OutlinedButton.icon(
                       onPressed: () => _duplicateProject(project),
-                      icon: const Icon(Icons.copy),
+                      icon: Icon(PhosphorIcons.copy()),
                       label: const Text('Duplicate'),
                     ),
                   ],
@@ -643,11 +643,11 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.task_alt,
+              PhosphorIcons.checkSquare(),
               size: 64,
               color: theme.colorScheme.onSurfaceVariant,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               'No Tasks Yet',
               style: theme.textTheme.headlineSmall?.copyWith(
@@ -668,7 +668,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
                 ref.read(projectsProvider).value!
                     .firstWhere((p) => p.id == widget.projectId),
               ),
-              icon: const Icon(Icons.add_task),
+              icon: Icon(PhosphorIcons.plus()),
               label: const Text('Add Task'),
             ),
           ],
@@ -767,3 +767,4 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage>
     return '${date.day}/${date.month}/${date.year}';
   }
 }
+

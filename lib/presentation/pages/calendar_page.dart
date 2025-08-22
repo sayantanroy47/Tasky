@@ -6,6 +6,7 @@ import '../widgets/enhanced_calendar_widget.dart';
 import '../providers/enhanced_calendar_provider.dart';
 import '../../domain/entities/calendar_event.dart';
 import '../../core/theme/typography_constants.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Calendar page for viewing tasks in calendar format
 class CalendarPage extends ConsumerWidget {
@@ -23,7 +24,7 @@ class CalendarPage extends ConsumerWidget {
         forceBackButton: false,
         actions: [
           IconButton(
-            icon: const Icon(Icons.sync),
+            icon: Icon(PhosphorIcons.arrowsClockwise()),
             onPressed: () {
               ref.read(enhancedCalendarProvider.notifier).refresh();
             },
@@ -31,7 +32,7 @@ class CalendarPage extends ConsumerWidget {
           ),
           IconButton(
             icon: Icon(
-              calendarState.isLoading ? Icons.sync : Icons.calendar_month,
+              calendarState.isLoading ? PhosphorIcons.arrowsClockwise() : PhosphorIcons.calendar(),
             ),
             onPressed: () {
               ref.read(enhancedCalendarProvider.notifier).goToToday();
@@ -66,7 +67,7 @@ class CalendarPage extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            Icons.error_outline,
+            PhosphorIcons.warningCircle(),
             size: 64,
             color: Theme.of(context).colorScheme.error,
           ),
@@ -135,7 +136,7 @@ class _CreateEventDialogState extends ConsumerState<_CreateEventDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Create Event'),
+      title: Text('Create Event'),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -170,7 +171,7 @@ class _CreateEventDialogState extends ConsumerState<_CreateEventDialog> {
             
             // Date picker
             ListTile(
-              leading: const Icon(Icons.calendar_today),
+              leading: Icon(PhosphorIcons.calendar()),
               title: const Text('Date'),
               subtitle: Text('${selectedDate.day}/${selectedDate.month}/${selectedDate.year}'),
               onTap: () async {
@@ -188,7 +189,7 @@ class _CreateEventDialogState extends ConsumerState<_CreateEventDialog> {
             
             // All day toggle
             SwitchListTile(
-              title: const Text('All Day'),
+              title: Text('All Day'),
               value: isAllDay,
               onChanged: (value) => setState(() => isAllDay = value),
             ),
@@ -196,7 +197,7 @@ class _CreateEventDialogState extends ConsumerState<_CreateEventDialog> {
             if (!isAllDay) ...[
               // Start time picker
               ListTile(
-                leading: const Icon(Icons.access_time),
+                leading: Icon(PhosphorIcons.clock()),
                 title: const Text('Start Time'),
                 subtitle: Text(startTime.format(context)),
                 onTap: () async {
@@ -212,7 +213,7 @@ class _CreateEventDialogState extends ConsumerState<_CreateEventDialog> {
               
               // End time picker
               ListTile(
-                leading: const Icon(Icons.access_time_filled),
+                leading: Icon(PhosphorIcons.clock()),
                 title: const Text('End Time'),
                 subtitle: Text(endTime.format(context)),
                 onTap: () async {
@@ -227,7 +228,7 @@ class _CreateEventDialogState extends ConsumerState<_CreateEventDialog> {
               ),
             ],
             
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             
             // Color picker
             Column(
@@ -255,7 +256,7 @@ class _CreateEventDialogState extends ConsumerState<_CreateEventDialog> {
                               : null,
                         ),
                         child: isSelected
-                            ? const Icon(Icons.check, color: Colors.white)
+                            ? Icon(PhosphorIcons.check(), color: Colors.white)
                             : null,
                       ),
                     );
@@ -331,3 +332,4 @@ class _CreateEventDialogState extends ConsumerState<_CreateEventDialog> {
     }
   }
 }
+

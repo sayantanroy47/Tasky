@@ -12,6 +12,7 @@ import 'status_badge_widget.dart';
 import 'audio_indicator_widget.dart';
 import 'task_dependency_status.dart';
 import 'subtask_progress_indicator.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Advanced task card widget with comprehensive features and animations
 /// 
@@ -276,7 +277,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(
-                isLeft ? Icons.check_circle : Icons.more_horiz,
+                isLeft ? PhosphorIcons.checkCircle() : PhosphorIcons.dotsThree(),
                 color: Colors.white,
                 size: 32,
               ),
@@ -315,7 +316,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
   Widget _buildElevatedCard(ThemeData theme) {
     return Card(
       elevation: widget.elevation ?? 4,
-      shadowColor: widget.accentColor?.withOpacity(0.3),
+      shadowColor: widget.accentColor?.withValues(alpha: 0.3),
       child: _buildCardInner(theme),
     );
   }
@@ -323,10 +324,10 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
   Widget _buildFilledCard(ThemeData theme) {
     return Container(
       decoration: BoxDecoration(
-        color: widget.accentColor?.withOpacity(0.1) ?? theme.colorScheme.surfaceContainer,
+        color: widget.accentColor?.withValues(alpha: 0.1) ?? theme.colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
         border: widget.accentColor != null 
-            ? Border.all(color: widget.accentColor!.withOpacity(0.3))
+            ? Border.all(color: widget.accentColor!.withValues(alpha: 0.3))
             : null,
       ),
       child: _buildCardInner(theme),
@@ -338,7 +339,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         border: Border.all(
-          color: widget.accentColor ?? theme.colorScheme.outline.withOpacity(0.3),
+          color: widget.accentColor ?? theme.colorScheme.outline.withValues(alpha: 0.3),
           width: widget.accentColor != null ? 2 : 1,
         ),
         borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
@@ -363,7 +364,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
       level: GlassLevel.content,
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       padding: EdgeInsets.zero,
-      borderColor: widget.accentColor?.withOpacity(0.3),
+      borderColor: widget.accentColor?.withValues(alpha: 0.3),
       child: _buildCardInner(theme),
     );
   }
@@ -514,11 +515,11 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
       children: [
         if (widget.showDragHandle) ...[
           Icon(
-            Icons.drag_indicator,
+            PhosphorIcons.dotsSixVertical(),
             color: theme.colorScheme.onSurfaceVariant,
             size: 20,
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: 8),
         ],
         _buildPriorityIndicator(theme),
         const SizedBox(width: 12),
@@ -547,7 +548,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
                   if (widget.task.isPinned) ...[
                     const SizedBox(width: 8),
                     Icon(
-                      Icons.push_pin,
+                      PhosphorIcons.pushPin(),
                       size: 16,
                       color: widget.accentColor ?? theme.colorScheme.primary,
                     ),
@@ -586,7 +587,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: priorityColor.withOpacity(0.2),
+        color: priorityColor.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(size / 2),
         border: Border.all(
           color: priorityColor,
@@ -608,7 +609,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
       child: Row(
         children: [
           Icon(
-            Icons.folder_outlined,
+            PhosphorIcons.folder(),
             size: 14,
             color: theme.colorScheme.onSurfaceVariant,
           ),
@@ -746,7 +747,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
       child: Padding(
         padding: const EdgeInsets.all(4),
         child: Icon(
-          Icons.more_vert,
+          PhosphorIcons.dotsThreeVertical(),
           size: 18,
           color: theme.colorScheme.onSurfaceVariant,
         ),
@@ -764,7 +765,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
               borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
               boxShadow: [
                 BoxShadow(
-                  color: widget.task.priority.color.withOpacity(
+                  color: widget.task.priority.color.withValues(alpha: 
                     0.3 * _glowAnimation.value,
                   ),
                   blurRadius: 12 * _glowAnimation.value,
@@ -785,14 +786,14 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
         builder: (context, child) {
           return Container(
             decoration: BoxDecoration(
-              color: Colors.green.withOpacity(0.1 * _completionAnimation.value),
+              color: Colors.green.withValues(alpha: 0.1 * _completionAnimation.value),
               borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
             ),
             child: Center(
               child: Transform.scale(
                 scale: _completionAnimation.value,
-                child: const Icon(
-                  Icons.check_circle,
+                child: Icon(
+                  PhosphorIcons.checkCircle(),
                   color: Colors.green,
                   size: 48,
                 ),
@@ -853,7 +854,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
               borderRadius: BorderRadius.circular(2),
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
@@ -867,7 +868,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
           ),
           const SizedBox(height: 16),
           _buildMenuTile(
-            icon: widget.task.isCompleted ? Icons.undo : Icons.check_circle,
+            icon: widget.task.isCompleted ? PhosphorIcons.arrowClockwise() : PhosphorIcons.checkCircle(),
             title: widget.task.isCompleted ? 'Mark Incomplete' : 'Mark Complete',
             onTap: () {
               Navigator.pop(context);
@@ -876,7 +877,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
           ),
           if (widget.onEdit != null)
             _buildMenuTile(
-              icon: Icons.edit,
+              icon: PhosphorIcons.pencil(),
               title: 'Edit',
               onTap: () {
                 Navigator.pop(context);
@@ -885,7 +886,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
             ),
           if (widget.onDuplicate != null)
             _buildMenuTile(
-              icon: Icons.copy,
+              icon: PhosphorIcons.copy(),
               title: 'Duplicate',
               onTap: () {
                 Navigator.pop(context);
@@ -894,7 +895,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
             ),
           if (widget.onShare != null)
             _buildMenuTile(
-              icon: Icons.share,
+              icon: PhosphorIcons.share(),
               title: 'Share',
               onTap: () {
                 Navigator.pop(context);
@@ -902,9 +903,9 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
               },
             ),
           if (widget.onDelete != null) ...[
-            const Divider(),
+            Divider(),
             _buildMenuTile(
-              icon: Icons.delete,
+              icon: PhosphorIcons.trash(),
               title: 'Delete',
               isDestructive: true,
               onTap: () {
@@ -953,25 +954,25 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
   IconData _getPriorityIcon(TaskPriority priority) {
     switch (priority) {
       case TaskPriority.low:
-        return Icons.keyboard_arrow_down;
+        return PhosphorIcons.caretDown();
       case TaskPriority.medium:
-        return Icons.remove;
+        return PhosphorIcons.minus();
       case TaskPriority.high:
-        return Icons.keyboard_arrow_up;
+        return PhosphorIcons.caretUp();
       case TaskPriority.urgent:
-        return Icons.priority_high;
+        return PhosphorIcons.arrowUp();
     }
   }
 
   IconData _getDueDateIcon() {
     if (_isOverdue()) {
-      return Icons.warning;
+      return PhosphorIcons.warning();
     } else if (_isDueToday()) {
-      return Icons.today;
+      return PhosphorIcons.calendar();
     } else if (_isDueTomorrow()) {
-      return Icons.schedule;
+      return PhosphorIcons.clock();
     } else {
-      return Icons.calendar_today;
+      return PhosphorIcons.calendar();
     }
   }
 
@@ -1097,7 +1098,7 @@ class QuickTaskCard extends StatelessWidget {
         leading: IconButton(
           onPressed: onToggleComplete,
           icon: Icon(
-            task.isCompleted ? Icons.check_circle : Icons.radio_button_unchecked,
+            task.isCompleted ? PhosphorIcons.checkCircle() : PhosphorIcons.circle(),
             color: task.isCompleted ? Colors.green : null,
           ),
         ),
@@ -1135,3 +1136,5 @@ class QuickTaskCard extends StatelessWidget {
     return '${date.day}/${date.month}';
   }
 }
+
+

@@ -6,6 +6,7 @@ import '../../services/audio/audio_concatenation_service.dart';
 import '../../services/audio/audio_recording_service.dart';
 import 'dart:async';
 import 'dart:math' as math;
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Recording data model for individual recordings
 class Recording {
@@ -191,12 +192,12 @@ class _WaveformVisualizerState extends State<WaveformVisualizer>
             height: (widget.height * height).clamp(widget.height * 0.1, widget.height),
             decoration: BoxDecoration(
               color: widget.isRecording 
-                  ? widget.color.withOpacity(opacity)
-                  : widget.color.withOpacity(0.3),
+                  ? widget.color.withValues(alpha: opacity)
+                  : widget.color.withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(2),
               boxShadow: widget.isRecording ? [
                 BoxShadow(
-                  color: widget.color.withOpacity(0.3),
+                  color: widget.color.withValues(alpha: 0.3),
                   blurRadius: 4,
                   spreadRadius: 1,
                 ),
@@ -367,7 +368,7 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
             end: Alignment.bottomCenter,
             colors: [
               Colors.black,
-              theme.colorScheme.primary.withOpacity(0.1),
+              theme.colorScheme.primary.withValues(alpha: 0.1),
               Colors.black,
             ],
             stops: const [0.0, 0.5, 1.0],
@@ -436,11 +437,11 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
           IconButton(
             onPressed: () => Navigator.of(context).pop(),
             icon: Icon(
-              Icons.close,
+              PhosphorIcons.x(),
               color: theme.colorScheme.onSurface,
             ),
             style: IconButton.styleFrom(
-              backgroundColor: theme.colorScheme.surface.withOpacity(0.1),
+              backgroundColor: theme.colorScheme.surface.withValues(alpha: 0.1),
             ),
           ),
           const SizedBox(width: 16),
@@ -457,7 +458,7 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: theme.colorScheme.primary.withOpacity(0.2),
+                color: theme.colorScheme.primary.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Text(
@@ -478,10 +479,10 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface.withOpacity(0.05),
+        color: theme.colorScheme.surface.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: theme.colorScheme.primary.withOpacity(0.2),
+          color: theme.colorScheme.primary.withValues(alpha: 0.2),
           width: 1,
         ),
       ),
@@ -514,21 +515,21 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
         Text(
           _statusMessage,
           style: theme.textTheme.bodyLarge?.copyWith(
-            color: theme.colorScheme.onSurface.withOpacity(0.8),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
           ),
           textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 20),
+        SizedBox(height: 20),
         
         // Recording duration (when recording)
         if (_isRecording) ...[
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: Colors.red.withOpacity(0.1),
+              color: Colors.red.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: Colors.red.withOpacity(0.3),
+                color: Colors.red.withValues(alpha: 0.3),
               ),
             ),
             child: Row(
@@ -570,7 +571,7 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: _startRecording,
-                  icon: const Icon(Icons.add_circle_outline),
+                  icon: Icon(PhosphorIcons.plusCircle()),
                   label: const Text('Add More'),
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 12),
@@ -581,7 +582,7 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
               Expanded(
                 child: FilledButton.icon(
                   onPressed: _proceedToTaskCreation,
-                  icon: const Icon(Icons.arrow_forward),
+                  icon: Icon(PhosphorIcons.arrowRight()),
                   label: const Text('Continue'),
                   style: FilledButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 12),
@@ -600,10 +601,10 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: theme.colorScheme.secondaryContainer.withOpacity(0.3),
+        color: theme.colorScheme.secondaryContainer.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: theme.colorScheme.secondary.withOpacity(0.3),
+          color: theme.colorScheme.secondary.withValues(alpha: 0.3),
         ),
       ),
       child: Column(
@@ -612,7 +613,7 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
           Row(
             children: [
               Icon(
-                Icons.transcribe,
+                PhosphorIcons.textAlignLeft(),
                 color: theme.colorScheme.secondary,
                 size: 20,
               ),
@@ -672,10 +673,10 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface.withOpacity(0.9),
+        color: theme.colorScheme.surface.withValues(alpha: 0.9),
         border: Border(
           top: BorderSide(
-            color: theme.colorScheme.outline.withOpacity(0.2),
+            color: theme.colorScheme.outline.withValues(alpha: 0.2),
           ),
         ),
       ),
@@ -687,12 +688,12 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: _isRecording ? null : _showClearConfirmation,
-                  icon: const Icon(Icons.refresh),
+                  icon: Icon(PhosphorIcons.arrowClockwise()),
                   label: const Text('Start Over'),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: theme.colorScheme.error,
                     side: BorderSide(
-                      color: theme.colorScheme.error.withOpacity(0.5),
+                      color: theme.colorScheme.error.withValues(alpha: 0.5),
                     ),
                   ),
                 ),
@@ -712,10 +713,10 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: theme.colorScheme.primaryContainer.withOpacity(0.3),
+        color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: theme.colorScheme.primary.withOpacity(0.3),
+          color: theme.colorScheme.primary.withValues(alpha: 0.3),
         ),
       ),
       child: Column(
@@ -724,7 +725,7 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
           Row(
             children: [
               Icon(
-                Icons.queue_music,
+                PhosphorIcons.queue(),
                 color: theme.colorScheme.primary,
                 size: 20,
               ),
@@ -766,7 +767,7 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
               width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: theme.colorScheme.surface.withOpacity(0.8),
+                color: theme.colorScheme.surface.withValues(alpha: 0.8),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
@@ -796,20 +797,20 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    (_isRecording ? Colors.red : theme.colorScheme.primary).withOpacity(0.8),
-                    (_isRecording ? Colors.red : theme.colorScheme.primary).withOpacity(0.4),
+                    (_isRecording ? Colors.red : theme.colorScheme.primary).withValues(alpha: 0.8),
+                    (_isRecording ? Colors.red : theme.colorScheme.primary).withValues(alpha: 0.4),
                   ],
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: (_isRecording ? Colors.red : theme.colorScheme.primary).withOpacity(0.3),
+                    color: (_isRecording ? Colors.red : theme.colorScheme.primary).withValues(alpha: 0.3),
                     blurRadius: 20,
                     spreadRadius: 5,
                   ),
                 ],
               ),
               child: Icon(
-                _isRecording ? Icons.stop : Icons.mic,
+                _isRecording ? PhosphorIcons.stop() : PhosphorIcons.microphone(),
                 size: 48,
                 color: Colors.white,
               ),
@@ -837,10 +838,10 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
             margin: const EdgeInsets.only(bottom: 8),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
+              color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color: theme.colorScheme.outline.withOpacity(0.3),
+                color: theme.colorScheme.outline.withValues(alpha: 0.3),
               ),
             ),
             child: Row(
@@ -849,7 +850,7 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
                   width: 32,
                   height: 32,
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.primary.withOpacity(0.2),
+                    color: theme.colorScheme.primary.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Center(
@@ -862,7 +863,7 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -888,7 +889,7 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
                 IconButton(
                   onPressed: () => _deleteRecording(index),
                   icon: Icon(
-                    Icons.delete_outline,
+                    PhosphorIcons.trash(),
                     color: theme.colorScheme.error,
                   ),
                 ),
@@ -1242,3 +1243,4 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
     return '$minutes:$seconds';
   }
 }
+

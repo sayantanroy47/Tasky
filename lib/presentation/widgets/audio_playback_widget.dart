@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../services/audio/audio_player_service.dart';
 import '../providers/audio_providers.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Widget for playing back audio files attached to tasks
 class AudioPlaybackWidget extends ConsumerWidget {
@@ -70,15 +71,15 @@ class AudioPlaybackWidget extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            Icons.audiotrack,
+            PhosphorIcons.musicNote(),
             size: 16,
             color: theme.colorScheme.onSecondaryContainer,
           ),
-          const SizedBox(width: 4),
+          SizedBox(width: 4),
           InkWell(
             onTap: () => _togglePlayback(audioControls),
             child: Icon(
-              isTaskPlaying ? Icons.pause : Icons.play_arrow,
+              isTaskPlaying ? PhosphorIcons.pause() : PhosphorIcons.play(),
               size: 20,
               color: theme.colorScheme.onSecondaryContainer,
             ),
@@ -118,10 +119,10 @@ class AudioPlaybackWidget extends ConsumerWidget {
             Row(
               children: [
                 Icon(
-                  Icons.audiotrack,
+                  PhosphorIcons.musicNote(),
                   color: theme.colorScheme.primary,
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     'Voice Recording',
@@ -169,7 +170,7 @@ class AudioPlaybackWidget extends ConsumerWidget {
                 if (isCurrentTask) ...[
                   IconButton(
                     onPressed: () => _rewind(ref),
-                    icon: const Icon(Icons.replay_10),
+                    icon: Icon(PhosphorIcons.skipBack()),
                     tooltip: 'Rewind 10s',
                   ),
                   const SizedBox(width: 16),
@@ -177,7 +178,7 @@ class AudioPlaybackWidget extends ConsumerWidget {
                 IconButton(
                   onPressed: () => _togglePlayback(audioControls),
                   icon: Icon(
-                    isTaskPlaying ? Icons.pause_circle : Icons.play_circle,
+                    isTaskPlaying ? PhosphorIcons.pauseCircle() : PhosphorIcons.playCircle(),
                     size: 48,
                   ),
                   tooltip: isTaskPlaying ? 'Pause' : 'Play',
@@ -186,7 +187,7 @@ class AudioPlaybackWidget extends ConsumerWidget {
                   const SizedBox(width: 16),
                   IconButton(
                     onPressed: () => _fastForward(ref),
-                    icon: const Icon(Icons.forward_10),
+                    icon: Icon(PhosphorIcons.skipForward()),
                     tooltip: 'Fast forward 10s',
                   ),
                 ],
@@ -230,3 +231,4 @@ class AudioPlaybackWidget extends ConsumerWidget {
     return '$minutes:${seconds.toString().padLeft(2, '0')}';
   }
 }
+

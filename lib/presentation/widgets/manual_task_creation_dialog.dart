@@ -16,6 +16,7 @@ import 'theme_aware_dialog_components.dart';
 import 'project_selector.dart';
 import 'recurrence_pattern_picker.dart';
 import 'dart:async';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Manual task creation dialog with form fields
 class ManualTaskCreationDialog extends ConsumerStatefulWidget {
@@ -48,28 +49,28 @@ class _ManualTaskCreationDialogState extends ConsumerState<ManualTaskCreationDia
   
   // Priority options
   final List<PriorityOption> _priorityOptions = [
-    const PriorityOption(
+    PriorityOption(
       value: 'low',
       name: 'Low',
-      icon: Icons.low_priority,
+      icon: PhosphorIcons.arrowDown(),
       color: Colors.green,
     ),
-    const PriorityOption(
+    PriorityOption(
       value: 'medium',
       name: 'Medium',
-      icon: Icons.remove,
+      icon: PhosphorIcons.minus(),
       color: Colors.orange,
     ),
-    const PriorityOption(
+    PriorityOption(
       value: 'high',
       name: 'High',
-      icon: Icons.priority_high,
+      icon: PhosphorIcons.arrowUp(),
       color: Colors.red,
     ),
-    const PriorityOption(
+    PriorityOption(
       value: 'urgent',
       name: 'Urgent',
-      icon: Icons.warning,
+      icon: PhosphorIcons.warning(),
       color: Colors.deepPurple,
     ),
   ];
@@ -116,8 +117,7 @@ class _ManualTaskCreationDialogState extends ConsumerState<ManualTaskCreationDia
           TextButton(
             onPressed: _isLoading ? null : _saveTask,
             child: _isLoading 
-              ? const SizedBox(
-                  width: 20,
+              ? SizedBox(width: 20,
                   height: 20,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
@@ -142,7 +142,7 @@ class _ManualTaskCreationDialogState extends ConsumerState<ManualTaskCreationDia
                       controller: _titleController,
                       labelText: 'Task Title',
                       hintText: 'Enter task title',
-                      prefixIcon: Icons.title,
+                      prefixIcon: PhosphorIcons.textT(),
                       autofocus: true,
                       required: true,
                       validator: (value) {
@@ -152,14 +152,14 @@ class _ManualTaskCreationDialogState extends ConsumerState<ManualTaskCreationDia
                         return null;
                       },
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     
                     // Description field
                     ThemeAwareFormField(
                       controller: _descriptionController,
                       labelText: 'Description',
                       hintText: 'Enter task description (optional)',
-                      prefixIcon: Icons.description,
+                      prefixIcon: PhosphorIcons.fileText(),
                       maxLines: 3,
                     ),
                     const SizedBox(height: 16),
@@ -188,7 +188,7 @@ class _ManualTaskCreationDialogState extends ConsumerState<ManualTaskCreationDia
                         });
                       },
                     ),
-                    const SizedBox(height: 16),
+                    SizedBox(height: 16),
                     
                     // Due date picker
                     _buildDueDatePicker(context, theme),
@@ -205,7 +205,7 @@ class _ManualTaskCreationDialogState extends ConsumerState<ManualTaskCreationDia
                           Row(
                             children: [
                               Icon(
-                                Icons.repeat,
+                                PhosphorIcons.repeat(),
                                 color: theme.colorScheme.primary,
                                 size: 20,
                               ),
@@ -262,7 +262,7 @@ class _ManualTaskCreationDialogState extends ConsumerState<ManualTaskCreationDia
               color: theme.colorScheme.onSurface,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Row(
             children: [
               Expanded(
@@ -276,14 +276,14 @@ class _ManualTaskCreationDialogState extends ConsumerState<ManualTaskCreationDia
                     ),
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: theme.colorScheme.outline.withOpacity(0.3),
+                        color: theme.colorScheme.outline.withValues(alpha: 0.3),
                       ),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
                       children: [
                         Icon(
-                          Icons.calendar_today,
+                          PhosphorIcons.calendar(),
                           size: 18,
                           color: theme.colorScheme.primary,
                         ),
@@ -303,7 +303,7 @@ class _ManualTaskCreationDialogState extends ConsumerState<ManualTaskCreationDia
                   ),
                 ),
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Expanded(
                 child: InkWell(
                   onTap: _dueDate != null ? _selectDueTime : null,
@@ -315,18 +315,18 @@ class _ManualTaskCreationDialogState extends ConsumerState<ManualTaskCreationDia
                     ),
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: theme.colorScheme.outline.withOpacity(0.3),
+                        color: theme.colorScheme.outline.withValues(alpha: 0.3),
                       ),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
                       children: [
                         Icon(
-                          Icons.access_time,
+                          PhosphorIcons.clock(),
                           size: 18,
                           color: _dueDate != null
                               ? theme.colorScheme.primary
-                              : theme.colorScheme.onSurfaceVariant.withOpacity(0.5),
+                              : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                         ),
                         const SizedBox(width: 8),
                         Text(
@@ -336,7 +336,7 @@ class _ManualTaskCreationDialogState extends ConsumerState<ManualTaskCreationDia
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: _dueTime != null
                                 ? theme.colorScheme.onSurface
-                                : theme.colorScheme.onSurfaceVariant.withOpacity(
+                                : theme.colorScheme.onSurfaceVariant.withValues(alpha: 
                                     _dueDate != null ? 1.0 : 0.5,
                                   ),
                           ),
@@ -358,7 +358,7 @@ class _ManualTaskCreationDialogState extends ConsumerState<ManualTaskCreationDia
                     _dueTime = null;
                   });
                 },
-                icon: const Icon(Icons.clear, size: 16),
+                icon: Icon(PhosphorIcons.x(), size: 16),
                 label: const Text('Clear due date'),
                 style: TextButton.styleFrom(
                   foregroundColor: theme.colorScheme.error,
@@ -463,3 +463,6 @@ class _ManualTaskCreationDialogState extends ConsumerState<ManualTaskCreationDia
     }
   }
 }
+
+
+

@@ -3,6 +3,7 @@ import 'glassmorphism_container.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../core/theme/material3/motion_system.dart';
 import '../../core/design_system/design_tokens.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Beautiful glassmorphism-based loading widget for various contexts
 class GlassLoadingWidget extends StatefulWidget {
@@ -150,7 +151,7 @@ class _GlassLoadingWidgetState extends State<GlassLoadingWidget>
                 width: widget.size,
                 height: widget.size,
                 borderRadius: BorderRadius.circular(widget.size / 2),
-                glassTint: effectiveAccentColor.withOpacity(0.1),
+                glassTint: effectiveAccentColor.withValues(alpha: 0.1),
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
@@ -165,7 +166,7 @@ class _GlassLoadingWidgetState extends State<GlassLoadingWidget>
                           end: Alignment(1.0 + _shimmerAnimation.value, 1.0),
                           colors: [
                             Colors.transparent,
-                            effectiveAccentColor.withOpacity(0.1),
+                            effectiveAccentColor.withValues(alpha: 0.1),
                             Colors.transparent,
                           ],
                           stops: const [0.0, 0.5, 1.0],
@@ -185,9 +186,9 @@ class _GlassLoadingWidgetState extends State<GlassLoadingWidget>
                     ),
                     // Center icon
                     Icon(
-                      Icons.hourglass_empty,
+                      PhosphorIcons.hourglass(),
                       size: widget.size * 0.3,
-                      color: effectiveAccentColor.withOpacity(0.8),
+                      color: effectiveAccentColor.withValues(alpha: 0.8),
                     ),
                   ],
                 ),
@@ -203,7 +204,7 @@ class _GlassLoadingWidgetState extends State<GlassLoadingWidget>
             level: GlassLevel.content,
             borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            glassTint: theme.colorScheme.surfaceContainerHighest.withOpacity(0.1),
+            glassTint: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.1),
             child: Text(
               widget.message!,
               style: TextStyle(
@@ -237,7 +238,7 @@ class _LoadingRingPainter extends CustomPainter {
 
     // Background circle (faint)
     final backgroundPaint = Paint()
-      ..color = color.withOpacity(0.2)
+      ..color = color.withValues(alpha: 0.2)
       ..strokeWidth = strokeWidth
       ..style = PaintingStyle.stroke;
 
@@ -284,7 +285,7 @@ class GlassLoadingOverlay extends StatelessWidget {
     final theme = Theme.of(context);
     
     return Material(
-      color: backgroundColor ?? Colors.black.withOpacity(0.3),
+      color: backgroundColor ?? Colors.black.withValues(alpha: 0.3),
       child: Center(
         child: GlassLoadingWidget.overlay(
           message: message ?? 'Loading...',
@@ -366,7 +367,7 @@ class _GlassShimmerLoadingState extends State<GlassShimmerLoading>
                 end: Alignment(1.0 + _shimmerAnimation.value, 1.0),
                 colors: [
                   Colors.transparent,
-                  theme.colorScheme.onSurface.withOpacity(0.1),
+                  theme.colorScheme.onSurface.withValues(alpha: 0.1),
                   Colors.transparent,
                 ],
                 stops: const [0.0, 0.5, 1.0],
@@ -378,3 +379,4 @@ class _GlassShimmerLoadingState extends State<GlassShimmerLoading>
     );
   }
 }
+

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/standardized_app_bar.dart';
 import '../../services/collaboration_service.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class CollaborationManagementScreen extends ConsumerStatefulWidget {
   final SharedTaskList sharedList;
@@ -58,10 +59,10 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
         title: 'Manage ${widget.sharedList.name}',
         bottom: TabBar(
           controller: _tabController,
-          tabs: const [
-            Tab(icon: Icon(Icons.people), text: 'Collaborators'),
-            Tab(icon: Icon(Icons.settings), text: 'Settings'),
-            Tab(icon: Icon(Icons.history), text: 'Activity'),
+          tabs: [
+            Tab(icon: Icon(PhosphorIcons.users()), text: 'Collaborators'),
+            Tab(icon: Icon(PhosphorIcons.gear()), text: 'Settings'),
+            Tab(icon: Icon(PhosphorIcons.clockCounterClockwise()), text: 'Activity'),
           ],
         ),
       ),
@@ -99,8 +100,8 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
           children: [
             Row(
               children: [
-                Icon(Icons.person_add, color: Theme.of(context).primaryColor),
-                const SizedBox(width: 8),
+                Icon(PhosphorIcons.userPlus(), color: Theme.of(context).primaryColor),
+                SizedBox(width: 8),
                 const Text(
                   'Add Collaborator',
                   style: TextStyle(
@@ -134,7 +135,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: () => _addCollaborator(CollaborationPermission.view),
-                    icon: const Icon(Icons.visibility),
+                    icon: Icon(PhosphorIcons.eye()),
                     label: const Text('Add as Viewer'),
                   ),
                 ),
@@ -142,7 +143,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
                 Expanded(
                   child: ElevatedButton.icon(
                     onPressed: () => _addCollaborator(CollaborationPermission.edit),
-                    icon: const Icon(Icons.edit),
+                    icon: Icon(PhosphorIcons.pencil()),
                     label: const Text('Add as Editor'),
                   ),
                 ),
@@ -163,7 +164,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
           children: [
             Row(
               children: [
-                Icon(Icons.group, color: Theme.of(context).primaryColor),
+                Icon(PhosphorIcons.users(), color: Theme.of(context).primaryColor),
                 const SizedBox(width: 8),
                 const Text(
                   'Current Collaborators',
@@ -198,9 +199,9 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
   Widget _buildCollaboratorTile(String userId, CollaborationPermission permission, bool isOwner) {
     return ListTile(
       leading: CircleAvatar(
-        backgroundColor: _getPermissionColor(permission).withOpacity(0.1),
+        backgroundColor: _getPermissionColor(permission).withValues(alpha: 0.1),
         child: Icon(
-          isOwner ? Icons.star : Icons.person,
+          isOwner ? PhosphorIcons.star() : PhosphorIcons.user(),
           color: _getPermissionColor(permission),
         ),
       ),
@@ -216,34 +217,34 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
           : PopupMenuButton<String>(
               onSelected: (value) => _handleCollaboratorAction(value, userId, permission),
               itemBuilder: (context) => [
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'change_to_view',
                   child: ListTile(
-                    leading: Icon(Icons.visibility),
+                    leading: Icon(PhosphorIcons.eye()),
                     title: Text('Change to Viewer'),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'change_to_edit',
                   child: ListTile(
-                    leading: Icon(Icons.edit),
+                    leading: Icon(PhosphorIcons.pencil()),
                     title: Text('Change to Editor'),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'change_to_admin',
                   child: ListTile(
-                    leading: Icon(Icons.admin_panel_settings),
+                    leading: Icon(PhosphorIcons.shieldCheck()),
                     title: Text('Change to Admin'),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'remove',
                   child: ListTile(
-                    leading: Icon(Icons.remove_circle, color: Colors.red),
+                    leading: Icon(PhosphorIcons.minusCircle(), color: Colors.red),
                     title: Text('Remove', style: TextStyle(color: Colors.red)),
                     contentPadding: EdgeInsets.zero,
                   ),
@@ -278,8 +279,8 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
           children: [
             Row(
               children: [
-                Icon(Icons.settings, color: Theme.of(context).primaryColor),
-                const SizedBox(width: 8),
+                Icon(PhosphorIcons.gear(), color: Theme.of(context).primaryColor),
+                SizedBox(width: 8),
                 const Text(
                   'List Settings',
                   style: TextStyle(
@@ -293,7 +294,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
             ListTile(
               title: const Text('List Name'),
               subtitle: Text(widget.sharedList.name),
-              trailing: const Icon(Icons.edit),
+              trailing: Icon(PhosphorIcons.pencil()),
               onTap: () => _editListName(),
               contentPadding: EdgeInsets.zero,
             ),
@@ -304,14 +305,14 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
                     ? 'No description' 
                     : widget.sharedList.description,
               ),
-              trailing: const Icon(Icons.edit),
+              trailing: Icon(PhosphorIcons.pencil()),
               onTap: () => _editListDescription(),
               contentPadding: EdgeInsets.zero,
             ),
             ListTile(
               title: const Text('Tasks'),
               subtitle: Text('${widget.sharedList.taskIds.length} tasks in this list'),
-              trailing: const Icon(Icons.arrow_forward_ios),
+              trailing: Icon(PhosphorIcons.caretRight()),
               onTap: () => _manageListTasks(),
               contentPadding: EdgeInsets.zero,
             ),
@@ -330,8 +331,8 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
           children: [
             Row(
               children: [
-                Icon(Icons.share, color: Theme.of(context).primaryColor),
-                const SizedBox(width: 8),
+                Icon(PhosphorIcons.share(), color: Theme.of(context).primaryColor),
+                SizedBox(width: 8),
                 const Text(
                   'Sharing Settings',
                   style: TextStyle(
@@ -354,7 +355,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
                 title: const Text('Share Code'),
                 subtitle: Text(widget.sharedList.shareCode!),
                 trailing: IconButton(
-                  icon: const Icon(Icons.copy),
+                  icon: Icon(PhosphorIcons.copy()),
                   onPressed: () => _copyShareCode(),
                 ),
                 contentPadding: EdgeInsets.zero,
@@ -362,7 +363,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
               ListTile(
                 title: const Text('Share Link'),
                 subtitle: const Text('Generate shareable link'),
-                trailing: const Icon(Icons.link),
+                trailing: Icon(PhosphorIcons.link()),
                 onTap: () => _generateShareLink(),
                 contentPadding: EdgeInsets.zero,
               ),
@@ -375,15 +376,15 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
 
   Widget _buildDangerZoneSection() {
     return Card(
-      color: Colors.red.withOpacity(0.05),
+      color: Colors.red.withValues(alpha: 0.05),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Row(
+            Row(
               children: [
-                Icon(Icons.warning, color: Colors.red),
+                Icon(PhosphorIcons.warning(), color: Colors.red),
                 SizedBox(width: 8),
                 Text(
                   'Danger Zone',
@@ -395,11 +396,11 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             ListTile(
               title: const Text('Delete Shared List'),
               subtitle: const Text('Permanently delete this shared list and remove all collaborators'),
-              trailing: const Icon(Icons.delete_forever, color: Colors.red),
+              trailing: Icon(PhosphorIcons.trash(), color: Colors.red),
               onTap: () => _deleteSharedList(),
               contentPadding: EdgeInsets.zero,
             ),
@@ -411,13 +412,13 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
 
   Widget _buildActivityTab() {
     return _isLoading
-        ? const Center(child: CircularProgressIndicator())
+        ? Center(child: CircularProgressIndicator())
         : _changeHistory.isEmpty
-            ? const Center(
+            ? Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.history, size: 64, color: Colors.grey),
+                    Icon(PhosphorIcons.clockCounterClockwise(), size: 64, color: Colors.grey),
                     SizedBox(height: 16),
                     Text(
                       'No activity yet',
@@ -440,7 +441,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
   Widget _buildActivityTile(CollaborationChange change) {
     return ListTile(
       leading: CircleAvatar(
-        backgroundColor: _getChangeTypeColor(change.changeType).withOpacity(0.1),
+        backgroundColor: _getChangeTypeColor(change.changeType).withValues(alpha: 0.1),
         child: Icon(
           _getChangeTypeIcon(change.changeType),
           color: _getChangeTypeColor(change.changeType),
@@ -487,19 +488,19 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
   IconData _getChangeTypeIcon(CollaborationChangeType changeType) {
     switch (changeType) {
       case CollaborationChangeType.taskCreated:
-        return Icons.add_task;
+        return PhosphorIcons.plus();
       case CollaborationChangeType.taskUpdated:
-        return Icons.edit;
+        return PhosphorIcons.pencil();
       case CollaborationChangeType.taskCompleted:
-        return Icons.check_circle;
+        return PhosphorIcons.checkCircle();
       case CollaborationChangeType.taskDeleted:
-        return Icons.delete;
+        return PhosphorIcons.trash();
       case CollaborationChangeType.collaboratorAdded:
-        return Icons.person_add;
+        return PhosphorIcons.userPlus();
       case CollaborationChangeType.collaboratorRemoved:
-        return Icons.person_remove;
+        return PhosphorIcons.userMinus();
       case CollaborationChangeType.permissionChanged:
-        return Icons.security;
+        return PhosphorIcons.shield();
     }
   }
 
@@ -982,10 +983,10 @@ class _SharedTaskListTasksScreen extends StatelessWidget {
                   }
                 },
                 itemBuilder: (context) => [
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'remove',
                     child: ListTile(
-                      leading: Icon(Icons.remove_circle, color: Colors.red),
+                      leading: Icon(PhosphorIcons.minusCircle(), color: Colors.red),
                       title: Text('Remove from list'),
                       contentPadding: EdgeInsets.zero,
                     ),
@@ -1026,3 +1027,4 @@ class _SharedTaskListTasksScreen extends StatelessWidget {
     }
   }
 }
+

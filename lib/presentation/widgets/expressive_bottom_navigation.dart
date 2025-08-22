@@ -112,15 +112,15 @@ class _ExpressiveBottomNavigationState extends State<ExpressiveBottomNavigation>
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            theme.colorScheme.surface.withOpacity(0.0),
-            theme.colorScheme.surface.withOpacity(0.8),
+            theme.colorScheme.surface.withValues(alpha: 0.0),
+            theme.colorScheme.surface.withValues(alpha: 0.8),
             theme.colorScheme.surface,
           ],
           stops: const [0.0, 0.3, 1.0],
         ),
         boxShadow: [
           BoxShadow(
-            color: theme.colorScheme.shadow.withOpacity(0.1),
+            color: theme.colorScheme.shadow.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, -2),
           ),
@@ -147,15 +147,15 @@ class _ExpressiveBottomNavigationState extends State<ExpressiveBottomNavigation>
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            theme.colorScheme.primary.withOpacity(0.15),
-                            theme.colorScheme.secondary.withOpacity(0.1),
+                            theme.colorScheme.primary.withValues(alpha: 0.15),
+                            theme.colorScheme.secondary.withValues(alpha: 0.1),
                           ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
                         borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                         border: Border.all(
-                          color: theme.colorScheme.primary.withOpacity(0.3),
+                          color: theme.colorScheme.primary.withValues(alpha: 0.3),
                           width: 1,
                         ),
                       ),
@@ -196,7 +196,7 @@ class _ExpressiveBottomNavigationState extends State<ExpressiveBottomNavigation>
                         height: 48,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: theme.colorScheme.primary.withOpacity(
+                          color: theme.colorScheme.primary.withValues(alpha: 
                             0.2 * (1 - _rippleAnimation.value),
                           ),
                         ),
@@ -262,8 +262,8 @@ class _ExpressiveBottomNavigationState extends State<ExpressiveBottomNavigation>
                         gradient: isSelected
                             ? LinearGradient(
                                 colors: [
-                                  theme.colorScheme.primary.withOpacity(0.2),
-                                  theme.colorScheme.secondary.withOpacity(0.1),
+                                  theme.colorScheme.primary.withValues(alpha: 0.2),
+                                  theme.colorScheme.secondary.withValues(alpha: 0.1),
                                 ],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,

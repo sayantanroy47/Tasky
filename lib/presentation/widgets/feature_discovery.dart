@@ -4,6 +4,7 @@ import '../../core/accessibility/accessibility_constants.dart';
 import '../../core/theme/typography_constants.dart';
 import 'glassmorphism_container.dart';
 import 'accessible_button.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Feature discovery system with glassmorphism tooltips and guided tours
 class FeatureDiscovery {
@@ -49,7 +50,7 @@ class FeatureDiscovery {
 
     showDialog(
       context: context,
-      barrierColor: Colors.black.withOpacity(0.7),
+      barrierColor: Colors.black.withValues(alpha: 0.7),
       barrierDismissible: canDismiss,
       builder: (context) => FeatureSpotlightOverlay(
         spotlight: spotlight,
@@ -236,7 +237,7 @@ class _FeatureSpotlightOverlayState extends State<FeatureSpotlightOverlay>
           ),
           boxShadow: [
             BoxShadow(
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
               blurRadius: 20,
               spreadRadius: 5,
             ),
@@ -271,7 +272,7 @@ class _FeatureSpotlightOverlayState extends State<FeatureSpotlightOverlay>
                     gradient: LinearGradient(
                       colors: [
                         theme.colorScheme.primary,
-                        theme.colorScheme.primary.withOpacity(0.7),
+                        theme.colorScheme.primary.withValues(alpha: 0.7),
                       ],
                     ),
                     shape: BoxShape.circle,
@@ -333,15 +334,15 @@ class _FeatureSpotlightOverlayState extends State<FeatureSpotlightOverlay>
                         semanticHint: 'Skip this feature introduction',
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    SizedBox(width: 12),
                   ],
                   
                   Expanded(
                     child: AccessibleButton.primary(
                       label: widget.spotlight.onNext != null ? 'Next' : 'Got It',
                       icon: widget.spotlight.onNext != null 
-                          ? Icons.arrow_forward 
-                          : Icons.check,
+                          ? PhosphorIcons.arrowRight() 
+                          : PhosphorIcons.check(),
                       onPressed: () {
                         Navigator.of(context).pop();
                         if (widget.spotlight.onNext != null) {
@@ -493,7 +494,7 @@ class _ContextualHintState extends State<ContextualHint>
                     level: GlassLevel.floating,
                     borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    glassTint: theme.colorScheme.primaryContainer.withOpacity(0.9),
+                    glassTint: theme.colorScheme.primaryContainer.withValues(alpha: 0.9),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -503,7 +504,7 @@ class _ContextualHintState extends State<ContextualHint>
                             size: 16,
                             color: theme.colorScheme.onPrimaryContainer,
                           ),
-                          const SizedBox(width: 8),
+                          SizedBox(width: 8),
                         ],
                         Flexible(
                           child: Text(
@@ -517,9 +518,9 @@ class _ContextualHintState extends State<ContextualHint>
                         ),
                         const SizedBox(width: 8),
                         Icon(
-                          Icons.close,
+                          PhosphorIcons.x(),
                           size: 14,
-                          color: theme.colorScheme.onPrimaryContainer.withOpacity(0.7),
+                          color: theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.7),
                         ),
                       ],
                     ),
@@ -630,3 +631,4 @@ class FeatureHighlight extends StatelessWidget {
     }
   }
 }
+

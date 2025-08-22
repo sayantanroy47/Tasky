@@ -1,0 +1,544 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:table_calendar/table_calendar.dart';
+import '../../domain/entities/task_model.dart';
+import '../../domain/entities/calendar_event.dart';
+import '../../domain/models/enums.dart';
+import '../providers/enhanced_calendar_provider.dart';
+
+/// Enhanced calendar widget that integrates tasks and events
+class EnhancedCalendarWidget extends ConsumerWidget {
+  const EnhancedCalendarWidget({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final calendarState = ref.watch(enhancedCalendarProvider);
+    final calendarNotifier = ref.read(enhancedCalendarProvider.notifier);
+
+    return Column(
+      children: [
+        // Calendar statistics
+        _buildCalendarStats(context, ref),
+        
+        const SizedBox(height: 16),
+        
+        // View mode selector
+        _buildViewModeSelector(context, calendarState, calendarNotifier),
+        
+        const SizedBox(height: 12),
+        
+        // Calendar
+        Expanded(
+          child: _buildCalendarView(context, calendarState, calendarNotifier),
+        ),
+        
+        const SizedBox(height: 16),
+        
+        // Selected date details
+        _buildSelectedDateDetails(context, ref, calendarState),
+      ],
+    );
+  }
+
+  Widget _buildCalendarStats(BuildContext context, WidgetRef ref) {
+    final stats = ref.watch(calendarStatsProvider);
+    
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _buildStatItem(context, 'Today', stats.todaysTasks.toString(), Colors.blue),
+          _buildStatItem(context, 'Upcoming', stats.upcomingTasks.toString(), Colors.green),
+          _buildStatItem(context, 'Overdue', stats.overdueTasks.toString(), Colors.red),
+          _buildStatItem(context, 'Total', stats.totalTasks.toString(), Colors.grey),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatItem(BuildContext context, String label, String value, Color color) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          value,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
+        ),
+        Text(
+          label,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildViewModeSelector(
+    BuildContext context,
+    EnhancedCalendarState state,
+    EnhancedCalendarNotifier notifier,
+  ) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: CalendarViewMode.values.map((mode) {
+          final isSelected = state.viewMode == mode;
+          return GestureDetector(
+            onTap: () => notifier.changeViewMode(mode),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: isSelected ? Theme.of(context).colorScheme.primary : null,
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Text(
+                _getViewModeLabel(mode),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: isSelected 
+                      ? Theme.of(context).colorScheme.onPrimary
+                      : Theme.of(context).colorScheme.onSurfaceVariant,
+                  fontWeight: isSelected ? FontWeight.bold : null,
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  String _getViewModeLabel(CalendarViewMode mode) {
+    switch (mode) {
+      case CalendarViewMode.month:
+        return 'Month';
+      case CalendarViewMode.week:
+        return 'Week';
+      case CalendarViewMode.day:
+        return 'Day';
+    }
+  }
+
+  Widget _buildCalendarView(
+    BuildContext context,
+    EnhancedCalendarState state,
+    EnhancedCalendarNotifier notifier,
+  ) {
+    final tasksByDate = notifier.getTasksByDate();
+    final eventsByDate = notifier.getEventsByDate();
+
+    return TableCalendar<TaskModel>(
+      firstDay: DateTime.utc(2020, 1, 1),
+      lastDay: DateTime.utc(2030, 12, 31),
+      focusedDay: state.focusedDate,
+      selectedDayPredicate: (day) => isSameDay(state.selectedDate, day),
+      calendarFormat: state.calendarFormat,
+      
+      // Event loader - combine tasks and events
+      eventLoader: (day) {
+        final tasks = tasksByDate[DateTime(day.year, day.month, day.day)] ?? [];
+        return tasks;
+      },
+      
+      // Styling
+      calendarStyle: CalendarStyle(
+        outsideDaysVisible: false,
+        weekendTextStyle: TextStyle(
+          color: Theme.of(context).colorScheme.error,
+        ),
+        holidayTextStyle: TextStyle(
+          color: Theme.of(context).colorScheme.error,
+        ),
+        selectedDecoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primary,
+          shape: BoxShape.circle,
+        ),
+        todayDecoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.secondary,
+          shape: BoxShape.circle,
+        ),
+        markerDecoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.tertiary,
+          shape: BoxShape.circle,
+        ),
+        markersMaxCount: 3,
+        markersAlignment: Alignment.bottomCenter,
+      ),
+      
+      // Header styling
+      headerStyle: HeaderStyle(
+        formatButtonVisible: false,
+        titleCentered: true,
+        titleTextStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
+          fontWeight: FontWeight.bold,
+        ) ?? const TextStyle(),
+        leftChevronIcon: Icon(
+          Icons.chevron_left,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
+        rightChevronIcon: Icon(
+          Icons.chevron_right,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
+      ),
+
+      // Day cell builder to show task indicators
+      calendarBuilders: CalendarBuilders(
+        markerBuilder: (context, day, events) {
+          final tasks = tasksByDate[DateTime(day.year, day.month, day.day)] ?? [];
+          final calendarEvents = eventsByDate[DateTime(day.year, day.month, day.day)] ?? [];
+          
+          if (tasks.isEmpty && calendarEvents.isEmpty) return null;
+          
+          return Positioned(
+            bottom: 1,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (tasks.isNotEmpty)
+                  _buildTaskMarker(context, tasks),
+                if (calendarEvents.isNotEmpty) ...[
+                  if (tasks.isNotEmpty) const SizedBox(width: 2),
+                  _buildEventMarker(context, calendarEvents),
+                ],
+              ],
+            ),
+          );
+        },
+      ),
+      
+      // Callbacks
+      onDaySelected: (selectedDay, focusedDay) {
+        notifier.selectDate(selectedDay);
+        notifier.changeFocusedDate(focusedDay);
+      },
+      
+      onPageChanged: (focusedDay) {
+        notifier.changeFocusedDate(focusedDay);
+      },
+    );
+  }
+
+  Widget _buildTaskMarker(BuildContext context, List<TaskModel> tasks) {
+    final completedCount = tasks.where((t) => t.status == TaskStatus.completed).length;
+    final totalCount = tasks.length;
+    
+    Color markerColor;
+    if (completedCount == totalCount) {
+      markerColor = Colors.green;
+    } else if (completedCount > 0) {
+      markerColor = Colors.orange;
+    } else {
+      markerColor = Theme.of(context).colorScheme.primary;
+    }
+    
+    return Container(
+      width: 6,
+      height: 6,
+      decoration: BoxDecoration(
+        color: markerColor,
+        shape: BoxShape.circle,
+      ),
+    );
+  }
+
+  Widget _buildEventMarker(BuildContext context, List<CalendarEvent> events) {
+    return Container(
+      width: 6,
+      height: 6,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.secondary,
+        shape: BoxShape.rectangle,
+      ),
+    );
+  }
+
+  Widget _buildSelectedDateDetails(
+    BuildContext context,
+    WidgetRef ref,
+    EnhancedCalendarState state,
+  ) {
+    final tasks = state.tasksForSelectedDate;
+    
+    if (tasks.isEmpty) {
+      return _buildEmptySelectedDate(context, state.selectedDate);
+    }
+    
+    return Container(
+      constraints: const BoxConstraints(maxHeight: 200),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Tasks for ${_formatDate(state.selectedDate)}',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          
+          Expanded(
+            child: ListView.builder(
+              itemCount: tasks.length,
+              itemBuilder: (context, index) {
+                final task = tasks[index];
+                return _buildTaskListItem(context, ref, task);
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptySelectedDate(BuildContext context, DateTime date) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.event_available,
+            size: 32,
+            color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'No tasks for ${_formatDate(date)}',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 8),
+          ElevatedButton.icon(
+            onPressed: () => _showCreateTaskDialog(context, date),
+            icon: const Icon(Icons.add),
+            label: const Text('Add Task'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTaskListItem(BuildContext context, WidgetRef ref, TaskModel task) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 4),
+      child: ListTile(
+        dense: true,
+        leading: IconButton(
+          icon: Icon(
+            task.status == TaskStatus.completed
+                ? Icons.check_circle
+                : Icons.radio_button_unchecked,
+            color: task.status == TaskStatus.completed
+                ? Colors.green
+                : Theme.of(context).colorScheme.primary,
+          ),
+          onPressed: () {
+            if (task.status != TaskStatus.completed) {
+              ref.read(enhancedCalendarProvider.notifier).completeTask(task.id);
+            }
+          },
+        ),
+        title: Text(
+          task.title,
+          style: TextStyle(
+            decoration: task.status == TaskStatus.completed
+                ? TextDecoration.lineThrough
+                : null,
+          ),
+        ),
+        subtitle: task.description?.isNotEmpty == true
+            ? Text(
+                task.description!,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              )
+            : null,
+        trailing: _buildPriorityIndicator(context, task.priority),
+      ),
+    );
+  }
+
+  Widget _buildPriorityIndicator(BuildContext context, TaskPriority priority) {
+    Color color;
+    IconData icon;
+    
+    switch (priority) {
+      case TaskPriority.low:
+        color = Colors.green;
+        icon = Icons.keyboard_arrow_down;
+        break;
+      case TaskPriority.medium:
+        color = Colors.orange;
+        icon = Icons.remove;
+        break;
+      case TaskPriority.high:
+        color = Colors.red;
+        icon = Icons.keyboard_arrow_up;
+        break;
+      case TaskPriority.urgent:
+        color = Colors.red;
+        icon = Icons.priority_high;
+        break;
+    }
+    
+    return Icon(icon, color: color, size: 16);
+  }
+
+  String _formatDate(DateTime date) {
+    final months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+    return '${months[date.month - 1]} ${date.day}, ${date.year}';
+  }
+
+  void _showCreateTaskDialog(BuildContext context, DateTime date) {
+    showDialog(
+      context: context,
+      builder: (context) => _CreateTaskDialog(selectedDate: date),
+    );
+  }
+}
+
+/// Dialog for creating a new task for a specific date
+class _CreateTaskDialog extends ConsumerStatefulWidget {
+  final DateTime selectedDate;
+  
+  const _CreateTaskDialog({required this.selectedDate});
+
+  @override
+  ConsumerState<_CreateTaskDialog> createState() => _CreateTaskDialogState();
+}
+
+class _CreateTaskDialogState extends ConsumerState<_CreateTaskDialog> {
+  final _titleController = TextEditingController();
+  final _descriptionController = TextEditingController();
+  TaskPriority _selectedPriority = TaskPriority.medium;
+  
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text('Create Task for ${_formatDate(widget.selectedDate)}'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: _titleController,
+            decoration: const InputDecoration(
+              labelText: 'Task Title',
+              border: OutlineInputBorder(),
+            ),
+            autofocus: true,
+          ),
+          const SizedBox(height: 16),
+          
+          TextField(
+            controller: _descriptionController,
+            decoration: const InputDecoration(
+              labelText: 'Description (optional)',
+              border: OutlineInputBorder(),
+            ),
+            maxLines: 2,
+          ),
+          const SizedBox(height: 16),
+          
+          DropdownButtonFormField<TaskPriority>(
+            value: _selectedPriority,
+            decoration: const InputDecoration(
+              labelText: 'Priority',
+              border: OutlineInputBorder(),
+            ),
+            items: TaskPriority.values.map((priority) {
+              return DropdownMenuItem(
+                value: priority,
+                child: Text(priority.name.toUpperCase()),
+              );
+            }).toList(),
+            onChanged: (priority) {
+              if (priority != null) {
+                setState(() => _selectedPriority = priority);
+              }
+            },
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(
+          onPressed: _canCreate() ? _createTask : null,
+          child: const Text('Create'),
+        ),
+      ],
+    );
+  }
+
+  bool _canCreate() {
+    return _titleController.text.trim().isNotEmpty;
+  }
+
+  void _createTask() async {
+    if (!_canCreate()) return;
+    
+    final task = TaskModel.create(
+      title: _titleController.text.trim(),
+      description: _descriptionController.text.trim().isEmpty 
+          ? null 
+          : _descriptionController.text.trim(),
+      priority: _selectedPriority,
+      dueDate: widget.selectedDate,
+    );
+    
+    final success = await ref.read(enhancedCalendarProvider.notifier).createTaskForDate(task);
+    
+    if (mounted) {
+      Navigator.of(context).pop();
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Task created successfully'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Failed to create task'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    }
+  }
+
+  String _formatDate(DateTime date) {
+    final months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
+    return '${months[date.month - 1]} ${date.day}, ${date.year}';
+  }
+}

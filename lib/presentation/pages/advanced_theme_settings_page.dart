@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/providers/enhanced_theme_provider.dart';
 import '../../core/theme/theme_persistence_service.dart';
 import '../widgets/glassmorphism_container.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Advanced theme settings page with persistence features
 class AdvancedThemeSettingsPage extends ConsumerStatefulWidget {
@@ -74,7 +75,7 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
         children: [
           Row(
             children: [
-              Icon(Icons.palette, color: Theme.of(context).colorScheme.primary),
+              Icon(PhosphorIcons.palette(), color: Theme.of(context).colorScheme.primary),
               const SizedBox(width: 8),
               Text(
                 'Current Theme',
@@ -110,7 +111,7 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
         children: [
           Row(
             children: [
-              Icon(Icons.settings, color: Theme.of(context).colorScheme.primary),
+              Icon(PhosphorIcons.gear(), color: Theme.of(context).colorScheme.primary),
               const SizedBox(width: 8),
               Text(
                 'Theme Preferences',
@@ -180,7 +181,7 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
         children: [
           Row(
             children: [
-              Icon(Icons.favorite, color: Theme.of(context).colorScheme.primary),
+              Icon(PhosphorIcons.heart(), color: Theme.of(context).colorScheme.primary),
               const SizedBox(width: 8),
               Text(
                 'Favorite Themes',
@@ -197,7 +198,7 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           if (favoriteThemes.isEmpty)
             Center(
               child: Padding(
@@ -205,7 +206,7 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
                 child: Column(
                   children: [
                     Icon(
-                      Icons.favorite_border,
+                      PhosphorIcons.heart(),
                       size: 48,
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
@@ -237,7 +238,7 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
                 title: Text(theme.metadata.name),
                 subtitle: Text(theme.metadata.category),
                 trailing: IconButton(
-                  icon: const Icon(Icons.favorite),
+                  icon: Icon(PhosphorIcons.heart()),
                   color: Colors.red,
                   onPressed: () => notifier.toggleFavoriteTheme(theme.metadata.id),
                 ),
@@ -267,7 +268,7 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
         children: [
           Row(
             children: [
-              Icon(Icons.analytics, color: Theme.of(context).colorScheme.primary),
+              Icon(PhosphorIcons.chartBar(), color: Theme.of(context).colorScheme.primary),
               const SizedBox(width: 8),
               Text(
                 'Usage Statistics',
@@ -358,8 +359,8 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
         children: [
           Row(
             children: [
-              Icon(Icons.storage, color: Theme.of(context).colorScheme.primary),
-              const SizedBox(width: 8),
+              Icon(PhosphorIcons.database(), color: Theme.of(context).colorScheme.primary),
+              SizedBox(width: 8),
               Text(
                 'Data Management',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -380,7 +381,7 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
                           height: 16,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Icon(Icons.file_download),
+                      : Icon(PhosphorIcons.download()),
                   label: Text(_exportInProgress ? 'Exporting...' : 'Export Data'),
                 ),
               ),
@@ -394,7 +395,7 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
                           height: 16,
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
-                      : const Icon(Icons.file_upload),
+                      : Icon(PhosphorIcons.upload()),
                   label: Text(_importInProgress ? 'Importing...' : 'Import Data'),
                 ),
               ),
@@ -421,8 +422,8 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
         children: [
           Row(
             children: [
-              Icon(Icons.build, color: Theme.of(context).colorScheme.primary),
-              const SizedBox(width: 8),
+              Icon(PhosphorIcons.wrench(), color: Theme.of(context).colorScheme.primary),
+              SizedBox(width: 8),
               Text(
                 'Advanced Actions',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
@@ -433,19 +434,19 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
           ),
           const SizedBox(height: 16),
           ListTile(
-            leading: const Icon(Icons.shuffle),
+            leading: Icon(PhosphorIcons.shuffle()),
             title: const Text('Random Theme'),
             subtitle: const Text('Apply a random theme'),
             onTap: () => notifier.applyRandomTheme(),
           ),
           ListTile(
-            leading: const Icon(Icons.refresh),
+            leading: Icon(PhosphorIcons.arrowClockwise()),
             title: const Text('Reset to Default'),
             subtitle: const Text('Reset to the default theme'),
             onTap: () => notifier.resetToDefault(),
           ),
           ListTile(
-            leading: Icon(Icons.delete_forever, color: Theme.of(context).colorScheme.error),
+            leading: Icon(PhosphorIcons.trash(), color: Theme.of(context).colorScheme.error),
             title: Text(
               'Clear All Data',
               style: TextStyle(color: Theme.of(context).colorScheme.error),
@@ -645,3 +646,4 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
     }
   }
 }
+

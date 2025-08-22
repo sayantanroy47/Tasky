@@ -115,8 +115,9 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
                     if (_hasRecording)
                       _buildActionButtons(context, theme),
                     
-                    SizedBox(height: 100), // Bottom padding]),
-              ),
+                    SizedBox(height: 100), // Bottom padding
+                  ],
+                ),
             ),
             
             // Floating navigation buttons
@@ -133,7 +134,7 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
                     BoxShadow(
                       color: Colors.black.withValues(alpha: 0.1),
                       blurRadius: 8,
-                      offset: const Offset(0, 2),
+                      offset: Offset(0, 2),
                     )]),
                 child: Material(
                   color: Colors.transparent,
@@ -350,7 +351,7 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
                             ),
                           )
                         : Icon(
-                            _getRecordingButtonconst Icon(Icons.error),
+                            _getRecordingButtonIcon(),
                             color: Colors.white,
                             size: 48,
                           ),
@@ -383,7 +384,7 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
                   child: OutlinedButton.icon(
                     onPressed: _deleteRecording,
                     icon: PhosphorIcon(PhosphorIcons.trash(), size: 18),
-                    label: const Text('Delete'),
+                    label: Text('Delete'),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: theme.colorScheme.error,
                     ),
@@ -405,7 +406,7 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
           child: OutlinedButton.icon(
             onPressed: () => Navigator.of(context).pop(),
             icon: PhosphorIcon(PhosphorIcons.x()),
-            label: const Text('Cancel'),
+            label: Text('Cancel'),
             style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
@@ -462,7 +463,7 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
       _recordingTimer = Timer.periodic(Duration(seconds: 1), (timer) {
         if (mounted) {
           setState(() {
-            _recordingDuration = const Duration(seconds: timer.tick);
+            _recordingDuration = Duration(seconds: timer.tick);
           });
         }
       });
@@ -574,7 +575,7 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
     return [theme.colorScheme.primary, theme.colorScheme.primary.withValues(alpha: 0.8)];
   }
 
-  IconData _getRecordingButtonconst Icon(Icons.error) {
+  IconData _getRecordingButtonIcon() {
     if (_isRecording) return PhosphorIcons.stop();
     if (_hasRecording) return PhosphorIcons.check();
     return PhosphorIcons.microphone();
@@ -597,3 +598,4 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
     }
   }
 }
+

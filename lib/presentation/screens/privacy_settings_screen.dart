@@ -7,6 +7,7 @@ import 'dart:convert';
 import '../widgets/glassmorphism_container.dart';
 import '../../core/design_system/design_tokens.dart';
 import '../../core/theme/typography_constants.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Screen for managing privacy settings and data compliance
 class PrivacySettingsScreen extends ConsumerWidget {
@@ -24,7 +25,7 @@ class PrivacySettingsScreen extends ConsumerWidget {
         actions: [
           IconButton(
             onPressed: () => _showPrivacyInfo(context),
-            icon: const Icon(Icons.info_outline),
+            icon: Icon(PhosphorIcons.info()),
             tooltip: 'Privacy information',
           ),
         ],
@@ -61,8 +62,8 @@ class PrivacySettingsScreen extends ConsumerWidget {
               child: Column(
                 children: [
                   SwitchListTile(
-                    secondary: const Icon(Icons.minimize),
-                    title: const Text('Data Minimization'),
+                    secondary: Icon(PhosphorIcons.minus()),
+                    title: Text('Data Minimization'),
                     subtitle: const Text('Collect only necessary data for app functionality'),
                     value: privacy.dataMinimization,
                     onChanged: (value) => _updatePrivacySetting(
@@ -72,7 +73,7 @@ class PrivacySettingsScreen extends ConsumerWidget {
                   ),
                   const Divider(),
                   SwitchListTile(
-                    secondary: const Icon(Icons.computer),
+                    secondary: Icon(PhosphorIcons.desktop()),
                     title: const Text('Local Processing Preferred'),
                     subtitle: const Text('Process data on device when possible'),
                     value: privacy.localProcessingPreferred,
@@ -96,7 +97,7 @@ class PrivacySettingsScreen extends ConsumerWidget {
               child: Column(
                 children: [
                   SwitchListTile(
-                    secondary: const Icon(Icons.analytics),
+                    secondary: Icon(PhosphorIcons.chartBar()),
                     title: const Text('Analytics'),
                     subtitle: const Text('Help improve the app with usage analytics'),
                     value: privacy.analyticsEnabled,
@@ -114,7 +115,7 @@ class PrivacySettingsScreen extends ConsumerWidget {
                   ),
                   const Divider(),
                   SwitchListTile(
-                    secondary: const Icon(Icons.bug_report),
+                    secondary: Icon(PhosphorIcons.bug()),
                     title: const Text('Crash Reporting'),
                     subtitle: const Text('Send crash reports to help fix issues'),
                     value: privacy.crashReportingEnabled,
@@ -125,7 +126,7 @@ class PrivacySettingsScreen extends ConsumerWidget {
                   ),
                   const Divider(),
                   SwitchListTile(
-                    secondary: const Icon(Icons.location_on),
+                    secondary: Icon(PhosphorIcons.mapPin()),
                     title: const Text('Location Tracking'),
                     subtitle: const Text('Use location for location-based reminders'),
                     value: privacy.locationTrackingEnabled,
@@ -156,7 +157,7 @@ class PrivacySettingsScreen extends ConsumerWidget {
               child: Column(
                 children: [
                   SwitchListTile(
-                    secondary: const Icon(Icons.psychology),
+                    secondary: Icon(PhosphorIcons.brain()),
                     title: const Text('AI Processing'),
                     subtitle: const Text('Use AI services for smart task parsing'),
                     value: privacy.aiProcessingConsent,
@@ -174,10 +175,10 @@ class PrivacySettingsScreen extends ConsumerWidget {
                   ),
                   const Divider(),
                   ListTile(
-                    leading: const Icon(Icons.mic),
+                    leading: Icon(PhosphorIcons.microphone()),
                     title: const Text('Voice Data Retention'),
                     subtitle: Text(_getVoiceRetentionDescription(privacy.voiceDataRetention)),
-                    trailing: const Icon(Icons.arrow_forward_ios),
+                    trailing: Icon(PhosphorIcons.caretRight()),
                     onTap: () => _showVoiceRetentionDialog(context, ref, privacy),
                   ),
                 ],
@@ -195,7 +196,7 @@ class PrivacySettingsScreen extends ConsumerWidget {
               child: Column(
                 children: [
                   SwitchListTile(
-                    secondary: const Icon(Icons.cloud),
+                    secondary: Icon(PhosphorIcons.cloud()),
                     title: const Text('Cloud Sync'),
                     subtitle: const Text('Sync data across devices via cloud'),
                     value: privacy.cloudSyncEnabled,
@@ -213,7 +214,7 @@ class PrivacySettingsScreen extends ConsumerWidget {
                   ),
                   const Divider(),
                   SwitchListTile(
-                    secondary: const Icon(Icons.share),
+                    secondary: Icon(PhosphorIcons.share()),
                     title: const Text('Share Usage Data'),
                     subtitle: const Text('Share anonymous usage patterns'),
                     value: privacy.shareUsageData,
@@ -224,7 +225,7 @@ class PrivacySettingsScreen extends ConsumerWidget {
                   ),
                   const Divider(),
                   SwitchListTile(
-                    secondary: const Icon(Icons.ads_click),
+                    secondary: Icon(PhosphorIcons.cursor()),
                     title: const Text('Personalized Ads'),
                     subtitle: const Text('Show personalized advertisements'),
                     value: privacy.personalizedAds,
@@ -248,10 +249,10 @@ class PrivacySettingsScreen extends ConsumerWidget {
               child: Column(
                 children: [
                   ListTile(
-                    leading: const Icon(Icons.schedule),
+                    leading: Icon(PhosphorIcons.clock()),
                     title: const Text('Log Retention'),
                     subtitle: Text('Keep logs for ${retention.logRetentionDays} days'),
-                    trailing: const Icon(Icons.arrow_forward_ios),
+                    trailing: Icon(PhosphorIcons.caretRight()),
                     onTap: () => _showRetentionDialog(
                       context,
                       ref,
@@ -263,14 +264,14 @@ class PrivacySettingsScreen extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  const Divider(),
+                  Divider(),
                   ListTile(
-                    leading: const Icon(Icons.task),
+                    leading: Icon(PhosphorIcons.checkSquare()),
                     title: const Text('Task Retention'),
                     subtitle: Text(retention.taskRetentionDays > 0
                         ? 'Delete completed tasks after ${retention.taskRetentionDays} days'
                         : 'Keep completed tasks forever'),
-                    trailing: const Icon(Icons.arrow_forward_ios),
+                    trailing: Icon(PhosphorIcons.caretRight()),
                     onTap: () => _showRetentionDialog(
                       context,
                       ref,
@@ -282,9 +283,9 @@ class PrivacySettingsScreen extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  const Divider(),
+                  Divider(),
                   SwitchListTile(
-                    secondary: const Icon(Icons.auto_delete),
+                    secondary: Icon(PhosphorIcons.trash()),
                     title: const Text('Auto-delete Completed Tasks'),
                     subtitle: const Text('Automatically remove old completed tasks'),
                     value: retention.autoDeleteCompletedTasks,
@@ -308,32 +309,32 @@ class PrivacySettingsScreen extends ConsumerWidget {
               child: Column(
                 children: [
                   ListTile(
-                    leading: const Icon(Icons.download),
+                    leading: Icon(PhosphorIcons.download()),
                     title: const Text('Export My Data'),
                     subtitle: const Text('Download all your data in JSON format'),
-                    trailing: const Icon(Icons.arrow_forward_ios),
+                    trailing: Icon(PhosphorIcons.caretRight()),
                     onTap: () => _exportUserData(context, ref),
                   ),
                   const Divider(),
                   ListTile(
-                    leading: const Icon(Icons.visibility),
+                    leading: Icon(PhosphorIcons.eye()),
                     title: const Text('View Data Processing Log'),
                     subtitle: const Text('See how your data has been processed'),
-                    trailing: const Icon(Icons.arrow_forward_ios),
+                    trailing: Icon(PhosphorIcons.caretRight()),
                     onTap: () => _showDataProcessingLog(context, ref),
                   ),
                   const Divider(),
                   ListTile(
-                    leading: const Icon(Icons.gavel),
+                    leading: Icon(PhosphorIcons.gavel()),
                     title: const Text('Manage Consent'),
                     subtitle: const Text('Review and modify your consent choices'),
-                    trailing: const Icon(Icons.arrow_forward_ios),
+                    trailing: Icon(PhosphorIcons.caretRight()),
                     onTap: () => _showConsentManagement(context, ref),
                   ),
                   const Divider(),
                   ListTile(
                     leading: Icon(
-                      Icons.delete_forever,
+                      PhosphorIcons.trash(),
                       color: Theme.of(context).colorScheme.error,
                     ),
                     title: Text(
@@ -343,7 +344,7 @@ class PrivacySettingsScreen extends ConsumerWidget {
                       ),
                     ),
                     subtitle: const Text('Permanently delete all your data'),
-                    trailing: const Icon(Icons.arrow_forward_ios),
+                    trailing: Icon(PhosphorIcons.caretRight()),
                     onTap: () => _showDeleteAllDataDialog(context, ref),
                   ),
                 ],
@@ -363,7 +364,7 @@ class PrivacySettingsScreen extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            Icons.error_outline,
+            PhosphorIcons.warningCircle(),
             size: 64,
             color: Theme.of(context).colorScheme.error,
           ),
@@ -397,8 +398,8 @@ class PrivacySettingsScreen extends ConsumerWidget {
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        Theme.of(context).colorScheme.primary.withOpacity(0.8),
-                        Theme.of(context).colorScheme.primary.withOpacity(0.6),
+                        Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
+                        Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
                       ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -624,7 +625,7 @@ class PrivacySettingsScreen extends ConsumerWidget {
                           'Data types: ${log.dataTypes.map((t) => t.name).join(', ')}',
                         ),
                         leading: Icon(
-                          log.success ? Icons.check_circle : Icons.error,
+                          log.success ? PhosphorIcons.checkCircle() : PhosphorIcons.warningCircle(),
                           color: log.success ? Colors.green : Colors.red,
                         ),
                         isThreeLine: true,
@@ -668,12 +669,12 @@ class PrivacySettingsScreen extends ConsumerWidget {
                           'Valid: ${consent.isValid ? 'Yes' : 'No'}',
                         ),
                         leading: Icon(
-                          consent.granted ? Icons.check_circle : Icons.cancel,
+                          consent.granted ? PhosphorIcons.checkCircle() : PhosphorIcons.xCircle(),
                           color: consent.granted ? Colors.green : Colors.red,
                         ),
                         trailing: consent.granted
                             ? IconButton(
-                                icon: const Icon(Icons.remove_circle),
+                                icon: Icon(PhosphorIcons.minusCircle()),
                                 onPressed: () async {
                                   await privacyService.withdrawConsent(consent.purpose);
                                   if (context.mounted) {
@@ -794,3 +795,4 @@ class PrivacySettingsScreen extends ConsumerWidget {
     }
   }
 }
+

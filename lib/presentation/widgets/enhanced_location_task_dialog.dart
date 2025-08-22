@@ -8,6 +8,7 @@ import '../providers/location_providers.dart';
 import '../providers/task_provider.dart' show taskOperationsProvider;
 import 'glassmorphism_container.dart';
 import '../../core/theme/typography_constants.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Enhanced dialog for creating location-based tasks with smart suggestions
 class EnhancedLocationTaskDialog extends ConsumerStatefulWidget {
@@ -94,7 +95,7 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
     return Dialog(
       backgroundColor: Colors.transparent,
       child: Container(
-        constraints: const BoxConstraints(maxWidth: 600, maxHeight: 700),
+        constraints: BoxConstraints(maxWidth: 600, maxHeight: 700),
         child: GlassmorphismContainer(
           borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
           child: Padding(
@@ -108,7 +109,7 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
                   // Header
                   Row(
                     children: [
-                      Icon(Icons.location_on, color: theme.colorScheme.primary),
+                      Icon(PhosphorIcons.mapPin(), color: theme.colorScheme.primary),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
@@ -122,7 +123,7 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
                       ),
                       IconButton(
                         onPressed: () => Navigator.of(context).pop(),
-                        icon: const Icon(Icons.close),
+                        icon: Icon(PhosphorIcons.x()),
                       ),
                     ],
                   ),
@@ -180,7 +181,7 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
             fontWeight: FontWeight.w600,
           ),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12),
         
         // Title field
         TextFormField(
@@ -188,7 +189,7 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
           decoration: InputDecoration(
             labelText: 'Task Title',
             hintText: 'Enter a descriptive title...',
-            prefixIcon: const Icon(Icons.task),
+            prefixIcon: Icon(PhosphorIcons.checkSquare()),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
             ),
@@ -202,7 +203,7 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
           onChanged: (_) => _updateLocationSuggestions(),
         ),
         
-        const SizedBox(height: 12),
+        SizedBox(height: 12),
         
         // Description field
         TextFormField(
@@ -210,7 +211,7 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
           decoration: InputDecoration(
             labelText: 'Description (Optional)',
             hintText: 'Add more details...',
-            prefixIcon: const Icon(Icons.description),
+            prefixIcon: Icon(PhosphorIcons.fileText()),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
             ),
@@ -229,7 +230,7 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
                 value: _priority,
                 decoration: InputDecoration(
                   labelText: 'Priority',
-                  prefixIcon: const Icon(Icons.flag),
+                  prefixIcon: Icon(PhosphorIcons.flag()),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
                   ),
@@ -253,14 +254,14 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
                 },
               ),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: 12),
             Expanded(
               child: InkWell(
                 onTap: () => _selectDueDate(context),
                 child: InputDecorator(
                   decoration: InputDecoration(
                     labelText: 'Due Date (Optional)',
-                    prefixIcon: const Icon(Icons.calendar_today),
+                    prefixIcon: Icon(PhosphorIcons.calendar()),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
                     ),
@@ -301,11 +302,11 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
                 fontWeight: FontWeight.w600,
               ),
             ),
-            const Spacer(),
+            Spacer(),
             if (_selectedLocation != null)
               TextButton.icon(
                 onPressed: () => setState(() => _selectedLocation = null),
-                icon: const Icon(Icons.clear, size: 16),
+                icon: Icon(PhosphorIcons.x(), size: 16),
                 label: const Text('Clear'),
               ),
           ],
@@ -318,7 +319,7 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
           decoration: InputDecoration(
             labelText: 'Search Location',
             hintText: 'Enter address, place name, or coordinates...',
-            prefixIcon: const Icon(Icons.search),
+            prefixIcon: Icon(PhosphorIcons.magnifyingGlass()),
             suffixIcon: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -333,7 +334,7 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
                   ),
                 IconButton(
                   onPressed: _useCurrentLocation,
-                  icon: const Icon(Icons.my_location),
+                  icon: Icon(PhosphorIcons.crosshair()),
                   tooltip: 'Use current location',
                 ),
               ],
@@ -359,13 +360,13 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
                 margin: const EdgeInsets.only(top: 8),
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.orange.withOpacity(0.1),
+                  color: Colors.orange.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
-                  border: Border.all(color: Colors.orange.withOpacity(0.3)),
+                  border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.warning, color: Colors.orange, size: 20),
+                    Icon(PhosphorIcons.warning(), color: Colors.orange, size: 20),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
@@ -391,20 +392,20 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
         
         // Selected location display
         if (_selectedLocation != null) ...[
-          const SizedBox(height: 12),
+          SizedBox(height: 12),
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: theme.colorScheme.primaryContainer.withOpacity(0.3),
+              color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
               border: Border.all(
-                color: theme.colorScheme.primary.withOpacity(0.3),
+                color: theme.colorScheme.primary.withValues(alpha: 0.3),
               ),
             ),
             child: Row(
               children: [
                 Icon(
-                  Icons.location_on,
+                  PhosphorIcons.mapPin(),
                   color: theme.colorScheme.primary,
                   size: 20,
                 ),
@@ -448,14 +449,14 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
             fontWeight: FontWeight.w600,
           ),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12),
         
         // Trigger type selection
         DropdownButtonFormField<GeofenceType>(
           value: _triggerType,
           decoration: InputDecoration(
             labelText: 'Trigger Type',
-            prefixIcon: const Icon(Icons.notifications_active),
+            prefixIcon: Icon(PhosphorIcons.bell()),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
             ),
@@ -528,7 +529,7 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
             fontWeight: FontWeight.w600,
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         Wrap(
           spacing: 8,
           runSpacing: 8,
@@ -536,7 +537,7 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
             return ActionChip(
               label: Text(location),
               onPressed: () => _selectSuggestedLocation(location),
-              avatar: const Icon(Icons.place, size: 16),
+              avatar: Icon(PhosphorIcons.mapPin(), size: 16),
             );
           }).toList(),
         ),
@@ -879,24 +880,24 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
   IconData _getPriorityIcon(TaskPriority priority) {
     switch (priority) {
       case TaskPriority.urgent:
-        return Icons.warning;
+        return PhosphorIcons.warning();
       case TaskPriority.high:
-        return Icons.keyboard_arrow_up;
+        return PhosphorIcons.caretUp();
       case TaskPriority.medium:
-        return Icons.drag_handle;
+        return PhosphorIcons.dotsSixVertical();
       case TaskPriority.low:
-        return Icons.keyboard_arrow_down;
+        return PhosphorIcons.caretDown();
     }
   }
 
   IconData _getTriggerTypeIcon(GeofenceType type) {
     switch (type) {
       case GeofenceType.enter:
-        return Icons.login;
+        return PhosphorIcons.signIn();
       case GeofenceType.exit:
-        return Icons.logout;
+        return PhosphorIcons.signOut();
       case GeofenceType.both:
-        return Icons.sync_alt;
+        return PhosphorIcons.arrowsClockwise();
     }
   }
 
@@ -978,3 +979,4 @@ extension LocationTriggerExtension on LocationTrigger {
     );
   }
 }
+

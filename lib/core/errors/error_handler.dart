@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import '../accessibility/accessibility_constants.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Comprehensive error handling system with glassmorphism UI
 class AppErrorHandler {
@@ -262,7 +263,7 @@ class AppErrorHandler {
       SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.warning, color: Colors.white, size: 20),
+            Icon(PhosphorIcons.warning(), color: Colors.white, size: 20),
             const SizedBox(width: 8),
             Expanded(child: Text(error.message)),
           ],
@@ -325,7 +326,7 @@ class AppErrorHandler {
       SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.check_circle, color: Colors.white, size: 20),
+            Icon(PhosphorIcons.checkCircle(), color: Colors.white, size: 20),
             const SizedBox(width: 8),
             Expanded(child: Text(message)),
           ],
@@ -467,3 +468,4 @@ enum ErrorType {
   systemError,
   userError,
 }
+

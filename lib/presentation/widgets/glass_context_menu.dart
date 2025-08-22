@@ -4,6 +4,7 @@ import 'glassmorphism_container.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../core/theme/material3/motion_system.dart';
 import '../../core/design_system/design_tokens.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Beautiful glassmorphism context menu system
 class GlassContextMenu extends StatefulWidget {
@@ -124,8 +125,8 @@ class _GlassContextMenuState extends State<GlassContextMenu>
       level: GlassLevel.floating,
       borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium),
       padding: widget.padding ?? const EdgeInsets.all(8),
-      glassTint: theme.colorScheme.surface.withOpacity(0.9),
-      borderColor: theme.colorScheme.outline.withOpacity(0.3),
+      glassTint: theme.colorScheme.surface.withValues(alpha: 0.9),
+      borderColor: theme.colorScheme.outline.withValues(alpha: 0.3),
       child: IntrinsicWidth(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -174,7 +175,7 @@ class _GlassContextMenuState extends State<GlassContextMenu>
         gradient: LinearGradient(
           colors: [
             Colors.transparent,
-            theme.colorScheme.outline.withOpacity(0.3),
+            theme.colorScheme.outline.withValues(alpha: 0.3),
             Colors.transparent,
           ],
         ),
@@ -229,7 +230,7 @@ class _AnimatedMenuItemState extends State<_AnimatedMenuItem>
 
     _backgroundAnimation = ColorTween(
       begin: Colors.transparent,
-      end: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+      end: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
     ).animate(_hoverController);
   }
 
@@ -286,7 +287,7 @@ class _AnimatedMenuItemState extends State<_AnimatedMenuItem>
                         size: 20,
                         color: widget.item.enabled
                             ? (widget.item.iconColor ?? theme.colorScheme.onSurface)
-                            : theme.colorScheme.onSurface.withOpacity(0.38),
+                            : theme.colorScheme.onSurface.withValues(alpha: 0.38),
                       ),
                     ),
                   
@@ -303,7 +304,7 @@ class _AnimatedMenuItemState extends State<_AnimatedMenuItem>
                             : TypographyConstants.regular,
                         color: widget.item.enabled
                             ? (widget.item.textColor ?? theme.colorScheme.onSurface)
-                            : theme.colorScheme.onSurface.withOpacity(0.38),
+                            : theme.colorScheme.onSurface.withValues(alpha: 0.38),
                       ),
                     ),
                   ),
@@ -314,7 +315,7 @@ class _AnimatedMenuItemState extends State<_AnimatedMenuItem>
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
-                        color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                         borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall),
                       ),
                       child: Text(
@@ -471,7 +472,7 @@ class CommonContextMenuItems {
   static ContextMenuItem copy({VoidCallback? onTap}) {
     return ContextMenuItem(
       title: 'Copy',
-      icon: Icons.copy,
+      icon: PhosphorIcons.copy(),
       shortcut: 'Ctrl+C',
       onTap: onTap,
     );
@@ -480,7 +481,7 @@ class CommonContextMenuItems {
   static ContextMenuItem paste({VoidCallback? onTap}) {
     return ContextMenuItem(
       title: 'Paste',
-      icon: Icons.paste,
+      icon: PhosphorIcons.clipboard(),
       shortcut: 'Ctrl+V',
       onTap: onTap,
     );
@@ -489,7 +490,7 @@ class CommonContextMenuItems {
   static ContextMenuItem delete({VoidCallback? onTap}) {
     return ContextMenuItem(
       title: 'Delete',
-      icon: Icons.delete,
+      icon: PhosphorIcons.trash(),
       iconColor: Colors.red,
       textColor: Colors.red,
       shortcut: 'Del',
@@ -500,7 +501,7 @@ class CommonContextMenuItems {
   static ContextMenuItem edit({VoidCallback? onTap}) {
     return ContextMenuItem(
       title: 'Edit',
-      icon: Icons.edit,
+      icon: PhosphorIcons.pencil(),
       shortcut: 'F2',
       onTap: onTap,
     );
@@ -509,7 +510,7 @@ class CommonContextMenuItems {
   static ContextMenuItem duplicate({VoidCallback? onTap}) {
     return ContextMenuItem(
       title: 'Duplicate',
-      icon: Icons.content_copy,
+      icon: PhosphorIcons.copy(),
       shortcut: 'Ctrl+D',
       onTap: onTap,
     );
@@ -518,7 +519,7 @@ class CommonContextMenuItems {
   static ContextMenuItem markComplete({VoidCallback? onTap}) {
     return ContextMenuItem(
       title: 'Mark Complete',
-      icon: Icons.check_circle,
+      icon: PhosphorIcons.checkCircle(),
       iconColor: Colors.green,
       onTap: onTap,
     );
@@ -527,7 +528,7 @@ class CommonContextMenuItems {
   static ContextMenuItem markIncomplete({VoidCallback? onTap}) {
     return ContextMenuItem(
       title: 'Mark Incomplete',
-      icon: Icons.radio_button_unchecked,
+      icon: PhosphorIcons.circle(),
       onTap: onTap,
     );
   }
@@ -545,13 +546,13 @@ class CommonContextMenuItems {
   static _PriorityConfig _getPriorityConfig(TaskPriority priority) {
     switch (priority) {
       case TaskPriority.low:
-        return _PriorityConfig('Low Priority', Icons.flag, Colors.green);
+        return _PriorityConfig('Low Priority', PhosphorIcons.flag(), Colors.green);
       case TaskPriority.medium:
-        return _PriorityConfig('Medium Priority', Icons.flag, Colors.blue);
+        return _PriorityConfig('Medium Priority', PhosphorIcons.flag(), Colors.blue);
       case TaskPriority.high:
-        return _PriorityConfig('High Priority', Icons.flag, Colors.orange);
+        return _PriorityConfig('High Priority', PhosphorIcons.flag(), Colors.orange);
       case TaskPriority.urgent:
-        return _PriorityConfig('Urgent Priority', Icons.flag, Colors.red);
+        return _PriorityConfig('Urgent Priority', PhosphorIcons.flag(), Colors.red);
     }
   }
 }
@@ -566,3 +567,5 @@ class _PriorityConfig {
 
 // Mock TaskPriority enum for the example
 enum TaskPriority { low, medium, high, urgent }
+
+

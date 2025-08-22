@@ -5,6 +5,7 @@ import 'dart:math' as math;
 import 'dart:async';
 import 'glassmorphism_container.dart';
 import '../../core/theme/typography_constants.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 
 // Define rainbow colors and gold color
@@ -255,7 +256,7 @@ class _GlassEasterEggsState extends State<GlassEasterEggs>
       SnackBar(
         content: Row(
           children: [
-            const Icon(Icons.star, color: Colors.yellow, size: 20),
+            Icon(PhosphorIcons.star(), color: Colors.yellow, size: 20),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
@@ -303,7 +304,7 @@ class _GlassEasterEggsState extends State<GlassEasterEggs>
                             BoxShadow(
                               color: _rainbowColors[
                                 (DateTime.now().millisecondsSinceEpoch ~/ 100) % _rainbowColors.length
-                              ].withOpacity(0.3 * _secretAnimation.value),
+                              ].withValues(alpha: 0.3 * _secretAnimation.value),
                               blurRadius: 20 * _secretAnimation.value,
                               spreadRadius: 5 * _secretAnimation.value,
                             ),
@@ -344,9 +345,9 @@ class _GlassEasterEggsState extends State<GlassEasterEggs>
             decoration: BoxDecoration(
               gradient: RadialGradient(
                 colors: [
-                  Colors.purple.withOpacity(0.3 * _konamiAnimation.value),
-                  Colors.blue.withOpacity(0.2 * _konamiAnimation.value),
-                  Colors.cyan.withOpacity(0.1 * _konamiAnimation.value),
+                  Colors.purple.withValues(alpha: 0.3 * _konamiAnimation.value),
+                  Colors.blue.withValues(alpha: 0.2 * _konamiAnimation.value),
+                  Colors.cyan.withValues(alpha: 0.1 * _konamiAnimation.value),
                   Colors.transparent,
                 ],
               ),
@@ -371,9 +372,9 @@ class _GlassEasterEggsState extends State<GlassEasterEggs>
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  _goldColor.withOpacity(0.1 * _secretAnimation.value),
-                  Colors.orange.withOpacity(0.05 * _secretAnimation.value),
-                  Colors.red.withOpacity(0.02 * _secretAnimation.value),
+                  _goldColor.withValues(alpha: 0.1 * _secretAnimation.value),
+                  Colors.orange.withValues(alpha: 0.05 * _secretAnimation.value),
+                  Colors.red.withValues(alpha: 0.02 * _secretAnimation.value),
                   Colors.transparent,
                 ],
               ),
@@ -425,20 +426,19 @@ class _GlassEasterEggsState extends State<GlassEasterEggs>
         level: GlassLevel.floating,
         borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium),
         padding: const EdgeInsets.all(16),
-        glassTint: Colors.purple.withOpacity(0.2),
+        glassTint: Colors.purple.withValues(alpha: 0.2),
         child: Row(
           children: [
             Container(
               width: 40,
               height: 40,
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
+              decoration: BoxDecoration(gradient: LinearGradient(
                   colors: [_goldColor, Colors.orange],
                 ),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
-                Icons.star,
+              child: Icon(
+                PhosphorIcons.star(),
                 color: Colors.white,
                 size: 24,
               ),
@@ -460,7 +460,7 @@ class _GlassEasterEggsState extends State<GlassEasterEggs>
                     'You\'ve unlocked the hidden glassmorphism effects',
                     style: TextStyle(
                       fontSize: TypographyConstants.textXS,
-                      color: Colors.white.withOpacity(0.8),
+                      color: Colors.white.withValues(alpha: 0.8),
                     ),
                   ),
                 ],
@@ -537,7 +537,7 @@ class _KonamiEffectPainter extends CustomPainter {
       final radius = maxRadius * ringProgress;
       final opacity = 1.0 - ringProgress;
       
-      paint.color = _rainbowColors[i % _rainbowColors.length].withOpacity(opacity * 0.5);
+      paint.color = _rainbowColors[i % _rainbowColors.length].withValues(alpha: opacity * 0.5);
       
       canvas.drawCircle(center, radius, paint);
     }
@@ -568,25 +568,25 @@ class SecretAchievements {
       id: 'secret_tapper',
       title: 'Secret Tapper',
       description: 'Discovered the 7-tap secret',
-      icon: Icons.touch_app,
+      icon: PhosphorIcons.hand(),
     ),
     Achievement(
       id: 'rainbow_master',
       title: 'Rainbow Master',
       description: 'Triggered the rainbow explosion',
-      icon: Icons.colorize,
+      icon: PhosphorIcons.palette(),
     ),
     Achievement(
       id: 'long_presser',
       title: 'Patient Explorer',
       description: 'Found the long press secret',
-      icon: Icons.timer,
+      icon: PhosphorIcons.timer(),
     ),
     Achievement(
       id: 'konami_warrior',
       title: 'Konami Warrior',
       description: 'Entered the legendary code',
-      icon: Icons.gamepad,
+      icon: PhosphorIcons.gameController(),
     ),
   ];
 
@@ -624,3 +624,5 @@ class Achievement {
     required this.icon,
   });
 }
+
+

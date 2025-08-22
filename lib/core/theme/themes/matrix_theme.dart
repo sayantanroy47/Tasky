@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../app_theme_data.dart' as app_theme_data;
 import '../models/theme_metadata.dart';
@@ -26,7 +27,7 @@ class MatrixTheme {
         version: '1.0.0',
         tags: ['cyberpunk', 'hacker', 'digital', 'green', 'terminal', 'retro'],
         category: 'developer',
-        previewIcon: Icons.terminal,
+        previewIcon: PhosphorIcons.terminal(),
         primaryPreviewColor: isDark ? const Color(0xFF000000) : const Color(0xFFf8f8f8), // Pure black or light gray
         secondaryPreviewColor: const Color(0xFF00ff00), // Neon green (same)
         createdAt: now,

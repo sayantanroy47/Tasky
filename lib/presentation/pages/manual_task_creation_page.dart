@@ -183,11 +183,16 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
               child: TextButton(
                 onPressed: _isCreating ? null : _createTask,
                 child: _isCreating
-                    ? SizedBox(width: 16,
+                    ? const SizedBox(
+                        width: 16,
                         height: 16,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : const Text(""), ))]),
+                    : const Text("Create"),
+              ),
+            ),
+          ],
+        ),
         body: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(16),
@@ -226,8 +231,9 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
                     // Create Button
                     _buildCreateButton(context, theme),
                     
-                    SizedBox(height: 100), // Bottom padding]),
-              ),
+                    SizedBox(height: 100), // Bottom padding
+                  ],
+                ),
             ),
           ),
         ),
@@ -629,3 +635,4 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
     );
   }
 }
+

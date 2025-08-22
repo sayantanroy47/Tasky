@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/data_export_providers.dart';
 import '../../services/data_export/data_export_models.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Temporary minimal analytics widgets to fix compilation errors
 /// This file provides basic implementations until full analytics widgets are created
@@ -81,7 +82,7 @@ class AnalyticsMetricCard extends StatelessWidget {
             Row(
               children: [
                 Icon(icon, color: color ?? Theme.of(context).colorScheme.primary),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Text(title, style: Theme.of(context).textTheme.titleSmall),
               ],
             ),
@@ -107,7 +108,7 @@ class AnalyticsMetricCard extends StatelessWidget {
               Row(
                 children: [
                   Icon(
-                    isPositiveTrend == true ? Icons.trending_up : Icons.trending_down,
+                    isPositiveTrend == true ? PhosphorIcons.trendUp() : PhosphorIcons.trendDown(),
                     size: 16,
                     color: isPositiveTrend == true ? Colors.green : Colors.red,
                   ),
@@ -360,10 +361,10 @@ class PeakHoursAnalysisWidget extends StatelessWidget {
               'Peak Hours Analysis',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Row(
               children: [
-                Icon(Icons.access_time, color: Theme.of(context).colorScheme.primary),
+                Icon(PhosphorIcons.clock(), color: Theme.of(context).colorScheme.primary),
                 const SizedBox(width: 8),
                 const Text('Peak productivity: 9:00 AM - 11:00 AM'),
               ],
@@ -597,3 +598,4 @@ class AnalyticsExportWidget extends ConsumerWidget {
     );
   }
 }
+

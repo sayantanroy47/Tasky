@@ -1,0 +1,616 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../domain/entities/task_template.dart';
+import '../../domain/entities/task_enums.dart';
+import '../../domain/entities/recurrence_pattern.dart';
+import '../providers/task_template_providers.dart';
+import 'recurrence_pattern_picker.dart';
+
+/// Dialog for selecting a task template
+class TaskTemplateSelector extends ConsumerStatefulWidget {
+  final ValueChanged<TaskTemplate> onTemplateSelected;
+
+  const TaskTemplateSelector({
+    super.key,
+    required this.onTemplateSelected,
+  });
+  @override
+  ConsumerState<TaskTemplateSelector> createState() => _TaskTemplateSelectorState();
+}
+
+class _TaskTemplateSelectorState extends ConsumerState<TaskTemplateSelector>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  String _searchQuery = '';
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+  }
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.9,
+        height: MediaQuery.of(context).size.height * 0.8,
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            // Header
+            Row(
+              children: [
+                Text(
+                  'Select Template',
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+                const Spacer(),
+                IconButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: const Icon(Icons.close),
+                ),
+              ],
+            ),
+            
+            const SizedBox(height: 16),
+            
+            // Search bar
+            TextField(
+              decoration: const InputDecoration(
+                hintText: 'Search templates...',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(),
+              ),
+              onChanged: (value) {
+                setState(() {
+                  _searchQuery = value;
+                });
+              },
+            ),
+            
+            const SizedBox(height: 16),
+            
+            // Tabs
+            TabBar(
+              controller: _tabController,
+              tabs: const [
+                Tab(text: 'All'),
+                Tab(text: 'Favorites'),
+                Tab(text: 'Most Used'),
+              ],
+            ),
+            
+            const SizedBox(height: 16),
+            
+            // Tab content
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  _buildAllTemplatesTab(),
+                  _buildFavoriteTemplatesTab(),
+                  _buildMostUsedTemplatesTab(),
+                ],
+              ),
+            ),
+            
+            const SizedBox(height: 16),
+            
+            // Create new template button
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () => _showCreateTemplateDialog(),
+                icon: const Icon(Icons.add),
+                label: const Text('Create New Template'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAllTemplatesTab() {
+    return Consumer(
+      builder: (context, ref, child) {
+        final templatesAsync = ref.watch(taskTemplatesProvider);
+        
+        return templatesAsync.when(
+          data: (templates) {
+            final filteredTemplates = _filterTemplates(templates);
+            return _buildTemplateList(filteredTemplates);
+          },
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, stack) => Center(
+            child: Text('Error loading templates: $error'),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildFavoriteTemplatesTab() {
+    return Consumer(
+      builder: (context, ref, child) {
+        final templatesAsync = ref.watch(favoriteTaskTemplatesProvider);
+        
+        return templatesAsync.when(
+          data: (templates) {
+            final filteredTemplates = _filterTemplates(templates);
+            return _buildTemplateList(filteredTemplates);
+          },
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, stack) => Center(
+            child: Text('Error loading favorite templates: $error'),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildMostUsedTemplatesTab() {
+    return Consumer(
+      builder: (context, ref, child) {
+        final templatesAsync = ref.watch(mostUsedTaskTemplatesProvider);
+        
+        return templatesAsync.when(
+          data: (templates) {
+            final filteredTemplates = _filterTemplates(templates);
+            return _buildTemplateList(filteredTemplates);
+          },
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, stack) => Center(
+            child: Text('Error loading most used templates: $error'),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildTemplateList(List<TaskTemplate> templates) {
+    if (templates.isEmpty) {
+      return const Center(
+        child: Text('No templates found'),
+      );
+    }
+
+    return ListView.builder(
+      itemCount: templates.length,
+      itemBuilder: (context, index) {
+        final template = templates[index];
+        return _buildTemplateCard(template);
+      },
+    );
+  }
+
+  Widget _buildTemplateCard(TaskTemplate template) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: ListTile(
+        title: Text(template.name),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (template.description != null)
+              Text(template.description!),
+            const SizedBox(height: 4),
+            Text(
+              template.titleTemplate,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Row(
+              children: [
+                if (template.isFavorite)
+                  const Icon(Icons.favorite, size: 16, color: Colors.red),
+                if (template.hasCategory) ...[
+                  const SizedBox(width: 4),
+                  Chip(
+                    label: Text(template.category!),
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                ],
+                const Spacer(),
+                Text(
+                  'Used ${template.usageCount} times',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ],
+            ),
+          ],
+        ),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              onPressed: () => _toggleTemplateFavorite(template),
+              icon: Icon(
+                template.isFavorite ? Icons.favorite : Icons.favorite_border,
+                color: template.isFavorite ? Colors.red : null,
+              ),
+            ),
+            IconButton(
+              onPressed: () => _showTemplateOptions(template),
+              icon: const Icon(Icons.more_vert),
+            ),
+          ],
+        ),
+        onTap: () {
+          widget.onTemplateSelected(template);
+          Navigator.of(context).pop();
+        },
+      ),
+    );
+  }
+
+  List<TaskTemplate> _filterTemplates(List<TaskTemplate> templates) {
+    if (_searchQuery.isEmpty) return templates;
+    
+    return templates.where((template) {
+      return template.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+          (template.description?.toLowerCase().contains(_searchQuery.toLowerCase()) ?? false) ||
+          template.titleTemplate.toLowerCase().contains(_searchQuery.toLowerCase());
+    }).toList();
+  }
+
+  void _toggleTemplateFavorite(TaskTemplate template) {
+    ref.read(taskTemplateNotifierProvider.notifier)
+        .toggleTemplateFavorite(template.id);
+  }
+
+  void _showTemplateOptions(TaskTemplate template) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: const Icon(Icons.edit),
+            title: const Text('Edit Template'),
+            onTap: () {
+              Navigator.of(context).pop();
+              _showEditTemplateDialog(template);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.copy),
+            title: const Text('Duplicate Template'),
+            onTap: () {
+              Navigator.of(context).pop();
+              _duplicateTemplate(template);
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.delete, color: Colors.red),
+            title: const Text('Delete Template'),
+            onTap: () {
+              Navigator.of(context).pop();
+              _showDeleteConfirmation(template);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showCreateTemplateDialog() {
+    Navigator.of(context).pop();
+    showDialog(
+      context: context,
+      builder: (context) => TaskTemplateFormDialog(
+        onTemplateSaved: (template) {
+          ref.read(taskTemplateNotifierProvider.notifier)
+              .createTemplate(template);
+        },
+      ),
+    );
+  }
+
+  void _showEditTemplateDialog(TaskTemplate template) {
+    showDialog(
+      context: context,
+      builder: (context) => TaskTemplateFormDialog(
+        initialTemplate: template,
+        onTemplateSaved: (updatedTemplate) {
+          ref.read(taskTemplateNotifierProvider.notifier)
+              .updateTemplate(updatedTemplate);
+        },
+      ),
+    );
+  }
+
+  void _duplicateTemplate(TaskTemplate template) {
+    final duplicatedTemplate = template.copyWith(
+      id: null, // Will generate new ID
+      name: '${template.name} (Copy)',
+      usageCount: 0,
+      createdAt: DateTime.now(),
+      updatedAt: null,
+    );
+    
+    ref.read(taskTemplateNotifierProvider.notifier)
+        .createTemplate(duplicatedTemplate);
+  }
+
+  void _showDeleteConfirmation(TaskTemplate template) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Template'),
+        content: Text('Are you sure you want to delete "${template.name}"?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              ref.read(taskTemplateNotifierProvider.notifier)
+                  .deleteTemplate(template.id);
+            },
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Dialog for creating/editing task templates
+class TaskTemplateFormDialog extends StatefulWidget {
+  final TaskTemplate? initialTemplate;
+  final ValueChanged<TaskTemplate> onTemplateSaved;
+
+  const TaskTemplateFormDialog({
+    super.key,
+    this.initialTemplate,
+    required this.onTemplateSaved,
+  });
+  @override
+  State<TaskTemplateFormDialog> createState() => _TaskTemplateFormDialogState();
+}
+
+class _TaskTemplateFormDialogState extends State<TaskTemplateFormDialog> {
+  final _formKey = GlobalKey<FormState>();
+  late TextEditingController _nameController;
+  late TextEditingController _descriptionController;
+  late TextEditingController _titleTemplateController;
+  late TextEditingController _descriptionTemplateController;
+  late TextEditingController _categoryController;
+  
+  TaskPriority _priority = TaskPriority.medium;
+  List<String> _tags = [];
+  RecurrencePattern? _recurrence;
+  int? _estimatedDuration;
+  @override
+  void initState() {
+    super.initState();
+    
+    final template = widget.initialTemplate;
+    _nameController = TextEditingController(text: template?.name ?? '');
+    _descriptionController = TextEditingController(text: template?.description ?? '');
+    _titleTemplateController = TextEditingController(text: template?.titleTemplate ?? '');
+    _descriptionTemplateController = TextEditingController(text: template?.descriptionTemplate ?? '');
+    _categoryController = TextEditingController(text: template?.category ?? '');
+    
+    if (template != null) {
+      _priority = template.priority;
+      _tags = List.from(template.tags);
+      _recurrence = template.recurrence;
+      _estimatedDuration = template.estimatedDuration;
+    }
+  }
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _descriptionController.dispose();
+    _titleTemplateController.dispose();
+    _descriptionTemplateController.dispose();
+    _categoryController.dispose();
+    super.dispose();
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.9,
+        height: MediaQuery.of(context).size.height * 0.8,
+        padding: const EdgeInsets.all(16),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              // Header
+              Row(
+                children: [
+                  Text(
+                    widget.initialTemplate == null ? 'Create Template' : 'Edit Template',
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.close),
+                  ),
+                ],
+              ),
+              
+              const SizedBox(height: 16),
+              
+              // Form fields
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: _nameController,
+                        decoration: const InputDecoration(
+                          labelText: 'Template Name',
+                          border: OutlineInputBorder(),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Please enter a template name';
+                          }
+                          return null;
+                        },
+                      ),
+                      
+                      const SizedBox(height: 16),
+                      
+                      TextFormField(
+                        controller: _descriptionController,
+                        decoration: const InputDecoration(
+                          labelText: 'Description (optional)',
+                          border: OutlineInputBorder(),
+                        ),
+                        maxLines: 2,
+                      ),
+                      
+                      const SizedBox(height: 16),
+                      
+                      TextFormField(
+                        controller: _titleTemplateController,
+                        decoration: const InputDecoration(
+                          labelText: 'Task Title Template',
+                          border: OutlineInputBorder(),
+                          helperText: 'Use {{placeholder}} for dynamic content',
+                        ),
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Please enter a task title template';
+                          }
+                          return null;
+                        },
+                      ),
+                      
+                      const SizedBox(height: 16),
+                      
+                      TextFormField(
+                        controller: _descriptionTemplateController,
+                        decoration: const InputDecoration(
+                          labelText: 'Task Description Template (optional)',
+                          border: OutlineInputBorder(),
+                          helperText: 'Use {{placeholder}} for dynamic content',
+                        ),
+                        maxLines: 3,
+                      ),
+                      
+                      const SizedBox(height: 16),
+                      
+                      TextFormField(
+                        controller: _categoryController,
+                        decoration: const InputDecoration(
+                          labelText: 'Category (optional)',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 16),
+                      
+                      // Priority selector
+                      DropdownButtonFormField<TaskPriority>(
+                        value: _priority,
+                        decoration: const InputDecoration(
+                          labelText: 'Default Priority',
+                          border: OutlineInputBorder(),
+                        ),
+                        items: TaskPriority.values.map((priority) {
+                          return DropdownMenuItem(
+                            value: priority,
+                            child: Text(priority.displayName),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _priority = value!;
+                          });
+                        },
+                      ),
+                      
+                      const SizedBox(height: 16),
+                      
+                      // Recurrence pattern picker
+                      RecurrencePatternPicker(
+                        initialPattern: _recurrence,
+                        onPatternChanged: (pattern) {
+                          setState(() {
+                            _recurrence = pattern;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              
+              const SizedBox(height: 16),
+              
+              // Action buttons
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text('Cancel'),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: _saveTemplate,
+                      child: const Text('Save'),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _saveTemplate() {
+    if (!_formKey.currentState!.validate()) return;
+    
+    final template = widget.initialTemplate?.copyWith(
+      name: _nameController.text.trim(),
+      description: _descriptionController.text.trim().isEmpty 
+          ? null : _descriptionController.text.trim(),
+      titleTemplate: _titleTemplateController.text.trim(),
+      descriptionTemplate: _descriptionTemplateController.text.trim().isEmpty 
+          ? null : _descriptionTemplateController.text.trim(),
+      category: _categoryController.text.trim().isEmpty 
+          ? null : _categoryController.text.trim(),
+      priority: _priority,
+      tags: _tags,
+      recurrence: _recurrence,
+      estimatedDuration: _estimatedDuration,
+    ) ?? TaskTemplate.create(
+      name: _nameController.text.trim(),
+      description: _descriptionController.text.trim().isEmpty 
+          ? null : _descriptionController.text.trim(),
+      titleTemplate: _titleTemplateController.text.trim(),
+      descriptionTemplate: _descriptionTemplateController.text.trim().isEmpty 
+          ? null : _descriptionTemplateController.text.trim(),
+      category: _categoryController.text.trim().isEmpty 
+          ? null : _categoryController.text.trim(),
+      priority: _priority,
+      tags: _tags,
+      recurrence: _recurrence,
+      estimatedDuration: _estimatedDuration,
+    );
+    
+    widget.onTemplateSaved(template);
+    Navigator.of(context).pop();
+  }
+}

@@ -8,15 +8,18 @@ import '../widgets/glassmorphism_container.dart';
 import '../../core/theme/typography_constants.dart';
 import '../providers/location_providers.dart';
 import '../../services/location/location_task_service.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class NearbyTasksPage extends ConsumerStatefulWidget {
-  const NearbyTasksPage({super.key});  @override
+  const NearbyTasksPage({super.key});
+  @override
   ConsumerState<NearbyTasksPage> createState() => _NearbyTasksPageState();
 }
 
 class _NearbyTasksPageState extends ConsumerState<NearbyTasksPage> {
   double _radiusInMeters = 1000;
-  bool _showOnlyActiveTriggers = false;  @override
+  bool _showOnlyActiveTriggers = false;
+  @override
   Widget build(BuildContext context) {
     final locationSettings = ref.watch(locationSettingsProvider);
 
@@ -28,11 +31,11 @@ class _NearbyTasksPageState extends ConsumerState<NearbyTasksPage> {
           title: 'Nearby Tasks',
           actions: [
             IconButton(
-              icon: const Icon(Icons.tune),
+              icon: Icon(PhosphorIcons.sliders()),
               onPressed: _showFilterDialog,
             ),
             IconButton(
-              icon: const Icon(Icons.refresh),
+              icon: Icon(PhosphorIcons.arrowClockwise()),
               onPressed: () {
                 setState(() {
                   // Trigger rebuild to refresh data
@@ -79,7 +82,7 @@ class _NearbyTasksPageState extends ConsumerState<NearbyTasksPage> {
           children: [
             Row(
               children: [
-                const Icon(Icons.location_on, color: Colors.green),
+                Icon(PhosphorIcons.mapPin(), color: Colors.green),
                 const SizedBox(width: 8),
                 Text(
                   'Location Services Active',
@@ -144,7 +147,7 @@ class _NearbyTasksPageState extends ConsumerState<NearbyTasksPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.location_off,
+              PhosphorIcons.mapPin(),
               size: 64,
               color: Colors.grey[400],
             ),
@@ -168,7 +171,7 @@ class _NearbyTasksPageState extends ConsumerState<NearbyTasksPage> {
               onPressed: () {
                 Navigator.of(context).pushNamed('/location-settings');
               },
-              icon: const Icon(Icons.settings),
+              icon: Icon(PhosphorIcons.gear()),
               label: const Text('Open Location Settings'),
             ),
           ],
@@ -207,14 +210,14 @@ class _NearbyTasksPageState extends ConsumerState<NearbyTasksPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Filter Options'),
+        title: Text('Filter Options'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
               title: const Text('Search Radius'),
               subtitle: Text(_formatDistance(_radiusInMeters)),
-              trailing: const Icon(Icons.edit),
+              trailing: Icon(PhosphorIcons.pencil()),
               onTap: () {
                 Navigator.of(context).pop();
                 _showRadiusDialog();
@@ -286,3 +289,5 @@ class _NearbyTasksPageState extends ConsumerState<NearbyTasksPage> {
     }
   }
 }
+
+

@@ -12,6 +12,7 @@ import '../providers/task_provider.dart' show taskOperationsProvider;
 import 'glassmorphism_container.dart';
 import 'theme_aware_dialog_components.dart';
 import 'project_selector.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 
 /// Task form dialog for creating or editing tasks
@@ -44,29 +45,29 @@ class _TaskFormDialogState extends ConsumerState<TaskFormDialog> {
   bool _isLoading = false;
   
   // Priority options
-  static const List<PriorityOption> _priorityOptions = [
+  static final List<PriorityOption> _priorityOptions = [
     PriorityOption(
       value: 'low',
       name: 'Low',
-      icon: Icons.low_priority,
+      icon: PhosphorIcons.arrowDown(),
       color: Colors.green,
     ),
     PriorityOption(
       value: 'medium',
       name: 'Medium',
-      icon: Icons.remove,
+      icon: PhosphorIcons.minus(),
       color: Colors.orange,
     ),
     PriorityOption(
       value: 'high',
       name: 'High',
-      icon: Icons.priority_high,
+      icon: PhosphorIcons.arrowUp(),
       color: Colors.red,
     ),
     PriorityOption(
       value: 'urgent',
       name: 'Urgent',
-      icon: Icons.warning,
+      icon: PhosphorIcons.warning(),
       color: Colors.deepPurple,
     ),
   ];
@@ -108,18 +109,18 @@ class _TaskFormDialogState extends ConsumerState<TaskFormDialog> {
     return ThemeAwareTaskDialog(
       title: widget.isEditing ? 'Edit Task' : 'Create Task',
       subtitle: widget.isEditing ? 'Update task details' : 'Add a new task',
-      icon: widget.isEditing ? Icons.edit : Icons.add_task,
+      icon: widget.isEditing ? PhosphorIcons.pencil() : PhosphorIcons.plus(),
       onBack: () => Navigator.of(context).pop(),
       actions: [
         ThemeAwareButton(
           label: 'Cancel',
           onPressed: () => Navigator.of(context).pop(),
-          icon: Icons.close,
+          icon: PhosphorIcons.x(),
         ),
         ThemeAwareButton(
           label: widget.isEditing ? 'Update' : 'Create',
           onPressed: _isLoading ? null : _saveTask,
-          icon: widget.isEditing ? Icons.save : Icons.add,
+          icon: widget.isEditing ? PhosphorIcons.floppyDisk() : PhosphorIcons.plus(),
           isPrimary: true,
           isLoading: _isLoading,
         ),
@@ -142,7 +143,7 @@ class _TaskFormDialogState extends ConsumerState<TaskFormDialog> {
                 controller: _titleController,
                 labelText: 'Task Title',
                 hintText: 'Enter task title',
-                prefixIcon: Icons.title,
+                prefixIcon: PhosphorIcons.textT(),
                 autofocus: !widget.isEditing,
                 required: true,
                 validator: (value) {
@@ -152,14 +153,14 @@ class _TaskFormDialogState extends ConsumerState<TaskFormDialog> {
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               
               // Description field
               ThemeAwareFormField(
                 controller: _descriptionController,
                 labelText: 'Description',
                 hintText: 'Enter task description (optional)',
-                prefixIcon: Icons.description,
+                prefixIcon: PhosphorIcons.fileText(),
                 maxLines: 3,
               ),
               const SizedBox(height: 16),
@@ -255,7 +256,7 @@ class _TaskFormDialogState extends ConsumerState<TaskFormDialog> {
                     _dueTime = null;
                   });
                 },
-                icon: const Icon(Icons.clear, size: 16),
+                icon: Icon(PhosphorIcons.x(), size: 16),
                 label: const Text('Clear due date'),
                 style: TextButton.styleFrom(
                   foregroundColor: theme.colorScheme.error,
@@ -275,14 +276,14 @@ class _TaskFormDialogState extends ConsumerState<TaskFormDialog> {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         decoration: BoxDecoration(
           border: Border.all(
-            color: theme.colorScheme.outline.withOpacity(0.3),
+            color: theme.colorScheme.outline.withValues(alpha: 0.3),
           ),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
           children: [
             Icon(
-              Icons.calendar_today,
+              PhosphorIcons.calendar(),
               size: 18,
               color: theme.colorScheme.primary,
             ),
@@ -311,18 +312,18 @@ class _TaskFormDialogState extends ConsumerState<TaskFormDialog> {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
         decoration: BoxDecoration(
           border: Border.all(
-            color: theme.colorScheme.outline.withOpacity(0.3),
+            color: theme.colorScheme.outline.withValues(alpha: 0.3),
           ),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
           children: [
             Icon(
-              Icons.access_time,
+              PhosphorIcons.clock(),
               size: 18,
               color: _dueDate != null
                   ? theme.colorScheme.primary
-                  : theme.colorScheme.onSurfaceVariant.withOpacity(0.5),
+                  : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
             ),
             const SizedBox(width: 8),
             Text(
@@ -332,7 +333,7 @@ class _TaskFormDialogState extends ConsumerState<TaskFormDialog> {
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: _dueTime != null
                     ? theme.colorScheme.onSurface
-                    : theme.colorScheme.onSurfaceVariant.withOpacity(
+                    : theme.colorScheme.onSurfaceVariant.withValues(alpha: 
                         _dueDate != null ? 1.0 : 0.5,
                       ),
               ),
@@ -450,3 +451,6 @@ Future<TaskModel?> showTaskFormDialog(
     ),
   );
 }
+
+
+

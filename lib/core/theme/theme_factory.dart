@@ -34,7 +34,7 @@ class ThemeFactory {
       ),
       
       // Card theme
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: components.card.elevation,
         shape: RoundedRectangleBorder(
           borderRadius: effects.getBorderRadius(components.card.borderRadius),
@@ -104,7 +104,7 @@ class ThemeFactory {
         fillColor: colors.surfaceVariant,
         labelStyle: typography.inputText,
         hintStyle: typography.inputText.copyWith(
-          color: colors.onSurface.withOpacity(0.6),
+          color: colors.onSurface.withValues(alpha: 0.6),
         ),
       ),
       
@@ -121,13 +121,13 @@ class ThemeFactory {
         elevation: components.navigation.elevation,
         backgroundColor: colors.surface,
         selectedItemColor: colors.primary,
-        unselectedItemColor: colors.onSurface.withOpacity(0.6),
+        unselectedItemColor: colors.onSurface.withValues(alpha: 0.6),
         showSelectedLabels: components.navigation.showLabels,
         showUnselectedLabels: components.navigation.showLabels,
         type: BottomNavigationBarType.fixed,
         selectedLabelStyle: typography.navigationLabel,
         unselectedLabelStyle: typography.navigationLabel.copyWith(
-          color: colors.onSurface.withOpacity(0.6),
+          color: colors.onSurface.withValues(alpha: 0.6),
         ),
       ),
       
@@ -136,15 +136,15 @@ class ThemeFactory {
         elevation: components.navigation.elevation,
         backgroundColor: colors.surface,
         selectedIconTheme: IconThemeData(color: colors.primary),
-        unselectedIconTheme: IconThemeData(color: colors.onSurface.withOpacity(0.6)),
+        unselectedIconTheme: IconThemeData(color: colors.onSurface.withValues(alpha: 0.6)),
         selectedLabelTextStyle: typography.navigationLabel,
         unselectedLabelTextStyle: typography.navigationLabel.copyWith(
-          color: colors.onSurface.withOpacity(0.6),
+          color: colors.onSurface.withValues(alpha: 0.6),
         ),
       ),
       
       // Dialog theme
-      dialogTheme: DialogTheme(
+      dialogTheme: DialogThemeData(
         elevation: 8.0,
         shape: RoundedRectangleBorder(
           borderRadius: effects.getBorderRadius(16.0),
@@ -177,7 +177,7 @@ class ThemeFactory {
         }),
         trackColor: WidgetStateProperty.resolveWith<Color>((states) {
           if (states.contains(WidgetState.selected)) {
-            return colors.primary.withOpacity(0.5);
+            return colors.primary.withValues(alpha: 0.5);
           }
           return colors.surfaceVariant;
         }),
@@ -212,7 +212,7 @@ class ThemeFactory {
         activeTrackColor: colors.primary,
         inactiveTrackColor: colors.outline,
         thumbColor: colors.primary,
-        overlayColor: colors.primary.withOpacity(0.12),
+        overlayColor: colors.primary.withValues(alpha: 0.12),
         valueIndicatorColor: colors.primary,
         valueIndicatorTextStyle: typography.labelSmall.copyWith(
           color: colors.onPrimary,

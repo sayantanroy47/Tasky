@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/semantics.dart';
 import '../../core/errors/failures.dart';
 import 'glassmorphism_container.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Utility class for accessibility functions
 class AccessibilityUtils {
@@ -89,12 +90,12 @@ class EnhancedErrorDialog extends StatelessWidget {
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(
-            Icons.error_outline,
+            PhosphorIcons.warningCircle(),
             color: theme.colorScheme.onErrorContainer,
             size: isLargeText ? 28 : 24,
           ),
         ),
-        const SizedBox(width: 12),
+        SizedBox(width: 12),
         Expanded(
           child: Text(
             customTitle ?? 'Error Occurred',
@@ -106,7 +107,7 @@ class EnhancedErrorDialog extends StatelessWidget {
         ),
         IconButton(
           onPressed: () => Navigator.of(context).pop(),
-          icon: const Icon(Icons.close),
+          icon: Icon(PhosphorIcons.x()),
           tooltip: 'Close error dialog',
         ),
       ],
@@ -120,10 +121,10 @@ class EnhancedErrorDialog extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: theme.colorScheme.surface.withOpacity(0.5),
+          color: theme.colorScheme.surface.withValues(alpha: 0.5),
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: theme.colorScheme.outline.withOpacity(0.3),
+            color: theme.colorScheme.outline.withValues(alpha: 0.3),
           ),
         ),
         child: Column(
@@ -160,7 +161,7 @@ class EnhancedErrorDialog extends StatelessWidget {
       buttons.add(
         _AccessibleButton(
           label: 'Retry',
-          icon: Icons.refresh,
+          icon: PhosphorIcons.arrowClockwise(),
           onPressed: () {
             Navigator.of(context).pop();
             onRetry?.call();
@@ -175,7 +176,7 @@ class EnhancedErrorDialog extends StatelessWidget {
     buttons.add(
       _AccessibleButton(
         label: 'Copy Error',
-        icon: Icons.copy,
+        icon: PhosphorIcons.copy(),
         onPressed: () => _copyErrorToClipboard(context),
         isPrimary: false,
         semanticHint: 'Copy error details to clipboard for support',
@@ -186,7 +187,7 @@ class EnhancedErrorDialog extends StatelessWidget {
     buttons.add(
       _AccessibleButton(
         label: 'Dismiss',
-        icon: Icons.close,
+        icon: PhosphorIcons.x(),
         onPressed: () {
           Navigator.of(context).pop();
           onDismiss?.call();
@@ -271,7 +272,7 @@ class CriticalErrorScreen extends StatelessWidget {
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
-                      Icons.error,
+                      PhosphorIcons.warningCircle(),
                       size: isLargeText ? 64 : 48,
                       color: theme.colorScheme.onErrorContainer,
                     ),
@@ -321,15 +322,15 @@ class CriticalErrorScreen extends StatelessWidget {
       children: [
         _AccessibleButton(
           label: 'Restart App',
-          icon: Icons.refresh,
+          icon: PhosphorIcons.arrowClockwise(),
           onPressed: onRestart ?? () => _restartApp(context),
           isPrimary: true,
           semanticHint: 'Restart the application to recover from error',
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12),
         _AccessibleButton(
           label: 'Report Issue',
-          icon: Icons.bug_report,
+          icon: PhosphorIcons.bug(),
           onPressed: () => _reportIssue(context),
           isPrimary: false,
           semanticHint: 'Report this issue to the development team',
@@ -337,7 +338,7 @@ class CriticalErrorScreen extends StatelessWidget {
         const SizedBox(height: 12),
         _AccessibleButton(
           label: 'Copy Error Details',
-          icon: Icons.copy,
+          icon: PhosphorIcons.copy(),
           onPressed: () => _copyErrorDetails(context),
           isPrimary: false,
           semanticHint: 'Copy error details to clipboard for support',
@@ -415,7 +416,7 @@ class SimpleErrorWidget extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              icon ?? Icons.error_outline,
+              icon ?? PhosphorIcons.warningCircle(),
               size: compact ? (isLargeText ? 40 : 32) : (isLargeText ? 64 : 48),
               color: theme.colorScheme.error,
             ),
@@ -432,7 +433,7 @@ class SimpleErrorWidget extends StatelessWidget {
               SizedBox(height: compact ? 12 : 16),
               _AccessibleButton(
                 label: 'Retry',
-                icon: Icons.refresh,
+                icon: PhosphorIcons.arrowClockwise(),
                 onPressed: onRetry!,
                 isPrimary: true,
                 semanticHint: 'Retry the failed operation',
@@ -496,7 +497,7 @@ class _LoadingErrorWidgetState extends State<LoadingErrorWidget>
           children: [
             shouldReduceMotion
                 ? Icon(
-                    Icons.error_outline,
+                    PhosphorIcons.warningCircle(),
                     size: isLargeText ? 64 : 48,
                     color: theme.colorScheme.error,
                   )
@@ -506,14 +507,14 @@ class _LoadingErrorWidgetState extends State<LoadingErrorWidget>
                       return Transform.rotate(
                         angle: _animation.value * 2 * 3.14159,
                         child: Icon(
-                          Icons.refresh,
+                          PhosphorIcons.arrowClockwise(),
                           size: isLargeText ? 64 : 48,
                           color: theme.colorScheme.error,
                         ),
                       );
                     },
                   ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               widget.message,
               style: theme.textTheme.bodyMedium?.copyWith(
@@ -526,7 +527,7 @@ class _LoadingErrorWidgetState extends State<LoadingErrorWidget>
               const SizedBox(height: 16),
               _AccessibleButton(
                 label: 'Retry',
-                icon: Icons.refresh,
+                icon: PhosphorIcons.arrowClockwise(),
                 onPressed: widget.onRetry!,
                 isPrimary: true,
                 semanticHint: 'Retry the failed operation',
@@ -585,3 +586,5 @@ class _AccessibleButton extends StatelessWidget {
     );
   }
 }
+
+

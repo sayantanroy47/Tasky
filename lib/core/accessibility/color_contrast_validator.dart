@@ -16,9 +16,9 @@ class ColorContrastValidator {
 
   /// Calculate relative luminance of a color
   static double _calculateLuminance(Color color) {
-    final r = _calculateChannelLuminance(color.red / 255.0);
-    final g = _calculateChannelLuminance(color.green / 255.0);
-    final b = _calculateChannelLuminance(color.blue / 255.0);
+    final r = _calculateChannelLuminance(color.r / 255.0);
+    final g = _calculateChannelLuminance(color.g / 255.0);
+    final b = _calculateChannelLuminance(color.b / 255.0);
     
     return 0.2126 * r + 0.7152 * g + 0.0722 * b;
   }

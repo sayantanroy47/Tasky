@@ -5,6 +5,7 @@ import '../../domain/entities/task_enums.dart';
 import '../../domain/entities/recurrence_pattern.dart';
 import '../providers/task_template_providers.dart';
 import 'recurrence_pattern_picker.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Dialog for selecting a task template
 class TaskTemplateSelector extends ConsumerStatefulWidget {
@@ -13,22 +14,26 @@ class TaskTemplateSelector extends ConsumerStatefulWidget {
   const TaskTemplateSelector({
     super.key,
     required this.onTemplateSelected,
-  });  @override
+  });
+  @override
   ConsumerState<TaskTemplateSelector> createState() => _TaskTemplateSelectorState();
 }
 
 class _TaskTemplateSelectorState extends ConsumerState<TaskTemplateSelector>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  String _searchQuery = '';  @override
+  String _searchQuery = '';
+  @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-  }  @override
+  }
+  @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
-  }  @override
+  }
+  @override
   Widget build(BuildContext context) {
     return Dialog(
       child: Container(
@@ -44,10 +49,10 @@ class _TaskTemplateSelectorState extends ConsumerState<TaskTemplateSelector>
                   'Select Template',
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
-                const Spacer(),
+                Spacer(),
                 IconButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  icon: const Icon(Icons.close),
+                  icon: Icon(PhosphorIcons.x()),
                 ),
               ],
             ),
@@ -56,9 +61,9 @@ class _TaskTemplateSelectorState extends ConsumerState<TaskTemplateSelector>
             
             // Search bar
             TextField(
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 hintText: 'Search templates...',
-                prefixIcon: Icon(Icons.search),
+                prefixIcon: Icon(PhosphorIcons.magnifyingGlass()),
                 border: OutlineInputBorder(),
               ),
               onChanged: (value) {
@@ -68,7 +73,7 @@ class _TaskTemplateSelectorState extends ConsumerState<TaskTemplateSelector>
               },
             ),
             
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             
             // Tabs
             TabBar(
@@ -101,7 +106,7 @@ class _TaskTemplateSelectorState extends ConsumerState<TaskTemplateSelector>
               width: double.infinity,
               child: OutlinedButton.icon(
                 onPressed: () => _showCreateTemplateDialog(),
-                icon: const Icon(Icons.add),
+                icon: Icon(PhosphorIcons.plus()),
                 label: const Text('Create New Template'),
               ),
             ),
@@ -194,7 +199,7 @@ class _TaskTemplateSelectorState extends ConsumerState<TaskTemplateSelector>
           children: [
             if (template.description != null)
               Text(template.description!),
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
             Text(
               template.titleTemplate,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -205,7 +210,7 @@ class _TaskTemplateSelectorState extends ConsumerState<TaskTemplateSelector>
             Row(
               children: [
                 if (template.isFavorite)
-                  const Icon(Icons.favorite, size: 16, color: Colors.red),
+                  Icon(PhosphorIcons.heart(), size: 16, color: Colors.red),
                 if (template.hasCategory) ...[
                   const SizedBox(width: 4),
                   Chip(
@@ -228,13 +233,13 @@ class _TaskTemplateSelectorState extends ConsumerState<TaskTemplateSelector>
             IconButton(
               onPressed: () => _toggleTemplateFavorite(template),
               icon: Icon(
-                template.isFavorite ? Icons.favorite : Icons.favorite_border,
+                template.isFavorite ? PhosphorIcons.heart() : PhosphorIcons.heart(),
                 color: template.isFavorite ? Colors.red : null,
               ),
             ),
             IconButton(
               onPressed: () => _showTemplateOptions(template),
-              icon: const Icon(Icons.more_vert),
+              icon: Icon(PhosphorIcons.dotsThreeVertical()),
             ),
           ],
         ),
@@ -268,7 +273,7 @@ class _TaskTemplateSelectorState extends ConsumerState<TaskTemplateSelector>
         mainAxisSize: MainAxisSize.min,
         children: [
           ListTile(
-            leading: const Icon(Icons.edit),
+            leading: Icon(PhosphorIcons.pencil()),
             title: const Text('Edit Template'),
             onTap: () {
               Navigator.of(context).pop();
@@ -276,7 +281,7 @@ class _TaskTemplateSelectorState extends ConsumerState<TaskTemplateSelector>
             },
           ),
           ListTile(
-            leading: const Icon(Icons.copy),
+            leading: Icon(PhosphorIcons.copy()),
             title: const Text('Duplicate Template'),
             onTap: () {
               Navigator.of(context).pop();
@@ -284,7 +289,7 @@ class _TaskTemplateSelectorState extends ConsumerState<TaskTemplateSelector>
             },
           ),
           ListTile(
-            leading: const Icon(Icons.delete, color: Colors.red),
+            leading: Icon(PhosphorIcons.trash(), color: Colors.red),
             title: const Text('Delete Template'),
             onTap: () {
               Navigator.of(context).pop();
@@ -369,7 +374,8 @@ class TaskTemplateFormDialog extends StatefulWidget {
     super.key,
     this.initialTemplate,
     required this.onTemplateSaved,
-  });  @override
+  });
+  @override
   State<TaskTemplateFormDialog> createState() => _TaskTemplateFormDialogState();
 }
 
@@ -384,7 +390,8 @@ class _TaskTemplateFormDialogState extends State<TaskTemplateFormDialog> {
   TaskPriority _priority = TaskPriority.medium;
   List<String> _tags = [];
   RecurrencePattern? _recurrence;
-  int? _estimatedDuration;  @override
+  int? _estimatedDuration;
+  @override
   void initState() {
     super.initState();
     
@@ -401,7 +408,8 @@ class _TaskTemplateFormDialogState extends State<TaskTemplateFormDialog> {
       _recurrence = template.recurrence;
       _estimatedDuration = template.estimatedDuration;
     }
-  }  @override
+  }
+  @override
   void dispose() {
     _nameController.dispose();
     _descriptionController.dispose();
@@ -409,7 +417,8 @@ class _TaskTemplateFormDialogState extends State<TaskTemplateFormDialog> {
     _descriptionTemplateController.dispose();
     _categoryController.dispose();
     super.dispose();
-  }  @override
+  }
+  @override
   Widget build(BuildContext context) {
     return Dialog(
       child: Container(
@@ -427,10 +436,10 @@ class _TaskTemplateFormDialogState extends State<TaskTemplateFormDialog> {
                     widget.initialTemplate == null ? 'Create Template' : 'Edit Template',
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
-                  const Spacer(),
+                  Spacer(),
                   IconButton(
                     onPressed: () => Navigator.of(context).pop(),
-                    icon: const Icon(Icons.close),
+                    icon: Icon(PhosphorIcons.x()),
                   ),
                 ],
               ),
@@ -606,3 +615,5 @@ class _TaskTemplateFormDialogState extends State<TaskTemplateFormDialog> {
     Navigator.of(context).pop();
   }
 }
+
+

@@ -5,6 +5,7 @@ import '../widgets/glassmorphism_container.dart';
 import '../widgets/standardized_app_bar.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../services/performance_service.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Performance dashboard screen for monitoring app performance
 class PerformanceDashboardScreen extends ConsumerWidget {
@@ -25,7 +26,7 @@ class PerformanceDashboardScreen extends ConsumerWidget {
         title: 'Performance Dashboard',
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: Icon(PhosphorIcons.arrowClockwise()),
             onPressed: () {
               ref.invalidate(performanceSnapshotProvider);
               ref.read(performanceMetricsProvider.notifier).refresh();
@@ -76,7 +77,7 @@ class PerformanceDashboardScreen extends ConsumerWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16),
         Row(
           children: [
             Expanded(
@@ -86,7 +87,7 @@ class PerformanceDashboardScreen extends ConsumerWidget {
                 snapshot != null 
                   ? _formatDuration(snapshot.appUptime)
                   : '--',
-                Icons.timer,
+                PhosphorIcons.timer(),
                 Colors.blue,
               ),
             ),
@@ -96,7 +97,7 @@ class PerformanceDashboardScreen extends ConsumerWidget {
                 theme,
                 'Events Tracked',
                 snapshot?.eventCount.toString() ?? '--',
-                Icons.analytics,
+                PhosphorIcons.chartBar(),
                 Colors.green,
               ),
             ),
@@ -115,7 +116,7 @@ class PerformanceDashboardScreen extends ConsumerWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.speed, color: theme.colorScheme.primary),
+              Icon(PhosphorIcons.speedometer(), color: theme.colorScheme.primary),
               const SizedBox(width: 8),
               Text(
                 'Frame Rate Performance',
@@ -165,7 +166,7 @@ class PerformanceDashboardScreen extends ConsumerWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.insights, color: theme.colorScheme.primary),
+              Icon(PhosphorIcons.chartLine(), color: theme.colorScheme.primary),
               const SizedBox(width: 8),
               Text(
                 'Performance Metrics',
@@ -213,8 +214,8 @@ class PerformanceDashboardScreen extends ConsumerWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.memory, color: theme.colorScheme.primary),
-              const SizedBox(width: 8),
+              Icon(PhosphorIcons.cpu(), color: theme.colorScheme.primary),
+              SizedBox(width: 8),
               Text(
                 'Memory Usage',
                 style: theme.textTheme.titleMedium?.copyWith(
@@ -233,7 +234,7 @@ class PerformanceDashboardScreen extends ConsumerWidget {
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () => MemoryManager.optimizeMemory(),
-                  icon: const Icon(Icons.cleaning_services),
+                  icon: Icon(PhosphorIcons.broom()),
                   label: const Text('Optimize Memory'),
                 ),
               ),
@@ -241,7 +242,7 @@ class PerformanceDashboardScreen extends ConsumerWidget {
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () => MemoryManager.collectGarbage(),
-                  icon: const Icon(Icons.delete_sweep),
+                  icon: Icon(PhosphorIcons.trash()),
                   label: const Text('Collect Garbage'),
                 ),
               ),
@@ -261,7 +262,7 @@ class PerformanceDashboardScreen extends ConsumerWidget {
         children: [
           Row(
             children: [
-              Icon(Icons.bar_chart, color: theme.colorScheme.primary),
+              Icon(PhosphorIcons.chartBar(), color: theme.colorScheme.primary),
               const SizedBox(width: 8),
               Text(
                 'Analytics Summary',
@@ -459,7 +460,7 @@ class PerformanceDashboardScreen extends ConsumerWidget {
       child: Column(
         children: [
           Icon(
-            Icons.error_outline,
+            PhosphorIcons.warningCircle(),
             size: 48,
             color: theme.colorScheme.error,
           ),
@@ -500,3 +501,4 @@ class PerformanceDashboardScreen extends ConsumerWidget {
     return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}:${time.second.toString().padLeft(2, '0')}';
   }
 }
+

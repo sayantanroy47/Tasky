@@ -221,14 +221,14 @@ class _ThemeAwareGlassState extends State<ThemeAwareGlass>
           borderRadius: widget.borderRadius ??
               BorderRadius.circular(TypographyConstants.radiusSmall),
           border: Border.all(
-            color: theme.colorScheme.primary.withOpacity(
+            color: theme.colorScheme.primary.withValues(alpha: 
               0.3 * _hoverAnimation.value,
             ),
             width: 2,
           ),
           boxShadow: [
             BoxShadow(
-              color: theme.colorScheme.primary.withOpacity(
+              color: theme.colorScheme.primary.withValues(alpha: 
                 0.2 * _hoverAnimation.value,
               ),
               blurRadius: 10 * _hoverAnimation.value,
@@ -241,7 +241,7 @@ class _ThemeAwareGlassState extends State<ThemeAwareGlass>
   }
 
   Color _getAnimatedGlassTint(ThemeData theme, ThemeGlassConfig config) {
-    final baseTint = config.glassTint ?? theme.colorScheme.surface.withOpacity(0.1);
+    final baseTint = config.glassTint ?? theme.colorScheme.surface.withValues(alpha: 0.1);
     final intensity = widget.enablePulseEffects ? _pulseAnimation.value : 1.0;
     
     return Color.lerp(
@@ -252,10 +252,10 @@ class _ThemeAwareGlassState extends State<ThemeAwareGlass>
   }
 
   Color _getAnimatedBorderColor(ThemeData theme, ThemeGlassConfig config) {
-    final baseBorder = config.borderColor ?? theme.colorScheme.outline.withOpacity(0.2);
+    final baseBorder = config.borderColor ?? theme.colorScheme.outline.withValues(alpha: 0.2);
     final intensity = widget.enablePulseEffects ? _pulseAnimation.value : 1.0;
     
-    return baseBorder.withOpacity(
+    return baseBorder.withValues(alpha: 
       baseBorder.opacity * intensity * (widget.enableHoverEnhancements && _isHovered ? 1.5 : 1.0),
     );
   }
@@ -268,7 +268,7 @@ class _ThemeAwareGlassState extends State<ThemeAwareGlass>
       end: Alignment.bottomRight,
       colors: [
         Colors.transparent,
-        (config.accentColor ?? Colors.blue).withOpacity(
+        (config.accentColor ?? Colors.blue).withValues(alpha: 
           0.05 * _specialAnimation.value,
         ),
         Colors.transparent,
@@ -345,8 +345,8 @@ class ThemeGlassConfig {
 
   factory ThemeGlassConfig.matrix() {
     return ThemeGlassConfig(
-      glassTint: const Color(0xFF00FF41).withOpacity(0.1),
-      borderColor: const Color(0xFF00FF41).withOpacity(0.3),
+      glassTint: const Color(0xFF00FF41).withValues(alpha: 0.1),
+      borderColor: const Color(0xFF00FF41).withValues(alpha: 0.3),
       accentColor: const Color(0xFF00FF41),
       hasGradientOverlay: true,
       hasPulseEffect: true,
@@ -356,8 +356,8 @@ class ThemeGlassConfig {
 
   factory ThemeGlassConfig.vegeta() {
     return ThemeGlassConfig(
-      glassTint: const Color(0xFF3B82F6).withOpacity(0.1),
-      borderColor: const Color(0xFF60A5FA).withOpacity(0.4),
+      glassTint: const Color(0xFF3B82F6).withValues(alpha: 0.1),
+      borderColor: const Color(0xFF60A5FA).withValues(alpha: 0.4),
       accentColor: const Color(0xFF3B82F6),
       hasGradientOverlay: true,
       hasPulseEffect: false,
@@ -367,8 +367,8 @@ class ThemeGlassConfig {
 
   factory ThemeGlassConfig.dracula() {
     return ThemeGlassConfig(
-      glassTint: const Color(0xFFBD93F9).withOpacity(0.1),
-      borderColor: const Color(0xFFFF79C6).withOpacity(0.3),
+      glassTint: const Color(0xFFBD93F9).withValues(alpha: 0.1),
+      borderColor: const Color(0xFFFF79C6).withValues(alpha: 0.3),
       accentColor: const Color(0xFFBD93F9),
       hasGradientOverlay: true,
       hasPulseEffect: true,
@@ -378,8 +378,8 @@ class ThemeGlassConfig {
 
   factory ThemeGlassConfig.defaultTheme() {
     return ThemeGlassConfig(
-      glassTint: Colors.grey.withOpacity(0.1),
-      borderColor: Colors.grey.withOpacity(0.2),
+      glassTint: Colors.grey.withValues(alpha: 0.1),
+      borderColor: Colors.grey.withValues(alpha: 0.2),
       accentColor: Colors.blue,
       hasGradientOverlay: false,
       hasPulseEffect: false,
@@ -398,7 +398,7 @@ class _MatrixEffectPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = color.withOpacity(0.3 * math.sin(progress * 2 * math.pi))
+      ..color = color.withValues(alpha: 0.3 * math.sin(progress * 2 * math.pi))
       ..strokeWidth = 1.0
       ..style = PaintingStyle.stroke;
 
@@ -443,7 +443,7 @@ class _EnergyEffectPainter extends CustomPainter {
       final opacity = (1 - progress) * (1 - i * 0.3);
       
       final wavePaint = Paint()
-        ..color = color.withOpacity(0.1 * opacity)
+        ..color = color.withValues(alpha: 0.1 * opacity)
         ..style = PaintingStyle.stroke
         ..strokeWidth = 2.0;
       
@@ -478,7 +478,7 @@ class _PsychedelicEffectPainter extends CustomPainter {
       );
       
       final paint = Paint()
-        ..color = colors[i].withOpacity(0.1 * math.sin(progress * math.pi))
+        ..color = colors[i].withValues(alpha: 0.1 * math.sin(progress * math.pi))
         ..style = PaintingStyle.fill;
       
       canvas.drawCircle(position, 20, paint);

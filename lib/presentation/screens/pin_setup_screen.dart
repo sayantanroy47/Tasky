@@ -5,6 +5,7 @@ import '../../core/theme/typography_constants.dart';
 import '../widgets/enhanced_ux_widgets.dart';
 import '../widgets/standardized_app_bar.dart';
 import '../../services/security_service.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Screen for setting up or changing PIN
 class PinSetupScreen extends ConsumerStatefulWidget {
@@ -106,7 +107,7 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
             color: isCompleted
                 ? Theme.of(context).colorScheme.primary
                 : isActive
-                    ? Theme.of(context).colorScheme.primary.withOpacity(0.5)
+                    ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.5)
                     : Theme.of(context).colorScheme.surfaceContainerHighest,
           ),
         );
@@ -267,12 +268,12 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
     return EnhancedButton(
       onPressed: _isProcessing || currentPin.isEmpty ? null : _onBackspacePressed,
       style: ElevatedButton.styleFrom(
-        shape: const CircleBorder(),
+        shape: CircleBorder(),
         padding: const EdgeInsets.all(20),
         backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
         foregroundColor: Theme.of(context).colorScheme.onSurfaceVariant,
       ),
-      child: const Icon(Icons.backspace, size: 24),
+      child: Icon(PhosphorIcons.backspace(), size: 24),
     );
   }
 
@@ -501,3 +502,5 @@ enum PinSetupStep {
   enterPin,
   confirmPin,
 }
+
+

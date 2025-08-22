@@ -5,6 +5,7 @@ import '../../core/design_system/responsive_constants.dart';
 import '../../core/design_system/design_tokens.dart';
 import '../../core/providers/navigation_provider.dart';
 import 'glassmorphism_container.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Adaptive navigation that changes based on screen size
 class AdaptiveNavigation extends ConsumerWidget {
@@ -111,7 +112,7 @@ class AdaptiveNavigation extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
-                Icons.task_alt,
+                PhosphorIcons.checkSquare(),
                 color: theme.colorScheme.onPrimary,
                 size: 24,
               ),
@@ -162,7 +163,7 @@ class AdaptiveNavigation extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
-                      Icons.task_alt,
+                      PhosphorIcons.checkSquare(),
                       color: theme.colorScheme.onPrimary,
                       size: 28,
                     ),
@@ -248,7 +249,7 @@ class AdaptiveNavigation extends ConsumerWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
           decoration: isSelected ? BoxDecoration(
-            color: theme.colorScheme.primaryContainer.withOpacity(0.3),
+            color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
             borderRadius: BorderRadius.circular(16),
           ) : null,
           child: Column(
@@ -301,7 +302,7 @@ class AdaptiveNavigation extends ConsumerWidget {
             ),
           ) : null,
           selected: isSelected,
-          selectedTileColor: theme.colorScheme.primaryContainer.withOpacity(0.3),
+          selectedTileColor: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(config.cardRadius),
           ),
@@ -496,3 +497,4 @@ class _BottomNavCutoutClipper extends CustomClipper<Path> {
   @override
   bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
 }
+

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/accessibility/accessibility_constants.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../core/validation/form_validators.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 
 /// Standardized form field with consistent validation and accessibility
@@ -246,7 +247,7 @@ class _StandardizedFormFieldState extends ConsumerState<StandardizedFormField> {
               filled: true,
               fillColor: shouldUseHighContrast 
                   ? theme.colorScheme.surface
-                  : theme.colorScheme.surface.withOpacity(0.5),
+                  : theme.colorScheme.surface.withValues(alpha: 0.5),
               
               // Content padding for touch targets
               contentPadding: EdgeInsets.symmetric(
@@ -288,7 +289,7 @@ class _StandardizedFormFieldState extends ConsumerState<StandardizedFormField> {
             });
           },
           icon: Icon(
-            _obscurePassword ? Icons.visibility_off : Icons.visibility,
+            _obscurePassword ? PhosphorIcons.eyeSlash() : PhosphorIcons.eye(),
             color: theme.colorScheme.onSurfaceVariant,
             semanticLabel: _obscurePassword ? 'Show password' : 'Hide password',
           ),
@@ -301,7 +302,7 @@ class _StandardizedFormFieldState extends ConsumerState<StandardizedFormField> {
       if (!_validationResult!.isValid) {
         icons.add(
           Icon(
-            Icons.error_outline,
+            PhosphorIcons.warningCircle(),
             color: theme.colorScheme.error,
             semanticLabel: 'Error',
           ),
@@ -309,7 +310,7 @@ class _StandardizedFormFieldState extends ConsumerState<StandardizedFormField> {
       } else if (_validationResult!.hasWarning) {
         icons.add(
           Icon(
-            Icons.warning_outlined,
+            PhosphorIcons.warningCircle(),
             color: theme.colorScheme.secondary,
             semanticLabel: 'Warning',
           ),
@@ -317,7 +318,7 @@ class _StandardizedFormFieldState extends ConsumerState<StandardizedFormField> {
       } else if (_validationResult!.hasSuccess) {
         icons.add(
           Icon(
-            Icons.check_circle_outline,
+            PhosphorIcons.checkCircle(),
             color: theme.colorScheme.primary,
             semanticLabel: 'Valid',
           ),
@@ -352,7 +353,7 @@ class _StandardizedFormFieldState extends ConsumerState<StandardizedFormField> {
     
     return shouldUseHighContrast 
         ? theme.colorScheme.outline
-        : theme.colorScheme.outline.withOpacity(0.6);
+        : theme.colorScheme.outline.withValues(alpha: 0.6);
   }
 
   Widget _buildValidationMessage(ThemeData theme, bool isLargeText) {
@@ -362,13 +363,13 @@ class _StandardizedFormFieldState extends ConsumerState<StandardizedFormField> {
 
     if (!result.isValid) {
       messageColor = theme.colorScheme.error;
-      messageIcon = Icons.error_outline;
+      messageIcon = PhosphorIcons.warningCircle();
     } else if (result.hasWarning) {
       messageColor = theme.colorScheme.secondary;
-      messageIcon = Icons.warning_outlined;
+      messageIcon = PhosphorIcons.warningCircle();
     } else {
       messageColor = theme.colorScheme.primary;
-      messageIcon = Icons.check_circle_outline;
+      messageIcon = PhosphorIcons.checkCircle();
     }
 
     return Semantics(
@@ -497,7 +498,7 @@ class StandardizedDropdownField<T> extends ConsumerWidget {
               filled: true,
               fillColor: shouldUseHighContrast 
                   ? theme.colorScheme.surface
-                  : theme.colorScheme.surface.withOpacity(0.5),
+                  : theme.colorScheme.surface.withValues(alpha: 0.5),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                 borderSide: BorderSide(
@@ -510,7 +511,7 @@ class StandardizedDropdownField<T> extends ConsumerWidget {
                 borderSide: BorderSide(
                   color: shouldUseHighContrast 
                       ? theme.colorScheme.outline
-                      : theme.colorScheme.outline.withOpacity(0.6),
+                      : theme.colorScheme.outline.withValues(alpha: 0.6),
                   width: shouldUseHighContrast ? 2.0 : 1.0,
                 ),
               ),
@@ -592,7 +593,7 @@ class StandardizedCheckboxField extends ConsumerWidget {
                 side: BorderSide(
                   color: shouldUseHighContrast 
                       ? theme.colorScheme.outline
-                      : theme.colorScheme.outline.withOpacity(0.6),
+                      : theme.colorScheme.outline.withValues(alpha: 0.6),
                   width: shouldUseHighContrast ? 2.0 : 1.0,
                 ),
               ),
@@ -763,3 +764,4 @@ class StandardizedRadioField<T> extends ConsumerWidget {
     );
   }
 }
+

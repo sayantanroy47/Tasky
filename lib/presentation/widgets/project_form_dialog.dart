@@ -6,6 +6,7 @@ import '../providers/project_providers.dart';
 import '../../core/theme/typography_constants.dart';
 import 'glassmorphism_container.dart';
 import '../../core/design_system/design_tokens.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Dialog for creating and editing projects
 /// 
@@ -88,10 +89,10 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> {
                 Row(
                   children: [
                     Icon(
-                      isEditing ? Icons.edit : Icons.add,
+                      isEditing ? PhosphorIcons.pencil() : PhosphorIcons.plus(),
                       color: _parseColor(_selectedColor),
                     ),
-                    const SizedBox(width: 8),
+                    SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         isEditing ? 'Edit Project' : 'Create Project',
@@ -102,7 +103,7 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> {
                     ),
                     IconButton(
                       onPressed: () => Navigator.of(context).pop(),
-                      icon: const Icon(Icons.close),
+                      icon: Icon(PhosphorIcons.x()),
                     ),
                   ],
                 ),
@@ -118,7 +119,7 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                     ),
-                    prefixIcon: const Icon(Icons.folder),
+                    prefixIcon: Icon(PhosphorIcons.folder()),
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
@@ -132,7 +133,7 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> {
                   textCapitalization: TextCapitalization.words,
                 ),
                 
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 
                 // Project description field
                 TextFormField(
@@ -143,7 +144,7 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                     ),
-                    prefixIcon: const Icon(Icons.description),
+                    prefixIcon: Icon(PhosphorIcons.fileText()),
                   ),
                   maxLines: 3,
                   textCapitalization: TextCapitalization.sentences,
@@ -182,12 +183,12 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> {
                                   width: 3,
                                 )
                               : Border.all(
-                                  color: theme.colorScheme.outline.withOpacity(0.3),
+                                  color: theme.colorScheme.outline.withValues(alpha: 0.3),
                                 ),
                         ),
                         child: isSelected
                             ? Icon(
-                                Icons.check,
+                                PhosphorIcons.check(),
                                 color: _parseColor(color).computeLuminance() > 0.5
                                     ? Colors.black
                                     : Colors.white,
@@ -199,7 +200,7 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> {
                   }).toList(),
                 ),
                 
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 
                 // Deadline selection
                 InkWell(
@@ -208,14 +209,14 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> {
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: theme.colorScheme.outline.withOpacity(0.5),
+                        color: theme.colorScheme.outline.withValues(alpha: 0.5),
                       ),
                       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                     ),
                     child: Row(
                       children: [
                         Icon(
-                          Icons.calendar_today,
+                          PhosphorIcons.calendar(),
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
                         const SizedBox(width: 12),
@@ -245,7 +246,7 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> {
                                 _selectedDeadline = null;
                               });
                             },
-                            icon: const Icon(Icons.clear),
+                            icon: Icon(PhosphorIcons.x()),
                             tooltip: 'Remove deadline',
                           ),
                       ],
@@ -390,3 +391,4 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> {
     return '${date.day}/${date.month}/${date.year}';
   }
 }
+

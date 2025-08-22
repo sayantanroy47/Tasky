@@ -4,6 +4,7 @@ import 'enhanced_glass_button.dart';
 import 'glassmorphism_container.dart';
 import '../../core/design_system/design_tokens.dart';
 import '../../core/theme/typography_constants.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Custom primary button with glassmorphism styling
 class PrimaryButton extends StatelessWidget {
@@ -211,10 +212,10 @@ class VoiceActionButton extends StatelessWidget {
       );
       glassColor = theme.colorScheme.secondary;
     } else if (isListening) {
-      icon = const Icon(Icons.mic, color: Colors.white);
+      icon = Icon(PhosphorIcons.microphone(), color: Colors.white);
       glassColor = AppColors.voiceRecording;
     } else {
-      icon = const Icon(Icons.mic_none, color: Colors.white);
+      icon = Icon(PhosphorIcons.microphoneSlash(), color: Colors.white);
       glassColor = theme.colorScheme.primaryContainer;
     }
 
@@ -228,8 +229,8 @@ class VoiceActionButton extends StatelessWidget {
             shape: BoxShape.circle,
             gradient: LinearGradient(
               colors: [
-                glassColor.withOpacity(0.8),
-                glassColor.withOpacity(0.6),
+                glassColor.withValues(alpha: 0.8),
+                glassColor.withValues(alpha: 0.6),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -265,8 +266,8 @@ class DestructiveButton extends StatelessWidget {
     final Widget button = GlassmorphismContainer(
       level: GlassLevel.interactive,
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-      glassTint: theme.colorScheme.error.withOpacity(0.1),
-      borderColor: theme.colorScheme.error.withOpacity(0.3),
+      glassTint: theme.colorScheme.error.withValues(alpha: 0.1),
+      borderColor: theme.colorScheme.error.withValues(alpha: 0.3),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -279,8 +280,8 @@ class DestructiveButton extends StatelessWidget {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  theme.colorScheme.error.withOpacity(0.8),
-                  theme.colorScheme.error.withOpacity(0.9),
+                  theme.colorScheme.error.withValues(alpha: 0.8),
+                  theme.colorScheme.error.withValues(alpha: 0.9),
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -326,3 +327,4 @@ class DestructiveButton extends StatelessWidget {
 class AppColors {
   static const Color voiceRecording = Color(0xFFE91E63);
 }
+

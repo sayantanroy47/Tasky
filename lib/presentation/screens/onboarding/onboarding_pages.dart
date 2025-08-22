@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Onboarding page data model
 class OnboardingPageData {
@@ -19,11 +20,11 @@ class OnboardingPageData {
 
 /// Onboarding pages content
 class OnboardingPages {
-  static const List<OnboardingPageData> pages = [
+  static final List<OnboardingPageData> pages = [
     OnboardingPageData(
       title: 'Welcome to Tasky',
       description: 'Your intelligent task management companion with beautiful glassmorphism design and powerful AI features.',
-      icon: Icons.rocket_launch,
+      icon: PhosphorIcons.rocket(),
       highlights: [
         'Beautiful glassmorphism interface',
         'AI-powered task creation',
@@ -35,7 +36,7 @@ class OnboardingPages {
     OnboardingPageData(
       title: 'Create Tasks Effortlessly',
       description: 'Create tasks using multiple methods - manual entry, voice commands, or AI-powered natural language processing.',
-      icon: Icons.add_task,
+      icon: PhosphorIcons.plus(),
       highlights: [
         'Manual task creation with rich details',
         'Voice-to-text for quick entry',
@@ -47,7 +48,7 @@ class OnboardingPages {
     OnboardingPageData(
       title: 'Stay Organized',
       description: 'Organize your tasks with priorities, due dates, categories, and dependencies to stay on top of everything.',
-      icon: Icons.inventory_2,
+      icon: PhosphorIcons.package(),
       highlights: [
         'Priority levels and color coding',
         'Due dates and reminders',
@@ -59,7 +60,7 @@ class OnboardingPages {
     OnboardingPageData(
       title: 'Smart Notifications',
       description: 'Never miss important tasks with intelligent notifications that adapt to your schedule and preferences.',
-      icon: Icons.notifications_active,
+      icon: PhosphorIcons.bell(),
       highlights: [
         'Location-based reminders',
         'Smart timing suggestions',
@@ -71,7 +72,7 @@ class OnboardingPages {
     OnboardingPageData(
       title: 'Powerful Analytics',
       description: 'Track your productivity with detailed analytics and insights to help you improve your task management.',
-      icon: Icons.analytics,
+      icon: PhosphorIcons.chartBar(),
       highlights: [
         'Completion rate tracking',
         'Productivity trends',
@@ -83,7 +84,7 @@ class OnboardingPages {
     OnboardingPageData(
       title: 'Sync Everywhere',
       description: 'Your tasks sync seamlessly across all your devices with offline support and cloud backup.',
-      icon: Icons.sync,
+      icon: PhosphorIcons.arrowsClockwise(),
       highlights: [
         'Cross-device synchronization',
         'Offline mode support',
@@ -230,32 +231,32 @@ enum TutorialAction {
 
 /// Available feature tutorials
 class FeatureTutorials {
-  static const List<FeatureTutorial> tutorials = [
+  static final List<FeatureTutorial> tutorials = [
     FeatureTutorial(
       id: 'voice_creation',
       title: 'Voice Task Creation',
       description: 'Learn how to create tasks using voice commands',
-      icon: Icons.mic,
+      icon: PhosphorIcons.microphone(),
       estimatedDuration: Duration(minutes: 2),
       steps: [
         TutorialStep(
           title: 'Find the Voice Button',
           description: 'Look for the microphone icon in the task creation menu',
           targetWidget: 'voice_creation_button',
-          icon: Icons.mic,
+          icon: PhosphorIcons.microphone(),
           action: TutorialAction.tap,
         ),
         TutorialStep(
           title: 'Speak Your Task',
           description: 'Say something like "Create a task to call mom tomorrow at 3 PM"',
-          icon: Icons.record_voice_over,
+          icon: PhosphorIcons.microphone(),
           action: TutorialAction.none,
         ),
         TutorialStep(
           title: 'Review and Save',
           description: 'Check the AI-generated task details and make any adjustments',
           targetWidget: 'task_review_dialog',
-          icon: Icons.edit,
+          icon: PhosphorIcons.pencil(),
           action: TutorialAction.tap,
         ),
       ],
@@ -264,28 +265,28 @@ class FeatureTutorials {
       id: 'task_management',
       title: 'Task Management',
       description: 'Master the basics of managing your tasks',
-      icon: Icons.task_alt,
+      icon: PhosphorIcons.checkSquare(),
       estimatedDuration: Duration(minutes: 3),
       steps: [
         TutorialStep(
           title: 'Complete a Task',
           description: 'Tap the checkbox or swipe right to mark a task as complete',
           targetWidget: 'task_card',
-          icon: Icons.check_circle,
+          icon: PhosphorIcons.checkCircle(),
           action: TutorialAction.tap,
         ),
         TutorialStep(
           title: 'Edit Task Details',
           description: 'Long press on a task to see editing options',
           targetWidget: 'task_card',
-          icon: Icons.edit,
+          icon: PhosphorIcons.pencil(),
           action: TutorialAction.longPress,
         ),
         TutorialStep(
           title: 'Delete or Archive',
           description: 'Swipe left on a task to reveal deletion options',
           targetWidget: 'task_card',
-          icon: Icons.delete,
+          icon: PhosphorIcons.trash(),
           action: TutorialAction.swipe,
         ),
       ],
@@ -294,26 +295,26 @@ class FeatureTutorials {
       id: 'smart_features',
       title: 'Smart Features',
       description: 'Discover AI-powered productivity features',
-      icon: Icons.auto_awesome,
+      icon: PhosphorIcons.sparkle(),
       estimatedDuration: Duration(minutes: 4),
       steps: [
         TutorialStep(
           title: 'Smart Scheduling',
           description: 'Let AI suggest optimal times for your tasks',
-          icon: Icons.schedule,
+          icon: PhosphorIcons.clock(),
           action: TutorialAction.none,
         ),
         TutorialStep(
           title: 'Natural Language',
           description: 'Create tasks using everyday language',
-          icon: Icons.chat,
+          icon: PhosphorIcons.chatCircle(),
           action: TutorialAction.none,
         ),
         TutorialStep(
           title: 'Productivity Insights',
           description: 'Get personalized tips to improve your productivity',
           targetWidget: 'analytics_page',
-          icon: Icons.insights,
+          icon: PhosphorIcons.chartLine(),
           action: TutorialAction.tap,
         ),
       ],
@@ -377,3 +378,5 @@ class OnboardingConfig {
     'smart_feature_used': 'AI Explorer',
   };
 }
+
+

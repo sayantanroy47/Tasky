@@ -3,10 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/enhanced_ux_widgets.dart';
 import '../widgets/standardized_app_bar.dart';
 import '../../services/gesture_customization_service.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Screen for customizing gestures and haptic feedback
 class GestureSettingsScreen extends ConsumerWidget {
-  const GestureSettingsScreen({super.key});  @override
+  const GestureSettingsScreen({super.key});
+  @override
   Widget build(BuildContext context, WidgetRef ref) {
     final gestureSettings = ref.watch(gestureSettingsProvider);
     final hapticSettings = ref.watch(hapticSettingsProvider);
@@ -19,7 +21,7 @@ class GestureSettingsScreen extends ConsumerWidget {
         actions: [
           IconButton(
             onPressed: () => _showResetDialog(context, gestureNotifier, hapticNotifier),
-            icon: const Icon(Icons.restore),
+            icon: Icon(PhosphorIcons.arrowClockwise()),
             tooltip: 'Reset to defaults',
           ),
         ],
@@ -35,7 +37,7 @@ class GestureSettingsScreen extends ConsumerWidget {
                 child: Column(
                   children: [
                     SwitchListTile(
-                      title: const Text('Enable Haptic Feedback'),
+                      title: Text('Enable Haptic Feedback'),
                       subtitle: const Text('Provide tactile feedback for interactions'),
                       value: hapticSettings.enabled,
                       onChanged: (value) => hapticNotifier.toggleHapticFeedback(value),
@@ -61,7 +63,7 @@ class GestureSettingsScreen extends ConsumerWidget {
                       context,
                       'Swipe to Complete',
                       'Swipe right on tasks to mark them as complete',
-                      Icons.swipe_right,
+                      PhosphorIcons.arrowRight(),
                       gestureSettings.swipeToComplete,
                       (value) => gestureNotifier.toggleGesture(GestureType.swipeToComplete, value),
                     ),
@@ -70,7 +72,7 @@ class GestureSettingsScreen extends ConsumerWidget {
                       context,
                       'Swipe to Delete',
                       'Swipe left on tasks to delete them',
-                      Icons.swipe_left,
+                      PhosphorIcons.arrowLeft(),
                       gestureSettings.swipeToDelete,
                       (value) => gestureNotifier.toggleGesture(GestureType.swipeToDelete, value),
                     ),
@@ -79,7 +81,7 @@ class GestureSettingsScreen extends ConsumerWidget {
                       context,
                       'Long Press Menu',
                       'Long press on tasks to show context menu',
-                      Icons.touch_app,
+                      PhosphorIcons.hand(),
                       gestureSettings.longPressMenu,
                       (value) => gestureNotifier.toggleGesture(GestureType.longPressMenu, value),
                     ),
@@ -88,7 +90,7 @@ class GestureSettingsScreen extends ConsumerWidget {
                       context,
                       'Double Tap to Edit',
                       'Double tap on tasks to edit them',
-                      Icons.touch_app,
+                      PhosphorIcons.hand(),
                       gestureSettings.doubleTapEdit,
                       (value) => gestureNotifier.toggleGesture(GestureType.doubleTapEdit, value),
                     ),
@@ -97,7 +99,7 @@ class GestureSettingsScreen extends ConsumerWidget {
                       context,
                       'Pull to Refresh',
                       'Pull down on lists to refresh content',
-                      Icons.refresh,
+                      PhosphorIcons.arrowClockwise(),
                       gestureSettings.pullToRefresh,
                       (value) => gestureNotifier.toggleGesture(GestureType.pullToRefresh, value),
                     ),
@@ -147,7 +149,7 @@ class GestureSettingsScreen extends ConsumerWidget {
                 ),
               ),
               
-              const SizedBox(height: 24),
+              SizedBox(height: 24),
               
               // Test Gestures Section
               _buildSectionHeader(context, 'Test Gestures'),
@@ -155,17 +157,17 @@ class GestureSettingsScreen extends ConsumerWidget {
                 child: Column(
                   children: [
                     ListTile(
-                      leading: const Icon(Icons.touch_app),
+                      leading: Icon(PhosphorIcons.hand()),
                       title: const Text('Test Haptic Feedback'),
                       subtitle: const Text('Tap to test current haptic settings'),
                       onTap: () => _testHapticFeedback(ref),
                     ),
                     const Divider(),
                     ListTile(
-                      leading: const Icon(Icons.gesture),
+                      leading: Icon(PhosphorIcons.hand()),
                       title: const Text('Gesture Tutorial'),
                       subtitle: const Text('Learn how to use gestures effectively'),
-                      trailing: const Icon(Icons.arrow_forward_ios),
+                      trailing: Icon(PhosphorIcons.caretRight()),
                       onTap: () => _showGestureTutorial(context),
                     ),
                   ],
@@ -216,7 +218,7 @@ class GestureSettingsScreen extends ConsumerWidget {
     HapticSettingsNotifier notifier,
   ) {
     return ListTile(
-      leading: const Icon(Icons.vibration),
+      leading: Icon(PhosphorIcons.vibrate()),
       title: const Text('Haptic Intensity'),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -330,38 +332,38 @@ class GestureSettingsScreen extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Gesture Tutorial'),
+        title: Text('Gesture Tutorial'),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildGestureTutorialItem(
-                Icons.swipe_right,
+                PhosphorIcons.arrowRight(),
                 'Swipe Right',
                 'Swipe right on a task to mark it as complete',
               ),
               const SizedBox(height: 16),
               _buildGestureTutorialItem(
-                Icons.swipe_left,
+                PhosphorIcons.arrowLeft(),
                 'Swipe Left',
                 'Swipe left on a task to delete it',
               ),
               const SizedBox(height: 16),
               _buildGestureTutorialItem(
-                Icons.touch_app,
+                PhosphorIcons.hand(),
                 'Long Press',
                 'Long press on a task to show the context menu',
               ),
               const SizedBox(height: 16),
               _buildGestureTutorialItem(
-                Icons.touch_app,
+                PhosphorIcons.hand(),
                 'Double Tap',
                 'Double tap on a task to edit it quickly',
               ),
               const SizedBox(height: 16),
               _buildGestureTutorialItem(
-                Icons.refresh,
+                PhosphorIcons.arrowClockwise(),
                 'Pull to Refresh',
                 'Pull down on task lists to refresh content',
               ),
@@ -441,3 +443,4 @@ class GestureSettingsScreen extends ConsumerWidget {
     );
   }
 }
+

@@ -7,6 +7,7 @@ import '../../domain/entities/subtask.dart';
 import '../providers/subtask_providers.dart';
 import '../providers/task_provider.dart';
 import 'custom_dialogs.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Widget for displaying and managing subtasks within a task
 class SubTaskList extends ConsumerStatefulWidget {
@@ -166,7 +167,7 @@ class _SubTaskListState extends ConsumerState<SubTaskList> {
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           border: Border.all(
-            color: theme.colorScheme.outline.withOpacity( 0.1),
+            color: theme.colorScheme.outline.withValues(alpha:  0.1),
             style: BorderStyle.solid,
           ),
           borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
@@ -174,7 +175,7 @@ class _SubTaskListState extends ConsumerState<SubTaskList> {
         child: Row(
           children: [
             Icon(
-              Icons.add,
+              PhosphorIcons.plus(),
               size: 20,
               color: theme.colorScheme.primary,
             ),
@@ -197,9 +198,9 @@ class _SubTaskListState extends ConsumerState<SubTaskList> {
       child: Column(
         children: [
           Icon(
-            Icons.checklist,
+            PhosphorIcons.listChecks(),
             size: 48,
-            color: theme.colorScheme.onSurfaceVariant.withOpacity( 0.1),
+            color: theme.colorScheme.onSurfaceVariant.withValues(alpha:  0.1),
           ),
           const SizedBox(height: 12),
           Text(
@@ -212,7 +213,7 @@ class _SubTaskListState extends ConsumerState<SubTaskList> {
           Text(
             'Break down this task into smaller steps',
             style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant.withOpacity( 0.1),
+              color: theme.colorScheme.onSurfaceVariant.withValues(alpha:  0.1),
             ),
             textAlign: TextAlign.center,
           ),
@@ -362,9 +363,9 @@ class _SubTaskItem extends StatelessWidget {
                 // Drag handle (if reorderable)
                 if (onReorder != null) ...[
                   Icon(
-                    Icons.drag_handle,
+                    PhosphorIcons.dotsSixVertical(),
                     size: 16,
-                    color: theme.colorScheme.onSurfaceVariant.withOpacity( 0.1),
+                    color: theme.colorScheme.onSurfaceVariant.withValues(alpha:  0.1),
                   ),
                   const SizedBox(width: 8),
                 ],
@@ -407,25 +408,25 @@ class _SubTaskItem extends StatelessWidget {
                       }
                     },
                     itemBuilder: (context) => [
-                      const PopupMenuItem(
+                      PopupMenuItem(
                         value: 'edit',
                         child: ListTile(
-                          leading: Icon(Icons.edit),
+                          leading: Icon(PhosphorIcons.pencil()),
                           title: Text('Edit'),
                           contentPadding: EdgeInsets.zero,
                         ),
                       ),
-                      const PopupMenuItem(
+                      PopupMenuItem(
                         value: 'delete',
                         child: ListTile(
-                          leading: Icon(Icons.delete),
+                          leading: Icon(PhosphorIcons.trash()),
                           title: Text('Delete'),
                           contentPadding: EdgeInsets.zero,
                         ),
                       ),
                     ],
                     child: Icon(
-                      Icons.more_vert,
+                      PhosphorIcons.dotsThreeVertical(),
                       size: 16,
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
@@ -498,3 +499,5 @@ class _EditSubTaskDialogState extends State<_EditSubTaskDialog> {
     }
   }
 }
+
+

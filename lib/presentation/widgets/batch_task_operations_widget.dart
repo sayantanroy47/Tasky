@@ -8,6 +8,7 @@ import '../providers/project_providers.dart';
 import 'glassmorphism_container.dart';
 import 'loading_error_widgets.dart' as loading_widgets;
 import '../../core/theme/typography_constants.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Comprehensive batch operations widget for managing multiple tasks
 class BatchTaskOperationsWidget extends ConsumerStatefulWidget {
@@ -58,58 +59,58 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
             PopupMenuButton<String>(
               onSelected: _handleBatchOperation,
               itemBuilder: (context) => [
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'complete',
                   child: ListTile(
-                    leading: Icon(Icons.check_circle, color: Colors.green),
+                    leading: Icon(PhosphorIcons.checkCircle(), color: Colors.green),
                     title: Text('Mark as Complete'),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'incomplete',
                   child: ListTile(
-                    leading: Icon(Icons.radio_button_unchecked),
+                    leading: Icon(PhosphorIcons.circle()),
                     title: Text('Mark as Incomplete'),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'priority',
                   child: ListTile(
-                    leading: Icon(Icons.flag),
+                    leading: Icon(PhosphorIcons.flag()),
                     title: Text('Change Priority'),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'project',
                   child: ListTile(
-                    leading: Icon(Icons.folder),
+                    leading: Icon(PhosphorIcons.folder()),
                     title: Text('Move to Project'),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'duplicate',
                   child: ListTile(
-                    leading: Icon(Icons.copy),
+                    leading: Icon(PhosphorIcons.copy()),
                     title: Text('Duplicate Tasks'),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'export',
                   child: ListTile(
-                    leading: Icon(Icons.download),
+                    leading: Icon(PhosphorIcons.download()),
                     title: Text('Export Tasks'),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'delete',
                   child: ListTile(
-                    leading: Icon(Icons.delete, color: Colors.red),
+                    leading: Icon(PhosphorIcons.trash(), color: Colors.red),
                     title: Text('Delete Tasks', style: TextStyle(color: Colors.red)),
                     contentPadding: EdgeInsets.zero,
                   ),
@@ -118,7 +119,7 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
             ),
             IconButton(
               onPressed: () => setState(() => _selectedTaskIds.clear()),
-              icon: const Icon(Icons.clear_all),
+              icon: Icon(PhosphorIcons.x()),
               tooltip: 'Clear selection',
             ),
           ],
@@ -164,14 +165,14 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
           TextField(
             decoration: InputDecoration(
               hintText: 'Search tasks...',
-              prefixIcon: const Icon(Icons.search),
+              prefixIcon: Icon(PhosphorIcons.magnifyingGlass()),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
               ),
               suffixIcon: _searchQuery.isNotEmpty
                   ? IconButton(
                       onPressed: () => setState(() => _searchQuery = ''),
-                      icon: const Icon(Icons.clear),
+                      icon: Icon(PhosphorIcons.x()),
                     )
                   : null,
             ),
@@ -218,7 +219,7 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
                       _filterPriority = null;
                       _filterProject = null;
                     }),
-                    avatar: const Icon(Icons.clear, size: 16),
+                    avatar: Icon(PhosphorIcons.x(), size: 16),
                   ),
               ],
             ),
@@ -234,14 +235,14 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: theme.colorScheme.primaryContainer.withOpacity(0.3),
+        color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
-        border: Border.all(color: theme.colorScheme.primary.withOpacity(0.3)),
+        border: Border.all(color: theme.colorScheme.primary.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
           Icon(
-            Icons.check_circle,
+            PhosphorIcons.checkCircle(),
             color: theme.colorScheme.primary,
             size: 20,
           ),
@@ -274,7 +275,7 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.task_outlined,
+              PhosphorIcons.checkSquare(),
               size: 64,
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -320,7 +321,7 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
                     onChanged: (_) => _toggleTaskSelection(task.id),
                   ),
                   
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   
                   // Task content
                   Expanded(
@@ -354,7 +355,7 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
                             if (task.dueDate != null) ...[
                               const SizedBox(width: 8),
                               Icon(
-                                Icons.schedule,
+                                PhosphorIcons.clock(),
                                 size: 12,
                                 color: theme.colorScheme.onSurfaceVariant,
                               ),
@@ -401,7 +402,7 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: chipColor.withOpacity(0.2),
+        color: chipColor.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
@@ -436,7 +437,7 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: chipColor.withOpacity(0.2),
+        color: chipColor.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
@@ -900,3 +901,4 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
     }
   }
 }
+

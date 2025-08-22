@@ -16,6 +16,7 @@ import '../../core/design_system/design_tokens.dart';
 import '../../core/theme/typography_constants.dart';
 import '../providers/task_provider.dart' show taskOperationsProvider;
 import '../widgets/task_form_dialog.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Task detail page showing comprehensive task information
 class TaskDetailPage extends ConsumerWidget {
@@ -31,8 +32,7 @@ class TaskDetailPage extends ConsumerWidget {
     final allTasksAsync = ref.watch(tasksProvider);
     
     return allTasksAsync.when(
-      loading: () => const ThemeBackgroundWidget(
-        child: Scaffold(
+      loading: () => ThemeBackgroundWidget(child: Scaffold(
           backgroundColor: Colors.transparent,
           extendBodyBehindAppBar: true,
           appBar: StandardizedAppBar(title: 'Task Details'),
@@ -48,7 +48,7 @@ class TaskDetailPage extends ConsumerWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                Icon(PhosphorIcons.warningCircle(), size: 64, color: Colors.red),
                 const SizedBox(height: 16),
                 Text('Error loading task: $error'),
                 const SizedBox(height: 16),
@@ -68,7 +68,7 @@ class TaskDetailPage extends ConsumerWidget {
         );
         
         if (task == null) {
-          return const ThemeBackgroundWidget(
+          return ThemeBackgroundWidget(
             child: Scaffold(
               backgroundColor: Colors.transparent,
               extendBodyBehindAppBar: true,
@@ -77,9 +77,9 @@ class TaskDetailPage extends ConsumerWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.task_alt, size: 64, color: Colors.grey),
-                    SizedBox(height: 16),
-                    Text('Task not found'),
+                    Icon(PhosphorIcons.checkSquare(), size: 64, color: Colors.grey),
+                    const SizedBox(height: 16),
+                    const Text('Task not found'),
                   ],
                 ),
               ),
@@ -110,32 +110,32 @@ class _TaskDetailView extends ConsumerWidget {
           title: 'Task Details',
           actions: [
             IconButton(
-              icon: const Icon(Icons.edit),
+              icon: Icon(PhosphorIcons.pencil()),
               onPressed: () => _editTask(context, ref),
             ),
             PopupMenuButton<String>(
               onSelected: (value) => _handleMenuAction(context, ref, value),
               itemBuilder: (context) => [
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'duplicate',
                   child: ListTile(
-                    leading: Icon(Icons.copy),
+                    leading: Icon(PhosphorIcons.copy()),
                     title: Text('Duplicate'),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'share',
                   child: ListTile(
-                    leading: Icon(Icons.share),
+                    leading: Icon(PhosphorIcons.share()),
                     title: Text('Share'),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
-                const PopupMenuItem(
+                PopupMenuItem(
                   value: 'delete',
                   child: ListTile(
-                    leading: Icon(Icons.delete, color: Colors.red),
+                    leading: Icon(PhosphorIcons.trash(), color: Colors.red),
                     title: Text('Delete', style: TextStyle(color: Colors.red)),
                     contentPadding: EdgeInsets.zero,
                   ),
@@ -315,11 +315,11 @@ class _TaskDetailView extends ConsumerWidget {
           Row(
             children: [
               Icon(
-                Icons.attachment,
+                PhosphorIcons.paperclip(),
                 color: theme.colorScheme.primary,
                 size: 20,
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Text(
                 'Attachments',
                 style: theme.textTheme.titleMedium?.copyWith(
@@ -329,7 +329,7 @@ class _TaskDetailView extends ConsumerWidget {
               const Spacer(),
               IconButton(
                 onPressed: () => _addAttachment(context, task),
-                icon: const Icon(Icons.add),
+                icon: Icon(PhosphorIcons.plus()),
                 iconSize: 20,
               ),
             ],
@@ -340,7 +340,7 @@ class _TaskDetailView extends ConsumerWidget {
               child: Column(
                 children: [
                   Icon(
-                    Icons.attach_file,
+                    PhosphorIcons.paperclip(),
                     size: 48,
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -362,7 +362,7 @@ class _TaskDetailView extends ConsumerWidget {
                 color: theme.colorScheme.surfaceContainer,
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: theme.colorScheme.outline.withOpacity(0.2),
+                  color: theme.colorScheme.outline.withValues(alpha: 0.2),
                 ),
               ),
               child: Row(
@@ -394,7 +394,7 @@ class _TaskDetailView extends ConsumerWidget {
                   ),
                   IconButton(
                     onPressed: () => _openAttachment(attachment),
-                    icon: const Icon(Icons.open_in_new),
+                    icon: Icon(PhosphorIcons.arrowSquareOut()),
                     iconSize: 16,
                   ),
                 ],
@@ -418,7 +418,7 @@ class _TaskDetailView extends ConsumerWidget {
           Row(
             children: [
               Icon(
-                Icons.history,
+                PhosphorIcons.clockCounterClockwise(),
                 color: theme.colorScheme.primary,
                 size: 20,
               ),
@@ -508,11 +508,11 @@ class _TaskDetailView extends ConsumerWidget {
           Row(
             children: [
               Icon(
-                Icons.people,
+                PhosphorIcons.users(),
                 color: theme.colorScheme.primary,
                 size: 20,
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Text(
                 'Collaboration',
                 style: theme.textTheme.titleMedium?.copyWith(
@@ -522,7 +522,7 @@ class _TaskDetailView extends ConsumerWidget {
               const Spacer(),
               IconButton(
                 onPressed: () => _inviteCollaborator(context, task),
-                icon: const Icon(Icons.person_add),
+                icon: Icon(PhosphorIcons.userPlus()),
                 iconSize: 20,
               ),
             ],
@@ -533,7 +533,7 @@ class _TaskDetailView extends ConsumerWidget {
               child: Column(
                 children: [
                   Icon(
-                    Icons.person_add_outlined,
+                    PhosphorIcons.userPlus(),
                     size: 48,
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -560,14 +560,14 @@ class _TaskDetailView extends ConsumerWidget {
                 color: theme.colorScheme.surfaceContainer,
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: theme.colorScheme.outline.withOpacity(0.2),
+                  color: theme.colorScheme.outline.withValues(alpha: 0.2),
                 ),
               ),
               child: Row(
                 children: [
                   CircleAvatar(
                     radius: 16,
-                    backgroundColor: theme.colorScheme.primary.withOpacity(0.2),
+                    backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.2),
                     child: Text(
                       email.substring(0, 1).toUpperCase(),
                       style: TextStyle(
@@ -585,7 +585,7 @@ class _TaskDetailView extends ConsumerWidget {
                   ),
                   IconButton(
                     onPressed: () => _removeCollaborator(context, task, email),
-                    icon: const Icon(Icons.remove_circle_outline, size: 16),
+                    icon: Icon(PhosphorIcons.minusCircle(), size: 16),
                   ),
                 ],
               ),
@@ -596,7 +596,7 @@ class _TaskDetailView extends ConsumerWidget {
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () => _shareTask(context, ref),
-                  icon: const Icon(Icons.share),
+                  icon: Icon(PhosphorIcons.share()),
                   label: const Text('Share Task'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: theme.colorScheme.primaryContainer,
@@ -608,7 +608,7 @@ class _TaskDetailView extends ConsumerWidget {
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () => _exportTask(context, task),
-                  icon: const Icon(Icons.download),
+                  icon: Icon(PhosphorIcons.download()),
                   label: const Text('Export'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: theme.colorScheme.secondaryContainer,
@@ -639,11 +639,11 @@ class _TaskDetailView extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Invite Collaborator'),
-        content: const TextField(
+        title: Text('Invite Collaborator'),
+        content: TextField(
           decoration: InputDecoration(
             hintText: 'Enter email address...',
-            prefixIcon: Icon(Icons.email),
+            prefixIcon: Icon(PhosphorIcons.envelope()),
           ),
           keyboardType: TextInputType.emailAddress,
         ),
@@ -735,17 +735,17 @@ class _TaskDetailView extends ConsumerWidget {
   IconData _getAttachmentIcon(String type) {
     switch (type.toLowerCase()) {
       case 'image':
-        return Icons.image;
+        return PhosphorIcons.image();
       case 'pdf':
-        return Icons.picture_as_pdf;
+        return PhosphorIcons.filePdf();
       case 'document':
-        return Icons.description;
+        return PhosphorIcons.fileText();
       case 'audio':
-        return Icons.audio_file;
+        return PhosphorIcons.fileAudio();
       case 'video':
-        return Icons.video_file;
+        return PhosphorIcons.video();
       default:
-        return Icons.attach_file;
+        return PhosphorIcons.paperclip();
     }
   }
 
@@ -803,7 +803,7 @@ class _TaskHeader extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               StatusBadgeWidget(status: task.status),
             ],
           ),
@@ -825,17 +825,17 @@ class _TaskHeader extends StatelessWidget {
             children: [
               if (task.dueDate != null)
                 _InfoChip(
-                  icon: Icons.schedule,
+                  icon: PhosphorIcons.clock(),
                   label: 'Due: ${_formatDateTime(task.dueDate!)}',
                 ),
               if (task.priority != TaskPriority.medium)
                 _InfoChip(
-                  icon: Icons.flag,
+                  icon: PhosphorIcons.flag(),
                   label: 'Priority: ${task.priority.name}',
                 ),
               if (task.tags.isNotEmpty)
                 _InfoChip(
-                  icon: Icons.tag,
+                  icon: PhosphorIcons.tag(),
                   label: '${task.tags.length} tags',
                 ),
             ],
@@ -905,8 +905,8 @@ class _VoiceTranscriptionDisplay extends StatelessWidget {
       level: GlassLevel.interactive,
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       padding: const EdgeInsets.all(20),
-      glassTint: theme.colorScheme.secondaryContainer.withOpacity(0.2),
-      borderColor: theme.colorScheme.secondary.withOpacity(0.3),
+      glassTint: theme.colorScheme.secondaryContainer.withValues(alpha: 0.2),
+      borderColor: theme.colorScheme.secondary.withValues(alpha: 0.3),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -914,7 +914,7 @@ class _VoiceTranscriptionDisplay extends StatelessWidget {
           Row(
             children: [
               Icon(
-                Icons.record_voice_over,
+                PhosphorIcons.microphone(),
                 size: 20,
                 color: theme.colorScheme.secondary,
               ),
@@ -930,10 +930,10 @@ class _VoiceTranscriptionDisplay extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.secondary.withOpacity(0.1),
+                  color: theme.colorScheme.secondary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: theme.colorScheme.secondary.withOpacity(0.2),
+                    color: theme.colorScheme.secondary.withValues(alpha: 0.2),
                   ),
                 ),
                 child: Text(
@@ -954,10 +954,10 @@ class _VoiceTranscriptionDisplay extends StatelessWidget {
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: theme.colorScheme.surface.withOpacity(0.5),
+              color: theme.colorScheme.surface.withValues(alpha: 0.5),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: theme.colorScheme.outline.withOpacity(0.1),
+                color: theme.colorScheme.outline.withValues(alpha: 0.1),
               ),
             ),
             child: Text(
@@ -1016,8 +1016,8 @@ class _FullAudioPlayerState extends ConsumerState<_FullAudioPlayer> {
       level: GlassLevel.interactive,
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       padding: const EdgeInsets.all(20),
-      glassTint: theme.colorScheme.tertiaryContainer.withOpacity(0.2),
-      borderColor: theme.colorScheme.tertiary.withOpacity(0.3),
+      glassTint: theme.colorScheme.tertiaryContainer.withValues(alpha: 0.2),
+      borderColor: theme.colorScheme.tertiary.withValues(alpha: 0.3),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1025,11 +1025,11 @@ class _FullAudioPlayerState extends ConsumerState<_FullAudioPlayer> {
           Row(
             children: [
               Icon(
-                Icons.audio_file,
+                PhosphorIcons.fileAudio(),
                 size: 20,
                 color: theme.colorScheme.tertiary,
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Text(
                 'Voice Recording',
                 style: theme.textTheme.titleMedium?.copyWith(
@@ -1059,8 +1059,8 @@ class _FullAudioPlayerState extends ConsumerState<_FullAudioPlayer> {
                 level: GlassLevel.interactive,
                 borderRadius: BorderRadius.circular(30),
                 padding: const EdgeInsets.all(12),
-                glassTint: theme.colorScheme.tertiary.withOpacity(0.2),
-                borderColor: theme.colorScheme.tertiary.withOpacity(0.4),
+                glassTint: theme.colorScheme.tertiary.withValues(alpha: 0.2),
+                borderColor: theme.colorScheme.tertiary.withValues(alpha: 0.4),
                 child: IconButton(
                   onPressed: _isLoading ? null : _togglePlayPause,
                   icon: _isLoading
@@ -1073,7 +1073,7 @@ class _FullAudioPlayerState extends ConsumerState<_FullAudioPlayer> {
                           ),
                         )
                       : Icon(
-                          _isPlaying ? Icons.pause : Icons.play_arrow,
+                          _isPlaying ? PhosphorIcons.pause() : PhosphorIcons.play(),
                           size: 32,
                           color: theme.colorScheme.tertiary,
                         ),
@@ -1135,15 +1135,15 @@ class _TaskDependencies extends ConsumerWidget {
       level: GlassLevel.content,
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       padding: const EdgeInsets.all(20),
-      glassTint: theme.colorScheme.secondaryContainer.withOpacity(0.1),
-      borderColor: theme.colorScheme.secondary.withOpacity(0.2),
+      glassTint: theme.colorScheme.secondaryContainer.withValues(alpha: 0.1),
+      borderColor: theme.colorScheme.secondary.withValues(alpha: 0.2),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               Icon(
-                Icons.account_tree,
+                PhosphorIcons.tree(),
                 size: 20,
                 color: theme.colorScheme.secondary,
               ),
@@ -1172,10 +1172,10 @@ class _TaskDependencies extends ConsumerWidget {
               margin: const EdgeInsets.symmetric(vertical: 4),
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
-                  color: theme.colorScheme.outline.withOpacity(0.2),
+                  color: theme.colorScheme.outline.withValues(alpha: 0.2),
                 ),
               ),
               child: Text(
@@ -1196,4 +1196,7 @@ class _TaskDependencies extends ConsumerWidget {
     );
   }
 }
+
+
+
 

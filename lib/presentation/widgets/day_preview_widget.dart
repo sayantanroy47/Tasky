@@ -245,7 +245,7 @@ class DayPreviewWidget extends ConsumerWidget {
                   ),
                   if (task.dueDate != null)
                     Text(
-                      '${task.dueDate!.hour}:${task.dueDate!.minute.value.padLeft(2, '0')}',
+                      '${task.dueDate!.hour}:${task.dueDate!.minute.toString().padLeft(2, '0')}',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
@@ -400,7 +400,7 @@ class DayPreviewWidget extends ConsumerWidget {
                   PhosphorIcon(PhosphorIcons.clock(), size: 16, color: theme.colorScheme.onSurfaceVariant),
                   SizedBox(width: 4),
                   Text(
-                    'Due: ${task.dueDate!.day}/${task.dueDate!.month}/${task.dueDate!.year} at ${task.dueDate!.hour}:${task.dueDate!.minute.value.padLeft(2, '0')}',
+                    'Due: ${task.dueDate!.day}/${task.dueDate!.month}/${task.dueDate!.year} at ${task.dueDate!.hour}:${task.dueDate!.minute.toString().padLeft(2, '0')}',
                     style: theme.textTheme.bodySmall,
                   )]),
             ],
@@ -422,8 +422,11 @@ class DayPreviewWidget extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text("")]),
+            child: const Text("Close"),
+          ),
+        ],
       ),
     );
   }
 }
+

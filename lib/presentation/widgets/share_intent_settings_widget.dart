@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../services/share_intent_service.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Comprehensive settings widget for ShareIntent functionality
 class ShareIntentSettingsWidget extends ConsumerStatefulWidget {
@@ -41,7 +42,7 @@ class _ShareIntentSettingsWidgetState extends ConsumerState<ShareIntentSettingsW
           children: [
             Row(
               children: [
-                Icon(Icons.share, color: Theme.of(context).primaryColor),
+                Icon(PhosphorIcons.share(), color: Theme.of(context).primaryColor),
                 const SizedBox(width: 8),
                 const Text(
                   'Share Intent Settings',
@@ -93,7 +94,7 @@ class _ShareIntentSettingsWidgetState extends ConsumerState<ShareIntentSettingsW
               },
             ),
             
-            const Divider(),
+            Divider(),
             
             // Trusted Contacts Section
             const Text(
@@ -143,7 +144,7 @@ class _ShareIntentSettingsWidgetState extends ConsumerState<ShareIntentSettingsW
                 spacing: 8,
                 children: _trustedContacts.map((contact) => Chip(
                   label: Text(contact),
-                  deleteIcon: const Icon(Icons.close, size: 18),
+                  deleteIcon: Icon(PhosphorIcons.x(), size: 18),
                   onDeleted: () => _removeTrustedContact(contact),
                 )).toList(),
               ),
@@ -164,13 +165,13 @@ class _ShareIntentSettingsWidgetState extends ConsumerState<ShareIntentSettingsW
               children: [
                 ElevatedButton.icon(
                   onPressed: _testShareIntent,
-                  icon: const Icon(Icons.share),
+                  icon: Icon(PhosphorIcons.share()),
                   label: const Text('Test Share'),
                 ),
                 const SizedBox(width: 8),
                 OutlinedButton.icon(
                   onPressed: _runSampleMessages,
-                  icon: const Icon(Icons.message),
+                  icon: Icon(PhosphorIcons.chatCircle()),
                   label: const Text('Test Messages'),
                 ),
               ],
@@ -243,3 +244,4 @@ class _ShareIntentSettingsWidgetState extends ConsumerState<ShareIntentSettingsW
     super.dispose();
   }
 }
+

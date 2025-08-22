@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Minimal calendar widget to fix compilation errors
 class CalendarWidget extends ConsumerWidget {
@@ -18,7 +19,7 @@ class CalendarWidget extends ConsumerWidget {
               'Calendar View',
               style: Theme.of(context).textTheme.titleLarge,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Container(
               height: 300,
               decoration: BoxDecoration(
@@ -30,7 +31,7 @@ class CalendarWidget extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
-                      Icons.calendar_today,
+                      PhosphorIcons.calendar(),
                       size: 48,
                       color: Theme.of(context).colorScheme.primary,
                     ),
@@ -58,3 +59,4 @@ class CalendarWidget extends ConsumerWidget {
     );
   }
 }
+

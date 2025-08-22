@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/standardized_app_bar.dart';
 import '../../services/cloud_sync_service.dart';
 import '../../domain/models/enums.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Screen for managing cloud synchronization settings
 class CloudSyncScreen extends ConsumerStatefulWidget {
@@ -26,12 +27,11 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
             IconButton(
               onPressed: _isLoading ? null : _performFullSync,
               icon: _isLoading 
-                  ? const SizedBox(
-                      width: 20,
+                  ? SizedBox(width: 20,
                       height: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Icon(Icons.cloud_sync),
+                  : Icon(PhosphorIcons.cloudArrowUp()),
               tooltip: 'Sync Now',
             ),
         ],
@@ -43,7 +43,7 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.error, size: 64, color: Colors.red),
+              Icon(PhosphorIcons.warningCircle(), size: 64, color: Colors.red),
               const SizedBox(height: 16),
               Text('Error: $error'),
               const SizedBox(height: 16),
@@ -94,12 +94,12 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
-            Icons.cloud_off,
+          Icon(
+            PhosphorIcons.cloudSlash(),
             size: 80,
             color: Colors.grey,
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 24),
           Text(
             'Cloud Sync Not Connected',
             style: Theme.of(context).textTheme.headlineSmall,
@@ -118,7 +118,7 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: () => _showSignInDialog(),
-              icon: const Icon(Icons.login),
+              icon: Icon(PhosphorIcons.signIn()),
               label: const Text('Sign In'),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.all(16),
@@ -132,7 +132,7 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
             width: double.infinity,
             child: OutlinedButton.icon(
               onPressed: () => _showSignUpDialog(),
-              icon: const Icon(Icons.person_add),
+              icon: Icon(PhosphorIcons.userPlus()),
               label: const Text('Create Account'),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.all(16),
@@ -160,21 +160,21 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
               'Benefits of Cloud Sync',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12),
             _buildBenefitItem(
-              Icons.devices,
+              PhosphorIcons.devices(),
               'Access your tasks on all devices',
             ),
             _buildBenefitItem(
-              Icons.backup,
+              PhosphorIcons.cloudArrowUp(),
               'Automatic backup of your data',
             ),
             _buildBenefitItem(
-              Icons.sync,
+              PhosphorIcons.arrowsClockwise(),
               'Real-time synchronization',
             ),
             _buildBenefitItem(
-              Icons.security,
+              PhosphorIcons.shield(),
               'Secure cloud storage',
             ),
           ],
@@ -205,7 +205,7 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
           children: [
             Row(
               children: [
-                const Icon(Icons.account_circle, color: Colors.green),
+                Icon(PhosphorIcons.userCircle(), color: Colors.green),
                 const SizedBox(width: 8),
                 Text(
                   'Account Connected',
@@ -251,25 +251,25 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
                   child: _buildStatItem(
                     'Tasks in Cloud',
                     '${stats.totalCloudTasks}',
-                    Icons.task,
+                    PhosphorIcons.checkSquare(),
                   ),
                 ),
                 Expanded(
                   child: _buildStatItem(
                     'Events in Cloud',
                     '${stats.totalCloudEvents}',
-                    Icons.event,
+                    PhosphorIcons.calendar(),
                   ),
                 ),
               ],
             ),
             
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             
             if (stats.lastSyncTime != null) ...[
               Row(
                 children: [
-                  const Icon(Icons.access_time, size: 16),
+                  Icon(PhosphorIcons.clock(), size: 16),
                   const SizedBox(width: 8),
                   Text(
                     'Last sync: ${_formatDateTime(stats.lastSyncTime!)}',
@@ -280,7 +280,7 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
             ] else ...[
               Row(
                 children: [
-                  const Icon(Icons.info, size: 16, color: Colors.orange),
+                  Icon(PhosphorIcons.info(), size: 16, color: Colors.orange),
                   const SizedBox(width: 8),
                   Text(
                     'Never synced',
@@ -373,24 +373,24 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
               'Sync Actions',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             
             ListTile(
-              leading: const Icon(Icons.cloud_sync),
+              leading: Icon(PhosphorIcons.cloudArrowUp()),
               title: const Text('Full Sync'),
               subtitle: const Text('Sync all data to and from cloud'),
               onTap: _performFullSync,
             ),
             
             ListTile(
-              leading: const Icon(Icons.cloud_upload),
+              leading: Icon(PhosphorIcons.cloudArrowUp()),
               title: const Text('Upload All'),
               subtitle: const Text('Upload all local data to cloud'),
               onTap: _uploadAllData,
             ),
             
             ListTile(
-              leading: const Icon(Icons.cloud_download),
+              leading: Icon(PhosphorIcons.cloudArrowDown()),
               title: const Text('Download All'),
               subtitle: const Text('Download all data from cloud'),
               onTap: _downloadAllData,
@@ -399,7 +399,7 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
             const Divider(),
             
             ListTile(
-              leading: const Icon(Icons.refresh, color: Colors.orange),
+              leading: Icon(PhosphorIcons.arrowClockwise(), color: Colors.orange),
               title: const Text('Reset Sync'),
               subtitle: const Text('Clear sync data and start fresh'),
               onTap: _resetSync,
@@ -421,29 +421,29 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
               'Advanced Settings',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8),
             
             ListTile(
-              leading: const Icon(Icons.merge_type),
+              leading: Icon(PhosphorIcons.gitMerge()),
               title: const Text('Conflict Resolution'),
               subtitle: const Text('How to handle sync conflicts'),
-              trailing: const Icon(Icons.chevron_right),
+              trailing: Icon(PhosphorIcons.caretRight()),
               onTap: _showConflictResolutionSettings,
             ),
             
             ListTile(
-              leading: const Icon(Icons.storage),
+              leading: Icon(PhosphorIcons.database()),
               title: const Text('Data Management'),
               subtitle: const Text('Manage cloud storage usage'),
-              trailing: const Icon(Icons.chevron_right),
+              trailing: Icon(PhosphorIcons.caretRight()),
               onTap: _showDataManagementSettings,
             ),
             
             ListTile(
-              leading: const Icon(Icons.history),
+              leading: Icon(PhosphorIcons.clockCounterClockwise()),
               title: const Text('Sync History'),
               subtitle: const Text('View sync activity log'),
-              trailing: const Icon(Icons.chevron_right),
+              trailing: Icon(PhosphorIcons.caretRight()),
               onTap: _showSyncHistory,
             ),
           ],
@@ -734,7 +734,7 @@ class _SignInDialogState extends ConsumerState<SignInDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Sign In'),
+      title: Text('Sign In'),
       content: Form(
         key: _formKey,
         child: Column(
@@ -742,10 +742,10 @@ class _SignInDialogState extends ConsumerState<SignInDialog> {
           children: [
             TextFormField(
               controller: _emailController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Email',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.email),
+                border: const OutlineInputBorder(),
+                prefixIcon: Icon(PhosphorIcons.envelope()),
               ),
               keyboardType: TextInputType.emailAddress,
               validator: (value) {
@@ -758,16 +758,16 @@ class _SignInDialogState extends ConsumerState<SignInDialog> {
                 return null;
               },
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             TextFormField(
               controller: _passwordController,
               decoration: InputDecoration(
                 labelText: 'Password',
                 border: const OutlineInputBorder(),
-                prefixIcon: const Icon(Icons.lock),
+                prefixIcon: Icon(PhosphorIcons.lock()),
                 suffixIcon: IconButton(
                   onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-                  icon: Icon(_obscurePassword ? Icons.visibility : Icons.visibility_off),
+                  icon: Icon(_obscurePassword ? PhosphorIcons.eye() : PhosphorIcons.eyeSlash()),
                 ),
               ),
               obscureText: _obscurePassword,
@@ -863,7 +863,7 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Create Account'),
+      title: Text('Create Account'),
       content: Form(
         key: _formKey,
         child: Column(
@@ -871,10 +871,10 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
           children: [
             TextFormField(
               controller: _emailController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Email',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.email),
+                border: const OutlineInputBorder(),
+                prefixIcon: Icon(PhosphorIcons.envelope()),
               ),
               keyboardType: TextInputType.emailAddress,
               validator: (value) {
@@ -887,16 +887,16 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
                 return null;
               },
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             TextFormField(
               controller: _passwordController,
               decoration: InputDecoration(
                 labelText: 'Password',
                 border: const OutlineInputBorder(),
-                prefixIcon: const Icon(Icons.lock),
+                prefixIcon: Icon(PhosphorIcons.lock()),
                 suffixIcon: IconButton(
                   onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
-                  icon: Icon(_obscurePassword ? Icons.visibility : Icons.visibility_off),
+                  icon: Icon(_obscurePassword ? PhosphorIcons.eye() : PhosphorIcons.eyeSlash()),
                 ),
               ),
               obscureText: _obscurePassword,
@@ -910,16 +910,16 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
                 return null;
               },
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             TextFormField(
               controller: _confirmPasswordController,
               decoration: InputDecoration(
                 labelText: 'Confirm Password',
                 border: const OutlineInputBorder(),
-                prefixIcon: const Icon(Icons.lock_outline),
+                prefixIcon: Icon(PhosphorIcons.lock()),
                 suffixIcon: IconButton(
                   onPressed: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
-                  icon: Icon(_obscureConfirmPassword ? Icons.visibility : Icons.visibility_off),
+                  icon: Icon(_obscureConfirmPassword ? PhosphorIcons.eye() : PhosphorIcons.eyeSlash()),
                 ),
               ),
               obscureText: _obscureConfirmPassword,
@@ -992,3 +992,4 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
     }
   }
 }
+

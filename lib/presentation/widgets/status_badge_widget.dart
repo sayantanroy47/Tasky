@@ -3,6 +3,7 @@ import '../../domain/models/enums.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../core/design_system/design_tokens.dart';
 import 'glassmorphism_container.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Enhanced status badge widget with icon and text
 class StatusBadgeWidget extends StatelessWidget {
@@ -47,14 +48,14 @@ class StatusBadgeWidget extends StatelessWidget {
         boxShadow: [
           // Outer glow
           BoxShadow(
-            color: config.color.withOpacity(0.4),
+            color: config.color.withValues(alpha: 0.4),
             blurRadius: 8,
             spreadRadius: 2,
             offset: const Offset(0, 2),
           ),
           // Inner glow
           BoxShadow(
-            color: config.color.withOpacity(0.2),
+            color: config.color.withValues(alpha: 0.2),
             blurRadius: 4,
             spreadRadius: 1,
             offset: const Offset(0, 1),
@@ -96,12 +97,12 @@ class StatusBadgeWidget extends StatelessWidget {
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: config.color.withOpacity(0.4),
+            color: config.color.withValues(alpha: 0.4),
             blurRadius: 6,
             spreadRadius: 2,
           ),
           BoxShadow(
-            color: config.color.withOpacity(0.2),
+            color: config.color.withValues(alpha: 0.2),
             blurRadius: 3,
             spreadRadius: 1,
           ),
@@ -118,26 +119,26 @@ class StatusBadgeWidget extends StatelessWidget {
   StatusConfig _getStatusConfig(TaskStatus status) {
     switch (status) {
       case TaskStatus.pending:
-        return const StatusConfig(
-          icon: Icons.schedule,
+        return StatusConfig(
+          icon: PhosphorIcons.clock(),
           label: 'Pending',
           color: Color(0xFFFF9800), // Orange
         );
       case TaskStatus.inProgress:
-        return const StatusConfig(
-          icon: Icons.play_circle_filled,
+        return StatusConfig(
+          icon: PhosphorIcons.playCircle(),
           label: 'In Progress',
           color: Color(0xFF2196F3), // Blue
         );
       case TaskStatus.completed:
-        return const StatusConfig(
-          icon: Icons.check_circle,
+        return StatusConfig(
+          icon: PhosphorIcons.checkCircle(),
           label: 'Completed',
           color: Color(0xFF4CAF50), // Green
         );
       case TaskStatus.cancelled:
-        return const StatusConfig(
-          icon: Icons.cancel,
+        return StatusConfig(
+          icon: PhosphorIcons.xCircle(),
           label: 'Cancelled',
           color: Color(0xFFFF1744), // Red
         );
@@ -186,14 +187,14 @@ class PriorityBadgeWidget extends StatelessWidget {
         boxShadow: [
           // Outer glow
           BoxShadow(
-            color: config.color.withOpacity(0.4),
+            color: config.color.withValues(alpha: 0.4),
             blurRadius: 8,
             spreadRadius: 2,
             offset: const Offset(0, 2),
           ),
           // Inner glow
           BoxShadow(
-            color: config.color.withOpacity(0.2),
+            color: config.color.withValues(alpha: 0.2),
             blurRadius: 4,
             spreadRadius: 1,
             offset: const Offset(0, 1),
@@ -235,12 +236,12 @@ class PriorityBadgeWidget extends StatelessWidget {
         shape: BoxShape.circle,
         boxShadow: [
           BoxShadow(
-            color: config.color.withOpacity(0.4),
+            color: config.color.withValues(alpha: 0.4),
             blurRadius: 6,
             spreadRadius: 2,
           ),
           BoxShadow(
-            color: config.color.withOpacity(0.2),
+            color: config.color.withValues(alpha: 0.2),
             blurRadius: 3,
             spreadRadius: 1,
           ),
@@ -257,26 +258,26 @@ class PriorityBadgeWidget extends StatelessWidget {
   PriorityConfig _getPriorityConfig(TaskPriority priority) {
     switch (priority) {
       case TaskPriority.low:
-        return const PriorityConfig(
-          icon: Icons.low_priority,
+        return PriorityConfig(
+          icon: PhosphorIcons.arrowDown(),
           label: 'Low',
           color: Color(0xFF4CAF50), // Green
         );
       case TaskPriority.medium:
-        return const PriorityConfig(
-          icon: Icons.remove,
+        return PriorityConfig(
+          icon: PhosphorIcons.minus(),
           label: 'Medium',
           color: Color(0xFF2196F3), // Blue
         );
       case TaskPriority.high:
-        return const PriorityConfig(
-          icon: Icons.priority_high,
+        return PriorityConfig(
+          icon: PhosphorIcons.arrowUp(),
           label: 'High',
           color: Color(0xFFFF9100), // Orange
         );
       case TaskPriority.urgent:
-        return const PriorityConfig(
-          icon: Icons.error,
+        return PriorityConfig(
+          icon: PhosphorIcons.warningCircle(),
           label: 'Urgent',
           color: Color(0xFFFF1744), // Red
         );
@@ -319,8 +320,8 @@ class CategoryBadgeWidget extends StatelessWidget {
           horizontal: compact ? 6 : 8,
           vertical: compact ? 2 : 4,
         ),
-        glassTint: categoryColor.withOpacity(0.15),
-        borderColor: categoryColor.withOpacity(0.3),
+        glassTint: categoryColor.withValues(alpha: 0.15),
+        borderColor: categoryColor.withValues(alpha: 0.3),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -343,11 +344,11 @@ class CategoryBadgeWidget extends StatelessWidget {
             ),
             
             if (onRemove != null) ...[
-              const SizedBox(width: 4),
+              SizedBox(width: 4),
               GestureDetector(
                 onTap: onRemove,
                 child: Icon(
-                  Icons.close,
+                  PhosphorIcons.x(),
                   size: 12,
                   color: categoryColor,
                 ),
@@ -406,10 +407,10 @@ class TaskBadgesWidget extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.outline.withOpacity(0.1),
+              color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall),
               border: Border.all(
-                color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.3),
               ),
             ),
             child: Text(
@@ -451,3 +452,5 @@ class PriorityConfig {
     required this.color,
   });
 }
+
+

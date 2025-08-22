@@ -7,6 +7,7 @@ import '../../domain/models/enums.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../core/theme/material3/motion_system.dart';
 import 'advanced_task_card.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Advanced draggable task widget with comprehensive drag-and-drop functionality
 /// 
@@ -357,7 +358,7 @@ class _DraggableTaskWidgetState extends ConsumerState<DraggableTaskWidget>
         ),
         child: Center(
           child: Icon(
-            Icons.drag_indicator,
+            PhosphorIcons.dotsSixVertical(),
             color: Theme.of(context).colorScheme.onSurfaceVariant,
             size: 32,
           ),
@@ -376,7 +377,7 @@ class _DraggableTaskWidgetState extends ConsumerState<DraggableTaskWidget>
         color: theme.colorScheme.primary,
         width: 2,
       ),
-      color: theme.colorScheme.primaryContainer.withOpacity(0.1),
+      color: theme.colorScheme.primaryContainer.withValues(alpha: 0.1),
     );
   }
 
@@ -828,3 +829,4 @@ class DraggableTaskGrid extends StatelessWidget {
     );
   }
 }
+

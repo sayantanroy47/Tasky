@@ -5,6 +5,7 @@ import '../../core/theme/typography_constants.dart';
 import '../../services/ai/ai_task_parsing_service.dart';
 import '../../services/security/api_key_manager.dart';
 import '../../domain/models/ai_service_type.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Widget for selecting AI service provider
 class AIServiceSelector extends ConsumerWidget {
@@ -23,7 +24,7 @@ class AIServiceSelector extends ConsumerWidget {
             Row(
               children: [
                 Icon(
-                  Icons.cloud_outlined,
+                  PhosphorIcons.cloud(),
                   color: Theme.of(context).colorScheme.primary,
                 ),
                 const SizedBox(width: 8),
@@ -51,7 +52,7 @@ class AIServiceSelector extends ConsumerWidget {
                   configNotifier.setServiceType(value);
                 }
               },
-              secondary: const Icon(Icons.security),
+              secondary: Icon(PhosphorIcons.shield()),
             ),
             
             // OpenAI Option
@@ -65,7 +66,7 @@ class AIServiceSelector extends ConsumerWidget {
                   configNotifier.setServiceType(value);
                 }
               },
-              secondary: const Icon(Icons.psychology),
+              secondary: Icon(PhosphorIcons.brain()),
             ),
             
             // Claude Option
@@ -79,10 +80,10 @@ class AIServiceSelector extends ConsumerWidget {
                   configNotifier.setServiceType(value);
                 }
               },
-              secondary: const Icon(Icons.smart_toy),
+              secondary: Icon(PhosphorIcons.robot()),
             ),
             
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             
             // API Key Configuration
             if (config.serviceType != AIServiceType.local) ...[
@@ -91,7 +92,7 @@ class AIServiceSelector extends ConsumerWidget {
               Row(
                 children: [
                   Icon(
-                    Icons.key,
+                    PhosphorIcons.key(),
                     color: Theme.of(context).colorScheme.primary,
                   ),
                   const SizedBox(width: 8),
@@ -108,12 +109,12 @@ class AIServiceSelector extends ConsumerWidget {
                   final hasKey = snapshot.data ?? false;
                   return ListTile(
                     leading: Icon(
-                      hasKey ? Icons.check_circle : Icons.settings,
+                      hasKey ? PhosphorIcons.checkCircle() : PhosphorIcons.gear(),
                       color: hasKey ? Colors.green : null,
                     ),
                     title: Text('Configure ${config.serviceType.displayName} API'),
                     subtitle: Text(hasKey ? 'API key configured' : 'Set up API key and preferences'),
-                    trailing: const Icon(Icons.arrow_forward_ios),
+                    trailing: Icon(PhosphorIcons.caretRight()),
                     onTap: () => _showAPIConfigDialog(context, config.serviceType),
                   );
                 },
@@ -178,12 +179,12 @@ class AIServiceSelector extends ConsumerWidget {
   IconData _getStatusIcon(AIServiceType serviceType, [bool hasKey = false]) {
     switch (serviceType) {
       case AIServiceType.local:
-        return Icons.check_circle;
+        return PhosphorIcons.checkCircle();
       case AIServiceType.openai:
       case AIServiceType.claude:
-        return hasKey ? Icons.check_circle : Icons.warning;
+        return hasKey ? PhosphorIcons.checkCircle() : PhosphorIcons.warning();
       case AIServiceType.composite:
-        return Icons.auto_mode;
+        return PhosphorIcons.sparkle();
     }
   }
 
@@ -377,18 +378,18 @@ class _APIConfigDialogState extends State<APIConfigDialog> {
                     hintText: hasSavedKey 
                       ? 'Current: ${APIKeyManager.getMaskedApiKey(currentApiKey)}'
                       : 'Enter your ${widget.serviceType.displayName} API key',
-                    border: const OutlineInputBorder(),
+                    border: OutlineInputBorder(),
                     suffixIcon: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         if (hasSavedKey) 
                           IconButton(
-                            icon: const Icon(Icons.clear),
+                            icon: Icon(PhosphorIcons.x()),
                             onPressed: () => _clearApiKey(),
                             tooltip: 'Clear saved API key',
                           ),
                         IconButton(
-                          icon: Icon(_obscureApiKey ? Icons.visibility : Icons.visibility_off),
+                          icon: Icon(_obscureApiKey ? PhosphorIcons.eye() : PhosphorIcons.eyeSlash()),
                           onPressed: () {
                             setState(() {
                               _obscureApiKey = !_obscureApiKey;
@@ -401,7 +402,7 @@ class _APIConfigDialogState extends State<APIConfigDialog> {
                 );
               },
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             
             // Base URL Field (Advanced)
             ExpansionTile(
@@ -432,7 +433,7 @@ class _APIConfigDialogState extends State<APIConfigDialog> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Icon(
-                    Icons.info_outline,
+                    PhosphorIcons.info(),
                     color: Theme.of(context).colorScheme.primary,
                     size: 20,
                   ),
@@ -621,3 +622,5 @@ class _APIConfigDialogState extends State<APIConfigDialog> {
     super.dispose();
   }
 }
+
+

@@ -7,6 +7,7 @@ import '../models/theme_typography.dart';
 import '../models/theme_animations.dart';
 import '../models/theme_effects.dart' as theme_effects;
 import '../typography_constants.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Vegeta Blue Theme - "Saiyan Power"
 /// A dramatic, powerful theme inspired by Dragon Ball Z's Prince Vegeta
@@ -26,7 +27,7 @@ class VegetaBlueTheme {
         version: '1.0.0',
         tags: ['anime', 'ssgss', 'cosmic', 'azure', 'royal', 'energy', 'dramatic'],
         category: 'gaming',
-        previewIcon: Icons.flash_on,
+        previewIcon: PhosphorIcons.lightning(),
         primaryPreviewColor: const Color(0xFF1E3A8A), // SSGSS battle suit
         secondaryPreviewColor: const Color(0xFF1F8FFF), // Azure aura core
         createdAt: now,
@@ -579,3 +580,5 @@ class _VegetaColorsHelper {
   Color get primary => const Color(0xFF1e3a8a);  // Same in both variants
   Color get secondary => isDark ? const Color(0xFF60a5fa) : const Color(0xFF3b82f6);
 }
+
+

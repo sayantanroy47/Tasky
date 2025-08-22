@@ -7,6 +7,7 @@ import '../widgets/recurrence_pattern_picker.dart';
 import '../widgets/project_selector.dart';
 import '../../core/theme/typography_constants.dart';
 import '../providers/recurring_task_providers.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Full page for creating recurring tasks
 class RecurringTaskCreationPage extends ConsumerStatefulWidget {
@@ -215,24 +216,24 @@ class _RecurringTaskCreationPageState extends ConsumerState<RecurringTaskCreatio
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           
           Row(
             children: [
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: _selectDate,
-                  icon: const Icon(Icons.calendar_today),
+                  icon: Icon(PhosphorIcons.calendar()),
                   label: Text(_dueDate != null 
                     ? '${_dueDate!.day}/${_dueDate!.month}/${_dueDate!.year}'
                     : 'Select Date'),
                 ),
               ),
-              const SizedBox(width: 16),
+              SizedBox(width: 16),
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: _selectTime,
-                  icon: const Icon(Icons.access_time),
+                  icon: Icon(PhosphorIcons.clock()),
                   label: Text(_dueTime != null 
                     ? _dueTime!.format(context)
                     : 'Select Time'),
@@ -302,8 +303,8 @@ class _RecurringTaskCreationPageState extends ConsumerState<RecurringTaskCreatio
                     _selectedPriority = priority;
                   });
                 },
-                backgroundColor: color.withOpacity(0.1),
-                selectedColor: color.withOpacity(0.2),
+                backgroundColor: color.withValues(alpha: 0.1),
+                selectedColor: color.withValues(alpha: 0.2),
                 checkmarkColor: color,
                 labelStyle: TextStyle(
                   color: isSelected ? color : theme.colorScheme.onSurface,
@@ -424,3 +425,4 @@ class _RecurringTaskCreationPageState extends ConsumerState<RecurringTaskCreatio
     }
   }
 }
+

@@ -7,6 +7,7 @@ import '../models/theme_effects.dart' as theme_effects;
 import '../typography_constants.dart';
 import 'color_system.dart';
 import 'motion_system.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Material 3 Expressive Theme - "Future 2050"
 /// A cutting-edge theme with dynamic colors, fluid animations, and futuristic design
@@ -26,7 +27,7 @@ class ExpressiveTheme {
         version: '2.0.0',
         tags: ['material3', 'expressive', 'futuristic', 'dynamic', 'animated', '2050'],
         category: 'futuristic',
-        previewIcon: Icons.auto_awesome,
+        previewIcon: PhosphorIcons.sparkle(),
         primaryPreviewColor: colorSystem.primary,
         secondaryPreviewColor: colorSystem.secondary,
         createdAt: now,
@@ -444,7 +445,7 @@ class ExpressiveTheme {
           : SystemUiOverlayStyle.dark,
       ),
       
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: expressive.components.card.elevation,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(expressive.components.card.borderRadius),
@@ -457,13 +458,13 @@ class ExpressiveTheme {
           elevation: WidgetStateProperty.all(0),
           backgroundColor: WidgetStateProperty.resolveWith((states) {
             if (states.contains(WidgetState.disabled)) {
-              return colors.onSurface.withOpacity(0.12);
+              return colors.onSurface.withValues(alpha: 0.12);
             }
             return colors.primary;
           }),
           foregroundColor: WidgetStateProperty.resolveWith((states) {
             if (states.contains(WidgetState.disabled)) {
-              return colors.onSurface.withOpacity(0.38);
+              return colors.onSurface.withValues(alpha: 0.38);
             }
             return colors.onPrimary;
           }),
@@ -479,7 +480,7 @@ class ExpressiveTheme {
       
       inputDecorationTheme: InputDecorationTheme(
         filled: expressive.components.input.filled,
-        fillColor: colors.surfaceVariant.withOpacity(0.3),
+        fillColor: colors.surfaceVariant.withValues(alpha: 0.3),
         contentPadding: expressive.components.input.contentPadding,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(expressive.components.input.borderRadius),
@@ -487,7 +488,7 @@ class ExpressiveTheme {
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(expressive.components.input.borderRadius),
-          borderSide: BorderSide(color: colors.outline.withOpacity(0.5)),
+          borderSide: BorderSide(color: colors.outline.withValues(alpha: 0.5)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(expressive.components.input.borderRadius),
@@ -513,3 +514,5 @@ class ExpressiveTheme {
     );
   }
 }
+
+

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import '../../domain/models/enums.dart';
 import '../../core/theme/material3/motion_system.dart';
 import '../../core/theme/typography_constants.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Animated priority chip with pulsing colors and effects
 /// Different priorities have different animation speeds and intensities
@@ -219,7 +220,7 @@ class _PulsingPriorityChipState extends State<PulsingPriorityChip>
           
           // Calculate pulsing color
           final currentColor = Color.lerp(
-            baseColor.withOpacity(0.6),
+            baseColor.withValues(alpha: 0.6),
             baseColor,
             pulseValue,
           ) ?? baseColor;
@@ -242,24 +243,24 @@ class _PulsingPriorityChipState extends State<PulsingPriorityChip>
                   color: currentColor,
                   borderRadius: BorderRadius.circular(TypographyConstants.chipRadius),
                   border: Border.all(
-                    color: currentColor.withOpacity(0.3),
+                    color: currentColor.withValues(alpha: 0.3),
                     width: 1,
                   ),
                   boxShadow: widget.enabled && widget.showPulse ? [
                     BoxShadow(
-                      color: currentColor.withOpacity(_glowAnimation.value * pulseIntensity),
+                      color: currentColor.withValues(alpha: _glowAnimation.value * pulseIntensity),
                       blurRadius: 8 + (_glowAnimation.value * 4),
                       spreadRadius: 2 + (_glowAnimation.value * 2),
                     ),
                     if (widget.priority == TaskPriority.urgent)
                       BoxShadow(
-                        color: currentColor.withOpacity(_glowAnimation.value * 0.2),
+                        color: currentColor.withValues(alpha: _glowAnimation.value * 0.2),
                         blurRadius: 16,
                         spreadRadius: 4,
                       ),
                   ] : [
                     BoxShadow(
-                      color: theme.shadowColor.withOpacity(0.1),
+                      color: theme.shadowColor.withValues(alpha: 0.1),
                       blurRadius: 2,
                       offset: const Offset(0, 1),
                     ),
@@ -295,13 +296,13 @@ class _PulsingPriorityChipState extends State<PulsingPriorityChip>
   IconData _getPriorityIcon() {
     switch (widget.priority) {
       case TaskPriority.urgent:
-        return Icons.priority_high;
+        return PhosphorIcons.arrowUp();
       case TaskPriority.high:
-        return Icons.keyboard_arrow_up;
+        return PhosphorIcons.caretUp();
       case TaskPriority.medium:
-        return Icons.remove;
+        return PhosphorIcons.minus();
       case TaskPriority.low:
-        return Icons.keyboard_arrow_down;
+        return PhosphorIcons.caretDown();
     }
   }
 
@@ -439,3 +440,4 @@ enum PriorityChipStyle {
   outlined,
   minimal,
 }
+

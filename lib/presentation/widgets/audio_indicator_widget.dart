@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/audio_providers.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/entities/task_audio_extensions.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Audio indicator widget for tasks with audio
 class AudioIndicatorWidget extends ConsumerWidget {
@@ -30,15 +31,15 @@ class AudioIndicatorWidget extends ConsumerWidget {
         width: size + 4,
         height: size + 4,
         decoration: BoxDecoration(
-          color: theme.colorScheme.primary.withOpacity(0.1),
+          color: theme.colorScheme.primary.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular((size + 4) / 2),
           border: Border.all(
-            color: theme.colorScheme.primary.withOpacity(0.3),
+            color: theme.colorScheme.primary.withValues(alpha: 0.3),
             width: 1,
           ),
         ),
         child: Icon(
-          Icons.volume_up,
+          PhosphorIcons.speakerHigh(),
           size: size * 0.7,
           color: theme.colorScheme.primary,
         ),
@@ -76,3 +77,4 @@ class AudioIndicatorWidget extends ConsumerWidget {
     }
   }
 }
+

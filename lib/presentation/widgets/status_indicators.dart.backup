@@ -1,0 +1,794 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import '../../core/design_system/design_tokens.dart';
+import 'dart:async';
+import '../../core/design_system/responsive_builder.dart';
+
+import 'glassmorphism_container.dart';
+
+/// Network connectivity status indicator
+class NetworkStatusIndicator extends ConsumerStatefulWidget {
+  final bool showWhenConnected;
+  final Duration animationDuration;
+  final bool showSpeedTest;
+
+  const NetworkStatusIndicator({
+    super.key,
+    this.showWhenConnected = false,
+    this.animationDuration = const Duration(milliseconds: 300),
+    this.showSpeedTest = false,
+  });
+
+  @override
+  ConsumerState<NetworkStatusIndicator> createState() => _NetworkStatusIndicatorState();
+}
+
+class _NetworkStatusIndicatorState extends ConsumerState<NetworkStatusIndicator>
+    with TickerProviderStateMixin {
+  late AnimationController _slideController;
+  late AnimationController _pulseController;
+  late Animation<Offset> _slideAnimation;
+  late Animation<double> _pulseAnimation;
+
+  ConnectivityResult _connectionStatus = ConnectivityResult.none;
+  StreamSubscription<ConnectivityResult>? _connectivitySubscription;
+  bool _isVisible = false;
+  String _connectionSpeed = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _setupAnimations();
+    _initConnectivity();
+  }
+
+  void _setupAnimations() {
+    _slideController = AnimationController(
+      duration: widget.animationDuration,
+      vsync: this,
+    );
+
+    _pulseController = AnimationController(
+      duration: const Duration(milliseconds: 1000),
+      vsync: this,
+    );
+
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, -1),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _slideController,
+      curve: Curves.easeOut,
+    ));
+
+    _pulseAnimation = Tween<double>(
+      begin: 0.8,
+      end: 1.2,
+    ).animate(CurvedAnimation(
+      parent: _pulseController,
+      curve: Curves.easeInOut,
+    ));
+  }
+
+  Future<void> _initConnectivity() async {
+    late List<ConnectivityResult> results;
+    try {
+      final result = await Connectivity().checkConnectivity();
+      results = [result];
+    } catch (e) {
+      results = [ConnectivityResult.none];
+    }
+
+    if (!mounted) return;
+
+    _updateConnectionStatus(results);
+
+    _connectivitySubscription = Connectivity().onConnectivityChanged.listen((result) => _updateConnectionStatus([result]));
+  }
+
+  void _updateConnectionStatus(List<ConnectivityResult> results) {
+    if (!mounted) return;
+
+    final result = results.isNotEmpty ? results.first : ConnectivityResult.none;
+    final wasConnected = _connectionStatus != ConnectivityResult.none;
+    final isConnected = result != ConnectivityResult.none;
+
+    setState(() {
+      _connectionStatus = result;
+      
+      // Show indicator when disconnected or when connection changes
+      _isVisible = !isConnected || 
+                   (widget.showWhenConnected && isConnected) ||
+                   (wasConnected != isConnected);
+    });
+
+    if (_isVisible) {
+      _slideController.forward();
+      if (!isConnected) {
+        _pulseController.repeat(reverse: true);
+      } else {
+        _pulseController.stop();
+        // Auto-hide after 3 seconds if connected and not explicitly shown
+        if (!widget.showWhenConnected) {
+          Timer(const Duration(seconds: 3), () {
+            if (mounted && isConnected) {
+              setState(() => _isVisible = false);
+              _slideController.reverse();
+            }
+          });
+        }
+      }
+    } else {
+      _slideController.reverse();
+      _pulseController.stop();
+    }
+
+    // Update connection speed if needed
+    if (widget.showSpeedTest && isConnected) {
+      _measureConnectionSpeed();
+    }
+  }
+
+  Future<void> _measureConnectionSpeed() async {
+    // Simulate speed test (in real app, you'd implement actual speed testing)
+    await Future.delayed(const Duration(milliseconds: 500));
+    if (mounted) {
+      setState(() {
+        switch (_connectionStatus) {
+          case ConnectivityResult.wifi:
+            _connectionSpeed = '50 Mbps';
+            break;
+          case ConnectivityResult.mobile:
+            _connectionSpeed = '15 Mbps';
+            break;
+          case ConnectivityResult.ethernet:
+            _connectionSpeed = '100 Mbps';
+            break;
+          default:
+            _connectionSpeed = '';
+        }
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _slideController.dispose();
+    _pulseController.dispose();
+    _connectivitySubscription?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_isVisible) return const SizedBox.shrink();
+
+    return ResponsiveBuilder(
+      builder: (context, config) {
+        return Positioned(
+          top: config.isMobile ? 40 : 10,
+          left: 0,
+          right: 0,
+          child: SlideTransition(
+            position: _slideAnimation,
+            child: Center(
+              child: AnimatedBuilder(
+                animation: _pulseAnimation,
+                builder: (context, child) {
+                  return Transform.scale(
+                    scale: _connectionStatus == ConnectivityResult.none ? _pulseAnimation.value : 1.0,
+                    child: GlassmorphismContainer(
+                      level: GlassLevel.floating,
+                      borderRadius: BorderRadius.circular(config.cardRadius * 2),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: config.isMobile ? 16 : 20,
+                        vertical: config.isMobile ? 8 : 10,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            _getConnectionIcon(),
+                            size: config.isMobile ? 16 : 18,
+                            color: _getConnectionColor(),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            _getConnectionText(),
+                            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                              color: _getConnectionColor(),
+                              fontWeight: FontWeight.bold,
+                              fontSize: config.isMobile ? 12 : 14,
+                            ),
+                          ),
+                          if (widget.showSpeedTest && _connectionSpeed.isNotEmpty) ...[
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: _getConnectionColor().withValues(alpha: 0.2),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                _connectionSpeed,
+                                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                  color: _getConnectionColor(),
+                                  fontSize: config.isMobile ? 10 : 11,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  IconData _getConnectionIcon() {
+    switch (_connectionStatus) {
+      case ConnectivityResult.wifi:
+        return Icons.wifi;
+      case ConnectivityResult.mobile:
+        return Icons.signal_cellular_4_bar;
+      case ConnectivityResult.ethernet:
+        return Icons.settings_ethernet;
+      case ConnectivityResult.bluetooth:
+        return Icons.bluetooth;
+      case ConnectivityResult.vpn:
+        return Icons.vpn_lock;
+      case ConnectivityResult.other:
+        return Icons.device_hub;
+      case ConnectivityResult.none:
+      default:
+        return Icons.wifi_off;
+    }
+  }
+
+  Color _getConnectionColor() {
+    switch (_connectionStatus) {
+      case ConnectivityResult.wifi:
+      case ConnectivityResult.ethernet:
+        return Colors.green;
+      case ConnectivityResult.mobile:
+        return Colors.blue;
+      case ConnectivityResult.bluetooth:
+      case ConnectivityResult.vpn:
+      case ConnectivityResult.other:
+        return Colors.orange;
+      case ConnectivityResult.none:
+      default:
+        return Colors.red;
+    }
+  }
+
+  String _getConnectionText() {
+    switch (_connectionStatus) {
+      case ConnectivityResult.wifi:
+        return 'WiFi Connected';
+      case ConnectivityResult.mobile:
+        return 'Mobile Data';
+      case ConnectivityResult.ethernet:
+        return 'Ethernet Connected';
+      case ConnectivityResult.bluetooth:
+        return 'Bluetooth';
+      case ConnectivityResult.vpn:
+        return 'VPN Connected';
+      case ConnectivityResult.other:
+        return 'Connected';
+      case ConnectivityResult.none:
+      default:
+        return 'No Connection';
+    }
+  }
+}
+
+/// Sync status indicator for data synchronization
+class SyncStatusIndicator extends StatefulWidget {
+  final bool isVisible;
+  final SyncStatus status;
+  final String? message;
+  final VoidCallback? onTap;
+
+  const SyncStatusIndicator({
+    super.key,
+    required this.isVisible,
+    required this.status,
+    this.message,
+    this.onTap,
+  });
+
+  @override
+  State<SyncStatusIndicator> createState() => _SyncStatusIndicatorState();
+}
+
+class _SyncStatusIndicatorState extends State<SyncStatusIndicator>
+    with TickerProviderStateMixin {
+  late AnimationController _rotationController;
+  late AnimationController _fadeController;
+
+  @override
+  void initState() {
+    super.initState();
+    _rotationController = AnimationController(
+      duration: const Duration(seconds: 2),
+      vsync: this,
+    );
+    
+    _fadeController = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+
+    if (widget.isVisible) {
+      _fadeController.forward();
+      if (widget.status == SyncStatus.syncing) {
+        _rotationController.repeat();
+      }
+    }
+  }
+
+  @override
+  void didUpdateWidget(SyncStatusIndicator oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    
+    if (widget.isVisible != oldWidget.isVisible) {
+      if (widget.isVisible) {
+        _fadeController.forward();
+      } else {
+        _fadeController.reverse();
+      }
+    }
+
+    if (widget.status != oldWidget.status) {
+      if (widget.status == SyncStatus.syncing) {
+        _rotationController.repeat();
+      } else {
+        _rotationController.stop();
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _rotationController.dispose();
+    _fadeController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ResponsiveBuilder(
+      builder: (context, config) {
+        return Positioned(
+          bottom: config.isMobile ? 100 : 80,
+          right: config.padding.right,
+          child: FadeTransition(
+            opacity: _fadeController,
+            child: GestureDetector(
+              onTap: widget.onTap,
+              child: GlassmorphismContainer(
+                level: GlassLevel.floating,
+                borderRadius: BorderRadius.circular(config.cardRadius * 2),
+                padding: EdgeInsets.all(config.isMobile ? 12 : 16),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    AnimatedBuilder(
+                      animation: _rotationController,
+                      builder: (context, child) {
+                        return Transform.rotate(
+                          angle: widget.status == SyncStatus.syncing
+                              ? _rotationController.value * 2 * 3.14159
+                              : 0,
+                          child: Icon(
+                            _getSyncIcon(),
+                            size: config.isMobile ? 16 : 18,
+                            color: _getSyncColor(),
+                          ),
+                        );
+                      },
+                    ),
+                    if (widget.message != null) ...[
+                      const SizedBox(width: 8),
+                      Text(
+                        widget.message!,
+                        style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                          color: _getSyncColor(),
+                          fontSize: config.isMobile ? 12 : 14,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  IconData _getSyncIcon() {
+    switch (widget.status) {
+      case SyncStatus.syncing:
+        return Icons.sync;
+      case SyncStatus.success:
+        return Icons.sync_alt;
+      case SyncStatus.error:
+        return Icons.sync_problem;
+      case SyncStatus.offline:
+        return Icons.cloud_off;
+    }
+  }
+
+  Color _getSyncColor() {
+    switch (widget.status) {
+      case SyncStatus.syncing:
+        return Colors.blue;
+      case SyncStatus.success:
+        return Colors.green;
+      case SyncStatus.error:
+        return Colors.red;
+      case SyncStatus.offline:
+        return Colors.orange;
+    }
+  }
+}
+
+/// Battery status indicator for mobile devices
+class BatteryStatusIndicator extends StatefulWidget {
+  final bool showOnlyWhenLow;
+  final int lowBatteryThreshold;
+
+  const BatteryStatusIndicator({
+    super.key,
+    this.showOnlyWhenLow = true,
+    this.lowBatteryThreshold = 20,
+  });
+
+  @override
+  State<BatteryStatusIndicator> createState() => _BatteryStatusIndicatorState();
+}
+
+class _BatteryStatusIndicatorState extends State<BatteryStatusIndicator>
+    with TickerProviderStateMixin {
+  late AnimationController _pulseController;
+  int _batteryLevel = 100;
+  bool _isCharging = false;
+  bool _isVisible = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _pulseController = AnimationController(
+      duration: const Duration(milliseconds: 1000),
+      vsync: this,
+    );
+    
+    _startBatteryMonitoring();
+  }
+
+  void _startBatteryMonitoring() {
+    // Simulate battery monitoring (in real app, use battery_plus package)
+    Timer.periodic(const Duration(seconds: 30), (timer) {
+      if (mounted) {
+        // Simulate battery level changes
+        setState(() {
+          _batteryLevel = 15 + (DateTime.now().millisecond % 85);
+          _isCharging = DateTime.now().second % 10 < 3;
+          
+          _isVisible = !widget.showOnlyWhenLow || 
+                       _batteryLevel <= widget.lowBatteryThreshold;
+        });
+
+        if (_isVisible && _batteryLevel <= widget.lowBatteryThreshold && !_isCharging) {
+          _pulseController.repeat(reverse: true);
+        } else {
+          _pulseController.stop();
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _pulseController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_isVisible) return const SizedBox.shrink();
+
+    return ResponsiveBuilder(
+      builder: (context, config) {
+        return Positioned(
+          top: config.isMobile ? 50 : 20,
+          left: config.padding.left,
+          child: AnimatedBuilder(
+            animation: _pulseController,
+            builder: (context, child) {
+              return Transform.scale(
+                scale: _batteryLevel <= widget.lowBatteryThreshold ? 
+                       (0.9 + (_pulseController.value * 0.2)) : 1.0,
+                child: GlassmorphismContainer(
+                  level: GlassLevel.floating,
+                  borderRadius: BorderRadius.circular(config.cardRadius),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: config.isMobile ? 8 : 12,
+                    vertical: config.isMobile ? 4 : 6,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Icon(
+                            Icons.battery_std,
+                            size: config.isMobile ? 20 : 24,
+                            color: _getBatteryColor(),
+                          ),
+                          if (_isCharging)
+                            Icon(
+                              Icons.flash_on,
+                              size: config.isMobile ? 12 : 14,
+                              color: Colors.yellow,
+                            ),
+                        ],
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '$_batteryLevel%',
+                        style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                          color: _getBatteryColor(),
+                          fontWeight: FontWeight.bold,
+                          fontSize: config.isMobile ? 12 : 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  Color _getBatteryColor() {
+    if (_isCharging) return Colors.green;
+    if (_batteryLevel <= 10) return Colors.red;
+    if (_batteryLevel <= 20) return Colors.orange;
+    return Colors.green;
+  }
+}
+
+/// Universal status bar that combines all indicators
+class UniversalStatusBar extends StatelessWidget {
+  final bool showNetworkStatus;
+  final bool showBatteryStatus;
+  final bool showPerformanceIndicator;
+  final SyncStatus? syncStatus;
+  final String? syncMessage;
+  final VoidCallback? onSyncTap;
+
+  const UniversalStatusBar({
+    super.key,
+    this.showNetworkStatus = true,
+    this.showBatteryStatus = true,
+    this.showPerformanceIndicator = true,
+    this.syncStatus,
+    this.syncMessage,
+    this.onSyncTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        // Network status
+        if (showNetworkStatus)
+          const NetworkStatusIndicator(),
+        
+        // Battery status
+        if (showBatteryStatus)
+          const BatteryStatusIndicator(),
+        
+        // Sync status
+        if (syncStatus != null)
+          SyncStatusIndicator(
+            isVisible: true,
+            status: syncStatus!,
+            message: syncMessage,
+            onTap: onSyncTap,
+          ),
+      ],
+    );
+  }
+}
+
+/// Sync status enumeration
+enum SyncStatus {
+  syncing,
+  success,
+  error,
+  offline,
+}
+
+/// Toast notification system
+class ToastNotification {
+  static OverlayEntry? _currentToast;
+
+  static void show({
+    required BuildContext context,
+    required String message,
+    ToastType type = ToastType.info,
+    Duration duration = const Duration(seconds: 3),
+    VoidCallback? onTap,
+  }) {
+    // Remove any existing toast
+    hide();
+
+    final overlay = Overlay.of(context);
+    _currentToast = OverlayEntry(
+      builder: (context) => _ToastWidget(
+        message: message,
+        type: type,
+        onTap: onTap,
+      ),
+    );
+
+    overlay.insert(_currentToast!);
+
+    // Auto-hide after duration
+    Timer(duration, () => hide());
+  }
+
+  static void hide() {
+    _currentToast?.remove();
+    _currentToast = null;
+  }
+}
+
+class _ToastWidget extends StatefulWidget {
+  final String message;
+  final ToastType type;
+  final VoidCallback? onTap;
+
+  const _ToastWidget({
+    required this.message,
+    required this.type,
+    this.onTap,
+  });
+
+  @override
+  State<_ToastWidget> createState() => _ToastWidgetState();
+}
+
+class _ToastWidgetState extends State<_ToastWidget>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<Offset> _slideAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 300),
+      vsync: this,
+    );
+
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, -1),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOut,
+    ));
+
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ResponsiveBuilder(
+      builder: (context, config) {
+        return Positioned(
+          top: config.isMobile ? 80 : 60,
+          left: config.padding.left,
+          right: config.padding.right,
+          child: SlideTransition(
+            position: _slideAnimation,
+            child: Center(
+              child: GestureDetector(
+                onTap: widget.onTap,
+                child: GlassmorphismContainer(
+                  level: GlassLevel.floating,
+                  borderRadius: BorderRadius.circular(config.cardRadius * 2),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: config.isMobile ? 16 : 20,
+                    vertical: config.isMobile ? 12 : 16,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        _getToastIcon(),
+                        size: config.isMobile ? 20 : 24,
+                        color: _getToastColor(),
+                      ),
+                      const SizedBox(width: 12),
+                      Flexible(
+                        child: Text(
+                          widget.message,
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Theme.of(context).colorScheme.onSurface,
+                            fontSize: config.isMobile ? 14 : 16,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  IconData _getToastIcon() {
+    switch (widget.type) {
+      case ToastType.success:
+        return Icons.check_circle;
+      case ToastType.error:
+        return Icons.error;
+      case ToastType.warning:
+        return Icons.warning;
+      case ToastType.info:
+      default:
+        return Icons.info;
+    }
+  }
+
+  Color _getToastColor() {
+    switch (widget.type) {
+      case ToastType.success:
+        return Colors.green;
+      case ToastType.error:
+        return Colors.red;
+      case ToastType.warning:
+        return Colors.orange;
+      case ToastType.info:
+      default:
+        return Colors.blue;
+    }
+  }
+}
+
+/// Toast notification types
+enum ToastType {
+  success,
+  error,
+  warning,
+  info,
+}

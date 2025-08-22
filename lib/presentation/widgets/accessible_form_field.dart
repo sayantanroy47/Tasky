@@ -293,23 +293,23 @@ class _AccessibleFormFieldState extends State<AccessibleFormField> {
     if (widget.fillColor != null) return widget.fillColor!;
     
     if (!widget.enabled) {
-      return theme.colorScheme.surfaceContainerHighest.withOpacity(0.3);
+      return theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3);
     }
     
     if (_hasError) {
-      return theme.colorScheme.errorContainer.withOpacity(0.1);
+      return theme.colorScheme.errorContainer.withValues(alpha: 0.1);
     }
     
     if (_isFocused) {
-      return theme.colorScheme.primaryContainer.withOpacity(0.1);
+      return theme.colorScheme.primaryContainer.withValues(alpha: 0.1);
     }
     
-    return theme.colorScheme.surface.withOpacity(0.6);
+    return theme.colorScheme.surface.withValues(alpha: 0.6);
   }
 
   Color _getBorderColor(ThemeData theme) {
     if (!widget.enabled) {
-      return theme.colorScheme.outline.withOpacity(0.2);
+      return theme.colorScheme.outline.withValues(alpha: 0.2);
     }
     
     if (_hasError) {
@@ -320,7 +320,7 @@ class _AccessibleFormFieldState extends State<AccessibleFormField> {
       return theme.colorScheme.primary;
     }
     
-    return theme.colorScheme.outline.withOpacity(0.4);
+    return theme.colorScheme.outline.withValues(alpha: 0.4);
   }
 }
 
@@ -495,23 +495,23 @@ class _AccessibleDropdownFieldState<T> extends State<AccessibleDropdownField<T>>
     if (widget.fillColor != null) return widget.fillColor!;
     
     if (!widget.enabled) {
-      return theme.colorScheme.surfaceContainerHighest.withOpacity(0.3);
+      return theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3);
     }
     
     if (_hasError) {
-      return theme.colorScheme.errorContainer.withOpacity(0.1);
+      return theme.colorScheme.errorContainer.withValues(alpha: 0.1);
     }
     
     if (_isFocused) {
-      return theme.colorScheme.primaryContainer.withOpacity(0.1);
+      return theme.colorScheme.primaryContainer.withValues(alpha: 0.1);
     }
     
-    return theme.colorScheme.surface.withOpacity(0.6);
+    return theme.colorScheme.surface.withValues(alpha: 0.6);
   }
 
   Color _getBorderColor(ThemeData theme) {
     if (!widget.enabled) {
-      return theme.colorScheme.outline.withOpacity(0.2);
+      return theme.colorScheme.outline.withValues(alpha: 0.2);
     }
     
     if (_hasError) {
@@ -522,7 +522,7 @@ class _AccessibleDropdownFieldState<T> extends State<AccessibleDropdownField<T>>
       return theme.colorScheme.primary;
     }
     
-    return theme.colorScheme.outline.withOpacity(0.4);
+    return theme.colorScheme.outline.withValues(alpha: 0.4);
   }
 }
 

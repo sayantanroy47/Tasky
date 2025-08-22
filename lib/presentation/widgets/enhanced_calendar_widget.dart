@@ -5,6 +5,7 @@ import '../../domain/entities/task_model.dart';
 import '../../domain/entities/calendar_event.dart';
 import '../../domain/models/enums.dart';
 import '../providers/enhanced_calendar_provider.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Enhanced calendar widget that integrates tasks and events
 class EnhancedCalendarWidget extends ConsumerWidget {
@@ -183,13 +184,13 @@ class EnhancedCalendarWidget extends ConsumerWidget {
         titleCentered: true,
         titleTextStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
           fontWeight: FontWeight.bold,
-        ) ?? const TextStyle(),
+        ) ?? TextStyle(),
         leftChevronIcon: Icon(
-          Icons.chevron_left,
+          PhosphorIcons.caretLeft(),
           color: Theme.of(context).colorScheme.onSurfaceVariant,
         ),
         rightChevronIcon: Icon(
-          Icons.chevron_right,
+          PhosphorIcons.caretRight(),
           color: Theme.of(context).colorScheme.onSurfaceVariant,
         ),
       ),
@@ -310,9 +311,9 @@ class EnhancedCalendarWidget extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            Icons.event_available,
+            PhosphorIcons.calendar(),
             size: 32,
-            color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.5),
+            color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
           ),
           const SizedBox(height: 8),
           Text(
@@ -321,10 +322,10 @@ class EnhancedCalendarWidget extends ConsumerWidget {
               color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           ElevatedButton.icon(
             onPressed: () => _showCreateTaskDialog(context, date),
-            icon: const Icon(Icons.add),
+            icon: Icon(PhosphorIcons.plus()),
             label: const Text('Add Task'),
           ),
         ],
@@ -340,8 +341,8 @@ class EnhancedCalendarWidget extends ConsumerWidget {
         leading: IconButton(
           icon: Icon(
             task.status == TaskStatus.completed
-                ? Icons.check_circle
-                : Icons.radio_button_unchecked,
+                ? PhosphorIcons.checkCircle()
+                : PhosphorIcons.circle(),
             color: task.status == TaskStatus.completed
                 ? Colors.green
                 : Theme.of(context).colorScheme.primary,
@@ -379,19 +380,19 @@ class EnhancedCalendarWidget extends ConsumerWidget {
     switch (priority) {
       case TaskPriority.low:
         color = Colors.green;
-        icon = Icons.keyboard_arrow_down;
+        icon = PhosphorIcons.caretDown();
         break;
       case TaskPriority.medium:
         color = Colors.orange;
-        icon = Icons.remove;
+        icon = PhosphorIcons.minus();
         break;
       case TaskPriority.high:
         color = Colors.red;
-        icon = Icons.keyboard_arrow_up;
+        icon = PhosphorIcons.caretUp();
         break;
       case TaskPriority.urgent:
         color = Colors.red;
-        icon = Icons.priority_high;
+        icon = PhosphorIcons.arrowUp();
         break;
     }
     
@@ -542,3 +543,4 @@ class _CreateTaskDialogState extends ConsumerState<_CreateTaskDialog> {
     return '${months[date.month - 1]} ${date.day}, ${date.year}';
   }
 }
+

@@ -64,7 +64,7 @@ class SubtaskProgressIndicator extends ConsumerWidget {
         height: size,
         child: CircularProgressIndicator(
           strokeWidth: 2,
-          color: theme.colorScheme.onSurfaceVariant.withOpacity(0.3),
+          color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
         ),
       ),
       error: (_, __) => const SizedBox.shrink(),

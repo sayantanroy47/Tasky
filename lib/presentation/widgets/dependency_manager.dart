@@ -9,6 +9,7 @@ import '../../core/theme/typography_constants.dart';
 import '../../core/design_system/design_tokens.dart';
 import 'glassmorphism_container.dart';
 import 'status_badge_widget.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Comprehensive dependency management widget for tasks
 /// 
@@ -93,11 +94,11 @@ class _DependencyManagerState extends ConsumerState<DependencyManager>
     return Row(
       children: [
         Icon(
-          Icons.account_tree,
+          PhosphorIcons.tree(),
           color: theme.colorScheme.primary,
           size: 24,
         ),
-        const SizedBox(width: 12),
+        SizedBox(width: 12),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -120,7 +121,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager>
         if (widget.showCreateButton)
           IconButton(
             onPressed: () => _showCreateDependencyDialog(),
-            icon: const Icon(Icons.add_link),
+            icon: Icon(PhosphorIcons.plus()),
             tooltip: 'Add Dependency',
           ),
       ],
@@ -145,7 +146,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager>
         color: theme.colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
         border: Border.all(
-          color: theme.colorScheme.outline.withOpacity(0.3),
+          color: theme.colorScheme.outline.withValues(alpha: 0.3),
         ),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -260,7 +261,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager>
             ),
             IconButton(
               onPressed: () => setState(() => _showAddDependencyDialog = true),
-              icon: const Icon(Icons.add),
+              icon: Icon(PhosphorIcons.plus()),
               tooltip: 'Add Prerequisite',
             ),
           ],
@@ -372,7 +373,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager>
       margin: const EdgeInsets.symmetric(vertical: 4),
       child: ListTile(
         leading: Icon(
-          isPrerequisite ? Icons.arrow_downward : Icons.arrow_upward,
+          isPrerequisite ? PhosphorIcons.arrowDown() : PhosphorIcons.arrowUp(),
           color: isPrerequisite ? Colors.orange : Colors.blue,
         ),
         title: Text(
@@ -398,7 +399,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager>
                   color: _getPriorityColor(task.priority),
                   size: 14,
                 ),
-                const SizedBox(width: 4),
+                SizedBox(width: 4),
                 Text(
                   task.priority.name.toUpperCase(),
                   style: theme.textTheme.labelSmall,
@@ -422,7 +423,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager>
             StatusBadgeWidget(status: task.status),
             IconButton(
               onPressed: () => _removeDependency(task.id, isPrerequisite),
-              icon: const Icon(Icons.remove_circle_outline),
+              icon: Icon(PhosphorIcons.minusCircle()),
               iconSize: 20,
               tooltip: 'Remove Dependency',
             ),
@@ -448,7 +449,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager>
           margin: const EdgeInsets.symmetric(vertical: 4),
           decoration: BoxDecoration(
             color: isCurrentTask 
-                ? theme.colorScheme.primaryContainer.withOpacity(0.3)
+                ? theme.colorScheme.primaryContainer.withValues(alpha: 0.3)
                 : null,
             borderRadius: BorderRadius.circular(8),
             border: isCurrentTask 
@@ -537,9 +538,9 @@ class _DependencyManagerState extends ConsumerState<DependencyManager>
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(
         children: [
@@ -574,7 +575,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager>
         margin: const EdgeInsets.symmetric(vertical: 2),
         child: ListTile(
           leading: Icon(
-            isBlocked ? Icons.block : Icons.check_circle_outline,
+            isBlocked ? PhosphorIcons.prohibit() : PhosphorIcons.checkCircle(),
             color: isBlocked ? Colors.red : Colors.green,
           ),
           title: Text(
@@ -609,7 +610,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.account_tree_outlined,
+              PhosphorIcons.tree(),
               size: 64,
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -642,7 +643,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.link_off,
+              PhosphorIcons.link(),
               size: 48,
               color: theme.colorScheme.onSurfaceVariant,
             ),
@@ -666,7 +667,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager>
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            Icons.error_outline,
+            PhosphorIcons.warningCircle(),
             size: 48,
             color: theme.colorScheme.error,
           ),
@@ -787,13 +788,13 @@ class _DependencyManagerState extends ConsumerState<DependencyManager>
   IconData _getPriorityIcon(TaskPriority priority) {
     switch (priority) {
       case TaskPriority.low:
-        return Icons.keyboard_arrow_down;
+        return PhosphorIcons.caretDown();
       case TaskPriority.medium:
-        return Icons.remove;
+        return PhosphorIcons.minus();
       case TaskPriority.high:
-        return Icons.keyboard_arrow_up;
+        return PhosphorIcons.caretUp();
       case TaskPriority.urgent:
-        return Icons.priority_high;
+        return PhosphorIcons.arrowUp();
     }
   }
 
@@ -900,18 +901,17 @@ class SimpleDependencyWidget extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         canCompleteAsync.when(
-          loading: () => const SizedBox(
-            width: 16,
+          loading: () => SizedBox(width: 16,
             height: 16,
             child: CircularProgressIndicator(strokeWidth: 2),
           ),
           error: (error, stack) => Icon(
-            Icons.error_outline,
+            PhosphorIcons.warningCircle(),
             size: 16,
             color: theme.colorScheme.error,
           ),
           data: (canComplete) => Icon(
-            canComplete ? Icons.check_circle : Icons.block,
+            canComplete ? PhosphorIcons.checkCircle() : PhosphorIcons.prohibit(),
             size: 16,
             color: canComplete ? Colors.green : Colors.red,
           ),
@@ -933,3 +933,4 @@ class SimpleDependencyWidget extends ConsumerWidget {
     );
   }
 }
+

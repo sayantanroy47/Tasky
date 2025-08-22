@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
-import 'audio_playback_service.dart';
+import 'lazy_audio_playback_service.dart';
 
 /// Audio file metadata
 class AudioFileMetadata {
@@ -116,8 +116,8 @@ class AudioFileManager {
   File? _metadataFile;
   Map<String, AudioFileMetadata> _metadataCache = {};
   
-  // Real audio playback service for getting actual durations
-  final AudioPlaybackService _playbackService = AudioPlaybackService();
+  // Lazy audio playback service for getting actual durations
+  final LazyAudioPlaybackService _playbackService = LazyAudioPlaybackService.instance;
   bool _playbackInitialized = false;
 
   /// Initialize the audio file manager
@@ -132,11 +132,9 @@ class AudioFileManager {
         await _audioDirectory!.create(recursive: true);
       }
 
-      // Initialize playback service for duration extraction
-      _playbackInitialized = await _playbackService.initialize();
-      if (!_playbackInitialized) {
-        debugPrint('Warning: Audio playback service could not be initialized - will use fallback duration calculation');
-      }
+      // Mark playback service as available (it will initialize lazily when needed)
+      _playbackInitialized = true;
+      debugPrint('AudioFileManager: Using lazy audio playback service for duration extraction');
 
       // Load existing metadata
       await _loadMetadata();

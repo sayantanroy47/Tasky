@@ -5,6 +5,7 @@ import '../../services/location/location_models.dart';
 import '../../services/location/location_task_service.dart';
 import '../../domain/models/enums.dart';
 import 'location_widgets.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class LocationTaskCard extends ConsumerWidget {
   final TaskLocationInfo taskLocationInfo;
@@ -45,7 +46,7 @@ class LocationTaskCard extends ConsumerWidget {
                     ),
                   ),
                   Icon(
-                    trigger.isEnabled ? Icons.location_on : Icons.location_off,
+                    trigger.isEnabled ? PhosphorIcons.mapPin() : PhosphorIcons.mapPin(),
                     color: trigger.isEnabled ? Colors.green : Colors.grey,
                     size: 20,
                   ),
@@ -53,7 +54,7 @@ class LocationTaskCard extends ConsumerWidget {
               ),
               
               if (task.description?.isNotEmpty == true) ...[
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 Text(
                   task.description!,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -70,16 +71,16 @@ class LocationTaskCard extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.blue.withOpacity(0.1),
+                  color: Colors.blue.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                  border: Border.all(color: Colors.blue.withOpacity(0.3)),
+                  border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.place, size: 16, color: Colors.blue),
+                        Icon(PhosphorIcons.mapPin(), size: 16, color: Colors.blue),
                         const SizedBox(width: 4),
                         Expanded(
                           child: Text(
@@ -184,8 +185,8 @@ class LocationTaskCard extends ConsumerWidget {
         label,
         style: TextStyle(color: color, fontSize: 12),
       ),
-      backgroundColor: color.withOpacity(0.1),
-      side: BorderSide(color: color.withOpacity(0.3)),
+      backgroundColor: color.withValues(alpha: 0.1),
+      side: BorderSide(color: color.withValues(alpha: 0.3)),
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
     );
   }
@@ -200,8 +201,8 @@ class LocationTaskCard extends ConsumerWidget {
         _formatDate(dueDate),
         style: TextStyle(color: color, fontSize: 12),
       ),
-      backgroundColor: color.withOpacity(0.1),
-      side: BorderSide(color: color.withOpacity(0.3)),
+      backgroundColor: color.withValues(alpha: 0.1),
+      side: BorderSide(color: color.withValues(alpha: 0.3)),
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
     );
   }
@@ -270,7 +271,7 @@ class NearbyTasksList extends ConsumerWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.error, color: Colors.red),
+                      Icon(PhosphorIcons.warningCircle(), color: Colors.red),
                       const SizedBox(height: 8),
                       Text('Error: ${snapshot.error}'),
                     ],
@@ -286,7 +287,7 @@ class NearbyTasksList extends ConsumerWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
-                        Icons.location_searching,
+                        PhosphorIcons.crosshair(),
                         size: 64,
                         color: Colors.grey[400],
                       ),
@@ -388,26 +389,26 @@ class LocationStatisticsWidget extends ConsumerWidget {
                   'Location Statistics',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 _buildStatRow(
                   'Total Location Triggers',
                   stats.totalLocationTriggers.toString(),
-                  Icons.location_on,
+                  PhosphorIcons.mapPin(),
                 ),
                 _buildStatRow(
                   'Active Triggers',
                   stats.activeLocationTriggers.toString(),
-                  Icons.notifications_active,
+                  PhosphorIcons.bell(),
                 ),
                 _buildStatRow(
                   'Location Tasks',
                   stats.totalLocationTasks.toString(),
-                  Icons.task,
+                  PhosphorIcons.checkSquare(),
                 ),
                 _buildStatRow(
                   'Completed Tasks',
                   stats.completedLocationTasks.toString(),
-                  Icons.check_circle,
+                  PhosphorIcons.checkCircle(),
                 ),
                 const SizedBox(height: 16),
                 LinearProgressIndicator(
@@ -458,3 +459,5 @@ class LocationStatisticsWidget extends ConsumerWidget {
     );
   }
 }
+
+

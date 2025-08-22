@@ -23,6 +23,7 @@ import '../../services/platform/platform_service_adapter.dart';
 import '../widgets/recurring_task_scheduling_widget.dart';
 import '../widgets/enhanced_location_task_dialog.dart';
 import '../widgets/batch_task_operations_widget.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Settings page for app configuration and preferences
 class SettingsPage extends ConsumerWidget {
@@ -50,7 +51,7 @@ class SettingsPage extends ConsumerWidget {
           color: Theme.of(context).colorScheme.onSurfaceVariant,
         ),
       ),
-      trailing: Icon(trailingIcon ?? Icons.chevron_right),
+      trailing: Icon(trailingIcon ?? PhosphorIcons.caretRight()),
       onTap: onTap,
       contentPadding: EdgeInsets.zero,
     );
@@ -61,8 +62,7 @@ class SettingsPage extends ConsumerWidget {
     return Scaffold(
       backgroundColor: Colors.transparent,
       extendBodyBehindAppBar: true, // Show phone status bar
-      appBar: const StandardizedAppBar(
-        title: 'Settings',
+      appBar: StandardizedAppBar(title: 'Settings',
         forceBackButton: false, // Settings is main tab - no back button
         actions: [
           ThemeToggleButton(),
@@ -94,7 +94,7 @@ class SettingsPage extends ConsumerWidget {
                 
                 _buildListTile(
                   context: context,
-                  leadingIcon: Icons.task_alt,
+                  leadingIcon: PhosphorIcons.checkSquare(),
                   title: 'Tasks',
                   subtitle: 'View and manage all tasks',
                   onTap: () {
@@ -108,7 +108,7 @@ class SettingsPage extends ConsumerWidget {
                 
                 _buildListTile(
                   context: context,
-                  leadingIcon: Icons.folder_outlined,
+                  leadingIcon: PhosphorIcons.folder(),
                   title: 'Projects',
                   subtitle: 'Organize tasks by projects',
                   onTap: () {
@@ -123,7 +123,7 @@ class SettingsPage extends ConsumerWidget {
             ),
           ),
           
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           
           // Appearance section
           GlassmorphismContainer(
@@ -142,7 +142,7 @@ class SettingsPage extends ConsumerWidget {
                 
                 _buildListTile(
                   context: context,
-                  leadingIcon: Icons.palette,
+                  leadingIcon: PhosphorIcons.palette(),
                   title: 'Themes',
                   subtitle: 'Customize app appearance',
                   onTap: () {
@@ -157,7 +157,7 @@ class SettingsPage extends ConsumerWidget {
             ),
           ),
           
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           
           // AI & Voice section
           GlassmorphismContainer(
@@ -176,7 +176,7 @@ class SettingsPage extends ConsumerWidget {
                 
                 _buildListTile(
                   context: context,
-                  leadingIcon: Icons.smart_toy,
+                  leadingIcon: PhosphorIcons.robot(),
                   title: 'AI Settings',
                   subtitle: 'Configure AI task parsing and features',
                   onTap: () {
@@ -190,7 +190,7 @@ class SettingsPage extends ConsumerWidget {
                 
                 _buildListTile(
                   context: context,
-                  leadingIcon: Icons.record_voice_over,
+                  leadingIcon: PhosphorIcons.microphone(),
                   title: 'Voice Demo',
                   subtitle: 'Test voice recognition features',
                   onTap: () {
@@ -205,7 +205,7 @@ class SettingsPage extends ConsumerWidget {
             ),
           ),
           
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           
           // Location section
           GlassmorphismContainer(
@@ -224,7 +224,7 @@ class SettingsPage extends ConsumerWidget {
                 
                 _buildListTile(
                   context: context,
-                  leadingIcon: Icons.location_on,
+                  leadingIcon: PhosphorIcons.mapPin(),
                   title: 'Location Settings',
                   subtitle: 'Configure location-based features',
                   onTap: () {
@@ -238,7 +238,7 @@ class SettingsPage extends ConsumerWidget {
                 
                 _buildListTile(
                   context: context,
-                  leadingIcon: Icons.near_me,
+                  leadingIcon: PhosphorIcons.crosshair(),
                   title: 'Nearby Tasks',
                   subtitle: 'View tasks near your location',
                   onTap: () {
@@ -253,7 +253,7 @@ class SettingsPage extends ConsumerWidget {
             ),
           ),
           
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           
           // Tasks section
           GlassmorphismContainer(
@@ -272,7 +272,7 @@ class SettingsPage extends ConsumerWidget {
                   
                   _buildListTile(
                     context: context,
-                    leadingIcon: Icons.today_outlined,
+                    leadingIcon: PhosphorIcons.calendar(),
                     title: 'Today\'s Tasks',
                     subtitle: 'View tasks due today',
                     onTap: () {
@@ -286,7 +286,7 @@ class SettingsPage extends ConsumerWidget {
                   
                   _buildListTile(
                     context: context,
-                    leadingIcon: Icons.schedule_outlined,
+                    leadingIcon: PhosphorIcons.clock(),
                     title: 'Upcoming Tasks',
                     subtitle: 'View future scheduled tasks',
                     onTap: () {
@@ -296,7 +296,7 @@ class SettingsPage extends ConsumerWidget {
                   
                   _buildListTile(
                     context: context,
-                    leadingIcon: Icons.repeat,
+                    leadingIcon: PhosphorIcons.repeat(),
                     title: 'Recurring Tasks',
                     subtitle: 'Manage automatic task scheduling',
                     onTap: () {
@@ -310,7 +310,7 @@ class SettingsPage extends ConsumerWidget {
                   
                   _buildListTile(
                     context: context,
-                    leadingIcon: Icons.account_tree,
+                    leadingIcon: PhosphorIcons.tree(),
                     title: 'Task Dependencies',
                     subtitle: 'Manage task relationships and prerequisites',
                     onTap: () {
@@ -320,7 +320,7 @@ class SettingsPage extends ConsumerWidget {
                   
                   _buildListTile(
                     context: context,
-                    leadingIcon: Icons.location_on,
+                    leadingIcon: PhosphorIcons.mapPin(),
                     title: 'Create Location Task',
                     subtitle: 'Add tasks with location-based reminders',
                     onTap: () {
@@ -333,7 +333,7 @@ class SettingsPage extends ConsumerWidget {
                   
                   _buildListTile(
                     context: context,
-                    leadingIcon: Icons.checklist,
+                    leadingIcon: PhosphorIcons.listChecks(),
                     title: 'Batch Operations',
                     subtitle: 'Manage multiple tasks at once',
                     onTap: () {
@@ -347,7 +347,7 @@ class SettingsPage extends ConsumerWidget {
                   
                   _buildListTile(
                     context: context,
-                    leadingIcon: Icons.notifications,
+                    leadingIcon: PhosphorIcons.bell(),
                     title: 'Notification Settings',
                     subtitle: 'Configure task reminders and alerts',
                     onTap: () {
@@ -361,7 +361,7 @@ class SettingsPage extends ConsumerWidget {
                   
                   _buildListTile(
                     context: context,
-                    leadingIcon: Icons.history,
+                    leadingIcon: PhosphorIcons.clockCounterClockwise(),
                     title: 'Notification History',
                     subtitle: 'View past notifications',
                     onTap: () {
@@ -374,7 +374,7 @@ class SettingsPage extends ConsumerWidget {
                   ),
                   
                   ListTile(
-                    leading: const Icon(Icons.sync),
+                    leading: Icon(PhosphorIcons.arrowsClockwise()),
                     title: const Text('Auto Sync'),
                     subtitle: const Text('Sync tasks across devices'),
                     trailing: Switch(
@@ -397,7 +397,7 @@ class SettingsPage extends ConsumerWidget {
             ),
           ),
           
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           
           // Data section
           GlassmorphismContainer(
@@ -416,7 +416,7 @@ class SettingsPage extends ConsumerWidget {
                 
                 _buildListTile(
                   context: context,
-                  leadingIcon: Icons.import_export,
+                  leadingIcon: PhosphorIcons.arrowsCounterClockwise(),
                   title: 'Import & Export',
                   subtitle: 'Backup and restore your tasks',
                   onTap: () {
@@ -430,7 +430,7 @@ class SettingsPage extends ConsumerWidget {
                 
                 _buildListTile(
                   context: context,
-                  leadingIcon: Icons.file_download,
+                  leadingIcon: PhosphorIcons.download(),
                   title: 'Data Export',
                   subtitle: 'Export analytics and task data',
                   onTap: () {
@@ -445,7 +445,7 @@ class SettingsPage extends ConsumerWidget {
             ),
           ),
           
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           
           // System section
           GlassmorphismContainer(
@@ -469,7 +469,7 @@ class SettingsPage extends ConsumerWidget {
                 
                 _buildListTile(
                   context: context,
-                  leadingIcon: Icons.memory,
+                  leadingIcon: PhosphorIcons.cpu(),
                   title: 'Platform Capabilities',
                   subtitle: 'View device capabilities and limitations',
                   onTap: () => _showPlatformCapabilities(context),
@@ -497,7 +497,7 @@ class SettingsPage extends ConsumerWidget {
                 
                 _buildListTile(
                   context: context,
-                  leadingIcon: Icons.help,
+                  leadingIcon: PhosphorIcons.question(),
                   title: 'Help & Support',
                   subtitle: 'Get help using the app',
                   onTap: () {
@@ -511,7 +511,7 @@ class SettingsPage extends ConsumerWidget {
                 
                 _buildListTile(
                   context: context,
-                  leadingIcon: Icons.info,
+                  leadingIcon: PhosphorIcons.info(),
                   title: 'About',
                   subtitle: 'Version 1.0.0',
                   onTap: () {
@@ -546,8 +546,8 @@ class SettingsPage extends ConsumerWidget {
       level: GlassLevel.content,
       padding: const EdgeInsets.all(16),
       borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
-      glassTint: Theme.of(context).colorScheme.surfaceContainer.withOpacity(0.5),
-      borderColor: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+      glassTint: Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.5),
+      borderColor: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
       borderWidth: 1.0,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -556,13 +556,13 @@ class SettingsPage extends ConsumerWidget {
           Row(
             children: [
               Icon(
-                Icons.sync,
+                PhosphorIcons.arrowsClockwise(),
                 color: isRunning && isEnabled 
                   ? Colors.green 
                   : Colors.grey,
                 size: 20,
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               Text(
                 'Background Services',
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
@@ -575,8 +575,8 @@ class SettingsPage extends ConsumerWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 borderRadius: BorderRadius.circular(12),
                 glassTint: isRunning && isEnabled 
-                    ? Colors.green.withOpacity(0.2)
-                    : Colors.grey.withOpacity(0.2),
+                    ? Colors.green.withValues(alpha: 0.2)
+                    : Colors.grey.withValues(alpha: 0.2),
                 child: Text(
                   isRunning && isEnabled ? 'Running' : 'Stopped',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -597,7 +597,7 @@ class SettingsPage extends ConsumerWidget {
             Row(
               children: [
                 Icon(
-                  Icons.cleaning_services,
+                  PhosphorIcons.broom(),
                   size: 16,
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
@@ -610,14 +610,14 @@ class SettingsPage extends ConsumerWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: 4),
           ],
           
           if (lastReminderCheck != null) ...[
             Row(
               children: [
                 Icon(
-                  Icons.notifications_outlined,
+                  PhosphorIcons.bell(),
                   size: 16,
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
@@ -683,13 +683,13 @@ class SettingsPage extends ConsumerWidget {
         level: GlassLevel.content,
         padding: const EdgeInsets.all(16),
         borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
-        glassTint: Theme.of(context).colorScheme.errorContainer.withOpacity(0.3),
-        borderColor: Theme.of(context).colorScheme.error.withOpacity(0.3),
+        glassTint: Theme.of(context).colorScheme.errorContainer.withValues(alpha: 0.3),
+        borderColor: Theme.of(context).colorScheme.error.withValues(alpha: 0.3),
         borderWidth: 1.0,
         child: Row(
           children: [
             Icon(
-              Icons.error_outline,
+              PhosphorIcons.warningCircle(),
               color: Theme.of(context).colorScheme.error,
               size: 20,
             ),
@@ -718,7 +718,7 @@ class SettingsPage extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Platform Capabilities'),
+        title: Text('Platform Capabilities'),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -735,7 +735,7 @@ class SettingsPage extends ConsumerWidget {
                 child: Row(
                   children: [
                     Icon(
-                      entry.value ? Icons.check_circle : Icons.cancel,
+                      entry.value ? PhosphorIcons.checkCircle() : PhosphorIcons.xCircle(),
                       color: entry.value ? Colors.green : Colors.red,
                       size: 20,
                     ),
@@ -757,7 +757,7 @@ class SettingsPage extends ConsumerWidget {
                 level: GlassLevel.content,
                 padding: const EdgeInsets.all(12),
                 borderRadius: BorderRadius.circular(8),
-                glassTint: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+                glassTint: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -860,3 +860,4 @@ class SettingsPage extends ConsumerWidget {
     }
   }
 }
+

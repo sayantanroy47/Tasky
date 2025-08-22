@@ -6,6 +6,7 @@ import '../../core/theme/typography_constants.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/entities/subtask.dart' as entities;
 import '../providers/subtask_providers.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Enhanced widget for displaying and managing subtasks within a task
 class EnhancedSubTaskList extends ConsumerStatefulWidget {
@@ -100,7 +101,7 @@ class _EnhancedSubTaskListState extends ConsumerState<EnhancedSubTaskList> {
                   ),
                 );
               },
-              loading: () => const SizedBox(),
+              loading: () => SizedBox(),
               error: (_, __) => const SizedBox(),
             ),
             
@@ -108,36 +109,36 @@ class _EnhancedSubTaskListState extends ConsumerState<EnhancedSubTaskList> {
             if (widget.isEditable)
               PopupMenuButton<String>(
                 icon: Icon(
-                  Icons.more_vert,
+                  PhosphorIcons.dotsThreeVertical(),
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
                 onSelected: _handleMenuAction,
                 itemBuilder: (context) => [
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'complete_all',
                     child: Row(
                       children: [
-                        Icon(Icons.check_circle),
+                        Icon(PhosphorIcons.checkCircle()),
                         SizedBox(width: 8),
                         Text('Complete All'),
                       ],
                     ),
                   ),
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'uncomplete_all',
                     child: Row(
                       children: [
-                        Icon(Icons.radio_button_unchecked),
+                        Icon(PhosphorIcons.circle()),
                         SizedBox(width: 8),
                         Text('Uncomplete All'),
                       ],
                     ),
                   ),
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: 'delete_all',
                     child: Row(
                       children: [
-                        Icon(Icons.delete, color: Colors.red),
+                        Icon(PhosphorIcons.trash(), color: Colors.red),
                         SizedBox(width: 8),
                         Text('Delete All', style: TextStyle(color: Colors.red)),
                       ],
@@ -234,7 +235,7 @@ class _EnhancedSubTaskListState extends ConsumerState<EnhancedSubTaskList> {
                   // Move up
                   if (index > 0)
                     IconButton(
-                      icon: const Icon(Icons.keyboard_arrow_up),
+                      icon: Icon(PhosphorIcons.caretUp()),
                       onPressed: () => _moveSubtaskUp(subtask.id),
                       tooltip: 'Move up',
                     ),
@@ -242,21 +243,21 @@ class _EnhancedSubTaskListState extends ConsumerState<EnhancedSubTaskList> {
                   // Move down
                   if (index < totalCount - 1)
                     IconButton(
-                      icon: const Icon(Icons.keyboard_arrow_down),
+                      icon: Icon(PhosphorIcons.caretDown()),
                       onPressed: () => _moveSubtaskDown(subtask.id),
                       tooltip: 'Move down',
                     ),
                   
                   // Edit
                   IconButton(
-                    icon: const Icon(Icons.edit),
+                    icon: Icon(PhosphorIcons.pencil()),
                     onPressed: () => _editSubtask(subtask),
                     tooltip: 'Edit',
                   ),
                   
                   // Delete
                   IconButton(
-                    icon: const Icon(Icons.delete, color: Colors.red),
+                    icon: Icon(PhosphorIcons.trash(), color: Colors.red),
                     onPressed: () => _deleteSubtask(subtask.id),
                     tooltip: 'Delete',
                   ),
@@ -324,14 +325,14 @@ class _EnhancedSubTaskListState extends ConsumerState<EnhancedSubTaskList> {
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           border: Border.all(
-            color: theme.colorScheme.outline.withOpacity(0.3),
+            color: theme.colorScheme.outline.withValues(alpha: 0.3),
           ),
           borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
         ),
         child: Row(
           children: [
             Icon(
-              Icons.add,
+              PhosphorIcons.plus(),
               size: 20,
               color: theme.colorScheme.primary,
             ),
@@ -354,9 +355,9 @@ class _EnhancedSubTaskListState extends ConsumerState<EnhancedSubTaskList> {
       child: Column(
         children: [
           Icon(
-            Icons.checklist,
+            PhosphorIcons.listChecks(),
             size: 48,
-            color: theme.colorScheme.onSurfaceVariant.withOpacity(0.5),
+            color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
           ),
           const SizedBox(height: 12),
           Text(
@@ -373,7 +374,7 @@ class _EnhancedSubTaskListState extends ConsumerState<EnhancedSubTaskList> {
                   _isAddingSubTask = true;
                 });
               },
-              icon: const Icon(Icons.add),
+              icon: Icon(PhosphorIcons.plus()),
               label: const Text('Add first subtask'),
             ),
         ],
@@ -387,7 +388,7 @@ class _EnhancedSubTaskListState extends ConsumerState<EnhancedSubTaskList> {
       child: Column(
         children: [
           Icon(
-            Icons.error_outline,
+            PhosphorIcons.warningCircle(),
             size: 48,
             color: theme.colorScheme.error,
           ),
@@ -612,3 +613,4 @@ class _EnhancedSubTaskListState extends ConsumerState<EnhancedSubTaskList> {
     return '${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
   }
 }
+

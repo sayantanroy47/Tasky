@@ -223,7 +223,7 @@ class _MultiTouchGestureAreaState extends State<MultiTouchGestureArea> {
         child: Container(
           decoration: BoxDecoration(
             border: Border.all(
-              color: theme.colorScheme.primary.withOpacity(0.5),
+              color: theme.colorScheme.primary.withValues(alpha: 0.5),
               width: 2,
             ),
           ),

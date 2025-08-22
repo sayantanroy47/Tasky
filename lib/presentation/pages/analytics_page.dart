@@ -6,6 +6,7 @@ import '../widgets/analytics_widgets.dart';
 import '../../core/theme/typography_constants.dart';
 import '../providers/analytics_providers.dart';
 import '../../services/analytics/analytics_models.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Analytics page for viewing productivity metrics and insights
 class AnalyticsPage extends ConsumerWidget {
@@ -21,7 +22,7 @@ class AnalyticsPage extends ConsumerWidget {
         forceBackButton: false, // Analytics is main tab - no back button
         actions: [
           IconButton(
-            icon: const Icon(Icons.date_range_outlined),
+            icon: Icon(PhosphorIcons.calendarBlank()),
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
@@ -33,7 +34,7 @@ class AnalyticsPage extends ConsumerWidget {
             tooltip: 'Change date range',
           ),
           IconButton(
-            icon: const Icon(Icons.file_download_outlined),
+            icon: Icon(PhosphorIcons.download()),
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
@@ -105,7 +106,7 @@ class AnalyticsPageBody extends ConsumerWidget {
                               title: 'Completed',
                               value: '${summary.completedTasks}',
                               subtitle: 'tasks ${selectedPeriod.displayName.toLowerCase()}',
-                              icon: Icons.check_circle,
+                              icon: PhosphorIcons.checkCircle(),
                               color: Colors.green,
                             ),
                           ),
@@ -115,7 +116,7 @@ class AnalyticsPageBody extends ConsumerWidget {
                               title: 'Completion Rate',
                               value: '${(summary.completionRate * 100).round()}%',
                               subtitle: 'of all tasks',
-                              icon: Icons.trending_up,
+                              icon: PhosphorIcons.trendUp(),
                               color: Colors.blue,
                             ),
                           ),
@@ -129,17 +130,17 @@ class AnalyticsPageBody extends ConsumerWidget {
                               title: 'Current Streak',
                               value: '${summary.currentStreak}',
                               subtitle: 'days active',
-                              icon: Icons.local_fire_department,
+                              icon: PhosphorIcons.fire(),
                               color: Colors.orange,
                             ),
                           ),
-                          const SizedBox(width: 12),
+                          SizedBox(width: 12),
                           Expanded(
                             child: AnalyticsMetricCard(
                               title: 'Avg Duration',
                               value: _formatDuration(summary.averageTaskDuration),
                               subtitle: 'per task',
-                              icon: Icons.schedule,
+                              icon: PhosphorIcons.clock(),
                               color: Colors.purple,
                             ),
                           ),
@@ -471,7 +472,7 @@ class _ErrorWidget extends StatelessWidget {
       child: Column(
           children: [
             Icon(
-              Icons.error_outline,
+              PhosphorIcons.warningCircle(),
               color: Theme.of(context).colorScheme.error,
               size: 48,
             ),
@@ -491,4 +492,7 @@ class _ErrorWidget extends StatelessWidget {
     );
   }
 }
+
+
+
 

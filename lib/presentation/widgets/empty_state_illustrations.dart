@@ -257,7 +257,7 @@ class _TasksEmptyPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = primaryColor.withOpacity(fadeValue)
+      ..color = primaryColor.withValues(alpha: fadeValue)
       ..style = PaintingStyle.fill;
 
     final center = Offset(size.width / 2, size.height / 2);
@@ -791,7 +791,7 @@ class _GenericEmptyPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = primaryColor.withOpacity(0.3)
+      ..color = primaryColor.withValues(alpha: 0.3)
       ..style = PaintingStyle.fill;
 
     final center = Offset(size.width / 2, size.height / 2);

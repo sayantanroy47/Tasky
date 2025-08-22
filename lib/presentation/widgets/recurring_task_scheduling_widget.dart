@@ -9,6 +9,7 @@ import 'loading_error_widgets.dart' as loading_widgets;
 import '../../core/theme/typography_constants.dart';
 import '../../core/routing/app_router.dart';
 import '../pages/recurring_task_creation_page.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Comprehensive recurring task management widget
 class RecurringTaskSchedulingWidget extends ConsumerWidget {
@@ -22,30 +23,30 @@ class RecurringTaskSchedulingWidget extends ConsumerWidget {
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title: const Text('Recurring Tasks'),
+        title: Text('Recurring Tasks'),
         backgroundColor: Colors.transparent,
         elevation: 0,
         actions: [
           IconButton(
-            icon: const Icon(Icons.add),
+            icon: Icon(PhosphorIcons.plus()),
             onPressed: () => _showCreateRecurringTaskDialog(context, ref),
             tooltip: 'Create recurring task',
           ),
           PopupMenuButton<String>(
             onSelected: (value) => _handleMenuAction(context, ref, value),
             itemBuilder: (context) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'process',
                 child: ListTile(
-                  leading: Icon(Icons.sync),
+                  leading: Icon(PhosphorIcons.arrowsClockwise()),
                   title: Text('Process Recurring Tasks'),
                   contentPadding: EdgeInsets.zero,
                 ),
               ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'refresh',
                 child: ListTile(
-                  leading: Icon(Icons.refresh),
+                  leading: Icon(PhosphorIcons.arrowClockwise()),
                   title: Text('Refresh'),
                   contentPadding: EdgeInsets.zero,
                 ),
@@ -107,7 +108,7 @@ class RecurringTaskSchedulingWidget extends ConsumerWidget {
             children: [
               Row(
                 children: [
-                  Icon(Icons.repeat, color: theme.colorScheme.primary),
+                  Icon(PhosphorIcons.repeat(), color: theme.colorScheme.primary),
                   const SizedBox(width: 8),
                   Text(
                     'Recurring Tasks Overview',
@@ -161,9 +162,9 @@ class RecurringTaskSchedulingWidget extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(
         children: [
@@ -237,34 +238,34 @@ class RecurringTaskSchedulingWidget extends ConsumerWidget {
                   PopupMenuButton<String>(
                     onSelected: (value) => _handleTaskAction(context, ref, task, value),
                     itemBuilder: (context) => [
-                      const PopupMenuItem(
+                      PopupMenuItem(
                         value: 'edit',
                         child: ListTile(
-                          leading: Icon(Icons.edit),
+                          leading: Icon(PhosphorIcons.pencil()),
                           title: Text('Edit Pattern'),
                           contentPadding: EdgeInsets.zero,
                         ),
                       ),
-                      const PopupMenuItem(
+                      PopupMenuItem(
                         value: 'instances',
                         child: ListTile(
-                          leading: Icon(Icons.list),
+                          leading: Icon(PhosphorIcons.list()),
                           title: Text('View Instances'),
                           contentPadding: EdgeInsets.zero,
                         ),
                       ),
-                      const PopupMenuItem(
+                      PopupMenuItem(
                         value: 'complete',
                         child: ListTile(
-                          leading: Icon(Icons.check_circle),
+                          leading: Icon(PhosphorIcons.checkCircle()),
                           title: Text('Complete & Generate Next'),
                           contentPadding: EdgeInsets.zero,
                         ),
                       ),
-                      const PopupMenuItem(
+                      PopupMenuItem(
                         value: 'stop',
                         child: ListTile(
-                          leading: Icon(Icons.stop, color: Colors.red),
+                          leading: Icon(PhosphorIcons.stop(), color: Colors.red),
                           title: Text('Stop Recurring', style: TextStyle(color: Colors.red)),
                           contentPadding: EdgeInsets.zero,
                         ),
@@ -274,7 +275,7 @@ class RecurringTaskSchedulingWidget extends ConsumerWidget {
                 ],
               ),
               
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
               
               // Recurrence details
               Text(
@@ -289,7 +290,7 @@ class RecurringTaskSchedulingWidget extends ConsumerWidget {
                 Row(
                   children: [
                     Icon(
-                      Icons.schedule,
+                      PhosphorIcons.clock(),
                       size: 16,
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
@@ -356,7 +357,7 @@ class RecurringTaskSchedulingWidget extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: chipColor.withOpacity(0.2),
+        color: chipColor.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
@@ -391,7 +392,7 @@ class RecurringTaskSchedulingWidget extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: chipColor.withOpacity(0.2),
+        color: chipColor.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
@@ -426,7 +427,7 @@ class RecurringTaskSchedulingWidget extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
-        color: chipColor.withOpacity(0.2),
+        color: chipColor.withValues(alpha: 0.2),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
@@ -447,11 +448,11 @@ class RecurringTaskSchedulingWidget extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            Icons.repeat_outlined,
+            PhosphorIcons.repeat(),
             size: 64,
             color: theme.colorScheme.onSurfaceVariant,
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Text(
             'No Recurring Tasks',
             style: theme.textTheme.titleLarge?.copyWith(
@@ -469,7 +470,7 @@ class RecurringTaskSchedulingWidget extends ConsumerWidget {
           const SizedBox(height: 24),
           ElevatedButton.icon(
             onPressed: () => _showCreateRecurringTaskDialog(context, null),
-            icon: const Icon(Icons.add),
+            icon: Icon(PhosphorIcons.plus()),
             label: const Text('Create Recurring Task'),
           ),
         ],
@@ -682,3 +683,4 @@ class RecurringTaskSchedulingWidget extends ConsumerWidget {
     }
   }
 }
+

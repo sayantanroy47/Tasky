@@ -6,6 +6,7 @@ import '../../domain/entities/project.dart';
 import '../providers/project_providers.dart';
 import 'glassmorphism_container.dart';
 import '../../core/design_system/design_tokens.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Widget for selecting a project from a list
 /// 
@@ -56,19 +57,19 @@ class ProjectSelector extends ConsumerWidget {
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               border: Border.all(
-                color: theme.colorScheme.outline.withOpacity(0.5),
+                color: theme.colorScheme.outline.withValues(alpha: 0.5),
               ),
               borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
             ),
             child: Row(
               children: [
                 Icon(
-                  Icons.folder,
+                  PhosphorIcons.folder(),
                   color: selectedProject != null
                       ? _parseColor(selectedProject.color)
                       : theme.colorScheme.onSurfaceVariant,
                 ),
-                const SizedBox(width: 12),
+                SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -91,7 +92,7 @@ class ProjectSelector extends ConsumerWidget {
                   ),
                 ),
                 Icon(
-                  Icons.arrow_drop_down,
+                  PhosphorIcons.caretDown(),
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
               ],
@@ -103,14 +104,13 @@ class ProjectSelector extends ConsumerWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           border: Border.all(
-            color: theme.colorScheme.outline.withOpacity(0.5),
+            color: theme.colorScheme.outline.withValues(alpha: 0.5),
           ),
           borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
         ),
         child: Row(
           children: [
-            const SizedBox(
-              width: 20,
+            SizedBox(width: 20,
               height: 20,
               child: CircularProgressIndicator(strokeWidth: 2),
             ),
@@ -128,14 +128,14 @@ class ProjectSelector extends ConsumerWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           border: Border.all(
-            color: theme.colorScheme.error.withOpacity(0.5),
+            color: theme.colorScheme.error.withValues(alpha: 0.5),
           ),
           borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
         ),
         child: Row(
           children: [
             Icon(
-              Icons.error_outline,
+              PhosphorIcons.warningCircle(),
               color: theme.colorScheme.error,
             ),
             const SizedBox(width: 12),
@@ -170,8 +170,8 @@ class ProjectSelector extends ConsumerWidget {
             // Header
             Row(
               children: [
-                const Icon(Icons.folder),
-                const SizedBox(width: 8),
+                Icon(PhosphorIcons.folder()),
+                SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     'Select Project',
@@ -182,7 +182,7 @@ class ProjectSelector extends ConsumerWidget {
                 ),
                 IconButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  icon: const Icon(Icons.close),
+                  icon: Icon(PhosphorIcons.x()),
                 ),
               ],
             ),
@@ -192,7 +192,7 @@ class ProjectSelector extends ConsumerWidget {
             // None option
             if (allowNone)
               ListTile(
-                leading: const Icon(Icons.clear),
+                leading: Icon(PhosphorIcons.x()),
                 title: const Text('No Project'),
                 subtitle: const Text('Don\'t assign to any project'),
                 onTap: () {
@@ -204,11 +204,10 @@ class ProjectSelector extends ConsumerWidget {
             
             // Project list
             if (projects.isEmpty)
-              const Padding(
-                padding: EdgeInsets.all(32),
+              Padding(padding: EdgeInsets.all(32),
                 child: Column(
                   children: [
-                    Icon(Icons.folder_open, size: 48, color: Colors.grey),
+                    Icon(PhosphorIcons.folder(), size: 48, color: Colors.grey),
                     SizedBox(height: 16),
                     Text(
                       'No Projects Available',
@@ -241,7 +240,7 @@ class ProjectSelector extends ConsumerWidget {
                     : null,
                 trailing: project.id == selectedProjectId
                     ? Icon(
-                        Icons.check,
+                        PhosphorIcons.check(),
                         color: _parseColor(project.color),
                       )
                     : null,
@@ -254,9 +253,9 @@ class ProjectSelector extends ConsumerWidget {
             
             // Create new project option
             if (showCreateOption) ...[
-              const Divider(),
+              Divider(),
               ListTile(
-                leading: const Icon(Icons.add),
+                leading: Icon(PhosphorIcons.plus()),
                 title: const Text('Create New Project'),
                 subtitle: const Text('Create a new project for this task'),
                 onTap: () {
@@ -322,7 +321,7 @@ class CompactProjectSelector extends ConsumerWidget {
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
             ),
-            prefixIcon: const Icon(Icons.folder),
+            prefixIcon: Icon(PhosphorIcons.folder()),
           ),
           items: [
             if (allowNone)
@@ -371,8 +370,7 @@ class CompactProjectSelector extends ConsumerWidget {
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
           ),
-          prefixIcon: const SizedBox(
-            width: 24,
+          prefixIcon: SizedBox(width: 24,
             height: 24,
             child: Padding(
               padding: EdgeInsets.all(10),
@@ -390,7 +388,7 @@ class CompactProjectSelector extends ConsumerWidget {
             borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
           ),
           prefixIcon: Icon(
-            Icons.error_outline,
+            PhosphorIcons.warningCircle(),
             color: theme.colorScheme.error,
           ),
         ),
@@ -406,3 +404,5 @@ class CompactProjectSelector extends ConsumerWidget {
     }
   }
 }
+
+

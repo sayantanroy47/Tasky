@@ -5,6 +5,7 @@ import '../../core/accessibility/accessibility_constants.dart';
 import '../../core/theme/typography_constants.dart';
 import 'glassmorphism_container.dart';
 import 'accessible_button.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Standardized state management for consistent UI across the app
 class StandardizedStateWidgets {
@@ -179,7 +180,7 @@ class StandardizedLoadingWidget extends ConsumerWidget {
                 height: 48,
                 child: shouldReduceMotion
                     ? Icon(
-                        Icons.hourglass_empty,
+                        PhosphorIcons.hourglass(),
                         size: 48,
                         color: theme.colorScheme.primary,
                       )
@@ -223,7 +224,7 @@ class StandardizedLoadingWidget extends ConsumerWidget {
       return Container(
         width: double.infinity,
         height: double.infinity,
-        color: backgroundColor ?? Colors.black.withOpacity(0.3),
+        color: backgroundColor ?? Colors.black.withValues(alpha: 0.3),
         child: Semantics(
           label: message != null 
               ? 'Loading: $message'
@@ -280,7 +281,7 @@ class StandardizedErrorWidget extends ConsumerWidget {
             children: [
               // Error icon
               Icon(
-                icon ?? Icons.error_outline,
+                icon ?? PhosphorIcons.warningCircle(),
                 size: 64,
                 color: theme.colorScheme.error,
               ),
@@ -418,7 +419,7 @@ class StandardizedEmptyWidget extends ConsumerWidget {
             children: [
               // Empty state icon
               Icon(
-                icon ?? Icons.inbox_outlined,
+                icon ?? PhosphorIcons.tray(),
                 size: 64,
                 color: theme.colorScheme.onSurfaceVariant,
               ),
@@ -552,7 +553,7 @@ class _StandardizedSuccessWidgetState extends ConsumerState<StandardizedSuccessW
               children: [
                 // Success icon
                 Icon(
-                  widget.icon ?? Icons.check_circle_outline,
+                  widget.icon ?? PhosphorIcons.checkCircle(),
                   size: 64,
                   color: theme.colorScheme.primary,
                 ),
@@ -638,7 +639,7 @@ class LoadingOverlayWrapper extends StatelessWidget {
               progress: progress,
               showProgress: progress != null,
               fullScreen: true,
-              backgroundColor: Colors.black.withOpacity(0.3),
+              backgroundColor: Colors.black.withValues(alpha: 0.3),
             ),
           ),
       ],
@@ -737,3 +738,4 @@ class StateAwareListBuilder<T> extends StatelessWidget {
     );
   }
 }
+

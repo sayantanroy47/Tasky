@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_theme_data.dart';
 import '../../../core/theme/typography_constants.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 
 /// Epic theme preview card with distinctive visuals for each theme
@@ -109,23 +110,23 @@ class _EpicThemePreviewCardState extends State<EpicThemePreviewCard>
         borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard * 2),
         border: Border.all(
           color: widget.isSelected 
-              ? colors.primary.withOpacity(0.8)
-              : colors.outline.withOpacity(0.3),
+              ? colors.primary.withValues(alpha: 0.8)
+              : colors.outline.withValues(alpha: 0.3),
           width: widget.isSelected ? 3.0 : 1.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: colors.shadow.withOpacity(widget.isSelected ? 0.3 : 0.15),
+            color: colors.shadow.withValues(alpha: widget.isSelected ? 0.3 : 0.15),
             blurRadius: widget.isSelected ? 20 : 10,
             spreadRadius: widget.isSelected ? 2 : 0,
             offset: Offset(0, widget.isSelected ? 8 : 4),
           ),
           if (widget.isSelected)
             BoxShadow(
-              color: colors.primary.withOpacity(0.2),
+              color: colors.primary.withValues(alpha: 0.2),
               blurRadius: 30,
               spreadRadius: 5,
-              offset: const Offset(0, 10),
+              offset: Offset(0, 10),
             ),
         ],
       ),
@@ -144,7 +145,7 @@ class _EpicThemePreviewCardState extends State<EpicThemePreviewCard>
                   end: Alignment.bottomCenter,
                   colors: [
                     Colors.transparent,
-                    colors.surface.withOpacity(isDark ? 0.7 : 0.85),
+                    colors.surface.withValues(alpha: isDark ? 0.7 : 0.85),
                   ],
                   stops: const [0.3, 1.0],
                 ),
@@ -171,7 +172,7 @@ class _EpicThemePreviewCardState extends State<EpicThemePreviewCard>
                           borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                           boxShadow: [
                             BoxShadow(
-                              color: colors.primary.withOpacity(0.4),
+                              color: colors.primary.withValues(alpha: 0.4),
                               blurRadius: 8,
                               offset: const Offset(0, 4),
                             ),
@@ -193,14 +194,14 @@ class _EpicThemePreviewCardState extends State<EpicThemePreviewCard>
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                color: colors.primary.withOpacity(0.5),
+                                color: colors.primary.withValues(alpha: 0.5),
                                 blurRadius: 10,
                                 spreadRadius: 2,
                               ),
                             ],
                           ),
                           child: Icon(
-                            Icons.check,
+                            PhosphorIcons.check(),
                             color: colors.onPrimary,
                             size: 20,
                           ),
@@ -215,10 +216,10 @@ class _EpicThemePreviewCardState extends State<EpicThemePreviewCard>
                     padding: const EdgeInsets.all(16),
                     margin: const EdgeInsets.only(bottom: 12),
                     decoration: BoxDecoration(
-                      color: colors.surface.withOpacity(isDark ? 0.9 : 0.95),
+                      color: colors.surface.withValues(alpha: isDark ? 0.9 : 0.95),
                       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                       border: Border.all(
-                        color: colors.outline.withOpacity(0.2),
+                        color: colors.outline.withValues(alpha: 0.2),
                       ),
                     ),
                     child: Column(
@@ -255,12 +256,12 @@ class _EpicThemePreviewCardState extends State<EpicThemePreviewCard>
                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
-                                  colors: [colors.primary.withOpacity(0.8), colors.secondary.withOpacity(0.6)],
+                                  colors: [colors.primary.withValues(alpha: 0.8), colors.secondary.withValues(alpha: 0.6)],
                                 ),
                                 borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: colors.primary.withOpacity(0.3),
+                                    color: colors.primary.withValues(alpha: 0.3),
                                     blurRadius: 4,
                                     offset: const Offset(0, 2),
                                   ),
@@ -269,8 +270,8 @@ class _EpicThemePreviewCardState extends State<EpicThemePreviewCard>
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Icon(
-                                    Icons.star,
+                                  Icon(
+                                    PhosphorIcons.star(),
                                     color: Colors.white,
                                     size: 14,
                                   ),
@@ -295,7 +296,7 @@ class _EpicThemePreviewCardState extends State<EpicThemePreviewCard>
                         Text(
                           metadata.description,
                           style: TextStyle(
-                            color: colors.onSurface.withOpacity(0.8),
+                            color: colors.onSurface.withValues(alpha: 0.8),
                             fontSize: 11,
                             height: 1.2,
                           ),
@@ -341,7 +342,7 @@ class _EpicThemePreviewCardState extends State<EpicThemePreviewCard>
               colors: [
                 colors.surface,
                 isDark ? Colors.black87 : colors.surface,
-                colors.primary.withOpacity(0.1),
+                colors.primary.withValues(alpha: 0.1),
               ],
             ),
           ),
@@ -354,7 +355,7 @@ class _EpicThemePreviewCardState extends State<EpicThemePreviewCard>
             child: Text(
               '010110',
               style: TextStyle(
-                color: colors.primary.withOpacity(0.6),
+                color: colors.primary.withValues(alpha: 0.6),
                 fontSize: 12,
                 fontFamily: 'monospace',
               ),
@@ -373,8 +374,8 @@ class _EpicThemePreviewCardState extends State<EpicThemePreviewCard>
             gradient: RadialGradient(
               center: Alignment.topRight,
               colors: [
-                colors.primary.withOpacity(0.3),
-                colors.secondary.withOpacity(0.2),
+                colors.primary.withValues(alpha: 0.3),
+                colors.secondary.withValues(alpha: 0.2),
                 colors.surface,
               ],
             ),
@@ -385,8 +386,8 @@ class _EpicThemePreviewCardState extends State<EpicThemePreviewCard>
           top: 20 + math.sin(_effectAnimation.value * math.pi * 2) * 10,
           right: 30,
           child: Icon(
-            Icons.flash_on,
-            color: colors.accent.withOpacity(0.7),
+            PhosphorIcons.lightning(),
+            color: colors.accent.withValues(alpha: 0.7),
             size: 40,
           ),
         ),
@@ -401,9 +402,9 @@ class _EpicThemePreviewCardState extends State<EpicThemePreviewCard>
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            colors.primary.withOpacity(0.2),
+            colors.primary.withValues(alpha: 0.2),
             colors.surface,
-            colors.secondary.withOpacity(0.1),
+            colors.secondary.withValues(alpha: 0.1),
           ],
         ),
       ),
@@ -415,8 +416,8 @@ class _EpicThemePreviewCardState extends State<EpicThemePreviewCard>
             child: Transform.rotate(
               angle: _effectAnimation.value * math.pi * 2,
               child: Icon(
-                Icons.nightlight_round,
-                color: colors.accent.withOpacity(0.5),
+                PhosphorIcons.moon(),
+                color: colors.accent.withValues(alpha: 0.5),
                 size: 30,
               ),
             ),
@@ -433,10 +434,10 @@ class _EpicThemePreviewCardState extends State<EpicThemePreviewCard>
           center: Alignment.center,
           startAngle: _effectAnimation.value * math.pi * 2,
           colors: [
-            colors.primary.withOpacity(0.3),
-            colors.secondary.withOpacity(0.2),
-            colors.tertiary.withOpacity(0.25),
-            colors.primary.withOpacity(0.3),
+            colors.primary.withValues(alpha: 0.3),
+            colors.secondary.withValues(alpha: 0.2),
+            colors.tertiary.withValues(alpha: 0.25),
+            colors.primary.withValues(alpha: 0.3),
           ],
         ),
       ),
@@ -450,9 +451,9 @@ class _EpicThemePreviewCardState extends State<EpicThemePreviewCard>
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            colors.primary.withOpacity(0.15),
+            colors.primary.withValues(alpha: 0.15),
             colors.surface,
-            colors.secondary.withOpacity(0.1),
+            colors.secondary.withValues(alpha: 0.1),
           ],
         ),
       ),
@@ -469,12 +470,12 @@ class _EpicThemePreviewCardState extends State<EpicThemePreviewCard>
           color: color,
           borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard / 2),
           border: Border.all(
-            color: Colors.white.withOpacity(0.3),
+            color: Colors.white.withValues(alpha: 0.3),
             width: 1,
           ),
           boxShadow: [
             BoxShadow(
-              color: color.withOpacity(0.4),
+              color: color.withValues(alpha: 0.4),
               blurRadius: 4,
               offset: const Offset(0, 2),
             ),
@@ -484,3 +485,4 @@ class _EpicThemePreviewCardState extends State<EpicThemePreviewCard>
     );
   }
 }
+

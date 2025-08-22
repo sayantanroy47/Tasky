@@ -6,6 +6,7 @@ import '../../core/design_system/design_tokens.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../services/accessibility_service.dart';
 import '../widgets/accessible_widgets.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Screen for managing accessibility settings
 class AccessibilitySettingsScreen extends ConsumerWidget {
@@ -20,7 +21,7 @@ class AccessibilitySettingsScreen extends ConsumerWidget {
       appBar: StandardizedAppBar(
         title: 'Accessibility Settings',
         leading: AccessibleIconButton(
-          icon: Icons.arrow_back,
+          icon: PhosphorIcons.arrowLeft(),
           semanticLabel: 'Go back',
           onPressed: () => Navigator.of(context).pop(),
         ),
@@ -37,8 +38,8 @@ class AccessibilitySettingsScreen extends ConsumerWidget {
             child: Column(
               children: [
                 AccessibleListTile(
-                  leading: const Icon(Icons.contrast),
-                  title: const Text('High Contrast Mode'),
+                  leading: Icon(PhosphorIcons.circleHalf()),
+                  title: Text('High Contrast Mode'),
                   subtitle: const Text('Increase contrast for better visibility'),
                   trailing: AccessibleSwitch(
                     value: settings.highContrastMode,
@@ -51,7 +52,7 @@ class AccessibilitySettingsScreen extends ConsumerWidget {
                 ),
                 
                 AccessibleListTile(
-                  leading: const Icon(Icons.text_fields),
+                  leading: Icon(PhosphorIcons.textAa()),
                   title: const Text('Large Text'),
                   subtitle: const Text('Enable larger text for better readability'),
                   trailing: AccessibleSwitch(
@@ -65,7 +66,7 @@ class AccessibilitySettingsScreen extends ConsumerWidget {
                 ),
                 
                 AccessibleListTile(
-                  leading: const Icon(Icons.slow_motion_video),
+                  leading: Icon(PhosphorIcons.clock()),
                   title: const Text('Reduce Motion'),
                   subtitle: const Text('Minimize animations and transitions'),
                   trailing: AccessibleSwitch(
@@ -79,10 +80,10 @@ class AccessibilitySettingsScreen extends ConsumerWidget {
                 ),
                 
                 AccessibleListTile(
-                  leading: const Icon(Icons.palette),
+                  leading: Icon(PhosphorIcons.palette()),
                   title: const Text('Color Blind Support'),
                   subtitle: Text(_getColorBlindModeDescription(settings.colorBlindMode)),
-                  trailing: const Icon(Icons.chevron_right),
+                  trailing: Icon(PhosphorIcons.caretRight()),
                   onTap: () => _showColorBlindModeDialog(context, ref),
                   semanticLabel: 'Color blind support settings',
                 ),
@@ -101,7 +102,7 @@ class AccessibilitySettingsScreen extends ConsumerWidget {
             child: Column(
               children: [
                 AccessibleListTile(
-                  leading: const Icon(Icons.accessibility),
+                  leading: Icon(PhosphorIcons.wheelchair()),
                   title: const Text('Screen Reader Support'),
                   subtitle: const Text('Enhanced support for screen readers'),
                   trailing: AccessibleSwitch(
@@ -115,7 +116,7 @@ class AccessibilitySettingsScreen extends ConsumerWidget {
                 ),
                 
                 AccessibleListTile(
-                  leading: const Icon(Icons.record_voice_over),
+                  leading: Icon(PhosphorIcons.microphone()),
                   title: const Text('Voice Over'),
                   subtitle: const Text('Enable voice descriptions'),
                   trailing: AccessibleSwitch(
@@ -129,7 +130,7 @@ class AccessibilitySettingsScreen extends ConsumerWidget {
                 ),
                 
                 AccessibleListTile(
-                  leading: const Icon(Icons.vibration),
+                  leading: Icon(PhosphorIcons.vibrate()),
                   title: const Text('Haptic Feedback'),
                   subtitle: const Text('Enable vibration feedback'),
                   trailing: AccessibleSwitch(
@@ -181,3 +182,5 @@ class AccessibilitySettingsScreen extends ConsumerWidget {
     // Implementation would go here
   }
 }
+
+

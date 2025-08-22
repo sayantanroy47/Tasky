@@ -504,7 +504,7 @@ class HelpTopicSheet extends StatelessWidget {
                     ),
                     IconButton(
                       onPressed: () => Navigator.pop(context),
-                      icon: const Icon(PhosphorIcons.x()),
+                      icon: Icon(PhosphorIcons.x()),
                     ),
                   ],
                 ),
@@ -546,7 +546,7 @@ class HelpSearchDelegate extends SearchDelegate<String> {
         onPressed: () {
           query = '';
         },
-        icon: const Icon(PhosphorIcons.x()),
+        icon: Icon(PhosphorIcons.x()),
       ),
     ];
   }
@@ -557,7 +557,7 @@ class HelpSearchDelegate extends SearchDelegate<String> {
       onPressed: () {
         close(context, '');
       },
-      icon: const Icon(PhosphorIcons.arrowLeft()),
+      icon: Icon(PhosphorIcons.arrowLeft()),
     );
   }
 

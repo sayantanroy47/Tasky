@@ -18,6 +18,7 @@ import '../widgets/theme_background_widget.dart';
 import '../widgets/glassmorphism_container.dart';
 import '../widgets/adaptive_navigation.dart';
 import 'dart:ui';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Responsive main scaffold with adaptive navigation
 class MainScaffold extends ConsumerWidget {
@@ -29,7 +30,7 @@ class MainScaffold extends ConsumerWidget {
 
     // Define the pages
     final pages = [
-      const HomePage(),
+      HomePage(),
       const CalendarPage(),
       const AnalyticsPage(),
       const SettingsPage(),
@@ -37,27 +38,27 @@ class MainScaffold extends ConsumerWidget {
 
     // Define navigation items
     final navigationItems = [
-      const AdaptiveNavigationItem(
-        icon: Icons.dashboard_outlined,
-        selectedIcon: Icons.dashboard_rounded,
+      AdaptiveNavigationItem(
+        icon: PhosphorIcons.house(),
+        selectedIcon: PhosphorIcons.house(),
         label: 'Home',
         tooltip: 'Go to home screen',
       ),
-      const AdaptiveNavigationItem(
-        icon: Icons.event_outlined,
-        selectedIcon: Icons.event_rounded,
+      AdaptiveNavigationItem(
+        icon: PhosphorIcons.calendar(),
+        selectedIcon: PhosphorIcons.calendar(),
         label: 'Calendar',
         tooltip: 'Go to calendar view',
       ),
-      const AdaptiveNavigationItem(
-        icon: Icons.insights_outlined,
-        selectedIcon: Icons.insights_rounded,
+      AdaptiveNavigationItem(
+        icon: PhosphorIcons.chartBar(),
+        selectedIcon: PhosphorIcons.chartBar(),
         label: 'Analytics',
         tooltip: 'Go to analytics and insights',
       ),
-      const AdaptiveNavigationItem(
-        icon: Icons.settings_outlined,
-        selectedIcon: Icons.settings_rounded,
+      AdaptiveNavigationItem(
+        icon: PhosphorIcons.gear(),
+        selectedIcon: PhosphorIcons.gear(),
         label: 'Settings',
         tooltip: 'Go to settings and menu',
       ),
@@ -124,7 +125,7 @@ class MainScaffold extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
-                      Icons.task_alt,
+                      PhosphorIcons.checkSquare(),
                       color: Theme.of(context).colorScheme.onPrimary,
                       size: 24,
                     ),
@@ -227,7 +228,7 @@ class MainScaffold extends ConsumerWidget {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Icon(
-                            Icons.task_alt,
+                            PhosphorIcons.checkSquare(),
                             color: Theme.of(context).colorScheme.onPrimary,
                             size: 28,
                           ),
@@ -278,7 +279,7 @@ class MainScaffold extends ConsumerWidget {
                                 ),
                               ),
                               selected: isSelected,
-                              selectedTileColor: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+                              selectedTileColor: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),
@@ -337,14 +338,14 @@ class MainScaffold extends ConsumerWidget {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            theme.colorScheme.surface.withOpacity(0.8),
-            theme.colorScheme.surface.withOpacity(0.95),
+            theme.colorScheme.surface.withValues(alpha: 0.8),
+            theme.colorScheme.surface.withValues(alpha: 0.95),
           ],
         ),
         // Subtle shadow for depth
         boxShadow: [
           BoxShadow(
-            color: theme.colorScheme.shadow.withOpacity(0.1),
+            color: theme.colorScheme.shadow.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, -2),
           ),
@@ -402,19 +403,19 @@ class MainScaffold extends ConsumerWidget {
         boxShadow: [
           // Outer glow - most prominent
           BoxShadow(
-            color: theme.colorScheme.primary.withOpacity(0.5),
+            color: theme.colorScheme.primary.withValues(alpha: 0.5),
             blurRadius: 20,
             spreadRadius: 4,
           ),
           // Middle glow
           BoxShadow(
-            color: theme.colorScheme.primary.withOpacity(0.3),
+            color: theme.colorScheme.primary.withValues(alpha: 0.3),
             blurRadius: 12,
             spreadRadius: 2,
           ),
           // Inner glow for depth
           BoxShadow(
-            color: theme.colorScheme.primary.withOpacity(0.2),
+            color: theme.colorScheme.primary.withValues(alpha: 0.2),
             blurRadius: 6,
             spreadRadius: 1,
           ),
@@ -438,15 +439,15 @@ class MainScaffold extends ConsumerWidget {
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      theme.colorScheme.primary.withOpacity(0.95),
-                      theme.colorScheme.primary.withOpacity(0.85),
-                      theme.colorScheme.secondary.withOpacity(0.1),
+                      theme.colorScheme.primary.withValues(alpha: 0.95),
+                      theme.colorScheme.primary.withValues(alpha: 0.85),
+                      theme.colorScheme.secondary.withValues(alpha: 0.1),
                     ],
                     stops: const [0.0, 0.7, 1.0],
                   ),
                   // Subtle border for definition
                   border: Border.all(
-                    color: theme.colorScheme.primary.withOpacity(0.3),
+                    color: theme.colorScheme.primary.withValues(alpha: 0.3),
                     width: 1.5,
                   ),
                 ),
@@ -456,13 +457,13 @@ class MainScaffold extends ConsumerWidget {
                   backgroundColor: Colors.transparent, // Use container gradient
                   foregroundColor: theme.colorScheme.onPrimary,
                   elevation: 0, // Remove default elevation to use custom shadow
-                  shape: const CircleBorder(),
+                  shape: CircleBorder(),
                   child: Container(
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(
-                      Icons.add,
+                    child: Icon(
+                      PhosphorIcons.plus(),
                       size: 36, // Larger icon for better visibility
                       weight: 600, // Make icon bolder
                     ),
@@ -510,15 +511,15 @@ class MainScaffold extends ConsumerWidget {
                     height: 32,
                     padding: const EdgeInsets.all(6),
                     decoration: isSelected ? BoxDecoration(
-                      color: theme.colorScheme.primary.withOpacity(0.15),
+                      color: theme.colorScheme.primary.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium), // Larger radius
                     border: Border.all(
-                      color: theme.colorScheme.primary.withOpacity(0.3),
+                      color: theme.colorScheme.primary.withValues(alpha: 0.3),
                       width: 1.5, // Slightly thicker border
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: theme.colorScheme.primary.withOpacity(0.3),
+                        color: theme.colorScheme.primary.withValues(alpha: 0.3),
                         blurRadius: 6,
                         spreadRadius: 2,
                       ),
@@ -582,7 +583,7 @@ class MainScaffold extends ConsumerWidget {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8),
                 Text(
                   'Choose how you\'d like to create your task',
                   style: theme.textTheme.bodyMedium?.copyWith(
@@ -594,7 +595,7 @@ class MainScaffold extends ConsumerWidget {
                 // Task Creation Options
                 _buildTaskCreationOption(
                   context: context,
-                  icon: Icons.mic,
+                  icon: PhosphorIcons.microphone(),
                   iconColor: theme.colorScheme.primary,
                   title: 'AI Voice Entry',
                   subtitle: 'Speak your task, we\'ll transcribe it',
@@ -610,12 +611,12 @@ class MainScaffold extends ConsumerWidget {
                   },
                 ),
                 
-                const SizedBox(height: 12),
+                SizedBox(height: 12),
                 
                 
                 _buildTaskCreationOption(
                   context: context,
-                  icon: Icons.edit,
+                  icon: PhosphorIcons.pencil(),
                   iconColor: Colors.green,
                   title: 'Manual Entry',
                   subtitle: 'Type your task details manually',
@@ -676,7 +677,7 @@ class MainScaffold extends ConsumerWidget {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: iconColor.withOpacity(0.15),
+                color: iconColor.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
@@ -685,7 +686,7 @@ class MainScaffold extends ConsumerWidget {
                 size: 24,
               ),
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -707,7 +708,7 @@ class MainScaffold extends ConsumerWidget {
               ),
             ),
             Icon(
-              Icons.chevron_right,
+              PhosphorIcons.caretRight(),
               color: theme.colorScheme.onSurfaceVariant,
               size: 20,
             ),
@@ -747,3 +748,5 @@ class CenterDockedFloatingActionButtonLocation extends FloatingActionButtonLocat
   @override
   String toString() => 'CenterDockedFloatingActionButtonLocation';
 }
+
+

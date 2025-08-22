@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Service for generating dynamic welcome messages and productivity insights
 class WelcomeMessageService {
@@ -10,13 +11,13 @@ class WelcomeMessageService {
   static final Random _random = Random();
 
   /// Collection of dynamic welcome messages
-  static const List<WelcomeMessage> _welcomeMessages = [
+  static final List<WelcomeMessage> _welcomeMessages = [
     // Morning motivations
     WelcomeMessage(
       greeting: 'Good Morning, Achiever!',
       subtitle: 'Time to turn dreams into done',
       timeOfDay: TimeOfDay.morning,
-      icon: Icons.auto_awesome,
+      icon: PhosphorIcons.sparkle(),
     ),
     WelcomeMessage(
       greeting: 'Rise and Grind!',
@@ -44,7 +45,7 @@ class WelcomeMessageService {
       greeting: 'Afternoon Focus Mode',
       subtitle: 'Momentum is building!',
       timeOfDay: TimeOfDay.afternoon,
-      icon: Icons.rocket_launch,
+      icon: PhosphorIcons.rocket(),
     ),
     WelcomeMessage(
       greeting: 'Midday Warrior',
@@ -72,7 +73,7 @@ class WelcomeMessageService {
       greeting: 'Evening Reflection',
       subtitle: 'Planning tomorrow\'s victories',
       timeOfDay: TimeOfDay.evening,
-      icon: Icons.wb_sunny,
+      icon: PhosphorIcons.sun(),
     ),
     WelcomeMessage(
       greeting: 'Sunset Planning',
@@ -100,7 +101,7 @@ class WelcomeMessageService {
       greeting: 'Night Owl Mode',
       subtitle: 'Quiet hours, focused mind',
       timeOfDay: TimeOfDay.night,
-      icon: Icons.nightlight_round,
+      icon: PhosphorIcons.moon(),
     ),
     WelcomeMessage(
       greeting: 'Midnight Planner',
@@ -123,7 +124,7 @@ class WelcomeMessageService {
       greeting: 'Task Champion',
       subtitle: 'You\'ve got this!',
       timeOfDay: TimeOfDay.any,
-      icon: Icons.fitness_center,
+      icon: PhosphorIcons.barbell(),
     ),
     WelcomeMessage(
       greeting: 'Productivity Legend',
@@ -193,7 +194,7 @@ class WelcomeMessageService {
     
     // Special cases for first-time users or specific contexts
     if (isFirstTimeUser) {
-      return const WelcomeMessage(
+      return WelcomeMessage(
         greeting: 'Welcome to Tasky! 🎉',
         subtitle: 'Let\'s build amazing habits together',
         timeOfDay: TimeOfDay.any,
@@ -291,7 +292,7 @@ class WelcomeMessage {
   final TimeOfDay timeOfDay;
   final IconData? icon;
   
-  const WelcomeMessage({
+  WelcomeMessage({
     required this.greeting,
     required this.subtitle,
     required this.timeOfDay,
@@ -307,3 +308,5 @@ enum TimeOfDay {
   night,
   any, // Can be used at any time
 }
+
+

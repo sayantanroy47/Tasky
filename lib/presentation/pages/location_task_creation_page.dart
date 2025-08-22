@@ -168,8 +168,9 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
                       // Create Button
                       _buildCreateButton(context, theme),
                       
-                      SizedBox(height: 100), // Bottom padding]),
-                ),
+                      SizedBox(height: 100), // Bottom padding
+                    ],
+                  ),
               ),
             ),
             
@@ -187,7 +188,7 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
                     BoxShadow(
                       color: Colors.black.withValues(alpha: 0.1),
                       blurRadius: 8,
-                      offset: const Offset(0, 2),
+                      offset: Offset(0, 2),
                     )]),
                 child: Material(
                   color: Colors.transparent,
@@ -372,8 +373,9 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
                       ),
                       child: IntrinsicHeight(
                         child: Row(
-                          children: [Icon(PhosphorIcons.warning(), color: Colors.orange, size: 20),
-                            SizedBox(width: 8),
+                          children: [
+                            Icon(PhosphorIcons.warning(), color: Colors.orange, size: 20),
+                            const SizedBox(width: 8),
                             Expanded(
                               child: Text(
                                 'Location permission required for location-based reminders',
@@ -382,10 +384,12 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
                                 ),
                               ),
                             ),
-                            SizedBox(width: 8),
+                            const SizedBox(width: 8),
                             TextButton(
                               onPressed: _requestLocationPermission,
-                              child: const Text("")]),
+                              child: const Text("Enable Location"),
+                            ),
+                          ],
                         ),
                       ),
                     );
@@ -1034,3 +1038,4 @@ extension LocationTriggerExtension on LocationTrigger {
     );
   }
 }
+

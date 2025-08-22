@@ -52,7 +52,7 @@ class AppScaffold extends ConsumerWidget {
                   : null,
               notchMargin: 10.5, // For 72px FAB: cutout radius (38.5) - FAB radius (36) = 2.5, but BottomAppBar needs larger margin
               height: 80,
-              color: Theme.of(context).colorScheme.surface.withOpacity(0.9),
+              color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.9),
               child: NavigationBar(
                 selectedIndex: safeSelectedIndex,
                 onDestinationSelected: (index) {
@@ -62,7 +62,7 @@ class AppScaffold extends ConsumerWidget {
                 destinations: destinations,
                 height: 80,
                 backgroundColor: Colors.transparent,
-                indicatorColor: Theme.of(context).colorScheme.secondaryContainer.withOpacity(0.3),
+                indicatorColor: Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.3),
                 indicatorShape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),

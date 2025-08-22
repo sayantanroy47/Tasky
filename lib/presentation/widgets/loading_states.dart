@@ -3,6 +3,7 @@ import '../../core/design_system/design_tokens.dart';
 import '../../core/accessibility/accessibility_constants.dart';
 import '../../core/theme/typography_constants.dart';
 import 'glassmorphism_container.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Comprehensive loading states with glassmorphism design
 class LoadingStates {
@@ -86,7 +87,7 @@ class LoadingStates {
         if (isLoading)
           Positioned.fill(
             child: Container(
-              color: backgroundColor ?? Colors.black.withOpacity(0.3),
+              color: backgroundColor ?? Colors.black.withValues(alpha: 0.3),
               child: Center(
                 child: GlassLoadingIndicator(message: message),
               ),
@@ -131,7 +132,7 @@ class SkeletonTaskCard extends StatelessWidget {
   }
 
   Widget _buildSkeletonContent(BuildContext context, ThemeData theme) {
-    final color = theme.colorScheme.onSurface.withOpacity(0.3);
+    final color = theme.colorScheme.onSurface.withValues(alpha: 0.3);
 
     return Row(
       children: [
@@ -237,7 +238,7 @@ class SkeletonCard extends StatelessWidget {
   }
 
   Widget _buildContent(BuildContext context, ThemeData theme) {
-    final color = theme.colorScheme.onSurface.withOpacity(0.3);
+    final color = theme.colorScheme.onSurface.withValues(alpha: 0.3);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -326,7 +327,7 @@ class GlassLoadingIndicator extends StatelessWidget {
               height: size,
               child: shouldReduceMotion
                   ? Icon(
-                      Icons.hourglass_empty,
+                      PhosphorIcons.hourglass(),
                       size: size,
                       color: color ?? theme.colorScheme.primary,
                     )
@@ -406,7 +407,7 @@ class GlassProgressIndicator extends StatelessWidget {
             level: GlassLevel.content,
             height: height,
             borderRadius: borderRadius ?? BorderRadius.circular(height / 2),
-            glassTint: bgColor.withOpacity(0.3),
+            glassTint: bgColor.withValues(alpha: 0.3),
             child: Stack(
               children: [
                 // Progress fill
@@ -418,7 +419,7 @@ class GlassProgressIndicator extends StatelessWidget {
                       gradient: LinearGradient(
                         colors: [
                           progressColor,
-                          progressColor.withOpacity(0.8),
+                          progressColor.withValues(alpha: 0.8),
                         ],
                       ),
                       borderRadius: borderRadius ?? BorderRadius.circular(height / 2),
@@ -510,9 +511,9 @@ class _ShimmerEffectState extends State<ShimmerEffect>
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                theme.colorScheme.surface.withOpacity(0.1),
-                theme.colorScheme.onSurface.withOpacity(0.3),
-                theme.colorScheme.surface.withOpacity(0.1),
+                theme.colorScheme.surface.withValues(alpha: 0.1),
+                theme.colorScheme.onSurface.withValues(alpha: 0.3),
+                theme.colorScheme.surface.withValues(alpha: 0.1),
               ],
               stops: [
                 _animation.value - 0.5,
@@ -527,3 +528,4 @@ class _ShimmerEffectState extends State<ShimmerEffect>
     );
   }
 }
+

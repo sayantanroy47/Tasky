@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/typography_constants.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 
 /// Widget for AI privacy controls and data management
 class AIPrivacyControls extends ConsumerWidget {
-  const AIPrivacyControls({super.key});  @override
+  const AIPrivacyControls({super.key});
+  @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Card(
       child: Padding(
@@ -16,10 +18,10 @@ class AIPrivacyControls extends ConsumerWidget {
             Row(
               children: [
                 Icon(
-                  Icons.privacy_tip,
+                  PhosphorIcons.shieldWarning(),
                   color: Theme.of(context).colorScheme.primary,
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Text(
                   'Privacy & Data Control',
                   style: Theme.of(context).textTheme.titleLarge,
@@ -35,10 +37,10 @@ class AIPrivacyControls extends ConsumerWidget {
 
             // Data Retention Settings
             ListTile(
-              leading: const Icon(Icons.storage),
+              leading: Icon(PhosphorIcons.database()),
               title: const Text('Data Retention'),
               subtitle: const Text('Manage how long AI data is stored'),
-              trailing: const Icon(Icons.arrow_forward_ios),
+              trailing: Icon(PhosphorIcons.caretRight()),
               onTap: () => _showDataRetentionDialog(context),
             ),
 
@@ -46,10 +48,10 @@ class AIPrivacyControls extends ConsumerWidget {
 
             // Clear AI Data
             ListTile(
-              leading: const Icon(Icons.delete_outline),
+              leading: Icon(PhosphorIcons.trash()),
               title: const Text('Clear AI Data'),
               subtitle: const Text('Remove all stored AI parsing data'),
-              trailing: const Icon(Icons.arrow_forward_ios),
+              trailing: Icon(PhosphorIcons.caretRight()),
               onTap: () => _showClearDataDialog(context),
             ),
 
@@ -57,10 +59,10 @@ class AIPrivacyControls extends ConsumerWidget {
 
             // Export Data
             ListTile(
-              leading: const Icon(Icons.download),
+              leading: Icon(PhosphorIcons.download()),
               title: const Text('Export AI Data'),
               subtitle: const Text('Download your AI usage data'),
-              trailing: const Icon(Icons.arrow_forward_ios),
+              trailing: Icon(PhosphorIcons.caretRight()),
               onTap: () => _exportAIData(context),
             ),
 
@@ -68,7 +70,7 @@ class AIPrivacyControls extends ConsumerWidget {
 
             // Privacy Mode
             SwitchListTile(
-              secondary: const Icon(Icons.shield),
+              secondary: Icon(PhosphorIcons.shield()),
               title: const Text('Enhanced Privacy Mode'),
               subtitle: const Text('Minimize data collection and processing'),
               value: false, // This would come from preferences
@@ -90,7 +92,7 @@ class AIPrivacyControls extends ConsumerWidget {
                   Row(
                     children: [
                       Icon(
-                        Icons.info_outline,
+                        PhosphorIcons.info(),
                         color: Theme.of(context).colorScheme.primary,
                         size: 20,
                       ),
@@ -196,12 +198,14 @@ class AIPrivacyControls extends ConsumerWidget {
 
 /// Dialog for configuring data retention settings
 class DataRetentionDialog extends StatefulWidget {
-  const DataRetentionDialog({super.key});  @override
+  const DataRetentionDialog({super.key});
+  @override
   State<DataRetentionDialog> createState() => _DataRetentionDialogState();
 }
 
 class _DataRetentionDialogState extends State<DataRetentionDialog> {
-  int _selectedDays = 30; // Default retention period  @override
+  int _selectedDays = 30; // Default retention period
+  @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text('Data Retention Settings'),
@@ -263,7 +267,7 @@ class _DataRetentionDialogState extends State<DataRetentionDialog> {
             },
           ),
           
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           
           Container(
             padding: const EdgeInsets.all(12),
@@ -275,7 +279,7 @@ class _DataRetentionDialogState extends State<DataRetentionDialog> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Icon(
-                  Icons.info_outline,
+                  PhosphorIcons.info(),
                   color: Theme.of(context).colorScheme.primary,
                   size: 20,
                 ),
@@ -321,3 +325,5 @@ class _DataRetentionDialogState extends State<DataRetentionDialog> {
     );
   }
 }
+
+

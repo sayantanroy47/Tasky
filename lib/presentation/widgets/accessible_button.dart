@@ -328,31 +328,31 @@ class _AccessibleButtonState extends State<AccessibleButton>
     if (widget.color != null) return widget.color!;
     
     if (!widget.enabled) {
-      return theme.colorScheme.surfaceContainerHighest.withOpacity(0.3);
+      return theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3);
     }
     
     if (_isPressed) {
       return widget.isSecondary
-          ? theme.colorScheme.primaryContainer.withOpacity(0.8)
-          : theme.colorScheme.primary.withOpacity(0.9);
+          ? theme.colorScheme.primaryContainer.withValues(alpha: 0.8)
+          : theme.colorScheme.primary.withValues(alpha: 0.9);
     }
     
     if (_isHovered) {
       return widget.isSecondary
-          ? theme.colorScheme.primaryContainer.withOpacity(0.6)
-          : theme.colorScheme.primary.withOpacity(0.8);
+          ? theme.colorScheme.primaryContainer.withValues(alpha: 0.6)
+          : theme.colorScheme.primary.withValues(alpha: 0.8);
     }
     
     return widget.isSecondary
-        ? theme.colorScheme.primaryContainer.withOpacity(0.4)
-        : theme.colorScheme.primary.withOpacity(0.7);
+        ? theme.colorScheme.primaryContainer.withValues(alpha: 0.4)
+        : theme.colorScheme.primary.withValues(alpha: 0.7);
   }
 
   Color _getForegroundColor(ThemeData theme) {
     if (widget.textColor != null) return widget.textColor!;
     
     if (!widget.enabled) {
-      return theme.colorScheme.onSurfaceVariant.withOpacity(0.6);
+      return theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.6);
     }
     
     return widget.isSecondary
@@ -362,18 +362,18 @@ class _AccessibleButtonState extends State<AccessibleButton>
 
   Color _getBorderColor(ThemeData theme) {
     if (!widget.enabled) {
-      return theme.colorScheme.outline.withOpacity(0.2);
+      return theme.colorScheme.outline.withValues(alpha: 0.2);
     }
     
     if (_isPressed) {
-      return theme.colorScheme.primary.withOpacity(0.6);
+      return theme.colorScheme.primary.withValues(alpha: 0.6);
     }
     
     if (_isHovered) {
-      return theme.colorScheme.primary.withOpacity(0.4);
+      return theme.colorScheme.primary.withValues(alpha: 0.4);
     }
     
-    return theme.colorScheme.outline.withOpacity(0.3);
+    return theme.colorScheme.outline.withValues(alpha: 0.3);
   }
 }
 

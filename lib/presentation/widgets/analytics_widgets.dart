@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../services/analytics/analytics_models.dart';
 import 'glassmorphism_container.dart';
 import '../../core/theme/typography_constants.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Collection of reusable widgets for analytics display
 
@@ -26,7 +27,8 @@ class AnalyticsMetricCard extends StatelessWidget {
     this.trend,
     this.isPositiveTrend,
     this.onTap,
-  });  @override
+  });
+  @override
   Widget build(BuildContext context) {
     return GlassmorphismContainer(
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
@@ -41,7 +43,7 @@ class AnalyticsMetricCard extends StatelessWidget {
               Row(
                 children: [
                   Icon(icon, color: color, size: 20),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       title,
@@ -72,10 +74,10 @@ class AnalyticsMetricCard extends StatelessWidget {
                   children: [
                     Icon(
                       isPositiveTrend == true
-                          ? Icons.arrow_upward
+                          ? PhosphorIcons.arrowUp()
                           : isPositiveTrend == false
-                              ? Icons.arrow_downward
-                              : Icons.remove,
+                              ? PhosphorIcons.arrowDown()
+                              : PhosphorIcons.minus(),
                       size: 12,
                       color: isPositiveTrend == true
                           ? Colors.green
@@ -121,7 +123,8 @@ class SimpleBarChart extends StatelessWidget {
     required this.title,
     this.barColor,
     this.height = 200,
-  });  @override
+  });
+  @override
   Widget build(BuildContext context) {
     final maxValue = values.isNotEmpty ? values.reduce((a, b) => a > b ? a : b) : 1.0;
     final color = barColor ?? Theme.of(context).colorScheme.primary;
@@ -191,7 +194,8 @@ class CategoryBreakdownWidget extends StatelessWidget {
     super.key,
     required this.categories,
     required this.title,
-  });  @override
+  });
+  @override
   Widget build(BuildContext context) {
     final totalTasks = categories.fold<int>(0, (sum, cat) => sum + cat.totalTasks);
 
@@ -258,7 +262,8 @@ class CategoryItem extends StatelessWidget {
     required this.color,
     required this.count,
     required this.completionRate,
-  });  @override
+  });
+  @override
   Widget build(BuildContext context) {
     return Row(
       children: [
@@ -319,7 +324,8 @@ class ProductivityInsightsWidget extends StatelessWidget {
     required this.metrics,
     required this.hourlyProductivity,
     required this.weekdayProductivity,
-  });  @override
+  });
+  @override
   Widget build(BuildContext context) {
     final insights = _generateInsights();
 
@@ -359,7 +365,7 @@ class ProductivityInsightsWidget extends StatelessWidget {
         .key;
     final peakHourFormatted = _formatHour(peakHour);
     insights.add(ProductivityInsight(
-      icon: Icons.schedule,
+      icon: PhosphorIcons.clock(),
       title: 'Peak Productivity',
       description: 'You\'re most productive at $peakHourFormatted',
       color: Colors.amber,
@@ -368,7 +374,7 @@ class ProductivityInsightsWidget extends StatelessWidget {
     // Streak information
     if (metrics.currentStreak > 0) {
       insights.add(ProductivityInsight(
-        icon: Icons.local_fire_department,
+        icon: PhosphorIcons.fire(),
         title: 'Current Streak',
         description: '${metrics.currentStreak} days of consistent task completion',
         color: Colors.orange,
@@ -380,7 +386,7 @@ class ProductivityInsightsWidget extends StatelessWidget {
     final monthlyRate = (metrics.monthlyCompletionRate * 100).round();
     if (weeklyRate > monthlyRate) {
       insights.add(ProductivityInsight(
-        icon: Icons.trending_up,
+        icon: PhosphorIcons.trendUp(),
         title: 'Improving Trend',
         description: 'Your completion rate improved from $monthlyRate% to $weeklyRate%',
         color: Colors.green,
@@ -390,7 +396,7 @@ class ProductivityInsightsWidget extends StatelessWidget {
     // Average tasks per day
     if (metrics.averageTasksPerDay > 5) {
       insights.add(ProductivityInsight(
-        icon: Icons.lightbulb,
+        icon: PhosphorIcons.lightbulb(),
         title: 'High Activity',
         description: 'You complete ${metrics.averageTasksPerDay.toStringAsFixed(1)} tasks per day on average',
         color: Colors.blue,
@@ -436,14 +442,15 @@ class InsightItem extends StatelessWidget {
     required this.title,
     required this.description,
     required this.color,
-  });  @override
+  });
+  @override
   Widget build(BuildContext context) {
     return Row(
       children: [
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: color.withOpacity( 0.1),
+            color: color.withValues(alpha:  0.1),
             borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
           ),
           child: Icon(icon, color: color, size: 20),
@@ -478,7 +485,8 @@ class StreakWidget extends StatelessWidget {
   const StreakWidget({
     super.key,
     required this.streakInfo,
-  });  @override
+  });
+  @override
   Widget build(BuildContext context) {
     return GlassmorphismContainer(
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
@@ -490,7 +498,7 @@ class StreakWidget extends StatelessWidget {
             Row(
               children: [
                 Icon(
-                  Icons.local_fire_department,
+                  PhosphorIcons.fire(),
                   color: streakInfo.isStreakActive ? Colors.orange : Colors.grey,
                   size: 24,
                 ),
@@ -566,7 +574,8 @@ class _StreakMetric extends StatelessWidget {
     required this.value,
     required this.subtitle,
     required this.isActive,
-  });  @override
+  });
+  @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -614,7 +623,8 @@ class TimePeriodSelector extends StatelessWidget {
     super.key,
     required this.selectedPeriod,
     required this.onPeriodChanged,
-  });  @override
+  });
+  @override
   Widget build(BuildContext context) {
     return GlassmorphismContainer(
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
@@ -660,10 +670,10 @@ class TimePeriodSelector extends StatelessWidget {
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       glassTint: isSelected 
-          ? theme.colorScheme.primary.withOpacity(0.2)
+          ? theme.colorScheme.primary.withValues(alpha: 0.2)
           : null,
       borderColor: isSelected 
-          ? theme.colorScheme.primary.withOpacity(0.3)
+          ? theme.colorScheme.primary.withValues(alpha: 0.3)
           : null,
       child: InkWell(
         onTap: onTap,
@@ -691,7 +701,8 @@ class ProductivityPatternsWidget extends StatelessWidget {
   const ProductivityPatternsWidget({
     super.key,
     required this.patterns,
-  });  @override
+  });
+  @override
   Widget build(BuildContext context) {
     return GlassmorphismContainer(
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
@@ -704,12 +715,12 @@ class ProductivityPatternsWidget extends StatelessWidget {
               'Productivity Patterns',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             
             // Consistency score
             Row(
               children: [
-                const Icon(Icons.trending_up, color: Colors.blue, size: 20),
+                Icon(PhosphorIcons.trendUp(), color: Colors.blue, size: 20),
                 const SizedBox(width: 8),
                 Text(
                   'Consistency Score: ${(patterns.consistencyScore * 100).round()}%',
@@ -717,7 +728,7 @@ class ProductivityPatternsWidget extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             
             // Peak hours
             if (patterns.peaks.isNotEmpty) ...[
@@ -730,7 +741,7 @@ class ProductivityPatternsWidget extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 4.0),
                 child: Row(
                   children: [
-                    const Icon(Icons.schedule, color: Colors.orange, size: 16),
+                    Icon(PhosphorIcons.clock(), color: Colors.orange, size: 16),
                     const SizedBox(width: 8),
                     Text(
                       '${_formatHour(peak.hour)} - ${(peak.efficiency * 100).round()}% efficiency',
@@ -817,7 +828,8 @@ class PeakHoursAnalysisWidget extends StatelessWidget {
   const PeakHoursAnalysisWidget({
     super.key,
     required this.analysis,
-  });  @override
+  });
+  @override
   Widget build(BuildContext context) {
     return GlassmorphismContainer(
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
@@ -830,7 +842,7 @@ class PeakHoursAnalysisWidget extends StatelessWidget {
               'Peak Hours Analysis',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             
             // Peak hours
             Row(
@@ -839,7 +851,7 @@ class PeakHoursAnalysisWidget extends StatelessWidget {
                   child: _MetricCard(
                     title: 'Peak Hours',
                     value: analysis.peakHours.take(3).map(_formatHour).join(', '),
-                    icon: Icons.schedule,
+                    icon: PhosphorIcons.clock(),
                     color: Colors.green,
                   ),
                 ),
@@ -848,7 +860,7 @@ class PeakHoursAnalysisWidget extends StatelessWidget {
                   child: _MetricCard(
                     title: 'Optimal Window',
                     value: '${_formatHour(analysis.recommendedWorkingWindow.startHour)}-${_formatHour(analysis.recommendedWorkingWindow.endHour)}',
-                    icon: Icons.access_time,
+                    icon: PhosphorIcons.clock(),
                     color: Colors.blue,
                   ),
                 ),
@@ -863,7 +875,7 @@ class PeakHoursAnalysisWidget extends StatelessWidget {
                   child: _MetricCard(
                     title: 'Peak Score',
                     value: '${(analysis.peakProductivityScore * 100).round()}%',
-                    icon: Icons.trending_up,
+                    icon: PhosphorIcons.trendUp(),
                     color: Colors.orange,
                   ),
                 ),
@@ -872,7 +884,7 @@ class PeakHoursAnalysisWidget extends StatelessWidget {
                   child: _MetricCard(
                     title: 'Average Score',
                     value: '${(analysis.averageProductivityScore * 100).round()}%',
-                    icon: Icons.analytics,
+                    icon: PhosphorIcons.chartBar(),
                     color: Colors.purple,
                   ),
                 ),
@@ -935,7 +947,8 @@ class AdvancedCategoryAnalyticsWidget extends StatelessWidget {
   const AdvancedCategoryAnalyticsWidget({
     super.key,
     required this.analytics,
-  });  @override
+  });
+  @override
   Widget build(BuildContext context) {
     return GlassmorphismContainer(
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
@@ -948,7 +961,7 @@ class AdvancedCategoryAnalyticsWidget extends StatelessWidget {
               'Advanced Category Analytics',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             
             // Performance ranking
             if (analytics.ranking.topPerformingCategories.isNotEmpty) ...[
@@ -963,7 +976,7 @@ class AdvancedCategoryAnalyticsWidget extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: 4.0),
                   child: Row(
                     children: [
-                      const Icon(Icons.star, color: Colors.amber, size: 16),
+                      Icon(PhosphorIcons.star(), color: Colors.amber, size: 16),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
@@ -1032,7 +1045,8 @@ class AdvancedProductivityInsightsWidget extends StatelessWidget {
   const AdvancedProductivityInsightsWidget({
     super.key,
     required this.insights,
-  });  @override
+  });
+  @override
   Widget build(BuildContext context) {
     return GlassmorphismContainer(
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
@@ -1051,7 +1065,7 @@ class AdvancedProductivityInsightsWidget extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: _getScoreColor(insights.overallScore.overall).withOpacity( 0.1),
+                color: _getScoreColor(insights.overallScore.overall).withValues(alpha:  0.1),
                 borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
               ),
               child: Row(
@@ -1091,7 +1105,7 @@ class AdvancedProductivityInsightsWidget extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             
             // Score breakdown
             Row(
@@ -1100,14 +1114,14 @@ class AdvancedProductivityInsightsWidget extends StatelessWidget {
                   child: _ScoreItem(
                     title: 'Completion',
                     score: insights.overallScore.completion,
-                    icon: Icons.check_circle,
+                    icon: PhosphorIcons.checkCircle(),
                   ),
                 ),
                 Expanded(
                   child: _ScoreItem(
                     title: 'Consistency',
                     score: insights.overallScore.consistency,
-                    icon: Icons.trending_up,
+                    icon: PhosphorIcons.trendUp(),
                   ),
                 ),
               ],
@@ -1119,14 +1133,14 @@ class AdvancedProductivityInsightsWidget extends StatelessWidget {
                   child: _ScoreItem(
                     title: 'Efficiency',
                     score: insights.overallScore.efficiency,
-                    icon: Icons.speed,
+                    icon: PhosphorIcons.speedometer(),
                   ),
                 ),
                 Expanded(
                   child: _ScoreItem(
                     title: 'Time Mgmt',
                     score: insights.overallScore.timeManagement,
-                    icon: Icons.schedule,
+                    icon: PhosphorIcons.clock(),
                   ),
                 ),
               ],
@@ -1153,7 +1167,7 @@ class AdvancedProductivityInsightsWidget extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(
-                          color: _getImpactColor(suggestion.impactScore).withOpacity( 0.2),
+                          color: _getImpactColor(suggestion.impactScore).withValues(alpha:  0.2),
                           borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                         ),
                         child: Icon(
@@ -1206,13 +1220,13 @@ class AdvancedProductivityInsightsWidget extends StatelessWidget {
   IconData _getSuggestionIcon(String actionType) {
     switch (actionType) {
       case 'schedule':
-        return Icons.schedule;
+        return PhosphorIcons.clock();
       case 'habit':
-        return Icons.psychology;
+        return PhosphorIcons.brain();
       case 'tool':
-        return Icons.build;
+        return PhosphorIcons.wrench();
       default:
-        return Icons.lightbulb;
+        return PhosphorIcons.lightbulb();
     }
   }
 }
@@ -1229,12 +1243,13 @@ class _MetricCard extends StatelessWidget {
     required this.value,
     required this.icon,
     required this.color,
-  });  @override
+  });
+  @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withOpacity( 0.1),
+        color: color.withValues(alpha:  0.1),
         borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       ),
       child: Column(
@@ -1277,7 +1292,8 @@ class _ScoreItem extends StatelessWidget {
     required this.title,
     required this.score,
     required this.icon,
-  });  @override
+  });
+  @override
   Widget build(BuildContext context) {
     return Column(
       children: [
@@ -1311,7 +1327,8 @@ class AnalyticsExportWidget extends StatelessWidget {
     this.onExportCsv,
     this.onExportPdf,
     this.onExportExcel,
-  });  @override
+  });
+  @override
   Widget build(BuildContext context) {
     return GlassmorphismContainer(
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
@@ -1324,13 +1341,13 @@ class AnalyticsExportWidget extends StatelessWidget {
               'Export Analytics',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Row(
               children: [
                 Expanded(
                   child: _ExportButton(
                     label: 'JSON',
-                    icon: Icons.code,
+                    icon: PhosphorIcons.code(),
                     onPressed: onExportJson,
                   ),
                 ),
@@ -1338,7 +1355,7 @@ class AnalyticsExportWidget extends StatelessWidget {
                 Expanded(
                   child: _ExportButton(
                     label: 'CSV',
-                    icon: Icons.table_chart,
+                    icon: PhosphorIcons.table(),
                     onPressed: onExportCsv,
                   ),
                 ),
@@ -1350,7 +1367,7 @@ class AnalyticsExportWidget extends StatelessWidget {
                 Expanded(
                   child: _ExportButton(
                     label: 'PDF',
-                    icon: Icons.picture_as_pdf,
+                    icon: PhosphorIcons.filePdf(),
                     onPressed: onExportPdf,
                   ),
                 ),
@@ -1358,7 +1375,7 @@ class AnalyticsExportWidget extends StatelessWidget {
                 Expanded(
                   child: _ExportButton(
                     label: 'Excel',
-                    icon: Icons.grid_on,
+                    icon: PhosphorIcons.gridNine(),
                     onPressed: onExportExcel,
                   ),
                 ),
@@ -1381,7 +1398,8 @@ class _ExportButton extends StatelessWidget {
     required this.label,
     required this.icon,
     this.onPressed,
-  });  @override
+  });
+  @override
   Widget build(BuildContext context) {
     return OutlinedButton.icon(
       onPressed: onPressed,
@@ -1393,3 +1411,6 @@ class _ExportButton extends StatelessWidget {
     );
   }
 }
+
+
+

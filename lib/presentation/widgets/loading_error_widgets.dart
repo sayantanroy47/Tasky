@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/typography_constants.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Loading indicator widget with optional message
 class LoadingWidget extends StatelessWidget {
@@ -12,7 +13,8 @@ class LoadingWidget extends StatelessWidget {
     this.message,
     this.size,
     this.color,
-  });  @override
+  });
+  @override
   Widget build(BuildContext context) {
     return Center(
       child: Column(
@@ -51,7 +53,8 @@ class InlineLoadingWidget extends StatelessWidget {
     super.key,
     this.size = 16,
     this.color,
-  });  @override
+  });
+  @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: size,
@@ -71,13 +74,14 @@ class ErrorWidget extends StatelessWidget {
   final VoidCallback? onRetry;
   final IconData icon;
 
-  const ErrorWidget({
+  ErrorWidget({
     super.key,
     required this.message,
     this.details,
     this.onRetry,
-    this.icon = Icons.error_outline,
-  });  @override
+    IconData? icon,
+  }) : icon = icon ?? PhosphorIcons.warningCircle();
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     
@@ -92,7 +96,7 @@ class ErrorWidget extends StatelessWidget {
               size: 64,
               color: theme.colorScheme.error,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             Text(
               message,
               style: theme.textTheme.titleMedium?.copyWith(
@@ -114,7 +118,7 @@ class ErrorWidget extends StatelessWidget {
               const SizedBox(height: 24),
               FilledButton.icon(
                 onPressed: onRetry,
-                icon: const Icon(Icons.refresh),
+                icon: Icon(PhosphorIcons.arrowClockwise()),
                 label: const Text('Retry'),
               ),
             ],
@@ -133,14 +137,15 @@ class EmptyStateWidget extends StatelessWidget {
   final String? actionText;
   final VoidCallback? onAction;
 
-  const EmptyStateWidget({
+  EmptyStateWidget({
     super.key,
     required this.title,
     this.subtitle,
-    this.icon = Icons.inbox_outlined,
+    IconData? icon,
     this.actionText,
     this.onAction,
-  });  @override
+  }) : icon = icon ?? PhosphorIcons.tray();
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     
@@ -196,14 +201,16 @@ class ShimmerListItem extends StatefulWidget {
     super.key,
     this.height = 80,
     this.margin = const EdgeInsets.only(bottom: 8),
-  });  @override
+  });
+  @override
   State<ShimmerListItem> createState() => _ShimmerListItemState();
 }
 
 class _ShimmerListItemState extends State<ShimmerListItem>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
-  late Animation<double> _animation;  @override
+  late Animation<double> _animation;
+  @override
   void initState() {
     super.initState();
     _animationController = AnimationController(
@@ -214,11 +221,13 @@ class _ShimmerListItemState extends State<ShimmerListItem>
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
     _animationController.repeat(reverse: true);
-  }  @override
+  }
+  @override
   void dispose() {
     _animationController.dispose();
     super.dispose();
-  }  @override
+  }
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     
@@ -238,7 +247,7 @@ class _ShimmerListItemState extends State<ShimmerListItem>
                   height: 20,
                   decoration: BoxDecoration(
                     color: theme.colorScheme.surfaceContainerHighest
-                        .withOpacity( 0.1),
+                        .withValues(alpha:  0.1),
                     borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                   ),
                 ),
@@ -255,7 +264,7 @@ class _ShimmerListItemState extends State<ShimmerListItem>
                         width: double.infinity,
                         decoration: BoxDecoration(
                           color: theme.colorScheme.surfaceContainerHighest
-                              .withOpacity( 0.1),
+                              .withValues(alpha:  0.1),
                           borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                         ),
                       ),
@@ -267,7 +276,7 @@ class _ShimmerListItemState extends State<ShimmerListItem>
                         width: MediaQuery.of(context).size.width * 0.6,
                         decoration: BoxDecoration(
                           color: theme.colorScheme.surfaceContainerHighest
-                              .withOpacity( 0.1),
+                              .withValues(alpha:  0.1),
                           borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                         ),
                       ),
@@ -281,7 +290,7 @@ class _ShimmerListItemState extends State<ShimmerListItem>
                   height: 24,
                   decoration: BoxDecoration(
                     color: theme.colorScheme.surfaceContainerHighest
-                        .withOpacity( 0.1),
+                        .withValues(alpha:  0.1),
                     borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                   ),
                 ),
@@ -303,7 +312,8 @@ class ShimmerList extends StatelessWidget {
     super.key,
     this.itemCount = 5,
     this.itemHeight = 80,
-  });  @override
+  });
+  @override
   Widget build(BuildContext context) {
     return ListView.builder(
       itemCount: itemCount,
@@ -321,12 +331,13 @@ class NetworkErrorWidget extends StatelessWidget {
   const NetworkErrorWidget({
     super.key,
     this.onRetry,
-  });  @override
+  });
+  @override
   Widget build(BuildContext context) {
     return ErrorWidget(
       message: 'No Internet Connection',
       details: 'Please check your internet connection and try again.',
-      icon: Icons.wifi_off,
+      icon: PhosphorIcons.wifiSlash(),
       onRetry: onRetry,
     );
   }
@@ -340,7 +351,7 @@ class ErrorSnackBar {
         content: Row(
           children: [
             Icon(
-              Icons.error_outline,
+              PhosphorIcons.warningCircle(),
               color: Theme.of(context).colorScheme.onError,
             ),
             const SizedBox(width: 12),
@@ -369,7 +380,7 @@ class SuccessSnackBar {
         content: Row(
           children: [
             Icon(
-              Icons.check_circle_outline,
+              PhosphorIcons.checkCircle(),
               color: Theme.of(context).colorScheme.onPrimary,
             ),
             const SizedBox(width: 12),
@@ -382,3 +393,6 @@ class SuccessSnackBar {
     );
   }
 }
+
+
+

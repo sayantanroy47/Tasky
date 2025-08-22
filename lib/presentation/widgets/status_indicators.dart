@@ -6,6 +6,7 @@ import 'dart:async';
 import '../../core/design_system/responsive_builder.dart';
 
 import 'glassmorphism_container.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Network connectivity status indicator
 class NetworkStatusIndicator extends ConsumerStatefulWidget {
@@ -207,7 +208,7 @@ class _NetworkStatusIndicatorState extends ConsumerState<NetworkStatusIndicator>
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                               decoration: BoxDecoration(
-                                color: _getConnectionColor().withOpacity(0.2),
+                                color: _getConnectionColor().withValues(alpha: 0.2),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
@@ -235,20 +236,20 @@ class _NetworkStatusIndicatorState extends ConsumerState<NetworkStatusIndicator>
   IconData _getConnectionIcon() {
     switch (_connectionStatus) {
       case ConnectivityResult.wifi:
-        return Icons.wifi;
+        return PhosphorIcons.wifiHigh();
       case ConnectivityResult.mobile:
-        return Icons.signal_cellular_4_bar;
+        return PhosphorIcons.cellSignalHigh();
       case ConnectivityResult.ethernet:
-        return Icons.settings_ethernet;
+        return PhosphorIcons.globe();
       case ConnectivityResult.bluetooth:
-        return Icons.bluetooth;
+        return PhosphorIcons.bluetooth();
       case ConnectivityResult.vpn:
-        return Icons.vpn_lock;
+        return PhosphorIcons.lock();
       case ConnectivityResult.other:
-        return Icons.device_hub;
+        return PhosphorIcons.circuitry();
       case ConnectivityResult.none:
       default:
-        return Icons.wifi_off;
+        return PhosphorIcons.wifiSlash();
     }
   }
 
@@ -419,13 +420,13 @@ class _SyncStatusIndicatorState extends State<SyncStatusIndicator>
   IconData _getSyncIcon() {
     switch (widget.status) {
       case SyncStatus.syncing:
-        return Icons.sync;
+        return PhosphorIcons.arrowsClockwise();
       case SyncStatus.success:
-        return Icons.sync_alt;
+        return PhosphorIcons.arrowsClockwise();
       case SyncStatus.error:
-        return Icons.sync_problem;
+        return PhosphorIcons.warningCircle();
       case SyncStatus.offline:
-        return Icons.cloud_off;
+        return PhosphorIcons.cloudSlash();
     }
   }
 
@@ -533,13 +534,13 @@ class _BatteryStatusIndicatorState extends State<BatteryStatusIndicator>
                         alignment: Alignment.center,
                         children: [
                           Icon(
-                            Icons.battery_std,
+                            PhosphorIcons.battery(),
                             size: config.isMobile ? 20 : 24,
                             color: _getBatteryColor(),
                           ),
                           if (_isCharging)
                             Icon(
-                              Icons.flash_on,
+                              PhosphorIcons.lightning(),
                               size: config.isMobile ? 12 : 14,
                               color: Colors.yellow,
                             ),
@@ -759,14 +760,14 @@ class _ToastWidgetState extends State<_ToastWidget>
   IconData _getToastIcon() {
     switch (widget.type) {
       case ToastType.success:
-        return Icons.check_circle;
+        return PhosphorIcons.checkCircle();
       case ToastType.error:
-        return Icons.error;
+        return PhosphorIcons.warningCircle();
       case ToastType.warning:
-        return Icons.warning;
+        return PhosphorIcons.warning();
       case ToastType.info:
       default:
-        return Icons.info;
+        return PhosphorIcons.info();
     }
   }
 
@@ -792,3 +793,4 @@ enum ToastType {
   warning,
   info,
 }
+

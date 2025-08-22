@@ -68,7 +68,7 @@ class GlassmorphismPainter extends CustomPainter {
   /// Create fill paint
   Paint _createFillPaint() {
     return Paint()
-      ..color = color.withOpacity(opacity)
+      ..color = color.withValues(alpha: opacity)
       ..style = PaintingStyle.fill
       ..maskFilter = MaskFilter.blur(BlurStyle.normal, blur);
   }
@@ -142,7 +142,7 @@ class GlassmorphicContainer extends StatelessWidget {
           child: Container(
             decoration: BoxDecoration(
               borderRadius: borderRadius,
-              color: color.withOpacity(opacity),
+              color: color.withValues(alpha: opacity),
               border: borderColor != null
                 ? Border.all(
                     color: borderColor!,
@@ -153,8 +153,8 @@ class GlassmorphicContainer extends StatelessWidget {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  color.withOpacity((opacity * 1.2).clamp(0.0, 1.0)),
-                  color.withOpacity((opacity * 0.8).clamp(0.0, 1.0)),
+                  color.withValues(alpha: (opacity * 1.2).clamp(0.0, 1.0)),
+                  color.withValues(alpha: (opacity * 0.8).clamp(0.0, 1.0)),
                 ],
               ),
             ),
@@ -192,14 +192,14 @@ class FrostedGlass extends StatelessWidget {
         filter: ui.ImageFilter.blur(sigmaX: blur, sigmaY: blur),
         child: Container(
           decoration: BoxDecoration(
-            color: color.withOpacity(opacity),
+            color: color.withValues(alpha: opacity),
             borderRadius: borderRadius,
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                color.withOpacity(opacity),
-                color.withOpacity(opacity * 0.5),
+                color.withValues(alpha: opacity),
+                color.withValues(alpha: opacity * 0.5),
               ],
             ),
           ),

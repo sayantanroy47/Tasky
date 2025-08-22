@@ -59,8 +59,8 @@ class GradientMeshPainter extends CustomPainter {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            colors[colorIndex].withOpacity(0.6),
-            colors[nextColorIndex].withOpacity(0.6),
+            colors[colorIndex].withValues(alpha: 0.6),
+            colors[nextColorIndex].withValues(alpha: 0.6),
           ],
         );
         

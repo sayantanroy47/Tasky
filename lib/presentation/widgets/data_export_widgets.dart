@@ -5,6 +5,7 @@ import '../../core/theme/typography_constants.dart';
 
 import '../../services/data_export/data_export_models.dart';
 import '../providers/data_export_providers.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class ExportFormatSelector extends ConsumerWidget {
   const ExportFormatSelector({super.key});
@@ -260,7 +261,7 @@ class FilePickerWidget extends ConsumerWidget {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             if (subtitle != null) ...[
-              const SizedBox(height: 4),
+              SizedBox(height: 4),
               Text(
                 subtitle!,
                 style: Theme.of(context).textTheme.bodyMedium,
@@ -277,7 +278,7 @@ class FilePickerWidget extends ConsumerWidget {
                 child: Row(
                   children: [
                     Icon(
-                      Icons.insert_drive_file,
+                      PhosphorIcons.file(),
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                     const SizedBox(width: 8),
@@ -289,7 +290,7 @@ class FilePickerWidget extends ConsumerWidget {
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.close),
+                      icon: Icon(PhosphorIcons.x()),
                       onPressed: () {
                         ref.read(selectedImportFileProvider.notifier).state = null;
                         onFileSelected(null);
@@ -328,7 +329,7 @@ class FilePickerWidget extends ConsumerWidget {
                   //   }
                   // }
                 },
-                icon: const Icon(Icons.folder_open),
+                icon: Icon(PhosphorIcons.folder()),
                 label: Text(selectedFile == null ? 'Select File' : 'Change File'),
               ),
             ),
@@ -357,7 +358,7 @@ class ImportValidationWidget extends ConsumerWidget {
             Row(
               children: [
                 Icon(
-                  validationResult.isValid ? Icons.check_circle : Icons.error,
+                  validationResult.isValid ? PhosphorIcons.checkCircle() : PhosphorIcons.warningCircle(),
                   color: validationResult.isValid
                       ? Theme.of(context).colorScheme.primary
                       : Theme.of(context).colorScheme.error,
@@ -417,7 +418,7 @@ class ImportValidationWidget extends ConsumerWidget {
 
             // Errors
             if (validationResult.errors.isNotEmpty) ...[
-              const SizedBox(height: 12),
+              SizedBox(height: 12),
               Text(
                 'Errors',
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
@@ -431,7 +432,7 @@ class ImportValidationWidget extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Icon(
-                      Icons.error_outline,
+                      PhosphorIcons.warningCircle(),
                       size: 16,
                       color: Theme.of(context).colorScheme.error,
                     ),
@@ -465,7 +466,7 @@ class ImportValidationWidget extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Icon(
-                      Icons.warning_outlined,
+                      PhosphorIcons.warningCircle(),
                       size: 16,
                       color: Theme.of(context).colorScheme.tertiary,
                     ),
@@ -498,12 +499,11 @@ class BackupListWidget extends ConsumerWidget {
     return backupsAsync.when(
       data: (backups) {
         if (backups.isEmpty) {
-          return const Card(
-            child: Padding(
+          return Card(child: Padding(
               padding: EdgeInsets.all(32.0),
               child: Column(
                 children: [
-                  Icon(Icons.backup, size: 48, color: Colors.grey),
+                  Icon(PhosphorIcons.cloudArrowUp(), size: 48, color: Colors.grey),
                   SizedBox(height: 16),
                   Text(
                     'No backups found',
@@ -524,14 +524,14 @@ class BackupListWidget extends ConsumerWidget {
           children: backups.map((backup) => BackupListItem(backup: backup)).toList(),
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => Center(child: CircularProgressIndicator()),
       error: (error, stack) => Card(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
               Icon(
-                Icons.error,
+                PhosphorIcons.warningCircle(),
                 color: Theme.of(context).colorScheme.error,
                 size: 48,
               ),
@@ -567,7 +567,7 @@ class BackupListItem extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Card(
       child: ListTile(
-        leading: const Icon(Icons.backup),
+        leading: Icon(PhosphorIcons.cloudArrowUp()),
         title: Text('Backup ${backup.id}'),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -590,18 +590,18 @@ class BackupListItem extends ConsumerWidget {
             }
           },
           itemBuilder: (context) => [
-            const PopupMenuItem(
+            PopupMenuItem(
               value: 'restore',
               child: ListTile(
-                leading: Icon(Icons.restore),
+                leading: Icon(PhosphorIcons.arrowClockwise()),
                 title: Text('Restore'),
                 contentPadding: EdgeInsets.zero,
               ),
             ),
-            const PopupMenuItem(
+            PopupMenuItem(
               value: 'delete',
               child: ListTile(
-                leading: Icon(Icons.delete),
+                leading: Icon(PhosphorIcons.trash()),
                 title: Text('Delete'),
                 contentPadding: EdgeInsets.zero,
               ),
@@ -710,3 +710,5 @@ class BackupListItem extends ConsumerWidget {
     }
   }
 }
+
+

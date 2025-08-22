@@ -7,6 +7,7 @@ import '../providers/task_providers.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/entities/calendar_event.dart';
 import '../../domain/models/enums.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Calendar screen with task scheduling and event management
 class CalendarScreen extends ConsumerStatefulWidget {
@@ -37,15 +38,15 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen>
         title: 'Calendar',
         bottom: TabBar(
           controller: _tabController,
-          tabs: const [
-            Tab(icon: Icon(Icons.calendar_month), text: 'Calendar'),
-            Tab(icon: Icon(Icons.schedule), text: 'Schedule Tasks'),
+          tabs: [
+            Tab(icon: Icon(PhosphorIcons.calendar()), text: 'Calendar'),
+            Tab(icon: Icon(PhosphorIcons.clock()), text: 'Schedule Tasks'),
           ],
         ),
         actions: [
           IconButton(
             onPressed: () => _showCreateEventDialog(context),
-            icon: const Icon(Icons.add_circle_outline),
+            icon: Icon(PhosphorIcons.plusCircle()),
             tooltip: 'Create Event',
           ),
         ],
@@ -88,11 +89,11 @@ class TaskSchedulingView extends ConsumerWidget {
         }).toList();
 
         if (unscheduledTasks.isEmpty) {
-          return const Center(
+          return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.check_circle, size: 64, color: Colors.green),
+                Icon(PhosphorIcons.checkCircle(), size: 64, color: Colors.green),
                 SizedBox(height: 16),
                 Text(
                   'All tasks are scheduled!',
@@ -160,7 +161,7 @@ class UnscheduledTaskCard extends ConsumerWidget {
         ),
         title: Text(
           task.title,
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -174,7 +175,7 @@ class UnscheduledTaskCard extends ConsumerWidget {
             const SizedBox(height: 4),
             Row(
               children: [
-                Icon(Icons.flag, size: 16, color: _getPriorityColor(task.priority)),
+                Icon(PhosphorIcons.flag(), size: 16, color: _getPriorityColor(task.priority)),
                 const SizedBox(width: 4),
                 Text(
                   task.priority.name.toUpperCase(),
@@ -186,7 +187,7 @@ class UnscheduledTaskCard extends ConsumerWidget {
                 ),
                 if (task.dueDate != null) ...[
                   const SizedBox(width: 16),
-                  Icon(Icons.schedule, size: 16, color: Colors.grey[600]),
+                  Icon(PhosphorIcons.clock(), size: 16, color: Colors.grey[600]),
                   const SizedBox(width: 4),
                   Text(
                     'Due ${_formatDueDate(task.dueDate!)}',
@@ -206,7 +207,7 @@ class UnscheduledTaskCard extends ConsumerWidget {
             // Quick schedule buttons
             IconButton(
               onPressed: () => _quickSchedule(context, ref, task, DateTime.now()),
-              icon: const Icon(Icons.today),
+              icon: Icon(PhosphorIcons.calendar()),
               tooltip: 'Schedule for today',
             ),
             IconButton(
@@ -216,12 +217,12 @@ class UnscheduledTaskCard extends ConsumerWidget {
                 task,
                 DateTime.now().add(const Duration(days: 1)),
               ),
-              icon: const Icon(Icons.today),
+              icon: Icon(PhosphorIcons.calendar()),
               tooltip: 'Schedule for tomorrow',
             ),
             IconButton(
               onPressed: () => _showScheduleDialog(context, task),
-              icon: const Icon(Icons.schedule),
+              icon: Icon(PhosphorIcons.clock()),
               tooltip: 'Custom schedule',
             ),
           ],
@@ -247,13 +248,13 @@ class UnscheduledTaskCard extends ConsumerWidget {
   IconData _getPriorityIcon(TaskPriority priority) {
     switch (priority) {
       case TaskPriority.urgent:
-        return Icons.priority_high;
+        return PhosphorIcons.arrowUp();
       case TaskPriority.high:
-        return Icons.keyboard_arrow_up;
+        return PhosphorIcons.caretUp();
       case TaskPriority.medium:
-        return Icons.remove;
+        return PhosphorIcons.minus();
       case TaskPriority.low:
-        return Icons.keyboard_arrow_down;
+        return PhosphorIcons.caretDown();
     }
   }
 
@@ -381,7 +382,7 @@ class _CreateEventDialogState extends ConsumerState<CreateEventDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Create Event'),
+      title: Text('Create Event'),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -419,7 +420,7 @@ class _CreateEventDialogState extends ConsumerState<CreateEventDialog> {
             
             // Date picker
             ListTile(
-              leading: const Icon(Icons.calendar_today),
+              leading: Icon(PhosphorIcons.calendar()),
               title: const Text('Date'),
               subtitle: Text('${selectedDate.day}/${selectedDate.month}/${selectedDate.year}'),
               onTap: () async {
@@ -437,7 +438,7 @@ class _CreateEventDialogState extends ConsumerState<CreateEventDialog> {
             
             // All day toggle
             SwitchListTile(
-              title: const Text('All Day'),
+              title: Text('All Day'),
               value: isAllDay,
               onChanged: (value) => setState(() => isAllDay = value),
             ),
@@ -445,7 +446,7 @@ class _CreateEventDialogState extends ConsumerState<CreateEventDialog> {
             if (!isAllDay) ...[
               // Start time picker
               ListTile(
-                leading: const Icon(Icons.access_time),
+                leading: Icon(PhosphorIcons.clock()),
                 title: const Text('Start Time'),
                 subtitle: Text(startTime.format(context)),
                 onTap: () async {
@@ -461,7 +462,7 @@ class _CreateEventDialogState extends ConsumerState<CreateEventDialog> {
               
               // End time picker
               ListTile(
-                leading: const Icon(Icons.access_time_filled),
+                leading: Icon(PhosphorIcons.clock()),
                 title: const Text('End Time'),
                 subtitle: Text(endTime.format(context)),
                 onTap: () async {
@@ -477,7 +478,7 @@ class _CreateEventDialogState extends ConsumerState<CreateEventDialog> {
             ],
             
             // Color picker
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             const Text('Event Color'),
             const SizedBox(height: 8),
             Wrap(
@@ -497,7 +498,7 @@ class _CreateEventDialogState extends ConsumerState<CreateEventDialog> {
                           : null,
                     ),
                     child: isSelected
-                        ? const Icon(Icons.check, color: Colors.white)
+                        ? Icon(PhosphorIcons.check(), color: Colors.white)
                         : null,
                   ),
                 );
@@ -565,3 +566,4 @@ class _CreateEventDialogState extends ConsumerState<CreateEventDialog> {
     }
   }
 }
+

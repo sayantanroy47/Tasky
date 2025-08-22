@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Custom text field with consistent styling
 class CustomTextField extends StatelessWidget {
@@ -139,10 +140,10 @@ class _SearchFieldState extends State<SearchField> {
       focusNode: _focusNode,
       decoration: InputDecoration(
         hintText: widget.hint ?? 'Search...',
-        prefixIcon: const Icon(Icons.search),
+        prefixIcon: Icon(PhosphorIcons.magnifyingGlass()),
         suffixIcon: _showClearButton
             ? IconButton(
-                icon: const Icon(Icons.clear),
+                icon: Icon(PhosphorIcons.x()),
                 onPressed: _onClear,
               )
             : null,
@@ -184,7 +185,7 @@ class DatePickerField extends StatelessWidget {
           ? '${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}'
           : '',
       ),
-      suffixIcon: const Icon(Icons.calendar_today),
+      suffixIcon: Icon(PhosphorIcons.calendar()),
       onTap: enabled ? () => _selectDate(context) : null,
     );
   }
@@ -232,7 +233,7 @@ class TimePickerField extends StatelessWidget {
           ? selectedTime!.format(context)
           : '',
       ),
-      suffixIcon: const Icon(Icons.access_time),
+      suffixIcon: Icon(PhosphorIcons.clock()),
       onTap: enabled ? () => _selectTime(context) : null,
     );
   }
@@ -339,7 +340,7 @@ class _TagInputFieldState extends State<TagInputField> {
             widget.label!,
             style: Theme.of(context).textTheme.bodyMedium,
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
         ],
         
         // Tags display
@@ -349,7 +350,7 @@ class _TagInputFieldState extends State<TagInputField> {
             runSpacing: 4,
             children: widget.tags.map((tag) => Chip(
               label: Text(tag),
-              deleteIcon: const Icon(Icons.close, size: 18),
+              deleteIcon: Icon(PhosphorIcons.x(), size: 18),
               onDeleted: () => _removeTag(tag),
             )).toList(),
           ),
@@ -363,7 +364,7 @@ class _TagInputFieldState extends State<TagInputField> {
           decoration: InputDecoration(
             hintText: widget.hint ?? 'Add tag and press Enter',
             suffixIcon: IconButton(
-              icon: const Icon(Icons.add),
+              icon: Icon(PhosphorIcons.plus()),
               onPressed: () => _addTag(_controller.text),
             ),
           ),
@@ -374,3 +375,5 @@ class _TagInputFieldState extends State<TagInputField> {
     );
   }
 }
+
+

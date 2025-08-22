@@ -299,13 +299,13 @@ class ShadowTokens {
     
     return [
       BoxShadow(
-        color: theme.colorScheme.shadow.withOpacity(0.1),
+        color: theme.colorScheme.shadow.withValues(alpha: 0.1),
         blurRadius: properties.shadowElevation * 2,
         spreadRadius: properties.shadowElevation * 0.5,
         offset: Offset(0, properties.shadowElevation * 0.5),
       ),
       BoxShadow(
-        color: theme.colorScheme.shadow.withOpacity(0.05),
+        color: theme.colorScheme.shadow.withValues(alpha: 0.05),
         blurRadius: properties.shadowElevation * 4,
         spreadRadius: properties.shadowElevation,
         offset: Offset(0, properties.shadowElevation),
@@ -433,17 +433,17 @@ class DesignSystem {
     
     switch (type) {
       case SemanticColorType.success:
-        return Colors.green.withOpacity(actualOpacity);
+        return Colors.green.withValues(alpha: actualOpacity);
       case SemanticColorType.warning:
-        return Colors.orange.withOpacity(actualOpacity);
+        return Colors.orange.withValues(alpha: actualOpacity);
       case SemanticColorType.error:
-        return theme.colorScheme.error.withOpacity(actualOpacity);
+        return theme.colorScheme.error.withValues(alpha: actualOpacity);
       case SemanticColorType.info:
-        return Colors.blue.withOpacity(actualOpacity);
+        return Colors.blue.withValues(alpha: actualOpacity);
       case SemanticColorType.primary:
-        return theme.colorScheme.primary.withOpacity(actualOpacity);
+        return theme.colorScheme.primary.withValues(alpha: actualOpacity);
       case SemanticColorType.secondary:
-        return theme.colorScheme.secondary.withOpacity(actualOpacity);
+        return theme.colorScheme.secondary.withValues(alpha: actualOpacity);
     }
   }
 

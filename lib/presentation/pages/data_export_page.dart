@@ -8,6 +8,7 @@ import '../../core/theme/typography_constants.dart';
 import '../../services/data_export/data_export_models.dart';
 import '../providers/data_export_providers.dart';
 import '../widgets/data_export_widgets.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class DataExportPage extends ConsumerStatefulWidget {
   const DataExportPage({super.key});
@@ -88,10 +89,10 @@ class _DataExportPageState extends ConsumerState<DataExportPage>
           title: 'Data Management',
           bottom: TabBar(
             controller: _tabController,
-            tabs: const [
-              Tab(icon: Icon(Icons.upload), text: 'Export'),
-              Tab(icon: Icon(Icons.download), text: 'Import'),
-              Tab(icon: Icon(Icons.backup), text: 'Backup'),
+            tabs: [
+              Tab(icon: Icon(PhosphorIcons.upload()), text: 'Export'),
+              Tab(icon: Icon(PhosphorIcons.download()), text: 'Import'),
+              Tab(icon: Icon(PhosphorIcons.cloudArrowUp()), text: 'Backup'),
             ],
           ),
         ),
@@ -119,7 +120,7 @@ class _DataExportPageState extends ConsumerState<DataExportPage>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const ExportFormatSelector(),
+          ExportFormatSelector(),
           const SizedBox(height: 16),
           const ExportProgressIndicator(),
           const SizedBox(height: 16),
@@ -142,7 +143,7 @@ class _DataExportPageState extends ConsumerState<DataExportPage>
                     width: double.infinity,
                     child: ElevatedButton.icon(
                       onPressed: isExporting ? null : () => _exportToFile(),
-                      icon: const Icon(Icons.save),
+                      icon: Icon(PhosphorIcons.floppyDisk()),
                       label: const Text('Export to File'),
                     ),
                   ),
@@ -153,7 +154,7 @@ class _DataExportPageState extends ConsumerState<DataExportPage>
                     width: double.infinity,
                     child: OutlinedButton.icon(
                       onPressed: isExporting ? null : () => _shareData(),
-                      icon: const Icon(Icons.share),
+                      icon: Icon(PhosphorIcons.share()),
                       label: const Text('Share Data'),
                     ),
                   ),
@@ -212,7 +213,7 @@ class _DataExportPageState extends ConsumerState<DataExportPage>
             },
           ),
           
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           
           // Validation result
           if (_validationResult != null) ...[
@@ -235,7 +236,7 @@ class _DataExportPageState extends ConsumerState<DataExportPage>
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: isImporting ? null : () => _importData(),
-                icon: const Icon(Icons.download),
+                icon: Icon(PhosphorIcons.download()),
                 label: const Text('Import Data'),
               ),
             ),
@@ -261,7 +262,7 @@ class _DataExportPageState extends ConsumerState<DataExportPage>
                     'Create Backup',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   const Text(
                     'Create a complete backup of all your tasks, projects, and settings.',
                   ),
@@ -270,7 +271,7 @@ class _DataExportPageState extends ConsumerState<DataExportPage>
                     width: double.infinity,
                     child: ElevatedButton.icon(
                       onPressed: () => _createBackup(),
-                      icon: const Icon(Icons.backup),
+                      icon: Icon(PhosphorIcons.cloudArrowUp()),
                       label: const Text('Create Backup'),
                     ),
                   ),
@@ -296,7 +297,7 @@ class _DataExportPageState extends ConsumerState<DataExportPage>
                       ),
                       IconButton(
                         onPressed: () => ref.read(backupNotifierProvider.notifier).loadBackups(),
-                        icon: const Icon(Icons.refresh),
+                        icon: Icon(PhosphorIcons.arrowClockwise()),
                         tooltip: 'Refresh',
                       ),
                     ],
@@ -380,3 +381,5 @@ class _DataExportPageState extends ConsumerState<DataExportPage>
     }
   }
 }
+
+

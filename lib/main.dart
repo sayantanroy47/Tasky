@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
@@ -13,8 +14,10 @@ import 'presentation/widgets/app_initialization_wrapper.dart';
 import 'services/share_intent_service.dart';
 import 'services/widget_service.dart';
 import 'services/audio/audio_file_manager.dart';
+import 'services/audio/lazy_audio_playback_service.dart';
 import 'services/background/simple_background_service.dart';
 import 'services/performance_service.dart';
+import 'core/services/lazy_service_manager.dart';
 
 /// Global navigator key for accessing context from services
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -32,44 +35,25 @@ final shareIntentServiceProvider = Provider<ShareIntentService>((ref) {
 void main() async {
   // Start performance monitoring early
   final appStartTime = DateTime.now();
-  final perfService = PerformanceService();
-  await perfService.initialize();
   
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Initialize services early
-  final shareIntentService = ShareIntentService();
-  final widgetService = WidgetService();
-  final audioFileManager = AudioFileManager();
-  final backgroundService = SimpleBackgroundService.instance;
+  // Register all services with lazy service manager
+  await _registerServices();
   
-  // Startup optimizations
+  // Initialize only critical services that must be ready before UI shows
+  final serviceManager = LazyServiceManager();
+  await serviceManager.initializeCriticalServices();
+  
+  // Get critical services
+  final perfService = await serviceManager.getService<PerformanceService>(ServiceIds.performance);
+  final shareIntentService = await serviceManager.getService<ShareIntentService>(ServiceIds.shareIntent);
+  
+  // Startup optimizations (lightweight only)
   await _performStartupOptimizations(appStartTime, perfService);
   
-  // Initialize share intent service
-  await shareIntentService.initialize();
-  
-  // Initialize widget service
-  await widgetService.initialize();
-  
-  // Initialize audio file manager
-  try {
-    await audioFileManager.initialize();
-  } catch (e) {
-    debugPrint('Warning: Audio file manager initialization failed: $e');
-    // Don't fail app startup if audio services fail
-  }
-  
-  // Initialize background service
-  try {
-    await backgroundService.initialize();
-    debugPrint('Background service initialized successfully');
-  } catch (e) {
-    debugPrint('Warning: Background service initialization failed: $e');
-    // Don't fail app startup if background service fails
-  }
-  
-  
+  // Start background service initialization (non-blocking)
+  _initializeBackgroundServices(serviceManager);
   
   runApp(
     ProviderScope(
@@ -82,23 +66,100 @@ void main() async {
   );
 }
 
-/// Perform startup optimizations
-Future<void> _performStartupOptimizations(DateTime appStartTime, PerformanceService perfService) async {
+/// Register all services with the lazy service manager
+Future<void> _registerServices() async {
+  final serviceManager = LazyServiceManager();
   
+  // Critical services (must be ready before UI)
+  serviceManager.registerService<PerformanceService>(
+    serviceId: ServiceIds.performance,
+    priority: ServicePriority.critical,
+    initializer: () async {
+      final service = PerformanceService();
+      await service.initialize();
+      return service;
+    },
+  );
+  
+  serviceManager.registerService<ShareIntentService>(
+    serviceId: ServiceIds.shareIntent,
+    priority: ServicePriority.critical,
+    initializer: () async {
+      final service = ShareIntentService();
+      await service.initialize();
+      return service;
+    },
+  );
+  
+  // High priority services (initialize early but not blocking)
+  serviceManager.registerService<WidgetService>(
+    serviceId: ServiceIds.widgetService,
+    priority: ServicePriority.high,
+    initializer: () async {
+      final service = WidgetService();
+      await service.initialize();
+      return service;
+    },
+  );
+  
+  serviceManager.registerService<AudioFileManager>(
+    serviceId: ServiceIds.audioFileManager,
+    priority: ServicePriority.high,
+    initializer: () async {
+      final service = AudioFileManager();
+      await service.initialize();
+      return service;
+    },
+  );
+  
+  // Medium priority services (nice to have early)
+  serviceManager.registerService<SimpleBackgroundService>(
+    serviceId: ServiceIds.backgroundService,
+    priority: ServicePriority.medium,
+    runInBackground: true,
+    initializer: () async {
+      final service = SimpleBackgroundService.instance;
+      await service.initialize();
+      return service;
+    },
+  );
+  
+  // Low priority services (lazy load when needed)
+  serviceManager.registerService<LazyAudioPlaybackService>(
+    serviceId: ServiceIds.audioPlayback,
+    priority: ServicePriority.low,
+    initializer: () async {
+      // Return immediately - lazy audio service initializes on first use
+      return LazyAudioPlaybackService.instance;
+    },
+  );
+}
+
+/// Initialize background services without blocking startup
+Future<void> _initializeBackgroundServices(LazyServiceManager serviceManager) async {
+  // Run in microtask to not block main thread
+  scheduleMicrotask(() async {
+    try {
+      await Future.delayed(const Duration(milliseconds: 100)); // Let UI settle first
+      await serviceManager.initializeBackgroundServices();
+      
+      if (kDebugMode) {
+        debugPrint('Background services initialization completed');
+        final status = serviceManager.getInitializationStatus();
+        debugPrint('Service status: $status');
+      }
+    } catch (e) {
+      debugPrint('Warning: Background service initialization failed: $e');
+    }
+  });
+}
+
+/// Perform startup optimizations (lightweight only - heavy operations moved to background)
+Future<void> _performStartupOptimizations(DateTime appStartTime, PerformanceService perfService) async {
   try {
-    // Set preferred orientations
-    await SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
+    // Only do lightweight operations here to not block startup
     
-    // Hide navigation bar but keep status bar visible
-    await SystemChrome.setEnabledSystemUIMode(
-      SystemUiMode.immersiveSticky,
-      overlays: [SystemUiOverlay.top],
-    );
-    
-    // Set system UI overlay style - transparent navigation bar, visible status bar
+    // Set system UI overlay style - this is fast
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
@@ -113,17 +174,33 @@ Future<void> _performStartupOptimizations(DateTime appStartTime, PerformanceServ
     // Record startup performance
     perfService.recordStartupTime(DateTime.now().difference(appStartTime));
     
-    // Preload critical resources in debug mode
-    if (kDebugMode) {
-      // Warm up the rendering pipeline
-      WidgetsBinding.instance.deferFirstFrame();
-      WidgetsBinding.instance.allowFirstFrame();
-    }
+    // Move heavy operations to background
+    scheduleMicrotask(() async {
+      try {
+        // Set preferred orientations (can be slow)
+        await SystemChrome.setPreferredOrientations([
+          DeviceOrientation.portraitUp,
+          DeviceOrientation.portraitDown,
+        ]);
+        
+        // Hide navigation bar but keep status bar visible (can be slow)
+        await SystemChrome.setEnabledSystemUIMode(
+          SystemUiMode.immersiveSticky,
+          overlays: [SystemUiOverlay.top],
+        );
+        
+        if (kDebugMode) {
+          debugPrint('Background startup optimizations completed');
+        }
+      } catch (e) {
+        debugPrint('Warning: Background startup optimization failed: $e');
+      }
+    });
     
   } catch (e) {
     // Log startup optimization errors but don't block app startup
+    debugPrint('Warning: Startup optimization failed: $e');
   }
-  
 }
 
 class TaskTrackerApp extends ConsumerStatefulWidget {
@@ -168,20 +245,10 @@ class _TaskTrackerAppState extends ConsumerState<TaskTrackerApp> with WidgetsBin
     final themeMode = ref.watch(themeModeProvider);
     final locale = ref.watch(localeProvider);
     
-    // Wait for theme to finish loading before showing the app
-    if (themeState.isLoading || themeState.flutterTheme == null) {
-      return const MaterialApp(
-        home: Scaffold(
-          backgroundColor: Colors.black,
-          body: Center(
-            child: CircularProgressIndicator(
-              color: Colors.white,
-            ),
-          ),
-        ),
-        debugShowCheckedModeBanner: false,
-      );
-    }
+    // Show app immediately with default theme if custom theme isn't ready yet
+    // This prevents blocking the UI while themes load
+    final theme = themeState.flutterTheme ?? ThemeData.light();
+    final darkTheme = themeState.darkFlutterTheme ?? ThemeData.dark();
     
     return AppInitializationWrapper(
       child: GestureDetector(
@@ -191,9 +258,9 @@ class _TaskTrackerAppState extends ConsumerState<TaskTrackerApp> with WidgetsBin
           navigatorKey: navigatorKey,
           debugShowCheckedModeBanner: false,
           
-          // Theme configuration
-          theme: themeState.flutterTheme!,
-          darkTheme: themeState.darkFlutterTheme!,
+          // Theme configuration - use defaults if custom themes not ready
+          theme: theme,
+          darkTheme: darkTheme,
           themeMode: themeMode,
           
           // Localization configuration
@@ -209,6 +276,50 @@ class _TaskTrackerAppState extends ConsumerState<TaskTrackerApp> with WidgetsBin
           // Routing
           initialRoute: AppRouter.initialRoute,
           onGenerateRoute: AppRouter.generateRoute,
+          
+          // Add loading indicator for theme if still loading
+          builder: (context, child) {
+            if (themeState.isLoading) {
+              return Stack(
+                children: [
+                  child ?? const SizedBox(),
+                  Positioned(
+                    top: MediaQuery.of(context).padding.top + 8,
+                    right: 8,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.black54,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(
+                            width: 12,
+                            height: 12,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 1.5,
+                              color: Colors.white,
+                            ),
+                          ),
+                          SizedBox(width: 6),
+                          Text(
+                            'Loading theme...',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            }
+            return child ?? const SizedBox();
+          },
         ),
       ),
     );

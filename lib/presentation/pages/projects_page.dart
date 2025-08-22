@@ -10,28 +10,33 @@ import '../widgets/project_card.dart';
 import '../widgets/project_form_dialog.dart';
 import '../widgets/glassmorphism_container.dart';
 import '../../core/design_system/design_tokens.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Page for managing projects
 /// 
 /// Displays all projects with their statistics, allows creating,
 /// editing, and managing projects.
 class ProjectsPage extends ConsumerStatefulWidget {
-  const ProjectsPage({super.key});  @override
+  const ProjectsPage({super.key});
+  @override
   ConsumerState<ProjectsPage> createState() => _ProjectsPageState();
 }
 
 class _ProjectsPageState extends ConsumerState<ProjectsPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  String _searchQuery = '';  @override
+  String _searchQuery = '';
+  @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
-  }  @override
+  }
+  @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
-  }  @override
+  }
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     
@@ -43,21 +48,21 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
           title: 'Projects',
           bottom: TabBar(
             controller: _tabController,
-            tabs: const [
-              Tab(text: 'Active', icon: Icon(Icons.folder)),
-              Tab(text: 'Archived', icon: Icon(Icons.archive)),
-              Tab(text: 'At Risk', icon: Icon(Icons.warning)),
+            tabs: [
+              Tab(text: 'Active', icon: Icon(PhosphorIcons.folder())),
+              Tab(text: 'Archived', icon: Icon(PhosphorIcons.archive())),
+              Tab(text: 'At Risk', icon: Icon(PhosphorIcons.warning())),
             ],
           ),
           actions: [
             IconButton(
               onPressed: _showSearchDialog,
-              icon: const Icon(Icons.search),
+              icon: Icon(PhosphorIcons.magnifyingGlass()),
               tooltip: 'Search projects',
             ),
             IconButton(
               onPressed: _refreshProjects,
-              icon: const Icon(Icons.refresh),
+              icon: Icon(PhosphorIcons.arrowClockwise()),
               tooltip: 'Refresh',
             ),
           ],
@@ -77,7 +82,7 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
                 child: Row(
                   children: [
                     Icon(
-                      Icons.search,
+                      PhosphorIcons.magnifyingGlass(),
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
                     const SizedBox(width: 8),
@@ -101,9 +106,8 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
                             });
                           },
                           borderRadius: BorderRadius.circular(20),
-                          child: const Padding(
-                            padding: EdgeInsets.all(8),
-                            child: Icon(Icons.clear, size: 20),
+                          child: Padding(padding: EdgeInsets.all(8),
+                            child: Icon(PhosphorIcons.x(), size: 20),
                           ),
                         ),
                       ),
@@ -143,7 +147,7 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
 
         if (activeProjects.isEmpty) {
           return _buildEmptyState(
-            icon: Icons.folder_open,
+            icon: PhosphorIcons.folder(),
             title: _searchQuery.isEmpty ? 'No Active Projects' : 'No Projects Found',
             subtitle: _searchQuery.isEmpty 
                 ? 'Create your first project to get started'
@@ -187,7 +191,7 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
 
         if (archivedProjects.isEmpty) {
           return _buildEmptyState(
-            icon: Icons.archive,
+            icon: PhosphorIcons.archive(),
             title: _searchQuery.isEmpty ? 'No Archived Projects' : 'No Archived Projects Found',
             subtitle: _searchQuery.isEmpty 
                 ? 'Archived projects will appear here'
@@ -228,7 +232,7 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
 
         if (filteredProjects.isEmpty) {
           return _buildEmptyState(
-            icon: Icons.check_circle,
+            icon: PhosphorIcons.checkCircle(),
             title: _searchQuery.isEmpty ? 'No Projects at Risk' : 'No At-Risk Projects Found',
             subtitle: _searchQuery.isEmpty 
                 ? 'All your projects are on track!'
@@ -246,13 +250,13 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
                 child: GlassmorphismContainer(
                   level: GlassLevel.interactive,
                   borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                  glassTint: Colors.orange.withOpacity(0.1),
-                  borderColor: Colors.orange.withOpacity(0.3),
+                  glassTint: Colors.orange.withValues(alpha: 0.1),
+                  borderColor: Colors.orange.withValues(alpha: 0.3),
                   padding: const EdgeInsets.all(16),
                   child: Row(
                     children: [
-                      const Icon(
-                        Icons.warning,
+                      Icon(
+                        PhosphorIcons.warning(),
                         color: Colors.orange,
                       ),
                       const SizedBox(width: 8),
@@ -343,8 +347,8 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            theme.colorScheme.primary.withOpacity(0.8),
-                            theme.colorScheme.primary.withOpacity(0.6),
+                            theme.colorScheme.primary.withValues(alpha: 0.8),
+                            theme.colorScheme.primary.withValues(alpha: 0.6),
                           ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
@@ -379,7 +383,7 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.error_outline,
+              PhosphorIcons.warningCircle(),
               size: 64,
               color: theme.colorScheme.error,
             ),
@@ -413,8 +417,8 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          theme.colorScheme.primary.withOpacity(0.8),
-                          theme.colorScheme.primary.withOpacity(0.6),
+                          theme.colorScheme.primary.withValues(alpha: 0.8),
+                          theme.colorScheme.primary.withValues(alpha: 0.6),
                         ],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
@@ -545,8 +549,8 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               colors: [
-                                Theme.of(context).colorScheme.primary.withOpacity(0.8),
-                                Theme.of(context).colorScheme.primary.withOpacity(0.6),
+                                Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
+                                Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
                               ],
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
@@ -604,3 +608,6 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
     );
   }
 }
+
+
+

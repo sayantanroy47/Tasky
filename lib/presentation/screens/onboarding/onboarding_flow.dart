@@ -8,6 +8,7 @@ import '../../widgets/glassmorphism_container.dart';
 import '../../widgets/accessible_button.dart';
 import '../../widgets/theme_background_widget.dart';
 import 'onboarding_pages.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Comprehensive onboarding flow with glassmorphism design
 class OnboardingFlow extends ConsumerStatefulWidget {
@@ -107,7 +108,7 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
               'Skip',
               style: TextStyle(
                 fontSize: TypographyConstants.textSM,
-                color: theme.colorScheme.onSurface.withOpacity(0.7),
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             ),
           ),
@@ -241,13 +242,13 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
               gradient: LinearGradient(
                 colors: [
                   theme.colorScheme.primary,
-                  theme.colorScheme.primary.withOpacity(0.7),
+                  theme.colorScheme.primary.withValues(alpha: 0.7),
                 ],
               ),
               shape: BoxShape.circle,
             ),
-            child: const Icon(
-              Icons.check,
+            child: Icon(
+              PhosphorIcons.check(),
               color: Colors.white,
               size: 16,
             ),
@@ -284,7 +285,7 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
             // Page indicators
             _buildPageIndicators(theme),
             
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
             
             // Navigation buttons
             Row(
@@ -294,7 +295,7 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
                   Expanded(
                     child: AccessibleButton.secondary(
                       label: 'Previous',
-                      icon: Icons.arrow_back,
+                      icon: PhosphorIcons.arrowLeft(),
                       onPressed: _previousPage,
                       semanticHint: 'Go to previous onboarding step',
                     ),
@@ -309,7 +310,7 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
                   flex: isLastPage ? 2 : 1,
                   child: AccessibleButton.primary(
                     label: isLastPage ? 'Get Started' : 'Next',
-                    icon: isLastPage ? Icons.rocket_launch : Icons.arrow_forward,
+                    icon: isLastPage ? PhosphorIcons.rocket() : PhosphorIcons.arrowRight(),
                     onPressed: isLastPage ? _completeOnboarding : _nextPage,
                     semanticHint: isLastPage 
                         ? 'Complete onboarding and start using the app'
@@ -346,7 +347,7 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
                 decoration: BoxDecoration(
                   color: isActive || isPassed
                       ? theme.colorScheme.primary
-                      : theme.colorScheme.primary.withOpacity(0.3),
+                      : theme.colorScheme.primary.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(BorderRadiusTokens.xs),
                 ),
               ),
@@ -426,7 +427,7 @@ class _OnboardingFlowState extends ConsumerState<OnboardingFlow>
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(
-                Icons.skip_next,
+                PhosphorIcons.skipForward(),
                 size: 48,
                 color: Theme.of(context).colorScheme.primary,
               ),
@@ -510,3 +511,5 @@ class MainAppScreen extends StatelessWidget {
     );
   }
 }
+
+

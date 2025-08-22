@@ -6,6 +6,7 @@ import '../../core/providers/core_providers.dart';
 import '../providers/initialization_providers.dart';
 import '../providers/background_service_providers.dart';
 import '../../core/theme/typography_constants.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Wrapper widget that handles app initialization with performance monitoring
 class AppInitializationWrapper extends ConsumerStatefulWidget {
@@ -56,8 +57,7 @@ class _AppInitializationWrapperState extends ConsumerState<AppInitializationWrap
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(
-                  width: 48,
+                SizedBox(width: 48,
                   height: 48,
                   child: CircularProgressIndicator(
                     strokeWidth: 3,
@@ -94,8 +94,8 @@ class _AppInitializationWrapperState extends ConsumerState<AppInitializationWrap
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(
-                      Icons.error_outline,
+                    Icon(
+                      PhosphorIcons.warningCircle(),
                       size: 64,
                       color: Colors.red,
                     ),
@@ -144,7 +144,7 @@ class _AppInitializationWrapperState extends ConsumerState<AppInitializationWrap
                             // Retry initialization
                             ref.invalidate(appInitializationProvider);
                           },
-                          icon: const Icon(Icons.refresh),
+                          icon: Icon(PhosphorIcons.arrowClockwise()),
                           label: const Text('Retry'),
                         ),
                         const SizedBox(width: 16),
@@ -153,7 +153,7 @@ class _AppInitializationWrapperState extends ConsumerState<AppInitializationWrap
                             // Clear app data and retry
                             _clearAppDataAndRetry();
                           },
-                          icon: const Icon(Icons.delete_sweep),
+                          icon: Icon(PhosphorIcons.trash()),
                           label: const Text('Reset & Retry'),
                         ),
                       ],
@@ -202,4 +202,6 @@ class MemoryManager {
     _cleanupTimer = null;
   }
 }
+
+
 

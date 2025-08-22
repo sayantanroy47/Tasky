@@ -8,24 +8,28 @@ import '../widgets/standardized_app_bar.dart';
 import '../widgets/theme_background_widget.dart';
 import '../../services/speech/transcription_service.dart';
 import '../../services/speech/transcription_validator.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Demo page to showcase voice recording functionality
 class VoiceDemoPage extends ConsumerStatefulWidget {
-  const VoiceDemoPage({super.key});  @override
+  const VoiceDemoPage({super.key});
+  @override
   ConsumerState<VoiceDemoPage> createState() => _VoiceDemoPageState();
 }
 
 class _VoiceDemoPageState extends ConsumerState<VoiceDemoPage> {
   TranscriptionResult? _lastTranscriptionResult;
   TranscriptionValidationResult? _lastValidationResult;
-  bool _isTranscribing = false;  @override
+  bool _isTranscribing = false;
+  @override
   void initState() {
     super.initState();
     // Initialize speech recognition when the page loads
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(speechRecognitionProvider.notifier).initialize();
     });
-  }  @override
+  }
+  @override
   Widget build(BuildContext context) {
     final speechState = ref.watch(speechRecognitionProvider);
     final speechNotifier = ref.read(speechRecognitionProvider.notifier);
@@ -145,7 +149,7 @@ class _VoiceDemoPageState extends ConsumerState<VoiceDemoPage> {
                 ),
             ],
             
-            const SizedBox(height: 16.0),
+            SizedBox(height: 16.0),
             
             // Transcription testing section
             GlassmorphismContainer(
@@ -174,7 +178,7 @@ class _VoiceDemoPageState extends ConsumerState<VoiceDemoPage> {
                               height: 16,
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
-                          : const Icon(Icons.mic_external_on),
+                          : Icon(PhosphorIcons.microphone()),
                       label: Text(_isTranscribing ? 'Transcribing...' : 'Test Transcription'),
                     ),
                     
@@ -208,8 +212,8 @@ class _VoiceDemoPageState extends ConsumerState<VoiceDemoPage> {
                               children: [
                                 Icon(
                                   _lastTranscriptionResult!.isSuccess 
-                                      ? Icons.check_circle 
-                                      : Icons.error,
+                                      ? PhosphorIcons.checkCircle() 
+                                      : PhosphorIcons.warningCircle(),
                                   size: 16,
                                   color: _lastTranscriptionResult!.isSuccess 
                                       ? Colors.green 
@@ -243,14 +247,14 @@ class _VoiceDemoPageState extends ConsumerState<VoiceDemoPage> {
                     
                     // Validation results
                     if (_lastValidationResult != null) ...[
-                      const SizedBox(height: 8.0),
+                      SizedBox(height: 8.0),
                       Container(
                         width: double.infinity,
                         padding: const EdgeInsets.all(12.0),
                         decoration: BoxDecoration(
                           color: _lastValidationResult!.isValid 
-                              ? Colors.green.withOpacity( 0.1)
-                              : Colors.orange.withOpacity( 0.1),
+                              ? Colors.green.withValues(alpha:  0.1)
+                              : Colors.orange.withValues(alpha:  0.1),
                           borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                           border: Border.all(
                             color: _lastValidationResult!.isValid 
@@ -266,8 +270,8 @@ class _VoiceDemoPageState extends ConsumerState<VoiceDemoPage> {
                               children: [
                                 Icon(
                                   _lastValidationResult!.isValid 
-                                      ? Icons.verified 
-                                      : Icons.warning,
+                                      ? PhosphorIcons.checkCircle() 
+                                      : PhosphorIcons.warning(),
                                   size: 16,
                                   color: _lastValidationResult!.isValid 
                                       ? Colors.green 
@@ -435,7 +439,7 @@ class _VoiceDemoPageState extends ConsumerState<VoiceDemoPage> {
       child: Row(
         children: [
           Icon(
-            value ? Icons.check_circle : Icons.cancel,
+            value ? PhosphorIcons.checkCircle() : PhosphorIcons.xCircle(),
             color: value ? Colors.green : Colors.red,
             size: 16.0,
           ),
@@ -446,3 +450,5 @@ class _VoiceDemoPageState extends ConsumerState<VoiceDemoPage> {
     );
   }
 }
+
+

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/audio_providers.dart';
 import '../../services/audio/audio_file_manager.dart';
 import '../../core/theme/typography_constants.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Simple audio control bar for tasks with audio files
 class AudioControlBar extends ConsumerWidget {
@@ -35,7 +36,7 @@ class AudioControlBar extends ConsumerWidget {
         color: theme.colorScheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
         border: Border.all(
-          color: theme.colorScheme.outline.withOpacity(0.2),
+          color: theme.colorScheme.outline.withValues(alpha: 0.2),
         ),
       ),
       child: Column(
@@ -47,13 +48,13 @@ class AudioControlBar extends ConsumerWidget {
               IconButton(
                 onPressed: () => _togglePlayback(audioControls),
                 icon: Icon(
-                  isTaskPlaying ? Icons.pause_circle_filled : Icons.play_circle_filled,
+                  isTaskPlaying ? PhosphorIcons.pause() : PhosphorIcons.playCircle(),
                   size: 32,
                 ),
                 color: theme.colorScheme.primary,
               ),
               
-              const SizedBox(width: 8),
+              SizedBox(width: 8),
               
               // Time display
               Expanded(
@@ -108,13 +109,13 @@ class AudioControlBar extends ConsumerWidget {
                 const SizedBox(width: 8),
                 IconButton(
                   onPressed: () => _rewind(ref),
-                  icon: const Icon(Icons.replay_10),
+                  icon: Icon(PhosphorIcons.skipBack()),
                   iconSize: 20,
                   tooltip: 'Rewind 10s',
                 ),
                 IconButton(
                   onPressed: () => _fastForward(ref),
-                  icon: const Icon(Icons.forward_10),
+                  icon: Icon(PhosphorIcons.skipForward()),
                   iconSize: 20,
                   tooltip: 'Fast forward 10s',
                 ),
@@ -183,20 +184,20 @@ class AudioBadge extends ConsumerWidget {
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(
           color: isTaskPlaying
-              ? theme.colorScheme.primary.withOpacity(0.1)
+              ? theme.colorScheme.primary.withValues(alpha: 0.1)
               : theme.colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isTaskPlaying
-                ? theme.colorScheme.primary.withOpacity(0.3)
-                : theme.colorScheme.outline.withOpacity(0.2),
+                ? theme.colorScheme.primary.withValues(alpha: 0.3)
+                : theme.colorScheme.outline.withValues(alpha: 0.2),
           ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              isTaskPlaying ? Icons.pause : Icons.volume_up,
+              isTaskPlaying ? PhosphorIcons.pause() : PhosphorIcons.speakerHigh(),
               size: 16,
               color: isTaskPlaying
                   ? theme.colorScheme.primary
@@ -267,7 +268,7 @@ class AudioFileList extends ConsumerWidget {
                   child: Column(
                     children: [
                       Icon(
-                        Icons.audiotrack_outlined,
+                        PhosphorIcons.musicNote(),
                         size: 48,
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
@@ -337,7 +338,7 @@ class AudioFileListItem extends ConsumerWidget {
 
     return ListTile(
       leading: Icon(
-        Icons.audiotrack,
+        PhosphorIcons.musicNote(),
         color: theme.colorScheme.primary,
       ),
       title: Text(
@@ -359,7 +360,7 @@ class AudioFileListItem extends ConsumerWidget {
       ),
       trailing: IconButton(
         onPressed: () => _playAudio(ref),
-        icon: const Icon(Icons.play_arrow),
+        icon: Icon(PhosphorIcons.play()),
         tooltip: 'Play audio',
       ),
     );
@@ -398,3 +399,4 @@ class AudioFileListItem extends ConsumerWidget {
     return '${(bytes / (1024 * 1024)).toStringAsFixed(1)}MB';
   }
 }
+

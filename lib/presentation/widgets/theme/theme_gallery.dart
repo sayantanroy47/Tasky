@@ -71,7 +71,7 @@ class _ThemeGalleryState extends ConsumerState<ThemeGallery>
         title: 'Theme Gallery (Legacy)',
         actions: [
           IconButton(
-            icon: const Icon(PhosphorIcons.shuffle()),
+            icon: Icon(PhosphorIcons.shuffle()),
             onPressed: () {
               ref.read(enhancedThemeProvider.notifier).applyRandomTheme();
               widget.onThemeSelected?.call();
@@ -102,7 +102,7 @@ class _ThemeGalleryState extends ConsumerState<ThemeGallery>
     return Padding(
       padding: const EdgeInsets.all(16),
       child: TextField(
-        decoration: const InputDecoration(
+        decoration: InputDecoration(
           hintText: 'Search themes...',
           prefixIcon: Icon(PhosphorIcons.magnifyingGlass()),
           border: OutlineInputBorder(),
@@ -203,3 +203,5 @@ class _ThemeGalleryState extends ConsumerState<ThemeGallery>
     widget.onThemeSelected?.call();
   }
 }
+
+

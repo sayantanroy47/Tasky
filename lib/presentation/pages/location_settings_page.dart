@@ -7,9 +7,11 @@ import '../widgets/location_widgets.dart';
 import '../widgets/standardized_app_bar.dart';
 import '../widgets/theme_background_widget.dart';
 import '../../services/location/location_models.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class LocationSettingsPage extends ConsumerWidget {
-  const LocationSettingsPage({super.key});  @override
+  const LocationSettingsPage({super.key});
+  @override
   Widget build(BuildContext context, WidgetRef ref) {
     final locationSettings = ref.watch(locationSettingsProvider);
     final locationPermission = ref.watch(locationPermissionProvider);
@@ -177,7 +179,7 @@ class LocationSettingsPage extends ConsumerWidget {
                   ],
                 ),
             ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
 
           // Location Triggers
           GlassmorphismContainer(
@@ -197,7 +199,7 @@ class LocationSettingsPage extends ConsumerWidget {
                         onPressed: locationSettings.locationEnabled && locationSettings.geofencingEnabled
                             ? () => _showCreateGeofenceDialog(context, ref)
                             : null,
-                        icon: const Icon(Icons.add),
+                        icon: Icon(PhosphorIcons.plus()),
                         label: const Text('Add Trigger'),
                       ),
                     ],
@@ -241,7 +243,7 @@ class LocationSettingsPage extends ConsumerWidget {
                       await locationService.requestPermission();
                       ref.invalidate(locationPermissionProvider);
                     },
-                    icon: const Icon(Icons.location_on),
+                    icon: Icon(PhosphorIcons.mapPin()),
                     label: const Text('Request Location Permission'),
                   ),
                   const SizedBox(height: 8),
@@ -250,7 +252,7 @@ class LocationSettingsPage extends ConsumerWidget {
                       ref.invalidate(currentLocationProvider);
                       ref.invalidate(locationServiceEnabledProvider);
                     },
-                    icon: const Icon(Icons.refresh),
+                    icon: Icon(PhosphorIcons.arrowClockwise()),
                     label: const Text('Refresh Location Status'),
                   ),
                 ],
@@ -266,7 +268,7 @@ class LocationSettingsPage extends ConsumerWidget {
     return Row(
       children: [
         Icon(
-          isGood ? Icons.check_circle : Icons.error,
+          isGood ? PhosphorIcons.checkCircle() : PhosphorIcons.warningCircle(),
           color: color,
           size: 20,
         ),
@@ -339,7 +341,7 @@ class LocationSettingsPage extends ConsumerWidget {
   Widget _buildTriggerTile(BuildContext context, WidgetRef ref, LocationTrigger trigger) {
     return ListTile(
       leading: Icon(
-        trigger.isEnabled ? Icons.location_on : Icons.location_off,
+        trigger.isEnabled ? PhosphorIcons.mapPin() : PhosphorIcons.mapPin(),
         color: trigger.isEnabled ? Colors.green : Colors.grey,
       ),
       title: Text(trigger.geofence.name),
@@ -435,3 +437,5 @@ class LocationSettingsPage extends ConsumerWidget {
     );
   }
 }
+
+

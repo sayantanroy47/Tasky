@@ -32,11 +32,11 @@ class CompactThemeSelector extends ConsumerWidget {
 
     return PopupMenuButton<String>(
       icon: Icon(
-        themeState.currentTheme?.metadata.previewIcon ?? Icons.palette,
+        themeState.currentTheme?.metadata.previewIcon ?? PhosphorIcons.palette(),
         size: 20,
       ),
       tooltip: 'Select Theme',
-      offset: const Offset(0, 40),
+      offset: Offset(0, 40),
       itemBuilder: (context) => [
         if (showCurrentTheme && themeState.currentTheme != null) ...[
           PopupMenuItem<String>(
@@ -54,12 +54,12 @@ class CompactThemeSelector extends ConsumerWidget {
           value: '__random__',
           child: Row(
             children: [
-              const Icon(PhosphorIcons.shuffle(), size: 16),
+              Icon(PhosphorIcons.shuffle(), size: 16),
               const SizedBox(width: 12),
               const Text('Random Theme'),
               const Spacer(),
               Icon(
-                Icons.casino,
+                PhosphorIcons.dice(),
                 size: 16,
                 color: Theme.of(context).colorScheme.primary,
               ),
@@ -126,7 +126,7 @@ class CompactThemeSelector extends ConsumerWidget {
             size: 16,
             color: theme.colors.primary,
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -161,7 +161,7 @@ class CompactThemeSelector extends ConsumerWidget {
           if (isSelected) ...[
             const SizedBox(width: 8),
             Icon(
-              Icons.check_circle,
+              PhosphorIcons.checkCircle(),
               size: 16,
               color: theme.colors.primary,
             ),
@@ -179,7 +179,7 @@ class CompactThemeSelector extends ConsumerWidget {
         color: color,
         borderRadius: BorderRadius.circular(size / 2),
         border: Border.all(
-          color: Colors.white.withOpacity(0.3),
+          color: Colors.white.withValues(alpha: 0.3),
           width: 0.5,
         ),
       ),
@@ -209,7 +209,7 @@ class QuickThemeCycleButton extends ConsumerWidget {
     final themeState = ref.watch(enhancedThemeProvider);
 
     return IconButton(
-      icon: Icon(icon ?? Icons.palette),
+      icon: Icon(icon ?? PhosphorIcons.palette()),
       tooltip: tooltip ?? 'Cycle Theme',
       onPressed: themeState.canTransition
           ? () {
@@ -234,7 +234,7 @@ class ThemeHistorySelector extends ConsumerWidget {
     }
 
     return PopupMenuButton<String>(
-      icon: const Icon(PhosphorIcons.clockCounterClockwise()),
+      icon: Icon(PhosphorIcons.clockCounterClockwise()),
       tooltip: 'Theme History',
       itemBuilder: (context) => [
         const PopupMenuItem<String>(
@@ -247,7 +247,7 @@ class ThemeHistorySelector extends ConsumerWidget {
             ),
           ),
         ),
-        const PopupMenuDivider(),
+        PopupMenuDivider(),
         ...history.map((theme) => PopupMenuItem<String>(
               value: theme.metadata.id,
               child: Row(
@@ -261,7 +261,7 @@ class ThemeHistorySelector extends ConsumerWidget {
                   Expanded(child: Text(theme.metadata.name)),
                   if (currentTheme?.metadata.id == theme.metadata.id)
                     Icon(
-                      Icons.check,
+                      PhosphorIcons.check(),
                       size: 16,
                       color: theme.colors.primary,
                     ),
@@ -286,7 +286,7 @@ class ThemeCategoryQuickSelector extends ConsumerWidget {
     // final currentTheme = ref.watch(enhancedThemeProvider).currentTheme;
 
     return PopupMenuButton<String>(
-      icon: const Icon(PhosphorIcons.squares()),
+      icon: Icon(PhosphorIcons.square()),
       tooltip: 'Browse by Category',
       itemBuilder: (context) => [
         const PopupMenuItem<String>(
@@ -353,22 +353,22 @@ class ThemeCategoryQuickSelector extends ConsumerWidget {
     IconData iconData;
     switch (category) {
       case 'gaming':
-        iconData = Icons.games;
+        iconData = PhosphorIcons.gameController();
         break;
       case 'developer':
-        iconData = Icons.code;
+        iconData = PhosphorIcons.code();
         break;
       case 'professional':
-        iconData = Icons.work;
+        iconData = PhosphorIcons.briefcase();
         break;
       case 'dark':
-        iconData = Icons.dark_mode;
+        iconData = PhosphorIcons.moon();
         break;
       case 'light':
-        iconData = Icons.light_mode;
+        iconData = PhosphorIcons.sun();
         break;
       default:
-        iconData = Icons.category;
+        iconData = PhosphorIcons.square();
     }
     return Icon(iconData, size: 16);
   }
@@ -387,7 +387,7 @@ class ThemeCategoryQuickSelector extends ConsumerWidget {
         color: color,
         borderRadius: BorderRadius.circular(size / 2),
         border: Border.all(
-          color: Colors.white.withOpacity(0.3),
+          color: Colors.white.withValues(alpha: 0.3),
           width: 0.5,
         ),
       ),
@@ -468,3 +468,4 @@ class ThemeCategoryQuickSelector extends ConsumerWidget {
     );
   }
 }
+

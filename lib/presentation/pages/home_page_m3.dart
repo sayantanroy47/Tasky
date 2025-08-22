@@ -21,6 +21,7 @@ import '../../services/welcome_message_service.dart';
 import '../../core/routing/app_router.dart';
 
 import '../widgets/audio_indicator_widget.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Futuristic Material 3 Home Page
 class HomePage extends ConsumerStatefulWidget {
@@ -107,14 +108,14 @@ class _HomePageState extends ConsumerState<HomePage>
         title: 'Home',
         forceBackButton: false, // Home is main tab - no back button
         actions: [
-          const ThemeToggleButton(),
+          ThemeToggleButton(),
           IconButton(
-            icon: const Icon(Icons.insights),
+            icon: Icon(PhosphorIcons.chartLine()),
             onPressed: () => _showTaskInsights(context),
             tooltip: 'Task insights',
           ),
           IconButton(
-            icon: const Icon(Icons.search),
+            icon: Icon(PhosphorIcons.magnifyingGlass()),
             onPressed: () => _showTaskSearch(context),
             tooltip: 'Search tasks',
           ),
@@ -175,7 +176,7 @@ class _HomePageState extends ConsumerState<HomePage>
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             GlassmorphismContainer(
               level: GlassLevel.interactive,
               borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
@@ -183,7 +184,7 @@ class _HomePageState extends ConsumerState<HomePage>
                   autofocus: true,
                   decoration: InputDecoration(
                     hintText: 'Enter search terms...',
-                    prefixIcon: const Icon(Icons.search),
+                    prefixIcon: Icon(PhosphorIcons.magnifyingGlass()),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                       borderSide: BorderSide.none,
@@ -250,24 +251,24 @@ class _HomePageState extends ConsumerState<HomePage>
                               }
                             },
                             itemBuilder: (context) => [
-                              const PopupMenuItem(
+                              PopupMenuItem(
                                 value: 'edit',
                                 child: ListTile(
-                                  leading: Icon(Icons.edit),
+                                  leading: Icon(PhosphorIcons.pencil()),
                                   title: Text('Edit'),
                                 ),
                               ),
-                              const PopupMenuItem(
+                              PopupMenuItem(
                                 value: 'share',
                                 child: ListTile(
-                                  leading: Icon(Icons.share),
+                                  leading: Icon(PhosphorIcons.share()),
                                   title: Text('Share'),
                                 ),
                               ),
-                              const PopupMenuItem(
+                              PopupMenuItem(
                                 value: 'delete',
                                 child: ListTile(
-                                  leading: Icon(Icons.delete),
+                                  leading: Icon(PhosphorIcons.trash()),
                                   title: Text('Delete'),
                                 ),
                               ),
@@ -333,11 +334,11 @@ class _HomePageState extends ConsumerState<HomePage>
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                _buildInsightRow('Total Tasks', '${tasks.length}', Icons.list),
-                                _buildInsightRow('Completed', '$completedTasks', Icons.check_circle, color: Colors.green),
-                                _buildInsightRow('Pending', '$pendingTasks', Icons.pending, color: Colors.orange),
-                                _buildInsightRow('Urgent', '$urgentTasks', Icons.priority_high, color: Colors.red),
-                                _buildInsightRow('Overdue', '$overdueTasks', Icons.warning, color: Colors.red),
+                                _buildInsightRow('Total Tasks', '${tasks.length}', PhosphorIcons.list()),
+                                _buildInsightRow('Completed', '$completedTasks', PhosphorIcons.checkCircle(), color: Colors.green),
+                                _buildInsightRow('Pending', '$pendingTasks', PhosphorIcons.clock(), color: Colors.orange),
+                                _buildInsightRow('Urgent', '$urgentTasks', PhosphorIcons.arrowUp(), color: Colors.red),
+                                _buildInsightRow('Overdue', '$overdueTasks', PhosphorIcons.warning(), color: Colors.red),
                                 const SizedBox(height: 16),
                                 const Text('Completion Rate', style: TextStyle(fontWeight: FontWeight.bold)),
                                 const SizedBox(height: 8),
@@ -391,8 +392,7 @@ class _HomePageState extends ConsumerState<HomePage>
   void _showTaskContextMenu(BuildContext context, TaskModel task) {
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
       builder: (context) => Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
@@ -421,7 +421,7 @@ class _HomePageState extends ConsumerState<HomePage>
             ),
             const SizedBox(height: 16),
             ListTile(
-              leading: const Icon(Icons.edit),
+              leading: Icon(PhosphorIcons.pencil()),
               title: const Text('Edit Task'),
               onTap: () {
                 Navigator.of(context).pop();
@@ -429,16 +429,16 @@ class _HomePageState extends ConsumerState<HomePage>
               },
             ),
             ListTile(
-              leading: const Icon(Icons.share),
+              leading: Icon(PhosphorIcons.share()),
               title: const Text('Share Task'),
               onTap: () {
                 Navigator.of(context).pop();
                 _shareTask(task);
               },
             ),
-            const Divider(),
+            Divider(),
             ListTile(
-              leading: const Icon(Icons.delete, color: Colors.red),
+              leading: Icon(PhosphorIcons.trash(), color: Colors.red),
               title: const Text('Delete Task', style: TextStyle(color: Colors.red)),
               onTap: () {
                 Navigator.of(context).pop();
@@ -455,7 +455,7 @@ class _HomePageState extends ConsumerState<HomePage>
   Widget _buildWelcomeSection(BuildContext context, ThemeData theme) {
     return SlideTransition(
       position: Tween<Offset>(
-        begin: const Offset(0, -0.2),
+        begin: Offset(0, -0.2),
         end: Offset.zero,
       ).animate(CurvedAnimation(
         parent: _slideController,
@@ -492,12 +492,12 @@ class _HomePageState extends ConsumerState<HomePage>
                   GlassmorphismContainer(
                     level: GlassLevel.content,
                     borderRadius: BorderRadius.circular(12),
-                    glassTint: theme.colorScheme.primary.withOpacity(0.15),
+                    glassTint: theme.colorScheme.primary.withValues(alpha: 0.15),
                     child: SizedBox(
                       width: 36,
                       height: 36,
                       child: Icon(
-                        Icons.waving_hand,
+                        PhosphorIcons.hand(),
                         color: theme.colorScheme.primary,
                         size: 20,
                       ),
@@ -527,7 +527,7 @@ class _HomePageState extends ConsumerState<HomePage>
                 ],
               ),
               
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               
               // Text-based Task Summary with Bullets
               GlassmorphismContainer(
@@ -541,7 +541,7 @@ class _HomePageState extends ConsumerState<HomePage>
                     Row(
                       children: [
                         Icon(
-                          Icons.summarize,
+                          PhosphorIcons.listBullets(),
                           size: 18,
                           color: theme.colorScheme.primary,
                         ),
@@ -561,7 +561,7 @@ class _HomePageState extends ConsumerState<HomePage>
                     // Bulleted Summary Text
                     _buildBulletPoint(
                       theme: theme,
-                      icon: Icons.circle,
+                      icon: PhosphorIcons.circle(),
                       iconColor: theme.colorScheme.primary,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w300, // Light weight but readable
@@ -578,7 +578,7 @@ class _HomePageState extends ConsumerState<HomePage>
                     if (urgentCount > 0) ...[
                       _buildBulletPoint(
                         theme: theme,
-                        icon: Icons.priority_high,
+                        icon: PhosphorIcons.arrowUp(),
                         iconColor: theme.colorScheme.error,
                         style: TextStyle(
                           fontSize: 13,
@@ -597,7 +597,7 @@ class _HomePageState extends ConsumerState<HomePage>
                     if (highCount > 0) ...[
                       _buildBulletPoint(
                         theme: theme,
-                        icon: Icons.arrow_upward,
+                        icon: PhosphorIcons.arrowUp(),
                         iconColor: theme.colorScheme.tertiary,
                         style: TextStyle(
                           fontSize: 13,
@@ -616,7 +616,7 @@ class _HomePageState extends ConsumerState<HomePage>
                     if (completedCount > 0) ...[
                       _buildBulletPoint(
                         theme: theme,
-                        icon: Icons.check_circle,
+                        icon: PhosphorIcons.checkCircle(),
                         iconColor: theme.colorScheme.tertiary,
                         style: TextStyle(
                           fontSize: 13,
@@ -639,13 +639,13 @@ class _HomePageState extends ConsumerState<HomePage>
                         level: GlassLevel.content,
                         padding: const EdgeInsets.all(8),
                         borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
-                        glassTint: theme.colorScheme.tertiary.withOpacity(0.1),
-                        borderColor: theme.colorScheme.tertiary.withOpacity(0.3),
+                        glassTint: theme.colorScheme.tertiary.withValues(alpha: 0.1),
+                        borderColor: theme.colorScheme.tertiary.withValues(alpha: 0.3),
                         borderWidth: 1.0,
                         child: Row(
                           children: [
                             Icon(
-                              Icons.celebration,
+                              PhosphorIcons.confetti(),
                               size: 16,
                               color: theme.colorScheme.tertiary,
                             ),
@@ -686,7 +686,7 @@ class _HomePageState extends ConsumerState<HomePage>
         title: 'Streak',
         subtitle: _getCompletionStreakText(completedTasks),
         count: _getCompletionStreakDays(completedTasks),
-        icon: Icons.local_fire_department,
+        icon: PhosphorIcons.fire(),
         iconColor: Colors.orange,
         onTap: () => AppRouter.navigateToRoute(context, AppRouter.analytics),
       ),
@@ -697,7 +697,7 @@ class _HomePageState extends ConsumerState<HomePage>
         title: 'Finished',
         subtitle: _getTotalCompletedText(completedTasks),
         count: 2, // Show fixed count of 2
-        icon: Icons.task_alt,
+        icon: PhosphorIcons.checkSquare(),
         iconColor: Colors.green,
         onTap: () => AppRouter.navigateToRoute(context, AppRouter.analytics),
       ),
@@ -708,7 +708,7 @@ class _HomePageState extends ConsumerState<HomePage>
         title: 'This Week',
         subtitle: _getWeeklyProgressText(allTasks, completedTasks),
         count: _getWeeklyCompletionPercentage(allTasks, completedTasks),
-        icon: Icons.trending_up,
+        icon: PhosphorIcons.trendUp(),
         iconColor: Colors.blue,
         onTap: () => AppRouter.navigateToRoute(context, AppRouter.analytics),
       ),
@@ -792,28 +792,28 @@ class _HomePageState extends ConsumerState<HomePage>
                 children: [
                   _buildQuickStat(
                     theme: theme,
-                    icon: Icons.pending_actions,
+                    icon: PhosphorIcons.clockCounterClockwise(),
                     label: 'Pending',
                     count: pendingCount,
                     color: theme.colorScheme.primary,
                   ),
                   _buildQuickStat(
                     theme: theme,
-                    icon: Icons.priority_high,
+                    icon: PhosphorIcons.arrowUp(),
                     label: 'Urgent',
                     count: urgentCount,
                     color: theme.colorScheme.error,
                   ),
                   _buildQuickStat(
                     theme: theme,
-                    icon: Icons.keyboard_arrow_up,
+                    icon: PhosphorIcons.caretUp(),
                     label: 'High',
                     count: highCount,
                     color: theme.colorScheme.secondary,
                   ),
                   _buildQuickStat(
                     theme: theme,
-                    icon: Icons.check_circle,
+                    icon: PhosphorIcons.checkCircle(),
                     label: 'Done',
                     count: completedToday,
                     color: Colors.green,
@@ -964,8 +964,8 @@ class _HomePageState extends ConsumerState<HomePage>
                   width: 36,
                   height: 36,
                   borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
-                  glassTint: iconColor.withOpacity(0.15),
-                  borderColor: iconColor.withOpacity(0.3),
+                  glassTint: iconColor.withValues(alpha: 0.15),
+                  borderColor: iconColor.withValues(alpha: 0.3),
                   borderWidth: 1.0,
                   child: Icon(
                     icon,
@@ -1034,9 +1034,9 @@ class _HomePageState extends ConsumerState<HomePage>
             level: GlassLevel.content,
             borderRadius: BorderRadius.circular(100), // Make it circular
             padding: const EdgeInsets.all(24),
-            glassTint: theme.colorScheme.primaryContainer.withOpacity(0.8),
+            glassTint: theme.colorScheme.primaryContainer.withValues(alpha: 0.8),
             child: Icon(
-              Icons.rocket_launch,
+              PhosphorIcons.rocket(),
               size: 48,
               color: theme.colorScheme.onPrimaryContainer,
             ),
@@ -1074,7 +1074,7 @@ class _HomePageState extends ConsumerState<HomePage>
           height: 120,
           margin: const EdgeInsets.only(bottom: 8),
           borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-          glassTint: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+          glassTint: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
           child: AnimatedContainer(
             duration: Duration(milliseconds: 1000 + (index * 200)),
             curve: Curves.easeInOut,
@@ -1082,7 +1082,7 @@ class _HomePageState extends ConsumerState<HomePage>
               gradient: LinearGradient(
                 colors: [
                   Colors.transparent,
-                  theme.colorScheme.primary.withOpacity(0.1),
+                  theme.colorScheme.primary.withValues(alpha: 0.1),
                   Colors.transparent,
                 ],
                 stops: const [0.0, 0.5, 1.0],
@@ -1102,11 +1102,11 @@ class _HomePageState extends ConsumerState<HomePage>
       child: Column(
         children: [
           Icon(
-            Icons.error_outline,
+            PhosphorIcons.warningCircle(),
             size: 48,
             color: theme.colorScheme.error,
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Text(
             'Something went wrong',
             style: theme.textTheme.titleSmall?.copyWith(
@@ -1130,7 +1130,7 @@ class _HomePageState extends ConsumerState<HomePage>
           const SizedBox(height: 16),
           OutlinedButton.icon(
             onPressed: () => ref.refresh(tasksProvider),
-            icon: const Icon(Icons.refresh),
+            icon: Icon(PhosphorIcons.arrowClockwise()),
             label: const Text('Retry'),
           ),
         ],
@@ -1251,14 +1251,14 @@ Shared from Tasky - Task Management App
                 borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),  // Standardized 5px
                 boxShadow: [
                   BoxShadow(
-                    color: theme.colorScheme.primary.withOpacity(0.4),  // Increased opacity for better visibility
+                    color: theme.colorScheme.primary.withValues(alpha: 0.4),  // Increased opacity for better visibility
                     blurRadius: 8.0,  // Increased blur for more prominent glow
                     spreadRadius: 1.0,  // Added spread for wider glow effect
-                    offset: const Offset(0, 2),  // Slightly larger offset for depth
+                    offset: Offset(0, 2),  // Slightly larger offset for depth
                   ),
                   // Additional subtle inner glow
                   BoxShadow(
-                    color: theme.colorScheme.primary.withOpacity(0.2),
+                    color: theme.colorScheme.primary.withValues(alpha: 0.2),
                     blurRadius: 4.0,
                     spreadRadius: 0.5,
                     offset: const Offset(0, 1),
@@ -1286,8 +1286,8 @@ Shared from Tasky - Task Management App
                   hint: 'View tasks due today',
                   button: true,
                   child: _buildFixedTab(
-                    icon: Icons.today_outlined,
-                    selectedIcon: Icons.today,
+                    icon: PhosphorIcons.calendar(),
+                    selectedIcon: PhosphorIcons.calendar(),
                     label: 'Today',
                     theme: theme,
                   ),
@@ -1297,8 +1297,8 @@ Shared from Tasky - Task Management App
                   hint: 'View overdue tasks',
                   button: true,
                   child: _buildFixedTab(
-                    icon: Icons.warning_amber_outlined,
-                    selectedIcon: Icons.warning_amber,
+                    icon: PhosphorIcons.warning(),
+                    selectedIcon: PhosphorIcons.warning(),
                     label: 'Overdue',
                     theme: theme,
                   ),
@@ -1308,8 +1308,8 @@ Shared from Tasky - Task Management App
                   hint: 'View upcoming tasks',
                   button: true,
                   child: _buildFixedTab(
-                    icon: Icons.schedule_outlined,
-                    selectedIcon: Icons.schedule,
+                    icon: PhosphorIcons.clock(),
+                    selectedIcon: PhosphorIcons.clock(),
                     label: 'Future',
                     theme: theme,
                   ),
@@ -1394,7 +1394,7 @@ Shared from Tasky - Task Management App
             }.toList();
             
             if (allTodayTasks.isEmpty) {
-              return _buildEmptyTasksList(theme, 'No tasks for today', Icons.today);
+              return _buildEmptyTasksList(theme, 'No tasks for today', PhosphorIcons.calendar());
             }
             
             // Sort by priority and creation time
@@ -1447,7 +1447,7 @@ Shared from Tasky - Task Management App
     return overdueTasks.when(
       data: (tasks) {
         if (tasks.isEmpty) {
-          return _buildEmptyTasksList(theme, 'No overdue tasks', Icons.check_circle);
+          return _buildEmptyTasksList(theme, 'No overdue tasks', PhosphorIcons.checkCircle());
         }
         
         // Sort by priority and how overdue they are
@@ -1502,7 +1502,7 @@ Shared from Tasky - Task Management App
         });
         
         if (futureTasks.isEmpty) {
-          return _buildEmptyTasksList(theme, 'No future tasks', Icons.schedule);
+          return _buildEmptyTasksList(theme, 'No future tasks', PhosphorIcons.clock());
         }
         
         return ListView.builder(
@@ -1542,8 +1542,8 @@ Shared from Tasky - Task Management App
                   width: 48,
                   height: 48,
                   borderRadius: BorderRadius.circular(12),
-                  glassTint: _getCategoryColor(task.tags.isNotEmpty ? task.tags.first : 'default').withOpacity(0.15),
-                  borderColor: _getCategoryColor(task.tags.isNotEmpty ? task.tags.first : 'default').withOpacity(0.3),
+                  glassTint: _getCategoryColor(task.tags.isNotEmpty ? task.tags.first : 'default').withValues(alpha: 0.15),
+                  borderColor: _getCategoryColor(task.tags.isNotEmpty ? task.tags.first : 'default').withValues(alpha: 0.3),
                   borderWidth: 1.5,
                   child: Icon(
                     _getCategoryIcon(task.tags.isNotEmpty ? task.tags.first : 'default'),
@@ -1655,43 +1655,43 @@ Shared from Tasky - Task Management App
   IconData _getCategoryIcon(String category) {
     switch (category.toLowerCase()) {
       case 'work':
-        return Icons.work;
+        return PhosphorIcons.briefcase();
       case 'personal':
-        return Icons.person;
+        return PhosphorIcons.user();
       case 'shopping':
-        return Icons.shopping_cart;
+        return PhosphorIcons.shoppingCart();
       case 'health':
-        return Icons.health_and_safety;
+        return PhosphorIcons.heartbeat();
       case 'fitness':
-        return Icons.fitness_center;
+        return PhosphorIcons.barbell();
       case 'finance':
-        return Icons.account_balance_wallet;
+        return PhosphorIcons.wallet();
       case 'education':
-        return Icons.school;
+        return PhosphorIcons.graduationCap();
       case 'travel':
-        return Icons.flight;
+        return PhosphorIcons.airplane();
       case 'home':
-        return Icons.home;
+        return PhosphorIcons.house();
       case 'family':
-        return Icons.family_restroom;
+        return PhosphorIcons.users();
       case 'entertainment':
-        return Icons.movie;
+        return PhosphorIcons.filmStrip();
       case 'food':
-        return Icons.restaurant;
+        return PhosphorIcons.forkKnife();
       case 'project':
-        return Icons.folder;
+        return PhosphorIcons.folder();
       case 'meeting':
-        return Icons.meeting_room;
+        return PhosphorIcons.door();
       case 'call':
-        return Icons.phone;
+        return PhosphorIcons.phone();
       case 'email':
-        return Icons.email;
+        return PhosphorIcons.envelope();
       case 'urgent':
-        return Icons.error;
+        return PhosphorIcons.warningCircle();
       case 'important':
-        return Icons.star;
+        return PhosphorIcons.star();
       default:
-        return Icons.task_alt; // Default task icon
+        return PhosphorIcons.checkSquare(); // Default task icon
     }
   }
 
@@ -1768,7 +1768,7 @@ Shared from Tasky - Task Management App
           LinearProgressIndicator(
             value: progress,
             minHeight: 2,
-            backgroundColor: theme.colorScheme.outline.withOpacity(0.2),
+            backgroundColor: theme.colorScheme.outline.withValues(alpha: 0.2),
             valueColor: AlwaysStoppedAnimation<Color>(
               _getCategoryColor(task.tags.isNotEmpty ? task.tags.first : 'default'),
             ),
@@ -1820,7 +1820,7 @@ Shared from Tasky - Task Management App
         height: 80,
         margin: const EdgeInsets.only(bottom: 8),
         borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-        glassTint: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+        glassTint: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
         child: Container(),
       ),
     );
@@ -1833,7 +1833,7 @@ Shared from Tasky - Task Management App
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            Icons.error_outline,
+            PhosphorIcons.warningCircle(),
             size: 48,
             color: theme.colorScheme.error,
           ),
@@ -1876,7 +1876,7 @@ Shared from Tasky - Task Management App
             height: 20,
             margin: const EdgeInsets.only(right: 12, top: 2),
             borderRadius: BorderRadius.circular(10),
-            glassTint: iconColor.withOpacity(0.15),
+            glassTint: iconColor.withValues(alpha: 0.15),
             child: Icon(
               icon,
               size: isSubBullet ? 12 : 14,
@@ -1918,7 +1918,7 @@ Shared from Tasky - Task Management App
             width: 32,
             height: 32,
             borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall),
-            glassTint: color.withOpacity(0.15),
+            glassTint: color.withValues(alpha: 0.15),
             child: Icon(
               icon,
               size: 16,
@@ -1952,24 +1952,24 @@ Shared from Tasky - Task Management App
   Widget _buildTaskInsight(ThemeData theme, int pendingCount, int urgentCount, int highCount) {
     String insight = '';
     Color insightColor = theme.colorScheme.onSurfaceVariant;
-    IconData insightIcon = Icons.info_outline;
+    IconData insightIcon = PhosphorIcons.info();
 
     if (urgentCount > 0) {
       insight = urgentCount == 1 
         ? '1 urgent task needs immediate attention'
         : '$urgentCount urgent tasks need immediate attention';
       insightColor = theme.colorScheme.error;
-      insightIcon = Icons.priority_high;
+      insightIcon = PhosphorIcons.arrowUp();
     } else if (highCount > 0) {
       insight = highCount == 1
         ? '1 high priority task to focus on'
         : '$highCount high priority tasks to focus on';
       insightColor = theme.colorScheme.secondary;
-      insightIcon = Icons.keyboard_arrow_up;
+      insightIcon = PhosphorIcons.caretUp();
     } else if (pendingCount > 0) {
       insight = 'Great progress! Stay focused on remaining tasks';
       insightColor = theme.colorScheme.primary;
-      insightIcon = Icons.trending_up;
+      insightIcon = PhosphorIcons.trendUp();
     }
 
     if (insight.isEmpty) return const SizedBox.shrink();
@@ -1978,8 +1978,8 @@ Shared from Tasky - Task Management App
       level: GlassLevel.content,
       padding: const EdgeInsets.all(12),
       borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall),
-      glassTint: insightColor.withOpacity(0.1),
-      borderColor: insightColor.withOpacity(0.3),
+      glassTint: insightColor.withValues(alpha: 0.1),
+      borderColor: insightColor.withValues(alpha: 0.3),
       borderWidth: 1.0,
       child: Row(
         children: [
@@ -2033,7 +2033,7 @@ class _SearchDialogState extends ConsumerState<SearchDialog> {
         level: GlassLevel.floating,
         borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
         glassTint: theme.colorScheme.surface,
-        borderColor: theme.colorScheme.outline.withOpacity(0.2),
+        borderColor: theme.colorScheme.outline.withValues(alpha: 0.2),
         borderWidth: 1.0,
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -2044,12 +2044,12 @@ class _SearchDialogState extends ConsumerState<SearchDialog> {
               autofocus: true,
               decoration: InputDecoration(
                 hintText: 'Search tasks...',
-                prefixIcon: const Icon(Icons.search),
+                prefixIcon: Icon(PhosphorIcons.magnifyingGlass()),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                 ),
                 filled: true,
-                fillColor: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                fillColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
               ),
               onSubmitted: (query) {
                 ref.read(searchQueryProvider.notifier).state = query;
@@ -2070,3 +2070,5 @@ class _SearchDialogState extends ConsumerState<SearchDialog> {
     );
   }
 }
+
+

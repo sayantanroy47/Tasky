@@ -439,8 +439,8 @@ class _ErrorRecoveryWrapperState extends ConsumerState<ErrorRecoveryWrapper> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
-              Icons.error_outline,
+            Icon(
+              PhosphorIcons.warningCircle(),
               size: 64,
               color: Colors.red,
             ),
@@ -455,10 +455,10 @@ class _ErrorRecoveryWrapperState extends ConsumerState<ErrorRecoveryWrapper> {
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
             ElevatedButton.icon(
               onPressed: _retry,
-              icon: const Icon(PhosphorIcons.arrowClockwise()),
+              icon: Icon(PhosphorIcons.arrowClockwise()),
               label: const Text('Try Again'),
             ),
           ],
@@ -507,3 +507,4 @@ final appHealthStatusProvider = StreamProvider<AppHealthStatus>((ref) {
   final service = ref.read(errorRecoveryServiceProvider);
   return service.healthStream;
 });
+

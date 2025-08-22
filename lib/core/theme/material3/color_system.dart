@@ -195,10 +195,10 @@ class ExpressiveColorSystem {
       statusOnHoldBadge: const Color(0xFFFF9800),     // Warning color for on hold
       
       // Interactive colors
-      hover: primary.withOpacity(0.08),
-      pressed: primary.withOpacity(0.12),
-      focus: primary.withOpacity(0.12),
-      disabled: onSurface.withOpacity(0.38),
+      hover: primary.withValues(alpha: 0.08),
+      pressed: primary.withValues(alpha: 0.12),
+      focus: primary.withValues(alpha: 0.12),
+      disabled: onSurface.withValues(alpha: 0.38),
     );
   }
   

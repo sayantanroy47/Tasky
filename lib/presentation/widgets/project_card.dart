@@ -6,6 +6,7 @@ import '../../services/project_service.dart';
 import '../providers/project_providers.dart';
 import 'glassmorphism_container.dart';
 import '../../core/theme/typography_constants.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// A card widget that displays project information
 /// 
@@ -25,7 +26,8 @@ class ProjectCard extends ConsumerWidget {
     this.onEdit,
     this.onDelete,
     this.showActions = true,
-  });  @override
+  });
+  @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final projectStatsAsync = ref.watch(projectStatsProvider(project.id));
@@ -48,7 +50,7 @@ class ProjectCard extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   
                   // Project name and description
                   Expanded(
@@ -84,11 +86,11 @@ class ProjectCard extends ConsumerWidget {
                     PopupMenuButton<String>(
                       onSelected: (value) => _handleAction(context, ref, value),
                       itemBuilder: (context) => [
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: 'edit',
                           child: Row(
                             children: [
-                              Icon(Icons.edit),
+                              Icon(PhosphorIcons.pencil()),
                               SizedBox(width: 8),
                               Text('Edit'),
                             ],
@@ -98,7 +100,7 @@ class ProjectCard extends ConsumerWidget {
                           value: project.isArchived ? 'unarchive' : 'archive',
                           child: Row(
                             children: [
-                              Icon(project.isArchived ? Icons.unarchive : Icons.archive),
+                              Icon(project.isArchived ? PhosphorIcons.archive() : PhosphorIcons.archive()),
                               const SizedBox(width: 8),
                               Text(project.isArchived ? 'Unarchive' : 'Archive'),
                             ],
@@ -109,7 +111,7 @@ class ProjectCard extends ConsumerWidget {
                           child: Builder(
                             builder: (context) => Row(
                               children: [
-                                Icon(Icons.delete, color: Theme.of(context).colorScheme.error),
+                                Icon(PhosphorIcons.trash(), color: Theme.of(context).colorScheme.error),
                                 const SizedBox(width: 8),
                                 Text('Delete', style: TextStyle(color: Theme.of(context).colorScheme.error)),
                               ],
@@ -145,17 +147,17 @@ class ProjectCard extends ConsumerWidget {
                   // Task count
                   _buildInfoChip(
                     context,
-                    icon: Icons.task_alt,
+                    icon: PhosphorIcons.checkSquare(),
                     label: '${project.taskCount} tasks',
                   ),
                   
-                  const SizedBox(width: 8),
+                  SizedBox(width: 8),
                   
                   // Deadline
                   if (project.hasDeadline)
                     _buildInfoChip(
                       context,
-                      icon: Icons.schedule,
+                      icon: PhosphorIcons.clock(),
                       label: _formatDeadline(project.deadline!),
                       color: project.isOverdue ? theme.colorScheme.error : null,
                     ),
@@ -165,7 +167,7 @@ class ProjectCard extends ConsumerWidget {
                   // Archived indicator
                   if (project.isArchived)
                     Icon(
-                      Icons.archive,
+                      PhosphorIcons.archive(),
                       size: 16,
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
@@ -279,7 +281,7 @@ class ProjectCard extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: (color ?? theme.colorScheme.surfaceContainerHighest).withOpacity( 0.1),
+        color: (color ?? theme.colorScheme.surfaceContainerHighest).withValues(alpha:  0.1),
         borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       ),
       child: Row(
@@ -373,3 +375,6 @@ class ProjectCard extends ConsumerWidget {
     }
   }
 }
+
+
+

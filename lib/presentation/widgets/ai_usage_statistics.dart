@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/typography_constants.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 
 /// Widget displaying AI usage statistics and insights
 class AIUsageStatistics extends ConsumerWidget {
-  const AIUsageStatistics({super.key});  @override
+  const AIUsageStatistics({super.key});
+  @override
   Widget build(BuildContext context, WidgetRef ref) {
     // In a real implementation, this would watch a provider that fetches usage stats
     final mockStats = _getMockUsageStats();
@@ -19,10 +21,10 @@ class AIUsageStatistics extends ConsumerWidget {
             Row(
               children: [
                 Icon(
-                  Icons.analytics,
+                  PhosphorIcons.chartBar(),
                   color: Theme.of(context).colorScheme.primary,
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: 8),
                 Text(
                   'Usage Statistics',
                   style: Theme.of(context).textTheme.titleLarge,
@@ -53,31 +55,31 @@ class AIUsageStatistics extends ConsumerWidget {
                 _StatCard(
                   title: 'Tasks Parsed',
                   value: mockStats['totalParsed'].toString(),
-                  icon: Icons.task_alt,
+                  icon: PhosphorIcons.checkSquare(),
                   color: Colors.blue,
                 ),
                 _StatCard(
                   title: 'Success Rate',
                   value: '${mockStats['successRate']}%',
-                  icon: Icons.check_circle,
+                  icon: PhosphorIcons.checkCircle(),
                   color: Colors.green,
                 ),
                 _StatCard(
                   title: 'Tags Suggested',
                   value: mockStats['tagsSuggested'].toString(),
-                  icon: Icons.label,
+                  icon: PhosphorIcons.tag(),
                   color: Colors.orange,
                 ),
                 _StatCard(
                   title: 'Time Saved',
                   value: '${mockStats['timeSaved']}min',
-                  icon: Icons.timer,
+                  icon: PhosphorIcons.timer(),
                   color: Colors.purple,
                 ),
               ],
             ),
 
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             // Current Service Status
             Container(
@@ -89,7 +91,7 @@ class AIUsageStatistics extends ConsumerWidget {
               child: Row(
                 children: [
                   Icon(
-                    Icons.psychology,
+                    PhosphorIcons.brain(),
                     color: Theme.of(context).colorScheme.primary,
                     size: 20,
                   ),
@@ -114,7 +116,7 @@ class AIUsageStatistics extends ConsumerWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: Colors.green.withOpacity(0.2),
+                      color: Colors.green.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                     ),
                     child: Text(
@@ -129,7 +131,7 @@ class AIUsageStatistics extends ConsumerWidget {
               ),
             ),
 
-            const SizedBox(height: 16),
+            SizedBox(height: 16),
 
             // Quick Actions
             Row(
@@ -137,7 +139,7 @@ class AIUsageStatistics extends ConsumerWidget {
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: () => _exportStats(context),
-                    icon: const Icon(Icons.download, size: 18),
+                    icon: Icon(PhosphorIcons.download(), size: 18),
                     label: const Text('Export'),
                   ),
                 ),
@@ -145,7 +147,7 @@ class AIUsageStatistics extends ConsumerWidget {
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed: () => _resetStats(context),
-                    icon: const Icon(Icons.refresh, size: 18),
+                    icon: Icon(PhosphorIcons.arrowClockwise(), size: 18),
                     label: const Text('Reset'),
                   ),
                 ),
@@ -228,14 +230,15 @@ class _StatCard extends StatelessWidget {
     required this.value,
     required this.icon,
     required this.color,
-  });  @override
+  });
+  @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -258,7 +261,7 @@ class _StatCard extends StatelessWidget {
           Text(
             title,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: color.withOpacity(0.8),
+              color: color.withValues(alpha: 0.8),
             ),
           ),
         ],
@@ -269,7 +272,8 @@ class _StatCard extends StatelessWidget {
 
 /// Dialog showing detailed usage statistics
 class DetailedStatsDialog extends StatelessWidget {
-  const DetailedStatsDialog({super.key});  @override
+  const DetailedStatsDialog({super.key});
+  @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text('Detailed Statistics'),
@@ -358,3 +362,6 @@ class _StatRow {
 
   const _StatRow(this.label, this.value);
 }
+
+
+

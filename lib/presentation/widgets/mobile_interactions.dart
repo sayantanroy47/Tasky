@@ -5,6 +5,7 @@ import '../../core/design_system/design_tokens.dart';
 import '../../core/accessibility/accessibility_constants.dart';
 import '../../core/theme/typography_constants.dart';
 import 'glassmorphism_container.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Mobile-optimized swipe actions for task cards
 class SwipeActionContainer extends StatefulWidget {
@@ -144,7 +145,7 @@ class _SwipeActionContainerState extends State<SwipeActionContainer>
         width: widget.actionWidth,
         child: GlassmorphismContainer(
           level: GlassLevel.interactive,
-          glassTint: action.backgroundColor?.withOpacity(0.9),
+          glassTint: action.backgroundColor?.withValues(alpha: 0.9),
           borderRadius: BorderRadius.zero,
           child: Material(
             color: Colors.transparent,
@@ -309,7 +310,7 @@ class SwipeAction {
   }) =>
       SwipeAction(
         label: 'Complete',
-        icon: Icons.check,
+        icon: PhosphorIcons.check(),
         backgroundColor: backgroundColor ?? Colors.green,
         onPressed: onPressed,
         semanticHint: 'Mark task as complete',
@@ -321,7 +322,7 @@ class SwipeAction {
   }) =>
       SwipeAction(
         label: 'Delete',
-        icon: Icons.delete,
+        icon: PhosphorIcons.trash(),
         backgroundColor: backgroundColor ?? Colors.red,
         onPressed: onPressed,
         semanticHint: 'Delete this task',
@@ -333,7 +334,7 @@ class SwipeAction {
   }) =>
       SwipeAction(
         label: 'Edit',
-        icon: Icons.edit,
+        icon: PhosphorIcons.pencil(),
         backgroundColor: backgroundColor ?? Colors.blue,
         onPressed: onPressed,
         semanticHint: 'Edit task details',
@@ -345,7 +346,7 @@ class SwipeAction {
   }) =>
       SwipeAction(
         label: 'Archive',
-        icon: Icons.archive,
+        icon: PhosphorIcons.archive(),
         backgroundColor: backgroundColor ?? Colors.orange,
         onPressed: onPressed,
         semanticHint: 'Archive this task',
@@ -491,7 +492,7 @@ class _GlassPullToRefreshState extends State<GlassPullToRefresh>
                             : Transform.rotate(
                                 angle: progress * 3.14159,
                                 child: Icon(
-                                  Icons.refresh,
+                                  PhosphorIcons.arrowClockwise(),
                                   size: 20,
                                   color: _hasTriggered
                                       ? theme.colorScheme.primary
@@ -663,7 +664,7 @@ class _GlassBottomSheetState extends State<GlassBottomSheet>
                         height: 4,
                         margin: const EdgeInsets.only(top: 12),
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.onSurfaceVariant.withOpacity(0.4),
+                          color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
                           borderRadius: BorderRadius.circular(2),
                         ),
                       ),
@@ -694,7 +695,7 @@ class _GlassBottomSheetState extends State<GlassBottomSheet>
                                 widget.onClose?.call();
                                 Navigator.of(context).pop();
                               },
-                              icon: const Icon(Icons.close),
+                              icon: Icon(PhosphorIcons.x()),
                               tooltip: 'Close bottom sheet',
                             ),
                         ],
@@ -813,7 +814,7 @@ class _GlassFloatingActionButtonState extends State<GlassFloatingActionButton>
                   width: size,
                   height: size,
                   borderRadius: BorderRadius.circular(size / 2),
-                  glassTint: backgroundColor.withOpacity(0.9),
+                  glassTint: backgroundColor.withValues(alpha: 0.9),
                   child: Center(
                     child: IconTheme(
                       data: IconThemeData(
@@ -832,3 +833,5 @@ class _GlassFloatingActionButtonState extends State<GlassFloatingActionButton>
     );
   }
 }
+
+

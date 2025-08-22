@@ -191,9 +191,7 @@ class LocalNotificationService implements NotificationService {
         scheduledDate,
         notificationDetails,
         payload: '${task.id}|reminder',
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
-      );
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,);
       
       return notificationId;
     } catch (e) {
@@ -289,9 +287,7 @@ class LocalNotificationService implements NotificationService {
         scheduledDate,
         notificationDetails,
         payload: 'daily_summary|summary',
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
-        matchDateTimeComponents: DateTimeComponents.time, // Repeat daily
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,matchDateTimeComponents: DateTimeComponents.time, // Repeat daily
       );
       
       // Store notification info for persistence

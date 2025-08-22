@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../services/location/location_models.dart';
 import '../providers/location_providers.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class LocationPermissionWidget extends ConsumerWidget {
   final Widget child;
@@ -42,8 +43,8 @@ class LocationPermissionWidget extends ConsumerWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
-            Icons.location_off,
+          Icon(
+            PhosphorIcons.mapPin(),
             size: 64,
             color: Colors.grey,
           ),
@@ -89,12 +90,12 @@ class CurrentLocationWidget extends ConsumerWidget {
 
     return locationAsync.when(
       data: builder,
-      loading: () => loadingWidget ?? const Center(child: CircularProgressIndicator()),
+      loading: () => loadingWidget ?? Center(child: CircularProgressIndicator()),
       error: (error, stack) => errorWidget ?? Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error, color: Colors.red),
+            Icon(PhosphorIcons.warningCircle(), color: Colors.red),
             const SizedBox(height: 8),
             Text('Error: $error'),
             const SizedBox(height: 8),
@@ -126,12 +127,12 @@ class LocationStreamWidget extends ConsumerWidget {
 
     return locationStream.when(
       data: builder,
-      loading: () => loadingWidget ?? const Center(child: CircularProgressIndicator()),
+      loading: () => loadingWidget ?? Center(child: CircularProgressIndicator()),
       error: (error, stack) => errorWidget ?? Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error, color: Colors.red),
+            Icon(PhosphorIcons.warningCircle(), color: Colors.red),
             const SizedBox(height: 8),
             Text('Error: $error'),
           ],
@@ -212,7 +213,7 @@ class _GeofenceConfigWidgetState extends ConsumerState<GeofenceConfigWidget> {
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               TextFormField(
                 controller: _addressController,
                 decoration: InputDecoration(
@@ -222,11 +223,11 @@ class _GeofenceConfigWidgetState extends ConsumerState<GeofenceConfigWidget> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.search),
+                        icon: Icon(PhosphorIcons.magnifyingGlass()),
                         onPressed: _searchAddress,
                       ),
                       IconButton(
-                        icon: const Icon(Icons.my_location),
+                        icon: Icon(PhosphorIcons.crosshair()),
                         onPressed: _useCurrentLocation,
                       ),
                     ],
@@ -273,18 +274,18 @@ class _GeofenceConfigWidgetState extends ConsumerState<GeofenceConfigWidget> {
                   }
                 },
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16),
               if (_selectedLocation != null)
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.green.withOpacity(0.1),
+                    color: Colors.green.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                     border: Border.all(color: Colors.green),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.location_on, color: Colors.green),
+                      Icon(PhosphorIcons.mapPin(), color: Colors.green),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
@@ -430,3 +431,5 @@ class _GeofenceConfigWidgetState extends ConsumerState<GeofenceConfigWidget> {
     Navigator.of(context).pop();
   }
 }
+
+

@@ -6,6 +6,7 @@ import '../../core/theme/typography_constants.dart';
 import 'glassmorphism_container.dart';
 import 'accessible_button.dart';
 import 'empty_state_illustrations.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Engaging empty states with beautiful illustrations and clear calls to action
 class EngagingEmptyStates {
@@ -21,12 +22,12 @@ class EngagingEmptyStates {
       message: customMessage ?? 'Start organizing your life by creating your first task. Break down big goals into manageable steps.',
       primaryAction: EngagingEmptyAction(
         text: 'Create First Task',
-        icon: Icons.add_task,
+        icon: PhosphorIcons.plus(),
         onPressed: onCreateTask,
       ),
       secondaryAction: onImportTasks != null ? EngagingEmptyAction(
         text: 'Import Tasks',
-        icon: Icons.upload_file,
+        icon: PhosphorIcons.upload(),
         onPressed: onImportTasks,
         isSecondary: true,
       ) : null,
@@ -50,12 +51,12 @@ class EngagingEmptyStates {
       message: customMessage ?? 'Organize your tasks into projects to track progress and collaborate with your team.',
       primaryAction: EngagingEmptyAction(
         text: 'Create Project',
-        icon: Icons.create_new_folder,
+        icon: PhosphorIcons.folderPlus(),
         onPressed: onCreateProject,
       ),
       secondaryAction: onBrowseTemplates != null ? EngagingEmptyAction(
         text: 'Browse Templates',
-        icon: Icons.article_outlined,
+        icon: PhosphorIcons.article(),
         onPressed: onBrowseTemplates,
         isSecondary: true,
       ) : null,
@@ -79,12 +80,12 @@ class EngagingEmptyStates {
       message: customMessage ?? 'Schedule your tasks to better manage your time and never miss important deadlines.',
       primaryAction: EngagingEmptyAction(
         text: 'Schedule a Task',
-        icon: Icons.schedule,
+        icon: PhosphorIcons.clock(),
         onPressed: onScheduleTask,
       ),
       secondaryAction: onConnectCalendar != null ? EngagingEmptyAction(
         text: 'Connect Calendar',
-        icon: Icons.sync,
+        icon: PhosphorIcons.arrowsClockwise(),
         onPressed: onConnectCalendar,
         isSecondary: true,
       ) : null,
@@ -108,12 +109,12 @@ class EngagingEmptyStates {
       message: 'We couldn\'t find any tasks matching "$query". Try adjusting your search terms or create a new task.',
       primaryAction: onCreateFromSearch != null ? EngagingEmptyAction(
         text: 'Create "$query" Task',
-        icon: Icons.add,
+        icon: PhosphorIcons.plus(),
         onPressed: onCreateFromSearch,
       ) : null,
       secondaryAction: onClearSearch != null ? EngagingEmptyAction(
         text: 'Clear Search',
-        icon: Icons.clear,
+        icon: PhosphorIcons.x(),
         onPressed: onClearSearch,
         isSecondary: true,
       ) : null,
@@ -136,12 +137,12 @@ class EngagingEmptyStates {
       message: 'You\'re all caught up! Enable notifications to stay informed about important task updates and deadlines.',
       primaryAction: onEnableNotifications != null ? EngagingEmptyAction(
         text: 'Enable Notifications',
-        icon: Icons.notifications_active,
+        icon: PhosphorIcons.bell(),
         onPressed: onEnableNotifications,
       ) : null,
       secondaryAction: onViewSettings != null ? EngagingEmptyAction(
         text: 'Notification Settings',
-        icon: Icons.settings_outlined,
+        icon: PhosphorIcons.gear(),
         onPressed: onViewSettings,
         isSecondary: true,
       ) : null,
@@ -164,12 +165,12 @@ class EngagingEmptyStates {
       message: 'Complete some tasks to see insights about your productivity patterns and progress over time.',
       primaryAction: onCreateTasks != null ? EngagingEmptyAction(
         text: 'Create Tasks',
-        icon: Icons.add_task,
+        icon: PhosphorIcons.plus(),
         onPressed: onCreateTasks,
       ) : null,
       secondaryAction: onViewGoals != null ? EngagingEmptyAction(
         text: 'Set Goals',
-        icon: Icons.flag_outlined,
+        icon: PhosphorIcons.flag(),
         onPressed: onViewGoals,
         isSecondary: true,
       ) : null,
@@ -192,12 +193,12 @@ class EngagingEmptyStates {
       message: 'We\'re having trouble connecting to our servers. Check your internet connection and try again.',
       primaryAction: onRetry != null ? EngagingEmptyAction(
         text: 'Try Again',
-        icon: Icons.refresh,
+        icon: PhosphorIcons.arrowClockwise(),
         onPressed: onRetry,
       ) : null,
       secondaryAction: onOfflineMode != null ? EngagingEmptyAction(
         text: 'Work Offline',
-        icon: Icons.offline_bolt,
+        icon: PhosphorIcons.lightning(),
         onPressed: onOfflineMode,
         isSecondary: true,
       ) : null,
@@ -411,7 +412,7 @@ class EngagingEmptyStateWidget extends ConsumerWidget {
         Row(
           children: [
             Icon(
-              Icons.lightbulb_outline,
+              PhosphorIcons.lightbulb(),
               size: isLargeText ? 24 : 20,
               color: theme.colorScheme.primary,
             ),
@@ -442,7 +443,7 @@ class EngagingEmptyStateWidget extends ConsumerWidget {
                 height: 6,
                 margin: const EdgeInsets.only(top: 6, right: 12),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withOpacity(0.6),
+                  color: theme.colorScheme.primary.withValues(alpha: 0.6),
                   shape: BoxShape.circle,
                 ),
               ),
@@ -465,3 +466,5 @@ class EngagingEmptyStateWidget extends ConsumerWidget {
     );
   }
 }
+
+
