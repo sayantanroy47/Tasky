@@ -238,7 +238,7 @@ class ImportExportService {
       if (task.subTasks.isNotEmpty) {
         buffer.writeln('Subtasks:');
         for (final subtask in task.subTasks) {
-          final status = subtask.isCompleted ? '✓' : '○';
+          final status = subtask.isCompleted ? '[EMOJI]' : '○';
           buffer.writeln('  $status ${subtask.title}');
         }
       }

@@ -99,7 +99,7 @@ class ShareIntentService {
         context: _context!,
         builder: (context) => MessageTaskDialog(
           messageText: messageText,
-          sourceName: 'Wife 💕',
+          sourceName: 'Wife [EMOJI]',
           sourceApp: 'Messaging App',
           suggestedTask: suggestedTask,
         ),

@@ -46,7 +46,7 @@ void main() {
           child: ProjectCard(project: project),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Test Project'), findsOneWidget);
       expect(find.byType(ProjectCard), findsOneWidget);
@@ -63,7 +63,7 @@ void main() {
           child: ProjectCard(project: redProject),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Red Project'), findsOneWidget);
       expect(find.byType(ProjectCard), findsOneWidget);
@@ -80,7 +80,7 @@ void main() {
           child: ProjectCard(project: archivedProject),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Archived Project'), findsOneWidget);
       expect(find.byType(ProjectCard), findsOneWidget);
@@ -98,10 +98,10 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       await tester.tap(find.byType(ProjectCard));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(onTapCalled, isTrue);
     });
@@ -117,7 +117,7 @@ void main() {
           child: ProjectCard(project: longDescProject),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Long Description Project'), findsOneWidget);
       expect(find.byType(ProjectCard), findsOneWidget);
@@ -136,7 +136,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Themed Project'), findsOneWidget);
       expect(find.byType(ProjectCard), findsOneWidget);
@@ -153,7 +153,7 @@ void main() {
           child: ProjectCard(project: project),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('No Description Project'), findsOneWidget);
       expect(find.byType(ProjectCard), findsOneWidget);
@@ -170,7 +170,7 @@ void main() {
           child: ProjectCard(project: project),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Invalid Color Project'), findsOneWidget);
       expect(find.byType(ProjectCard), findsOneWidget);
@@ -184,10 +184,10 @@ void main() {
           child: ProjectCard(project: project),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       await tester.longPress(find.byType(ProjectCard));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Should not crash and card should still be there
       expect(find.byType(ProjectCard), findsOneWidget);
@@ -201,7 +201,7 @@ void main() {
           child: ProjectCard(project: project),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Check for accessibility semantics
       expect(find.byType(ProjectCard), findsOneWidget);

@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+import 'dart:math' as math;
 import '../../domain/entities/task_model.dart';
+import '../../domain/entities/calendar_event.dart';
 import '../../domain/models/enums.dart';
 import '../providers/enhanced_calendar_provider.dart';
+import '../../core/theme/typography_constants.dart';
+import '../../core/providers/navigation_provider.dart';
+import '../widgets/enhanced_task_creation_dialog.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Enhanced calendar widget that integrates tasks and events
@@ -17,25 +22,63 @@ class EnhancedCalendarWidget extends ConsumerWidget {
 
     return Column(
       children: [
-        // Calendar statistics
-        _buildCalendarStats(context, ref),
-        
-        const SizedBox(height: 16),
-        
-        // View mode selector
-        _buildViewModeSelector(context, calendarState, calendarNotifier),
-        
-        const SizedBox(height: 12),
-        
-        // Calendar
-        Expanded(
-          child: _buildCalendarView(context, calendarState, calendarNotifier),
+        // Calendar statistics with compact spacing
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),
+          child: _buildCalendarStats(context, ref),
         ),
         
-        const SizedBox(height: 16),
+        const SizedBox(height: 8),
         
-        // Selected date details
-        _buildSelectedDateDetails(context, ref, calendarState),
+        // View mode selector with padding
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+          child: _buildViewModeSelector(context, calendarState, calendarNotifier),
+        ),
+        
+        const SizedBox(height: 8),
+        
+        // Calendar with enhanced sizing constraints and geometry validation
+        Expanded(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              // Validate available space before rendering calendar
+              final availableHeight = constraints.maxHeight;
+              final availableWidth = constraints.maxWidth;
+              
+              // Ensure minimum viable dimensions to prevent geometry errors
+              if (availableHeight < 150 || availableWidth < 150) {
+                return Container(
+                  constraints: BoxConstraints(
+                    minHeight: math.max(150, availableHeight),
+                    minWidth: math.max(150, availableWidth),
+                  ),
+                  child: const Center(
+                    child: Text(
+                      'Calendar needs more space to display properly',
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                );
+              }
+              
+              return Container(
+                height: availableHeight, // Use all available height
+                width: availableWidth, // Use all available width
+                padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                child: _buildCalendarView(context, calendarState, calendarNotifier, ref),
+              );
+            },
+          ),
+        ),
+        
+        const SizedBox(height: 8),
+        
+        // Selected date details with proper spacing
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),
+          child: _buildSelectedDateDetails(context, ref, calendarState),
+        ),
       ],
     );
   }
@@ -44,18 +87,18 @@ class EnhancedCalendarWidget extends ConsumerWidget {
     final stats = ref.watch(calendarStatsProvider);
     
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), // Even more compact padding
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(6),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildStatItem(context, 'Today', stats.todaysTasks.toString(), Colors.blue),
-          _buildStatItem(context, 'Upcoming', stats.upcomingTasks.toString(), Colors.green),
-          _buildStatItem(context, 'Overdue', stats.overdueTasks.toString(), Colors.red),
-          _buildStatItem(context, 'Total', stats.totalTasks.toString(), Colors.grey),
+          _buildStatItem(context, 'Today', stats.todaysTasks.toString(), Theme.of(context).colorScheme.primary),
+          _buildStatItem(context, 'Upcoming', stats.upcomingTasks.toString(), Theme.of(context).colorScheme.secondary),
+          _buildStatItem(context, 'Overdue', stats.overdueTasks.toString(), Theme.of(context).colorScheme.error),
+          _buildStatItem(context, 'Total', stats.totalTasks.toString(), Theme.of(context).colorScheme.onSurfaceVariant),
         ],
       ),
     );
@@ -68,13 +111,16 @@ class EnhancedCalendarWidget extends ConsumerWidget {
         Text(
           value,
           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w500,
+            fontSize: TypographyConstants.titleMedium,
+            fontWeight: TypographyConstants.medium,
             color: color,
           ),
         ),
         Text(
           label,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            fontSize: TypographyConstants.bodySmall,
+            fontWeight: TypographyConstants.regular,
             color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
@@ -97,20 +143,27 @@ class EnhancedCalendarWidget extends ConsumerWidget {
         children: CalendarViewMode.values.map((mode) {
           final isSelected = state.viewMode == mode;
           return GestureDetector(
-            onTap: () => notifier.changeViewMode(mode),
+            onTap: () {
+              // Prevent rapid view mode switches that could cause duplicate key errors
+              if (state.viewMode != mode) {
+                notifier.changeViewMode(mode);
+              }
+            },
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              margin: const EdgeInsets.symmetric(horizontal: 2),
               decoration: BoxDecoration(
                 color: isSelected ? Theme.of(context).colorScheme.primary : null,
-                borderRadius: BorderRadius.circular(6),
+                borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
                 _getViewModeLabel(mode),
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontSize: TypographyConstants.labelLarge,
                   color: isSelected 
                       ? Theme.of(context).colorScheme.onPrimary
                       : Theme.of(context).colorScheme.onSurfaceVariant,
-                  fontWeight: isSelected ? FontWeight.w500 : null,
+                  fontWeight: isSelected ? TypographyConstants.medium : TypographyConstants.regular,
                 ),
               ),
             ),
@@ -135,86 +188,277 @@ class EnhancedCalendarWidget extends ConsumerWidget {
     BuildContext context,
     EnhancedCalendarState state,
     EnhancedCalendarNotifier notifier,
+    WidgetRef ref,
   ) {
-    final tasksByDate = notifier.getTasksByDate();
-    final eventsByDate = notifier.getEventsByDate();
+    try {
+      final tasksByDate = notifier.getTasksByDate();
+      final eventsByDate = notifier.getEventsByDate();
 
-    // Convert tasks to calendar appointments
-    final appointments = <Appointment>[];
-    
-    // Add tasks as appointments
-    for (final entry in tasksByDate.entries) {
-      for (final task in entry.value) {
-        appointments.add(Appointment(
-          startTime: entry.key,
-          endTime: entry.key.add(const Duration(hours: 1)),
-          subject: task.title,
-          color: _getTaskColor(task),
-          notes: task.description ?? '',
-        ));
+      // Convert tasks to calendar appointments with enhanced styling
+      final appointments = <Appointment>[];
+      
+      // Add tasks as appointments with improved visibility
+      for (final entry in tasksByDate.entries) {
+        for (final task in entry.value) {
+          final hasSpecificTime = task.dueDate != null && 
+            (task.dueDate!.hour != 0 || task.dueDate!.minute != 0);
+          
+          final taskColor = _getEnhancedTaskColor(task, context);
+          
+          appointments.add(Appointment(
+            startTime: entry.key,
+            endTime: hasSpecificTime 
+              ? entry.key.add(const Duration(hours: 1))
+              : entry.key.add(const Duration(days: 1)),
+            subject: _getTaskDisplayText(task),
+            color: taskColor,
+            notes: task.description ?? '',
+            isAllDay: !hasSpecificTime,
+            id: task.id, // Add unique ID for task identification
+          ));
+        }
       }
-    }
-    
-    // Add events as appointments
-    for (final entry in eventsByDate.entries) {
-      for (final event in entry.value) {
-        appointments.add(Appointment(
-          startTime: event.startTime,
-          endTime: event.endTime,
-          subject: event.title,
-          color: Colors.blue,
-          notes: event.description ?? '',
-        ));
+      
+      // Add events as appointments with enhanced styling
+      for (final entry in eventsByDate.entries) {
+        for (final event in entry.value) {
+          appointments.add(Appointment(
+            startTime: event.startTime,
+            endTime: event.endTime,
+            subject: _getEventDisplayText(event),
+            color: Color(int.parse(event.color.replaceFirst('#', '0xFF'))).withValues(alpha: 0.8),
+            notes: event.description ?? '',
+            isAllDay: event.isAllDay,
+            id: event.id, // Add unique ID for event identification
+          ));
+        }
       }
-    }
 
-    return SfCalendar(
-      view: _mapViewModeToCalendarView(state.viewMode),
-      initialDisplayDate: state.focusedDate,
-      initialSelectedDate: state.selectedDate,
-      dataSource: MeetingDataSource(appointments),
-      monthViewSettings: MonthViewSettings(
-        appointmentDisplayMode: MonthAppointmentDisplayMode.indicator,
-        showAgenda: false,
-        dayFormat: 'EEE',
-        monthCellStyle: MonthCellStyle(
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          todayBackgroundColor: Theme.of(context).colorScheme.primaryContainer,
-          leadingDatesBackgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
-          trailingDatesBackgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+      return GestureDetector(
+        onHorizontalDragEnd: (DragEndDetails details) {
+          // Add swipe navigation for month view
+          if (state.viewMode == CalendarViewMode.month) {
+            final velocity = details.primaryVelocity ?? 0;
+            if (velocity < -500) {
+              // Swiped left - next month
+              final nextMonth = DateTime(
+                state.focusedDate.year,
+                state.focusedDate.month + 1,
+                1,
+              );
+              notifier.changeFocusedDate(nextMonth);
+            } else if (velocity > 500) {
+              // Swiped right - previous month
+              final prevMonth = DateTime(
+                state.focusedDate.year,
+                state.focusedDate.month - 1,
+                1,
+              );
+              notifier.changeFocusedDate(prevMonth);
+            }
+          }
+        },
+        child: SfCalendar(
+          key: ValueKey('calendar_${state.viewMode.name}_${state.focusedDate.millisecondsSinceEpoch}'), // Unique key to prevent duplicate GlobalKey errors
+          view: _mapViewModeToCalendarView(state.viewMode),
+          initialDisplayDate: state.focusedDate,
+          initialSelectedDate: state.selectedDate,
+          dataSource: MeetingDataSource(appointments),
+          
+          // Enhanced month view settings with optimized cell space
+          monthViewSettings: MonthViewSettings(
+            appointmentDisplayMode: MonthAppointmentDisplayMode.indicator,
+            showAgenda: false, // Disable agenda to give more space to cells
+            dayFormat: 'EEE',
+            appointmentDisplayCount: 6, // Increased to show more task indicators
+            navigationDirection: MonthNavigationDirection.horizontal,
+            monthCellStyle: MonthCellStyle(
+              backgroundColor: Theme.of(context).colorScheme.surface,
+              todayBackgroundColor: Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 1.0),
+              leadingDatesBackgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+              trailingDatesBackgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+              textStyle: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface,
+                fontWeight: TypographyConstants.regular,
+                fontSize: TypographyConstants.bodyLarge,
+              ),
+              // todayTextStyle is deprecated and moved to SfCalendar class
+              leadingDatesTextStyle: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+                fontWeight: TypographyConstants.regular,
+                fontSize: TypographyConstants.bodyMedium,
+              ),
+              trailingDatesTextStyle: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+                fontWeight: TypographyConstants.regular,
+                fontSize: TypographyConstants.bodyMedium,
+              ),
+            ),
+            agendaStyle: AgendaStyle(
+              backgroundColor: Colors.transparent,
+              appointmentTextStyle: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface,
+                fontSize: TypographyConstants.bodyMedium,
+                fontWeight: TypographyConstants.medium,
+              ),
+              dateTextStyle: TextStyle(
+                color: Theme.of(context).colorScheme.primary,
+                fontSize: TypographyConstants.titleSmall,
+                fontWeight: TypographyConstants.medium,
+              ),
+              dayTextStyle: TextStyle(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                fontSize: TypographyConstants.bodyMedium,
+                fontWeight: TypographyConstants.regular,
+              ),
+            ),
+          ),
+          
+          // Enhanced time slot settings for week and day views
+          timeSlotViewSettings: TimeSlotViewSettings(
+            startHour: 6, // Start at 6 AM
+            endHour: 23, // End at 11 PM  
+            timeIntervalHeight: 100, // Further increased for better readability
+            timeFormat: 'HH:mm',
+            timeTextStyle: TextStyle(
+              fontSize: TypographyConstants.bodyLarge,
+              fontWeight: TypographyConstants.medium,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+            timeRulerSize: 85, // Slightly increased time ruler size
+          ),
+          
+          // All-day panel settings
+          showCurrentTimeIndicator: true,
+          showNavigationArrow: true,
+          allowViewNavigation: true,
+          headerStyle: CalendarHeaderStyle(
+            textAlign: TextAlign.center,
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontSize: TypographyConstants.titleLarge,
+              fontWeight: TypographyConstants.medium,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+          ),
+          headerHeight: 55, // Slightly increased header height
+          cellBorderColor: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+          selectionDecoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
+            border: Border.all(
+              color: Theme.of(context).colorScheme.primary,
+              width: 3.0, // Slightly thicker border for better visibility
+            ),
+            borderRadius: BorderRadius.circular(10), // More rounded corners
+            boxShadow: [
+              BoxShadow(
+                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.4),
+                blurRadius: 6,
+                spreadRadius: 1,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          todayHighlightColor: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.9),
+          todayTextStyle: TextStyle(
+            color: Theme.of(context).colorScheme.onSecondaryContainer,
+            fontWeight: TypographyConstants.medium,
+            fontSize: TypographyConstants.bodyLarge,
+          ),
+          onTap: (CalendarTapDetails details) {
+            if (details.date != null) {
+              // Defer state updates to ensure they happen outside build cycle
+              // Use microtask to prevent duplicate key issues during rapid taps
+              Future.microtask(() {
+                if (context.mounted) {
+                  try {
+                    notifier.selectDate(details.date!);
+                    // Only update focused date if it's significantly different
+                    if (state.focusedDate.month != details.date!.month ||
+                        state.focusedDate.year != details.date!.year) {
+                      notifier.changeFocusedDate(details.date!);
+                    }
+                  } catch (e) {
+                    // Ignore errors that occur during widget disposal
+                    debugPrint('Calendar tap error (can be safely ignored): $e');
+                  }
+                }
+              });
+            }
+          },
+          onViewChanged: (ViewChangedDetails details) {
+            if (details.visibleDates.isNotEmpty) {
+              // Defer state update to avoid modifying provider during build
+              // Use microtask with additional safety checks to prevent duplicate keys
+              Future.microtask(() {
+                if (context.mounted) {
+                  try {
+                    if (details.visibleDates.isNotEmpty) {
+                      final newDate = details.visibleDates.first;
+                      // Only update if the focused date has actually changed significantly
+                      final currentFocused = state.focusedDate;
+                      if (newDate.month != currentFocused.month ||
+                          newDate.year != currentFocused.year ||
+                          (newDate.day != currentFocused.day && 
+                           state.viewMode == CalendarViewMode.day)) {
+                        notifier.changeFocusedDate(newDate);
+                      }
+                    }
+                  } catch (e) {
+                    // Ignore errors that occur during widget disposal or view transitions
+                    debugPrint('Calendar view change error (can be safely ignored): $e');
+                  }
+                }
+              });
+            }
+          },
         ),
+      );
+    } catch (e) {
+      debugPrint('Calendar rendering error: $e');
+      return _buildCalendarErrorWidget(context, e.toString(), ref);
+    }
+  }
+  
+  Widget _buildCalendarErrorWidget(BuildContext context, String error, WidgetRef ref) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            PhosphorIcons.warningCircle(),
+            size: 48,
+            color: Theme.of(context).colorScheme.error,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'Calendar Display Error',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontSize: TypographyConstants.titleMedium,
+              fontWeight: TypographyConstants.medium,
+              color: Theme.of(context).colorScheme.error,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'The calendar encountered a display error. Please try switching views or refreshing.',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              fontSize: TypographyConstants.bodySmall,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton.icon(
+            onPressed: () {
+              final notifier = ref.read(enhancedCalendarProvider.notifier);
+              notifier.refresh();
+            },
+            icon: Icon(PhosphorIcons.arrowsClockwise()),
+            label: const Text('Refresh'),
+          ),
+        ],
       ),
-      headerStyle: CalendarHeaderStyle(
-        textAlign: TextAlign.center,
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        textStyle: Theme.of(context).textTheme.titleLarge?.copyWith(
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-      selectionDecoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
-        border: Border.all(
-          color: Theme.of(context).colorScheme.primary,
-          width: 2,
-        ),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      todayHighlightColor: Theme.of(context).colorScheme.secondary,
-      onTap: (CalendarTapDetails details) {
-        if (details.date != null) {
-          // Defer state updates to ensure they happen outside build cycle
-          Future(() {
-            notifier.selectDate(details.date!);
-            notifier.changeFocusedDate(details.date!);
-          });
-        }
-      },
-      onViewChanged: (ViewChangedDetails details) {
-        if (details.visibleDates.isNotEmpty) {
-          // Defer state update to avoid modifying provider during build
-          Future(() => notifier.changeFocusedDate(details.visibleDates.first));
-        }
-      },
     );
   }
 
@@ -229,21 +473,61 @@ class EnhancedCalendarWidget extends ConsumerWidget {
     }
   }
 
-
-  Color _getTaskColor(TaskModel task) {
+  Color _getEnhancedTaskColor(TaskModel task, BuildContext context) {
+    // Get base color by priority using system theme colors
+    Color baseColor;
     switch (task.priority) {
       case TaskPriority.urgent:
-        return Colors.red;
+        baseColor = Theme.of(context).colorScheme.error;
+        break;
       case TaskPriority.high:
-        return Colors.orange;
+        baseColor = Theme.of(context).colorScheme.errorContainer;
+        break;
       case TaskPriority.medium:
-        return Colors.blue;
+        baseColor = Theme.of(context).colorScheme.primary;
+        break;
       case TaskPriority.low:
-        return Colors.green;
+        baseColor = Theme.of(context).colorScheme.secondary;
+        break;
     }
+    
+    // Modify color based on task status
+    if (task.status == TaskStatus.completed) {
+      return baseColor.withValues(alpha: 0.6); // Slightly transparent for completed tasks
+    } else if (task.status == TaskStatus.inProgress) {
+      return baseColor.withValues(alpha: 0.9); // High visibility for in-progress
+    }
+    
+    return baseColor.withValues(alpha: 0.8); // Standard visibility for pending
   }
-
-  // Removed unused marker methods
+  
+  String _getTaskDisplayText(TaskModel task) {
+    // Add priority and status indicators to improve visibility
+    String priorityPrefix = '';
+    switch (task.priority) {
+      case TaskPriority.urgent:
+        priorityPrefix = '[!] ';
+        break;
+      case TaskPriority.high:
+        priorityPrefix = '[H] ';
+        break;
+      case TaskPriority.medium:
+        priorityPrefix = '[M] ';
+        break;
+      case TaskPriority.low:
+        priorityPrefix = '[L] ';
+        break;
+    }
+    
+    final String statusPrefix = task.status == TaskStatus.completed ? '[DONE] ' : '';
+    
+    return '$statusPrefix$priorityPrefix${task.title}';
+  }
+  
+  String _getEventDisplayText(CalendarEvent event) {
+    // Add event indicator to distinguish from tasks
+    return '[EVENT] ${event.title}';
+  }
 
   Widget _buildSelectedDateDetails(
     BuildContext context,
@@ -253,18 +537,19 @@ class EnhancedCalendarWidget extends ConsumerWidget {
     final tasks = state.tasksForSelectedDate;
     
     if (tasks.isEmpty) {
-      return _buildEmptySelectedDate(context, state.selectedDate);
+      return _buildEmptySelectedDate(context, state.selectedDate, ref);
     }
     
     return Container(
-      constraints: const BoxConstraints(maxHeight: 200),
+      constraints: const BoxConstraints(maxHeight: 120), // Reduced max height
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             'Tasks for ${_formatDate(state.selectedDate)}',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w500,
+              fontSize: TypographyConstants.titleMedium,
+              fontWeight: TypographyConstants.medium,
             ),
           ),
           const SizedBox(height: 8),
@@ -283,7 +568,7 @@ class EnhancedCalendarWidget extends ConsumerWidget {
     );
   }
 
-  Widget _buildEmptySelectedDate(BuildContext context, DateTime date) {
+  Widget _buildEmptySelectedDate(BuildContext context, DateTime date, WidgetRef ref) {
     return Container(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -298,12 +583,13 @@ class EnhancedCalendarWidget extends ConsumerWidget {
           Text(
             'No tasks for ${_formatDate(date)}',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontSize: TypographyConstants.bodyMedium,
               color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: 8),
           ElevatedButton.icon(
-            onPressed: () => _showCreateTaskDialog(context, date),
+            onPressed: () => _navigateToTaskCreation(context, ref, date),
             icon: Icon(PhosphorIcons.plus()),
             label: const Text('Add Task'),
           ),
@@ -323,7 +609,7 @@ class EnhancedCalendarWidget extends ConsumerWidget {
                 ? PhosphorIcons.checkCircle()
                 : PhosphorIcons.circle(),
             color: task.status == TaskStatus.completed
-                ? Colors.green
+                ? Theme.of(context).colorScheme.secondary
                 : Theme.of(context).colorScheme.primary,
           ),
           onPressed: () {
@@ -334,7 +620,9 @@ class EnhancedCalendarWidget extends ConsumerWidget {
         ),
         title: Text(
           task.title,
-          style: TextStyle(
+          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+            fontSize: TypographyConstants.bodyLarge,
+            fontWeight: TypographyConstants.regular,
             decoration: task.status == TaskStatus.completed
                 ? TextDecoration.lineThrough
                 : null,
@@ -345,6 +633,10 @@ class EnhancedCalendarWidget extends ConsumerWidget {
                 task.description!,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  fontSize: TypographyConstants.bodySmall,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
               )
             : null,
         trailing: _buildPriorityIndicator(context, task.priority),
@@ -358,19 +650,19 @@ class EnhancedCalendarWidget extends ConsumerWidget {
     
     switch (priority) {
       case TaskPriority.low:
-        color = Colors.green;
+        color = Theme.of(context).colorScheme.secondary;
         icon = PhosphorIcons.caretDown();
         break;
       case TaskPriority.medium:
-        color = Colors.orange;
+        color = Theme.of(context).colorScheme.primary;
         icon = PhosphorIcons.minus();
         break;
       case TaskPriority.high:
-        color = Colors.red;
+        color = Theme.of(context).colorScheme.errorContainer;
         icon = PhosphorIcons.caretUp();
         break;
       case TaskPriority.urgent:
-        color = Colors.red;
+        color = Theme.of(context).colorScheme.error;
         icon = PhosphorIcons.arrowUp();
         break;
     }
@@ -386,142 +678,26 @@ class EnhancedCalendarWidget extends ConsumerWidget {
     return '${months[date.month - 1]} ${date.day}, ${date.year}';
   }
 
-  void _showCreateTaskDialog(BuildContext context, DateTime date) {
-    showDialog(
-      context: context,
-      builder: (context) => _CreateTaskDialog(selectedDate: date),
-    );
-  }
-}
-
-/// Dialog for creating a new task for a specific date
-class _CreateTaskDialog extends ConsumerStatefulWidget {
-  final DateTime selectedDate;
-  
-  const _CreateTaskDialog({required this.selectedDate});
-
-  @override
-  ConsumerState<_CreateTaskDialog> createState() => _CreateTaskDialogState();
-}
-
-class _CreateTaskDialogState extends ConsumerState<_CreateTaskDialog> {
-  final _titleController = TextEditingController();
-  final _descriptionController = TextEditingController();
-  TaskPriority _selectedPriority = TaskPriority.medium;
-  
-  @override
-  void dispose() {
-    _titleController.dispose();
-    _descriptionController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text('Create Task for ${_formatDate(widget.selectedDate)}'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TextField(
-            controller: _titleController,
-            decoration: const InputDecoration(
-              labelText: 'Task Title',
-              border: OutlineInputBorder(),
-            ),
-            autofocus: true,
-          ),
-          const SizedBox(height: 16),
-          
-          TextField(
-            controller: _descriptionController,
-            decoration: const InputDecoration(
-              labelText: 'Description (optional)',
-              border: OutlineInputBorder(),
-            ),
-            maxLines: 2,
-          ),
-          const SizedBox(height: 16),
-          
-          DropdownButtonFormField<TaskPriority>(
-            initialValue: _selectedPriority,
-            decoration: const InputDecoration(
-              labelText: 'Priority',
-              border: OutlineInputBorder(),
-            ),
-            items: TaskPriority.values.map((priority) {
-              return DropdownMenuItem(
-                value: priority,
-                child: Text(priority.name.toUpperCase()),
-              );
-            }).toList(),
-            onChanged: (priority) {
-              if (priority != null) {
-                setState(() => _selectedPriority = priority);
-              }
-            },
-          ),
-        ],
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
-        ),
-        ElevatedButton(
-          onPressed: _canCreate() ? _createTask : null,
-          child: const Text('Create'),
-        ),
-      ],
-    );
-  }
-
-  bool _canCreate() {
-    return _titleController.text.trim().isNotEmpty;
-  }
-
-  void _createTask() async {
-    if (!_canCreate()) return;
+  void _navigateToTaskCreation(BuildContext context, WidgetRef ref, DateTime date) {
+    // Navigate to home tab and trigger task creation with the selected date
+    ref.read(navigationProvider.notifier).navigateToIndex(0); // Switch to home tab
     
-    final task = TaskModel.create(
-      title: _titleController.text.trim(),
-      description: _descriptionController.text.trim().isEmpty 
-          ? null 
-          : _descriptionController.text.trim(),
-      priority: _selectedPriority,
-      dueDate: widget.selectedDate,
-    );
-    
-    final success = await ref.read(enhancedCalendarProvider.notifier).createTaskForDate(task);
-    
-    if (mounted) {
-      Navigator.of(context).pop();
-      if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Task created successfully'),
-            backgroundColor: Colors.green,
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Failed to create task'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
+    // Show the same task creation dialog as the home screen plus button
+    Future.microtask(() {
+      if (context.mounted) {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return EnhancedTaskCreationDialog(
+              prePopulatedData: {'dueDate': date}, // Pass the selected date in prePopulatedData
+            );
+          },
         );
       }
-    }
-  }
-
-  String _formatDate(DateTime date) {
-    final months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-    ];
-    return '${months[date.month - 1]} ${date.day}, ${date.year}';
+    });
   }
 }
+
 
 /// Data source for Syncfusion Calendar
 class MeetingDataSource extends CalendarDataSource {
@@ -554,4 +730,3 @@ class MeetingDataSource extends CalendarDataSource {
     return appointments![index].isAllDay;
   }
 }
-

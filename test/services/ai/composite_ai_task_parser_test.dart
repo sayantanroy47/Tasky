@@ -234,15 +234,15 @@ void main() {
 
     group('AIServiceType', () {
       test('should have correct display names', () {
-        expect(AIServiceType.openai.displayName, equals('OpenAI GPT-4o'));
-        expect(AIServiceType.claude.displayName, equals('Claude 3'));
-        expect(AIServiceType.local.displayName, equals('Local Processing'));
+        expect(AIServiceType.openai.displayName, equals('OpenAI'));
+        expect(AIServiceType.claude.displayName, equals('Claude'));
+        expect(AIServiceType.local.displayName, equals('Local'));
       });
 
       test('should have descriptions', () {
         expect(AIServiceType.openai.description, contains('OpenAI'));
         expect(AIServiceType.claude.description, contains('Claude'));
-        expect(AIServiceType.local.description, contains('local'));
+        expect(AIServiceType.local.description, contains('Local'));
       });
     });
   });

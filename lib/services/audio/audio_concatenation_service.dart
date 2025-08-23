@@ -14,10 +14,10 @@ class AudioConcatenationService {
   Future<bool> initialize() async {
     try {
       _isInitialized = true;
-      debugPrint('✅ AudioConcatenationService initialized with FFmpeg support');
+      debugPrint('AudioConcatenationService initialized with FFmpeg support');
       return true;
     } catch (e) {
-      debugPrint('❌ AudioConcatenationService initialization failed: $e');
+      debugPrint('AudioConcatenationService initialization failed: $e');
       return false;
     }
   }
@@ -41,17 +41,17 @@ class AudioConcatenationService {
     }
 
     if (audioFilePaths.isEmpty) {
-      debugPrint('📄 No audio files to concatenate');
+      debugPrint('No audio files to concatenate');
       return null;
     }
 
     if (audioFilePaths.length == 1) {
-      debugPrint('📄 Single audio file, returning as-is: ${audioFilePaths.first}');
+      debugPrint('Single audio file, returning as-is: ${audioFilePaths.first}');
       onProgress?.call(1.0);
       return audioFilePaths.first;
     }
 
-    debugPrint('🎵 Starting REAL audio concatenation for ${audioFilePaths.length} files...');
+    debugPrint('[AUDIO] Starting REAL audio concatenation for ${audioFilePaths.length} files...');
     
     try {
       // Create output directory
@@ -71,20 +71,20 @@ class AudioConcatenationService {
         final file = File(filePath);
         if (await file.exists() && filePath.isNotEmpty) {
           validFiles.add(filePath);
-          debugPrint('✅ Valid audio file: $filePath');
+          debugPrint('Valid audio file: $filePath');
         } else {
-          debugPrint('❌ Skipping invalid/missing file: $filePath');
+          debugPrint('Skipping invalid/missing file: $filePath');
         }
       }
 
       if (validFiles.isEmpty) {
-        debugPrint('📄 No valid audio files found for concatenation');
+        debugPrint('[EMOJI] No valid audio files found for concatenation');
         onProgress?.call(1.0);
         return null;
       }
 
       if (validFiles.length == 1) {
-        debugPrint('📄 Only one valid file, returning as-is: ${validFiles.first}');
+        debugPrint('[EMOJI] Only one valid file, returning as-is: ${validFiles.first}');
         onProgress?.call(1.0);
         return validFiles.first;
       }
@@ -106,8 +106,8 @@ class AudioConcatenationService {
       // Complete FFmpeg command with optimized approach
       final ffmpegCommand = '$inputFiles -filter_complex "$filterCommand" -map "[out]" -c:a aac -b:a 128k "$outputPath"';
       
-      debugPrint('🎵 Executing optimized FFmpeg command: $ffmpegCommand');
-      debugPrint('🎵 Input files: ${validFiles.length}');
+      debugPrint('[AUDIO] Executing optimized FFmpeg command: $ffmpegCommand');
+      debugPrint('[AUDIO] Input files: ${validFiles.length}');
       
       onProgress?.call(0.3); // Starting FFmpeg execution
       
@@ -121,7 +121,7 @@ class AudioConcatenationService {
         final outputFile = File(outputPath);
         if (await outputFile.exists()) {
           final fileSize = await outputFile.length();
-          debugPrint('✅ Audio concatenation successful!');
+          debugPrint('Audio concatenation successful!');
           debugPrint('   Command: $ffmpegCommand');
           debugPrint('   Output: $outputPath');
           debugPrint('   Size: $fileSize bytes');
@@ -130,7 +130,7 @@ class AudioConcatenationService {
           onProgress?.call(1.0); // Complete
           return outputPath;
         } else {
-          debugPrint('❌ Concatenated file was not created despite success code');
+          debugPrint('Concatenated file was not created despite success code');
           final logs = await session.getAllLogsAsString();
           debugPrint('   Session logs: $logs');
           onProgress?.call(1.0);
@@ -141,7 +141,7 @@ class AudioConcatenationService {
         final logs = await session.getAllLogsAsString();
         final failureStackTrace = await session.getFailStackTrace();
         
-        debugPrint('❌ FFmpeg concatenation failed!');
+        debugPrint('FFmpeg concatenation failed!');
         debugPrint('   Return code: $returnCode');
         debugPrint('   Command: $ffmpegCommand');
         debugPrint('   Session logs: $logs');
@@ -152,18 +152,18 @@ class AudioConcatenationService {
         onProgress?.call(1.0);
         
         // Fallback to first file with better error context
-        debugPrint('📄 Falling back to first audio file: ${validFiles.first}');
+        debugPrint('[EMOJI] Falling back to first audio file: ${validFiles.first}');
         debugPrint('   Fallback reason: FFmpeg concatenation failed, preserving first recording');
         return validFiles.first;
       }
 
     } catch (e) {
-      debugPrint('❌ Audio concatenation failed: $e');
+      debugPrint('Audio concatenation failed: $e');
       onProgress?.call(1.0);
       
       // Fallback to first file
       final fallbackFile = audioFilePaths.isNotEmpty ? audioFilePaths.first : null;
-      debugPrint('📄 Falling back to first audio file: $fallbackFile');
+      debugPrint('[EMOJI] Falling back to first audio file: $fallbackFile');
       return fallbackFile;
     }
   }
@@ -197,7 +197,7 @@ class AudioConcatenationService {
       final file = File(filePath);
       if (await file.exists()) {
         await file.delete();
-        debugPrint('🗑️ Deleted concatenated audio file: $filePath');
+        debugPrint('Deleted concatenated audio file: $filePath');
         return true;
       }
       return false;
@@ -235,7 +235,7 @@ class AudioConcatenationService {
       for (final file in filesToDelete) {
         try {
           await file.delete();
-          debugPrint('🗑️ Cleaned up old concatenated file: ${file.path}');
+          debugPrint('Cleaned up old concatenated file: ${file.path}');
         } catch (e) {
           debugPrint('Error deleting old file ${file.path}: $e');
         }
@@ -248,6 +248,6 @@ class AudioConcatenationService {
   /// Dispose of the audio concatenation service
   Future<void> dispose() async {
     _isInitialized = false;
-    debugPrint('🗑️ AudioConcatenationService disposed');
+    debugPrint('AudioConcatenationService disposed');
   }
 }

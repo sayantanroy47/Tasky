@@ -35,7 +35,7 @@ void main() {
   group('HomePage Widget Tests', () {
     testWidgets('should display home page with basic elements', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Verify basic UI elements
       expect(find.text('Home'), findsOneWidget);
@@ -52,7 +52,7 @@ void main() {
       );
 
       await tester.pumpWidget(createTestWidget(userProfile: mockProfile));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Should find elements related to the profile/welcome
       expect(find.byType(HomePage), findsOneWidget);
@@ -66,7 +66,7 @@ void main() {
       ];
 
       await tester.pumpWidget(createTestWidget(pendingTasks: pendingTasks));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Verify the home page renders with tasks
       expect(find.byType(HomePage), findsOneWidget);
@@ -79,7 +79,7 @@ void main() {
       ];
 
       await tester.pumpWidget(createTestWidget(completedTasks: completedTasks));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(HomePage), findsOneWidget);
     });
@@ -100,7 +100,7 @@ void main() {
       );
 
       await tester.pumpWidget(widget);
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(HomePage), findsOneWidget);
     });
@@ -123,14 +123,14 @@ void main() {
       );
 
       await tester.pumpWidget(widget);
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(HomePage), findsOneWidget);
     });
 
     testWidgets('should display theme toggle button', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Look for the theme toggle in the app bar
       expect(find.byType(IconButton), findsWidgets);
@@ -138,7 +138,7 @@ void main() {
 
     testWidgets('should display analytics button', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Should find chart icon for analytics
       expect(find.byIcon(PhosphorIcons.chartLine()), findsOneWidget);
@@ -146,25 +146,25 @@ void main() {
 
     testWidgets('should handle tap on analytics button', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       final analyticsButton = find.byIcon(PhosphorIcons.chartLine());
       expect(analyticsButton, findsOneWidget);
       
       await tester.tap(analyticsButton);
-      await tester.pumpAndSettle();
+      await tester.pump();
     });
 
     testWidgets('should display scroll controller properly', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Verify the page has scrollable content
       expect(find.byType(HomePage), findsOneWidget);
       
       // Test scrolling behavior
       await tester.drag(find.byType(HomePage), const Offset(0, -200));
-      await tester.pumpAndSettle();
+      await tester.pump();
     });
 
     testWidgets('should handle different user profile states', (tester) async {
@@ -178,7 +178,7 @@ void main() {
       );
 
       await tester.pumpWidget(createTestWidget(userProfile: minimalProfile));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(HomePage), findsOneWidget);
     });
@@ -188,7 +188,7 @@ void main() {
         pendingTasks: [],
         completedTasks: [],
       ));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(HomePage), findsOneWidget);
     });
@@ -202,18 +202,18 @@ void main() {
       ];
 
       await tester.pumpWidget(createTestWidget(pendingTasks: mixedTasks));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(HomePage), findsOneWidget);
     });
 
     testWidgets('should properly dispose scroll controller', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Navigate away to trigger dispose
       await tester.pumpWidget(const MaterialApp(home: Scaffold()));
-      await tester.pumpAndSettle();
+      await tester.pump();
     });
 
     testWidgets('should handle welcome service data correctly', (tester) async {
@@ -235,14 +235,14 @@ void main() {
         pendingTasks: pendingTasks,
         completedTasks: completedTasks,
       ));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(HomePage), findsOneWidget);
     });
 
     testWidgets('should maintain transparent background', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       final scaffold = tester.widget<Scaffold>(find.byType(Scaffold));
       expect(scaffold.backgroundColor, Colors.transparent);
@@ -250,7 +250,7 @@ void main() {
 
     testWidgets('should extend body behind app bar', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       final scaffold = tester.widget<Scaffold>(find.byType(Scaffold));
       expect(scaffold.extendBodyBehindAppBar, true);
@@ -269,7 +269,7 @@ void main() {
       );
 
       await tester.pumpWidget(widget);
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(HomePage), findsOneWidget);
     });
@@ -282,7 +282,7 @@ void main() {
           home: const HomePage(),
         ),
       ));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(HomePage), findsOneWidget);
     });
@@ -291,7 +291,7 @@ void main() {
   group('HomePage Edge Cases', () {
     testWidgets('should handle null profile gracefully', (tester) async {
       await tester.pumpWidget(createTestWidget(userProfile: null));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(HomePage), findsOneWidget);
     });
@@ -301,7 +301,7 @@ void main() {
         TaskModel.create(title: 'Task $i'));
       
       await tester.pumpWidget(createTestWidget(pendingTasks: largeTasks));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(HomePage), findsOneWidget);
     });

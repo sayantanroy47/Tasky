@@ -46,10 +46,10 @@ class SupportedLocales {
   };
 
   static const Map<String, String> flags = {
-    'en': '🇺🇸',
-    'es': '🇪🇸',
-    'fr': '🇫🇷',
-    'de': '🇩🇪',
+    'en': '[EMOJI][EMOJI]',
+    'es': '[EMOJI][EMOJI]',
+    'fr': '[EMOJI][EMOJI]',
+    'de': '[EMOJI][EMOJI]',
   };
 
   /// Get the display name for a locale

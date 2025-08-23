@@ -41,22 +41,24 @@ class CalendarPage extends ConsumerWidget {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.only(
-          top: kToolbarHeight + 8,
-          left: 16.0,
-          right: 16.0,
-          bottom: 16.0,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.only(
+            top: 4.0, // Minimal top padding
+            left: 8.0, // Reduced horizontal padding
+            right: 8.0,
+            bottom: 4.0, // Minimal bottom padding
+          ),
+          child: calendarState.isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : calendarState.errorMessage != null
+                  ? _buildErrorWidget(context, ref, calendarState.errorMessage!)
+                  : GlassmorphismContainer(
+                      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                      padding: const EdgeInsets.all(8.0), // Reduced internal padding
+                      child: const EnhancedCalendarWidget(),
+                    ),
         ),
-        child: calendarState.isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : calendarState.errorMessage != null
-                ? _buildErrorWidget(context, ref, calendarState.errorMessage!)
-                : GlassmorphismContainer(
-                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                    padding: const EdgeInsets.all(16.0),
-                    child: const EnhancedCalendarWidget(),
-                  ),
       ),
     );
   }

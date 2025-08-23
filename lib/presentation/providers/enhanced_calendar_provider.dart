@@ -20,9 +20,11 @@ class EnhancedCalendarState {
   final List<TaskModel> allTasks;
   final CalendarView calendarFormat;
   final bool isLoading;
+  final bool isViewChanging;
   final String? errorMessage;
+  final DateTime lastUpdated;
 
-  const EnhancedCalendarState({
+  EnhancedCalendarState({
     required this.selectedDate,
     required this.focusedDate,
     this.viewMode = CalendarViewMode.month,
@@ -31,8 +33,10 @@ class EnhancedCalendarState {
     this.allTasks = const [],
     this.calendarFormat = CalendarView.month,
     this.isLoading = false,
+    this.isViewChanging = false,
     this.errorMessage,
-  });
+    DateTime? lastUpdated,
+  }) : lastUpdated = lastUpdated ?? DateTime.now();
 
   EnhancedCalendarState copyWith({
     DateTime? selectedDate,
@@ -43,7 +47,10 @@ class EnhancedCalendarState {
     List<TaskModel>? allTasks,
     CalendarView? calendarFormat,
     bool? isLoading,
+    bool? isViewChanging,
     String? errorMessage,
+    bool clearError = false,
+    bool updateTimestamp = true,
   }) {
     return EnhancedCalendarState(
       selectedDate: selectedDate ?? this.selectedDate,
@@ -54,8 +61,20 @@ class EnhancedCalendarState {
       allTasks: allTasks ?? this.allTasks,
       calendarFormat: calendarFormat ?? this.calendarFormat,
       isLoading: isLoading ?? this.isLoading,
-      errorMessage: errorMessage,
+      isViewChanging: isViewChanging ?? this.isViewChanging,
+      errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
+      lastUpdated: updateTimestamp ? DateTime.now() : lastUpdated,
     );
+  }
+  
+  /// Check if state has been recently updated to prevent unnecessary rebuilds
+  bool get wasRecentlyUpdated {
+    return DateTime.now().difference(lastUpdated).inMilliseconds < 100;
+  }
+  
+  /// Check if calendar is in a stable state (not loading or changing views)
+  bool get isStable {
+    return !isLoading && !isViewChanging && errorMessage == null;
   }
 }
 
@@ -63,11 +82,15 @@ class EnhancedCalendarState {
 class EnhancedCalendarNotifier extends StateNotifier<EnhancedCalendarState> {
   final CalendarService _calendarService;
   final Ref _ref;
+  
+  /// Check if notifier is still active (simple check)
+  bool get _isActive => true; // Simplified for now
 
   EnhancedCalendarNotifier(this._calendarService, this._ref) 
     : super(EnhancedCalendarState(
         selectedDate: DateTime.now(),
         focusedDate: DateTime.now(),
+        lastUpdated: DateTime.now(),
       )) {
     _initialize();
   }
@@ -115,8 +138,15 @@ class EnhancedCalendarNotifier extends StateNotifier<EnhancedCalendarState> {
     }).toList();
   }
 
-  /// Select a date and load tasks for that date
+  /// Select a date and load tasks for that date with validation
   void selectDate(DateTime date) {
+    // Prevent redundant updates if same date is selected
+    if (state.selectedDate.day == date.day && 
+        state.selectedDate.month == date.month && 
+        state.selectedDate.year == date.year) {
+      return;
+    }
+    
     final tasksForDate = _getTasksForDate(state.allTasks, date);
     
     state = state.copyWith(
@@ -125,37 +155,72 @@ class EnhancedCalendarNotifier extends StateNotifier<EnhancedCalendarState> {
     );
   }
 
-  /// Change focused date (for navigation)
+  /// Change focused date (for navigation) with debouncing
+  DateTime? _lastFocusedUpdate;
   void changeFocusedDate(DateTime date) {
+    // Debounce rapid updates to prevent performance issues and duplicate keys
+    final now = DateTime.now();
+    if (_lastFocusedUpdate != null && 
+        now.difference(_lastFocusedUpdate!).inMilliseconds < 50) {
+      return;
+    }
+    
     // Safety check to prevent duplicate updates
     if (state.focusedDate.day != date.day || 
         state.focusedDate.month != date.month || 
         state.focusedDate.year != date.year) {
+      _lastFocusedUpdate = now;
       state = state.copyWith(focusedDate: date);
     }
   }
 
-  /// Change view mode with proper synchronization
+  /// Change view mode with proper synchronization and error prevention
   void changeViewMode(CalendarViewMode mode) {
-    // Map CalendarViewMode to CalendarView for consistency
-    CalendarView format;
-    switch (mode) {
-      case CalendarViewMode.month:
-        format = CalendarView.month;
-        break;
-      case CalendarViewMode.week:
-        format = CalendarView.week;
-        break;
-      case CalendarViewMode.day:
-        format = CalendarView.day;
-        break;
-    }
+    // Prevent unnecessary state updates if mode is already selected
+    if (state.viewMode == mode) return;
     
-    // Update both viewMode and calendarFormat to ensure synchronization
-    state = state.copyWith(
-      viewMode: mode,
-      calendarFormat: format,
-    );
+    // Prevent rapid view changes if one is already in progress
+    if (state.isViewChanging) return;
+    
+    try {
+      // Set view changing state to prevent conflicts
+      state = state.copyWith(
+        isViewChanging: true,
+        clearError: true,
+      );
+      
+      // Map CalendarViewMode to CalendarView for consistency
+      CalendarView format;
+      switch (mode) {
+        case CalendarViewMode.month:
+          format = CalendarView.month;
+          break;
+        case CalendarViewMode.week:
+          format = CalendarView.week;
+          break;
+        case CalendarViewMode.day:
+          format = CalendarView.day;
+          break;
+      }
+      
+      // Update both viewMode and calendarFormat atomically after brief delay
+      Future.microtask(() {
+        if (_isActive) {
+          state = state.copyWith(
+            viewMode: mode,
+            calendarFormat: format,
+            isLoading: false,
+            isViewChanging: false,
+            clearError: true,
+          );
+        }
+      });
+    } catch (e) {
+      state = state.copyWith(
+        isViewChanging: false,
+        errorMessage: 'Failed to change view: $e',
+      );
+    }
   }
 
   /// Go to today

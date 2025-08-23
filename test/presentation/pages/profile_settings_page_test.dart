@@ -56,7 +56,7 @@ void main() {
   group('ProfileSettingsPage Widget Tests', () {
     testWidgets('should display profile settings page with basic elements', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ProfileSettingsPage), findsOneWidget);
       expect(find.byType(Scaffold), findsOneWidget);
@@ -64,14 +64,14 @@ void main() {
 
     testWidgets('should display loading state', (tester) async {
       await tester.pumpWidget(createTestWidget(isLoading: true));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
 
     testWidgets('should display error state', (tester) async {
       await tester.pumpWidget(createTestWidget(hasError: true));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.textContaining('error'), findsOneWidget, reason: 'Should display error message');
     });
@@ -80,14 +80,14 @@ void main() {
       final profile = createTestProfile();
       
       await tester.pumpWidget(createTestWidget(userProfile: profile));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ProfileSettingsPage), findsOneWidget);
     });
 
     testWidgets('should handle null profile', (tester) async {
       await tester.pumpWidget(createTestWidget(userProfile: null));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ProfileSettingsPage), findsOneWidget);
     });
@@ -102,7 +102,7 @@ void main() {
       );
       
       await tester.pumpWidget(createTestWidget(userProfile: profile));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ProfileSettingsPage), findsOneWidget);
     });
@@ -114,7 +114,7 @@ void main() {
       );
       
       await tester.pumpWidget(createTestWidget(userProfile: profile));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ProfileSettingsPage), findsOneWidget);
     });
@@ -126,7 +126,7 @@ void main() {
       );
       
       await tester.pumpWidget(createTestWidget(userProfile: profile));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ProfileSettingsPage), findsOneWidget);
     });
@@ -137,7 +137,7 @@ void main() {
       final profile = createTestProfile(bio: longBio);
       
       await tester.pumpWidget(createTestWidget(userProfile: profile));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ProfileSettingsPage), findsOneWidget);
     });
@@ -150,7 +150,7 @@ void main() {
       );
       
       await tester.pumpWidget(createTestWidget(userProfile: profile));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ProfileSettingsPage), findsOneWidget);
     });
@@ -159,7 +159,7 @@ void main() {
       final profile = createTestProfile();
       
       await tester.pumpWidget(createTestWidget(userProfile: profile));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ProfileSettingsPage), findsOneWidget);
     });
@@ -168,7 +168,7 @@ void main() {
       final profile = createTestProfile(phoneNumber: 'not-a-phone-number');
       
       await tester.pumpWidget(createTestWidget(userProfile: profile));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ProfileSettingsPage), findsOneWidget);
     });
@@ -177,7 +177,7 @@ void main() {
       final profile = createTestProfile(profileImageUrl: 'not-a-valid-url');
       
       await tester.pumpWidget(createTestWidget(userProfile: profile));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ProfileSettingsPage), findsOneWidget);
     });
@@ -186,13 +186,13 @@ void main() {
       final profile = createTestProfile();
       
       await tester.pumpWidget(createTestWidget(userProfile: profile));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Look for edit buttons or icons
       final editButtons = find.byIcon(Icons.edit);
       if (editButtons.evaluate().isNotEmpty) {
         await tester.tap(editButtons.first);
-        await tester.pumpAndSettle();
+        await tester.pump();
       }
       
       expect(find.byType(ProfileSettingsPage), findsOneWidget);
@@ -202,13 +202,13 @@ void main() {
       final profile = createTestProfile();
       
       await tester.pumpWidget(createTestWidget(userProfile: profile));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Look for save buttons
       final saveButtons = find.byIcon(Icons.save);
       if (saveButtons.evaluate().isNotEmpty) {
         await tester.tap(saveButtons.first);
-        await tester.pumpAndSettle();
+        await tester.pump();
       }
       
       expect(find.byType(ProfileSettingsPage), findsOneWidget);
@@ -218,7 +218,7 @@ void main() {
       final profile = createTestProfile();
       
       await tester.pumpWidget(createTestWidget(userProfile: profile));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ProfileSettingsPage), findsOneWidget);
     });
@@ -231,7 +231,7 @@ void main() {
       await tester.pump();
       
       await tester.pumpWidget(createTestWidget(hasError: true));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ProfileSettingsPage), findsOneWidget);
     });
@@ -250,7 +250,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ProfileSettingsPage), findsOneWidget);
     });
@@ -261,11 +261,11 @@ void main() {
       );
       
       await tester.pumpWidget(createTestWidget(userProfile: profile));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Test scrolling if page is scrollable
       await tester.drag(find.byType(ProfileSettingsPage), const Offset(0, -300));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ProfileSettingsPage), findsOneWidget);
     });
@@ -274,14 +274,14 @@ void main() {
       final profile = createTestProfile();
       
       await tester.pumpWidget(createTestWidget(userProfile: profile));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Look for form fields
       final textFields = find.byType(TextFormField);
       if (textFields.evaluate().isNotEmpty) {
         // Test entering invalid data
         await tester.enterText(textFields.first, '');
-        await tester.pumpAndSettle();
+        await tester.pump();
         
         // Look for validation messages
         expect(find.byType(ProfileSettingsPage), findsOneWidget);
@@ -301,7 +301,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ProfileSettingsPage), findsOneWidget);
     });
@@ -317,7 +317,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ProfileSettingsPage), findsOneWidget);
       
@@ -332,7 +332,7 @@ void main() {
       final stopwatch = Stopwatch()..start();
       
       await tester.pumpWidget(createTestWidget(userProfile: profile));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       stopwatch.stop();
       
@@ -348,7 +348,7 @@ void main() {
         await tester.pump(const Duration(milliseconds: 10));
       }
       
-      await tester.pumpAndSettle();
+      await tester.pump();
       expect(find.byType(ProfileSettingsPage), findsOneWidget);
     });
   });
@@ -360,7 +360,7 @@ void main() {
       
       final profile = createTestProfile();
       await tester.pumpWidget(createTestWidget(userProfile: profile));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ProfileSettingsPage), findsOneWidget);
       
@@ -374,7 +374,7 @@ void main() {
       
       final profile = createTestProfile();
       await tester.pumpWidget(createTestWidget(userProfile: profile));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ProfileSettingsPage), findsOneWidget);
       
@@ -398,20 +398,20 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ProfileSettingsPage), findsOneWidget);
     });
 
     testWidgets('should handle widget disposal', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Navigate away
       await tester.pumpWidget(
         const MaterialApp(home: Scaffold(body: Text('Other page'))),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Other page'), findsOneWidget);
     });
@@ -426,7 +426,7 @@ void main() {
       );
       
       await tester.pumpWidget(createTestWidget(userProfile: profile));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ProfileSettingsPage), findsOneWidget);
     });
@@ -442,7 +442,7 @@ void main() {
       );
       
       await tester.pumpWidget(createTestWidget(userProfile: profile));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ProfileSettingsPage), findsOneWidget);
     });
@@ -458,7 +458,7 @@ void main() {
       );
       
       await tester.pumpWidget(createTestWidget(userProfile: profile));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ProfileSettingsPage), findsOneWidget);
     });

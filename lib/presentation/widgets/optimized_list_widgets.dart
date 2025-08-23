@@ -309,12 +309,13 @@ class OptimizedAnimatedList<T> extends StatefulWidget {
 }
 
 class _OptimizedAnimatedListState<T> extends State<OptimizedAnimatedList<T>> {
-  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
+  late final GlobalKey<AnimatedListState> _listKey;
   final PerformanceService _performanceService = PerformanceService();
   List<T> _items = [];
   @override
   void initState() {
     super.initState();
+    _listKey = GlobalKey<AnimatedListState>();
     _items = List.from(widget.items);
     
     if (widget.performanceTag != null) {

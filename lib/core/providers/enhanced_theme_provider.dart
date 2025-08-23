@@ -175,7 +175,7 @@ class EnhancedThemeNotifier extends StateNotifier<EnhancedThemeState> {
     
     final theme = _themeRegistry.getTheme(themeId);
     if (theme == null) {
-      debugPrint('🚫 Theme not found: $themeId');
+      debugPrint('Theme not found: $themeId');
       state = state.copyWith(
         error: 'Theme not found: $themeId',
         isLoading: false,
@@ -183,7 +183,7 @@ class EnhancedThemeNotifier extends StateNotifier<EnhancedThemeState> {
       return;
     }
     
-    debugPrint('✅ Theme found: ${theme.metadata.name} (${theme.metadata.id})');
+    debugPrint('Theme found: ${theme.metadata.name} (${theme.metadata.id})');
 
     // Start transition
     state = state.copyWith(
@@ -316,7 +316,7 @@ class EnhancedThemeNotifier extends StateNotifier<EnhancedThemeState> {
   List<AppThemeData> getAllThemes() {
     final themes = _themeRegistry.themes.toList();
     if (themes.isEmpty) {
-      debugPrint('🚫 No themes found in registry! Registry count: ${_themeRegistry.count}');
+      debugPrint('No themes found in registry! Registry count: ${_themeRegistry.count}');
     }
     return themes;
   }

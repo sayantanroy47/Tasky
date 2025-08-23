@@ -41,7 +41,7 @@ class _ProfileSetupFlowState extends ConsumerState<ProfileSetupFlow> {
       final text = _firstNameController.text;
       final step = _currentStep;
       final canProceed = _canProceed();
-      debugPrint('🔥 CRITICAL: FirstName listener fired!');
+      debugPrint('CRITICAL: FirstName listener fired!');
       debugPrint('   - Text: "$text"');
       debugPrint('   - Step: $step (display: ${step + 1})');
       debugPrint('   - Can proceed: $canProceed');
@@ -68,7 +68,7 @@ class _ProfileSetupFlowState extends ConsumerState<ProfileSetupFlow> {
   }
 
   void _nextStep() {
-    debugPrint('🚀 _nextStep() called!');
+    debugPrint('_nextStep() called!');
     debugPrint('   - Current step before: $_currentStep');
     debugPrint('   - Total steps: $_totalSteps');
     debugPrint('   - Condition check: $_currentStep < ${_totalSteps - 1} = ${_currentStep < _totalSteps - 1}');
@@ -597,12 +597,12 @@ class _ProfileSetupFlowState extends ConsumerState<ProfileSetupFlow> {
                       )
                     : (() {
                         final canProceed = _canProceed();
-                        debugPrint('🔄 DIRECT BUTTON: Step $_currentStep, canProceed: $canProceed, firstName: "${_firstNameController.text.trim()}"');
-                        debugPrint('🔥 BUTTON WIDGET CREATED: onPressed = ${canProceed ? "ENABLED" : "DISABLED"}');
+                        debugPrint('[REFRESH] DIRECT BUTTON: Step $_currentStep, canProceed: $canProceed, firstName: "${_firstNameController.text.trim()}"');
+                        debugPrint('BUTTON WIDGET CREATED: onPressed = ${canProceed ? "ENABLED" : "DISABLED"}');
                         
                         return ElevatedButton.icon(
                           onPressed: canProceed ? () {
-                            debugPrint('🚀 CONTINUE BUTTON PRESSED!');
+                            debugPrint('CONTINUE BUTTON PRESSED!');
                             debugPrint('   - Current step: $_currentStep (display: ${_currentStep + 1})');
                             debugPrint('   - First name: "${_firstNameController.text.trim()}"');
                             debugPrint('   - Calling _nextStep()');

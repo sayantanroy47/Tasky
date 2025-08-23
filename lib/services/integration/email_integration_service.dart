@@ -474,7 +474,7 @@ class EmailIntegrationService {
     <body>
         <div class="container">
             <div class="header">
-                <h1>📋 Task Shared from Tasky</h1>
+                <h1>Task Shared from Tasky</h1>
             </div>
             <div class="content">
                 <div class="task-title">${task.title}</div>
@@ -537,7 +537,7 @@ class EmailIntegrationService {
     <body>
         <div class="container">
             <div class="header">
-                <h1>📋 ${tasks.length} Tasks Shared from Tasky</h1>
+                <h1>${tasks.length} Tasks Shared from Tasky</h1>
             </div>
             <div class="content">
                 <div class="summary">
@@ -594,7 +594,7 @@ class EmailIntegrationService {
     <body>
         <div class="container">
             <div class="header">
-                <h1>📁 Project Shared: ${project.name}</h1>
+                <h1>[EMOJI] Project Shared: ${project.name}</h1>
             </div>
             <div class="content">
                 <div class="project-info">
@@ -693,7 +693,7 @@ class EmailIntegrationService {
     <body>
         <div class="container">
             <div class="header">
-                <h1>⏰ Task Reminder</h1>
+                <h1>Task Reminder</h1>
             </div>
             <div class="content">
                 <h2>${task.title}</h2>
@@ -1016,17 +1016,17 @@ class EmailIntegrationService {
   String _getUpdateTypeIcon(TaskUpdateType updateType) {
     switch (updateType) {
       case TaskUpdateType.completed:
-        return '✅';
+        return '[SUCCESS]';
       case TaskUpdateType.statusChanged:
-        return '📝';
+        return '[TASK]';
       case TaskUpdateType.priorityChanged:
-        return '⚡';
+        return '[URGENT]';
       case TaskUpdateType.dueDateChanged:
-        return '📅';
+        return '[DATE]';
       case TaskUpdateType.assigned:
-        return '👤';
+        return '[USER]';
       case TaskUpdateType.commented:
-        return '💬';
+        return '[EMOJI]';
     }
   }
 

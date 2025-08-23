@@ -196,6 +196,30 @@ class AudioControls {
     await notifier.stop();
   }
 
+  /// Pause audio for a specific task
+  Future<void> pauseTask(String taskId) async {
+    final notifier = _ref.read(audioPlayerProvider.notifier);
+    await notifier.pause();
+  }
+
+  /// Resume audio for a specific task
+  Future<void> resumeTask(String taskId) async {
+    final notifier = _ref.read(audioPlayerProvider.notifier);
+    await notifier.play();
+  }
+
+  /// Stop audio for a specific task
+  Future<void> stopTask(String taskId) async {
+    final notifier = _ref.read(audioPlayerProvider.notifier);
+    await notifier.stop();
+  }
+
+  /// Seek to a specific position for a task
+  Future<void> seekTask(String taskId, Duration position) async {
+    final notifier = _ref.read(audioPlayerProvider.notifier);
+    await notifier.seekTo(position);
+  }
+
   /// Check if a specific task is currently playing
   bool isTaskPlaying(String taskId) {
     return _ref.read(isTaskPlayingProvider(taskId));

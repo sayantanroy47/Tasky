@@ -7,6 +7,7 @@ import '../../domain/models/enums.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../core/design_system/design_tokens.dart';
 import '../../core/theme/material3/motion_system.dart';
+import '../../core/utils/category_utils.dart';
 import '../../services/ui/slidable_action_service.dart';
 import '../../services/ui/slidable_theme_service.dart';
 import '../../services/ui/slidable_feedback_service.dart';
@@ -411,6 +412,16 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
   Widget _buildCompactContent(ThemeData theme) {
     return Row(
       children: [
+        // Category icon container
+        if (widget.task.tags.isNotEmpty) ...[
+          CategoryUtils.buildCategoryIconContainer(
+            category: widget.task.tags.first,
+            size: 24,
+            theme: theme,
+            iconSizeRatio: 0.5,
+          ),
+          const SizedBox(width: 8),
+        ],
         _buildPriorityIndicator(theme, size: 16),
         const SizedBox(width: 12),
         Expanded(
@@ -443,6 +454,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
           AudioIndicatorWidget(
             task: widget.task,
             size: 16,
+            mode: AudioIndicatorMode.playButton,
           ),
         ],
         if (widget.showSubtasks) ...[
@@ -542,6 +554,8 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
           const SizedBox(width: 8),
           AudioIndicatorWidget(
             task: widget.task,
+            size: 20,
+            mode: AudioIndicatorMode.playButton,
           ),
         ],
         if (widget.showDependencyStatus) ...[
@@ -700,17 +714,17 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
             width: 28,
             height: 28,
             decoration: BoxDecoration(
-              color: _getCategoryColor(tag).withValues(alpha: 0.15),
+              color: CategoryUtils.getCategoryColor(tag, theme: theme).withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(8),
               border: Border.all(
-                color: _getCategoryColor(tag).withValues(alpha: 0.3),
+                color: CategoryUtils.getCategoryColor(tag, theme: theme).withValues(alpha: 0.3),
                 width: 0.5,
               ),
             ),
             child: Icon(
-              _getCategoryIcon(tag),
+              CategoryUtils.getCategoryIcon(tag),
               size: 14,
-              color: _getCategoryColor(tag),
+              color: CategoryUtils.getCategoryColor(tag, theme: theme),
             ),
           ),
         )),
@@ -1125,78 +1139,6 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
     return '$weekday, $month $day at $hour:$minute';
   }
 
-  /// Get category-based icon for task cards
-  IconData _getCategoryIcon(String category) {
-    switch (category.toLowerCase()) {
-      case 'work':
-        return PhosphorIcons.briefcase();
-      case 'personal':
-        return PhosphorIcons.user();
-      case 'shopping':
-        return PhosphorIcons.shoppingCart();
-      case 'health':
-        return PhosphorIcons.heartbeat();
-      case 'fitness':
-        return PhosphorIcons.barbell();
-      case 'finance':
-        return PhosphorIcons.wallet();
-      case 'education':
-        return PhosphorIcons.graduationCap();
-      case 'travel':
-        return PhosphorIcons.airplane();
-      case 'home':
-        return PhosphorIcons.house();
-      case 'family':
-        return PhosphorIcons.users();
-      case 'entertainment':
-        return PhosphorIcons.filmStrip();
-      case 'food':
-        return PhosphorIcons.forkKnife();
-      case 'technology':
-        return PhosphorIcons.laptop();
-      case 'creative':
-        return PhosphorIcons.paintBrush();
-      default:
-        return PhosphorIcons.tag();
-    }
-  }
-
-  /// Get category-based color for task cards
-  Color _getCategoryColor(String category) {
-    final theme = Theme.of(context);
-    switch (category.toLowerCase()) {
-      case 'work':
-        return theme.colorScheme.primary;
-      case 'personal':
-        return theme.colorScheme.secondary;
-      case 'shopping':
-        return Colors.green;
-      case 'health':
-        return Colors.red;
-      case 'fitness':
-        return Colors.orange;
-      case 'finance':
-        return Colors.teal;
-      case 'education':
-        return Colors.indigo;
-      case 'travel':
-        return Colors.cyan;
-      case 'home':
-        return Colors.brown;
-      case 'family':
-        return Colors.pink;
-      case 'entertainment':
-        return Colors.purple;
-      case 'food':
-        return Colors.amber;
-      case 'technology':
-        return Colors.blueGrey;
-      case 'creative':
-        return Colors.deepPurple;
-      default:
-        return theme.colorScheme.outline;
-    }
-  }
 }
 
 /// Task card size variants

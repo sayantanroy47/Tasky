@@ -19,7 +19,7 @@ void main() {
 
     testWidgets('should display notification settings page', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(NotificationSettingsPage), findsOneWidget);
       expect(find.byType(Scaffold), findsOneWidget);
@@ -27,7 +27,7 @@ void main() {
 
     testWidgets('should display notification toggle switches', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(NotificationSettingsPage), findsOneWidget);
       
@@ -37,12 +37,12 @@ void main() {
 
     testWidgets('should handle notification toggle', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       final switches = find.byType(Switch);
       if (switches.evaluate().isNotEmpty) {
         await tester.tap(switches.first);
-        await tester.pumpAndSettle();
+        await tester.pump();
       }
       
       expect(find.byType(NotificationSettingsPage), findsOneWidget);
@@ -50,14 +50,14 @@ void main() {
 
     testWidgets('should display notification categories', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(NotificationSettingsPage), findsOneWidget);
     });
 
     testWidgets('should handle time picker for notifications', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Look for time picker widgets
       final timeButtons = [
@@ -67,7 +67,7 @@ void main() {
       
       if (timeButtons.isNotEmpty) {
         await tester.tap(find.byWidget(timeButtons.first.widget));
-        await tester.pumpAndSettle();
+        await tester.pump();
       }
       
       expect(find.byType(NotificationSettingsPage), findsOneWidget);
@@ -75,7 +75,7 @@ void main() {
 
     testWidgets('should handle sound/vibration settings', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(NotificationSettingsPage), findsOneWidget);
     });
@@ -89,7 +89,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(NotificationSettingsPage), findsOneWidget);
     });

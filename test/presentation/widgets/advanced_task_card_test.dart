@@ -40,7 +40,7 @@ void main() {
           child: AdvancedTaskCard(task: task),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Test Task Title'), findsOneWidget);
       expect(find.byType(AdvancedTaskCard), findsOneWidget);
@@ -57,7 +57,7 @@ void main() {
           child: AdvancedTaskCard(task: urgentTask),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Urgent Task'), findsOneWidget);
       expect(find.byType(AdvancedTaskCard), findsOneWidget);
@@ -74,7 +74,7 @@ void main() {
           child: AdvancedTaskCard(task: completedTask),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Completed Task'), findsOneWidget);
       expect(find.byType(AdvancedTaskCard), findsOneWidget);
@@ -91,7 +91,7 @@ void main() {
           child: AdvancedTaskCard(task: taskWithDueDate),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Task with Due Date'), findsOneWidget);
       expect(find.byType(AdvancedTaskCard), findsOneWidget);
@@ -108,7 +108,7 @@ void main() {
           child: AdvancedTaskCard(task: overdueTask),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Overdue Task'), findsOneWidget);
       expect(find.byType(AdvancedTaskCard), findsOneWidget);
@@ -126,10 +126,10 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       await tester.tap(find.byType(AdvancedTaskCard));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(onTapCalled, isTrue);
     });
@@ -147,7 +147,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Themed Task'), findsOneWidget);
       expect(find.byType(AdvancedTaskCard), findsOneWidget);
@@ -163,7 +163,7 @@ void main() {
           child: AdvancedTaskCard(task: longTitleTask),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(AdvancedTaskCard), findsOneWidget);
     });
@@ -176,7 +176,7 @@ void main() {
           child: AdvancedTaskCard(task: minimalTask),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Minimal Task'), findsOneWidget);
       expect(find.byType(AdvancedTaskCard), findsOneWidget);
@@ -190,7 +190,7 @@ void main() {
           child: AdvancedTaskCard(task: task),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Check for accessibility semantics
       expect(find.byType(AdvancedTaskCard), findsOneWidget);

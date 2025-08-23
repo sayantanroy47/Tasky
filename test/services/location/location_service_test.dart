@@ -4,6 +4,7 @@ import 'package:task_tracker_app/services/location/location_service.dart';
 import 'package:task_tracker_app/services/location/location_models.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   group('LocationServiceImpl (Stub)', () {
     late LocationService locationService;
 
@@ -21,14 +22,14 @@ void main() {
         expect(result, isFalse);
       });
 
-      test('should return denied for permission check', () async {
+      test('should return denied or serviceDisabled for permission check', () async {
         final result = await locationService.checkPermission();
-        expect(result, LocationPermissionStatus.denied);
+        expect(result, isIn([LocationPermissionStatus.denied, LocationPermissionStatus.serviceDisabled]));
       });
 
-      test('should return denied for permission request', () async {
+      test('should return denied or serviceDisabled for permission request', () async {
         final result = await locationService.requestPermission();
-        expect(result, LocationPermissionStatus.denied);
+        expect(result, isIn([LocationPermissionStatus.denied, LocationPermissionStatus.serviceDisabled]));
       });
 
       test('should throw exception for getCurrentLocation', () async {

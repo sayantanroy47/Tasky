@@ -65,7 +65,7 @@ void main() {
   group('CalendarPage Widget Tests', () {
     testWidgets('should display calendar page with basic elements', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(CalendarPage), findsOneWidget);
       expect(find.byType(Scaffold), findsOneWidget);
@@ -73,14 +73,14 @@ void main() {
 
     testWidgets('should display loading state', (tester) async {
       await tester.pumpWidget(createTestWidget(isLoading: true));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
 
     testWidgets('should display error state', (tester) async {
       await tester.pumpWidget(createTestWidget(hasError: true));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.textContaining('error'), findsOneWidget, reason: 'Should display error message');
     });
@@ -93,7 +93,7 @@ void main() {
       ];
       
       await tester.pumpWidget(createTestWidget(tasks: tasks));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(CalendarPage), findsOneWidget);
     });
@@ -106,14 +106,14 @@ void main() {
       ];
       
       await tester.pumpWidget(createTestWidget(events: events));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(CalendarPage), findsOneWidget);
     });
 
     testWidgets('should handle empty calendar', (tester) async {
       await tester.pumpWidget(createTestWidget(tasks: [], events: []));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(CalendarPage), findsOneWidget);
     });
@@ -122,7 +122,7 @@ void main() {
       final selectedDate = DateTime.now().add(const Duration(days: 5));
       
       await tester.pumpWidget(createTestWidget(selectedDate: selectedDate));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(CalendarPage), findsOneWidget);
     });
@@ -138,7 +138,7 @@ void main() {
         tasks: tasks,
         selectedDate: selectedDate,
       ));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(CalendarPage), findsOneWidget);
     });
@@ -154,7 +154,7 @@ void main() {
         events: events,
         selectedDate: selectedDate,
       ));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(CalendarPage), findsOneWidget);
     });
@@ -168,7 +168,7 @@ void main() {
       ];
       
       await tester.pumpWidget(createTestWidget(tasks: tasks));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(CalendarPage), findsOneWidget);
     });
@@ -182,7 +182,7 @@ void main() {
       ];
       
       await tester.pumpWidget(createTestWidget(tasks: tasks));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(CalendarPage), findsOneWidget);
     });
@@ -194,7 +194,7 @@ void main() {
       ];
       
       await tester.pumpWidget(createTestWidget(tasks: tasks));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(CalendarPage), findsOneWidget);
     });
@@ -206,7 +206,7 @@ void main() {
       ];
       
       await tester.pumpWidget(createTestWidget(tasks: tasks));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(CalendarPage), findsOneWidget);
     });
@@ -224,7 +224,7 @@ void main() {
       ];
       
       await tester.pumpWidget(createTestWidget(events: events));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(CalendarPage), findsOneWidget);
     });
@@ -242,14 +242,14 @@ void main() {
       ];
       
       await tester.pumpWidget(createTestWidget(events: events));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(CalendarPage), findsOneWidget);
     });
 
     testWidgets('should handle calendar navigation', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Look for navigation buttons (previous/next month/week/day)
       final navigationButtons = [
@@ -261,7 +261,7 @@ void main() {
       
       if (navigationButtons.isNotEmpty) {
         await tester.tap(find.byWidget(navigationButtons.first.widget));
-        await tester.pumpAndSettle();
+        await tester.pump();
       }
       
       expect(find.byType(CalendarPage), findsOneWidget);
@@ -269,7 +269,7 @@ void main() {
 
     testWidgets('should handle view mode switching', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Look for view mode buttons (month/week/day/agenda view)
       final viewButtons = [
@@ -281,7 +281,7 @@ void main() {
       
       if (viewButtons.isNotEmpty) {
         await tester.tap(find.byWidget(viewButtons.first.widget));
-        await tester.pumpAndSettle();
+        await tester.pump();
       }
       
       expect(find.byType(CalendarPage), findsOneWidget);
@@ -292,13 +292,13 @@ void main() {
       final events = [createTestEvent()];
       
       await tester.pumpWidget(createTestWidget(tasks: tasks, events: events));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Look for tappable task/event elements
       final tappableElements = find.byType(GestureDetector);
       if (tappableElements.evaluate().isNotEmpty) {
         await tester.tap(tappableElements.first);
-        await tester.pumpAndSettle();
+        await tester.pump();
       }
       
       expect(find.byType(CalendarPage), findsOneWidget);
@@ -306,14 +306,14 @@ void main() {
 
     testWidgets('should handle calendar scrolling', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Test scrolling through calendar
       await tester.drag(find.byType(CalendarPage), const Offset(0, -300));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       await tester.drag(find.byType(CalendarPage), const Offset(-300, 0));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(CalendarPage), findsOneWidget);
     });
@@ -323,7 +323,7 @@ void main() {
       final events = [createTestEvent()];
       
       await tester.pumpWidget(createTestWidget(tasks: tasks, events: events));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(CalendarPage), findsOneWidget);
     });
@@ -336,7 +336,7 @@ void main() {
       await tester.pump();
       
       await tester.pumpWidget(createTestWidget(hasError: true));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(CalendarPage), findsOneWidget);
     });
@@ -355,14 +355,14 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(CalendarPage), findsOneWidget);
     });
 
     testWidgets('should handle today highlighting', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Today should be highlighted in the calendar
       expect(find.byType(CalendarPage), findsOneWidget);
@@ -381,7 +381,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(CalendarPage), findsOneWidget);
     });
@@ -397,7 +397,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(CalendarPage), findsOneWidget);
       
@@ -415,7 +415,7 @@ void main() {
       final stopwatch = Stopwatch()..start();
       
       await tester.pumpWidget(createTestWidget(tasks: tasks, events: events));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       stopwatch.stop();
       
@@ -431,7 +431,7 @@ void main() {
         await tester.pump(const Duration(milliseconds: 10));
       }
       
-      await tester.pumpAndSettle();
+      await tester.pump();
       expect(find.byType(CalendarPage), findsOneWidget);
     });
   });
@@ -443,7 +443,7 @@ void main() {
       
       final tasks = [createTestTask()];
       await tester.pumpWidget(createTestWidget(tasks: tasks));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(CalendarPage), findsOneWidget);
       
@@ -457,7 +457,7 @@ void main() {
       
       final tasks = [createTestTask()];
       await tester.pumpWidget(createTestWidget(tasks: tasks));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(CalendarPage), findsOneWidget);
       
@@ -467,13 +467,13 @@ void main() {
 
     testWidgets('should handle widget disposal', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Navigate away
       await tester.pumpWidget(
         const MaterialApp(home: Scaffold(body: Text('Other page'))),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Other page'), findsOneWidget);
     });
@@ -488,7 +488,7 @@ void main() {
       ];
       
       await tester.pumpWidget(createTestWidget(tasks: tasks));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(CalendarPage), findsOneWidget);
     });
@@ -497,7 +497,7 @@ void main() {
       // This would typically test timezone handling
       // For now, just ensure the page renders
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(CalendarPage), findsOneWidget);
     });
@@ -507,7 +507,7 @@ void main() {
       final tasks = [createTestTask(title: 'Leap Year Task', dueDate: leapYearDate)];
       
       await tester.pumpWidget(createTestWidget(tasks: tasks));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(CalendarPage), findsOneWidget);
     });

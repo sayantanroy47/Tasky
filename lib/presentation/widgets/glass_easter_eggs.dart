@@ -76,14 +76,14 @@ class _GlassEasterEggsState extends State<GlassEasterEggs>
   Timer? _emojiTimer;
   
   final List<String> _secretMessages = [
-    '🎉 You found a secret!',
-    '✨ Glassmorphism magic activated!',
-    '🚀 Easter egg discovered!',
-    '👀 You\'re a UI explorer!',
-    '💎 Hidden gem unlocked!',
-    '🌟 Secret mode engaged!',
-    '🔮 Mystery revealed!',
-    '🎭 Behind the glass curtain!',
+    'You found a secret!',
+    'Glassmorphism magic activated!',
+    'Easter egg discovered!',
+    'You\'re a UI explorer!',
+    'Hidden gem unlocked!',
+    'Secret mode engaged!',
+    'Mystery revealed!',
+    'Behind the glass curtain!',
   ];
 
   @override
@@ -201,7 +201,7 @@ class _GlassEasterEggsState extends State<GlassEasterEggs>
     });
     
     _createFloatingEmojis();
-    _showSecretMessage('🌈 RAINBOW EXPLOSION! 🌈');
+    _showSecretMessage('[RAINBOW] RAINBOW EXPLOSION! [RAINBOW]');
     widget.onSecretUnlocked?.call();
   }
 
@@ -212,19 +212,30 @@ class _GlassEasterEggsState extends State<GlassEasterEggs>
       });
     });
     
-    _showSecretMessage('🔐 Secret long press detected!');
+    _showSecretMessage('Secret long press detected!');
     widget.onSecretUnlocked?.call();
   }
 
   void _createFloatingEmojis() {
-    final emojis = ['🎉', '✨', '🚀', '💫', '💎', '🌟', '🔮', '🎭', '🦄', '🌈'];
+    final icons = [
+      PhosphorIcons.star(),
+      PhosphorIcons.lightning(),
+      PhosphorIcons.rocket(),
+      PhosphorIcons.lightbulb(),
+      PhosphorIcons.diamond(),
+      PhosphorIcons.crown(),
+      PhosphorIcons.sparkle(),
+      PhosphorIcons.smiley(),
+      PhosphorIcons.heart(),
+      PhosphorIcons.sun(),
+    ];
     final random = math.Random();
     
     setState(() {
       _floatingEmojis.clear();
       for (int i = 0; i < 15; i++) {
         _floatingEmojis.add(_FloatingEmoji(
-          emoji: emojis[random.nextInt(emojis.length)],
+          emoji: icons[random.nextInt(icons.length)],
           startPosition: Offset(
             random.nextDouble(),
             random.nextDouble(),
@@ -405,9 +416,10 @@ class _GlassEasterEggsState extends State<GlassEasterEggs>
               scale: emoji.scale,
               child: Opacity(
                 opacity: emoji.alpha,
-                child: Text(
+                child: Icon(
                   emoji.emoji,
-                  style: const TextStyle(fontSize: 24),
+                  size: 24,
+                  color: _rainbowColors[DateTime.now().millisecond % _rainbowColors.length],
                 ),
               ),
             ),
@@ -475,7 +487,7 @@ class _GlassEasterEggsState extends State<GlassEasterEggs>
 
 /// Floating emoji animation data
 class _FloatingEmoji {
-  final String emoji;
+  final IconData emoji;
   Offset startPosition;
   Offset velocity;
   double rotation;

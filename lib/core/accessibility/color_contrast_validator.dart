@@ -16,9 +16,9 @@ class ColorContrastValidator {
 
   /// Calculate relative luminance of a color
   static double _calculateLuminance(Color color) {
-    final r = _calculateChannelLuminance(color.r / 255.0);
-    final g = _calculateChannelLuminance(color.g / 255.0);
-    final b = _calculateChannelLuminance(color.b / 255.0);
+    final r = _calculateChannelLuminance((color.value >> 16 & 0xFF) / 255.0);
+    final g = _calculateChannelLuminance((color.value >> 8 & 0xFF) / 255.0);
+    final b = _calculateChannelLuminance((color.value & 0xFF) / 255.0);
     
     return 0.2126 * r + 0.7152 * g + 0.0722 * b;
   }
@@ -439,7 +439,7 @@ class ColorContrastTester extends StatelessWidget {
             style: const TextStyle(fontSize: 12),
           ),
           Text(
-            'WCAG AA: ${meetsAA ? "✓" : "✗"} | AAA: ${meetsAAA ? "✓" : "✗"}',
+            'WCAG AA: ${meetsAA ? "PASS" : "FAIL"} | AAA: ${meetsAAA ? "PASS" : "FAIL"}',
             style: const TextStyle(fontSize: 12),
           ),
         ],

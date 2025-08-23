@@ -23,7 +23,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Test Title'), findsOneWidget);
       expect(find.byType(StandardizedAppBar), findsOneWidget);
@@ -38,7 +38,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Custom Leading'), findsOneWidget);
       expect(find.byIcon(Icons.menu), findsOneWidget);
@@ -57,7 +57,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('With Actions'), findsOneWidget);
       expect(find.byIcon(Icons.search), findsOneWidget);
@@ -74,7 +74,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('No Elevation'), findsOneWidget);
       expect(find.byType(StandardizedAppBar), findsOneWidget);
@@ -87,7 +87,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('High Elevation'), findsOneWidget);
     });
@@ -101,7 +101,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Custom Color'), findsOneWidget);
       expect(find.byType(StandardizedAppBar), findsOneWidget);
@@ -115,7 +115,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('With Profile Picture'), findsOneWidget);
       expect(find.byType(UniversalProfilePicture), findsOneWidget);
@@ -131,7 +131,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Centered Title'), findsOneWidget);
       expect(find.byType(StandardizedAppBar), findsOneWidget);
@@ -146,7 +146,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('No Auto Leading'), findsOneWidget);
       expect(find.byType(StandardizedAppBar), findsOneWidget);
@@ -180,12 +180,12 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('First Page'), findsOneWidget);
       
       await tester.tap(find.text('Navigate'));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Second Page'), findsOneWidget);
       expect(find.byIcon(Icons.arrow_back), findsOneWidget);
@@ -199,7 +199,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(StandardizedAppBar), findsOneWidget);
     });
@@ -214,7 +214,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(StandardizedAppBar), findsOneWidget);
     });
@@ -231,7 +231,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Dark Theme'), findsOneWidget);
       expect(find.byType(StandardizedAppBar), findsOneWidget);
@@ -251,7 +251,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Multiple Actions'), findsOneWidget);
       expect(find.byIcon(Icons.search), findsOneWidget);
@@ -279,10 +279,10 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       await tester.tap(find.byIcon(Icons.search));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(actionTapped, isTrue);
     });
@@ -295,7 +295,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(StandardizedAppBar), findsOneWidget);
       

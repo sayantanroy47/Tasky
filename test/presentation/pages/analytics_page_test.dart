@@ -114,7 +114,7 @@ void main() {
 
     testWidgets('should display analytics page with basic elements', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(AnalyticsPage), findsOneWidget);
       expect(find.byType(Scaffold), findsOneWidget);
@@ -122,14 +122,14 @@ void main() {
 
     testWidgets('should display loading state', (tester) async {
       await tester.pumpWidget(createTestWidget(isLoading: true));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
 
     testWidgets('should display error state', (tester) async {
       await tester.pumpWidget(createTestWidget(hasError: true));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.textContaining('error'), findsOneWidget, reason: 'Should display error message');
     });
@@ -138,14 +138,14 @@ void main() {
       final data = createTestAnalyticsData();
       
       await tester.pumpWidget(createTestWidget(analyticsSummary: data));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(AnalyticsPage), findsOneWidget);
     });
 
     testWidgets('should handle empty analytics data', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(AnalyticsPage), findsOneWidget);
     });
@@ -164,7 +164,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(AnalyticsPage), findsOneWidget);
     });

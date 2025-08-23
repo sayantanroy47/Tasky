@@ -49,7 +49,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(UniversalProfilePicture), findsOneWidget);
       expect(find.text('JD'), findsOneWidget); // Initials
@@ -70,7 +70,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(UniversalProfilePicture), findsOneWidget);
       expect(find.text('M'), findsOneWidget);
@@ -112,7 +112,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(UniversalProfilePicture), findsOneWidget);
       expect(find.text('?'), findsOneWidget);
@@ -138,7 +138,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(UniversalProfilePicture), findsNWidgets(2));
     });
@@ -162,10 +162,10 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       await tester.tap(find.byType(UniversalProfilePicture));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(customTapCalled, isTrue);
     });
@@ -190,7 +190,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(UniversalProfilePicture), findsNWidgets(2));
     });
@@ -211,7 +211,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(UniversalProfilePicture), findsOneWidget);
       expect(find.text('JD'), findsOneWidget);
@@ -234,7 +234,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(UniversalProfilePicture), findsOneWidget);
     });
@@ -254,7 +254,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(UniversalProfilePicture), findsOneWidget);
       
@@ -275,7 +275,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(UniversalProfilePicture), findsOneWidget);
       expect(find.text('U'), findsOneWidget); // Default initial
@@ -298,7 +298,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(UniversalProfilePictureSmall), findsOneWidget);
       expect(find.text('JD'), findsOneWidget);
@@ -321,7 +321,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(UniversalProfilePictureLarge), findsOneWidget);
       expect(find.text('JD'), findsOneWidget);

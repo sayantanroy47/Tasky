@@ -28,7 +28,7 @@ void main() {
 
     testWidgets('should display task dependencies page', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(TaskDependenciesPage), findsOneWidget);
       expect(find.byType(Scaffold), findsOneWidget);
@@ -36,14 +36,14 @@ void main() {
 
     testWidgets('should display loading state', (tester) async {
       await tester.pumpWidget(createTestWidget(isLoading: true));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
 
     testWidgets('should display error state', (tester) async {
       await tester.pumpWidget(createTestWidget(hasError: true));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.textContaining('error'), findsOneWidget);
     });
@@ -56,14 +56,14 @@ void main() {
       ];
       
       await tester.pumpWidget(createTestWidget(tasks: tasks));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(TaskDependenciesPage), findsOneWidget);
     });
 
     testWidgets('should handle empty dependencies', (tester) async {
       await tester.pumpWidget(createTestWidget(tasks: []));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(TaskDependenciesPage), findsOneWidget);
     });
@@ -77,7 +77,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(TaskDependenciesPage), findsOneWidget);
     });

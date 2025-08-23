@@ -19,7 +19,7 @@ void main() {
           child: LoadingStates.skeletonList(itemCount: 3),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ListView), findsOneWidget);
       expect(find.byType(SkeletonTaskCard), findsNWidgets(3));
@@ -31,7 +31,7 @@ void main() {
           child: LoadingStates.skeletonGrid(itemCount: 4),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(GridView), findsOneWidget);
       expect(find.byType(SkeletonCard), findsNWidgets(4));
@@ -43,7 +43,7 @@ void main() {
           child: LoadingStates.inline(message: 'Loading...'),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Loading...'), findsOneWidget);
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
@@ -59,7 +59,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Content'), findsOneWidget);
       expect(find.byType(GlassLoadingIndicator), findsOneWidget);
@@ -75,7 +75,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Content'), findsOneWidget);
       expect(find.byType(GlassLoadingIndicator), findsNothing);
@@ -89,7 +89,7 @@ void main() {
           child: const SkeletonTaskCard(),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(SkeletonTaskCard), findsOneWidget);
     });
@@ -100,7 +100,7 @@ void main() {
           child: const SkeletonTaskCard(height: 120),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(SkeletonTaskCard), findsOneWidget);
     });
@@ -113,7 +113,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(SkeletonTaskCard), findsOneWidget);
     });
@@ -126,7 +126,7 @@ void main() {
           child: const SkeletonCard(),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(SkeletonCard), findsOneWidget);
     });
@@ -139,7 +139,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(SkeletonCard), findsOneWidget);
     });
@@ -152,7 +152,7 @@ void main() {
           child: const GlassLoadingIndicator(),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(GlassLoadingIndicator), findsOneWidget);
       expect(find.text('Loading...'), findsOneWidget);
@@ -166,7 +166,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Custom loading message'), findsOneWidget);
       expect(find.byType(GlassLoadingIndicator), findsOneWidget);
@@ -180,7 +180,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(GlassLoadingIndicator), findsOneWidget);
     });
@@ -193,7 +193,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(GlassLoadingIndicator), findsOneWidget);
     });
@@ -208,7 +208,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(GlassProgressIndicator), findsOneWidget);
       expect(find.text('50%'), findsOneWidget);
@@ -223,7 +223,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Upload Progress'), findsOneWidget);
       expect(find.text('75%'), findsOneWidget);
@@ -240,7 +240,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(GlassProgressIndicator), findsOneWidget);
       expect(find.text('30%'), findsOneWidget);
@@ -255,7 +255,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(GlassProgressIndicator), findsOneWidget);
       expect(find.text('60%'), findsOneWidget);
@@ -269,7 +269,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(GlassProgressIndicator), findsOneWidget);
       expect(find.text('150%'), findsOneWidget); // Still shows 150% but progress bar is clamped
@@ -291,7 +291,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ShimmerEffect), findsOneWidget);
     });
@@ -305,7 +305,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('No Shimmer'), findsOneWidget);
       expect(find.byType(ShimmerEffect), findsOneWidget);
@@ -320,7 +320,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Custom Duration Shimmer'), findsOneWidget);
       expect(find.byType(ShimmerEffect), findsOneWidget);
@@ -344,7 +344,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(SkeletonTaskCard), findsOneWidget);
       expect(find.byType(SkeletonCard), findsOneWidget);
@@ -368,7 +368,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       final skeletonTaskSemantics = tester.getSemantics(find.byType(SkeletonTaskCard));
       final skeletonCardSemantics = tester.getSemantics(find.byType(SkeletonCard));

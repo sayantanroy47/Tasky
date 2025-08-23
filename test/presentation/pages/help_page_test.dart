@@ -19,7 +19,7 @@ void main() {
 
     testWidgets('should display help page with basic elements', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(HelpPage), findsOneWidget);
       expect(find.byType(Scaffold), findsOneWidget);
@@ -27,17 +27,17 @@ void main() {
 
     testWidgets('should display help content', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(HelpPage), findsOneWidget);
     });
 
     testWidgets('should handle scrolling through help content', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       await tester.drag(find.byType(HelpPage), const Offset(0, -300));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(HelpPage), findsOneWidget);
     });
@@ -51,20 +51,20 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(HelpPage), findsOneWidget);
     });
 
     testWidgets('should handle expandable sections', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Look for expandable tiles or sections
       final expansionTiles = find.byType(ExpansionTile);
       if (expansionTiles.evaluate().isNotEmpty) {
         await tester.tap(expansionTiles.first);
-        await tester.pumpAndSettle();
+        await tester.pump();
       }
       
       expect(find.byType(HelpPage), findsOneWidget);
@@ -72,14 +72,14 @@ void main() {
 
     testWidgets('should display FAQ sections', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(HelpPage), findsOneWidget);
     });
 
     testWidgets('should handle contact/support links', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Look for contact buttons or links
       final contactElements = [
@@ -90,7 +90,7 @@ void main() {
       
       if (contactElements.isNotEmpty) {
         await tester.tap(find.byWidget(contactElements.first.widget));
-        await tester.pumpAndSettle();
+        await tester.pump();
       }
       
       expect(find.byType(HelpPage), findsOneWidget);

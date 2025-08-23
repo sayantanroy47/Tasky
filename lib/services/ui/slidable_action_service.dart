@@ -64,11 +64,12 @@ class SlidableActionService {
     return actions;
   }
 
-  /// Gets balanced compact actions with proper 2-1 distribution
+  /// Gets balanced compact actions with proper 2-2 distribution for better UX
   static Map<String, List<SlidableAction>> getBalancedCompactTaskActions(
     TaskModel task, {
     VoidCallback? onComplete,
     VoidCallback? onQuickEdit,
+    VoidCallback? onDelete,
     VoidCallback? onMore,
   }) {
     return {
@@ -77,33 +78,47 @@ class SlidableActionService {
           onPressed: onComplete,
           actionType: SlidableActionType.complete,
           actionName: 'Complete',
-          backgroundColor: Colors.green.shade600,
+          backgroundColor: Colors.green.shade700, // Darker for better contrast
           foregroundColor: Colors.white,
           icon: PhosphorIcons.check(),
-          iconSize: 26, // Larger icon for better visibility
+          iconSize: 24, // Slightly smaller to balance with text
           label: 'Complete',
+          spacing: 8, // Increased spacing for better text visibility
         ),
         _createStyledAction(
           onPressed: onQuickEdit,
           actionType: SlidableActionType.edit,
           actionName: 'QuickEdit',
-          backgroundColor: Colors.blue.shade600,
+          backgroundColor: Colors.blue.shade700, // Darker for better contrast
           foregroundColor: Colors.white,
           icon: PhosphorIcons.pencil(), // Changed from lightning to pencil for clarity
-          iconSize: 26, // Larger icon for better visibility
+          iconSize: 24, // Slightly smaller to balance with text
           label: 'Edit',
+          spacing: 8, // Increased spacing for better text visibility
         ),
       ],
       'endActions': [
         _createStyledAction(
+          onPressed: onDelete,
+          actionType: SlidableActionType.destructive,
+          actionName: 'Delete',
+          backgroundColor: Colors.red.shade700, // Darker for better contrast
+          foregroundColor: Colors.white,
+          icon: PhosphorIcons.trash(),
+          iconSize: 24, // Slightly smaller to balance with text
+          label: 'Delete',
+          spacing: 8, // Increased spacing for better text visibility
+        ),
+        _createStyledAction(
           onPressed: onMore,
           actionType: SlidableActionType.neutral,
           actionName: 'More',
-          backgroundColor: Colors.grey.shade700,
+          backgroundColor: Colors.grey.shade800, // Darker for better contrast
           foregroundColor: Colors.white,
           icon: PhosphorIcons.dotsThreeOutline(),
-          iconSize: 26, // Larger icon for better visibility
+          iconSize: 24, // Slightly smaller to balance with text
           label: 'More',
+          spacing: 8, // Increased spacing for better text visibility
         ),
       ],
     };
@@ -194,7 +209,7 @@ class SlidableActionService {
         backgroundColor: Colors.orange,
         foregroundColor: Colors.white,
         icon: PhosphorIcons.archive(),
-        label: 'Archive',
+        // label: 'Archive', // Removed text
       ),
       SlidableAction(
         onPressed: (_) async {
@@ -203,11 +218,7 @@ class SlidableActionService {
         backgroundColor: Colors.red.shade600,
         foregroundColor: Colors.white,
         icon: PhosphorIcons.trash(),
-        label: 'Delete',
-        flex: 1,
-        spacing: 4,
-        borderRadius: BorderRadius.circular(8),
-        autoClose: true,
+        // label: 'Delete', // Removed text
       ),
     ];
   }
@@ -230,7 +241,7 @@ class SlidableActionService {
         backgroundColor: Colors.green,
         foregroundColor: Colors.white,
         icon: PhosphorIcons.check(),
-        label: 'Complete',
+        // label: 'Complete', // Removed text
       ),
       SlidableAction(
         onPressed: (_) async {
@@ -239,7 +250,7 @@ class SlidableActionService {
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
         icon: PhosphorIcons.pencil(),
-        label: 'Edit',
+        // label: 'Edit', // Removed text
       ),
       SlidableAction(
         onPressed: (_) {
@@ -249,7 +260,7 @@ class SlidableActionService {
         backgroundColor: Colors.purple,
         foregroundColor: Colors.white,
         icon: task.isPinned ? PhosphorIcons.pushPinSlash() : PhosphorIcons.pushPin(),
-        label: task.isPinned ? 'Unpin' : 'Pin',
+        // label: task.isPinned ? 'Unpin' : 'Pin', // Removed text
       ),
       SlidableAction(
         onPressed: (_) async {
@@ -258,11 +269,7 @@ class SlidableActionService {
         backgroundColor: Colors.red.shade600,
         foregroundColor: Colors.white,
         icon: PhosphorIcons.trash(),
-        label: 'Delete',
-        flex: 1,
-        spacing: 4,
-        borderRadius: BorderRadius.circular(8),
-        autoClose: true,
+        // label: 'Delete', // Removed text
       ),
     ];
   }
@@ -281,7 +288,7 @@ class SlidableActionService {
         backgroundColor: Colors.orange,
         foregroundColor: Colors.white,
         icon: PhosphorIcons.arrowCounterClockwise(),
-        label: 'Uncomplete',
+        // label: 'Uncomplete', // Removed text
       ),
       SlidableAction(
         onPressed: (_) async {
@@ -290,7 +297,7 @@ class SlidableActionService {
         backgroundColor: Colors.teal,
         foregroundColor: Colors.white,
         icon: PhosphorIcons.archive(),
-        label: 'Archive',
+        // label: 'Archive', // Removed text
       ),
       SlidableAction(
         onPressed: (_) async {
@@ -299,11 +306,7 @@ class SlidableActionService {
         backgroundColor: Colors.red.shade600,
         foregroundColor: Colors.white,
         icon: PhosphorIcons.trash(),
-        label: 'Delete',
-        flex: 1,
-        spacing: 4,
-        borderRadius: BorderRadius.circular(8),
-        autoClose: true,
+        // label: 'Delete', // Removed text
       ),
     ];
   }
@@ -323,7 +326,7 @@ class SlidableActionService {
         backgroundColor: Colors.green,
         foregroundColor: Colors.white,
         icon: PhosphorIcons.checkCircle(),
-        label: 'Complete',
+        // label: 'Complete', // Removed text
       ),
       SlidableAction(
         onPressed: (_) {
@@ -333,7 +336,7 @@ class SlidableActionService {
         backgroundColor: Colors.orange,
         foregroundColor: Colors.white,
         icon: PhosphorIcons.calendar(),
-        label: 'Reschedule',
+        // label: 'Reschedule', // Removed text
       ),
       SlidableAction(
         onPressed: (_) async {
@@ -342,7 +345,7 @@ class SlidableActionService {
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
         icon: PhosphorIcons.pencil(),
-        label: 'Edit',
+        // label: 'Edit', // Removed text
       ),
       SlidableAction(
         onPressed: (_) async {
@@ -351,11 +354,7 @@ class SlidableActionService {
         backgroundColor: Colors.red.shade600,
         foregroundColor: Colors.white,
         icon: PhosphorIcons.trash(),
-        label: 'Delete',
-        flex: 1,
-        spacing: 4,
-        borderRadius: BorderRadius.circular(8),
-        autoClose: true,
+        // label: 'Delete', // Removed text
       ),
     ];
   }
@@ -375,7 +374,7 @@ class SlidableActionService {
         backgroundColor: Colors.green,
         foregroundColor: Colors.white,
         icon: PhosphorIcons.check(),
-        label: 'Complete',
+        // label: 'Complete', // Removed text
       ),
       SlidableAction(
         onPressed: (_) async {
@@ -384,7 +383,7 @@ class SlidableActionService {
         backgroundColor: Colors.blue,
         foregroundColor: Colors.white,
         icon: PhosphorIcons.gear(),
-        label: 'Edit',
+        // label: 'Edit', // Removed text
       ),
       SlidableAction(
         onPressed: (_) {
@@ -394,7 +393,7 @@ class SlidableActionService {
         backgroundColor: Colors.teal,
         foregroundColor: Colors.white,
         icon: PhosphorIcons.skipForward(),
-        label: 'Skip',
+        // label: 'Skip', // Removed text
       ),
       SlidableAction(
         onPressed: (_) {
@@ -404,7 +403,7 @@ class SlidableActionService {
         backgroundColor: Colors.red,
         foregroundColor: Colors.white,
         icon: PhosphorIcons.stop(),
-        label: 'Stop Series',
+        // label: 'Stop Series', // Removed text
       ),
     ];
   }
@@ -459,8 +458,8 @@ class SlidableActionService {
     required IconData icon,
     required String label,
     int flex = 1,
-    double spacing = 6, // Increased for better visual balance
-    double iconSize = 20, // Default icon size, can be overridden
+    double spacing = 8, // Increased for better text visibility
+    double iconSize = 40, // Much larger icon size for better visibility without text
     BorderRadius? borderRadius,
     bool autoClose = true,
   }) {
@@ -471,10 +470,9 @@ class SlidableActionService {
       backgroundColor: backgroundColor,
       foregroundColor: foregroundColor,
       icon: icon,
-      label: label,
+      // No label to ensure center alignment
       flex: flex,
-      spacing: spacing,
-      borderRadius: borderRadius ?? BorderRadius.circular(10), // Slightly more rounded
+      borderRadius: borderRadius ?? BorderRadius.circular(10),
       autoClose: autoClose,
     );
   }

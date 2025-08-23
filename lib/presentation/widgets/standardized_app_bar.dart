@@ -75,7 +75,7 @@ class StandardizedAppBar extends StatelessWidget implements PreferredSizeWidget 
         title,
         style: TextStyle(
           fontSize: TypographyConstants.titleLarge,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w500,
           letterSpacing: -0.5,
           color: theme.colorScheme.onSurface,
         ),
@@ -83,15 +83,15 @@ class StandardizedAppBar extends StatelessWidget implements PreferredSizeWidget 
       actions: _buildActions(),
       bottom: bottom,
       
-      // Glassmorphism background effect
+      // Enhanced glassmorphism background effect for better transparency
       flexibleSpace: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              theme.colorScheme.surface.withValues(alpha: 0.9),
-              theme.colorScheme.surface.withValues(alpha: 0.7),
+              theme.colorScheme.surface.withValues(alpha: 0.6),
+              theme.colorScheme.surface.withValues(alpha: 0.4),
             ],
           ),
           border: Border(
@@ -105,7 +105,7 @@ class StandardizedAppBar extends StatelessWidget implements PreferredSizeWidget 
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
             child: Container(
-              color: theme.colorScheme.surface.withValues(alpha: 0.1),
+              color: theme.colorScheme.surface.withValues(alpha: 0.05),
             ),
           ),
         ),

@@ -85,6 +85,8 @@ class MainScaffold extends ConsumerWidget {
   ) {
     return Scaffold(
       backgroundColor: Colors.transparent,
+      extendBodyBehindAppBar: true, // Allow background behind app bar
+      extendBody: true, // Allow background behind bottom navigation
       body: IndexedStack(
         index: selectedIndex,
         children: pages,
@@ -105,6 +107,8 @@ class MainScaffold extends ConsumerWidget {
   ) {
     return Scaffold(
       backgroundColor: Colors.transparent,
+      extendBodyBehindAppBar: true, // Allow background behind app bar
+      extendBody: true, // Allow background behind navigation elements
       body: Row(
         children: [
           // Navigation rail
@@ -204,6 +208,8 @@ class MainScaffold extends ConsumerWidget {
   ) {
     return Scaffold(
       backgroundColor: Colors.transparent,
+      extendBodyBehindAppBar: true, // Allow background behind app bar
+      extendBody: true, // Allow background behind navigation elements
       body: Row(
         children: [
           // Navigation drawer
@@ -335,13 +341,13 @@ class MainScaffold extends ConsumerWidget {
     
     return Container(
       decoration: BoxDecoration(
-        // Enhanced glassmorphism background
+        // Enhanced glassmorphism background with better transparency
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            theme.colorScheme.surface.withValues(alpha: 0.8),
-            theme.colorScheme.surface.withValues(alpha: 0.95),
+            theme.colorScheme.surface.withValues(alpha: 0.5),
+            theme.colorScheme.surface.withValues(alpha: 0.7),
           ],
         ),
         // Subtle shadow for depth
@@ -556,11 +562,12 @@ class MainScaffold extends ConsumerWidget {
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (context) => GlassmorphismContainer(
-        level: GlassLevel.floating,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-        margin: EdgeInsets.zero,
-        child: SafeArea(
+      builder: (context) => ThemeBackgroundWidget(
+        child: GlassmorphismContainer(
+          level: GlassLevel.floating,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          margin: EdgeInsets.zero,
+          child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Column(
@@ -678,6 +685,7 @@ class MainScaffold extends ConsumerWidget {
               ],
             ),
           ),
+        ),
         ),
       ),
     );

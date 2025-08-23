@@ -19,7 +19,7 @@ void main() {
 
     testWidgets('should display AI settings page with basic elements', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(AISettingsPage), findsOneWidget);
       expect(find.byType(Scaffold), findsOneWidget);
@@ -27,14 +27,14 @@ void main() {
 
     testWidgets('should display AI service options', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(AISettingsPage), findsOneWidget);
     });
 
     testWidgets('should handle AI service selection', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Look for dropdown, radio buttons, or other selection UI
       final dropdowns = find.byType(DropdownButton);
@@ -43,13 +43,13 @@ void main() {
       
       if (dropdowns.evaluate().isNotEmpty) {
         await tester.tap(dropdowns.first);
-        await tester.pumpAndSettle();
+        await tester.pump();
       } else if (radioButtons.evaluate().isNotEmpty) {
         await tester.tap(radioButtons.first);
-        await tester.pumpAndSettle();
+        await tester.pump();
       } else if (listTiles.evaluate().isNotEmpty) {
         await tester.tap(listTiles.first);
-        await tester.pumpAndSettle();
+        await tester.pump();
       }
       
       expect(find.byType(AISettingsPage), findsOneWidget);
@@ -57,13 +57,13 @@ void main() {
 
     testWidgets('should handle API key management', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Look for text fields for API keys
       final textFields = find.byType(TextFormField);
       if (textFields.evaluate().isNotEmpty) {
         await tester.enterText(textFields.first, 'test-api-key');
-        await tester.pumpAndSettle();
+        await tester.pump();
       }
       
       expect(find.byType(AISettingsPage), findsOneWidget);
@@ -71,7 +71,7 @@ void main() {
 
     testWidgets('should display save/cancel buttons', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(AISettingsPage), findsOneWidget);
     });
@@ -85,17 +85,17 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(AISettingsPage), findsOneWidget);
     });
 
     testWidgets('should handle scrolling', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       await tester.drag(find.byType(AISettingsPage), const Offset(0, -300));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(AISettingsPage), findsOneWidget);
     });

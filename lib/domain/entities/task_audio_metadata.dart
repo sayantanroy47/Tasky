@@ -116,11 +116,11 @@ extension TaskTypeExtension on TaskType {
   String get icon {
     switch (this) {
       case TaskType.text:
-        return '📝';
+        return '[TASK]';
       case TaskType.voice:
         return '🎤';
       case TaskType.transcribed:
-        return '📝🎤';
+        return '[VOICE_TASK]';
     }
   }
 }

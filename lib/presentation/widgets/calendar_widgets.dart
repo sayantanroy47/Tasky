@@ -18,7 +18,7 @@ class CalendarWidget extends ConsumerWidget {
     final calendarNotifier = ref.read(calendar.calendarProvider.notifier);
 
     return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.75, // Fixed height to prevent layout issues
+      height: MediaQuery.of(context).size.height * 0.65, // Optimized height for better proportions
       child: Column(
         children: [
           // Calendar view mode selector

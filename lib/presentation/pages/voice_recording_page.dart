@@ -302,7 +302,7 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
       _speechEnabled = await _speechToText.initialize(
         debugLogging: true,
         onError: (error) {
-          debugPrint('🎤 Speech recognition error: ${error.errorMsg}');
+          debugPrint('[MIC] Speech recognition error: ${error.errorMsg}');
           if (mounted) {
             setState(() {
               _statusMessage = 'Speech error: ${error.errorMsg}';
@@ -310,30 +310,30 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
           }
         },
         onStatus: (status) {
-          debugPrint('🎤 Speech recognition status: $status');
+          debugPrint('[MIC] Speech recognition status: $status');
           if (status == 'doneNoResult') {
-            debugPrint('🎤 Speech recognition finished with no result');
+            debugPrint('[MIC] Speech recognition finished with no result');
           }
         },
       );
       
-      debugPrint('🎤 Speech enabled: $_speechEnabled');
-      debugPrint('🎤 Speech available: ${await _speechToText.hasPermission}');
+      debugPrint('[MIC] Speech enabled: $_speechEnabled');
+      debugPrint('[MIC] Speech available: ${await _speechToText.hasPermission}');
       
       // Initialize audio recording service
       _audioRecorder = AudioRecordingService();
       _audioEnabled = await _audioRecorder.initialize();
-      debugPrint('🎵 Audio recording enabled: $_audioEnabled');
+      debugPrint('[AUDIO] Audio recording enabled: $_audioEnabled');
       
       // Initialize audio concatenation service
       _concatenationService = AudioConcatenationService();
       _concatenationEnabled = await _concatenationService.initialize();
-      debugPrint('🎵 Audio concatenation enabled: $_concatenationEnabled');
+      debugPrint('[AUDIO] Audio concatenation enabled: $_concatenationEnabled');
       
       // Check microphone permission for speech recognition
       final hasPermission = await _speechToText.hasPermission;
       if (!hasPermission) {
-        debugPrint('🎤 Requesting microphone permission for speech recognition...');
+        debugPrint('[MIC] Requesting microphone permission for speech recognition...');
       }
       
       if (mounted) {
@@ -344,7 +344,7 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
         });
       }
     } catch (e) {
-      debugPrint('❌ Error initializing services: $e');
+      debugPrint('[ERROR] Error initializing services: $e');
       if (mounted) {
         setState(() {
           _statusMessage = 'Error initializing services: $e';
@@ -908,7 +908,7 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
     }
 
     try {
-      debugPrint('🎤 Starting speech recognition (primary mode)...');
+      debugPrint('[MIC] Starting speech recognition (primary mode)...');
       
       setState(() {
         _isRecording = true;
@@ -931,7 +931,7 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
       // Use ONLY speech recognition to avoid microphone conflicts
       await _speechToText.listen(
         onResult: (result) {
-          debugPrint('🎤 Speech result: ${result.recognizedWords} (confidence: ${result.confidence})');
+          debugPrint('[MIC] Speech result: ${result.recognizedWords} (confidence: ${result.confidence})');
           if (mounted) {
             setState(() {
               _currentTranscription = result.recognizedWords;
@@ -958,7 +958,7 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
         },
       );
       
-      debugPrint('🎤 Speech recognition started successfully');
+      debugPrint('[MIC] Speech recognition started successfully');
       
     } catch (e) {
       setState(() {
@@ -974,7 +974,7 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
     if (!_isRecording) return;
 
     try {
-      debugPrint('🎤 Stopping speech recognition...');
+      debugPrint('[MIC] Stopping speech recognition...');
       
       setState(() {
         _isProcessing = true;
@@ -991,7 +991,7 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
       // For now, create recording with transcription only (no audio file)
       // In future iterations, we can add separate audio recording when transcription is complete
       if (_currentTranscription.isNotEmpty) {
-        debugPrint('✅ SAVING TRANSCRIPTION RECORDING:');
+        debugPrint('[SUCCESS] SAVING TRANSCRIPTION RECORDING:');
         debugPrint('  - Transcription: $_currentTranscription');
         debugPrint('  - Duration: $_currentRecordingDuration');
         
@@ -1012,7 +1012,7 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
         );
         
         _session.addRecording(recording);
-        debugPrint('✅ Recording added to session. Total recordings: ${_session.recordings.length}');
+        debugPrint('[SUCCESS] Recording added to session. Total recordings: ${_session.recordings.length}');
         
         setState(() {
           _isRecording = false;
@@ -1103,7 +1103,7 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
   Future<void> _proceedToTaskCreation() async {
     if (!_session.hasRecordings) return;
     
-    debugPrint('🎯 Starting task creation with ${_session.recordings.length} recordings...');
+    debugPrint('[DART] Starting task creation with ${_session.recordings.length} recordings...');
     
     setState(() {
       _statusMessage = 'Preparing audio files...';
@@ -1119,18 +1119,18 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
           .toList();
       
       // Enhanced logging for mixed recordings
-      debugPrint('🎯 Mixed recording analysis:');
+      debugPrint('[DART] Mixed recording analysis:');
       debugPrint('  - Total recordings: ${_session.recordings.length}');
       debugPrint('  - Recordings with audio: ${audioFilePaths.length}');
       debugPrint('  - Transcription-only recordings: ${_session.recordings.length - audioFilePaths.length}');
-      debugPrint('🎵 Audio files to process: ${audioFilePaths.length}');
+      debugPrint('[AUDIO] Audio files to process: ${audioFilePaths.length}');
       for (int i = 0; i < audioFilePaths.length; i++) {
         debugPrint('  $i: ${audioFilePaths[i]}');
       }
       
       // Concatenate audio files if multiple exist and concatenation is enabled
       if (_concatenationEnabled && audioFilePaths.length > 1) {
-        debugPrint('🎵 Concatenating ${audioFilePaths.length} audio files...');
+        debugPrint('[AUDIO] Concatenating ${audioFilePaths.length} audio files...');
         
         setState(() {
           _statusMessage = 'Combining audio files...';
@@ -1148,17 +1148,17 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
         );
         
         if (finalAudioPath != null) {
-          debugPrint('✅ Audio concatenation successful: $finalAudioPath');
+          debugPrint('[SUCCESS] Audio concatenation successful: $finalAudioPath');
         } else {
-          debugPrint('❌ Audio concatenation failed, using first file as fallback');
+          debugPrint('[ERROR] Audio concatenation failed, using first file as fallback');
           finalAudioPath = audioFilePaths.isNotEmpty ? audioFilePaths.first : null;
         }
       } else if (audioFilePaths.isNotEmpty) {
         // Single file or concatenation not available - use first file
         finalAudioPath = audioFilePaths.first;
-        debugPrint('📄 Using single audio file: $finalAudioPath');
+        debugPrint('Using single audio file: $finalAudioPath');
       } else {
-        debugPrint('📄 No audio files available');
+        debugPrint('No audio files available');
       }
       
       // Prepare return data with concatenated or primary audio file
@@ -1179,7 +1179,7 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
         },
       };
       
-      debugPrint('🎯 Task creation data prepared:');
+      debugPrint('[DART] Task creation data prepared:');
       debugPrint('  - Combined transcription length: ${_session.combinedTranscription.length} chars');
       debugPrint('  - Final audio file: $finalAudioPath');
       debugPrint('  - Total duration: ${_session.totalDuration}');
@@ -1211,7 +1211,7 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
       }
       
     } catch (e) {
-      debugPrint('❌ Error in _proceedToTaskCreation: $e');
+      debugPrint('[ERROR] Error in _proceedToTaskCreation: $e');
       if (mounted) {
         setState(() {
           _statusMessage = 'Error preparing audio: $e';

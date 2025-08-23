@@ -19,7 +19,7 @@ void main() {
 
     testWidgets('should display onboarding page with basic elements', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(OnboardingPage), findsOneWidget);
       expect(find.byType(Scaffold), findsOneWidget);
@@ -27,14 +27,14 @@ void main() {
 
     testWidgets('should display onboarding steps', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(OnboardingPage), findsOneWidget);
     });
 
     testWidgets('should handle navigation between steps', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Look for next/previous buttons
       final nextButtons = [
@@ -45,7 +45,7 @@ void main() {
       
       if (nextButtons.isNotEmpty) {
         await tester.tap(find.byWidget(nextButtons.first.widget));
-        await tester.pumpAndSettle();
+        await tester.pump();
       }
       
       expect(find.byType(OnboardingPage), findsOneWidget);
@@ -53,12 +53,12 @@ void main() {
 
     testWidgets('should handle skip functionality', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       final skipButtons = find.textContaining('Skip');
       if (skipButtons.evaluate().isNotEmpty) {
         await tester.tap(skipButtons.first);
-        await tester.pumpAndSettle();
+        await tester.pump();
       }
       
       expect(find.byType(OnboardingPage), findsOneWidget);
@@ -66,7 +66,7 @@ void main() {
 
     testWidgets('should handle finish/get started', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       final finishButtons = [
         ...find.textContaining('Finish').evaluate(),
@@ -76,7 +76,7 @@ void main() {
       
       if (finishButtons.isNotEmpty) {
         await tester.tap(find.byWidget(finishButtons.first.widget));
-        await tester.pumpAndSettle();
+        await tester.pump();
       }
       
       expect(find.byType(OnboardingPage), findsOneWidget);
@@ -84,21 +84,21 @@ void main() {
 
     testWidgets('should display page indicator', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(OnboardingPage), findsOneWidget);
     });
 
     testWidgets('should handle swipe gestures', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Test swiping through pages
       await tester.drag(find.byType(OnboardingPage), const Offset(-300, 0));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       await tester.drag(find.byType(OnboardingPage), const Offset(300, 0));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(OnboardingPage), findsOneWidget);
     });
@@ -112,7 +112,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(OnboardingPage), findsOneWidget);
     });

@@ -24,13 +24,13 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Test Button'), findsOneWidget);
       expect(find.byType(PrimaryButton), findsOneWidget);
       
       await tester.tap(find.byType(PrimaryButton));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(onPressedCalled, isTrue);
     });
@@ -44,7 +44,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Disabled Button'), findsOneWidget);
       expect(find.byType(PrimaryButton), findsOneWidget);
@@ -60,7 +60,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(PrimaryButton), findsOneWidget);
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
@@ -76,7 +76,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Icon Button'), findsOneWidget);
       expect(find.byIcon(Icons.add), findsOneWidget);
@@ -93,7 +93,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Expanded Button'), findsOneWidget);
       expect(find.byType(PrimaryButton), findsOneWidget);
@@ -112,13 +112,13 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Secondary Button'), findsOneWidget);
       expect(find.byType(SecondaryButton), findsOneWidget);
       
       await tester.tap(find.byType(SecondaryButton));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(onPressedCalled, isTrue);
     });
@@ -132,7 +132,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Disabled Secondary'), findsOneWidget);
       expect(find.byType(SecondaryButton), findsOneWidget);
@@ -148,7 +148,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(SecondaryButton), findsOneWidget);
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
@@ -167,13 +167,13 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Text Button'), findsOneWidget);
       expect(find.byType(CustomTextButton), findsOneWidget);
       
       await tester.tap(find.byType(CustomTextButton));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(onPressedCalled, isTrue);
     });
@@ -187,7 +187,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Disabled Text Button'), findsOneWidget);
       expect(find.byType(CustomTextButton), findsOneWidget);
@@ -203,7 +203,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(CustomTextButton), findsOneWidget);
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
@@ -221,12 +221,12 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(VoiceActionButton), findsOneWidget);
       
       await tester.tap(find.byType(VoiceActionButton));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(onPressedCalled, isTrue);
     });
@@ -240,7 +240,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(VoiceActionButton), findsOneWidget);
     });
@@ -254,7 +254,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(VoiceActionButton), findsOneWidget);
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
@@ -269,7 +269,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(VoiceActionButton), findsOneWidget);
     });
@@ -287,13 +287,13 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Delete'), findsOneWidget);
       expect(find.byType(DestructiveButton), findsOneWidget);
       
       await tester.tap(find.byType(DestructiveButton));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(onPressedCalled, isTrue);
     });
@@ -307,7 +307,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Disabled Delete'), findsOneWidget);
       expect(find.byType(DestructiveButton), findsOneWidget);
@@ -323,7 +323,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(DestructiveButton), findsOneWidget);
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
@@ -339,7 +339,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Expanded Delete'), findsOneWidget);
       expect(find.byType(DestructiveButton), findsOneWidget);
@@ -375,7 +375,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(PrimaryButton), findsOneWidget);
       expect(find.byType(SecondaryButton), findsOneWidget);
@@ -410,7 +410,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(PrimaryButton), findsOneWidget);
       expect(find.byType(SecondaryButton), findsOneWidget);

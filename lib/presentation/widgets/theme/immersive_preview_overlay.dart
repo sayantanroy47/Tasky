@@ -426,6 +426,7 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
               ),
               const SizedBox(width: 12),
               FloatingActionButton(
+                heroTag: 'themePreviewFAB',
                 mini: true,
                 onPressed: () {},
                 child: Icon(PhosphorIcons.plus()),

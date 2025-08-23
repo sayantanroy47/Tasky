@@ -19,7 +19,7 @@ void main() {
 
     testWidgets('should display location settings page', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(LocationSettingsPage), findsOneWidget);
       expect(find.byType(Scaffold), findsOneWidget);
@@ -27,26 +27,26 @@ void main() {
 
     testWidgets('should handle location permission settings', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(LocationSettingsPage), findsOneWidget);
     });
 
     testWidgets('should display location-based task settings', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(LocationSettingsPage), findsOneWidget);
     });
 
     testWidgets('should handle geofencing settings', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       final switches = find.byType(Switch);
       if (switches.evaluate().isNotEmpty) {
         await tester.tap(switches.first);
-        await tester.pumpAndSettle();
+        await tester.pump();
       }
       
       expect(find.byType(LocationSettingsPage), findsOneWidget);
@@ -61,7 +61,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(LocationSettingsPage), findsOneWidget);
     });

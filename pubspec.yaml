@@ -111,6 +111,7 @@ dev_dependencies:
 
   # Testing
   mockito: ^5.4.2
+  golden_toolkit: ^0.15.0
   integration_test:
     sdk: flutter
 

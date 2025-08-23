@@ -7,6 +7,8 @@ import '../providers/task_provider.dart' show taskOperationsProvider;
 import '../providers/project_providers.dart';
 import '../../core/theme/typography_constants.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'glassmorphism_container.dart';
+import '../../core/design_system/design_tokens.dart';
 
 /// Category option for task categorization
 class CategoryOption {
@@ -51,7 +53,16 @@ class EnhancedTaskCreationDialog extends ConsumerStatefulWidget {
 }
 
 class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreationDialog> {
-  final _formKey = GlobalKey<FormState>();
+  late final GlobalKey<FormState> _formKey;
+  
+  @override
+  void initState() {
+    super.initState();
+    // Create unique form key to prevent duplicate GlobalKey errors
+    _formKey = GlobalKey<FormState>();
+    debugPrint('Manual: Building EnhancedTaskCreationDialog');
+    _initializeFromData();
+  }
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   
@@ -70,13 +81,6 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
   final _tagsController = TextEditingController();
   final _notesController = TextEditingController();
   
-  
-  @override
-  void initState() {
-    super.initState();
-    debugPrint('Manual: Building EnhancedTaskCreationDialog');
-    _initializeFromData();
-  }
   
   void _initializeFromData() {
     if (widget.editingTask != null) {
@@ -142,18 +146,24 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     
-    return AlertDialog(
-      backgroundColor: theme.colorScheme.surface,
-      contentPadding: EdgeInsets.zero,
+    return Dialog(
+      backgroundColor: Colors.transparent,
       insetPadding: const EdgeInsets.all(16),
-      shape: RoundedRectangleBorder(
+      child: GlassmorphismContainer(
+        level: GlassLevel.floating,
         borderRadius: BorderRadius.circular(TypographyConstants.dialogRadius),
-      ),
-      content: SizedBox(
-        width: MediaQuery.of(context).size.width - 32,
-        height: MediaQuery.of(context).size.height * 0.8,
-        child: Scaffold(
-          backgroundColor: Colors.transparent,
+        padding: EdgeInsets.zero,
+        child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width - 32,
+          maxHeight: MediaQuery.of(context).size.height * 0.85,
+          minHeight: 200,
+        ),
+        child: SizedBox(
+          width: MediaQuery.of(context).size.width - 32,
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            resizeToAvoidBottomInset: true,
         appBar: AppBar(
           title: Text(_getDialogTitle()),
           backgroundColor: Colors.transparent,
@@ -341,10 +351,12 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
               ],
             ),
           ),
-        ),
+        ), // Bottom Save Button Bar
         ), // Close Scaffold
-      ), // Close content: SizedBox
-    ); // Close AlertDialog
+      ), // Close SizedBox
+      ), // Close ConstrainedBox
+      ), // Close GlassmorphismContainer
+    ); // Close Dialog
   }
   
   String _getDialogTitle() {
@@ -714,8 +726,13 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
                 ? theme.colorScheme.onPrimary
                 : theme.colorScheme.primary,
           ),
-          const SizedBox(width: 6),
-          Text(category.label),
+          const SizedBox(width: 4),
+          Flexible(
+            child: Text(
+              category.label,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
         ],
       ),
       selectedColor: theme.colorScheme.primary,
@@ -746,31 +763,55 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
     final controller = TextEditingController();
     final result = await showDialog<String>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Add Custom Tag'),
-        content: TextField(
-          controller: controller,
-          decoration: const InputDecoration(
-            labelText: 'Tag name',
-            hintText: 'Enter custom tag name',
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: GlassmorphismContainer(
+          level: GlassLevel.floating,
+          borderRadius: BorderRadius.circular(TypographyConstants.dialogRadius),
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Add Custom Tag',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: controller,
+                decoration: const InputDecoration(
+                  labelText: 'Tag name',
+                  hintText: 'Enter custom tag name',
+                  border: OutlineInputBorder(),
+                ),
+                autofocus: true,
+                textCapitalization: TextCapitalization.words,
+              ),
+              const SizedBox(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Cancel'),
+                  ),
+                  const SizedBox(width: 8),
+                  FilledButton(
+                    onPressed: () {
+                      if (controller.text.trim().isNotEmpty) {
+                        Navigator.pop(context, controller.text.trim().toLowerCase());
+                      }
+                    },
+                    child: const Text('Add'),
+                  ),
+                ],
+              ),
+            ],
           ),
-          autofocus: true,
-          textCapitalization: TextCapitalization.words,
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () {
-              if (controller.text.trim().isNotEmpty) {
-                Navigator.pop(context, controller.text.trim().toLowerCase());
-              }
-            },
-            child: const Text('Add'),
-          ),
-        ],
       ),
     );
     
@@ -917,19 +958,32 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
         color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Text(
-        '🎵 Audio recording attached',
-        style: theme.textTheme.bodyMedium?.copyWith(
-          color: theme.colorScheme.primary,
-        ),
+      child: Row(
+        children: [
+          Icon(
+            PhosphorIcons.microphone(),
+            size: 20,
+            color: theme.colorScheme.primary,
+          ),
+          const SizedBox(width: 8),
+          Text(
+            'Audio recording attached',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.primary,
+            ),
+          ),
+        ],
       ),
     );
   }
   
   Widget _buildCreationModeIndicator(ThemeData theme) {
+    final IconData modeIcon = _creationMode == 'voiceToText' 
+        ? PhosphorIcons.microphone() 
+        : PhosphorIcons.pencil();
     final String modeText = _creationMode == 'voiceToText' 
-        ? '🎤 Created with AI Voice Entry' 
-        : '✏️ Manual Entry';
+        ? 'Created with AI Voice Entry' 
+        : 'Manual Entry';
     
     return Container(
       width: double.infinity,
@@ -938,11 +992,21 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
         color: theme.colorScheme.secondaryContainer.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Text(
-        modeText,
-        style: theme.textTheme.bodySmall?.copyWith(
-          color: theme.colorScheme.secondary,
-        ),
+      child: Row(
+        children: [
+          Icon(
+            modeIcon,
+            size: 16,
+            color: theme.colorScheme.secondary,
+          ),
+          const SizedBox(width: 8),
+          Text(
+            modeText,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.secondary,
+            ),
+          ),
+        ],
       ),
     );
   }

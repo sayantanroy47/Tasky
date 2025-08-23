@@ -68,6 +68,7 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
           ],
         ),
         floatingActionButton: FloatingActionButton(
+          heroTag: 'projectsFAB',
           onPressed: _createProject,
           tooltip: 'Create Project',
           child: Icon(PhosphorIcons.plus()),

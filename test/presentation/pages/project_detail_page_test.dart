@@ -46,7 +46,7 @@ void main() {
       final project = createTestProject();
       
       await tester.pumpWidget(createTestWidget(project: project));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ProjectDetailPage), findsOneWidget);
       expect(find.byType(Scaffold), findsOneWidget);
@@ -54,21 +54,21 @@ void main() {
 
     testWidgets('should display loading state', (tester) async {
       await tester.pumpWidget(createTestWidget(isLoading: true));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
 
     testWidgets('should display error state', (tester) async {
       await tester.pumpWidget(createTestWidget(hasError: true));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.textContaining('error'), findsOneWidget);
     });
 
     testWidgets('should display project not found', (tester) async {
       await tester.pumpWidget(createTestWidget(project: null));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.textContaining('not found'), findsOneWidget);
     });
@@ -77,7 +77,7 @@ void main() {
       final project = createTestProject();
       
       await tester.pumpWidget(createTestWidget(project: project));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ProjectDetailPage), findsOneWidget);
     });
@@ -95,7 +95,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ProjectDetailPage), findsOneWidget);
     });

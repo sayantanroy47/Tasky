@@ -56,9 +56,9 @@ class RouteValidator {
     }
     
     // Log the actual taskId for debugging
-    debugPrint('🔍 RouteValidator: Validating taskId: $taskId');
-    debugPrint('🔍 RouteValidator: Matches UUID: ${uuidRegex.hasMatch(taskId)}');
-    debugPrint('🔍 RouteValidator: Starts with temp_: ${taskId.startsWith('temp_')}');
+    debugPrint('[EMOJI] RouteValidator: Validating taskId: $taskId');
+    debugPrint('[EMOJI] RouteValidator: Matches UUID: ${uuidRegex.hasMatch(taskId)}');
+    debugPrint('[EMOJI] RouteValidator: Starts with temp_: ${taskId.startsWith('temp_')}');
 
     return RouteValidationResult.success({'taskId': taskId});
   }

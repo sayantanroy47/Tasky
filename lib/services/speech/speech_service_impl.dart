@@ -20,13 +20,13 @@ class SpeechServiceImpl implements SpeechService {
       _isAvailable = await _speechToText.initialize(
         onError: (error) {
           if (kDebugMode) {
-            print('🎤 Speech recognition initialization error: ${error.errorMsg}');
-            print('🎤 Error message: ${error.errorMsg}');
+            print('[MIC] Speech recognition initialization error: ${error.errorMsg}');
+            print('[MIC] Error message: ${error.errorMsg}');
           }
         },
         onStatus: (status) {
           if (kDebugMode) {
-            print('🎤 Speech recognition initialization status: $status');
+            print('[MIC] Speech recognition initialization status: $status');
           }
         },
       );
@@ -78,7 +78,7 @@ class SpeechServiceImpl implements SpeechService {
     final hasPermission = await this.hasPermission();
     if (!hasPermission) {
       if (kDebugMode) {
-        print('🎤 No microphone permission - requesting...');
+        print('[MIC] No microphone permission - requesting...');
       }
       final granted = await requestPermission();
       if (!granted) {
@@ -86,28 +86,28 @@ class SpeechServiceImpl implements SpeechService {
         return;
       }
       if (kDebugMode) {
-        print('🎤 Microphone permission granted');
+        print('[MIC] Microphone permission granted');
       }
     }
     
     try {
       if (kDebugMode) {
-        print('🎤 Starting speech recognition with 5-minute timeout...');
-        print('🎤 Using locale: ${localeId ?? 'default'}');
-        print('🎤 Listen duration: ${listenFor ?? const Duration(minutes: 5)}');
-        print('🎤 Pause duration: ${pauseFor ?? const Duration(seconds: 5)}');
+        print('[MIC] Starting speech recognition with 5-minute timeout...');
+        print('[MIC] Using locale: ${localeId ?? 'default'}');
+        print('[MIC] Listen duration: ${listenFor ?? const Duration(minutes: 5)}');
+        print('[MIC] Pause duration: ${pauseFor ?? const Duration(seconds: 5)}');
       }
       
       await _speechToText.listen(
         onResult: (stt.SpeechRecognitionResult result) {
           if (kDebugMode) {
-            print('🎤 Speech result: ${result.recognizedWords} (confidence: ${result.confidence}, final: ${result.finalResult})');
+            print('[MIC] Speech result: ${result.recognizedWords} (confidence: ${result.confidence}, final: ${result.finalResult})');
           }
           onResult(result.recognizedWords);
           if (result.finalResult) {
             _isListening = false;
             if (kDebugMode) {
-              print('🎤 Final result received - stopping listening');
+              print('[MIC] Final result received - stopping listening');
             }
           }
         },
@@ -123,12 +123,12 @@ class SpeechServiceImpl implements SpeechService {
       );
       _isListening = true;
       if (kDebugMode) {
-        print('🎤 Successfully started listening');
+        print('[MIC] Successfully started listening');
       }
     } catch (e) {
       if (kDebugMode) {
-        print('🎤 Failed to start listening: $e');
-        print('🎤 Error type: ${e.runtimeType}');
+        print('[MIC] Failed to start listening: $e');
+        print('[MIC] Error type: ${e.runtimeType}');
       }
       onError('Failed to start listening: $e');
     }

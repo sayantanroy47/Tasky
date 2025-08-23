@@ -1,21 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/audio_providers.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/entities/task_audio_extensions.dart';
+import 'task_audio_controls.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-/// Audio indicator widget for tasks with audio
+/// Enhanced audio indicator widget with playback controls
+/// 
+/// Modes:
+/// - simple: Just shows audio icon (for very compact spaces)
+/// - playButton: Shows play/pause button 
+/// - compact: Shows play button with duration
+/// - expanded: Shows full controls with progress
 class AudioIndicatorWidget extends ConsumerWidget {
   final TaskModel task;
   final double size;
+  final AudioIndicatorMode mode;
   final VoidCallback? onTap;
+  final bool showDuration;
+  final bool showProgress;
+  final Color? accentColor;
 
   const AudioIndicatorWidget({
     super.key,
     required this.task,
-    this.size = 16,
+    this.size = 20,
+    this.mode = AudioIndicatorMode.playButton,
     this.onTap,
+    this.showDuration = false,
+    this.showProgress = false,
+    this.accentColor,
   });
 
   @override
@@ -25,56 +39,101 @@ class AudioIndicatorWidget extends ConsumerWidget {
     // Only show if task has playable audio
     if (!task.hasPlayableAudio) return const SizedBox.shrink();
     
+    switch (mode) {
+      case AudioIndicatorMode.simple:
+        return _buildSimpleIndicator(theme);
+      case AudioIndicatorMode.playButton:
+        return QuickAudioPlayButton(
+          taskId: task.id,
+          audioFilePath: task.audioFilePath!,
+          size: size,
+          duration: task.audioDuration,
+        );
+      case AudioIndicatorMode.compact:
+        return TaskAudioControls(
+          taskId: task.id,
+          audioFilePath: task.audioFilePath!,
+          mode: AudioControlsMode.compact,
+          width: size * 4,
+          duration: task.audioDuration,
+        );
+      case AudioIndicatorMode.expanded:
+        return TaskAudioControls(
+          taskId: task.id,
+          audioFilePath: task.audioFilePath!,
+          mode: AudioControlsMode.expanded,
+          width: size * 6,
+          duration: task.audioDuration,
+        );
+    }
+  }
+
+  Widget _buildSimpleIndicator(ThemeData theme) {
     return GestureDetector(
-      onTap: onTap ?? () => _playAudio(context, ref),
+      onTap: onTap ?? () => _handleTap(),
       child: Container(
-        width: size + 4,
-        height: size + 4,
+        width: size,
+        height: size,
         decoration: BoxDecoration(
-          color: theme.colorScheme.primary.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular((size + 4) / 2),
+          color: (accentColor ?? theme.colorScheme.primary).withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(size / 2),
           border: Border.all(
-            color: theme.colorScheme.primary.withValues(alpha: 0.3),
-            width: 1,
+            color: (accentColor ?? theme.colorScheme.primary).withValues(alpha: 0.3),
+            width: 0.5,
           ),
         ),
         child: Icon(
-          PhosphorIcons.speakerHigh(),
-          size: size * 0.7,
-          color: theme.colorScheme.primary,
+          PhosphorIcons.waveform(),
+          size: size * 0.6,
+          color: accentColor ?? theme.colorScheme.primary,
         ),
       ),
     );
   }
 
-  void _playAudio(BuildContext context, WidgetRef ref) async {
-    final audioFilePath = task.audioFilePath;
-    if (audioFilePath == null) return;
-    
-    try {
-      final audioControls = ref.read(audioControlsProvider);
-      await audioControls.togglePlayPauseForTask(task.id, audioFilePath);
-      
-      if (context.mounted) {
-        final isPlaying = ref.read(isTaskPlayingProvider(task.id));
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(isPlaying ? 'Playing audio...' : 'Audio paused'),
-            behavior: SnackBarBehavior.floating,
-            duration: const Duration(seconds: 2),
-          ),
-        );
-      }
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error playing audio: $e'),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
+  void _handleTap() {
+    // If custom tap handler provided, use it
+    if (onTap != null) {
+      onTap!();
+      return;
     }
+    
+    // Otherwise show audio controls dialog
+    // This could be implemented to show a modal with full audio controls
+  }
+}
+
+/// Display modes for audio indicators
+enum AudioIndicatorMode {
+  simple,    // Just shows audio icon
+  playButton, // Shows play/pause button (recommended)
+  compact,   // Shows compact controls with duration
+  expanded,  // Shows full controls with progress
+}
+
+/// Legacy support - simple audio indicator
+/// 
+/// @deprecated Use AudioIndicatorWidget with mode parameter instead
+class SimpleAudioIndicator extends ConsumerWidget {
+  final TaskModel task;
+  final double size;
+  final VoidCallback? onTap;
+
+  const SimpleAudioIndicator({
+    super.key,
+    required this.task,
+    this.size = 16,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return AudioIndicatorWidget(
+      task: task,
+      size: size,
+      mode: AudioIndicatorMode.simple,
+      onTap: onTap,
+    );
   }
 }
 

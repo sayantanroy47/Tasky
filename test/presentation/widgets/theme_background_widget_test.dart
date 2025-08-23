@@ -25,7 +25,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Test Content'), findsOneWidget);
       expect(find.byType(ThemeBackgroundWidget), findsOneWidget);
@@ -48,7 +48,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Null Theme Content'), findsOneWidget);
       expect(find.byType(ThemeBackgroundWidget), findsOneWidget);
@@ -67,7 +67,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Dark Theme Background'), findsOneWidget);
       expect(find.byType(ThemeBackgroundWidget), findsOneWidget);
@@ -87,7 +87,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Title'), findsOneWidget);
       expect(find.byIcon(Icons.star), findsOneWidget);
@@ -107,7 +107,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Small Screen'), findsOneWidget);
       
@@ -121,7 +121,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Large Screen'), findsOneWidget);
       
@@ -137,7 +137,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Gradient Background'), findsOneWidget);
       expect(find.byType(ThemeBackgroundWidget), findsOneWidget);
@@ -156,7 +156,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Provider Integration'), findsOneWidget);
       expect(find.byType(ThemeBackgroundWidget), findsOneWidget);
@@ -175,12 +175,12 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Interactive Button'), findsOneWidget);
       
       await tester.tap(find.text('Interactive Button'));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(buttonPressed, isTrue);
     });
@@ -193,7 +193,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ThemeBackgroundWidget), findsOneWidget);
       
@@ -216,7 +216,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Card Content'), findsOneWidget);
       expect(find.byType(ThemeBackgroundWidget), findsOneWidget);
@@ -236,7 +236,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ThemeBackgroundWidget), findsOneWidget);
       expect(find.byType(ListView), findsOneWidget);

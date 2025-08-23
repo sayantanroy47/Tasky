@@ -92,7 +92,7 @@ class _VoiceTaskCreationDialogM3State extends ConsumerState<VoiceTaskCreationDia
   }
 
   Future<void> _initializeServices() async {
-    debugPrint('🎤 Initializing dual stream services...');
+    debugPrint('[MIC] Initializing dual stream services...');
 
     // Initialize speech recognition
     try {
@@ -102,9 +102,9 @@ class _VoiceTaskCreationDialogM3State extends ConsumerState<VoiceTaskCreationDia
         onError: _onSpeechError,
         debugLogging: true,
       );
-      debugPrint('🎤 Speech recognition enabled: $_speechEnabled');
+      debugPrint('[MIC] Speech recognition enabled: $_speechEnabled');
     } catch (e) {
-      debugPrint('🎤 Speech recognition initialization failed: $e');
+      debugPrint('[MIC] Speech recognition initialization failed: $e');
       _speechEnabled = false;
     }
 
@@ -112,9 +112,9 @@ class _VoiceTaskCreationDialogM3State extends ConsumerState<VoiceTaskCreationDia
     try {
       _audioRecorder = AudioRecordingService();
       _audioEnabled = await _audioRecorder.initialize();
-      debugPrint('🎵 Audio recording enabled: $_audioEnabled');
+      debugPrint('[AUDIO] Audio recording enabled: $_audioEnabled');
     } catch (e) {
-      debugPrint('🎵 Audio recording initialization failed: $e');
+      debugPrint('[AUDIO] Audio recording initialization failed: $e');
       _audioEnabled = false;
     }
 
@@ -170,7 +170,7 @@ class _VoiceTaskCreationDialogM3State extends ConsumerState<VoiceTaskCreationDia
     if (!_speechEnabled && !_audioEnabled) return;
 
     try {
-      debugPrint('🎯 Starting dual stream recording...');
+      debugPrint('[DART] Starting dual stream recording...');
 
       // Clear previous data
       setState(() {
@@ -186,7 +186,7 @@ class _VoiceTaskCreationDialogM3State extends ConsumerState<VoiceTaskCreationDia
 
       // STEP 1: Start audio recording first (if available)
       if (_audioEnabled) {
-        debugPrint('🎵 Step 1: Starting audio recording...');
+        debugPrint('[AUDIO] Step 1: Starting audio recording...');
         try {
           _audioFilePath = await _audioRecorder.startRecording(
             onDurationUpdate: (duration) {
@@ -197,13 +197,13 @@ class _VoiceTaskCreationDialogM3State extends ConsumerState<VoiceTaskCreationDia
               }
             },
             onMaxDurationReached: () {
-              debugPrint('🎵 Max recording duration reached, stopping...');
+              debugPrint('[AUDIO] Max recording duration reached, stopping...');
               _stopListening();
             },
           );
 
           _audioRecordingActive = true;
-          debugPrint('🎵 Audio recording started: $_audioFilePath');
+          debugPrint('[AUDIO] Audio recording started: $_audioFilePath');
 
           if (mounted) {
             setState(() {
@@ -211,7 +211,7 @@ class _VoiceTaskCreationDialogM3State extends ConsumerState<VoiceTaskCreationDia
             });
           }
         } catch (e) {
-          debugPrint('🎵 Audio recording failed: $e');
+          debugPrint('[AUDIO] Audio recording failed: $e');
           // Continue with speech-only fallback
         }
       }
@@ -221,7 +221,7 @@ class _VoiceTaskCreationDialogM3State extends ConsumerState<VoiceTaskCreationDia
 
       // STEP 3: Start speech recognition (if available)
       if (_speechEnabled) {
-        debugPrint('🎤 Step 2: Starting speech recognition...');
+        debugPrint('[MIC] Step 2: Starting speech recognition...');
         try {
           await _speechToText.listen(
             onResult: _onSpeechResult,
@@ -239,7 +239,7 @@ class _VoiceTaskCreationDialogM3State extends ConsumerState<VoiceTaskCreationDia
           );
 
           _speechRecognitionActive = true;
-          debugPrint('🎤 Speech recognition started');
+          debugPrint('[MIC] Speech recognition started');
 
           if (mounted) {
             setState(() {
@@ -247,7 +247,7 @@ class _VoiceTaskCreationDialogM3State extends ConsumerState<VoiceTaskCreationDia
             });
           }
         } catch (e) {
-          debugPrint('🎤 Speech recognition failed: $e');
+          debugPrint('[MIC] Speech recognition failed: $e');
           // Continue with audio-only fallback
           if (mounted) {
             setState(() {
@@ -275,7 +275,7 @@ class _VoiceTaskCreationDialogM3State extends ConsumerState<VoiceTaskCreationDia
         }
       }
     } catch (e) {
-      debugPrint('🎯 Dual stream start failed: $e');
+      debugPrint('[DART] Dual stream start failed: $e');
       setState(() {
         _isListening = false;
         _statusMessage = 'Failed to start recording: $e';
@@ -303,7 +303,7 @@ class _VoiceTaskCreationDialogM3State extends ConsumerState<VoiceTaskCreationDia
   Future<void> _stopListening() async {
     if (!_isListening) return;
 
-    debugPrint('🎯 Stopping dual stream recording...');
+    debugPrint('[DART] Stopping dual stream recording...');
 
     setState(() {
       _isProcessing = true;
@@ -317,19 +317,19 @@ class _VoiceTaskCreationDialogM3State extends ConsumerState<VoiceTaskCreationDia
     try {
       // Stop speech recognition
       if (_speechRecognitionActive && _speechEnabled) {
-        debugPrint('🎤 Stopping speech recognition...');
+        debugPrint('[MIC] Stopping speech recognition...');
         await _speechToText.stop();
         _speechRecognitionActive = false;
         hasTranscription = _transcribedText.isNotEmpty;
-        debugPrint('🎤 Speech recognition stopped. Has transcription: $hasTranscription');
+        debugPrint('[MIC] Speech recognition stopped. Has transcription: $hasTranscription');
       }
 
       // Stop audio recording
       if (_audioRecordingActive && _audioEnabled) {
-        debugPrint('🎵 Stopping audio recording...');
+        debugPrint('[AUDIO] Stopping audio recording...');
         finalAudioPath = await _audioRecorder.stopRecording();
         _audioRecordingActive = false;
-        debugPrint('🎵 Audio recording stopped. File: $finalAudioPath');
+        debugPrint('[AUDIO] Audio recording stopped. File: $finalAudioPath');
       }
 
       // Update final state
@@ -354,13 +354,13 @@ class _VoiceTaskCreationDialogM3State extends ConsumerState<VoiceTaskCreationDia
         _pulseController.reset();
       });
 
-      debugPrint('🎯 Dual stream recording complete:');
+      debugPrint('[DART] Dual stream recording complete:');
       debugPrint('  - Audio file: $finalAudioPath');
       debugPrint(
           '  - Transcription: ${_transcribedText.isNotEmpty ? _transcribedText.substring(0, _transcribedText.length > 50 ? 50 : _transcribedText.length) : 'None'}');
       debugPrint('  - Duration: $_recordingDuration');
     } catch (e) {
-      debugPrint('🎯 Error stopping recording: $e');
+      debugPrint('[DART] Error stopping recording: $e');
       setState(() {
         _isListening = false;
         _isProcessing = false;
@@ -381,7 +381,7 @@ class _VoiceTaskCreationDialogM3State extends ConsumerState<VoiceTaskCreationDia
     });
 
     try {
-      debugPrint('🎯 Dual stream: Continuing to edit with:');
+      debugPrint('[DART] Dual stream: Continuing to edit with:');
       debugPrint(
           '  - Transcription: ${_transcribedText.isNotEmpty ? _transcribedText.substring(0, _transcribedText.length > 100 ? 100 : _transcribedText.length) : 'None'}');
       debugPrint('  - Audio file: $_audioFilePath');
@@ -413,13 +413,13 @@ class _VoiceTaskCreationDialogM3State extends ConsumerState<VoiceTaskCreationDia
               },
       };
 
-      debugPrint('🎯 Dual stream: Returning data: $returnData');
+      debugPrint('[DART] Dual stream: Returning data: $returnData');
 
       if (mounted) {
         Navigator.of(context).pop(returnData);
       }
     } catch (e) {
-      debugPrint('🎯 Dual stream: Error in _continueToEdit: $e');
+      debugPrint('[DART] Dual stream: Error in _continueToEdit: $e');
       if (mounted) {
         setState(() {
           _statusMessage = 'Error preparing data: $e';

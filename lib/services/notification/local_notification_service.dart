@@ -622,8 +622,8 @@ class LocalNotificationService implements NotificationService {
   
   /// Gets the title for a task reminder notification
   String _getTaskReminderTitle(TaskModel task) {
-    final priorityEmoji = _getPriorityEmoji(task.priority);
-    return '$priorityEmoji Task Reminder';
+    final priorityIndicator = _getPriorityIndicator(task.priority);
+    return '$priorityIndicator Task Reminder';
   }
   
   /// Gets the body for a task reminder notification
@@ -638,17 +638,17 @@ class LocalNotificationService implements NotificationService {
     return body;
   }
   
-  /// Gets emoji for task priority
-  String _getPriorityEmoji(TaskPriority priority) {
+  /// Gets priority indicator for task priority
+  String _getPriorityIndicator(TaskPriority priority) {
     switch (priority) {
       case TaskPriority.urgent:
-        return '🔴';
+        return '[URGENT]';
       case TaskPriority.high:
-        return '🟠';
+        return '[HIGH]';
       case TaskPriority.medium:
-        return '🟡';
+        return '[MED]';
       case TaskPriority.low:
-        return '🟢';
+        return '[LOW]';
     }
   }
   

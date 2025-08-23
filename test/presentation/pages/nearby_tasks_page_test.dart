@@ -38,7 +38,7 @@ void main() {
 
     testWidgets('should display nearby tasks page', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(NearbyTasksPage), findsOneWidget);
       expect(find.byType(Scaffold), findsOneWidget);
@@ -46,14 +46,14 @@ void main() {
 
     testWidgets('should display loading state', (tester) async {
       await tester.pumpWidget(createTestWidget(isLoading: true));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
 
     testWidgets('should display error state', (tester) async {
       await tester.pumpWidget(createTestWidget(hasError: true));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.textContaining('error'), findsOneWidget);
     });
@@ -65,14 +65,14 @@ void main() {
       ];
       
       await tester.pumpWidget(createTestWidget(nearbyTasks: nearbyTasks));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(NearbyTasksPage), findsOneWidget);
     });
 
     testWidgets('should handle empty nearby tasks', (tester) async {
       await tester.pumpWidget(createTestWidget(nearbyTasks: []));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(NearbyTasksPage), findsOneWidget);
     });
@@ -86,7 +86,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(NearbyTasksPage), findsOneWidget);
     });

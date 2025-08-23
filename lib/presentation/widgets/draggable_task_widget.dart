@@ -663,12 +663,13 @@ class DraggableTaskList extends ConsumerStatefulWidget {
 }
 
 class _DraggableTaskListState extends ConsumerState<DraggableTaskList> {
-  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
+  late final GlobalKey<AnimatedListState> _listKey;
   late List<TaskModel> _tasks;
 
   @override
   void initState() {
     super.initState();
+    _listKey = GlobalKey<AnimatedListState>();
     _tasks = List.from(widget.tasks);
   }
 

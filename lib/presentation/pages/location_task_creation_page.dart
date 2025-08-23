@@ -1045,7 +1045,7 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('✓ Current location selected'),
+              content: Text('[EMOJI] Current location selected'),
               backgroundColor: Colors.green,
               duration: Duration(seconds: 1),
             ),

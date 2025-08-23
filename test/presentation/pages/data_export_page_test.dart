@@ -19,7 +19,7 @@ void main() {
 
     testWidgets('should display data export page', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(DataExportPage), findsOneWidget);
       expect(find.byType(Scaffold), findsOneWidget);
@@ -27,14 +27,14 @@ void main() {
 
     testWidgets('should display export format options', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(DataExportPage), findsOneWidget);
     });
 
     testWidgets('should handle export button tap', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       final exportButtons = [
         ...find.textContaining('Export').evaluate(),
@@ -43,7 +43,7 @@ void main() {
       
       if (exportButtons.isNotEmpty) {
         await tester.tap(find.byWidget(exportButtons.first.widget));
-        await tester.pumpAndSettle();
+        await tester.pump();
       }
       
       expect(find.byType(DataExportPage), findsOneWidget);
@@ -51,7 +51,7 @@ void main() {
 
     testWidgets('should display export progress', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(DataExportPage), findsOneWidget);
     });
@@ -65,7 +65,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(DataExportPage), findsOneWidget);
     });

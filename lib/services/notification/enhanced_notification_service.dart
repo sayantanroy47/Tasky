@@ -334,7 +334,7 @@ class EnhancedNotificationService implements NotificationService {
     processed = processed.replaceAll('{{task_description}}', 
         task.description ?? '');
     processed = processed.replaceAll('{{priority_emoji}}', 
-        _getPriorityEmoji(task.priority));
+        _getPriorityIndicator(task.priority));
     
     if (task.dueDate != null) {
       processed = processed.replaceAll('{{due_time_text}}', 
@@ -551,16 +551,16 @@ class EnhancedNotificationService implements NotificationService {
 
   // Helper methods
 
-  String _getPriorityEmoji(TaskPriority priority) {
+  String _getPriorityIndicator(TaskPriority priority) {
     switch (priority) {
       case TaskPriority.urgent:
-        return '🔴';
+        return '[URGENT]';
       case TaskPriority.high:
-        return '🟠';
+        return '[HIGH]';
       case TaskPriority.medium:
-        return '🟡';
+        return '[MED]';
       case TaskPriority.low:
-        return '🟢';
+        return '[LOW]';
     }
   }
 

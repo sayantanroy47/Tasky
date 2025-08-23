@@ -282,7 +282,7 @@ class LocationBasedNotificationService {
       suggestions.add(const LocationSuggestion(
         name: 'Office',
         description: 'When you arrive at or leave the office',
-        icon: '🏢',
+        icon: 'OFFICE',
         suggestedRadius: 100,
       ));
     }
@@ -292,7 +292,7 @@ class LocationBasedNotificationService {
       suggestions.add(const LocationSuggestion(
         name: 'Home',
         description: 'When you arrive at or leave home',
-        icon: '🏠',
+        icon: 'HOME',
         suggestedRadius: 50,
       ));
     }
@@ -304,13 +304,13 @@ class LocationBasedNotificationService {
         const LocationSuggestion(
           name: 'Grocery Store',
           description: 'When you visit the grocery store',
-          icon: '🛒',
+          icon: 'GROCERY',
           suggestedRadius: 100,
         ),
         const LocationSuggestion(
           name: 'Shopping Mall',
           description: 'When you visit the mall',
-          icon: '🏬',
+          icon: 'SHOPPING',
           suggestedRadius: 200,
         ),
       ]);
@@ -322,7 +322,7 @@ class LocationBasedNotificationService {
       suggestions.add(const LocationSuggestion(
         name: 'Gym',
         description: 'When you arrive at or leave the gym',
-        icon: '💪',
+        icon: 'GYM',
         suggestedRadius: 100,
       ));
     }

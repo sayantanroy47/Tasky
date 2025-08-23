@@ -52,7 +52,7 @@ void main() {
 
     testWidgets('should display loading state', (tester) async {
       await tester.pumpWidget(createTestWidget(isLoading: true));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
       expect(find.text('Task Details'), findsOneWidget);
@@ -61,7 +61,7 @@ void main() {
 
     testWidgets('should display error state', (tester) async {
       await tester.pumpWidget(createTestWidget(hasError: true));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byIcon(PhosphorIcons.warningCircle()), findsOneWidget);
       expect(find.textContaining('Error loading task:'), findsOneWidget);
@@ -70,7 +70,7 @@ void main() {
 
     testWidgets('should display task not found state', (tester) async {
       await tester.pumpWidget(createTestWidget(tasks: []));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Task not found'), findsOneWidget);
       expect(find.byIcon(PhosphorIcons.checkSquare()), findsOneWidget);
@@ -80,7 +80,7 @@ void main() {
       final task = createTestTask();
       
       await tester.pumpWidget(createTestWidget(tasks: [task]));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(TaskDetailPage), findsOneWidget);
       // The _TaskDetailView should be displayed
@@ -91,7 +91,7 @@ void main() {
       final urgentTask = createTestTask(priority: TaskPriority.urgent);
       
       await tester.pumpWidget(createTestWidget(tasks: [urgentTask]));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(TaskDetailPage), findsOneWidget);
     });
@@ -100,7 +100,7 @@ void main() {
       final completedTask = createTestTask(status: TaskStatus.completed);
       
       await tester.pumpWidget(createTestWidget(tasks: [completedTask]));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(TaskDetailPage), findsOneWidget);
     });
@@ -109,7 +109,7 @@ void main() {
       final cancelledTask = createTestTask(status: TaskStatus.cancelled);
       
       await tester.pumpWidget(createTestWidget(tasks: [cancelledTask]));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(TaskDetailPage), findsOneWidget);
     });
@@ -118,7 +118,7 @@ void main() {
       final inProgressTask = createTestTask(status: TaskStatus.inProgress);
       
       await tester.pumpWidget(createTestWidget(tasks: [inProgressTask]));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(TaskDetailPage), findsOneWidget);
     });
@@ -128,7 +128,7 @@ void main() {
       final task = createTestTask(description: longDescription);
       
       await tester.pumpWidget(createTestWidget(tasks: [task]));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(TaskDetailPage), findsOneWidget);
     });
@@ -137,25 +137,25 @@ void main() {
       final task = createTestTask(description: '');
       
       await tester.pumpWidget(createTestWidget(tasks: [task]));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(TaskDetailPage), findsOneWidget);
     });
 
     testWidgets('should handle go back button in error state', (tester) async {
       await tester.pumpWidget(createTestWidget(hasError: true));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       final goBackButton = find.text('Go Back');
       expect(goBackButton, findsOneWidget);
       
       await tester.tap(goBackButton);
-      await tester.pumpAndSettle();
+      await tester.pump();
     });
 
     testWidgets('should display all scaffold properties correctly', (tester) async {
       await tester.pumpWidget(createTestWidget(isLoading: true));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       final scaffold = tester.widget<Scaffold>(find.byType(Scaffold).first);
       expect(scaffold.backgroundColor, Colors.transparent);
@@ -167,7 +167,7 @@ void main() {
       final task2 = createTestTask(title: 'Task 2');
       
       await tester.pumpWidget(createTestWidget(tasks: [task1, task2]));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Should find the first task with matching ID
       expect(find.byType(TaskDetailPage), findsOneWidget);
@@ -177,14 +177,14 @@ void main() {
       final task = createTestTask(id: 'different-id');
       
       await tester.pumpWidget(createTestWidget(tasks: [task]));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Task not found'), findsOneWidget);
     });
 
     testWidgets('should maintain theme background wrapper', (tester) async {
       await tester.pumpWidget(createTestWidget(hasError: true));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ThemeBackgroundWidget), findsOneWidget);
     });
@@ -194,7 +194,7 @@ void main() {
         final task = createTestTask(priority: priority);
         
         await tester.pumpWidget(createTestWidget(tasks: [task]));
-        await tester.pumpAndSettle();
+        await tester.pump();
         
         expect(find.byType(TaskDetailPage), findsOneWidget);
       }
@@ -205,7 +205,7 @@ void main() {
         final task = createTestTask(status: status);
         
         await tester.pumpWidget(createTestWidget(tasks: [task]));
-        await tester.pumpAndSettle();
+        await tester.pump();
         
         expect(find.byType(TaskDetailPage), findsOneWidget);
       }
@@ -215,7 +215,7 @@ void main() {
       final quickTask = TaskModel.create(title: 'Quick Task').copyWith(id: testTaskId);
       
       await tester.pumpWidget(createTestWidget(tasks: [quickTask]));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(TaskDetailPage), findsOneWidget);
     });
@@ -225,7 +225,7 @@ void main() {
       final task = createTestTask();
       
       await tester.pumpWidget(createTestWidget(tasks: [task]));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(TaskDetailPage), findsOneWidget);
     });
@@ -243,7 +243,7 @@ void main() {
       );
 
       await tester.pumpWidget(widget);
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(TaskDetailPage), findsOneWidget);
     });
@@ -262,7 +262,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(TaskDetailPage), findsOneWidget);
     });
@@ -286,7 +286,7 @@ void main() {
         await tester.pump(const Duration(milliseconds: 10));
       }
       
-      await tester.pumpAndSettle();
+      await tester.pump();
       expect(find.byType(TaskDetailPage), findsOneWidget);
     });
 
@@ -304,7 +304,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(TaskDetailPage), findsOneWidget);
     });
@@ -317,13 +317,13 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Navigate away to test disposal
       await tester.pumpWidget(
         const MaterialApp(home: Scaffold(body: Text('Other page'))),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Other page'), findsOneWidget);
     });
@@ -345,7 +345,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       stopwatch.stop();
       expect(stopwatch.elapsedMilliseconds, lessThan(1000));

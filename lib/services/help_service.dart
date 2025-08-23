@@ -14,7 +14,7 @@ class HelpService {
       id: 'getting_started',
       title: 'Getting Started',
       content: '''
-# Welcome to Tasky! 🎉
+# Welcome to Tasky! [EMOJI]
 
 Tasky is your AI-powered task management companion that helps you stay organized and productive.
 
@@ -41,7 +41,7 @@ Get started by creating your first task!
       id: 'voice_input',
       title: 'Voice Input & Speech-to-Text',
       content: '''
-# Voice Input Features 🎤
+# Voice Input Features [MIC]
 
 Tasky offers three powerful ways to create tasks with your voice:
 
@@ -79,19 +79,19 @@ Tasky offers beautiful, creative themes to match your style:
 
 ## Available Themes:
 
-### 🔥 Vegeta Blue
+### Vegeta Blue
 - Inspired by Dragon Ball Z's Prince Vegeta
 - Deep royal blues with explosive energy effects
 - Angular design with dramatic animations
 - Perfect for power users who like bold aesthetics
 
-### 💚 Matrix
+### Matrix
 - Cyberpunk theme inspired by The Matrix
 - Neon green code on black backgrounds
 - Terminal-style typography with digital effects
 - Great for developers and tech enthusiasts
 
-### 🟣 Dracula IDE
+### Dracula IDE
 - Popular developer color scheme
 - Sophisticated dark purples with syntax highlighting colors
 - Elegant design with smooth animations
@@ -116,7 +116,7 @@ Tasky offers beautiful, creative themes to match your style:
       id: 'ai_features',
       title: 'AI-Powered Features',
       content: '''
-# Intelligent Task Management 🤖
+# Intelligent Task Management
 
 Tasky uses advanced AI to make task management effortless:
 
@@ -156,7 +156,7 @@ Tasky uses advanced AI to make task management effortless:
       id: 'organization',
       title: 'Organization & Productivity',
       content: '''
-# Stay Organized 📋
+# Stay Organized
 
 Tasky offers powerful organization tools to keep you productive:
 
@@ -199,7 +199,7 @@ Tasky offers powerful organization tools to keep you productive:
       id: 'notifications',
       title: 'Notifications & Reminders',
       content: '''
-# Smart Notifications 🔔
+# Smart Notifications
 
 Never miss important tasks with Tasky's intelligent notification system:
 
@@ -237,7 +237,7 @@ Never miss important tasks with Tasky's intelligent notification system:
       id: 'troubleshooting',
       title: 'Troubleshooting',
       content: '''
-# Common Issues & Solutions 🔧
+# Common Issues & Solutions [EMOJI]
 
 ## Voice Input Not Working:
 1. Check microphone permissions in device settings
@@ -287,7 +287,7 @@ Never miss important tasks with Tasky's intelligent notification system:
       id: 'privacy_security',
       title: 'Privacy & Security',
       content: '''
-# Your Privacy Matters 🔒
+# Your Privacy Matters [EMOJI]
 
 Tasky is designed with privacy and security as core principles:
 

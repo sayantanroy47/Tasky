@@ -19,7 +19,7 @@ void main() {
 
     testWidgets('should display import export page', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ImportExportPage), findsOneWidget);
       expect(find.byType(Scaffold), findsOneWidget);
@@ -27,12 +27,12 @@ void main() {
 
     testWidgets('should handle import functionality', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       final importButtons = find.textContaining('Import');
       if (importButtons.evaluate().isNotEmpty) {
         await tester.tap(importButtons.first);
-        await tester.pumpAndSettle();
+        await tester.pump();
       }
       
       expect(find.byType(ImportExportPage), findsOneWidget);
@@ -40,12 +40,12 @@ void main() {
 
     testWidgets('should handle export functionality', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       final exportButtons = find.textContaining('Export');
       if (exportButtons.evaluate().isNotEmpty) {
         await tester.tap(exportButtons.first);
-        await tester.pumpAndSettle();
+        await tester.pump();
       }
       
       expect(find.byType(ImportExportPage), findsOneWidget);
@@ -60,7 +60,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ImportExportPage), findsOneWidget);
     });

@@ -354,6 +354,7 @@ class AccessibleFAB extends ConsumerWidget {
   final Color? backgroundColor;
   final Color? foregroundColor;
   final bool mini;
+  final String? heroTag;
 
   const AccessibleFAB({
     super.key,
@@ -364,6 +365,7 @@ class AccessibleFAB extends ConsumerWidget {
     this.backgroundColor,
     this.foregroundColor,
     this.mini = false,
+    this.heroTag,
   });
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -374,6 +376,7 @@ class AccessibleFAB extends ConsumerWidget {
       button: true,
       enabled: onPressed != null,
       child: FloatingActionButton(
+        heroTag: heroTag,
         onPressed: onPressed == null ? null : () async {
           await accessibilityService.provideHapticFeedback(HapticFeedbackType.medium);
           onPressed!();

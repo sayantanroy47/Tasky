@@ -223,7 +223,7 @@ class ExternalAppService {
   String _formatTaskForSharing(TaskModel task) {
     final buffer = StringBuffer();
     
-    buffer.writeln('📋 ${task.title}');
+    buffer.writeln('Task: ${task.title}');
     
     if (task.description != null && task.description!.isNotEmpty) {
       buffer.writeln();
@@ -232,24 +232,24 @@ class ExternalAppService {
     
     if (task.dueDate != null) {
       buffer.writeln();
-      buffer.writeln('📅 Due: ${_formatDate(task.dueDate!)}');
+      buffer.writeln('Due: ${_formatDate(task.dueDate!)}');
     }
     
     if (task.priority != TaskPriority.medium) {
       buffer.writeln();
-      buffer.writeln('⚡ Priority: ${task.priority.name.toUpperCase()}');
+      buffer.writeln('Priority: ${task.priority.name.toUpperCase()}');
     }
     
     if (task.tags.isNotEmpty) {
       buffer.writeln();
-      buffer.writeln('🏷️ Tags: ${task.tags.join(', ')}');
+      buffer.writeln('Tags: ${task.tags.join(', ')}');
     }
     
     if (task.subTasks.isNotEmpty) {
       buffer.writeln();
-      buffer.writeln('✅ Subtasks:');
+      buffer.writeln('[SUCCESS] Subtasks:');
       for (final subtask in task.subTasks) {
-        final checkbox = subtask.isCompleted ? '☑️' : '☐';
+        final checkbox = subtask.isCompleted ? '[[EMOJI]]' : '[ ]';
         buffer.writeln('  $checkbox ${subtask.title}');
       }
     }

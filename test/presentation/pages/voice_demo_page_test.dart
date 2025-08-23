@@ -19,7 +19,7 @@ void main() {
 
     testWidgets('should display voice demo page', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(VoiceDemoPage), findsOneWidget);
       expect(find.byType(Scaffold), findsOneWidget);
@@ -27,14 +27,14 @@ void main() {
 
     testWidgets('should display voice recording controls', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(VoiceDemoPage), findsOneWidget);
     });
 
     testWidgets('should handle record button tap', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       final recordButtons = [
         ...find.byIcon(Icons.mic).evaluate(),
@@ -43,7 +43,7 @@ void main() {
       
       if (recordButtons.isNotEmpty) {
         await tester.tap(find.byWidget(recordButtons.first.widget));
-        await tester.pumpAndSettle();
+        await tester.pump();
       }
       
       expect(find.byType(VoiceDemoPage), findsOneWidget);
@@ -51,7 +51,7 @@ void main() {
 
     testWidgets('should handle stop recording', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       final stopButtons = [
         ...find.byIcon(Icons.stop).evaluate(),
@@ -60,7 +60,7 @@ void main() {
       
       if (stopButtons.isNotEmpty) {
         await tester.tap(find.byWidget(stopButtons.first.widget));
-        await tester.pumpAndSettle();
+        await tester.pump();
       }
       
       expect(find.byType(VoiceDemoPage), findsOneWidget);
@@ -68,7 +68,7 @@ void main() {
 
     testWidgets('should display demo instructions', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(VoiceDemoPage), findsOneWidget);
     });
@@ -82,7 +82,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(VoiceDemoPage), findsOneWidget);
     });

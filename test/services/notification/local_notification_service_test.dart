@@ -16,6 +16,7 @@ import 'local_notification_service_test.mocks.dart';
 class MockLocalNotificationService extends Mock implements LocalNotificationService {}
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   group('LocalNotificationService', () {
     late LocalNotificationService notificationService;
     late MockTaskRepository mockTaskRepository;

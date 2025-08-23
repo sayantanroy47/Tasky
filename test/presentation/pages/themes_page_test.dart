@@ -28,7 +28,7 @@ void main() {
   group('ThemesPage Widget Tests', () {
     testWidgets('should display themes page with basic elements', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ThemesPage), findsOneWidget);
       expect(find.byType(Scaffold), findsOneWidget);
@@ -36,7 +36,7 @@ void main() {
 
     testWidgets('should display theme selection options', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ThemesPage), findsOneWidget);
       // Should have some form of theme selection UI
@@ -44,28 +44,28 @@ void main() {
 
     testWidgets('should handle light theme mode', (tester) async {
       await tester.pumpWidget(createTestWidget(themeMode: ThemeMode.light));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ThemesPage), findsOneWidget);
     });
 
     testWidgets('should handle dark theme mode', (tester) async {
       await tester.pumpWidget(createTestWidget(themeMode: ThemeMode.dark));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ThemesPage), findsOneWidget);
     });
 
     testWidgets('should handle system theme mode', (tester) async {
       await tester.pumpWidget(createTestWidget(themeMode: ThemeMode.system));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ThemesPage), findsOneWidget);
     });
 
     testWidgets('should handle theme selection', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Look for theme selection widgets (cards, buttons, list tiles, etc.)
       final themeCards = find.byType(Card);
@@ -84,7 +84,7 @@ void main() {
 
     testWidgets('should handle theme preview', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ThemesPage), findsOneWidget);
       // Should display theme previews
@@ -92,7 +92,7 @@ void main() {
 
     testWidgets('should handle theme switching', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Look for interactive theme selection elements
       final interactiveElements = [
@@ -110,7 +110,7 @@ void main() {
             firstElement is ListTile ||
             firstElement is Card) {
           await tester.tap(find.byWidget(firstElement));
-          await tester.pumpAndSettle();
+          await tester.pump();
         }
       }
       
@@ -119,7 +119,7 @@ void main() {
 
     testWidgets('should display available themes', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ThemesPage), findsOneWidget);
       // Should display multiple theme options
@@ -127,18 +127,18 @@ void main() {
 
     testWidgets('should handle custom theme selection', (tester) async {
       await tester.pumpWidget(createTestWidget(selectedTheme: 'custom_theme'));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ThemesPage), findsOneWidget);
     });
 
     testWidgets('should handle scrolling with many themes', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Test scrolling if page has scrollable content
       await tester.drag(find.byType(ThemesPage), const Offset(0, -300));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ThemesPage), findsOneWidget);
     });
@@ -146,7 +146,7 @@ void main() {
     testWidgets('should maintain consistent layout across themes', (tester) async {
       for (final themeMode in ThemeMode.values) {
         await tester.pumpWidget(createTestWidget(themeMode: themeMode));
-        await tester.pumpAndSettle();
+        await tester.pump();
         
         expect(find.byType(ThemesPage), findsOneWidget);
       }
@@ -154,7 +154,7 @@ void main() {
 
     testWidgets('should handle theme mode toggle', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Look for theme mode toggle switches or buttons
       final switches = find.byType(Switch);
@@ -162,10 +162,10 @@ void main() {
       
       if (switches.evaluate().isNotEmpty) {
         await tester.tap(switches.first);
-        await tester.pumpAndSettle();
+        await tester.pump();
       } else if (toggleButtons.evaluate().isNotEmpty) {
         await tester.tap(toggleButtons.first);
-        await tester.pumpAndSettle();
+        await tester.pump();
       }
       
       expect(find.byType(ThemesPage), findsOneWidget);
@@ -173,7 +173,7 @@ void main() {
 
     testWidgets('should display theme information', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ThemesPage), findsOneWidget);
       // Should display information about each theme
@@ -181,7 +181,7 @@ void main() {
 
     testWidgets('should handle app bar theming', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       final appBar = find.byType(AppBar);
       if (appBar.evaluate().isNotEmpty) {
@@ -196,26 +196,26 @@ void main() {
         await tester.pump(const Duration(milliseconds: 50));
       }
       
-      await tester.pumpAndSettle();
+      await tester.pump();
       expect(find.byType(ThemesPage), findsOneWidget);
     });
 
     testWidgets('should handle theme persistence', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ThemesPage), findsOneWidget);
       
       // Test that theme selection is maintained across rebuilds
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ThemesPage), findsOneWidget);
     });
 
     testWidgets('should display theme colors properly', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ThemesPage), findsOneWidget);
       // Should display theme color previews
@@ -223,7 +223,7 @@ void main() {
 
     testWidgets('should handle theme reset functionality', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Look for reset button or similar functionality
       final resetButtons = find.textContaining('Reset');
@@ -232,13 +232,13 @@ void main() {
       
       if (resetButtons.evaluate().isNotEmpty) {
         await tester.tap(resetButtons.first);
-        await tester.pumpAndSettle();
+        await tester.pump();
       } else if (clearButtons.evaluate().isNotEmpty) {
         await tester.tap(clearButtons.first);
-        await tester.pumpAndSettle();
+        await tester.pump();
       } else if (defaultButtons.evaluate().isNotEmpty) {
         await tester.tap(defaultButtons.first);
-        await tester.pumpAndSettle();
+        await tester.pump();
       }
       
       expect(find.byType(ThemesPage), findsOneWidget);
@@ -256,7 +256,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ThemesPage), findsOneWidget);
     });
@@ -272,7 +272,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ThemesPage), findsOneWidget);
       
@@ -295,7 +295,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ThemesPage), findsOneWidget);
     });
@@ -306,7 +306,7 @@ void main() {
       final stopwatch = Stopwatch()..start();
       
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       stopwatch.stop();
       
@@ -320,7 +320,7 @@ void main() {
         await tester.pump(const Duration(milliseconds: 10));
       }
       
-      await tester.pumpAndSettle();
+      await tester.pump();
       expect(find.byType(ThemesPage), findsOneWidget);
     });
 
@@ -333,7 +333,7 @@ void main() {
       }
       
       stopwatch.stop();
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(stopwatch.elapsedMilliseconds, lessThan(2000));
       expect(find.byType(ThemesPage), findsOneWidget);
@@ -346,7 +346,7 @@ void main() {
       tester.view.devicePixelRatio = 1.0;
       
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ThemesPage), findsOneWidget);
       
@@ -359,7 +359,7 @@ void main() {
       tester.view.devicePixelRatio = 1.0;
       
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ThemesPage), findsOneWidget);
       
@@ -378,7 +378,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ThemesPage), findsOneWidget);
     });
@@ -394,34 +394,34 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ThemesPage), findsOneWidget);
     });
 
     testWidgets('should handle widget disposal', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Navigate away
       await tester.pumpWidget(
         const MaterialApp(home: Scaffold(body: Text('Other page'))),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Other page'), findsOneWidget);
     });
 
     testWidgets('should handle invalid theme selection', (tester) async {
       await tester.pumpWidget(createTestWidget(selectedTheme: 'invalid_theme'));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ThemesPage), findsOneWidget);
     });
 
     testWidgets('should handle null theme values', (tester) async {
       await tester.pumpWidget(createTestWidget(selectedTheme: null));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ThemesPage), findsOneWidget);
     });
@@ -438,7 +438,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ThemesPage), findsOneWidget);
     });
@@ -451,7 +451,7 @@ void main() {
       await tester.pumpWidget(createTestWidget(themeMode: ThemeMode.dark));
       await tester.pump(const Duration(milliseconds: 10));
       
-      await tester.pumpAndSettle();
+      await tester.pump();
       expect(find.byType(ThemesPage), findsOneWidget);
     });
   });

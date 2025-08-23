@@ -11,6 +11,7 @@ import 'package:task_tracker_app/domain/repositories/task_repository.dart';
 import 'geofencing_manager_test.mocks.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   group('GeofencingManager', () {
     late GeofencingManager geofencingManager;
     late MockLocationService mockLocationService;

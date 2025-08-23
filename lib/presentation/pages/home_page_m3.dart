@@ -6,6 +6,7 @@ import '../widgets/simple_theme_toggle.dart';
 import '../../domain/entities/task_audio_extensions.dart';
 import '../widgets/glassmorphism_container.dart';
 import '../widgets/enhanced_glass_button.dart';
+import '../widgets/audio_indicator_widget.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../core/design_system/design_tokens.dart';
 import '../../services/ui/slidable_action_service.dart';
@@ -876,61 +877,30 @@ Shared from Tasky - Task Management App
   
   // Removed _buildFixedTab method - using simple text-only tabs for sophistication
 
-  /// Build today's tasks list
+  /// Build today's tasks list - only tasks due today, not created today
   Widget _buildTodayTasksList(BuildContext context, ThemeData theme) {
     final todayDueTasks = ref.watch(todayTasksProvider);
-    final todayCreatedTasks = ref.watch(tasksCreatedTodayProvider);
     
     return todayDueTasks.when(
-      data: (dueTasks) {
-        return todayCreatedTasks.when(
-          data: (createdTasks) {
-            // Combine tasks due today and created today, removing duplicates
-            final allTodayTasks = <TaskModel>{
-              ...dueTasks,
-              ...createdTasks,
-            }.toList();
-            
-            if (allTodayTasks.isEmpty) {
-              return _buildEmptyTasksList(theme, 'No tasks for today', PhosphorIcons.calendar());
-            }
-            
-            // Sort by priority and creation time
-            allTodayTasks.sort((a, b) {
-              final priorityComparison = b.priority.index.compareTo(a.priority.index);
-              if (priorityComparison != 0) return priorityComparison;
-              return b.createdAt.compareTo(a.createdAt);
-            });
-            
-            return ListView.builder(
-              padding: const EdgeInsets.only(bottom: 80), // FAB clearance
-              itemCount: allTodayTasks.length,
-              itemBuilder: (context, index) {
-                final task = allTodayTasks[index];
-                return _buildCompactTaskCard(task, theme);
-              },
-            );
+      data: (tasks) {
+        if (tasks.isEmpty) {
+          return _buildEmptyTasksList(theme, 'No tasks due today', PhosphorIcons.calendar());
+        }
+        
+        // Sort by priority and creation time
+        tasks.sort((a, b) {
+          final priorityComparison = b.priority.index.compareTo(a.priority.index);
+          if (priorityComparison != 0) return priorityComparison;
+          return b.createdAt.compareTo(a.createdAt);
+        });
+        
+        return ListView.builder(
+          padding: const EdgeInsets.only(bottom: 80), // FAB clearance
+          itemCount: tasks.length,
+          itemBuilder: (context, index) {
+            final task = tasks[index];
+            return _buildCompactTaskCard(task, theme);
           },
-          loading: () => dueTasks.isEmpty 
-            ? _buildTasksLoadingState(theme)
-            : ListView.builder(
-                padding: const EdgeInsets.only(bottom: 80), // FAB clearance
-                itemCount: dueTasks.length,
-                itemBuilder: (context, index) {
-                  final task = dueTasks[index];
-                  return _buildCompactTaskCard(task, theme);
-                },
-              ),
-          error: (error, stack) => dueTasks.isEmpty 
-            ? _buildErrorState(theme, 'Failed to load today\'s tasks')
-            : ListView.builder(
-                padding: const EdgeInsets.only(bottom: 80), // FAB clearance
-                itemCount: dueTasks.length,
-                itemBuilder: (context, index) {
-                  final task = dueTasks[index];
-                  return _buildCompactTaskCard(task, theme);
-                },
-              ),
         );
       },
       loading: () => _buildTasksLoadingState(theme),
@@ -1023,6 +993,7 @@ Shared from Tasky - Task Management App
       task,
       onComplete: () => _toggleTaskCompletion(task),
       onQuickEdit: () => _quickEditTask(task),
+      onDelete: () => _confirmDeleteTask(task),
       onMore: () => _showMoreActions(task),
     );
 
@@ -1044,32 +1015,38 @@ Shared from Tasky - Task Management App
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Elegant vertical accent bar
+                    // Elegant vertical accent bar - priority indicator
                     Container(
                       width: 4,
                       height: 32,
                       decoration: BoxDecoration(
-                        color: _getCategoryColor(task.tags.isNotEmpty ? task.tags.first : 'default'),
+                        color: task.priority.color,
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
                     const SizedBox(width: SpacingTokens.phi1), // Golden ratio spacing
-                    // Sophisticated category icon
+                    // Sophisticated priority icon
                     Container(
                       width: 32,
                       height: 32,
                       decoration: BoxDecoration(
-                        color: _getCategoryColor(task.tags.isNotEmpty ? task.tags.first : 'default').withValues(alpha: 0.1),
+                        color: task.priority.color.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
-                          color: _getCategoryColor(task.tags.isNotEmpty ? task.tags.first : 'default').withValues(alpha: 0.2),
+                          color: task.priority.color.withValues(alpha: 0.2),
                           width: 0.5,
                         ),
                       ),
                       child: Icon(
-                        _getCategoryIcon(task.tags.isNotEmpty ? task.tags.first : 'default'),
+                        task.priority == TaskPriority.urgent
+                            ? PhosphorIcons.arrowUp()
+                            : task.priority == TaskPriority.high
+                                ? PhosphorIcons.caretUp()
+                                : task.priority == TaskPriority.medium
+                                    ? PhosphorIcons.equals()
+                                    : PhosphorIcons.caretDown(),
                         size: 16,
-                        color: _getCategoryColor(task.tags.isNotEmpty ? task.tags.first : 'default'),
+                        color: task.priority.color,
                       ),
                     ),
                     const SizedBox(width: SpacingTokens.phi1), // Golden ratio spacing
@@ -1077,13 +1054,12 @@ Shared from Tasky - Task Management App
                 ),
                 
                 // Title and description in the middle (takes up most space)
-                Flexible(
-                  child: ClipRect(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
                       // Task title with audio indicator
                       Row(
                         children: [
@@ -1091,13 +1067,13 @@ Shared from Tasky - Task Management App
                             child: Text(
                               task.title,
                               style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.w500, // Sophisticated medium weight
+                                fontWeight: FontWeight.w500,
                                 color: theme.colorScheme.onSurface,
                                 decoration: task.status == TaskStatus.completed
                                     ? TextDecoration.lineThrough
                                     : null,
-                                height: 1.3, // Refined line height for readability
-                                letterSpacing: 0.1, // Subtle letter spacing for elegance
+                                height: 1.2,
+                                letterSpacing: 0.1,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -1105,27 +1081,17 @@ Shared from Tasky - Task Management App
                           ),
                           // Sophisticated audio indicator for voice tasks
                           if (task.hasVoiceMetadata) ...[
-                            const SizedBox(width: 4), // 4px spacing
-                            Container(
-                              width: 24,
-                              height: 24,
-                              decoration: BoxDecoration(
-                                color: theme.colorScheme.primary.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: theme.colorScheme.primary.withValues(alpha: 0.2),
-                                  width: 0.5,
-                                ),
-                              ),
-                              child: Icon(
-                                PhosphorIcons.waveform(),
-                                size: 14,
-                                color: theme.colorScheme.primary,
-                              ),
+                            const SizedBox(width: 4),
+                            AudioIndicatorWidget(
+                              task: task,
+                              size: 20,
+                              mode: AudioIndicatorMode.playButton,
                             ),
                           ],
                         ],
                       ),
+                      
+                      const SizedBox(height: 2),
                       
                       // Elegant task metadata - priority only for sophisticated simplicity
                       if (task.priority != TaskPriority.medium) ...[
@@ -1135,28 +1101,27 @@ Shared from Tasky - Task Management App
                               task.priority == TaskPriority.urgent
                                   ? PhosphorIcons.arrowUp()
                                   : PhosphorIcons.caretUp(),
-                              size: 12,
+                              size: 10,
                               color: task.priority == TaskPriority.urgent
                                   ? theme.colorScheme.error
                                   : theme.colorScheme.secondary,
                             ),
-                            const SizedBox(width: 4), // 4px spacing
+                            const SizedBox(width: 3),
                             Text(
                               task.priority.name.toUpperCase(),
                               style: theme.textTheme.labelSmall?.copyWith(
-                                fontSize: 11,
+                                fontSize: 10,
                                 fontWeight: FontWeight.w500,
                                 color: task.priority == TaskPriority.urgent
                                     ? theme.colorScheme.error
                                     : theme.colorScheme.secondary,
-                                letterSpacing: 0.5, // Wide letter spacing for labels
+                                letterSpacing: 0.3,
                               ),
                             ),
                           ],
                         ),
                       ],
                     ],
-                    ),
                   ),
                 ),
                 
@@ -1227,95 +1192,11 @@ Shared from Tasky - Task Management App
     _showTaskContextMenu(context, task);
   }
 
-  /// Get category-based icon for task cards
-  IconData _getCategoryIcon(String category) {
-    switch (category.toLowerCase()) {
-      case 'work':
-        return PhosphorIcons.briefcase();
-      case 'personal':
-        return PhosphorIcons.user();
-      case 'shopping':
-        return PhosphorIcons.shoppingCart();
-      case 'health':
-        return PhosphorIcons.heartbeat();
-      case 'fitness':
-        return PhosphorIcons.barbell();
-      case 'finance':
-        return PhosphorIcons.wallet();
-      case 'education':
-        return PhosphorIcons.graduationCap();
-      case 'travel':
-        return PhosphorIcons.airplane();
-      case 'home':
-        return PhosphorIcons.house();
-      case 'family':
-        return PhosphorIcons.users();
-      case 'entertainment':
-        return PhosphorIcons.filmStrip();
-      case 'food':
-        return PhosphorIcons.forkKnife();
-      case 'project':
-        return PhosphorIcons.folder();
-      case 'meeting':
-        return PhosphorIcons.door();
-      case 'call':
-        return PhosphorIcons.phone();
-      case 'email':
-        return PhosphorIcons.envelope();
-      case 'urgent':
-        return PhosphorIcons.warningCircle();
-      case 'important':
-        return PhosphorIcons.star();
-      default:
-        return PhosphorIcons.checkSquare();
-    }
+  void _confirmDeleteTask(TaskModel task) {
+    SlidableFeedbackService.provideFeedback(SlidableActionType.destructive);
+    _deleteTask(task);
   }
 
-  /// Get category-based color for task cards
-  Color _getCategoryColor(String category) {
-    final theme = Theme.of(context);
-    
-    switch (category.toLowerCase()) {
-      case 'work':
-        return const Color(0xFF1976D2); // Blue
-      case 'personal':
-        return const Color(0xFF388E3C); // Green
-      case 'shopping':
-        return const Color(0xFFFF9800); // Orange
-      case 'health':
-        return const Color(0xFFE91E63); // Pink
-      case 'fitness':
-        return const Color(0xFF8BC34A); // Light Green
-      case 'finance':
-        return const Color(0xFF4CAF50); // Green
-      case 'education':
-        return const Color(0xFF3F51B5); // Indigo
-      case 'travel':
-        return const Color(0xFF00BCD4); // Cyan
-      case 'home':
-        return const Color(0xFF795548); // Brown
-      case 'family':
-        return const Color(0xFFFF5722); // Deep Orange
-      case 'entertainment':
-        return const Color(0xFF9C27B0); // Purple
-      case 'food':
-        return const Color(0xFFFF9800); // Orange
-      case 'project':
-        return const Color(0xFF607D8B); // Blue Grey
-      case 'meeting':
-        return const Color(0xFF673AB7); // Deep Purple
-      case 'call':
-        return const Color(0xFF2196F3); // Blue
-      case 'email':
-        return const Color(0xFF009688); // Teal
-      case 'urgent':
-        return const Color(0xFFF44336); // Red
-      case 'important':
-        return const Color(0xFFFFEB3B); // Yellow
-      default:
-        return theme.colorScheme.primary; // Default theme color
-    }
-  }
 
   /// Build progress indicator for task cards
 

@@ -37,7 +37,7 @@ class FeatureIntegrationManager {
     _isInitialized = true;
     
     if (kDebugMode) {
-      debugPrint('✅ Feature Integration Manager initialized with ${_registeredFeatures.length} features');
+      debugPrint('[SUCCESS] Feature Integration Manager initialized with ${_registeredFeatures.length} features');
     }
   }
 
@@ -54,7 +54,7 @@ class FeatureIntegrationManager {
     );
     
     if (kDebugMode) {
-      debugPrint('🔧 Registered feature: ${feature.id}');
+      debugPrint('[EMOJI] Registered feature: ${feature.id}');
     }
   }
 
@@ -62,7 +62,7 @@ class FeatureIntegrationManager {
   Future<bool> enableFeature(String featureId, {Map<String, dynamic>? config}) async {
     final feature = _registeredFeatures[featureId];
     if (feature == null) {
-      debugPrint('⚠️ Feature not found: $featureId');
+      debugPrint('Feature not found: $featureId');
       return false;
     }
 
@@ -71,7 +71,7 @@ class FeatureIntegrationManager {
     try {
       // Check dependencies
       if (!_checkDependencies(feature)) {
-        debugPrint('⚠️ Feature dependencies not met: $featureId');
+        debugPrint('Feature dependencies not met: $featureId');
         return false;
       }
 
@@ -92,7 +92,7 @@ class FeatureIntegrationManager {
         _onFeatureStateChanged?.call();
         
         if (kDebugMode) {
-          debugPrint('✅ Feature enabled: $featureId (${stopwatch.elapsedMilliseconds}ms)');
+          debugPrint('[SUCCESS] Feature enabled: $featureId (${stopwatch.elapsedMilliseconds}ms)');
         }
         
         return true;
@@ -127,7 +127,7 @@ class FeatureIntegrationManager {
       _onFeatureStateChanged?.call();
       
       if (kDebugMode) {
-        debugPrint('🔄 Feature disabled: $featureId');
+        debugPrint('[REFRESH] Feature disabled: $featureId');
       }
       
       return true;
@@ -206,7 +206,7 @@ class FeatureIntegrationManager {
       steps: steps,
       onComplete: () {
         if (kDebugMode) {
-          debugPrint('✅ Feature tour completed');
+          debugPrint('[SUCCESS] Feature tour completed');
         }
       },
     );
@@ -319,7 +319,7 @@ class FeatureIntegrationManager {
       rule.apply(_registeredFeatures, _featureStates);
     } catch (error) {
       if (kDebugMode) {
-        debugPrint('⚠️ Failed to apply integration rule: $error');
+        debugPrint('Failed to apply integration rule: $error');
       }
     }
   }
@@ -353,7 +353,7 @@ class FeatureIntegrationManager {
     }
     
     if (kDebugMode) {
-      debugPrint('❌ Feature error [$featureId]: $error');
+      debugPrint('[ERROR] Feature error [$featureId]: $error');
     }
   }
 }

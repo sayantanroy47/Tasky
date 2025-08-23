@@ -19,7 +19,7 @@ void main() {
 
     testWidgets('should display notification history page', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(NotificationHistoryPage), findsOneWidget);
       expect(find.byType(Scaffold), findsOneWidget);
@@ -27,26 +27,26 @@ void main() {
 
     testWidgets('should display notification history list', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(NotificationHistoryPage), findsOneWidget);
     });
 
     testWidgets('should handle empty notification history', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(NotificationHistoryPage), findsOneWidget);
     });
 
     testWidgets('should handle clear history action', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       final clearButtons = find.textContaining('Clear');
       if (clearButtons.evaluate().isNotEmpty) {
         await tester.tap(clearButtons.first);
-        await tester.pumpAndSettle();
+        await tester.pump();
       }
       
       expect(find.byType(NotificationHistoryPage), findsOneWidget);
@@ -61,7 +61,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(NotificationHistoryPage), findsOneWidget);
     });

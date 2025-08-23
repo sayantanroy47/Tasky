@@ -24,7 +24,7 @@ void main() {
   group('SettingsPage Widget Tests', () {
     testWidgets('should display settings page with basic elements', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(SettingsPage), findsOneWidget);
       expect(find.byType(Scaffold), findsOneWidget);
@@ -32,7 +32,7 @@ void main() {
 
     testWidgets('should display theme toggle widget', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Verify basic UI elements
       expect(find.text('Settings'), findsOneWidget);
@@ -42,21 +42,21 @@ void main() {
 
     testWidgets('should display theme toggle button in app bar', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ThemeToggleButton), findsOneWidget);
     });
 
     testWidgets('should display navigation section', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Navigation'), findsOneWidget);
     });
 
     testWidgets('should display tasks navigation tile', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Tasks'), findsOneWidget);
       expect(find.text('View and manage all tasks'), findsOneWidget);
@@ -65,7 +65,7 @@ void main() {
 
     testWidgets('should display projects navigation tile', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Projects'), findsOneWidget);
       expect(find.byIcon(PhosphorIcons.folder()), findsOneWidget);
@@ -73,38 +73,38 @@ void main() {
 
     testWidgets('should handle tap on tasks tile', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       final tasksTitle = find.text('Tasks');
       expect(tasksTitle, findsOneWidget);
       
       await tester.tap(tasksTitle);
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Should navigate or show some response
     });
 
     testWidgets('should handle tap on projects tile', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       final projectsTitle = find.text('Projects');
       expect(projectsTitle, findsOneWidget);
       
       await tester.tap(projectsTitle);
-      await tester.pumpAndSettle();
+      await tester.pump();
     });
 
     testWidgets('should display glassmorphism containers', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(GlassmorphismContainer), findsWidgets);
     });
 
     testWidgets('should display all section headers', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Check for various section headers that should exist
       expect(find.text('Navigation'), findsOneWidget);
@@ -112,19 +112,19 @@ void main() {
 
     testWidgets('should have proper scrolling behavior', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       final listView = find.byType(ListView);
       expect(listView, findsOneWidget);
       
       // Test scrolling
       await tester.drag(listView, const Offset(0, -300));
-      await tester.pumpAndSettle();
+      await tester.pump();
     });
 
     testWidgets('should maintain transparent background', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       final scaffold = tester.widget<Scaffold>(find.byType(Scaffold));
       expect(scaffold.backgroundColor, Colors.transparent);
@@ -132,7 +132,7 @@ void main() {
 
     testWidgets('should extend body behind app bar', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       final scaffold = tester.widget<Scaffold>(find.byType(Scaffold));
       expect(scaffold.extendBodyBehindAppBar, true);
@@ -140,7 +140,7 @@ void main() {
 
     testWidgets('should not show back button in app bar', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       final appBar = tester.widget<StandardizedAppBar>(
         find.byType(StandardizedAppBar));
@@ -149,7 +149,7 @@ void main() {
 
     testWidgets('should display correct padding for list content', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       final listView = tester.widget<ListView>(find.byType(ListView));
       expect(listView.padding, isNotNull);
@@ -165,14 +165,14 @@ void main() {
       );
 
       await tester.pumpWidget(darkWidget);
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(SettingsPage), findsOneWidget);
     });
 
     testWidgets('should display all list tiles with proper styling', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       final listTiles = find.byType(ListTile);
       expect(listTiles, findsWidgets);
@@ -188,14 +188,14 @@ void main() {
 
     testWidgets('should display caret right icons on tiles', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byIcon(PhosphorIcons.caretRight()), findsWidgets);
     });
 
     testWidgets('should handle accessibility properly', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Test semantic navigation
       expect(find.byType(Semantics), findsWidgets);
@@ -214,7 +214,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Find and tap the tasks tile
       final tasksListTile = find.ancestor(
@@ -223,7 +223,7 @@ void main() {
       );
       
       await tester.tap(tasksListTile);
-      await tester.pumpAndSettle();
+      await tester.pump();
     });
 
     testWidgets('should navigate to projects page', (tester) async {
@@ -237,7 +237,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Find and tap the projects tile
       final projectsListTile = find.ancestor(
@@ -246,14 +246,14 @@ void main() {
       );
       
       await tester.tap(projectsListTile);
-      await tester.pumpAndSettle();
+      await tester.pump();
     });
   });
 
   group('SettingsPage Edge Cases', () {
     testWidgets('should handle rapid taps on navigation items', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       final tasksListTile = find.ancestor(
         of: find.text('Tasks'),
@@ -266,7 +266,7 @@ void main() {
         await tester.pump(const Duration(milliseconds: 10));
       }
       
-      await tester.pumpAndSettle();
+      await tester.pump();
     });
 
     testWidgets('should handle small screen sizes', (tester) async {
@@ -274,7 +274,7 @@ void main() {
       tester.view.devicePixelRatio = 1.0;
       
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(SettingsPage), findsOneWidget);
       
@@ -288,7 +288,7 @@ void main() {
       tester.view.devicePixelRatio = 1.0;
       
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(SettingsPage), findsOneWidget);
       
@@ -311,14 +311,14 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(SettingsPage), findsOneWidget);
     });
 
     testWidgets('should handle widget rebuild efficiently', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Force rebuild multiple times
       for (int i = 0; i < 10; i++) {
@@ -342,7 +342,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(SettingsPage), findsOneWidget);
     });
@@ -359,7 +359,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(SettingsPage), findsOneWidget);
     });

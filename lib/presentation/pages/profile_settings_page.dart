@@ -39,7 +39,7 @@ class _ProfileSettingsPageState extends ConsumerState<ProfileSettingsPage> {
   
   @override
   Widget build(BuildContext context) {
-    debugPrint('🏗️ ProfileSettingsPage build() called');
+    debugPrint('ProfileSettingsPage build() called');
     
     final theme = Theme.of(context);
     final profileAsync = ref.watch(currentProfileProvider);

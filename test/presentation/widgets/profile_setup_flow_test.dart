@@ -24,7 +24,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ProfileSetupFlow), findsOneWidget);
     });
@@ -37,7 +37,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ProfileSetupFlow), findsOneWidget);
       expect(find.byType(PageView), findsOneWidget);
@@ -51,14 +51,14 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ProfileSetupFlow), findsOneWidget);
       
       final nameFields = find.byType(TextField);
       if (nameFields.evaluate().isNotEmpty) {
         await tester.enterText(nameFields.first, 'John Doe');
-        await tester.pumpAndSettle();
+        await tester.pump();
       }
     });
 
@@ -70,7 +70,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ProfileSetupFlow), findsOneWidget);
       
@@ -78,14 +78,14 @@ void main() {
       final continueButtons = find.text('Continue');
       if (continueButtons.evaluate().isNotEmpty) {
         await tester.tap(continueButtons.first);
-        await tester.pumpAndSettle();
+        await tester.pump();
       }
       
       // Look for back buttons
       final backButtons = find.text('Back');
       if (backButtons.evaluate().isNotEmpty) {
         await tester.tap(backButtons.first);
-        await tester.pumpAndSettle();
+        await tester.pump();
       }
     });
 
@@ -97,7 +97,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ProfileSetupFlow), findsOneWidget);
       
@@ -105,7 +105,7 @@ void main() {
       final skipButtons = find.text('Skip setup completely');
       if (skipButtons.evaluate().isNotEmpty) {
         await tester.tap(skipButtons.first);
-        await tester.pumpAndSettle();
+        await tester.pump();
       }
     });
 
@@ -119,7 +119,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ProfileSetupFlow), findsOneWidget);
       
@@ -127,7 +127,7 @@ void main() {
       final completeButtons = find.text('Complete Setup');
       if (completeButtons.evaluate().isNotEmpty) {
         await tester.tap(completeButtons.first);
-        await tester.pumpAndSettle();
+        await tester.pump();
         
         expect(onCompletedCalled, isTrue);
       }
@@ -141,7 +141,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ProfileSetupFlow), findsOneWidget);
       
@@ -163,7 +163,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ProfileSetupFlow), findsOneWidget);
     });
@@ -176,7 +176,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ProfileSetupFlow), findsOneWidget);
       
@@ -184,7 +184,7 @@ void main() {
       final continueButtons = find.text('Continue');
       if (continueButtons.evaluate().isNotEmpty) {
         await tester.tap(continueButtons.first);
-        await tester.pumpAndSettle();
+        await tester.pump();
       }
     });
 
@@ -196,7 +196,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(ProfileSetupFlow), findsOneWidget);
       

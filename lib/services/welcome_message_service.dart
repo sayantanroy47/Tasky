@@ -152,7 +152,7 @@ class WelcomeMessageService {
     // Special cases for first-time users
     if (isFirstTimeUser) {
       return WelcomeMessage(
-        greeting: firstName != null ? 'Welcome to Tasky, $firstName! 🎉' : 'Welcome to Tasky! 🎉',
+        greeting: firstName != null ? 'Welcome to Tasky, $firstName! [EMOJI]' : 'Welcome to Tasky! [EMOJI]',
         subtitle: 'Let\'s build amazing habits together',
         timeOfDay: TimeOfDay.any,
       );
@@ -227,7 +227,7 @@ class WelcomeMessageService {
     
     if (pendingTasks == 0) {
       return completedToday > 0 
-        ? 'All done for today! 🎉 You completed $completedToday ${completedToday == 1 ? 'task' : 'tasks'}.'
+        ? 'All done for today! [EMOJI] You completed $completedToday ${completedToday == 1 ? 'task' : 'tasks'}.'
         : 'All caught up! Time to plan tomorrow.';
     }
     

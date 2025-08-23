@@ -21,7 +21,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Test Content'), findsOneWidget);
       expect(find.byType(GlassmorphismContainer), findsOneWidget);
@@ -36,7 +36,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Blurred Content'), findsOneWidget);
       expect(find.byType(GlassmorphismContainer), findsOneWidget);
@@ -51,7 +51,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Transparent Content'), findsOneWidget);
       expect(find.byType(GlassmorphismContainer), findsOneWidget);
@@ -66,7 +66,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Rounded Content'), findsOneWidget);
       expect(find.byType(GlassmorphismContainer), findsOneWidget);
@@ -81,7 +81,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Colored Content'), findsOneWidget);
       expect(find.byType(GlassmorphismContainer), findsOneWidget);
@@ -96,7 +96,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Padded Content'), findsOneWidget);
       expect(find.byType(GlassmorphismContainer), findsOneWidget);
@@ -111,7 +111,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Margin Content'), findsOneWidget);
       expect(find.byType(GlassmorphismContainer), findsOneWidget);
@@ -131,7 +131,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Title'), findsOneWidget);
       expect(find.byIcon(Icons.star), findsOneWidget);
@@ -150,7 +150,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Dark Theme'), findsOneWidget);
       expect(find.byType(GlassmorphismContainer), findsOneWidget);
@@ -165,7 +165,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('No Blur'), findsOneWidget);
       
@@ -177,7 +177,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Max Blur'), findsOneWidget);
     });
@@ -191,7 +191,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(GlassmorphismContainer), findsOneWidget);
       
@@ -203,7 +203,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Opaque'), findsOneWidget);
     });
@@ -216,7 +216,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Basic Container'), findsOneWidget);
       expect(find.byType(GlassmorphismContainer), findsOneWidget);
@@ -230,7 +230,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(GlassmorphismContainer), findsOneWidget);
       

@@ -19,7 +19,7 @@ void main() {
 
     testWidgets('should display recurring task creation page', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(RecurringTaskCreationPage), findsOneWidget);
       expect(find.byType(Scaffold), findsOneWidget);
@@ -27,19 +27,19 @@ void main() {
 
     testWidgets('should display task form fields', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(RecurringTaskCreationPage), findsOneWidget);
     });
 
     testWidgets('should handle recurrence pattern selection', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       final dropdowns = find.byType(DropdownButton);
       if (dropdowns.evaluate().isNotEmpty) {
         await tester.tap(dropdowns.first);
-        await tester.pumpAndSettle();
+        await tester.pump();
       }
       
       expect(find.byType(RecurringTaskCreationPage), findsOneWidget);
@@ -47,12 +47,12 @@ void main() {
 
     testWidgets('should handle form validation', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       final textFields = find.byType(TextFormField);
       if (textFields.evaluate().isNotEmpty) {
         await tester.enterText(textFields.first, '');
-        await tester.pumpAndSettle();
+        await tester.pump();
       }
       
       expect(find.byType(RecurringTaskCreationPage), findsOneWidget);
@@ -60,12 +60,12 @@ void main() {
 
     testWidgets('should handle save button', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       final saveButtons = find.textContaining('Save');
       if (saveButtons.evaluate().isNotEmpty) {
         await tester.tap(saveButtons.first);
-        await tester.pumpAndSettle();
+        await tester.pump();
       }
       
       expect(find.byType(RecurringTaskCreationPage), findsOneWidget);
@@ -80,7 +80,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(RecurringTaskCreationPage), findsOneWidget);
     });

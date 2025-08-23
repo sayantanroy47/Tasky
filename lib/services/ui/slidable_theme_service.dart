@@ -194,7 +194,7 @@ class SlidableThemeService {
     );
   }
 
-  /// Creates a balanced dual-sided compact slidable with proper 2-1 action distribution
+  /// Creates a balanced dual-sided compact slidable with proper 2-2 action distribution
   static Widget createBalancedCompactCardSlidable({
     required Widget child,
     required List<SlidableAction> startActions,
@@ -206,7 +206,7 @@ class SlidableThemeService {
   }) {
     // Calculate responsive extent ratios for different action counts
     double startExtentRatio = 0.4; // For 2 actions (Complete + Edit)
-    double endExtentRatio = 0.25;  // For 1 action (More)
+    double endExtentRatio = 0.4;   // For 2 actions (Delete + More)
     
     if (context != null) {
       final screenWidth = MediaQuery.of(context).size.width;
@@ -244,7 +244,7 @@ class SlidableThemeService {
         closeThreshold: 0.7,
         useGlassmorphism: false,
       ) : null,
-      // Right side: Secondary action (More)
+      // Right side: Secondary actions (Delete + More)
       endActionPane: endActions.isNotEmpty ? createEndActionPane(
         actions: endActions,
         motion: getContextualMotion(SlidableContext.compactList, highPerformance: enableFastSwipe),
@@ -304,13 +304,13 @@ class SlidableThemeService {
 
         // Verify buttons are large enough to be touchable
         if (buttonWidth < minButtonWidth) {
-          debugPrint('❌ Action buttons too small: ${buttonWidth}px on ${screenWidth}px screen');
+          debugPrint('[ERROR] Action buttons too small: ${buttonWidth}px on ${screenWidth}px screen');
           return false;
         }
       }
     }
 
-    debugPrint('✅ Action button responsiveness test passed');
+    debugPrint('[SUCCESS] Action button responsiveness test passed');
     return true;
   }
 

@@ -42,7 +42,7 @@ void main() {
   group('TasksPage Widget Tests', () {
     testWidgets('should display tasks page with basic elements', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(TasksPage), findsOneWidget);
       expect(find.byType(Scaffold), findsOneWidget);
@@ -50,21 +50,21 @@ void main() {
 
     testWidgets('should display loading state', (tester) async {
       await tester.pumpWidget(createTestWidget(isLoading: true));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
 
     testWidgets('should display error state', (tester) async {
       await tester.pumpWidget(createTestWidget(hasError: true));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.textContaining('error'), findsOneWidget, reason: 'Should display error message');
     });
 
     testWidgets('should display empty state when no tasks', (tester) async {
       await tester.pumpWidget(createTestWidget(tasks: []));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(TasksPage), findsOneWidget);
     });
@@ -77,7 +77,7 @@ void main() {
       ];
       
       await tester.pumpWidget(createTestWidget(tasks: tasks));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(TasksPage), findsOneWidget);
     });
@@ -91,7 +91,7 @@ void main() {
       ];
       
       await tester.pumpWidget(createTestWidget(tasks: tasks));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(TasksPage), findsOneWidget);
     });
@@ -105,7 +105,7 @@ void main() {
       ];
       
       await tester.pumpWidget(createTestWidget(tasks: tasks));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(TasksPage), findsOneWidget);
     });
@@ -115,11 +115,11 @@ void main() {
         createTestTask(title: 'Task $i'));
       
       await tester.pumpWidget(createTestWidget(tasks: tasks));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Test scrolling
       await tester.drag(find.byType(TasksPage), const Offset(0, -300));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(TasksPage), findsOneWidget);
     });
@@ -128,7 +128,7 @@ void main() {
       final tasks = [createTestTask()];
       
       await tester.pumpWidget(createTestWidget(tasks: tasks));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(TasksPage), findsOneWidget);
     });
@@ -141,7 +141,7 @@ void main() {
       await tester.pump();
       
       await tester.pumpWidget(createTestWidget(hasError: true));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(TasksPage), findsOneWidget);
     });
@@ -160,7 +160,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(TasksPage), findsOneWidget);
     });
@@ -178,7 +178,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(TasksPage), findsOneWidget);
     });
@@ -194,7 +194,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(TasksPage), findsOneWidget);
       
@@ -210,7 +210,7 @@ void main() {
       final stopwatch = Stopwatch()..start();
       
       await tester.pumpWidget(createTestWidget(tasks: tasks));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       stopwatch.stop();
       
@@ -226,7 +226,7 @@ void main() {
         await tester.pump(const Duration(milliseconds: 10));
       }
       
-      await tester.pumpAndSettle();
+      await tester.pump();
       expect(find.byType(TasksPage), findsOneWidget);
     });
   });
@@ -234,7 +234,7 @@ void main() {
   group('TasksPage Edge Cases', () {
     testWidgets('should handle null tasks gracefully', (tester) async {
       await tester.pumpWidget(createTestWidget(tasks: []));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(TasksPage), findsOneWidget);
     });
@@ -244,7 +244,7 @@ void main() {
       final tasks = [createTestTask(title: longTitle)];
       
       await tester.pumpWidget(createTestWidget(tasks: tasks));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(TasksPage), findsOneWidget);
     });
@@ -255,7 +255,7 @@ void main() {
       
       final tasks = [createTestTask()];
       await tester.pumpWidget(createTestWidget(tasks: tasks));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(TasksPage), findsOneWidget);
       
@@ -269,7 +269,7 @@ void main() {
       
       final tasks = [createTestTask()];
       await tester.pumpWidget(createTestWidget(tasks: tasks));
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(TasksPage), findsOneWidget);
       
@@ -293,20 +293,20 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.byType(TasksPage), findsOneWidget);
     });
 
     testWidgets('should handle widget disposal', (tester) async {
       await tester.pumpWidget(createTestWidget());
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       // Navigate away
       await tester.pumpWidget(
         const MaterialApp(home: Scaffold(body: Text('Other page'))),
       );
-      await tester.pumpAndSettle();
+      await tester.pump();
       
       expect(find.text('Other page'), findsOneWidget);
     });
