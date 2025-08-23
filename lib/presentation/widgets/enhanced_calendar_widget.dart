@@ -169,7 +169,7 @@ class EnhancedCalendarWidget extends ConsumerWidget {
     }
 
     return SfCalendar(
-      view: _getCalendarView(state.calendarFormat),
+      view: _mapViewModeToCalendarView(state.viewMode),
       initialDisplayDate: state.focusedDate,
       initialSelectedDate: state.selectedDate,
       dataSource: MeetingDataSource(appointments),
@@ -218,20 +218,17 @@ class EnhancedCalendarWidget extends ConsumerWidget {
     );
   }
 
-  CalendarView _getCalendarView(CalendarView format) {
-    switch (format) {
-      case CalendarView.month:
+  CalendarView _mapViewModeToCalendarView(CalendarViewMode viewMode) {
+    switch (viewMode) {
+      case CalendarViewMode.month:
         return CalendarView.month;
-      case CalendarView.week:
+      case CalendarViewMode.week:
         return CalendarView.week;
-      case CalendarView.workWeek:
-        return CalendarView.workWeek;
-      case CalendarView.day:
+      case CalendarViewMode.day:
         return CalendarView.day;
-      default:
-        return CalendarView.month;
     }
   }
+
 
   Color _getTaskColor(TaskModel task) {
     switch (task.priority) {

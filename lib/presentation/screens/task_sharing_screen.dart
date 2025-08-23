@@ -1,12 +1,14 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../widgets/standardized_app_bar.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+
 import '../../core/theme/typography_constants.dart';
 import '../../services/collaboration_service.dart';
+import '../widgets/standardized_app_bar.dart';
 import 'collaboration_management_screen.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class TaskSharingScreen extends ConsumerStatefulWidget {
   final String? taskId;
@@ -26,7 +28,7 @@ class _TaskSharingScreenState extends ConsumerState<TaskSharingScreen> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _shareCodeController = TextEditingController();
-  
+
   List<SharedTaskList> _sharedLists = [];
   bool _isLoading = false;
   bool _isPublic = false;
@@ -35,6 +37,7 @@ class _TaskSharingScreenState extends ConsumerState<TaskSharingScreen> {
     super.initState();
     _loadSharedLists();
   }
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -58,6 +61,7 @@ class _TaskSharingScreenState extends ConsumerState<TaskSharingScreen> {
       _showErrorSnackBar('Failed to load shared lists: $e');
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -99,7 +103,7 @@ class _TaskSharingScreenState extends ConsumerState<TaskSharingScreen> {
                   'Create Shared Task List',
                   style: TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
@@ -161,7 +165,7 @@ class _TaskSharingScreenState extends ConsumerState<TaskSharingScreen> {
                   'Join Shared List',
                   style: TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
@@ -207,7 +211,7 @@ class _TaskSharingScreenState extends ConsumerState<TaskSharingScreen> {
                   'Your Shared Lists',
                   style: TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
@@ -264,13 +268,12 @@ class _TaskSharingScreenState extends ConsumerState<TaskSharingScreen> {
       ),
       title: Text(
         sharedList.name,
-        style: const TextStyle(fontWeight: FontWeight.bold),
+        style: const TextStyle(fontWeight: FontWeight.w500),
       ),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (sharedList.description.isNotEmpty)
-            Text(sharedList.description),
+          if (sharedList.description.isNotEmpty) Text(sharedList.description),
           const SizedBox(height: 4),
           Row(
             children: [
@@ -301,7 +304,7 @@ class _TaskSharingScreenState extends ConsumerState<TaskSharingScreen> {
               style: TextStyle(
                 color: _getPermissionColor(userPermission),
                 fontSize: 10,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ),
@@ -379,7 +382,7 @@ class _TaskSharingScreenState extends ConsumerState<TaskSharingScreen> {
       setState(() => _isLoading = true);
 
       final taskIds = widget.taskIds ?? (widget.taskId != null ? [widget.taskId!] : <String>[]);
-      
+
       final sharedList = await _collaborationService.createSharedTaskList(
         name: _nameController.text.trim(),
         description: _descriptionController.text.trim(),
@@ -498,18 +501,20 @@ class _TaskSharingScreenState extends ConsumerState<TaskSharingScreen> {
 
   void _manageSharedList(SharedTaskList sharedList) {
     // Navigate to collaboration management screen
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => CollaborationManagementScreen(sharedList: sharedList),
-      ),
-    ).then((_) => _loadSharedLists());
+    Navigator.of(context)
+        .push(
+          MaterialPageRoute(
+            builder: (context) => CollaborationManagementScreen(sharedList: sharedList),
+          ),
+        )
+        .then((_) => _loadSharedLists());
   }
 
   void _exportSharedList(SharedTaskList sharedList) {
     try {
       final exportData = _collaborationService.exportSharedTaskList(sharedList.id);
       final jsonString = const JsonEncoder.withIndent('  ').convert(exportData);
-      
+
       // In a real implementation, save to file or share
       Clipboard.setData(ClipboardData(text: jsonString));
       _showSuccessSnackBar('Shared list data copied to clipboard!');
@@ -571,7 +576,7 @@ class _TaskSharingScreenState extends ConsumerState<TaskSharingScreen> {
                 sharedList.shareCode!,
                 style: const TextStyle(
                   fontSize: 24,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                   letterSpacing: 2,
                 ),
               ),
@@ -623,6 +628,3 @@ class _TaskSharingScreenState extends ConsumerState<TaskSharingScreen> {
     );
   }
 }
-
-
-

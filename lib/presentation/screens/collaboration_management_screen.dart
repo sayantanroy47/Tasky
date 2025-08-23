@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../widgets/standardized_app_bar.dart';
-import '../../services/collaboration_service.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+
+import '../../services/collaboration_service.dart';
+import '../widgets/standardized_app_bar.dart';
 
 class CollaborationManagementScreen extends ConsumerStatefulWidget {
   final SharedTaskList sharedList;
@@ -22,7 +23,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
   final CollaborationService _collaborationService = CollaborationService();
   final TextEditingController _userIdController = TextEditingController();
   final TextEditingController _userNameController = TextEditingController();
-  
+
   List<CollaborationChange> _changeHistory = [];
   bool _isLoading = false;
   @override
@@ -31,6 +32,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
     _tabController = TabController(length: 3, vsync: this);
     _loadChangeHistory();
   }
+
   @override
   void dispose() {
     _tabController.dispose();
@@ -52,6 +54,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
       _showErrorSnackBar('Failed to load change history: $e');
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -106,7 +109,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
                   'Add Collaborator',
                   style: TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
@@ -170,7 +173,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
                   'Current Collaborators',
                   style: TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
@@ -186,7 +189,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
                 final userId = entry.key;
                 final permission = entry.value;
                 final isOwner = userId == widget.sharedList.ownerId;
-                
+
                 return _buildCollaboratorTile(userId, permission, isOwner);
               },
             ),
@@ -208,7 +211,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
       title: Text(
         isOwner ? '$userId (Owner)' : userId,
         style: TextStyle(
-          fontWeight: isOwner ? FontWeight.bold : FontWeight.normal,
+          fontWeight: isOwner ? FontWeight.w500 : FontWeight.normal,
         ),
       ),
       subtitle: Text(permission.name.toUpperCase()),
@@ -285,7 +288,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
                   'List Settings',
                   style: TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
@@ -301,9 +304,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
             ListTile(
               title: const Text('Description'),
               subtitle: Text(
-                widget.sharedList.description.isEmpty 
-                    ? 'No description' 
-                    : widget.sharedList.description,
+                widget.sharedList.description.isEmpty ? 'No description' : widget.sharedList.description,
               ),
               trailing: Icon(PhosphorIcons.pencil()),
               onTap: () => _editListDescription(),
@@ -337,7 +338,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
                   'Sharing Settings',
                   style: TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
@@ -390,7 +391,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
                   'Danger Zone',
                   style: TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w500,
                     color: Colors.red,
                   ),
                 ),
@@ -558,7 +559,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
 
       _userIdController.clear();
       _userNameController.clear();
-      
+
       // Refresh the screen
       if (mounted) {
         Navigator.of(context).pop();
@@ -1027,4 +1028,3 @@ class _SharedTaskListTasksScreen extends StatelessWidget {
     }
   }
 }
-

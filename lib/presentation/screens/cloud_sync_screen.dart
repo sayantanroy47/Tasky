@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../widgets/standardized_app_bar.dart';
-import '../../services/cloud_sync_service.dart';
-import '../../domain/models/enums.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+
+import '../../domain/models/enums.dart';
+import '../../services/cloud_sync_service.dart';
+import '../widgets/standardized_app_bar.dart';
 
 /// Screen for managing cloud synchronization settings
 class CloudSyncScreen extends ConsumerStatefulWidget {
@@ -26,8 +27,9 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
           if (isAuthenticated)
             IconButton(
               onPressed: _isLoading ? null : _performFullSync,
-              icon: _isLoading 
-                  ? const SizedBox(width: 20,
+              icon: _isLoading
+                  ? const SizedBox(
+                      width: 20,
                       height: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
@@ -112,7 +114,7 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 32),
-          
+
           // Sign in button
           SizedBox(
             width: double.infinity,
@@ -126,7 +128,7 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          
+
           // Sign up button
           SizedBox(
             width: double.infinity,
@@ -139,9 +141,9 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
               ),
             ),
           ),
-          
+
           const SizedBox(height: 32),
-          
+
           // Benefits section
           _buildBenefitsSection(),
         ],
@@ -210,9 +212,9 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
                 Text(
                   'Account Connected',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Colors.green,
-                    fontWeight: FontWeight.bold,
-                  ),
+                        color: Colors.green,
+                        fontWeight: FontWeight.w500,
+                      ),
                 ),
                 const Spacer(),
                 TextButton(
@@ -244,7 +246,6 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 16),
-            
             Row(
               children: [
                 Expanded(
@@ -263,9 +264,7 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
                 ),
               ],
             ),
-            
             const SizedBox(height: 16),
-            
             if (stats.lastSyncTime != null) ...[
               Row(
                 children: [
@@ -285,8 +284,8 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
                   Text(
                     'Never synced',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.orange,
-                    ),
+                          color: Colors.orange,
+                        ),
                   ),
                 ],
               ),
@@ -305,8 +304,8 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
         Text(
           value,
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.w500,
+              ),
         ),
         Text(
           label,
@@ -329,7 +328,6 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
-            
             SwitchListTile(
               title: const Text('Auto Sync'),
               subtitle: const Text('Automatically sync changes'),
@@ -338,7 +336,6 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
                 // Implement auto sync toggle
               },
             ),
-            
             SwitchListTile(
               title: const Text('Real-time Sync'),
               subtitle: const Text('Sync changes immediately'),
@@ -347,7 +344,6 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
                 // Implement real-time sync toggle
               },
             ),
-            
             SwitchListTile(
               title: const Text('Sync on WiFi Only'),
               subtitle: const Text('Avoid mobile data usage'),
@@ -374,30 +370,25 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
-            
             ListTile(
               leading: Icon(PhosphorIcons.cloudArrowUp()),
               title: const Text('Full Sync'),
               subtitle: const Text('Sync all data to and from cloud'),
               onTap: _performFullSync,
             ),
-            
             ListTile(
               leading: Icon(PhosphorIcons.cloudArrowUp()),
               title: const Text('Upload All'),
               subtitle: const Text('Upload all local data to cloud'),
               onTap: _uploadAllData,
             ),
-            
             ListTile(
               leading: Icon(PhosphorIcons.cloudArrowDown()),
               title: const Text('Download All'),
               subtitle: const Text('Download all data from cloud'),
               onTap: _downloadAllData,
             ),
-            
             const Divider(),
-            
             ListTile(
               leading: Icon(PhosphorIcons.arrowClockwise(), color: Colors.orange),
               title: const Text('Reset Sync'),
@@ -422,7 +413,6 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
-            
             ListTile(
               leading: Icon(PhosphorIcons.gitMerge()),
               title: const Text('Conflict Resolution'),
@@ -430,7 +420,6 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
               trailing: Icon(PhosphorIcons.caretRight()),
               onTap: _showConflictResolutionSettings,
             ),
-            
             ListTile(
               leading: Icon(PhosphorIcons.database()),
               title: const Text('Data Management'),
@@ -438,7 +427,6 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
               trailing: Icon(PhosphorIcons.caretRight()),
               onTap: _showDataManagementSettings,
             ),
-            
             ListTile(
               leading: Icon(PhosphorIcons.clockCounterClockwise()),
               title: const Text('Sync History'),
@@ -496,7 +484,7 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
   Future<void> _signOut() async {
     final cloudService = ref.read(cloudSyncServiceProvider);
     await cloudService.signOut();
-    
+
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Signed out successfully')),
@@ -506,11 +494,11 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
 
   Future<void> _performFullSync() async {
     setState(() => _isLoading = true);
-    
+
     try {
       final cloudService = ref.read(cloudSyncServiceProvider);
       final result = await cloudService.performFullSync();
-      
+
       if (mounted) {
         if (result.success) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -519,7 +507,7 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
               backgroundColor: Colors.green,
             ),
           );
-          
+
           if (result.conflicts.isNotEmpty) {
             _showConflictsDialog(result.conflicts);
           }
@@ -541,11 +529,11 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
 
   Future<void> _uploadAllData() async {
     setState(() => _isLoading = true);
-    
+
     try {
       final cloudService = ref.read(cloudSyncServiceProvider);
       final result = await cloudService.uploadAllLocalData();
-      
+
       if (mounted) {
         if (result.success) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -572,11 +560,11 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
 
   Future<void> _downloadAllData() async {
     setState(() => _isLoading = true);
-    
+
     try {
       final cloudService = ref.read(cloudSyncServiceProvider);
       final result = await cloudService.downloadAllCloudData();
-      
+
       if (mounted) {
         if (result.success) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -707,8 +695,8 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
 
   String _formatDateTime(DateTime dateTime) {
     return '${dateTime.day}/${dateTime.month}/${dateTime.year} '
-           '${dateTime.hour.toString().padLeft(2, '0')}:'
-           '${dateTime.minute.toString().padLeft(2, '0')}';
+        '${dateTime.hour.toString().padLeft(2, '0')}:'
+        '${dateTime.minute.toString().padLeft(2, '0')}';
   }
 }
 
@@ -731,6 +719,7 @@ class _SignInDialogState extends ConsumerState<SignInDialog> {
     _passwordController.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -860,6 +849,7 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
     _confirmPasswordController.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -992,4 +982,3 @@ class _SignUpDialogState extends ConsumerState<SignUpDialog> {
     }
   }
 }
-

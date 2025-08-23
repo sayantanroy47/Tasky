@@ -19,6 +19,10 @@ class NotificationManager {
   Timer? _dailySummaryTimer;
   Timer? _overdueCheckTimer;
   StreamSubscription? _notificationEventSubscription;
+  
+  // Prevent race conditions in notification scheduling
+  final Map<String, Completer<void>> _schedulingOperations = {};
+  bool _isDisposed = false;
 
   NotificationManager({
     NotificationService? notificationService,
@@ -34,14 +38,13 @@ class NotificationManager {
     final initialized = await _notificationService.initialize();
     
     if (initialized) {
-      // Load persisted notifications first
+      // Load persisted notifications first - safely cast to LocalNotificationService
       if (_notificationService is LocalNotificationService) {
-        await (_notificationService).loadPersistedNotifications();
-      }
-      
-      // Process immediate overdue notifications
-      if (_notificationService is LocalNotificationService) {
-        await (_notificationService).processImmediateOverdueNotifications();
+        final localService = _notificationService;
+        await localService.loadPersistedNotifications();
+        
+        // Process immediate overdue notifications
+        await localService.processImmediateOverdueNotifications();
       }
       
       await _setupPeriodicTasks();
@@ -60,14 +63,29 @@ class NotificationManager {
   Future<bool> get hasPermissions => _notificationService.hasPermissions;
 
   /// Schedule notifications for a task based on its due date and user settings
+  /// Uses atomic operations to prevent race conditions
   Future<void> scheduleTaskNotifications(TaskModel task) async {
-    if (task.dueDate == null) return;
+    if (task.dueDate == null || _isDisposed) return;
 
-    // Cancel existing notifications for this task
-    await _notificationService.cancelTaskNotifications(task.id);
-    if (!settings.enabled) return;
+    // Prevent concurrent scheduling for the same task
+    if (_schedulingOperations.containsKey(task.id)) {
+      await _schedulingOperations[task.id]!.future;
+      if (_isDisposed) return;
+    }
+
+    final completer = Completer<void>();
+    _schedulingOperations[task.id] = completer;
 
     try {
+      // Atomic operation: cancel then reschedule
+      await _notificationService.cancelTaskNotifications(task.id);
+      
+      if (!settings.enabled || _isDisposed) {
+        completer.complete();
+        _schedulingOperations.remove(task.id);
+        return;
+      }
+
       // Schedule default reminder
       final defaultReminderTime = task.dueDate!.subtract(settings.defaultReminder);
       if (defaultReminderTime.isAfter(DateTime.now())) {
@@ -114,12 +132,23 @@ class NotificationManager {
           }
         }
       }
+      // Mark operation complete
+      completer.complete();
     } catch (e) {
       debugPrint('Error scheduling task notifications: $e');
-      // Attempt to reschedule after a delay
-      Timer(const Duration(minutes: 5), () {
-        scheduleTaskNotifications(task);
-      });
+      completer.completeError(e);
+      
+      // Attempt to reschedule after a delay (avoid infinite recursion)
+      if (!_isDisposed) {
+        Timer(const Duration(minutes: 5), () {
+          if (!_isDisposed && _schedulingOperations[task.id]?.isCompleted != false) {
+            scheduleTaskNotifications(task);
+          }
+        });
+      }
+    } finally {
+      // Always clean up the operation tracker
+      _schedulingOperations.remove(task.id);
     }
   }
 
@@ -588,14 +617,38 @@ class NotificationManager {
     );
   }
 
-  /// Dispose of resources
+  /// Dispose of resources - ensure proper cleanup to prevent memory leaks
   void dispose() {
-    _dailySummaryTimer?.cancel();
-    _overdueCheckTimer?.cancel();
-    _notificationEventSubscription?.cancel();
+    if (_isDisposed) return;
+    _isDisposed = true;
     
-    if (_notificationService is LocalNotificationService) {
-      (_notificationService).dispose();
+    try {
+      // Cancel all timers
+      _dailySummaryTimer?.cancel();
+      _dailySummaryTimer = null;
+      
+      _overdueCheckTimer?.cancel();
+      _overdueCheckTimer = null;
+      
+      // Cancel stream subscription
+      _notificationEventSubscription?.cancel();
+      _notificationEventSubscription = null;
+      
+      // Complete all pending operations to prevent hanging futures
+      for (final completer in _schedulingOperations.values) {
+        if (!completer.isCompleted) {
+          completer.complete();
+        }
+      }
+      _schedulingOperations.clear();
+      
+      // Dispose notification service if it's LocalNotificationService
+      if (_notificationService is LocalNotificationService) {
+        final localService = _notificationService;
+        localService.dispose();
+      }
+    } catch (e) {
+      debugPrint('Error disposing notification manager: $e');
     }
   }
 }

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+
+import '../../core/theme/typography_constants.dart';
+import '../../services/performance_service.dart';
 import '../providers/performance_providers.dart';
 import '../widgets/glassmorphism_container.dart';
 import '../widgets/standardized_app_bar.dart';
-import '../../core/theme/typography_constants.dart';
-import '../../services/performance_service.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Performance dashboard screen for monitoring app performance
 class PerformanceDashboardScreen extends ConsumerWidget {
@@ -74,7 +75,7 @@ class PerformanceDashboardScreen extends ConsumerWidget {
         Text(
           'System Overview',
           style: theme.textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w500,
           ),
         ),
         const SizedBox(height: 16),
@@ -84,9 +85,7 @@ class PerformanceDashboardScreen extends ConsumerWidget {
               child: _buildMetricCard(
                 theme,
                 'App Uptime',
-                snapshot != null 
-                  ? _formatDuration(snapshot.appUptime)
-                  : '--',
+                snapshot != null ? _formatDuration(snapshot.appUptime) : '--',
                 PhosphorIcons.timer(),
                 Colors.blue,
               ),
@@ -150,8 +149,7 @@ class PerformanceDashboardScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 16),
           // Simple frame rate chart representation
-          if (frameRate.recentFrames.isNotEmpty)
-            _buildSimpleChart(theme, frameRate.recentFrames, 'FPS Over Time'),
+          if (frameRate.recentFrames.isNotEmpty) _buildSimpleChart(theme, frameRate.recentFrames, 'FPS Over Time'),
         ],
       ),
     );
@@ -197,9 +195,8 @@ class PerformanceDashboardScreen extends ConsumerWidget {
               ),
             )
           else
-            ...metrics.currentMetrics.entries.map((entry) => 
-              _buildMetricRow(theme, entry.key, entry.value.toStringAsFixed(2))
-            ),
+            ...metrics.currentMetrics.entries
+                .map((entry) => _buildMetricRow(theme, entry.key, entry.value.toStringAsFixed(2))),
         ],
       ),
     );
@@ -225,9 +222,7 @@ class PerformanceDashboardScreen extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: 16),
-          ...memoryStats.entries.map((entry) => 
-            _buildMetricRow(theme, entry.key, entry.value.toString())
-          ),
+          ...memoryStats.entries.map((entry) => _buildMetricRow(theme, entry.key, entry.value.toString())),
           const SizedBox(height: 16),
           Row(
             children: [
@@ -276,7 +271,6 @@ class PerformanceDashboardScreen extends ConsumerWidget {
           _buildMetricRow(theme, 'Session ID', snapshot.sessionId),
           _buildMetricRow(theme, 'Total Events', snapshot.eventCount.toString()),
           _buildMetricRow(theme, 'Metrics Tracked', snapshot.performanceMetrics.length.toString()),
-          
           if (snapshot.performanceMetrics.isNotEmpty) ...[
             const SizedBox(height: 16),
             Text(
@@ -295,9 +289,9 @@ class PerformanceDashboardScreen extends ConsumerWidget {
                   Padding(
                     padding: const EdgeInsets.all(16),
                     child: Column(
-                      children: stats.entries.map((stat) => 
-                        _buildMetricRow(theme, stat.key, stat.value.toStringAsFixed(2))
-                      ).toList(),
+                      children: stats.entries
+                          .map((stat) => _buildMetricRow(theme, stat.key, stat.value.toStringAsFixed(2)))
+                          .toList(),
                     ),
                   ),
                 ],
@@ -334,7 +328,7 @@ class PerformanceDashboardScreen extends ConsumerWidget {
           Text(
             value,
             style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w500,
               color: color,
             ),
           ),
@@ -363,7 +357,7 @@ class PerformanceDashboardScreen extends ConsumerWidget {
           Text(
             value,
             style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w500,
               color: color,
             ),
           ),
@@ -487,7 +481,7 @@ class PerformanceDashboardScreen extends ConsumerWidget {
     final hours = duration.inHours;
     final minutes = duration.inMinutes % 60;
     final seconds = duration.inSeconds % 60;
-    
+
     if (hours > 0) {
       return '${hours}h ${minutes}m ${seconds}s';
     } else if (minutes > 0) {
@@ -501,4 +495,3 @@ class PerformanceDashboardScreen extends ConsumerWidget {
     return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}:${time.second.toString().padLeft(2, '0')}';
   }
 }
-

@@ -929,14 +929,16 @@ class _VoiceTranscriptionDisplay extends StatelessWidget {
                 color: theme.colorScheme.secondary,
               ),
               const SizedBox(width: 8),
-              Text(
-                'Voice Transcription',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                  color: theme.colorScheme.secondary,
+              Expanded(
+                child: Text(
+                  'Voice Transcription',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w500,
+                    color: theme.colorScheme.secondary,
+                  ),
                 ),
               ),
-              const Spacer(),
+              const SizedBox(width: 8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(

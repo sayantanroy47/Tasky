@@ -52,6 +52,7 @@ dependencies:
   
   # File handling
   file_picker: ^10.0.0
+  image_picker: ^1.0.4
   share_plus: ^11.1.0
   csv: ^5.0.2
   crypto: ^3.0.3
@@ -63,7 +64,7 @@ dependencies:
   
   # Share intent and external app integration
   url_launcher: ^6.2.1
-  android_intent_plus: ^4.0.3
+  android_intent_plus: ^5.3.1
   mailer: ^6.0.1
   
   # Notifications
@@ -75,7 +76,6 @@ dependencies:
   
   # Authentication
   local_auth: ^2.1.7
-  sign_in_with_apple: ^7.0.1
   
   # Calendar Integration
   device_calendar: ^4.3.3

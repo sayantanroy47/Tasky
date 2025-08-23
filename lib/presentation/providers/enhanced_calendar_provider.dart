@@ -135,8 +135,9 @@ class EnhancedCalendarNotifier extends StateNotifier<EnhancedCalendarState> {
     }
   }
 
-  /// Change view mode
+  /// Change view mode with proper synchronization
   void changeViewMode(CalendarViewMode mode) {
+    // Map CalendarViewMode to CalendarView for consistency
     CalendarView format;
     switch (mode) {
       case CalendarViewMode.month:
@@ -150,6 +151,7 @@ class EnhancedCalendarNotifier extends StateNotifier<EnhancedCalendarState> {
         break;
     }
     
+    // Update both viewMode and calendarFormat to ensure synchronization
     state = state.copyWith(
       viewMode: mode,
       calendarFormat: format,

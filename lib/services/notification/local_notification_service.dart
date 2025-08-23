@@ -254,13 +254,30 @@ class LocalNotificationService implements NotificationService {
       iOS: iosDetails,
     );
     
-    // Ensure proper timezone conversion
+    // Ensure proper timezone conversion with validation
     tz.TZDateTime? scheduledDate;
     try {
-      final location = tz.getLocation(tz.local.name);
+      // Try to get system timezone first
+      final systemTimezone = DateTime.now().timeZoneName;
+      late tz.Location location;
+      
+      try {
+        location = tz.getLocation(systemTimezone);
+      } catch (e) {
+        debugPrint('Failed to get system timezone ($systemTimezone), falling back to local: $e');
+        location = tz.local;
+      }
+      
       scheduledDate = tz.TZDateTime.from(scheduledTime, location);
+      
+      // Validate the conversion is reasonable (within 24 hours of original)
+      final timeDifference = scheduledDate.difference(scheduledTime).abs();
+      if (timeDifference.inHours > 24) {
+        debugPrint('Timezone conversion resulted in unreasonable time difference: ${timeDifference.inHours} hours');
+        scheduledDate = tz.TZDateTime.from(scheduledTime, tz.local);
+      }
     } catch (e) {
-      debugPrint('Timezone error, using local: $e');
+      debugPrint('Timezone conversion failed: $e');
       scheduledDate = tz.TZDateTime.from(scheduledTime, tz.local);
     }
     
@@ -372,9 +389,28 @@ class LocalNotificationService implements NotificationService {
     final pendingNotifications = await _notificationsPlugin.pendingNotificationRequests();
     
     return pendingNotifications.map((notification) {
-      final payloadParts = notification.payload?.split('|') ?? [];
-      final taskId = payloadParts.isNotEmpty ? payloadParts[0] : null;
-      final type = payloadParts.length > 1 ? payloadParts[1] : 'unknown';
+      // Validate and parse payload safely
+      final payload = notification.payload;
+      String? taskId;
+      String type = 'unknown';
+      
+      if (payload != null && payload.isNotEmpty) {
+        final payloadParts = payload.split('|');
+        if (payloadParts.isNotEmpty) {
+          final potentialTaskId = payloadParts[0].trim();
+          // Basic validation for task ID (should be non-empty and reasonable length)
+          if (potentialTaskId.isNotEmpty && potentialTaskId.length <= 100) {
+            taskId = potentialTaskId;
+          }
+        }
+        if (payloadParts.length > 1) {
+          final potentialType = payloadParts[1].trim();
+          // Validate notification type
+          if (potentialType.isNotEmpty && potentialType.length <= 50) {
+            type = potentialType;
+          }
+        }
+      }
       
       return ScheduledNotification(
         id: notification.id,
@@ -491,10 +527,31 @@ class LocalNotificationService implements NotificationService {
   
   @override
   Future<bool> shouldSendNotification(DateTime scheduledTime) async {
-    // Check quiet hours
+    // Check quiet hours with proper logic for midnight-crossing ranges
     if (_settings.quietHoursStart != null && _settings.quietHoursEnd != null) {
       final hour = scheduledTime.hour;
-      if (hour >= _settings.quietHoursStart!.hour || hour < _settings.quietHoursEnd!.hour) {
+      final minute = scheduledTime.minute;
+      final currentTime = hour * 60 + minute; // Total minutes since midnight
+      
+      final startHour = _settings.quietHoursStart!.hour;
+      final startMinute = _settings.quietHoursStart!.minute;
+      final startTime = startHour * 60 + startMinute;
+      
+      final endHour = _settings.quietHoursEnd!.hour;
+      final endMinute = _settings.quietHoursEnd!.minute;
+      final endTime = endHour * 60 + endMinute;
+      
+      bool isInQuietHours;
+      if (startTime <= endTime) {
+        // Normal range (e.g., 08:00 to 22:00)
+        isInQuietHours = currentTime >= startTime && currentTime <= endTime;
+      } else {
+        // Midnight-crossing range (e.g., 22:00 to 06:00)
+        isInQuietHours = currentTime >= startTime || currentTime <= endTime;
+      }
+      
+      if (isInQuietHours) {
+        debugPrint('Notification blocked by quiet hours: ${_formatTimeOfDay(scheduledTime)}');
         return false;
       }
     }
@@ -522,10 +579,16 @@ class LocalNotificationService implements NotificationService {
   /// Handles notification tap events
   void _onNotificationTapped(NotificationResponse response) {
     final payload = response.payload;
-    if (payload != null) {
+    if (payload != null && payload.isNotEmpty) {
       final parts = payload.split('|');
       if (parts.isNotEmpty) {
-        final taskId = parts[0];
+        final taskId = parts[0].trim();
+        // Validate task ID
+        if (taskId.isEmpty || taskId.length > 100) {
+          debugPrint('Invalid task ID in notification payload: $taskId');
+          return;
+        }
+        
         final actionId = response.actionId;
         
         if (actionId != null) {
@@ -544,8 +607,17 @@ class LocalNotificationService implements NotificationService {
   }
   
   /// Generates a unique notification ID for a task and type
+  /// Uses timestamp to prevent collisions
   int _generateNotificationId(String taskId, String type) {
-    return '${taskId}_$type'.hashCode.abs();
+    final baseString = '${taskId}_$type';
+    final hash = baseString.hashCode.abs();
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    
+    // Combine hash with timestamp to reduce collision probability
+    // Use modulo to keep it within int32 range
+    final uniqueId = ((hash << 16) + (timestamp & 0xFFFF)) % 0x7FFFFFFF;
+    
+    return uniqueId;
   }
   
   /// Gets the title for a task reminder notification

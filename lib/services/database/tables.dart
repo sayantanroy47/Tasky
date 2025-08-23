@@ -134,3 +134,19 @@ class TaskTemplates extends Table {
     'FOREIGN KEY (project_id) REFERENCES projects (id) ON DELETE SET NULL',
   ];
 }
+
+/// UserProfiles table definition
+/// 
+/// Stores user profile information including name, profile picture, and location
+class UserProfiles extends Table {
+  TextColumn get id => text()();
+  TextColumn get firstName => text()();
+  TextColumn get lastName => text().nullable()();
+  TextColumn get profilePicturePath => text().nullable()(); // Local file path to profile picture
+  TextColumn get location => text().nullable()(); // User-entered location
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}

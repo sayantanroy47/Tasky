@@ -5,12 +5,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'core/constants/app_constants.dart';
-import 'core/routing/app_router.dart';
 import 'core/providers/enhanced_theme_provider.dart';
 import 'core/localization/app_localizations.dart';
 import 'core/localization/locale_service.dart';
 import 'core/localization/app_localizations_delegate.dart';
 import 'presentation/widgets/app_initialization_wrapper.dart';
+import 'presentation/widgets/profile_setup_wrapper.dart';
 import 'services/share_intent_service.dart';
 import 'services/widget_service.dart';
 import 'services/audio/audio_file_manager.dart';
@@ -295,9 +295,8 @@ class _TaskTrackerAppState extends ConsumerState<TaskTrackerApp> with WidgetsBin
           ],
           supportedLocales: SupportedLocales.all,
           
-          // Routing
-          initialRoute: AppRouter.initialRoute,
-          onGenerateRoute: AppRouter.generateRoute,
+          // Use ProfileSetupWrapper as home to ensure proper widget hierarchy
+          home: const ProfileSetupWrapper(),
           
           // Add loading indicator for theme if still loading
           builder: (context, child) {

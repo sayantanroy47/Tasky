@@ -19,6 +19,17 @@ class RealLocationService implements LocationService {
       StreamController<GeofenceEvent>.broadcast();
   Timer? _geofenceMonitoringTimer;
   LocationData? _lastKnownLocation;
+  
+  // Performance optimizations
+  LocationData? _cachedLocation;
+  DateTime? _cacheTimestamp;
+  LocationPermissionStatus? _cachedPermissionStatus;
+  DateTime? _permissionCacheTimestamp;
+  final Map<String, String?> _addressCache = {};
+  final Map<String, LocationData?> _geocodeCache = {};
+  
+  static const Duration _locationCacheDuration = Duration(seconds: 30);
+  static const Duration _permissionCacheDuration = Duration(minutes: 5);
 
   @override
   Future<bool> isLocationServiceEnabled() async {
@@ -35,8 +46,21 @@ class RealLocationService implements LocationService {
   @override
   Future<LocationPermissionStatus> checkPermission() async {
     try {
+      // Return cached permission if still valid
+      if (_cachedPermissionStatus != null && 
+          _permissionCacheTimestamp != null &&
+          DateTime.now().difference(_permissionCacheTimestamp!) < _permissionCacheDuration) {
+        return _cachedPermissionStatus!;
+      }
+      
       final permission = await geolocator.Geolocator.checkPermission();
-      return _mapGeolocatorPermission(permission);
+      final status = _mapGeolocatorPermission(permission);
+      
+      // Cache the result
+      _cachedPermissionStatus = status;
+      _permissionCacheTimestamp = DateTime.now();
+      
+      return status;
     } catch (e) {
       if (kDebugMode) {
         print('Error checking location permission: $e');
@@ -60,6 +84,10 @@ class RealLocationService implements LocationService {
       final permission = await geolocator.Geolocator.requestPermission();
       final status = _mapGeolocatorPermission(permission);
       
+      // Update cache with new permission status
+      _cachedPermissionStatus = status;
+      _permissionCacheTimestamp = DateTime.now();
+      
       if (kDebugMode) {
         print('Location permission requested: $permission -> $status');
       }
@@ -76,13 +104,20 @@ class RealLocationService implements LocationService {
   @override
   Future<LocationData> getCurrentLocation() async {
     try {
+      // Return cached location if still valid
+      if (_cachedLocation != null && 
+          _cacheTimestamp != null &&
+          DateTime.now().difference(_cacheTimestamp!) < _locationCacheDuration) {
+        return _cachedLocation!;
+      }
+      
       // Check if location services are enabled
       final serviceEnabled = await isLocationServiceEnabled();
       if (!serviceEnabled) {
         throw Exception('Location services are disabled');
       }
 
-      // Check permissions
+      // Check permissions (now uses cached result)
       final permission = await checkPermission();
       if (permission == LocationPermissionStatus.denied) {
         final requestResult = await requestPermission();
@@ -118,17 +153,23 @@ class RealLocationService implements LocationService {
       final position = await geolocator.Geolocator.getCurrentPosition(
         locationSettings: locationSettings,
       ).timeout(
-        const Duration(seconds: 10),
-        onTimeout: () => throw Exception('Location request timed out after 10 seconds'),
+        const Duration(seconds: 5),
+        onTimeout: () => throw Exception('Location request timed out after 5 seconds'),
       );
 
-      return LocationData(
+      final locationData = LocationData(
         latitude: position.latitude,
         longitude: position.longitude,
         accuracy: position.accuracy,
         altitude: position.altitude,
         timestamp: position.timestamp,
       );
+      
+      // Cache the result
+      _cachedLocation = locationData;
+      _cacheTimestamp = DateTime.now();
+      
+      return locationData;
     } catch (e) {
       if (kDebugMode) {
         print('Error getting current location: $e');
@@ -183,8 +224,17 @@ class RealLocationService implements LocationService {
   @override
   Future<String?> getAddressFromCoordinates(double latitude, double longitude) async {
     try {
+      // Create cache key
+      final cacheKey = '${latitude.toStringAsFixed(4)},${longitude.toStringAsFixed(4)}';
+      
+      // Check cache first
+      if (_addressCache.containsKey(cacheKey)) {
+        return _addressCache[cacheKey];
+      }
+      
       final placemarks = await placemarkFromCoordinates(latitude, longitude);
       
+      String? address;
       if (placemarks.isNotEmpty) {
         final place = placemarks.first;
         final addressParts = <String>[];
@@ -194,10 +244,21 @@ class RealLocationService implements LocationService {
         if (place.administrativeArea?.isNotEmpty == true) addressParts.add(place.administrativeArea!);
         if (place.country?.isNotEmpty == true) addressParts.add(place.country!);
         
-        return addressParts.join(', ');
+        address = addressParts.join(', ');
       }
       
-      return null;
+      // Cache the result
+      _addressCache[cacheKey] = address;
+      
+      // Clean cache if it gets too large
+      if (_addressCache.length > 100) {
+        final keysToRemove = _addressCache.keys.take(_addressCache.length - 80).toList();
+        for (final key in keysToRemove) {
+          _addressCache.remove(key);
+        }
+      }
+      
+      return address;
     } catch (e) {
       if (kDebugMode) {
         print('Error getting address from coordinates: $e');
@@ -276,18 +337,38 @@ class RealLocationService implements LocationService {
   @override
   Future<LocationData?> getCoordinatesFromAddress(String address) async {
     try {
+      // Use address as cache key (normalize it)
+      final cacheKey = address.toLowerCase().trim();
+      
+      // Check cache first
+      if (_geocodeCache.containsKey(cacheKey)) {
+        return _geocodeCache[cacheKey];
+      }
+      
       final locations = await locationFromAddress(address);
       
+      LocationData? locationData;
       if (locations.isNotEmpty) {
         final location = locations.first;
-        return LocationData(
+        locationData = LocationData(
           latitude: location.latitude,
           longitude: location.longitude,
           timestamp: DateTime.now(),
         );
       }
       
-      return null;
+      // Cache the result (even if null)
+      _geocodeCache[cacheKey] = locationData;
+      
+      // Clean cache if it gets too large
+      if (_geocodeCache.length > 100) {
+        final keysToRemove = _geocodeCache.keys.take(_geocodeCache.length - 80).toList();
+        for (final key in keysToRemove) {
+          _geocodeCache.remove(key);
+        }
+      }
+      
+      return locationData;
     } catch (e) {
       if (kDebugMode) {
         print('Error getting coordinates from address: $e');
@@ -328,6 +409,14 @@ class RealLocationService implements LocationService {
     _locationController = null;
     _stopGeofenceMonitoringTimer();
     _geofenceController.close();
+    
+    // Clear caches
+    _cachedLocation = null;
+    _cacheTimestamp = null;
+    _cachedPermissionStatus = null;
+    _permissionCacheTimestamp = null;
+    _addressCache.clear();
+    _geocodeCache.clear();
   }
 
   @override
@@ -387,7 +476,16 @@ class RealLocationService implements LocationService {
     _geofenceMonitoringTimer?.cancel();
     _geofenceMonitoringTimer = Timer.periodic(const Duration(seconds: 30), (_) async {
       try {
-        final currentLocation = await getCurrentLocation();
+        // Use cached location if available, otherwise get fresh location
+        LocationData currentLocation;
+        if (_cachedLocation != null && 
+            _cacheTimestamp != null &&
+            DateTime.now().difference(_cacheTimestamp!) < _locationCacheDuration) {
+          currentLocation = _cachedLocation!;
+        } else {
+          currentLocation = await getCurrentLocation();
+        }
+        
         _checkGeofences(currentLocation);
         _lastKnownLocation = currentLocation;
       } catch (e) {

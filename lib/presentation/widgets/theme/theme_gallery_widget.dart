@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/theme/typography_constants.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+
 import '../../../core/providers/enhanced_theme_provider.dart';
 import '../../../core/theme/app_theme_data.dart';
 import '../../../core/theme/models/theme_colors.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import '../../../core/theme/typography_constants.dart';
 
 /// Theme gallery widget with animated previews
 class ThemeGalleryWidget extends ConsumerStatefulWidget {
@@ -12,7 +13,7 @@ class ThemeGalleryWidget extends ConsumerStatefulWidget {
   final EdgeInsets padding;
   final double itemHeight;
   final int crossAxisCount;
-  
+
   const ThemeGalleryWidget({
     super.key,
     this.showTitle = true,
@@ -25,8 +26,7 @@ class ThemeGalleryWidget extends ConsumerStatefulWidget {
   ConsumerState<ThemeGalleryWidget> createState() => _ThemeGalleryWidgetState();
 }
 
-class _ThemeGalleryWidgetState extends ConsumerState<ThemeGalleryWidget> 
-    with TickerProviderStateMixin {
+class _ThemeGalleryWidgetState extends ConsumerState<ThemeGalleryWidget> with TickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
 
@@ -69,13 +69,12 @@ class _ThemeGalleryWidgetState extends ConsumerState<ThemeGalleryWidget>
               child: Text(
                 'Theme Gallery',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                      fontWeight: FontWeight.w500,
+                    ),
               ),
             ),
             const SizedBox(height: 8),
           ],
-          
           Padding(
             padding: widget.padding,
             child: GridView.builder(
@@ -91,7 +90,7 @@ class _ThemeGalleryWidgetState extends ConsumerState<ThemeGalleryWidget>
               itemBuilder: (context, index) {
                 final theme = availableThemes[index];
                 final isSelected = theme.metadata.id == currentThemeState.currentThemeId;
-                
+
                 return ThemePreviewCard(
                   theme: theme,
                   isSelected: isSelected,
@@ -139,19 +138,17 @@ class ThemePreviewCard extends StatefulWidget {
   State<ThemePreviewCard> createState() => _ThemePreviewCardState();
 }
 
-class _ThemePreviewCardState extends State<ThemePreviewCard>
-    with TickerProviderStateMixin {
+class _ThemePreviewCardState extends State<ThemePreviewCard> with TickerProviderStateMixin {
   late AnimationController _slideController;
   late AnimationController _glowController;
   late Animation<Offset> _slideAnimation;
   late Animation<double> _glowAnimation;
   bool _isHovered = false;
 
-
   @override
   void initState() {
     super.initState();
-    
+
     _slideController = AnimationController(
       duration: const Duration(milliseconds: 600),
       vsync: this,
@@ -221,31 +218,31 @@ class _ThemePreviewCardState extends State<ThemePreviewCard>
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
                 child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                  boxShadow: [
-                    if (widget.isSelected)
-                      BoxShadow(
-                        color: widget.theme.colors.primary.withValues(alpha: 
-                          0.4 * _glowAnimation.value,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                    boxShadow: [
+                      if (widget.isSelected)
+                        BoxShadow(
+                          color: widget.theme.colors.primary.withValues(
+                            alpha: 0.4 * _glowAnimation.value,
+                          ),
+                          blurRadius: 20.0,
+                          spreadRadius: 2.0,
                         ),
-                        blurRadius: 20.0,
-                        spreadRadius: 2.0,
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.1),
+                        blurRadius: 8.0,
+                        offset: const Offset(0, 4),
                       ),
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.1),
-                      blurRadius: 8.0,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Material(
-                  borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                  clipBehavior: Clip.hardEdge,
-                  child: InkWell(
-                    onTap: widget.onTap,
-                    child: _buildThemePreview(),
+                    ],
                   ),
+                  child: Material(
+                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                    clipBehavior: Clip.hardEdge,
+                    child: InkWell(
+                      onTap: widget.onTap,
+                      child: _buildThemePreview(),
+                    ),
                   ),
                 ),
               ),
@@ -259,7 +256,7 @@ class _ThemePreviewCardState extends State<ThemePreviewCard>
   Widget _buildThemePreview() {
     final theme = widget.theme;
     final colors = theme.colors;
-    
+
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -275,7 +272,7 @@ class _ThemePreviewCardState extends State<ThemePreviewCard>
         children: [
           // Background pattern based on theme
           _buildBackgroundPattern(),
-          
+
           // Content
           Padding(
             padding: const EdgeInsets.all(12.0),
@@ -313,34 +310,34 @@ class _ThemePreviewCardState extends State<ThemePreviewCard>
                       ),
                   ],
                 ),
-                
+
                 const SizedBox(height: 8),
-                
+
                 // Theme name
                 Text(
                   theme.metadata.name,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: colors.onBackground,
-                    fontWeight: FontWeight.bold,
-                  ),
+                        color: colors.onBackground,
+                        fontWeight: FontWeight.w500,
+                      ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                
+
                 const SizedBox(height: 4),
-                
+
                 // Theme category
                 Text(
                   theme.metadata.category.toUpperCase(),
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: colors.onBackground.withValues(alpha: 0.7),
-                    fontWeight: FontWeight.w500,
-                    letterSpacing: 0.5,
-                  ),
+                        color: colors.onBackground.withValues(alpha: 0.7),
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: 0.5,
+                      ),
                 ),
-                
+
                 const Spacer(),
-                
+
                 // Color palette preview
                 _buildColorPalette(),
               ],
@@ -353,7 +350,7 @@ class _ThemePreviewCardState extends State<ThemePreviewCard>
 
   Widget _buildBackgroundPattern() {
     final colors = widget.theme.colors;
-    
+
     // Different patterns based on theme category
     switch (widget.theme.metadata.category) {
       case 'gaming':
@@ -530,4 +527,3 @@ class DraculaPatternPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
-

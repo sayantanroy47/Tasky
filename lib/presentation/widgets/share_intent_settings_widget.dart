@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../services/share_intent_service.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+
+import '../../services/share_intent_service.dart';
 
 /// Comprehensive settings widget for ShareIntent functionality
 class ShareIntentSettingsWidget extends ConsumerStatefulWidget {
@@ -48,13 +49,13 @@ class _ShareIntentSettingsWidgetState extends ConsumerState<ShareIntentSettingsW
                   'Share Intent Settings',
                   style: TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 16),
-            
+
             // Auto Task Creation Toggle
             SwitchListTile(
               title: const Text('Auto Task Creation'),
@@ -67,7 +68,7 @@ class _ShareIntentSettingsWidgetState extends ConsumerState<ShareIntentSettingsW
                 _saveSettings();
               },
             ),
-            
+
             // Confirmation Dialog Toggle
             SwitchListTile(
               title: const Text('Show Confirmation Dialog'),
@@ -80,7 +81,7 @@ class _ShareIntentSettingsWidgetState extends ConsumerState<ShareIntentSettingsW
                 _saveSettings();
               },
             ),
-            
+
             // Message Filtering Toggle
             SwitchListTile(
               title: const Text('Enable Message Filtering'),
@@ -93,15 +94,15 @@ class _ShareIntentSettingsWidgetState extends ConsumerState<ShareIntentSettingsW
                 _saveSettings();
               },
             ),
-            
+
             const Divider(),
-            
+
             // Trusted Contacts Section
             const Text(
               'Trusted Contacts',
               style: TextStyle(
                 fontSize: 16,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w500,
               ),
             ),
             const SizedBox(height: 8),
@@ -110,7 +111,7 @@ class _ShareIntentSettingsWidgetState extends ConsumerState<ShareIntentSettingsW
               style: TextStyle(color: Colors.grey),
             ),
             const SizedBox(height: 12),
-            
+
             // Add Trusted Contact
             Row(
               children: [
@@ -132,7 +133,7 @@ class _ShareIntentSettingsWidgetState extends ConsumerState<ShareIntentSettingsW
               ],
             ),
             const SizedBox(height: 12),
-            
+
             // Trusted Contacts List
             if (_trustedContacts.isNotEmpty) ...[
               const Text(
@@ -142,22 +143,24 @@ class _ShareIntentSettingsWidgetState extends ConsumerState<ShareIntentSettingsW
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
-                children: _trustedContacts.map((contact) => Chip(
-                  label: Text(contact),
-                  deleteIcon: Icon(PhosphorIcons.x(), size: 18),
-                  onDeleted: () => _removeTrustedContact(contact),
-                )).toList(),
+                children: _trustedContacts
+                    .map((contact) => Chip(
+                          label: Text(contact),
+                          deleteIcon: Icon(PhosphorIcons.x(), size: 18),
+                          onDeleted: () => _removeTrustedContact(contact),
+                        ))
+                    .toList(),
               ),
             ],
-            
+
             const Divider(),
-            
+
             // Test Section
             const Text(
               'Test Share Intent',
               style: TextStyle(
                 fontSize: 16,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w500,
               ),
             ),
             const SizedBox(height: 8),
@@ -244,4 +247,3 @@ class _ShareIntentSettingsWidgetState extends ConsumerState<ShareIntentSettingsW
     super.dispose();
   }
 }
-

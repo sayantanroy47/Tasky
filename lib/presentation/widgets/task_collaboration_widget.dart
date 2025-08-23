@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/providers/collaboration_provider.dart';
-import '../../services/collaboration_service.dart';
-import '../../domain/entities/task_model.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+
+import '../../core/providers/collaboration_provider.dart';
+import '../../domain/entities/task_model.dart';
+import '../../services/collaboration_service.dart';
 
 class TaskCollaborationWidget extends ConsumerWidget {
   final TaskModel task;
@@ -30,7 +31,7 @@ class TaskCollaborationWidget extends ConsumerWidget {
                   'Collaboration',
                   style: TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
@@ -53,15 +54,14 @@ class TaskCollaborationWidget extends ConsumerWidget {
     List<SharedTaskList> sharedLists,
   ) {
     // Find shared lists that contain this task
-    final taskSharedLists = sharedLists
-        .where((list) => list.taskIds.contains(task.id))
-        .toList();
+    final taskSharedLists = sharedLists.where((list) => list.taskIds.contains(task.id)).toList();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (taskSharedLists.isNotEmpty) ...[
-          const Text('This task is shared in:',
+          const Text(
+            'This task is shared in:',
             style: TextStyle(fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 8),
@@ -112,9 +112,7 @@ class TaskCollaborationWidget extends ConsumerWidget {
     List<SharedTaskList> sharedLists,
   ) {
     // Filter out lists that already contain this task
-    final availableLists = sharedLists
-        .where((list) => !list.taskIds.contains(task.id))
-        .toList();
+    final availableLists = sharedLists.where((list) => !list.taskIds.contains(task.id)).toList();
 
     showDialog(
       context: context,
@@ -128,16 +126,16 @@ class TaskCollaborationWidget extends ConsumerWidget {
                   const Text('Select a shared list to add this task to:'),
                   const SizedBox(height: 16),
                   ...availableLists.map((sharedList) => ListTile(
-                    leading: Icon(
-                      sharedList.isPublic ? PhosphorIcons.globe() : PhosphorIcons.users(),
-                    ),
-                    title: Text(sharedList.name),
-                    subtitle: Text('${sharedList.collaborators.length} collaborators'),
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      _addTaskToSharedList(context, ref, sharedList.id);
-                    },
-                  )),
+                        leading: Icon(
+                          sharedList.isPublic ? PhosphorIcons.globe() : PhosphorIcons.users(),
+                        ),
+                        title: Text(sharedList.name),
+                        subtitle: Text('${sharedList.collaborators.length} collaborators'),
+                        onTap: () {
+                          Navigator.of(context).pop();
+                          _addTaskToSharedList(context, ref, sharedList.id);
+                        },
+                      )),
                 ],
               ),
         actions: [
@@ -217,9 +215,9 @@ class TaskCollaborationWidget extends ConsumerWidget {
   ) async {
     try {
       await ref.read(collaborationNotifierProvider.notifier).addTaskToSharedList(
-        taskListId: sharedListId,
-        taskId: task.id,
-      );
+            taskListId: sharedListId,
+            taskId: task.id,
+          );
 
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -241,5 +239,3 @@ class TaskCollaborationWidget extends ConsumerWidget {
     }
   }
 }
-
-

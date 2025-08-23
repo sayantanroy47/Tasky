@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../widgets/calendar_widgets.dart';
-import '../widgets/standardized_app_bar.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+
+import '../../domain/entities/calendar_event.dart';
+import '../../domain/entities/task_model.dart';
+import '../../domain/models/enums.dart';
 import '../providers/calendar_provider.dart';
 import '../providers/task_providers.dart';
-import '../../domain/entities/task_model.dart';
-import '../../domain/entities/calendar_event.dart';
-import '../../domain/models/enums.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import '../widgets/calendar_widgets.dart';
+import '../widgets/standardized_app_bar.dart';
 
 /// Calendar screen with task scheduling and event management
 class CalendarScreen extends ConsumerStatefulWidget {
@@ -17,8 +18,7 @@ class CalendarScreen extends ConsumerStatefulWidget {
   ConsumerState<CalendarScreen> createState() => _CalendarScreenState();
 }
 
-class _CalendarScreenState extends ConsumerState<CalendarScreen>
-    with TickerProviderStateMixin {
+class _CalendarScreenState extends ConsumerState<CalendarScreen> with TickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -26,11 +26,13 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen>
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
   }
+
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,7 +58,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen>
         children: const [
           // Calendar view
           CalendarWidget(),
-          
+
           // Task scheduling view
           TaskSchedulingView(),
         ],
@@ -84,8 +86,7 @@ class TaskSchedulingView extends ConsumerWidget {
       data: (tasks) {
         // Filter unscheduled tasks
         final unscheduledTasks = tasks.where((task) {
-          return task.status != TaskStatus.completed &&
-                 !_isTaskScheduled(task, calendarState.events);
+          return task.status != TaskStatus.completed && !_isTaskScheduled(task, calendarState.events);
         }).toList();
 
         if (unscheduledTasks.isEmpty) {
@@ -97,7 +98,7 @@ class TaskSchedulingView extends ConsumerWidget {
                 const SizedBox(height: 16),
                 const Text(
                   'All tasks are scheduled!',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                 ),
                 const SizedBox(height: 8),
                 const Text('Great job staying organized!'),
@@ -116,7 +117,6 @@ class TaskSchedulingView extends ConsumerWidget {
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
             ),
-            
             Expanded(
               child: ListView.builder(
                 itemCount: unscheduledTasks.length,
@@ -161,7 +161,7 @@ class UnscheduledTaskCard extends ConsumerWidget {
         ),
         title: Text(
           task.title,
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: const TextStyle(fontWeight: FontWeight.w500),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -181,7 +181,7 @@ class UnscheduledTaskCard extends ConsumerWidget {
                   task.priority.name.toUpperCase(),
                   style: TextStyle(
                     color: _getPriorityColor(task.priority),
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w500,
                     fontSize: 12,
                   ),
                 ),
@@ -261,7 +261,7 @@ class UnscheduledTaskCard extends ConsumerWidget {
   String _formatDueDate(DateTime dueDate) {
     final now = DateTime.now();
     final difference = dueDate.difference(now).inDays;
-    
+
     if (difference == 0) return 'today';
     if (difference == 1) return 'tomorrow';
     if (difference == -1) return 'yesterday';
@@ -276,11 +276,11 @@ class UnscheduledTaskCard extends ConsumerWidget {
     DateTime date,
   ) async {
     final calendarNotifier = ref.read(calendarProvider.notifier);
-    
+
     // Schedule for 9 AM - 10 AM by default
     final startTime = DateTime(date.year, date.month, date.day, 9, 0);
     final endTime = startTime.add(const Duration(hours: 1));
-    
+
     final event = CalendarEvent.create(
       taskId: task.id,
       title: task.title,
@@ -291,7 +291,7 @@ class UnscheduledTaskCard extends ConsumerWidget {
     );
 
     await calendarNotifier.addEvent(event);
-    
+
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -355,7 +355,7 @@ class _CreateEventDialogState extends ConsumerState<CreateEventDialog> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _locationController = TextEditingController();
-  
+
   DateTime selectedDate = DateTime.now();
   TimeOfDay startTime = TimeOfDay.now();
   TimeOfDay endTime = TimeOfDay.now().replacing(hour: TimeOfDay.now().hour + 1);
@@ -379,6 +379,7 @@ class _CreateEventDialogState extends ConsumerState<CreateEventDialog> {
     _locationController.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -396,7 +397,7 @@ class _CreateEventDialogState extends ConsumerState<CreateEventDialog> {
               ),
             ),
             const SizedBox(height: 16),
-            
+
             // Description field
             TextField(
               controller: _descriptionController,
@@ -407,7 +408,7 @@ class _CreateEventDialogState extends ConsumerState<CreateEventDialog> {
               maxLines: 3,
             ),
             const SizedBox(height: 16),
-            
+
             // Location field
             TextField(
               controller: _locationController,
@@ -417,7 +418,7 @@ class _CreateEventDialogState extends ConsumerState<CreateEventDialog> {
               ),
             ),
             const SizedBox(height: 16),
-            
+
             // Date picker
             ListTile(
               leading: Icon(PhosphorIcons.calendar()),
@@ -435,14 +436,14 @@ class _CreateEventDialogState extends ConsumerState<CreateEventDialog> {
                 }
               },
             ),
-            
+
             // All day toggle
             SwitchListTile(
               title: const Text('All Day'),
               value: isAllDay,
               onChanged: (value) => setState(() => isAllDay = value),
             ),
-            
+
             if (!isAllDay) ...[
               // Start time picker
               ListTile(
@@ -459,7 +460,7 @@ class _CreateEventDialogState extends ConsumerState<CreateEventDialog> {
                   }
                 },
               ),
-              
+
               // End time picker
               ListTile(
                 leading: Icon(PhosphorIcons.clock()),
@@ -476,7 +477,7 @@ class _CreateEventDialogState extends ConsumerState<CreateEventDialog> {
                 },
               ),
             ],
-            
+
             // Color picker
             const SizedBox(height: 16),
             const Text('Event Color'),
@@ -493,13 +494,9 @@ class _CreateEventDialogState extends ConsumerState<CreateEventDialog> {
                     decoration: BoxDecoration(
                       color: Color(int.parse(color.replaceFirst('#', '0xFF'))),
                       shape: BoxShape.circle,
-                      border: isSelected
-                          ? Border.all(color: Colors.black, width: 3)
-                          : null,
+                      border: isSelected ? Border.all(color: Colors.black, width: 3) : null,
                     ),
-                    child: isSelected
-                        ? Icon(PhosphorIcons.check(), color: Colors.white)
-                        : null,
+                    child: isSelected ? Icon(PhosphorIcons.check(), color: Colors.white) : null,
                   ),
                 );
               }).toList(),
@@ -522,7 +519,7 @@ class _CreateEventDialogState extends ConsumerState<CreateEventDialog> {
 
   Future<void> _createEvent() async {
     final calendarNotifier = ref.read(calendarProvider.notifier);
-    
+
     final DateTime startDateTime;
     final DateTime endDateTime;
 
@@ -557,7 +554,7 @@ class _CreateEventDialogState extends ConsumerState<CreateEventDialog> {
     );
 
     await calendarNotifier.addEvent(event);
-    
+
     if (mounted) {
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
@@ -566,4 +563,3 @@ class _CreateEventDialogState extends ConsumerState<CreateEventDialog> {
     }
   }
 }
-

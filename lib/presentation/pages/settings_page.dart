@@ -15,6 +15,7 @@ import 'location_settings_page.dart';
 import 'nearby_tasks_page.dart';
 import 'notification_settings_page.dart';
 import 'notification_history_page.dart';
+import 'profile_settings_page.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../core/routing/app_router.dart';
 import '../../services/background/simple_background_service.dart';
@@ -114,6 +115,40 @@ class SettingsPage extends ConsumerWidget {
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => const ProjectsPage(),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+          
+          const SizedBox(height: 16),
+          
+          // Profile section
+          GlassmorphismContainer(
+            padding: const EdgeInsets.all(16),
+            borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Profile',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                
+                _buildListTile(
+                  context: context,
+                  leadingIcon: PhosphorIcons.user(),
+                  title: 'Profile Settings',
+                  subtitle: 'Manage your profile and personal information',
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const ProfileSettingsPage(),
                       ),
                     );
                   },

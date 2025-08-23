@@ -14,6 +14,86 @@ import '../../core/theme/typography_constants.dart';
 import '../../core/design_system/design_tokens.dart';
 import '../../core/theme/material3/motion_system.dart';
 
+/// Location validation utilities
+class LocationValidator {
+  // Earth coordinate bounds
+  static const double _minLatitude = -90.0;
+  static const double _maxLatitude = 90.0;
+  static const double _minLongitude = -180.0;
+  static const double _maxLongitude = 180.0;
+  
+  // Geofence radius bounds (in meters)
+  static const double _minRadius = 1.0;
+  static const double _maxRadius = 10000.0; // 10km
+  
+  /// Validate latitude coordinate
+  static bool isValidLatitude(double latitude) {
+    return latitude >= _minLatitude && 
+           latitude <= _maxLatitude && 
+           !latitude.isNaN && 
+           latitude.isFinite;
+  }
+  
+  /// Validate longitude coordinate  
+  static bool isValidLongitude(double longitude) {
+    return longitude >= _minLongitude && 
+           longitude <= _maxLongitude && 
+           !longitude.isNaN && 
+           longitude.isFinite;
+  }
+  
+  /// Validate location coordinates
+  static bool isValidLocation(LocationData location) {
+    return isValidLatitude(location.latitude) && 
+           isValidLongitude(location.longitude);
+  }
+  
+  /// Validate geofence radius
+  static bool isValidRadius(double radius) {
+    return radius >= _minRadius && 
+           radius <= _maxRadius && 
+           !radius.isNaN && 
+           radius.isFinite;
+  }
+  
+  /// Sanitize user address input
+  static String sanitizeAddressInput(String input) {
+    return input.trim()
+        .replaceAll(RegExp(r'\s+'), ' ') // Normalize whitespace
+        .replaceAll(RegExp(r'[^\w\s,.-]'), ''); // Remove special chars except common address chars
+  }
+  
+  /// Check if string looks like coordinates
+  static bool looksLikeCoordinates(String input) {
+    final coordPattern = RegExp(r'^-?\d+\.?\d*\s*,\s*-?\d+\.?\d*$');
+    return coordPattern.hasMatch(input.trim());
+  }
+  
+  /// Get validation error message for coordinates
+  static String? getLocationValidationError(LocationData? location) {
+    if (location == null) return 'Location is required';
+    
+    if (!isValidLatitude(location.latitude)) {
+      return 'Invalid latitude: must be between -90 and 90 degrees';
+    }
+    
+    if (!isValidLongitude(location.longitude)) {
+      return 'Invalid longitude: must be between -180 and 180 degrees';
+    }
+    
+    return null;
+  }
+  
+  /// Get validation error message for radius
+  static String? getRadiusValidationError(double radius) {
+    if (!isValidRadius(radius)) {
+      return 'Invalid radius: must be between 1m and 10km';
+    }
+    
+    return null;
+  }
+}
+
 /// Ultra-modern full-screen location-based task creation page
 class LocationTaskCreationPage extends ConsumerStatefulWidget {
   final TaskModel? taskToEdit;
@@ -55,6 +135,9 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
   
   // State
   bool _isCreatingTask = false;
+  bool _isSearchingLocation = false;
+  bool _isLoadingAddress = false;
+  String? _selectedLocationAddress;
   Timer? _debounceTimer;
   
   @override
@@ -72,6 +155,7 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
     
     _initializeData();
     _loadLocationSuggestions();
+    _preloadPermissions();
     _fadeController.forward();
   }
   
@@ -79,6 +163,7 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
   void dispose() {
     _fadeController.dispose();
     _debounceTimer?.cancel();
+    _debounceTimer = null;
     _titleController.dispose();
     _descriptionController.dispose();
     _locationSearchController.dispose();
@@ -101,7 +186,7 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
     // Use preselected location if provided
     if (widget.preselectedLocation != null) {
       _selectedLocation = widget.preselectedLocation;
-      _locationSearchController.text = _formatLocationDisplay(_selectedLocation!);
+      _loadLocationAddress(_selectedLocation!);
     }
   }
   
@@ -118,6 +203,62 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
       'Restaurant',
       'Coffee Shop',
     ];
+  }
+  
+  void _preloadPermissions() async {
+    // Preload location permissions to avoid delays later
+    try {
+      ref.read(locationPermissionProvider);
+    } catch (e) {
+      // Ignore errors - user will see them when they try to use location
+      debugPrint('Failed to preload location permissions: $e');
+    }
+  }
+
+  Future<void> _loadLocationAddress(LocationData location) async {
+    if (mounted) {
+      setState(() => _isLoadingAddress = true);
+    }
+    
+    try {
+      final locationService = ref.read(locationServiceProvider);
+      final address = await locationService.getAddressFromCoordinates(
+        location.latitude, 
+        location.longitude,
+      );
+      
+      if (mounted) {
+        setState(() {
+          _selectedLocationAddress = address;
+          _locationSearchController.text = address ?? _formatLocationDisplay(location);
+          _isLoadingAddress = false;
+        });
+      }
+    } catch (e) {
+      // Fallback to coordinates if geocoding fails
+      if (mounted) {
+        setState(() {
+          _selectedLocationAddress = null;
+          _locationSearchController.text = _formatLocationDisplay(location);
+          _isLoadingAddress = false;
+        });
+        
+        // Show subtle feedback about geocoding failure
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Could not load address name, using coordinates'),
+            backgroundColor: Colors.orange,
+            behavior: SnackBarBehavior.floating,
+            duration: const Duration(seconds: 2),
+            action: SnackBarAction(
+              label: 'OK',
+              textColor: Colors.white,
+              onPressed: () {},
+            ),
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -233,6 +374,7 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
                       borderRadius: BorderRadius.circular(24),
                       onTap: () => setState(() {
                         _selectedLocation = null;
+                        _selectedLocationAddress = null;
                         _locationSearchController.clear();
                       }),
                       child: Icon(
@@ -351,7 +493,16 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
             decoration: InputDecoration(
               labelText: 'Search Location',
               hintText: 'Enter address, place name, or coordinates...',
-              prefixIcon: Icon(PhosphorIcons.magnifyingGlass()),
+              prefixIcon: _isSearchingLocation 
+                  ? const Padding(
+                      padding: EdgeInsets.all(14.0),
+                      child: SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    )
+                  : Icon(PhosphorIcons.magnifyingGlass()),
               suffixIcon: IconButton(
                 onPressed: _useCurrentLocation,
                 icon: Icon(PhosphorIcons.crosshair()),
@@ -451,7 +602,7 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          _formatLocationDisplay(_selectedLocation!),
+                          _getBestLocationDisplay(),
                           style: theme.textTheme.bodyMedium?.copyWith(
                             fontWeight: TypographyConstants.medium,
                           ),
@@ -634,14 +785,17 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
             ),
             child: Slider(
               value: _geofenceRadius,
-              min: 50,
-              max: 1000,
-              divisions: 19,
+              min: 1, // LocationValidator._minRadius
+              max: 10000, // LocationValidator._maxRadius
+              divisions: 50,
               label: '${_geofenceRadius.toInt()}m',
               onChanged: (value) {
-                setState(() {
-                  _geofenceRadius = value;
-                });
+                // Validate the new radius value
+                if (LocationValidator.isValidRadius(value)) {
+                  setState(() {
+                    _geofenceRadius = value;
+                  });
+                }
               },
             ),
           ),
@@ -717,8 +871,8 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton.icon(
-        onPressed: _isCreatingTask ? null : _createLocationTask,
-        icon: _isCreatingTask 
+        onPressed: (_isCreatingTask || _isLoadingAddress) ? null : _createLocationTask,
+        icon: (_isCreatingTask || _isLoadingAddress)
             ? const SizedBox(width: 16,
                 height: 16,
                 child: CircularProgressIndicator(
@@ -728,10 +882,12 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
               )
             : Icon(PhosphorIcons.mapPin()),
         label: Text(_isCreatingTask 
-            ? 'Creating...' 
-            : widget.taskToEdit != null 
-                ? 'Update Location Task'
-                : 'Create Location Task'),
+            ? 'Creating...'
+            : _isLoadingAddress
+                ? 'Loading address...'
+                : widget.taskToEdit != null 
+                    ? 'Update Location Task'
+                    : 'Create Location Task'),
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
@@ -745,21 +901,64 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
   // Location search with debouncing
   void _onLocationSearchChanged(String query) {
     _debounceTimer?.cancel();
-    _debounceTimer = Timer(const Duration(milliseconds: 800), () async {
-      if (query.trim().isEmpty) {
-        setState(() => _selectedLocation = null);
+    
+    if (query.trim().isEmpty) {
+      setState(() {
+        _selectedLocation = null;
+        _selectedLocationAddress = null;
+        _isSearchingLocation = false;
+      });
+      return;
+    }
+    
+    // Show loading state immediately for better UX
+    setState(() => _isSearchingLocation = true);
+    
+    _debounceTimer = Timer(const Duration(milliseconds: 300), () async {
+      // Sanitize user input before processing
+      final sanitizedQuery = LocationValidator.sanitizeAddressInput(query);
+      if (sanitizedQuery.isEmpty) {
+        if (mounted) setState(() => _isSearchingLocation = false);
         return;
       }
       
       try {
         final locationService = ref.read(locationServiceProvider);
-        final location = await locationService.getCoordinatesFromAddress(query);
+        final location = await locationService.getCoordinatesFromAddress(sanitizedQuery);
         
-        if (location != null && mounted) {
-          setState(() => _selectedLocation = location);
+        // Validate coordinates are within Earth bounds
+        final validationError = LocationValidator.getLocationValidationError(location);
+        if (validationError != null) {
+          if (mounted) {
+            setState(() => _isSearchingLocation = false);
+            _showError('Invalid location: $validationError');
+          }
+          return;
+        }
+        
+        if (mounted) {
+          setState(() {
+            _selectedLocation = location;
+            _isSearchingLocation = false;
+            _selectedLocationAddress = sanitizedQuery;
+          });
         }
       } catch (e) {
-        debugPrint('Geocoding error: $e');
+        if (mounted) {
+          setState(() {
+            _isSearchingLocation = false;
+            _selectedLocation = null;
+            _selectedLocationAddress = null;
+          });
+          
+          // Enhanced geocoding error feedback
+          final errorString = e.toString().toLowerCase();
+          if (errorString.contains('geocoding') || errorString.contains('not found')) {
+            _showEnhancedGeocodingError(sanitizedQuery);
+          } else {
+            _showLocationError('find address', e);
+          }
+        }
       }
     });
   }
@@ -792,52 +991,69 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
 
   // Use current location
   void _useCurrentLocation() async {
-    // Check permissions first
-    final permissionStatus = await ref.read(locationPermissionProvider.future);
-    if (permissionStatus != LocationPermissionStatus.granted) {
-      _requestLocationPermission();
-      return;
-    }
-
-    // Show loading state
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Row(
-          children: [
-            SizedBox(
-              width: 16,
-              height: 16,
-              child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-            ),
-            SizedBox(width: 12),
-            Text('Getting your current location...'),
-          ],
-        ),
-        duration: Duration(seconds: 2),
-      ),
-    );
-
     try {
+      // Check permissions first (now cached)
+      final permissionAsync = ref.read(locationPermissionProvider);
+      final permissionStatus = await permissionAsync.when(
+        data: (status) => Future.value(status),
+        loading: () => ref.read(locationServiceProvider).checkPermission(),
+        error: (_, __) => ref.read(locationServiceProvider).checkPermission(),
+      );
+      
+      if (permissionStatus != LocationPermissionStatus.granted) {
+        _requestLocationPermission();
+        return;
+      }
+
+      // Show loading state with reduced duration since it should be faster now
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Row(
+            children: [
+              SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+              ),
+              SizedBox(width: 12),
+              Text('Getting your location...'),
+            ],
+          ),
+          duration: Duration(milliseconds: 1500),
+        ),
+      );
+
       final locationService = ref.read(locationServiceProvider);
       final location = await locationService.getCurrentLocation();
+      
+      // Validate coordinates are within Earth bounds  
+      final validationError = LocationValidator.getLocationValidationError(location);
+      if (validationError != null) {
+        _showError('Invalid current location coordinates: $validationError');
+        return;
+      }
       
       if (mounted) {
         setState(() {
           _selectedLocation = location;
-          _locationSearchController.text = _formatLocationDisplay(location);
         });
         
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('✓ Current location selected'),
-            backgroundColor: Colors.green,
-            duration: Duration(seconds: 2),
-          ),
-        );
+        // Load the address for better display (await to prevent race condition)
+        await _loadLocationAddress(location);
+        
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('✓ Current location selected'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 1),
+            ),
+          );
+        }
       }
     } catch (error) {
-      _showError('Failed to get current location: $error');
+      _showLocationError('get current location', error);
     }
   }
 
@@ -851,13 +1067,31 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
       final locationService = ref.read(locationServiceProvider);
       final location = await locationService.getCoordinatesFromAddress(locationName);
       
-      if (location != null && mounted) {
-        setState(() => _selectedLocation = location);
+      if (location != null) {
+        // Validate coordinates are within Earth bounds
+        final validationError = LocationValidator.getLocationValidationError(location);
+        if (validationError != null) {
+          _showError('Invalid location coordinates for "$locationName": $validationError');
+          return;
+        }
+        
+        if (mounted) {
+          setState(() {
+            _selectedLocation = location;
+            _selectedLocationAddress = LocationValidator.sanitizeAddressInput(locationName);
+          });
+        }
       } else {
         _showError('Could not find coordinates for "$locationName"');
       }
     } catch (e) {
-      _showError('Failed to find location: $e');
+      // Enhanced error handling for suggested locations
+      final errorString = e.toString().toLowerCase();
+      if (errorString.contains('geocoding') || errorString.contains('not found')) {
+        _showError('Could not find location for "$locationName". Try using "Use Current Location" or enter a specific address.');
+      } else {
+        _showLocationError('find suggested location', e);
+      }
     }
   }
 
@@ -910,7 +1144,7 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
         );
       }
     } catch (e) {
-      _showError('Failed to request location permission: $e');
+      _showLocationError('request location permission', e);
     }
   }
 
@@ -1004,19 +1238,24 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
       _showError('Please select a location for this task');
       return;
     }
+    
+    // Validate geofence radius
+    final radiusError = LocationValidator.getRadiusValidationError(_geofenceRadius);
+    if (radiusError != null) {
+      _showError(radiusError);
+      return;
+    }
 
     setState(() => _isCreatingTask = true);
 
     try {
-      // Create location trigger
-      final trigger = LocationTrigger(
+      // Create location trigger template (taskId will be set after task creation)
+      final triggerTemplate = LocationTrigger(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
-        taskId: '',
+        taskId: '', // Will be updated after task creation
         geofence: GeofenceData(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
-          name: _locationSearchController.text.isNotEmpty 
-            ? _locationSearchController.text 
-            : 'Task Location',
+          name: _getBestGeofenceName(),
           latitude: _selectedLocation!.latitude,
           longitude: _selectedLocation!.longitude,
           radius: _geofenceRadius,
@@ -1044,24 +1283,26 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
         }
       }
 
-      // Create task with location trigger
+      // Create task with location trigger (sanitize all text inputs)
+      final sanitizedTitle = _titleController.text.trim().replaceAll(RegExp(r'\s+'), ' ');
+      final sanitizedDescription = _descriptionController.text.trim().replaceAll(RegExp(r'\s+'), ' ');
+      
       final task = TaskModel.create(
-        title: _titleController.text.trim(),
-        description: _descriptionController.text.trim().isEmpty 
-          ? null 
-          : _descriptionController.text.trim(),
+        title: sanitizedTitle,
+        description: sanitizedDescription.isEmpty ? null : sanitizedDescription,
         dueDate: finalDueDate,
         priority: _priority,
-        locationTrigger: jsonEncode(trigger.toJson()),
+        locationTrigger: jsonEncode(triggerTemplate.toJson()),
         metadata: {
           'has_location_trigger': true,
           'trigger_type': _triggerType.name,
           'geofence_radius': _geofenceRadius,
-          'location_display': _formatLocationDisplay(_selectedLocation!),
+          'location_display': _getBestLocationDisplay(),
           'created_from': 'location_task_creation',
         },
       );
 
+      TaskModel createdTask;
       if (widget.taskToEdit != null) {
         // Update existing task
         final updatedTask = widget.taskToEdit!.copyWith(
@@ -1072,16 +1313,42 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
           locationTrigger: task.locationTrigger,
           metadata: {...widget.taskToEdit!.metadata, ...task.metadata},
         );
-        await ref.read(taskOperationsProvider).updateTask(updatedTask);
+        final result = await ref.read(taskOperationsProvider).updateTask(updatedTask);
+        if (!result.isSuccess || result.task == null) {
+          throw Exception(result.error ?? 'Failed to update task');
+        }
+        createdTask = result.task!;
       } else {
         // Create new task
-        await ref.read(taskOperationsProvider).createTask(task);
+        final result = await ref.read(taskOperationsProvider).createTask(task);
+        if (!result.isSuccess || result.task == null) {
+          throw Exception(result.error ?? 'Failed to create task');
+        }
+        createdTask = result.task!;
       }
 
-      // Add location trigger
-      await ref.read(locationTriggersProvider.notifier).addLocationTrigger(
-        trigger.copyWith(taskId: task.id),
-      );
+      // Ensure we have a valid task ID before creating the location trigger
+      if (createdTask.id.isEmpty) {
+        throw Exception('Failed to create task: Invalid task ID');
+      }
+
+      // Create the final location trigger with the correct task ID
+      final finalTrigger = triggerTemplate.copyWith(taskId: createdTask.id);
+      
+      // Add location trigger to geofencing system
+      try {
+        await ref.read(locationTriggersProvider.notifier).addLocationTrigger(finalTrigger);
+      } catch (e) {
+        // If trigger creation fails, we should clean up the task (only for new tasks)
+        if (widget.taskToEdit == null) {
+          try {
+            await ref.read(taskOperationsProvider).deleteTask(createdTask);
+          } catch (deleteError) {
+            debugPrint('Failed to cleanup task after trigger failure: $deleteError');
+          }
+        }
+        throw Exception('Failed to create location trigger: $e');
+      }
 
       if (mounted) {
         Navigator.of(context).pop();
@@ -1156,6 +1423,40 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
   String _formatLocationDisplay(LocationData location) {
     return '${location.latitude.toStringAsFixed(4)}, ${location.longitude.toStringAsFixed(4)}';
   }
+  
+  /// Get the best available location display for metadata/storage
+  String _getBestLocationDisplay() {
+    if (_selectedLocationAddress != null && _selectedLocationAddress!.isNotEmpty) {
+      return _selectedLocationAddress!;
+    }
+    if (_selectedLocation != null) {
+      return _formatLocationDisplay(_selectedLocation!);
+    }
+    return 'Unknown Location';
+  }
+  
+  /// Get the best available name for geofence (prioritizes human-readable names)
+  String _getBestGeofenceName() {
+    // Priority 1: Use human-readable address if available
+    if (_selectedLocationAddress != null && _selectedLocationAddress!.isNotEmpty) {
+      return _selectedLocationAddress!;
+    }
+    
+    // Priority 2: Use search query if it's not coordinates and not empty
+    final searchText = _locationSearchController.text.trim();
+    if (searchText.isNotEmpty && !LocationValidator.looksLikeCoordinates(searchText)) {
+      return searchText;
+    }
+    
+    // Priority 3: Use task title as context
+    final taskTitle = _titleController.text.trim();
+    if (taskTitle.isNotEmpty) {
+      return '$taskTitle Location';
+    }
+    
+    // Fallback: Generic name
+    return 'Task Location';
+  }
 
   void _showError(String message) {
     if (mounted) {
@@ -1164,44 +1465,75 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
           content: Text(message),
           backgroundColor: Theme.of(context).colorScheme.error,
           behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 4),
+        ),
+      );
+    }
+  }
+  
+  void _showLocationError(String operation, dynamic error) {
+    final String errorString = error.toString().toLowerCase();
+    final String userMessage;
+    
+    if (errorString.contains('timeout') || errorString.contains('timed out')) {
+      userMessage = 'Location request timed out. Please check your GPS signal and try again.';
+    } else if (errorString.contains('permission') || errorString.contains('denied')) {
+      userMessage = 'Location permission denied. Please enable location access in settings.';
+    } else if (errorString.contains('disabled') || errorString.contains('service')) {
+      userMessage = 'Location services are disabled. Please enable GPS in your device settings.';
+    } else if (errorString.contains('network') || errorString.contains('internet')) {
+      userMessage = 'No internet connection. Address lookup requires internet access.';
+    } else if (errorString.contains('geocoding') || errorString.contains('address not found')) {
+      userMessage = 'Address not found. Please try a different address or use coordinates.';
+    } else {
+      userMessage = 'Failed to $operation. Please check your location settings and try again.';
+    }
+    
+    _showError(userMessage);
+  }
+  
+  void _showEnhancedGeocodingError(String searchQuery) {
+    final suggestions = <String>[];
+    
+    // Add specific suggestions based on the search query
+    if (searchQuery.length < 3) {
+      suggestions.add('• Try entering a more complete address');
+    }
+    if (!searchQuery.contains(',') && !searchQuery.contains('street') && !searchQuery.contains('road')) {
+      suggestions.add('• Include street name or city (e.g., "123 Main St, Springfield")');
+    }
+    if (!RegExp(r'\d').hasMatch(searchQuery)) {
+      suggestions.add('• Try including a street number or postal code');
+    }
+    
+    final suggestionsText = suggestions.isEmpty 
+        ? '' 
+        : '\n\nSuggestions:\n${suggestions.join('\n')}';
+    
+    final message = 'Address "$searchQuery" could not be found.$suggestionsText\n\nYou can also:\n• Use your current location\n• Try a different address\n• Use coordinates (lat, lng)';
+    
+    if (mounted) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Row(
+            children: [
+              Icon(PhosphorIcons.mapPin(), color: Colors.orange, size: 24),
+              const SizedBox(width: 8),
+              const Text('Address Not Found'),
+            ],
+          ),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('OK'),
+            ),
+          ],
         ),
       );
     }
   }
 }
 
-/// Extension methods for location trigger
-extension LocationTriggerExtension on LocationTrigger {
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'taskId': taskId,
-      'geofence': {
-        'id': geofence.id,
-        'latitude': geofence.latitude,
-        'longitude': geofence.longitude,
-        'radius': geofence.radius,
-        'type': geofence.type.name,
-      },
-      'isEnabled': isEnabled,
-      'createdAt': createdAt.toIso8601String(),
-    };
-  }
-  
-  LocationTrigger copyWith({
-    String? id,
-    String? taskId,
-    GeofenceData? geofence,
-    bool? isEnabled,
-    DateTime? createdAt,
-  }) {
-    return LocationTrigger(
-      id: id ?? this.id,
-      taskId: taskId ?? this.taskId,
-      geofence: geofence ?? this.geofence,
-      isEnabled: isEnabled ?? this.isEnabled,
-      createdAt: createdAt ?? this.createdAt,
-    );
-  }
-}
 

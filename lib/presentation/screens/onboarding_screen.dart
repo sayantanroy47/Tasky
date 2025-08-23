@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/semantics.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/theme/typography_constants.dart';
-import '../widgets/enhanced_ux_widgets.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../core/theme/typography_constants.dart';
+import '../widgets/enhanced_ux_widgets.dart';
 
 /// Onboarding screen with tutorial system
 class OnboardingScreen extends ConsumerStatefulWidget {
@@ -14,13 +14,12 @@ class OnboardingScreen extends ConsumerStatefulWidget {
   ConsumerState<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
-class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
-    with TickerProviderStateMixin {
+class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with TickerProviderStateMixin {
   late PageController _pageController;
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
-  
+
   int _currentPage = 0;
   final int _totalPages = 5;
 
@@ -64,7 +63,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
       duration: const Duration(milliseconds: 600),
       vsync: this,
     );
-    
+
     _fadeAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
@@ -72,7 +71,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
       parent: _animationController,
       curve: Curves.easeInOut,
     ));
-    
+
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, 0.3),
       end: Offset.zero,
@@ -80,9 +79,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
       parent: _animationController,
       curve: Curves.easeOutCubic,
     ));
-    
+
     _animationController.forward();
   }
+
   @override
   void dispose() {
     _pageController.dispose();
@@ -118,6 +118,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
     // Mark onboarding as completed and navigate to main app
     Navigator.of(context).pushReplacementNamed('/home');
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -134,8 +135,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                   Text(
                     '${_currentPage + 1} of $_totalPages',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
                   ),
                   // Skip button
                   if (_currentPage < _totalPages - 1)
@@ -152,7 +153,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                 ],
               ),
             ),
-            
+
             // Progress bar
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -164,7 +165,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                 ),
               ),
             ),
-            
+
             // Page content
             Expanded(
               child: PageView.builder(
@@ -173,7 +174,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                   setState(() => _currentPage = index);
                   _animationController.reset();
                   _animationController.forward();
-                  
+
                   // Provide haptic feedback for page changes and accessibility
                   HapticFeedback.lightImpact();
                   // Announce page changes for screen readers
@@ -194,7 +195,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                 },
               ),
             ),
-            
+
             // Navigation buttons
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -221,7 +222,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                     )
                   else
                     const SizedBox(width: 100), // Placeholder for alignment
-                  
+
                   // Page indicators
                   Row(
                     children: List.generate(_totalPages, (index) {
@@ -239,22 +240,19 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                       );
                     }),
                   ),
-                  
+
                   // Next/Get Started button
                   EnhancedButton(
                     onPressed: _nextPage,
-                    semanticLabel: _currentPage == _totalPages - 1 
-                        ? 'Get started with Task Tracker'
-                        : 'Go to next page',
+                    semanticLabel:
+                        _currentPage == _totalPages - 1 ? 'Get started with Task Tracker' : 'Go to next page',
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(_currentPage == _totalPages - 1 ? 'Get Started' : 'Next'),
                         const SizedBox(width: 8),
                         Icon(
-                          _currentPage == _totalPages - 1 
-                              ? PhosphorIcons.check() 
-                              : PhosphorIcons.arrowRight(),
+                          _currentPage == _totalPages - 1 ? PhosphorIcons.check() : PhosphorIcons.arrowRight(),
                           size: 18,
                         ),
                       ],
@@ -289,33 +287,33 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
               color: page.color,
             ),
           ),
-          
+
           const SizedBox(height: 48),
-          
+
           // Title
           Text(
             page.title,
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Theme.of(context).colorScheme.onSurface,
-            ),
+                  fontWeight: FontWeight.w500,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
             textAlign: TextAlign.center,
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Description
           Text(
             page.description,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-              height: 1.5,
-            ),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  height: 1.5,
+                ),
             textAlign: TextAlign.center,
           ),
-          
+
           const SizedBox(height: 48),
-          
+
           // Feature highlights for specific pages
           if (_currentPage == 1) _buildVoiceFeatureDemo(),
           if (_currentPage == 2) _buildSmartFeatureDemo(),
@@ -343,15 +341,15 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
                   Text(
                     'Try saying:',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     '"Remind me to call mom tomorrow at 3 PM"',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontStyle: FontStyle.italic,
-                    ),
+                          fontStyle: FontStyle.italic,
+                        ),
                   ),
                 ],
               ),
@@ -461,14 +459,14 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen>
               Text(
                 title,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
+                      fontWeight: FontWeight.w500,
+                    ),
               ),
               Text(
                 description,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
               ),
             ],
           ),
@@ -492,6 +490,3 @@ class OnboardingPage {
     required this.color,
   });
 }
-
-
-

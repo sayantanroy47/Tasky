@@ -14,6 +14,14 @@ import 'theme_aware_dialog_components.dart';
 import 'project_selector.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+/// Category option for task categorization
+class CategoryOption {
+  final String id;
+  final String label;
+  final IconData icon;
+  
+  const CategoryOption(this.id, this.label, this.icon);
+}
 
 /// Task form dialog for creating or editing tasks
 class TaskFormDialog extends ConsumerStatefulWidget {
@@ -193,6 +201,10 @@ class _TaskFormDialogState extends ConsumerState<TaskFormDialog> {
               ),
               const SizedBox(height: 16),
               
+              // Category selector
+              _buildCategorySelector(context),
+              const SizedBox(height: 16),
+              
               // Due date picker
               _buildDueDatePicker(context),
               const SizedBox(height: 16),
@@ -370,6 +382,183 @@ class _TaskFormDialogState extends ConsumerState<TaskFormDialog> {
     if (time != null) {
       setState(() {
         _dueTime = time;
+      });
+    }
+  }
+  
+  // Predefined categories with icons
+  static final List<CategoryOption> _predefinedCategories = [
+    CategoryOption('work', 'Work', PhosphorIcons.briefcase()),
+    CategoryOption('personal', 'Personal', PhosphorIcons.user()),
+    CategoryOption('shopping', 'Shopping', PhosphorIcons.shoppingCart()),
+    CategoryOption('health', 'Health', PhosphorIcons.heartbeat()),
+    CategoryOption('fitness', 'Fitness', PhosphorIcons.barbell()),
+    CategoryOption('finance', 'Finance', PhosphorIcons.wallet()),
+    CategoryOption('education', 'Education', PhosphorIcons.graduationCap()),
+    CategoryOption('travel', 'Travel', PhosphorIcons.airplane()),
+    CategoryOption('home', 'Home', PhosphorIcons.house()),
+    CategoryOption('family', 'Family', PhosphorIcons.users()),
+    CategoryOption('entertainment', 'Entertainment', PhosphorIcons.filmStrip()),
+    CategoryOption('food', 'Food', PhosphorIcons.forkKnife()),
+  ];
+  
+  Widget _buildCategorySelector(BuildContext context) {
+    final theme = Theme.of(context);
+    
+    return GlassmorphismContainer(
+      level: GlassLevel.interactive,
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Categories',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.w500,
+              color: theme.colorScheme.onSurface,
+            ),
+          ),
+          const SizedBox(height: 12),
+          
+          // Predefined category chips
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: _predefinedCategories.map((category) {
+              final isSelected = _selectedTags.contains(category.id);
+              return _buildCategoryChip(
+                context,
+                category,
+                isSelected,
+                () => _toggleCategory(category.id),
+              );
+            }).toList(),
+          ),
+          
+          // Selected tags display
+          if (_selectedTags.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            Text(
+              'Selected: ${_selectedTags.join(', ')}',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+          
+          // Custom tag input (future enhancement)
+          const SizedBox(height: 8),
+          TextButton.icon(
+            onPressed: () => _showAddCustomTagDialog(context),
+            icon: Icon(PhosphorIcons.plus(), size: 16),
+            label: const Text('Add custom tag'),
+            style: TextButton.styleFrom(
+              foregroundColor: theme.colorScheme.primary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  Widget _buildCategoryChip(
+    BuildContext context,
+    CategoryOption category,
+    bool isSelected,
+    VoidCallback onTap,
+  ) {
+    final theme = Theme.of(context);
+    
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(20),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? theme.colorScheme.primary.withValues(alpha: 0.15)
+              : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isSelected
+                ? theme.colorScheme.primary
+                : theme.colorScheme.outline.withValues(alpha: 0.3),
+            width: isSelected ? 1.5 : 1,
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              category.icon,
+              size: 16,
+              color: isSelected
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.onSurfaceVariant,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              category.label,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: isSelected
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.onSurfaceVariant,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  
+  void _toggleCategory(String categoryId) {
+    setState(() {
+      if (_selectedTags.contains(categoryId)) {
+        _selectedTags.remove(categoryId);
+      } else {
+        _selectedTags.add(categoryId);
+      }
+    });
+  }
+  
+  Future<void> _showAddCustomTagDialog(BuildContext context) async {
+    final controller = TextEditingController();
+    final result = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Add Custom Tag'),
+        content: TextField(
+          controller: controller,
+          decoration: const InputDecoration(
+            hintText: 'Enter tag name',
+            border: OutlineInputBorder(),
+          ),
+          autofocus: true,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              final tag = controller.text.trim();
+              if (tag.isNotEmpty) {
+                Navigator.pop(context, tag);
+              }
+            },
+            child: const Text('Add'),
+          ),
+        ],
+      ),
+    );
+    
+    if (result != null && result.isNotEmpty && !_selectedTags.contains(result)) {
+      setState(() {
+        _selectedTags.add(result);
       });
     }
   }

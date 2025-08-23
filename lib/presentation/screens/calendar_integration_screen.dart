@@ -1,10 +1,11 @@
+import 'package:device_calendar/device_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:device_calendar/device_calendar.dart';
-import '../widgets/standardized_app_bar.dart';
-import '../../services/system_calendar_service.dart';
-import '../../core/accessibility/touch_target_validator.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+
+import '../../core/accessibility/touch_target_validator.dart';
+import '../../services/system_calendar_service.dart';
+import '../widgets/standardized_app_bar.dart';
 
 /// Screen for managing calendar integration settings
 class CalendarIntegrationScreen extends ConsumerStatefulWidget {
@@ -26,10 +27,10 @@ class _CalendarIntegrationScreenState extends ConsumerState<CalendarIntegrationS
 
   Future<void> _initializeCalendarService() async {
     setState(() => _isInitializing = true);
-    
+
     final service = ref.read(systemCalendarServiceProvider);
     await service.initialize();
-    
+
     setState(() => _isInitializing = false);
   }
 
@@ -44,8 +45,9 @@ class _CalendarIntegrationScreenState extends ConsumerState<CalendarIntegrationS
         actions: [
           IconButton(
             onPressed: _isSyncing ? null : _performSync,
-            icon: _isSyncing 
-                ? const SizedBox(width: 20,
+            icon: _isSyncing
+                ? const SizedBox(
+                    width: 20,
                     height: 20,
                     child: CircularProgressIndicator(strokeWidth: 2),
                   )
@@ -120,7 +122,7 @@ class _CalendarIntegrationScreenState extends ConsumerState<CalendarIntegrationS
 
   Widget _buildStatusCard(CalendarSyncStatus syncStatus) {
     final isEnabled = syncStatus.isEnabled;
-    
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -142,9 +144,7 @@ class _CalendarIntegrationScreenState extends ConsumerState<CalendarIntegrationS
             ),
             const SizedBox(height: 8),
             Text(
-              isEnabled 
-                  ? 'Integration is active and ready to sync'
-                  : 'Integration requires setup',
+              isEnabled ? 'Integration is active and ready to sync' : 'Integration requires setup',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             if (syncStatus.selectedCalendarName != null) ...[
@@ -188,9 +188,7 @@ class _CalendarIntegrationScreenState extends ConsumerState<CalendarIntegrationS
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    syncStatus.hasPermission
-                        ? 'Calendar access granted'
-                        : 'Calendar access required',
+                    syncStatus.hasPermission ? 'Calendar access granted' : 'Calendar access required',
                   ),
                 ),
                 if (!syncStatus.hasPermission)
@@ -205,8 +203,8 @@ class _CalendarIntegrationScreenState extends ConsumerState<CalendarIntegrationS
               Text(
                 'Calendar permission is required to sync tasks with your device calendar.',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.grey[600],
-                ),
+                      color: Colors.grey[600],
+                    ),
               ),
             ],
           ],
@@ -235,7 +233,7 @@ class _CalendarIntegrationScreenState extends ConsumerState<CalendarIntegrationS
             else
               ...availableCalendars.map((calendar) {
                 final isReadOnly = calendar.isReadOnly ?? false;
-                
+
                 return ListTile(
                   leading: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -243,12 +241,14 @@ class _CalendarIntegrationScreenState extends ConsumerState<CalendarIntegrationS
                       AccessibleRadio<String>(
                         value: calendar.id!,
                         groupValue: selectedCalendarId,
-                        onChanged: isReadOnly ? null : (value) {
-                          if (value != null) {
-                            service.setSelectedCalendar(value);
-                            ref.invalidate(calendarSyncStatusProvider);
-                          }
-                        },
+                        onChanged: isReadOnly
+                            ? null
+                            : (value) {
+                                if (value != null) {
+                                  service.setSelectedCalendar(value);
+                                  ref.invalidate(calendarSyncStatusProvider);
+                                }
+                              },
                         semanticLabel: 'Select ${calendar.name ?? 'Unnamed Calendar'}',
                       ),
                       const SizedBox(width: 8),
@@ -268,15 +268,17 @@ class _CalendarIntegrationScreenState extends ConsumerState<CalendarIntegrationS
                           'Read-only',
                           style: TextStyle(
                             color: Colors.orange[700],
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                     ],
                   ),
-                  onTap: isReadOnly ? null : () {
-                    service.setSelectedCalendar(calendar.id!);
-                    ref.invalidate(calendarSyncStatusProvider);
-                  },
+                  onTap: isReadOnly
+                      ? null
+                      : () {
+                          service.setSelectedCalendar(calendar.id!);
+                          ref.invalidate(calendarSyncStatusProvider);
+                        },
                 );
               }),
           ],
@@ -404,11 +406,11 @@ class _CalendarIntegrationScreenState extends ConsumerState<CalendarIntegrationS
   Future<void> _requestPermission() async {
     final service = ref.read(systemCalendarServiceProvider);
     final granted = await service.requestCalendarPermission();
-    
+
     if (granted) {
       await service.initialize();
       ref.invalidate(calendarSyncStatusProvider);
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Calendar permission granted')),
@@ -428,11 +430,11 @@ class _CalendarIntegrationScreenState extends ConsumerState<CalendarIntegrationS
 
   Future<void> _performSync() async {
     setState(() => _isSyncing = true);
-    
+
     try {
       final service = ref.read(systemCalendarServiceProvider);
       final result = await service.performSync();
-      
+
       if (mounted) {
         if (result.success) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -643,8 +645,7 @@ class _CalendarIntegrationScreenState extends ConsumerState<CalendarIntegrationS
 
   String _formatDateTime(DateTime dateTime) {
     return '${dateTime.day}/${dateTime.month}/${dateTime.year} '
-           '${dateTime.hour.toString().padLeft(2, '0')}:'
-           '${dateTime.minute.toString().padLeft(2, '0')}';
+        '${dateTime.hour.toString().padLeft(2, '0')}:'
+        '${dateTime.minute.toString().padLeft(2, '0')}';
   }
 }
-

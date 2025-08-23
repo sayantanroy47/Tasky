@@ -711,32 +711,52 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
 
   Widget _buildTagsPreview(ThemeData theme) {
     final tags = widget.task.tags;
-    const maxTags = 2;
+    const maxTags = 3; // Show more icons since they're more compact
     
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         ...tags.take(maxTags).map((tag) => Padding(
-          padding: const EdgeInsets.only(right: 4),
+          padding: const EdgeInsets.only(right: 6),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            width: 28,
+            height: 28,
             decoration: BoxDecoration(
-              color: theme.colorScheme.primaryContainer,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              tag,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.onPrimaryContainer,
+              color: _getCategoryColor(tag).withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: _getCategoryColor(tag).withValues(alpha: 0.3),
+                width: 0.5,
               ),
+            ),
+            child: Icon(
+              _getCategoryIcon(tag),
+              size: 14,
+              color: _getCategoryColor(tag),
             ),
           ),
         )),
         if (tags.length > maxTags)
-          Text(
-            '+${tags.length - maxTags}',
-            style: theme.textTheme.labelSmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
+          Container(
+            width: 28,
+            height: 28,
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: theme.colorScheme.outline.withValues(alpha: 0.3),
+                width: 0.5,
+              ),
+            ),
+            child: Center(
+              child: Text(
+                '+${tags.length - maxTags}',
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
           ),
       ],
@@ -1056,6 +1076,79 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
     final minute = dueDate.minute.toString().padLeft(2, '0');
     
     return '$weekday, $month $day at $hour:$minute';
+  }
+
+  /// Get category-based icon for task cards
+  IconData _getCategoryIcon(String category) {
+    switch (category.toLowerCase()) {
+      case 'work':
+        return PhosphorIcons.briefcase();
+      case 'personal':
+        return PhosphorIcons.user();
+      case 'shopping':
+        return PhosphorIcons.shoppingCart();
+      case 'health':
+        return PhosphorIcons.heartbeat();
+      case 'fitness':
+        return PhosphorIcons.barbell();
+      case 'finance':
+        return PhosphorIcons.wallet();
+      case 'education':
+        return PhosphorIcons.graduationCap();
+      case 'travel':
+        return PhosphorIcons.airplane();
+      case 'home':
+        return PhosphorIcons.house();
+      case 'family':
+        return PhosphorIcons.users();
+      case 'entertainment':
+        return PhosphorIcons.filmStrip();
+      case 'food':
+        return PhosphorIcons.forkKnife();
+      case 'technology':
+        return PhosphorIcons.laptop();
+      case 'creative':
+        return PhosphorIcons.paintBrush();
+      default:
+        return PhosphorIcons.tag();
+    }
+  }
+
+  /// Get category-based color for task cards
+  Color _getCategoryColor(String category) {
+    final theme = Theme.of(context);
+    switch (category.toLowerCase()) {
+      case 'work':
+        return theme.colorScheme.primary;
+      case 'personal':
+        return theme.colorScheme.secondary;
+      case 'shopping':
+        return Colors.green;
+      case 'health':
+        return Colors.red;
+      case 'fitness':
+        return Colors.orange;
+      case 'finance':
+        return Colors.teal;
+      case 'education':
+        return Colors.indigo;
+      case 'travel':
+        return Colors.cyan;
+      case 'home':
+        return Colors.brown;
+      case 'family':
+        return Colors.pink;
+      case 'entertainment':
+        return Colors.purple;
+      case 'food':
+        return Colors.amber;
+      case 'technology':
+        return Colors.blueGrey;
+      case 'creative':
+        return Colors.deepPurple;
+      default:
+        return theme.colorScheme.outline;
+    }
   }
 }
 

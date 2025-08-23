@@ -1,12 +1,13 @@
+import 'dart:async';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
-import '../../core/design_system/design_tokens.dart';
-import 'dart:async';
-import '../../core/design_system/responsive_builder.dart';
-
-import 'glassmorphism_container.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+
+import '../../core/design_system/design_tokens.dart';
+import '../../core/design_system/responsive_builder.dart';
+import 'glassmorphism_container.dart';
 
 /// Network connectivity status indicator
 class NetworkStatusIndicator extends ConsumerStatefulWidget {
@@ -25,8 +26,7 @@ class NetworkStatusIndicator extends ConsumerStatefulWidget {
   ConsumerState<NetworkStatusIndicator> createState() => _NetworkStatusIndicatorState();
 }
 
-class _NetworkStatusIndicatorState extends ConsumerState<NetworkStatusIndicator>
-    with TickerProviderStateMixin {
+class _NetworkStatusIndicatorState extends ConsumerState<NetworkStatusIndicator> with TickerProviderStateMixin {
   late AnimationController _slideController;
   late AnimationController _pulseController;
   late Animation<Offset> _slideAnimation;
@@ -96,11 +96,9 @@ class _NetworkStatusIndicatorState extends ConsumerState<NetworkStatusIndicator>
 
     setState(() {
       _connectionStatus = result;
-      
+
       // Show indicator when disconnected or when connection changes
-      _isVisible = !isConnected || 
-                   (widget.showWhenConnected && isConnected) ||
-                   (wasConnected != isConnected);
+      _isVisible = !isConnected || (widget.showWhenConnected && isConnected) || (wasConnected != isConnected);
     });
 
     if (_isVisible) {
@@ -197,10 +195,10 @@ class _NetworkStatusIndicatorState extends ConsumerState<NetworkStatusIndicator>
                           Text(
                             _getConnectionText(),
                             style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                              color: _getConnectionColor(),
-                              fontWeight: FontWeight.bold,
-                              fontSize: config.isMobile ? 12 : 14,
-                            ),
+                                  color: _getConnectionColor(),
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: config.isMobile ? 12 : 14,
+                                ),
                           ),
                           if (widget.showSpeedTest && _connectionSpeed.isNotEmpty) ...[
                             const SizedBox(width: 8),
@@ -213,9 +211,9 @@ class _NetworkStatusIndicatorState extends ConsumerState<NetworkStatusIndicator>
                               child: Text(
                                 _connectionSpeed,
                                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                  color: _getConnectionColor(),
-                                  fontSize: config.isMobile ? 10 : 11,
-                                ),
+                                      color: _getConnectionColor(),
+                                      fontSize: config.isMobile ? 10 : 11,
+                                    ),
                               ),
                             ),
                           ],
@@ -306,8 +304,7 @@ class SyncStatusIndicator extends StatefulWidget {
   State<SyncStatusIndicator> createState() => _SyncStatusIndicatorState();
 }
 
-class _SyncStatusIndicatorState extends State<SyncStatusIndicator>
-    with TickerProviderStateMixin {
+class _SyncStatusIndicatorState extends State<SyncStatusIndicator> with TickerProviderStateMixin {
   late AnimationController _rotationController;
   late AnimationController _fadeController;
 
@@ -318,7 +315,7 @@ class _SyncStatusIndicatorState extends State<SyncStatusIndicator>
       duration: const Duration(seconds: 2),
       vsync: this,
     );
-    
+
     _fadeController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
@@ -335,7 +332,7 @@ class _SyncStatusIndicatorState extends State<SyncStatusIndicator>
   @override
   void didUpdateWidget(SyncStatusIndicator oldWidget) {
     super.didUpdateWidget(oldWidget);
-    
+
     if (widget.isVisible != oldWidget.isVisible) {
       if (widget.isVisible) {
         _fadeController.forward();
@@ -382,9 +379,7 @@ class _SyncStatusIndicatorState extends State<SyncStatusIndicator>
                       animation: _rotationController,
                       builder: (context, child) {
                         return Transform.rotate(
-                          angle: widget.status == SyncStatus.syncing
-                              ? _rotationController.value * 2 * 3.14159
-                              : 0,
+                          angle: widget.status == SyncStatus.syncing ? _rotationController.value * 2 * 3.14159 : 0,
                           child: Icon(
                             _getSyncIcon(),
                             size: config.isMobile ? 16 : 18,
@@ -398,9 +393,9 @@ class _SyncStatusIndicatorState extends State<SyncStatusIndicator>
                       Text(
                         widget.message!,
                         style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                          color: _getSyncColor(),
-                          fontSize: config.isMobile ? 12 : 14,
-                        ),
+                              color: _getSyncColor(),
+                              fontSize: config.isMobile ? 12 : 14,
+                            ),
                       ),
                     ],
                   ],
@@ -455,8 +450,7 @@ class BatteryStatusIndicator extends StatefulWidget {
   State<BatteryStatusIndicator> createState() => _BatteryStatusIndicatorState();
 }
 
-class _BatteryStatusIndicatorState extends State<BatteryStatusIndicator>
-    with TickerProviderStateMixin {
+class _BatteryStatusIndicatorState extends State<BatteryStatusIndicator> with TickerProviderStateMixin {
   late AnimationController _pulseController;
   int _batteryLevel = 100;
   bool _isCharging = false;
@@ -469,7 +463,7 @@ class _BatteryStatusIndicatorState extends State<BatteryStatusIndicator>
       duration: const Duration(milliseconds: 1000),
       vsync: this,
     );
-    
+
     _startBatteryMonitoring();
   }
 
@@ -481,9 +475,8 @@ class _BatteryStatusIndicatorState extends State<BatteryStatusIndicator>
         setState(() {
           _batteryLevel = 15 + (DateTime.now().millisecond % 85);
           _isCharging = DateTime.now().second % 10 < 3;
-          
-          _isVisible = !widget.showOnlyWhenLow || 
-                       _batteryLevel <= widget.lowBatteryThreshold;
+
+          _isVisible = !widget.showOnlyWhenLow || _batteryLevel <= widget.lowBatteryThreshold;
         });
 
         if (_isVisible && _batteryLevel <= widget.lowBatteryThreshold && !_isCharging) {
@@ -514,8 +507,7 @@ class _BatteryStatusIndicatorState extends State<BatteryStatusIndicator>
             animation: _pulseController,
             builder: (context, child) {
               return Transform.scale(
-                scale: _batteryLevel <= widget.lowBatteryThreshold ? 
-                       (0.9 + (_pulseController.value * 0.2)) : 1.0,
+                scale: _batteryLevel <= widget.lowBatteryThreshold ? (0.9 + (_pulseController.value * 0.2)) : 1.0,
                 child: GlassmorphismContainer(
                   level: GlassLevel.floating,
                   borderRadius: BorderRadius.circular(config.cardRadius),
@@ -546,10 +538,10 @@ class _BatteryStatusIndicatorState extends State<BatteryStatusIndicator>
                       Text(
                         '$_batteryLevel%',
                         style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                          color: _getBatteryColor(),
-                          fontWeight: FontWeight.bold,
-                          fontSize: config.isMobile ? 12 : 14,
-                        ),
+                              color: _getBatteryColor(),
+                              fontWeight: FontWeight.w500,
+                              fontSize: config.isMobile ? 12 : 14,
+                            ),
                       ),
                     ],
                   ),
@@ -594,13 +586,11 @@ class UniversalStatusBar extends StatelessWidget {
     return Stack(
       children: [
         // Network status
-        if (showNetworkStatus)
-          const NetworkStatusIndicator(),
-        
+        if (showNetworkStatus) const NetworkStatusIndicator(),
+
         // Battery status
-        if (showBatteryStatus)
-          const BatteryStatusIndicator(),
-        
+        if (showBatteryStatus) const BatteryStatusIndicator(),
+
         // Sync status
         if (syncStatus != null)
           SyncStatusIndicator(
@@ -672,8 +662,7 @@ class _ToastWidget extends StatefulWidget {
   State<_ToastWidget> createState() => _ToastWidgetState();
 }
 
-class _ToastWidgetState extends State<_ToastWidget>
-    with SingleTickerProviderStateMixin {
+class _ToastWidgetState extends State<_ToastWidget> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<Offset> _slideAnimation;
 
@@ -735,9 +724,9 @@ class _ToastWidgetState extends State<_ToastWidget>
                         child: Text(
                           widget.message,
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurface,
-                            fontSize: config.isMobile ? 14 : 16,
-                          ),
+                                color: Theme.of(context).colorScheme.onSurface,
+                                fontSize: config.isMobile ? 14 : 16,
+                              ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -787,4 +776,3 @@ enum ToastType {
   warning,
   info,
 }
-

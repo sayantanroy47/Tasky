@@ -6,8 +6,32 @@ import '../../domain/models/enums.dart';
 import '../providers/task_provider.dart' show taskOperationsProvider;
 import '../providers/project_providers.dart';
 import '../../core/theme/typography_constants.dart';
-import '../painters/glassmorphism_painter.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+
+/// Category option for task categorization
+class CategoryOption {
+  final String id;
+  final String label;
+  final IconData icon;
+  
+  const CategoryOption(this.id, this.label, this.icon);
+}
+
+/// Predefined category options with icons  
+final List<CategoryOption> _predefinedCategories = [
+  CategoryOption('work', 'Work', PhosphorIcons.briefcase()),
+  CategoryOption('personal', 'Personal', PhosphorIcons.user()),
+  CategoryOption('shopping', 'Shopping', PhosphorIcons.shoppingCart()),
+  CategoryOption('health', 'Health', PhosphorIcons.heartbeat()),
+  CategoryOption('finance', 'Finance', PhosphorIcons.currencyDollar()),
+  CategoryOption('learning', 'Learning', PhosphorIcons.graduationCap()),
+  CategoryOption('family', 'Family', PhosphorIcons.house()),
+  CategoryOption('travel', 'Travel', PhosphorIcons.airplane()),
+  CategoryOption('fitness', 'Fitness', PhosphorIcons.barbell()),
+  CategoryOption('social', 'Social', PhosphorIcons.users()),
+  CategoryOption('creative', 'Creative', PhosphorIcons.paintBrush()),
+  CategoryOption('urgent', 'Urgent', PhosphorIcons.warning()),
+];
 
 /// Enhanced unified task creation dialog - rebuilt with proper constraint handling
 class EnhancedTaskCreationDialog extends ConsumerStatefulWidget {
@@ -41,6 +65,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
   List<String> _tags = [];
   String _notes = '';
   bool _isLoading = false;
+  Set<String> _selectedCategories = {};
   
   final _tagsController = TextEditingController();
   final _notesController = TextEditingController();
@@ -67,6 +92,10 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
         _tags = List<String>.from(task.metadata['tags'] ?? []);
         _notes = task.metadata['notes'] ?? '';
         _notesController.text = _notes;
+        // Initialize selected categories from existing tags
+        _selectedCategories = _tags.where((tag) => 
+          _predefinedCategories.any((cat) => cat.id == tag.toLowerCase())
+        ).map((tag) => tag.toLowerCase()).toSet();
       }
     } else if (widget.prePopulatedData != null) {
       final data = widget.prePopulatedData!;
@@ -113,18 +142,18 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     
-    return Dialog.fullscreen(
-      backgroundColor: theme.colorScheme.surface.withValues(alpha: 0.95),
-      child: LayoutBuilder(
-        builder: (context, constraints) => GlassmorphicContainer(
-          width: constraints.maxWidth,
-          height: constraints.maxHeight,
-          borderRadius: TypographyConstants.getBorderRadius(radius: TypographyConstants.dialogRadius),
-          blur: 10.0,
-          opacity: 0.1,
-          color: theme.colorScheme.surface,
-          child: Scaffold(
-            backgroundColor: Colors.transparent,
+    return AlertDialog(
+      backgroundColor: theme.colorScheme.surface,
+      contentPadding: EdgeInsets.zero,
+      insetPadding: const EdgeInsets.all(16),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(TypographyConstants.dialogRadius),
+      ),
+      content: SizedBox(
+        width: MediaQuery.of(context).size.width - 32,
+        height: MediaQuery.of(context).size.height * 0.8,
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
         appBar: AppBar(
           title: Text(_getDialogTitle()),
           backgroundColor: Colors.transparent,
@@ -134,19 +163,25 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
             icon: Icon(PhosphorIcons.x()),
           ),
           actions: [
-            // Use TextButton instead of FilledButton.icon to avoid infinite width constraints in AppBar
-            TextButton.icon(
-              onPressed: _isLoading ? null : _saveTask,
-              icon: _isLoading 
-                ? const SizedBox(width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
+            // Use IconButton with constrained width to avoid infinite width constraints in AppBar
+            SizedBox(
+              width: 80, // Constrain width to prevent infinite width error
+              child: _isLoading 
+                ? const Center(
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
                   )
-                : Icon(PhosphorIcons.floppyDisk(), size: 18),
-              label: Text(_isLoading ? 'Saving...' : 'Save'),
-              style: TextButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              ),
+                : TextButton.icon(
+                    onPressed: _saveTask,
+                    icon: Icon(PhosphorIcons.floppyDisk(), size: 18),
+                    label: const Text('Save'),
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    ),
+                  ),
             ),
             const SizedBox(width: 8),
           ],
@@ -307,10 +342,9 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
             ),
           ),
         ),
-        ),
-        ),
-      ),
-    );
+        ), // Close Scaffold
+      ), // Close content: SizedBox
+    ); // Close AlertDialog
   }
   
   String _getDialogTitle() {
@@ -445,13 +479,55 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
                   ),
                 );
               },
-              loading: () => const SizedBox(
+              loading: () => SizedBox(
                 width: double.infinity,
-                child: LinearProgressIndicator(),
+                height: 56,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: theme.colorScheme.outline),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(PhosphorIcons.folder(), color: theme.colorScheme.onSurfaceVariant),
+                      const SizedBox(width: 12),
+                      Text(
+                        'Loading projects...',
+                        style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
+                      ),
+                      const Spacer(),
+                      const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-              error: (error, stack) => const SizedBox(
+              error: (error, stack) => SizedBox(
                 width: double.infinity,
-                child: Text('Error loading projects'),
+                height: 56,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: theme.colorScheme.error),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(PhosphorIcons.warningCircle(), color: theme.colorScheme.error),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'Error loading projects',
+                          style: TextStyle(color: theme.colorScheme.error),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             );
           },
@@ -557,79 +633,153 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Tags',
-          style: TypographyConstants.getStyle(
-            fontSize: TypographyConstants.titleMedium,
-            fontWeight: TypographyConstants.medium,
-            color: theme.colorScheme.onSurface,
-          ),
+        Row(
+          children: [
+            Text(
+              'Categories',
+              style: TypographyConstants.getStyle(
+                fontSize: TypographyConstants.titleMedium,
+                fontWeight: TypographyConstants.medium,
+                color: theme.colorScheme.onSurface,
+              ),
+            ),
+            const Spacer(),
+            TextButton.icon(
+              onPressed: _showAddCustomTagDialog,
+              icon: Icon(PhosphorIcons.plus(), size: 16),
+              label: const Text('Custom'),
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 8),
-        SizedBox(
-          width: double.infinity,
-          child: TextFormField(
-            controller: _tagsController,
-            decoration: InputDecoration(
-              labelText: 'Add tags',
-              hintText: 'Enter tags separated by commas (e.g., urgent, work, meeting)',
-              border: const OutlineInputBorder(),
-              prefixIcon: Icon(PhosphorIcons.tag()),
-              suffixIcon: _tagsController.text.isNotEmpty ? IconButton(
-                onPressed: () {
-                  final newTags = _tagsController.text
-                      .split(',')
-                      .map((tag) => tag.trim())
-                      .where((tag) => tag.isNotEmpty && !_tags.contains(tag))
-                      .toList();
-                  
+        const SizedBox(height: 12),
+        // Predefined categories
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: _predefinedCategories.map((category) {
+            return _buildCategoryChip(category, theme);
+          }).toList(),
+        ),
+        // Custom tags (non-predefined categories)
+        if (_tags.where((tag) => !_predefinedCategories.any((cat) => cat.id == tag.toLowerCase())).isNotEmpty) ...[
+          const SizedBox(height: 16),
+          Text(
+            'Custom Tags',
+            style: TypographyConstants.getStyle(
+              fontSize: TypographyConstants.titleSmall,
+              fontWeight: TypographyConstants.medium,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 4,
+            children: _tags
+                .where((tag) => !_predefinedCategories.any((cat) => cat.id == tag.toLowerCase()))
+                .map((tag) {
+              return Chip(
+                label: Text(tag),
+                deleteIcon: Icon(PhosphorIcons.x(), size: 16),
+                onDeleted: () {
                   setState(() {
-                    _tags.addAll(newTags);
-                    _tagsController.clear();
+                    _tags.remove(tag);
                   });
                 },
-                icon: Icon(PhosphorIcons.plus()),
-              ) : null,
-            ),
-            onFieldSubmitted: (value) {
-              if (value.trim().isNotEmpty) {
-                final newTags = value
-                    .split(',')
-                    .map((tag) => tag.trim())
-                    .where((tag) => tag.isNotEmpty && !_tags.contains(tag))
-                    .toList();
-                
-                setState(() {
-                  _tags.addAll(newTags);
-                  _tagsController.clear();
-                });
-              }
-            },
-          ),
-        ),
-        if (_tags.isNotEmpty) ...[
-          const SizedBox(height: 8),
-          SizedBox(
-            width: double.infinity,
-            child: Wrap(
-              spacing: 8,
-              runSpacing: 4,
-              children: _tags.map((tag) {
-                return Chip(
-                  label: Text(tag),
-                  deleteIcon: Icon(PhosphorIcons.x(), size: 18),
-                  onDeleted: () {
-                    setState(() {
-                      _tags.remove(tag);
-                    });
-                  },
-                );
-              }).toList(),
-            ),
+              );
+            }).toList(),
           ),
         ],
       ],
     );
+  }
+
+  Widget _buildCategoryChip(CategoryOption category, ThemeData theme) {
+    final isSelected = _selectedCategories.contains(category.id);
+    return FilterChip(
+      selected: isSelected,
+      onSelected: (selected) => _toggleCategory(category.id),
+      label: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            category.icon,
+            size: 16,
+            color: isSelected
+                ? theme.colorScheme.onPrimary
+                : theme.colorScheme.primary,
+          ),
+          const SizedBox(width: 6),
+          Text(category.label),
+        ],
+      ),
+      selectedColor: theme.colorScheme.primary,
+      checkmarkColor: theme.colorScheme.onPrimary,
+      labelStyle: TextStyle(
+        color: isSelected
+            ? theme.colorScheme.onPrimary
+            : theme.colorScheme.onSurface,
+      ),
+    );
+  }
+
+  void _toggleCategory(String categoryId) {
+    setState(() {
+      if (_selectedCategories.contains(categoryId)) {
+        _selectedCategories.remove(categoryId);
+        _tags.remove(categoryId);
+      } else {
+        _selectedCategories.add(categoryId);
+        if (!_tags.contains(categoryId)) {
+          _tags.add(categoryId);
+        }
+      }
+    });
+  }
+
+  Future<void> _showAddCustomTagDialog() async {
+    final controller = TextEditingController();
+    final result = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Add Custom Tag'),
+        content: TextField(
+          controller: controller,
+          decoration: const InputDecoration(
+            labelText: 'Tag name',
+            hintText: 'Enter custom tag name',
+          ),
+          autofocus: true,
+          textCapitalization: TextCapitalization.words,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () {
+              if (controller.text.trim().isNotEmpty) {
+                Navigator.pop(context, controller.text.trim().toLowerCase());
+              }
+            },
+            child: const Text('Add'),
+          ),
+        ],
+      ),
+    );
+    
+    if (result != null && result.isNotEmpty && !_tags.contains(result)) {
+      setState(() {
+        _tags.add(result);
+      });
+    }
+    controller.dispose();
   }
   
   Widget _buildRecurrenceSection(ThemeData theme) {

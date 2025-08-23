@@ -49,6 +49,7 @@ class _AppInitializationWrapperState extends ConsumerState<AppInitializationWrap
 
     return initializationAsync.when(
       data: (_) {
+        // After app initialization, return the child (MaterialApp) with ProfileSetupWrapper as home
         return widget.child;
       },
       loading: () => MaterialApp(

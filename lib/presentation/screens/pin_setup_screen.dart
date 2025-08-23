@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+
 import '../../core/theme/typography_constants.dart';
+import '../../services/security_service.dart';
 import '../widgets/enhanced_ux_widgets.dart';
 import '../widgets/standardized_app_bar.dart';
-import '../../services/security_service.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Screen for setting up or changing PIN
 class PinSetupScreen extends ConsumerStatefulWidget {
@@ -23,7 +24,7 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
   final List<String> _enteredPin = [];
   final List<String> _confirmPin = [];
   final int _pinLength = 4;
-  
+
   PinSetupStep _currentStep = PinSetupStep.enterPin;
   String? _errorMessage;
   bool _isProcessing = false;
@@ -35,6 +36,7 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
       _currentStep = PinSetupStep.enterOldPin;
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,38 +51,37 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
             children: [
               // Progress indicator
               _buildProgressIndicator(),
-              
+
               const SizedBox(height: 48),
-              
+
               // Title and description
               _buildTitleAndDescription(),
-              
+
               const SizedBox(height: 48),
-              
+
               // PIN dots
               _buildPinDots(),
-              
+
               if (_errorMessage != null) ...[
                 const SizedBox(height: 16),
                 Text(
                   _errorMessage!,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.error,
-                  ),
+                        color: Theme.of(context).colorScheme.error,
+                      ),
                   textAlign: TextAlign.center,
                 ),
               ],
-              
+
               const SizedBox(height: 48),
-              
+
               // Number pad
               _buildNumberPad(),
-              
+
               const SizedBox(height: 32),
-              
+
               // Loading indicator
-              if (_isProcessing)
-                const CircularProgressIndicator(),
+              if (_isProcessing) const CircularProgressIndicator(),
             ],
           ),
         ),
@@ -91,13 +92,13 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
   Widget _buildProgressIndicator() {
     final totalSteps = widget.isChangingPin ? 3 : 2;
     final currentStepIndex = _getCurrentStepIndex();
-    
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(totalSteps, (index) {
         final isActive = index <= currentStepIndex;
         final isCompleted = index < currentStepIndex;
-        
+
         return Container(
           margin: const EdgeInsets.symmetric(horizontal: 4),
           width: 32,
@@ -118,7 +119,7 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
   Widget _buildTitleAndDescription() {
     String title;
     String description;
-    
+
     switch (_currentStep) {
       case PinSetupStep.enterOldPin:
         title = 'Enter Current PIN';
@@ -133,22 +134,22 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
         description = 'Enter your PIN again to confirm';
         break;
     }
-    
+
     return Column(
       children: [
         Text(
           title,
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.w500,
+              ),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 16),
         Text(
           description,
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-          ),
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
           textAlign: TextAlign.center,
         ),
       ],
@@ -157,7 +158,7 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
 
   Widget _buildPinDots() {
     List<String> currentPin;
-    
+
     switch (_currentStep) {
       case PinSetupStep.enterOldPin:
       case PinSetupStep.enterPin:
@@ -167,7 +168,7 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
         currentPin = _confirmPin;
         break;
     }
-    
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(_pinLength, (index) {
@@ -178,9 +179,7 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
           height: 20,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: isFilled
-                ? Theme.of(context).colorScheme.primary
-                : Theme.of(context).colorScheme.outline,
+            color: isFilled ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outline,
           ),
         );
       }),
@@ -200,7 +199,7 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
           ],
         ),
         const SizedBox(height: 16),
-        
+
         // Row 2: 4, 5, 6
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -211,7 +210,7 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
           ],
         ),
         const SizedBox(height: 16),
-        
+
         // Row 3: 7, 8, 9
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -222,7 +221,7 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
           ],
         ),
         const SizedBox(height: 16),
-        
+
         // Row 4: empty, 0, backspace
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -254,7 +253,7 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
 
   Widget _buildBackspaceButton() {
     List<String> currentPin;
-    
+
     switch (_currentStep) {
       case PinSetupStep.enterOldPin:
       case PinSetupStep.enterPin:
@@ -264,7 +263,7 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
         currentPin = _confirmPin;
         break;
     }
-    
+
     return EnhancedButton(
       onPressed: _isProcessing || currentPin.isEmpty ? null : _onBackspacePressed,
       style: ElevatedButton.styleFrom(
@@ -279,7 +278,7 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
 
   void _onNumberPressed(String number) {
     List<String> currentPin;
-    
+
     switch (_currentStep) {
       case PinSetupStep.enterOldPin:
       case PinSetupStep.enterPin:
@@ -289,16 +288,16 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
         currentPin = _confirmPin;
         break;
     }
-    
+
     if (currentPin.length < _pinLength) {
       setState(() {
         currentPin.add(number);
         _errorMessage = null;
       });
-      
+
       // Provide haptic feedback
       HapticFeedback.selectionClick();
-      
+
       // Process when PIN is complete
       if (currentPin.length == _pinLength) {
         _processPinInput();
@@ -308,7 +307,7 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
 
   void _onBackspacePressed() {
     List<String> currentPin;
-    
+
     switch (_currentStep) {
       case PinSetupStep.enterOldPin:
       case PinSetupStep.enterPin:
@@ -318,13 +317,13 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
         currentPin = _confirmPin;
         break;
     }
-    
+
     if (currentPin.isNotEmpty) {
       setState(() {
         currentPin.removeLast();
         _errorMessage = null;
       });
-      
+
       // Provide haptic feedback
       HapticFeedback.selectionClick();
     }
@@ -332,9 +331,9 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
 
   Future<void> _processPinInput() async {
     if (_isProcessing) return;
-    
+
     setState(() => _isProcessing = true);
-    
+
     try {
       switch (_currentStep) {
         case PinSetupStep.enterOldPin:
@@ -358,7 +357,7 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
     final oldPin = _enteredPin.join();
     final securityService = ref.read(securityServiceProvider);
     final isValid = await securityService.verifyPin(oldPin);
-    
+
     if (isValid) {
       _oldPin = oldPin;
       setState(() {
@@ -371,7 +370,7 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
         _enteredPin.clear();
         _errorMessage = 'Incorrect PIN. Please try again.';
       });
-      
+
       // Provide error haptic feedback
       HapticFeedback.heavyImpact();
     }
@@ -387,43 +386,41 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
   Future<void> _confirmAndSetupPin() async {
     final newPin = _enteredPin.join();
     final confirmPin = _confirmPin.join();
-    
+
     if (newPin != confirmPin) {
       setState(() {
         _confirmPin.clear();
         _errorMessage = 'PINs do not match. Please try again.';
       });
-      
+
       // Provide error haptic feedback
       HapticFeedback.heavyImpact();
       return;
     }
-    
+
     // Setup or change PIN
     final securityService = ref.read(securityServiceProvider);
     bool success;
-    
+
     if (widget.isChangingPin && _oldPin != null) {
       success = await securityService.changePin(_oldPin!, newPin);
     } else {
       success = await securityService.setupPin(newPin);
     }
-    
+
     if (success) {
       // Refresh security settings
       await ref.read(securitySettingsProvider.notifier).refresh();
-      
+
       if (mounted) {
         // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(widget.isChangingPin 
-                ? 'PIN changed successfully' 
-                : 'PIN set up successfully'),
+            content: Text(widget.isChangingPin ? 'PIN changed successfully' : 'PIN set up successfully'),
             backgroundColor: Theme.of(context).colorScheme.primary,
           ),
         );
-        
+
         // Navigate back or to biometric setup
         if (widget.isChangingPin) {
           Navigator.of(context).pop();
@@ -441,17 +438,17 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
   void _showBiometricSetupDialog() async {
     final securityService = ref.read(securityServiceProvider);
     final isBiometricAvailable = await securityService.isBiometricAvailable();
-    
+
     if (!isBiometricAvailable) {
       return;
     }
-    
+
     if (!mounted) {
       return;
     }
-    
+
     Navigator.of(context).pop();
-    
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -470,8 +467,7 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
           ),
           TextButton(
             onPressed: () async {
-              await ref.read(securitySettingsProvider.notifier)
-                  .setBiometricEnabled(true);
+              await ref.read(securitySettingsProvider.notifier).setBiometricEnabled(true);
               if (context.mounted) {
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();
@@ -502,5 +498,3 @@ enum PinSetupStep {
   enterPin,
   confirmPin,
 }
-
-

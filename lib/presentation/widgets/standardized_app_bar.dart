@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import '../../core/theme/typography_constants.dart';
+import 'universal_profile_picture.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Standardized AppBar widget for consistent design across all screens
@@ -14,6 +15,7 @@ class StandardizedAppBar extends StatelessWidget implements PreferredSizeWidget 
   final bool centerTitle;
   final Color? backgroundColor;
   final bool forceBackButton;
+  final bool showProfilePicture;
   
   const StandardizedAppBar({
     super.key,
@@ -26,8 +28,26 @@ class StandardizedAppBar extends StatelessWidget implements PreferredSizeWidget 
     this.centerTitle = false,
     this.backgroundColor,
     this.forceBackButton = true, // Always show back button by default
+    this.showProfilePicture = true, // Show profile picture by default
   });
   
+  /// Build the combined actions list with profile picture
+  List<Widget> _buildActions() {
+    final combinedActions = <Widget>[];
+    
+    // Add user-provided actions first
+    if (actions != null) {
+      combinedActions.addAll(actions!);
+    }
+    
+    // Add profile picture as the rightmost action
+    if (showProfilePicture) {
+      combinedActions.add(const UniversalProfilePicture());
+    }
+    
+    return combinedActions;
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -60,7 +80,7 @@ class StandardizedAppBar extends StatelessWidget implements PreferredSizeWidget 
           color: theme.colorScheme.onSurface,
         ),
       ),
-      actions: actions,
+      actions: _buildActions(),
       bottom: bottom,
       
       // Glassmorphism background effect

@@ -1,26 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
-// import 'package:font_awesome_flutter/font_awesome_flutter.dart'; // Temporarily disabled
 import '../widgets/standardized_app_bar.dart';
 import '../widgets/simple_theme_toggle.dart';
 import '../../domain/entities/task_audio_extensions.dart';
 import '../widgets/glassmorphism_container.dart';
 import '../widgets/enhanced_glass_button.dart';
-import '../widgets/status_badge_widget.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../core/design_system/design_tokens.dart';
-import '../../core/theme/material3/motion_system.dart';
-import '../widgets/enhanced_list_animations.dart';
 
 import '../providers/task_providers.dart';
+import '../providers/profile_providers.dart';
 import '../../core/providers/core_providers.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
 import '../../services/welcome_message_service.dart';
 import '../../core/routing/app_router.dart';
 
-import '../widgets/audio_indicator_widget.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Futuristic Material 3 Home Page
@@ -31,39 +27,17 @@ class HomePage extends ConsumerStatefulWidget {
   ConsumerState<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends ConsumerState<HomePage> 
-    with TickerProviderStateMixin {
-  late AnimationController _fadeController;
-  late AnimationController _scaleController;
-  late AnimationController _slideController;
+class _HomePageState extends ConsumerState<HomePage> {
   late ScrollController _scrollController;
   
   @override
   void initState() {
     super.initState();
-    _fadeController = AnimationController(
-      duration: ExpressiveMotionSystem.durationMedium4,
-      vsync: this,
-    )..forward();
-    
-    _scaleController = AnimationController(
-      duration: ExpressiveMotionSystem.durationLong2,
-      vsync: this,
-    )..forward();
-    
-    _slideController = AnimationController(
-      duration: ExpressiveMotionSystem.durationMedium3,
-      vsync: this,
-    )..forward();
-    
     _scrollController = ScrollController();
   }
   
   @override
   void dispose() {
-    _fadeController.dispose();
-    _scaleController.dispose();
-    _slideController.dispose();
     _scrollController.dispose();
     super.dispose();
   }
@@ -72,13 +46,21 @@ class _HomePageState extends ConsumerState<HomePage>
   Map<String, dynamic> _getWelcomeData() {
     final pendingTasks = ref.watch(pendingTasksProvider);
     final completedTasks = ref.watch(completedTasksProvider);
+    final profileAsync = ref.watch(currentProfileProvider);
     
     final pendingCount = pendingTasks.maybeWhen(data: (tasks) => tasks.length, orElse: () => 0);
     final completedCount = completedTasks.maybeWhen(data: (tasks) => tasks.length, orElse: () => 0);
     final totalCount = pendingCount + completedCount;
     
+    // Get user's first name from profile
+    final firstName = profileAsync.maybeWhen(
+      data: (profile) => profile?.firstName,
+      orElse: () => null,
+    );
+    
     final welcomeService = WelcomeMessageService();
     final welcomeMessage = welcomeService.getWelcomeMessage(
+      firstName: firstName,
       pendingTaskCount: pendingCount,
       completedToday: completedCount,
     );
@@ -94,6 +76,7 @@ class _HomePageState extends ConsumerState<HomePage>
       'taskSummary': taskSummary,
       'pendingCount': pendingCount,
       'completedCount': completedCount,
+      'firstName': firstName,
     };
   }
   
@@ -131,10 +114,13 @@ class _HomePageState extends ConsumerState<HomePage>
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   children: [
+                    // Sophisticated welcome - condensed for task focus
                     _buildWelcomeSection(context, theme),
-                    const SizedBox(height: 20),
-                    _buildTodayTasksSummarySection(context, theme),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: SpacingTokens.phi1), 
+                    // Task overview with detailed stats
+                    _buildTaskOverview(theme),
+                    const SizedBox(height: SpacingTokens.welcomeSpacing), // Golden ratio spacing
+                    // Tasks prioritized - moved to top for immediate focus
                     _buildTaskTabsSection(context, theme),
                   ],
                 ),
@@ -441,276 +427,67 @@ class _HomePageState extends ConsumerState<HomePage>
     );
   }
   
-  /// REVAMPED: Clean Summary Card with Perfect Alignment - NO motivational content
+  /// Personalized welcome section with elegant minimal design
   Widget _buildWelcomeSection(BuildContext context, ThemeData theme) {
-    return SlideTransition(
-      position: Tween<Offset>(
-        begin: const Offset(0, -0.2),
-        end: Offset.zero,
-      ).animate(CurvedAnimation(
-        parent: _slideController,
-        curve: ExpressiveMotionSystem.emphasizedDecelerate,
-      )),
-      child: GlassmorphismContainer(
-        level: GlassLevel.content, // Use content level for welcome section
-        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-        padding: const EdgeInsets.all(20.0),
-        child: Builder(builder: (context) {
-          final welcomeData = _getWelcomeData();
-          final pendingCount = welcomeData['pendingCount'] as int;
-          final completedCount = welcomeData['completedCount'] as int;
-          
-          // Get task data for summary
-          final pendingTasks = ref.watch(pendingTasksProvider);
-          final urgentCount = pendingTasks.maybeWhen(
-            data: (tasks) => tasks.where((task) => task.priority == TaskPriority.urgent).length,
-            orElse: () => 0,
-          );
-          final highCount = pendingTasks.maybeWhen(
-            data: (tasks) => tasks.where((task) => task.priority == TaskPriority.high).length,
-            orElse: () => 0,
-          );
-          
-          
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Welcome Header
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Good ${_getTimeOfDay()}!',
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w500,
+    return GlassmorphismContainer(
+      level: GlassLevel.whisper,  // Ultra-subtle background for elegance
+      borderRadius: BorderRadius.circular(BorderRadiusTokens.card),
+      padding: const EdgeInsets.all(SpacingTokens.elementPadding),
+      child: Builder(builder: (context) {
+        final welcomeData = _getWelcomeData();
+        final welcomeMessage = welcomeData['welcomeMessage'] as WelcomeMessage;
+        
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Personalized welcome greeting
+            Row(
+              children: [
+                if (welcomeMessage.icon != null) ...[
+                  Icon(
+                    welcomeMessage.icon!,
+                    size: 24,
+                    color: theme.colorScheme.primary,
+                  ),
+                  const SizedBox(width: 12),
+                ],
+                Expanded(
+                  child: Text(
+                    welcomeMessage.greeting,
+                    style: theme.textTheme.displaySmall?.copyWith(
+                      fontSize: 24.0,              // Premium display size
+                      fontWeight: FontWeight.w300, // Light weight for sophistication
+                      height: 1.3,                 // Refined line height
+                      letterSpacing: -0.2,         // Tighter for elegance
                       color: theme.colorScheme.onSurface,
                     ),
                   ),
-                  Text(
-                    'Here\'s your task overview',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
-              
-              const SizedBox(height: 16),
-              
-              // Text-based Task Summary with Bullets
-              GlassmorphismContainer(
-                level: GlassLevel.interactive,
-                borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Summary Header
-                    Row(
-                      children: [
-                        Icon(
-                          PhosphorIcons.listBullets(),
-                          size: 18,
-                          color: theme.colorScheme.primary,
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Today\'s Summary',
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color: theme.colorScheme.primary,
-                          ),
-                        ),
-                      ],
-                    ),
-                    
-                    const SizedBox(height: 12),
-                    
-                    // Bulleted Summary Text
-                    _buildBulletPoint(
-                      theme: theme,
-                      icon: PhosphorIcons.circle(),
-                      iconColor: theme.colorScheme.primary,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w300, // Light weight but readable
-                        height: 1.3, // Better line height for readability
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                      text: pendingCount == 0 
-                          ? 'All tasks are completed - great job!'
-                          : pendingCount == 1
-                              ? '1 task is pending completion'
-                              : '$pendingCount tasks are pending completion',
-                    ),
-                    
-                    if (urgentCount > 0) ...[
-                      _buildBulletPoint(
-                        theme: theme,
-                        icon: PhosphorIcons.arrowUp(),
-                        iconColor: theme.colorScheme.error,
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w300, // Light weight but readable
-                          height: 1.3, // Better line height for readability
-                          color: theme.colorScheme.onSurfaceVariant,
-                          fontFamily: 'Roboto', // Force standard font to bypass theme
-                          inherit: false, // Don't inherit theme properties
-                        ),
-                        text: urgentCount == 1
-                            ? '1 urgent task requires immediate attention'
-                            : '$urgentCount urgent tasks require immediate attention',
-                      ),
-                    ],
-                    
-                    if (highCount > 0) ...[
-                      _buildBulletPoint(
-                        theme: theme,
-                        icon: PhosphorIcons.arrowUp(),
-                        iconColor: theme.colorScheme.tertiary,
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w300, // Light weight but readable
-                          height: 1.3, // Better line height for readability
-                          color: theme.colorScheme.onSurfaceVariant,
-                          fontFamily: 'Roboto', // Force standard font to bypass theme
-                          inherit: false, // Don't inherit theme properties
-                        ),
-                        text: highCount == 1
-                            ? '1 high-priority task needs focus'
-                            : '$highCount high-priority tasks need focus',
-                      ),
-                    ],
-                    
-                    if (completedCount > 0) ...[
-                      _buildBulletPoint(
-                        theme: theme,
-                        icon: PhosphorIcons.checkCircle(),
-                        iconColor: theme.colorScheme.tertiary,
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w300, // Light weight but readable
-                          height: 1.3, // Better line height for readability
-                          color: theme.colorScheme.onSurfaceVariant,
-                          fontFamily: 'Roboto', // Force standard font to bypass theme
-                          inherit: false, // Don't inherit theme properties
-                        ),
-                        text: completedCount == 1
-                            ? '1 task completed today'
-                            : '$completedCount tasks completed today',
-                      ),
-                    ],
-                    
-                    // Motivational message if all done
-                    if (pendingCount == 0 && urgentCount == 0) ...[
-                      const SizedBox(height: 8),
-                      GlassmorphismContainer(
-                        level: GlassLevel.content,
-                        padding: const EdgeInsets.all(8),
-                        borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
-                        glassTint: theme.colorScheme.tertiary.withValues(alpha: 0.1),
-                        borderColor: theme.colorScheme.tertiary.withValues(alpha: 0.3),
-                        borderWidth: 1.0,
-                        child: Row(
-                          children: [
-                            Icon(
-                              PhosphorIcons.confetti(),
-                              size: 16,
-                              color: theme.colorScheme.tertiary,
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                'You\'re all caught up! Time to relax or plan ahead.',
-                                style: TextStyle(
-                                  fontSize: TypographyConstants.textXS,
-                                  color: theme.colorScheme.tertiary,
-                                  fontStyle: FontStyle.italic,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ],
                 ),
+              ],
+            ),
+            
+            const SizedBox(height: SpacingTokens.phi1), // Golden ratio spacing
+            
+            // Personalized subtitle (replacing the removed secondary text)
+            Text(
+              welcomeMessage.subtitle,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                fontSize: 15.0,              // Refined size for readability
+                fontWeight: FontWeight.w400, // Regular weight
+                height: 1.5,                 // Relaxed for scanning
+                letterSpacing: 0.1,          // Slight spacing for clarity
+                color: theme.colorScheme.onSurfaceVariant,
               ),
-            ],
-          );
-        }),
-      ),
+            ),
+          ],
+        );
+      }),
     );
   }
   
 
-  Widget _buildTodayTasksSummarySection(BuildContext context, ThemeData theme) {
-    final allTasks = ref.watch(tasksProvider);
-    final completedTasks = ref.watch(completedTasksProvider);
-    
-    final summaryCards = [
-      // Card 1: Total Completed Tasks
-      _buildTodaySummaryCard(
-        theme: theme,
-        title: 'Finished',
-        subtitle: _getTotalCompletedText(completedTasks),
-        count: 2, // Show fixed count of 2
-        icon: PhosphorIcons.checkSquare(),
-        iconColor: Colors.green,
-        onTap: () => AppRouter.navigateToRoute(context, AppRouter.analytics),
-      ),
-      
-      // Card 3: Weekly Progress
-      _buildTodaySummaryCard(
-        theme: theme,
-        title: 'This Week',
-        subtitle: _getWeeklyProgressText(allTasks, completedTasks),
-        count: _getWeeklyCompletionPercentage(allTasks, completedTasks),
-        icon: PhosphorIcons.trendUp(),
-        iconColor: Colors.blue,
-        onTap: () => AppRouter.navigateToRoute(context, AppRouter.analytics),
-      ),
-    ];
-    
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Section title
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4.0),
-          child: Text(
-            'Insights',
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w500,
-              color: theme.colorScheme.onSurface,
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        // Summary cards
-        Row(
-          children: [
-            for (int i = 0; i < summaryCards.length; i++) ...[
-              Expanded(
-                child: AnimatedListItem(
-                  pattern: AnimationPattern.slideUp,
-                  duration: Duration(milliseconds: 300 + (i * 150)),
-                  child: summaryCards[i],
-                ),
-              ),
-              if (i < summaryCards.length - 1) const SizedBox(width: 12),
-            ],
-          ],
-        ),
-        const SizedBox(height: 16),
-        // Task Analytics Section
-        _buildTaskAnalyticsSection(context, theme),
-      ],
-    );
-  }
-  
-  // Task Analytics Section
-  Widget _buildTaskAnalyticsSection(BuildContext context, ThemeData theme) {
+  /// Builds the main task overview section with quick stats and insights
+  Widget _buildTaskOverview(ThemeData theme) {
     final allTasks = ref.watch(tasksProvider);
     
     return allTasks.when(
@@ -787,163 +564,6 @@ class _HomePageState extends ConsumerState<HomePage>
       },
     );
   }
-  
-  // Helper methods for new summary cards
-  
-  
-  /// Get total completed tasks count
-  int _getTotalCompletedCount(AsyncValue<List<TaskModel>> completedTasksAsync) {
-    return completedTasksAsync.maybeWhen(
-      data: (tasks) => tasks.length,
-      orElse: () => 0,
-    );
-  }
-  
-  /// Get descriptive text for total completed tasks
-  String _getTotalCompletedText(AsyncValue<List<TaskModel>> completedTasksAsync) {
-    final count = _getTotalCompletedCount(completedTasksAsync);
-    if (count == 0) return 'Get started!';
-    if (count < 5) return 'Great start';
-    if (count < 20) return 'Building momentum';
-    if (count < 50) return 'Getting productive';
-    if (count < 100) return 'Highly productive';
-    return 'Task master!';
-  }
-  
-  
-  int _getWeeklyCompletionPercentage(AsyncValue<List<TaskModel>> allTasksAsync, AsyncValue<List<TaskModel>> completedTasksAsync) {
-    return allTasksAsync.maybeWhen(
-      data: (allTasks) => completedTasksAsync.maybeWhen(
-        data: (completedTasks) {
-          final now = DateTime.now();
-          final weekStart = now.subtract(Duration(days: now.weekday - 1));
-          final weekStartDate = DateTime(weekStart.year, weekStart.month, weekStart.day);
-          final weekEnd = weekStartDate.add(const Duration(days: 7));
-          
-          // Tasks due this week
-          final weekTasks = allTasks.where((task) => 
-            task.dueDate != null &&
-            task.dueDate!.isAfter(weekStartDate) &&
-            task.dueDate!.isBefore(weekEnd)
-          ).toList();
-          
-          if (weekTasks.isEmpty) return 0;
-          
-          // Tasks completed this week
-          final weekCompletedTasks = weekTasks.where((task) => 
-            task.status == TaskStatus.completed
-          ).length;
-          
-          return ((weekCompletedTasks / weekTasks.length) * 100).round();
-        },
-        orElse: () => 0,
-      ),
-      orElse: () => 0,
-    );
-  }
-  
-  String _getWeeklyProgressText(AsyncValue<List<TaskModel>> allTasksAsync, AsyncValue<List<TaskModel>> completedTasksAsync) {
-    final percentage = _getWeeklyCompletionPercentage(allTasksAsync, completedTasksAsync);
-    if (percentage == 0) return 'Just started';
-    if (percentage < 25) return 'Getting going';
-    if (percentage < 50) return 'Making progress';
-    if (percentage < 75) return 'Strong week';
-    if (percentage < 100) return 'Almost there!';
-    return 'Perfect week!';
-  }
-  
-
-  /// Build today's summary card for the enhanced welcome section
-  Widget _buildTodaySummaryCard({
-    required ThemeData theme,
-    required String title,
-    required String subtitle,
-    required int? count,
-    required IconData icon,
-    required Color iconColor,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: GlassmorphismContainer(
-        level: GlassLevel.content,
-        // Remove fixed height to prevent overflow
-        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Icon and count row
-            Row(
-              children: [
-                // Icon with enhanced glassmorphism background
-                GlassmorphismContainer(
-                  level: GlassLevel.interactive,
-                  width: 36,
-                  height: 36,
-                  borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
-                  glassTint: iconColor.withValues(alpha: 0.15),
-                  borderColor: iconColor.withValues(alpha: 0.3),
-                  borderWidth: 1.0,
-                  child: Icon(
-                    icon,
-                    size: 20,
-                    color: iconColor,
-                  ),
-                ),
-                
-                // Count beside the icon
-                if (count != null) ...[
-                  const SizedBox(width: 16),
-                  Text(
-                    count.toString(),
-                    style: theme.textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.w500,
-                      color: theme.colorScheme.onSurface,
-                      fontSize: TypographyConstants.textXL,
-                    ),
-                  ),
-                ],
-              ],
-            ),
-            
-            const SizedBox(height: 16), // Add consistent spacing
-            
-            // Content section with consistent spacing
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Title
-                Text(
-                  title,
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: theme.colorScheme.onSurface,
-                    fontSize: TypographyConstants.textSM,
-                  ),
-                ),
-                
-                const SizedBox(height: 2),
-                
-                // Subtitle
-                Text(
-                  subtitle,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                    fontSize: TypographyConstants.textXS,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
 
   Widget _buildEmptyState(ThemeData theme) {
     return Center(
@@ -1150,105 +770,84 @@ Shared from Tasky - Task Management App
     );
   }
   
-  /// Build task tabs section with Today's, Overdue, and Future Tasks
-  /// FIXED: Perfect Tab Selection with Horizontal Scroll and Proper Logic
+  /// Sophisticated task tabs with text-only elegance and positive psychology
   Widget _buildTaskTabsSection(BuildContext context, ThemeData theme) {
     return DefaultTabController(
       length: 3,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Fixed Tab Bar with Perfect Padding and Horizontal Scroll
-          GlassmorphismContainer(
-            level: GlassLevel.interactive, // Use interactive level for tab bar
-            borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-            padding: EdgeInsets.zero,
-            child: SizedBox(
-              height: 48.0,  // Fixed height for consistent alignment
+          // Sophisticated tab bar with elegant styling
+          Container(
+            height: 56, // Increased for touch accessibility
+            padding: const EdgeInsets.all(4), // 4px padding
             child: TabBar(
-              // ENHANCED: Beautiful selection indicator with improved glow
+              // Sophisticated gradient indicator for premium feel
               indicator: BoxDecoration(
-                color: theme.colorScheme.primary,
-                borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),  // Standardized 5px
-                boxShadow: [
-                  BoxShadow(
-                    color: theme.colorScheme.primary.withValues(alpha: 0.4),  // Increased opacity for better visibility
-                    blurRadius: 8.0,  // Increased blur for more prominent glow
-                    spreadRadius: 1.0,  // Added spread for wider glow effect
-                    offset: const Offset(0, 2),  // Slightly larger offset for depth
-                  ),
-                  // Additional subtle inner glow
-                  BoxShadow(
-                    color: theme.colorScheme.primary.withValues(alpha: 0.2),
-                    blurRadius: 4.0,
-                    spreadRadius: 0.5,
-                    offset: const Offset(0, 1),
-                  ),
-                ],
+                borderRadius: BorderRadius.circular(8),
+                gradient: LinearGradient(
+                  colors: [
+                    theme.colorScheme.primary.withValues(alpha: 0.1),
+                    theme.colorScheme.primary.withValues(alpha: 0.05),
+                  ],
+                ),
+                border: Border.all(
+                  color: theme.colorScheme.primary.withValues(alpha: 0.2),
+                  width: 0.5, // Ultra-thin for sophistication
+                ),
               ),
               
-              // FIXED: Proper colors and styling
-              labelColor: theme.colorScheme.onPrimary,
+              // Sophisticated typography and colors
+              labelColor: theme.colorScheme.primary,
               unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
               dividerColor: Colors.transparent,
               indicatorSize: TabBarIndicatorSize.tab,
               
-              // FIXED: Perfect horizontal scrolling
-              isScrollable: true,
-              tabAlignment: TabAlignment.start,  // Align tabs to start for better UX
-              
-              // FIXED: Perfect padding and spacing
-              labelPadding: const EdgeInsets.symmetric(horizontal: 16.0),  // Consistent padding
-              padding: const EdgeInsets.all(4.0),  // Inner container padding
+              // Elegant text styling
+              labelStyle: const TextStyle(
+                fontSize: 16, // titleMedium for clarity
+                fontWeight: FontWeight.w400, // Regular weight for sophistication
+                letterSpacing: 0.1, // Subtle letter spacing
+              ),
+              unselectedLabelStyle: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w300, // Light weight for unselected
+                letterSpacing: 0.1,
+              ),
               
               tabs: [
+                // Text-only tabs for sophisticated elegance
                 Semantics(
                   label: 'Today\'s tasks tab',
                   hint: 'View tasks due today',
                   button: true,
-                  child: _buildFixedTab(
-                    icon: PhosphorIcons.calendar(),
-                    selectedIcon: PhosphorIcons.calendar(),
-                    label: 'Today',
-                    theme: theme,
-                  ),
+                  child: const Tab(text: 'Today'),
                 ),
                 Semantics(
-                  label: 'Overdue tasks tab',
-                  hint: 'View overdue tasks',
+                  label: 'Focus tasks tab', // Positive psychology
+                  hint: 'View tasks requiring focus',
                   button: true,
-                  child: _buildFixedTab(
-                    icon: PhosphorIcons.warning(),
-                    selectedIcon: PhosphorIcons.warning(),
-                    label: 'Overdue',
-                    theme: theme,
-                  ),
+                  child: const Tab(text: 'Focus'), // Renamed from 'Overdue' for positive psychology
                 ),
                 Semantics(
-                  label: 'Future tasks tab',
-                  hint: 'View upcoming tasks',
+                  label: 'Planned tasks tab',
+                  hint: 'View planned upcoming tasks',
                   button: true,
-                  child: _buildFixedTab(
-                    icon: PhosphorIcons.clock(),
-                    selectedIcon: PhosphorIcons.clock(),
-                    label: 'Future',
-                    theme: theme,
-                  ),
+                  child: const Tab(text: 'Planned'), // Renamed from 'Future' for clarity
                 ),
               ],
             ),
-            ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: SpacingTokens.tabSpacing), // Golden ratio spacing
           
-          // Tab content with proper FAB padding
+          // Task content prioritized - increased from 65% to 75% of screen height
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.65, // Increased height for better task visibility
+            height: MediaQuery.of(context).size.height * 0.75, // More space for tasks
             child: TabBarView(
               children: [
                 _buildTodayTasksList(context, theme),
-                _buildOverdueTasksList(context, theme),
-                _buildFutureTasksList(context, theme),
+                _buildFocusTasksList(context, theme), // Renamed for positive psychology
+                _buildPlannedTasksList(context, theme), // Renamed for clarity
               ],
             ),
           ),
@@ -1260,44 +859,7 @@ Shared from Tasky - Task Management App
     );
   }
   
-  /// ENHANCED: Helper method to build perfectly aligned tab with larger, more visible elements
-  Widget _buildFixedTab({
-    required IconData icon,
-    required IconData selectedIcon,
-    required String label,
-    required ThemeData theme,
-  }) {
-    return Tab(
-      height: 42.0,  // Reduced height for more compact tabs
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),  // Reduced padding
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(
-              icon,  // Will show selected/unselected based on tab state
-              size: 20.0,  // Reduced to 20px for better proportion
-            ),
-            const SizedBox(width: 8.0),  // Reduced spacing
-            Flexible(  // Prevent text overflow
-              child: Text(
-                label,
-                style: const TextStyle(
-                  fontSize: TypographyConstants.textSM,  // Use small text size (14px)
-                  fontWeight: TypographyConstants.medium,  // Medium weight for readability
-                  letterSpacing: 0.2,
-                ),
-                overflow: TextOverflow.ellipsis,  // Handle long text gracefully
-                maxLines: 1,  // Ensure single line to prevent cutoff
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  // Removed _buildFixedTab method - using simple text-only tabs for sophistication
 
   /// Build today's tasks list
   Widget _buildTodayTasksList(BuildContext context, ThemeData theme) {
@@ -1361,8 +923,8 @@ Shared from Tasky - Task Management App
     );
   }
 
-  /// Build overdue tasks list
-  Widget _buildOverdueTasksList(BuildContext context, ThemeData theme) {
+  /// Build focus tasks list (renamed for positive psychology)
+  Widget _buildFocusTasksList(BuildContext context, ThemeData theme) {
     final overdueTasks = ref.watch(overdueTasksProvider);
     
     return overdueTasks.when(
@@ -1396,8 +958,8 @@ Shared from Tasky - Task Management App
     );
   }
 
-  /// Build future tasks list
-  Widget _buildFutureTasksList(BuildContext context, ThemeData theme) {
+  /// Build planned tasks list (renamed for clarity)
+  Widget _buildPlannedTasksList(BuildContext context, ThemeData theme) {
     final allTasks = ref.watch(tasksProvider);
     
     return allTasks.when(
@@ -1440,40 +1002,58 @@ Shared from Tasky - Task Management App
     );
   }
 
-  /// Build compact task card
+  /// Sophisticated task card with golden ratio proportions and premium aesthetics
   Widget _buildCompactTaskCard(TaskModel task, ThemeData theme, {bool isOverdue = false}) {
     return Container(
-      height: 100, // Increased height to accommodate stacked badges
-      margin: const EdgeInsets.only(bottom: 8),
+      height: SpacingTokens.taskCardHeight, // Golden ratio optimized height
+      margin: const EdgeInsets.only(bottom: SpacingTokens.taskCardMargin), // 8px margin
       child: GlassmorphismContainer(
-        level: GlassLevel.content, // Use content level for compact task cards
-        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+        level: GlassLevel.whisper, // Ultra-subtle for sophisticated task focus
+        borderRadius: BorderRadius.circular(SpacingTokens.taskCardRadius), // Sophisticated corner radius
         padding: EdgeInsets.zero,
         child: InkWell(
           onTap: () => AppRouter.navigateToTaskDetail(context, task.id),
           onLongPress: () => _showTaskContextMenu(context, task),
-          borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+          borderRadius: BorderRadius.circular(SpacingTokens.taskCardRadius),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            padding: const EdgeInsets.all(SpacingTokens.taskCardPadding), // Golden ratio padding
             child: Row(
               children: [
-                // Category-based task icon (big) on the left
-                GlassmorphismContainer(
-                  level: GlassLevel.interactive,
-                  width: 48,
-                  height: 48,
-                  borderRadius: BorderRadius.circular(12),
-                  glassTint: _getCategoryColor(task.tags.isNotEmpty ? task.tags.first : 'default').withValues(alpha: 0.15),
-                  borderColor: _getCategoryColor(task.tags.isNotEmpty ? task.tags.first : 'default').withValues(alpha: 0.3),
-                  borderWidth: 1.5,
-                  child: Icon(
-                    _getCategoryIcon(task.tags.isNotEmpty ? task.tags.first : 'default'),
-                    color: _getCategoryColor(task.tags.isNotEmpty ? task.tags.first : 'default'),
-                    size: 24,
-                  ),
+                // Sophisticated category indicator with icon and accent bar
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Elegant vertical accent bar
+                    Container(
+                      width: 4,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        color: _getCategoryColor(task.tags.isNotEmpty ? task.tags.first : 'default'),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    const SizedBox(width: SpacingTokens.phi1), // Golden ratio spacing
+                    // Sophisticated category icon
+                    Container(
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        color: _getCategoryColor(task.tags.isNotEmpty ? task.tags.first : 'default').withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(
+                          color: _getCategoryColor(task.tags.isNotEmpty ? task.tags.first : 'default').withValues(alpha: 0.2),
+                          width: 0.5,
+                        ),
+                      ),
+                      child: Icon(
+                        _getCategoryIcon(task.tags.isNotEmpty ? task.tags.first : 'default'),
+                        size: 16,
+                        color: _getCategoryColor(task.tags.isNotEmpty ? task.tags.first : 'default'),
+                      ),
+                    ),
+                    const SizedBox(width: SpacingTokens.phi1), // Golden ratio spacing
+                  ],
                 ),
-                
-                const SizedBox(width: 16),
                 
                 // Title and description in the middle (takes up most space)
                 Expanded(
@@ -1488,81 +1068,96 @@ Shared from Tasky - Task Management App
                             child: Text(
                               task.title,
                               style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.w600,
-                                color: theme.colorScheme.onSurface, // Ensure theme-aware color
+                                fontWeight: FontWeight.w500, // Sophisticated medium weight
+                                color: theme.colorScheme.onSurface,
                                 decoration: task.status == TaskStatus.completed
                                     ? TextDecoration.lineThrough
                                     : null,
-                                height: 1.2,
+                                height: 1.3, // Refined line height for readability
+                                letterSpacing: 0.1, // Subtle letter spacing for elegance
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          // Audio indicator for voice tasks
+                          // Sophisticated audio indicator for voice tasks
                           if (task.hasVoiceMetadata) ...[
-                            const SizedBox(width: 6),
-                            AudioIndicatorWidget(
-                              task: task,
-                              size: 20, // Increased from 14 to make it more visible
-                              // Remove onTap override - let it use default audio play behavior
+                            const SizedBox(width: 4), // 4px spacing
+                            Container(
+                              width: 24,
+                              height: 24,
+                              decoration: BoxDecoration(
+                                color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: theme.colorScheme.primary.withValues(alpha: 0.2),
+                                  width: 0.5,
+                                ),
+                              ),
+                              child: Icon(
+                                PhosphorIcons.waveform(),
+                                size: 14,
+                                color: theme.colorScheme.primary,
+                              ),
                             ),
                           ],
                         ],
                       ),
                       
-                      // Task description (single line, maxed)
-                      if (task.description?.isNotEmpty == true) ...[
-                        const SizedBox(height: 4),
-                        Text(
-                          task.description!,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                            height: 1.2,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                      // Elegant task metadata - priority only for sophisticated simplicity
+                      if (task.priority != TaskPriority.medium) ...[
+                        const SizedBox(height: 4), // 4px spacing
+                        Row(
+                          children: [
+                            Icon(
+                              task.priority == TaskPriority.urgent
+                                  ? PhosphorIcons.arrowUp()
+                                  : PhosphorIcons.caretUp(),
+                              size: 12,
+                              color: task.priority == TaskPriority.urgent
+                                  ? theme.colorScheme.error
+                                  : theme.colorScheme.secondary,
+                            ),
+                            const SizedBox(width: 4), // 4px spacing
+                            Text(
+                              task.priority.name.toUpperCase(),
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w500,
+                                color: task.priority == TaskPriority.urgent
+                                    ? theme.colorScheme.error
+                                    : theme.colorScheme.secondary,
+                                letterSpacing: 0.5, // Wide letter spacing for labels
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ],
                   ),
                 ),
                 
-                const SizedBox(width: 16),
-                
-                // Status and priority badges stacked vertically on the right
-                SizedBox(
-                  width: 100, // Fixed width for badges
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      // Priority badge on top
-                      PriorityBadgeWidget(
-                        priority: task.priority,
-                        showText: false,
-                        compact: false,
-                        fontSize: 11, // labelSmall size - correct
+                // Sophisticated completion indicator on the right
+                if (task.status == TaskStatus.completed) ...[
+                  const SizedBox(width: 16), // 16px spacing
+                  Container(
+                    width: 20,
+                    height: 20,
+                    decoration: BoxDecoration(
+                      color: Colors.green.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: Colors.green.withValues(alpha: 0.3),
+                        width: 0.5,
                       ),
-                      
-                      const SizedBox(height: 6),
-                      
-                      // Status badge below priority
-                      StatusBadgeWidget(
-                        status: task.status,
-                        showText: false,
-                        compact: false,
-                        fontSize: 11, // labelSmall size - correct
-                      ),
-                      
-                      // Progress indicator if applicable
-                      if (task.subTasks.isNotEmpty || task.status == TaskStatus.inProgress) ...[
-                        const SizedBox(height: 6),
-                        _buildProgressIndicator(task, theme),
-                      ],
-                    ],
+                    ),
+                    child: Icon(
+                      PhosphorIcons.check(),
+                      size: 12,
+                      color: Colors.green,
+                    ),
                   ),
-                ),
+                ],
               ],
             ),
           ),
@@ -1570,6 +1165,7 @@ Shared from Tasky - Task Management App
       ),
     );
   }
+
 
 
   /// Get category-based icon for task cards
@@ -1612,7 +1208,7 @@ Shared from Tasky - Task Management App
       case 'important':
         return PhosphorIcons.star();
       default:
-        return PhosphorIcons.checkSquare(); // Default task icon
+        return PhosphorIcons.checkSquare();
     }
   }
 
@@ -1663,51 +1259,6 @@ Shared from Tasky - Task Management App
   }
 
   /// Build progress indicator for task cards
-  Widget _buildProgressIndicator(TaskModel task, ThemeData theme) {
-    if (task.subTasks.isEmpty && task.status != TaskStatus.inProgress) {
-      return const SizedBox.shrink();
-    }
-
-    double progress = 0.0;
-    String progressText = '';
-
-    if (task.subTasks.isNotEmpty) {
-      final completedSubtasks = task.subTasks.where((s) => s.isCompleted).length;
-      progress = completedSubtasks / task.subTasks.length;
-      progressText = '$completedSubtasks/${task.subTasks.length}';
-    } else if (task.status == TaskStatus.inProgress) {
-      progress = 0.5; // Show 50% for in-progress tasks without subtasks
-      progressText = 'Working';
-    }
-
-    return SizedBox(
-      width: 60,
-      height: 16, // Fixed height to prevent overflow
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          LinearProgressIndicator(
-            value: progress,
-            minHeight: 2,
-            backgroundColor: theme.colorScheme.outline.withValues(alpha: 0.2),
-            valueColor: AlwaysStoppedAnimation<Color>(
-              _getCategoryColor(task.tags.isNotEmpty ? task.tags.first : 'default'),
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            progressText,
-            style: theme.textTheme.labelSmall?.copyWith(
-              fontWeight: FontWeight.w500,
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
-      ),
-    );
-  }
 
   /// Build empty tasks list state
   Widget _buildEmptyTasksList(ThemeData theme, String message, IconData icon) {
@@ -1772,56 +1323,6 @@ Shared from Tasky - Task Management App
 
 
   /// Generate natural language task summary
-
-  
-  /// Build individual bullet point with consistent styling
-  Widget _buildBulletPoint({
-    required ThemeData theme,
-    required IconData icon,
-    required Color iconColor,
-    required String text,
-    required TextStyle? style,
-    bool isSubBullet = false,
-  }) {
-    return Padding(
-      padding: EdgeInsets.only(
-        bottom: 8.0,
-        left: isSubBullet ? 24.0 : 0.0,
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          GlassmorphismContainer(
-            level: GlassLevel.content,
-            width: 20,
-            height: 20,
-            margin: const EdgeInsets.only(right: 12, top: 2),
-            borderRadius: BorderRadius.circular(10),
-            glassTint: iconColor.withValues(alpha: 0.15),
-            child: Icon(
-              icon,
-              size: isSubBullet ? 12 : 14,
-              color: iconColor,
-            ),
-          ),
-          Expanded(
-            child: Text(
-              text,
-              style: style, // Use the provided style without overriding fontSize
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// Get time-based greeting
-  String _getTimeOfDay() {
-    final hour = DateTime.now().hour;
-    if (hour < 12) return 'morning';
-    if (hour < 17) return 'afternoon';
-    return 'evening';
-  }
 
   /// Build quick stat widget for improved density
   Widget _buildQuickStat({

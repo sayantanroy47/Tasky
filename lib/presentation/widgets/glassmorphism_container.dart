@@ -179,6 +179,8 @@ class GlassmorphismContainer extends StatelessWidget {
   /// Get default blur value for a given glass level (static helper)
   static double _getDefaultBlurForLevel(GlassLevel level) {
     switch (level) {
+      case GlassLevel.whisper:
+        return 3.0;
       case GlassLevel.background:
         return 5.0;
       case GlassLevel.content:
@@ -193,6 +195,8 @@ class GlassmorphismContainer extends StatelessWidget {
   /// Get default opacity for a given glass level (static helper)
   static double _getDefaultOpacityForLevel(GlassLevel level) {
     switch (level) {
+      case GlassLevel.whisper:
+        return 0.05;
       case GlassLevel.background:
         return 0.1;
       case GlassLevel.content:
@@ -207,6 +211,8 @@ class GlassmorphismContainer extends StatelessWidget {
   /// Get default border width for a given glass level (static helper)
   static double _getDefaultBorderWidthForLevel(GlassLevel level) {
     switch (level) {
+      case GlassLevel.whisper:
+        return 0.3;
       case GlassLevel.background:
         return 0.5;
       case GlassLevel.content:

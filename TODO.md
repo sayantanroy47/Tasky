@@ -237,7 +237,7 @@
 ### REQ 20: Typography Bold Font Removal
 - [ ] **Remove bold fonts** from typography system
   - **File:** `lib/core/theme/app_typography.dart`
-  - **Action:** Replace all FontWeight.bold with normal weights
+  - **Action:** Replace all FontWeight.w500 with normal weights
 - [ ] **Update all typography references**
   - **Files:** All UI components using bold fonts
   - **Action:** Ensure no bold fonts are used anywhere

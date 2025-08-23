@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'glassmorphism_container.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+
 import '../../core/theme/typography_constants.dart';
-import '../../domain/entities/task_model.dart';
 import '../../domain/entities/subtask.dart';
+import '../../domain/entities/task_model.dart';
 import '../providers/subtask_providers.dart';
 import '../providers/task_provider.dart';
 import 'custom_dialogs.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'glassmorphism_container.dart';
 
 /// Widget for displaying and managing subtasks within a task
 class SubTaskList extends ConsumerStatefulWidget {
@@ -31,11 +32,12 @@ class _SubTaskListState extends ConsumerState<SubTaskList> {
     _newSubTaskController.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final completionPercentageAsync = ref.watch(subtaskCompletionPercentageProvider(widget.task.id));
-    
+
     return GlassmorphismContainer(
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       child: Padding(
@@ -51,11 +53,12 @@ class _SubTaskListState extends ConsumerState<SubTaskList> {
                   style: theme.textTheme.titleMedium,
                 ),
                 const Spacer(),
-                
+
                 // Progress indicator
                 completionPercentageAsync.when(
                   data: (percentage) => _buildProgressIndicator(theme, percentage),
-                  loading: () => const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
+                  loading: () =>
+                      const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
                   error: (_, __) => const SizedBox(),
                 ),
                 if (widget.task.hasSubTasks)
@@ -67,7 +70,7 @@ class _SubTaskListState extends ConsumerState<SubTaskList> {
                   ),
               ],
             ),
-            
+
             // Progress indicator
             if (widget.task.hasSubTasks) ...[
               const SizedBox(height: 8),
@@ -79,9 +82,9 @@ class _SubTaskListState extends ConsumerState<SubTaskList> {
                 ),
               ),
             ],
-            
+
             const SizedBox(height: 16),
-            
+
             // Subtasks list
             if (widget.task.hasSubTasks)
               ...widget.task.subTasks.asMap().entries.map((entry) {
@@ -97,19 +100,15 @@ class _SubTaskListState extends ConsumerState<SubTaskList> {
                   onReorder: widget.isEditable ? (newIndex) => _reorderSubTask(index, newIndex) : null,
                 );
               }),
-            
+
             // Add new subtask section
             if (widget.isEditable) ...[
               const SizedBox(height: 8),
-              if (_isAddingSubTask)
-                _buildAddSubTaskForm(theme)
-              else
-                _buildAddSubTaskButton(theme),
+              if (_isAddingSubTask) _buildAddSubTaskForm(theme) else _buildAddSubTaskButton(theme),
             ],
-            
+
             // Empty state
-            if (!widget.task.hasSubTasks && !_isAddingSubTask)
-              _buildEmptyState(theme),
+            if (!widget.task.hasSubTasks && !_isAddingSubTask) _buildEmptyState(theme),
           ],
         ),
       ),
@@ -167,7 +166,7 @@ class _SubTaskListState extends ConsumerState<SubTaskList> {
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           border: Border.all(
-            color: theme.colorScheme.outline.withValues(alpha:  0.1),
+            color: theme.colorScheme.outline.withValues(alpha: 0.1),
             style: BorderStyle.solid,
           ),
           borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
@@ -200,7 +199,7 @@ class _SubTaskListState extends ConsumerState<SubTaskList> {
           Icon(
             PhosphorIcons.listChecks(),
             size: 48,
-            color: theme.colorScheme.onSurfaceVariant.withValues(alpha:  0.1),
+            color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.1),
           ),
           const SizedBox(height: 12),
           Text(
@@ -213,7 +212,7 @@ class _SubTaskListState extends ConsumerState<SubTaskList> {
           Text(
             'Break down this task into smaller steps',
             style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant.withValues(alpha:  0.1),
+              color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.1),
             ),
             textAlign: TextAlign.center,
           ),
@@ -235,7 +234,7 @@ class _SubTaskListState extends ConsumerState<SubTaskList> {
         child: Text(
           '${(percentage * 100).round()}%',
           style: theme.textTheme.labelSmall?.copyWith(
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w500,
             color: theme.colorScheme.onPrimaryContainer,
           ),
         ),
@@ -270,10 +269,8 @@ class _SubTaskListState extends ConsumerState<SubTaskList> {
   }
 
   void _toggleSubTask(SubTask subTask) {
-    final updatedSubTask = subTask.isCompleted 
-        ? subTask.markIncomplete() 
-        : subTask.markCompleted();
-    
+    final updatedSubTask = subTask.isCompleted ? subTask.markIncomplete() : subTask.markCompleted();
+
     final updatedTask = widget.task.updateSubTask(updatedSubTask);
     ref.read(taskOperationsProvider).updateTask(updatedTask);
   }
@@ -348,7 +345,7 @@ class _SubTaskItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Container(
       margin: const EdgeInsets.only(bottom: 4),
       child: Material(
@@ -365,35 +362,31 @@ class _SubTaskItem extends StatelessWidget {
                   Icon(
                     PhosphorIcons.dotsSixVertical(),
                     size: 16,
-                    color: theme.colorScheme.onSurfaceVariant.withValues(alpha:  0.1),
+                    color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.1),
                   ),
                   const SizedBox(width: 8),
                 ],
-                
+
                 // Checkbox
                 Checkbox(
                   value: subTask.isCompleted,
                   onChanged: isEditable ? (_) => onToggle() : null,
                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
-                
+
                 const SizedBox(width: 8),
-                
+
                 // Title
                 Expanded(
                   child: Text(
                     subTask.title,
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      decoration: subTask.isCompleted 
-                          ? TextDecoration.lineThrough 
-                          : null,
-                      color: subTask.isCompleted 
-                          ? theme.colorScheme.onSurfaceVariant 
-                          : theme.colorScheme.onSurface,
+                      decoration: subTask.isCompleted ? TextDecoration.lineThrough : null,
+                      color: subTask.isCompleted ? theme.colorScheme.onSurfaceVariant : theme.colorScheme.onSurface,
                     ),
                   ),
                 ),
-                
+
                 // Actions menu
                 if (isEditable)
                   PopupMenuButton<String>(
@@ -460,11 +453,13 @@ class _EditSubTaskDialogState extends State<_EditSubTaskDialog> {
     super.initState();
     _controller = TextEditingController(text: widget.subTask.title);
   }
+
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -499,5 +494,3 @@ class _EditSubTaskDialogState extends State<_EditSubTaskDialog> {
     }
   }
 }
-
-

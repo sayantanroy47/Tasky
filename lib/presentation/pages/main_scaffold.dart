@@ -764,13 +764,10 @@ class CenterDockedFloatingActionButtonLocation extends FloatingActionButtonLocat
     // Calculate horizontal center
     final double fabX = (scaffoldGeometry.scaffoldSize.width - fabSize) / 2.0;
     
-    // Account for bottom insets (system navigation bar)
-    final double bottomInsets = scaffoldGeometry.minInsets.bottom;
-    
     // Calculate vertical center within the bottom navigation bar
     // Position FAB so its center aligns with the center of the 80px toolbar
-    // Account for system insets to move FAB up when navigation bar appears
-    final double fabY = scaffoldGeometry.scaffoldSize.height - bottomNavHeight - bottomInsets + (bottomNavHeight - fabSize) / 2.0;
+    // Fixed position - ignore system insets to prevent FAB movement
+    final double fabY = scaffoldGeometry.scaffoldSize.height - bottomNavHeight + (bottomNavHeight - fabSize) / 2.0;
     
     return Offset(fabX, fabY);
   }

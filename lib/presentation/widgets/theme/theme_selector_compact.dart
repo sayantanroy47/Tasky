@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-// import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import '../../../core/theme/typography_constants.dart';
+
 import '../../../core/providers/enhanced_theme_provider.dart';
 import '../../../core/theme/app_theme_data.dart';
+import '../../../core/theme/typography_constants.dart';
 
 /// Compact theme selector for app bars and settings
 class CompactThemeSelector extends ConsumerWidget {
@@ -103,7 +103,7 @@ class CompactThemeSelector extends ConsumerWidget {
               child: Text(
                 theme.metadata.name,
                 style: const TextStyle(
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ),
@@ -135,7 +135,7 @@ class CompactThemeSelector extends ConsumerWidget {
                 Text(
                   theme.metadata.name,
                   style: TextStyle(
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                    fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
                   ),
                 ),
                 Text(
@@ -187,9 +187,7 @@ class CompactThemeSelector extends ConsumerWidget {
   }
 
   String _formatCategory(String category) {
-    return category.split('_').map((word) => 
-        word.substring(0, 1).toUpperCase() + word.substring(1)
-    ).join(' ');
+    return category.split('_').map((word) => word.substring(0, 1).toUpperCase() + word.substring(1)).join(' ');
   }
 }
 
@@ -242,7 +240,7 @@ class ThemeHistorySelector extends ConsumerWidget {
           child: Text(
             'Recent Themes',
             style: TextStyle(
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w500,
               fontSize: 12,
             ),
           ),
@@ -294,17 +292,15 @@ class ThemeCategoryQuickSelector extends ConsumerWidget {
           child: Text(
             'Theme Categories',
             style: TextStyle(
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w500,
               fontSize: 12,
             ),
           ),
         ),
         const PopupMenuDivider(),
         ...categories.map((category) {
-          final categoryThemes = ref
-              .read(enhancedThemeProvider.notifier)
-              .getThemesByCategory(category);
-          
+          final categoryThemes = ref.read(enhancedThemeProvider.notifier).getThemesByCategory(category);
+
           return PopupMenuItem<String>(
             value: category,
             child: Row(
@@ -330,12 +326,15 @@ class ThemeCategoryQuickSelector extends ConsumerWidget {
                 // Show category color swatches
                 Row(
                   mainAxisSize: MainAxisSize.min,
-                  children: categoryThemes.take(3).map((theme) =>
-                    Padding(
-                      padding: const EdgeInsets.only(left: 2),
-                      child: _buildColorSwatch(theme.colors.primary, 8),
-                    ),
-                  ).toList(),
+                  children: categoryThemes
+                      .take(3)
+                      .map(
+                        (theme) => Padding(
+                          padding: const EdgeInsets.only(left: 2),
+                          child: _buildColorSwatch(theme.colors.primary, 8),
+                        ),
+                      )
+                      .toList(),
                 ),
               ],
             ),
@@ -374,9 +373,7 @@ class ThemeCategoryQuickSelector extends ConsumerWidget {
   }
 
   String _formatCategoryName(String category) {
-    return category.split('_').map((word) => 
-        word.substring(0, 1).toUpperCase() + word.substring(1)
-    ).join(' ');
+    return category.split('_').map((word) => word.substring(0, 1).toUpperCase() + word.substring(1)).join(' ');
   }
 
   Widget _buildColorSwatch(Color color, double size) {
@@ -395,10 +392,8 @@ class ThemeCategoryQuickSelector extends ConsumerWidget {
   }
 
   void _showCategoryThemes(BuildContext context, WidgetRef ref, String category) {
-    final themes = ref
-        .read(enhancedThemeProvider.notifier)
-        .getThemesByCategory(category);
-    
+    final themes = ref.read(enhancedThemeProvider.notifier).getThemesByCategory(category);
+
     showModalBottomSheet(
       context: context,
       builder: (context) => Container(
@@ -411,7 +406,7 @@ class ThemeCategoryQuickSelector extends ConsumerWidget {
               _formatCategoryName(category),
               style: const TextStyle(
                 fontSize: 18,
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w500,
               ),
             ),
             const SizedBox(height: 16),
@@ -468,4 +463,3 @@ class ThemeCategoryQuickSelector extends ConsumerWidget {
     );
   }
 }
-

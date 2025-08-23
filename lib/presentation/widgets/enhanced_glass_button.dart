@@ -323,6 +323,8 @@ class _EnhancedGlassButtonState extends State<EnhancedGlassButton>
         return theme.colorScheme.surface.withValues(alpha: 0.2);
       case GlassLevel.background:
         return theme.colorScheme.surface.withValues(alpha: 0.1);
+      case GlassLevel.whisper:
+        return theme.colorScheme.surface.withValues(alpha: 0.05);
     }
   }
 
@@ -332,6 +334,8 @@ class _EnhancedGlassButtonState extends State<EnhancedGlassButton>
         return theme.colorScheme.primary.withValues(alpha: 0.4);
       case GlassLevel.interactive:
         return theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5);
+      case GlassLevel.whisper:
+        return theme.colorScheme.surface.withValues(alpha: 0.1);
       case GlassLevel.content:
         return theme.colorScheme.surface.withValues(alpha: 0.4);
       case GlassLevel.background:

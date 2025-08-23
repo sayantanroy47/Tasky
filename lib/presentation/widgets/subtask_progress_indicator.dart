@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../providers/subtask_providers.dart';
 
 /// Compact subtask progress indicator for task cards
@@ -44,7 +45,7 @@ class SubtaskProgressIndicator extends ConsumerWidget {
                 ),
               ),
             ),
-            
+
             // Count text
             if (showCount) ...[
               const SizedBox(width: 4),
@@ -160,7 +161,7 @@ class SubtaskCompletionBadge extends ConsumerWidget {
             style: theme.textTheme.bodySmall?.copyWith(
               color: Colors.white,
               fontSize: 10,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w500,
             ),
           ),
         );

@@ -1,9 +1,10 @@
 import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
-import '../../../core/theme/app_theme_data.dart';
-import '../../../core/theme/typography_constants.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../core/theme/app_theme_data.dart';
+import '../../../core/theme/typography_constants.dart';
 
 /// Epic theme preview card with distinctive visuals for each theme
 class EpicThemePreviewCard extends StatefulWidget {
@@ -22,14 +23,12 @@ class EpicThemePreviewCard extends StatefulWidget {
   State<EpicThemePreviewCard> createState() => _EpicThemePreviewCardState();
 }
 
-class _EpicThemePreviewCardState extends State<EpicThemePreviewCard>
-    with TickerProviderStateMixin {
+class _EpicThemePreviewCardState extends State<EpicThemePreviewCard> with TickerProviderStateMixin {
   late AnimationController _hoverController;
   late AnimationController _effectController;
   late Animation<double> _hoverAnimation;
   late Animation<double> _effectAnimation;
   bool _isHovered = false;
-
 
   @override
   void initState() {
@@ -109,9 +108,7 @@ class _EpicThemePreviewCardState extends State<EpicThemePreviewCard>
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard * 2),
         border: Border.all(
-          color: widget.isSelected 
-              ? colors.primary.withValues(alpha: 0.8)
-              : colors.outline.withValues(alpha: 0.3),
+          color: widget.isSelected ? colors.primary.withValues(alpha: 0.8) : colors.outline.withValues(alpha: 0.3),
           width: widget.isSelected ? 3.0 : 1.5,
         ),
         boxShadow: [
@@ -136,7 +133,7 @@ class _EpicThemePreviewCardState extends State<EpicThemePreviewCard>
           children: [
             // Epic Theme-Specific Background
             _buildEpicBackground(themeId, colors, isDark),
-            
+
             // Gradient Overlay for better text readability
             Container(
               decoration: BoxDecoration(
@@ -151,7 +148,7 @@ class _EpicThemePreviewCardState extends State<EpicThemePreviewCard>
                 ),
               ),
             ),
-            
+
             // Epic Content Layout
             Padding(
               padding: const EdgeInsets.all(20),
@@ -184,7 +181,7 @@ class _EpicThemePreviewCardState extends State<EpicThemePreviewCard>
                           size: 28,
                         ),
                       ),
-                      
+
                       // Selection indicator
                       if (widget.isSelected)
                         Container(
@@ -208,9 +205,9 @@ class _EpicThemePreviewCardState extends State<EpicThemePreviewCard>
                         ),
                     ],
                   ),
-                  
+
                   const Spacer(),
-                  
+
                   // Epic Color Palette Display
                   Container(
                     padding: const EdgeInsets.all(16),
@@ -231,15 +228,15 @@ class _EpicThemePreviewCardState extends State<EpicThemePreviewCard>
                           style: TextStyle(
                             color: colors.onSurface,
                             fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.w500,
                             letterSpacing: 0.5,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        
+
                         const SizedBox(height: 8),
-                        
+
                         // Epic color swatches
                         Row(
                           children: [
@@ -248,15 +245,18 @@ class _EpicThemePreviewCardState extends State<EpicThemePreviewCard>
                             _buildEpicColorSwatch(colors.secondary, 'Secondary'),
                             const SizedBox(width: 8),
                             _buildEpicColorSwatch(colors.accent, 'Accent'),
-                            
+
                             const Spacer(),
-                            
+
                             // Popularity score with epic styling
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
-                                  colors: [colors.primary.withValues(alpha: 0.8), colors.secondary.withValues(alpha: 0.6)],
+                                  colors: [
+                                    colors.primary.withValues(alpha: 0.8),
+                                    colors.secondary.withValues(alpha: 0.6)
+                                  ],
                                 ),
                                 borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                                 boxShadow: [
@@ -281,7 +281,7 @@ class _EpicThemePreviewCardState extends State<EpicThemePreviewCard>
                                     style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 12,
-                                      fontWeight: FontWeight.bold,
+                                      fontWeight: FontWeight.w500,
                                     ),
                                   ),
                                 ],
@@ -289,9 +289,9 @@ class _EpicThemePreviewCardState extends State<EpicThemePreviewCard>
                             ),
                           ],
                         ),
-                        
+
                         const SizedBox(height: 8),
-                        
+
                         // Theme description with better styling
                         Text(
                           metadata.description,
@@ -348,8 +348,9 @@ class _EpicThemePreviewCardState extends State<EpicThemePreviewCard>
           ),
         ),
         // Animated matrix rain effect
-        ...List.generate(8, (i) => 
-          Positioned(
+        ...List.generate(
+          8,
+          (i) => Positioned(
             left: (i * 35.0) % 200,
             top: (_effectAnimation.value * 300 + i * 50) % 320 - 40,
             child: Text(
@@ -485,4 +486,3 @@ class _EpicThemePreviewCardState extends State<EpicThemePreviewCard>
     );
   }
 }
-

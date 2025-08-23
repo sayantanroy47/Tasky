@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../widgets/standardized_app_bar.dart';
-import '../widgets/share_intent_settings_widget.dart';
-import '../../services/integration_service.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+
 import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import '../../services/integration_service.dart';
+import '../widgets/share_intent_settings_widget.dart';
+import '../widgets/standardized_app_bar.dart';
 
 class IntegrationSettingsScreen extends ConsumerStatefulWidget {
   const IntegrationSettingsScreen({super.key});
@@ -36,6 +37,7 @@ class _IntegrationSettingsScreenState extends ConsumerState<IntegrationSettingsS
       });
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,19 +54,15 @@ class _IntegrationSettingsScreenState extends ConsumerState<IntegrationSettingsS
                   _buildSectionHeader('Share Intent Settings'),
                   const ShareIntentSettingsWidget(),
                   const SizedBox(height: 24),
-                  
                   _buildSectionHeader('Messaging Apps'),
                   _buildMessagingAppsSection(),
                   const SizedBox(height: 24),
-                  
                   _buildSectionHeader('Quick Actions'),
                   _buildQuickActionsSection(),
                   const SizedBox(height: 24),
-                  
                   _buildSectionHeader('Widgets'),
                   _buildWidgetsSection(),
                   const SizedBox(height: 24),
-                  
                   _buildSectionHeader('Test Integration'),
                   _buildTestSection(),
                 ],
@@ -79,12 +77,11 @@ class _IntegrationSettingsScreenState extends ConsumerState<IntegrationSettingsS
       child: Text(
         title,
         style: Theme.of(context).textTheme.titleLarge?.copyWith(
-          fontWeight: FontWeight.bold,
-        ),
+              fontWeight: FontWeight.w500,
+            ),
       ),
     );
   }
-
 
   Widget _buildMessagingAppsSection() {
     return Card(
@@ -99,7 +96,7 @@ class _IntegrationSettingsScreenState extends ConsumerState<IntegrationSettingsS
                 const SizedBox(width: 8),
                 const Text(
                   'Messaging App Integration',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(fontWeight: FontWeight.w500),
                 ),
               ],
             ),
@@ -160,7 +157,7 @@ class _IntegrationSettingsScreenState extends ConsumerState<IntegrationSettingsS
                 const SizedBox(width: 8),
                 const Text(
                   'Quick Actions',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(fontWeight: FontWeight.w500),
                 ),
               ],
             ),
@@ -209,7 +206,7 @@ class _IntegrationSettingsScreenState extends ConsumerState<IntegrationSettingsS
                 const SizedBox(width: 8),
                 const Text(
                   'Home Screen Widgets',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(fontWeight: FontWeight.w500),
                 ),
               ],
             ),
@@ -219,14 +216,14 @@ class _IntegrationSettingsScreenState extends ConsumerState<IntegrationSettingsS
             ),
             const SizedBox(height: 16),
             ...widgetTypes.map((widget) => ListTile(
-              leading: Icon(PhosphorIcons.square()),
-              title: Text(widget['name'] as String),
-              subtitle: Text(widget['description'] as String),
-              trailing: TextButton(
-                onPressed: () => _configureWidget(widget['type'] as String),
-                child: const Text('Configure'),
-              ),
-            )),
+                  leading: Icon(PhosphorIcons.square()),
+                  title: Text(widget['name'] as String),
+                  subtitle: Text(widget['description'] as String),
+                  trailing: TextButton(
+                    onPressed: () => _configureWidget(widget['type'] as String),
+                    child: const Text('Configure'),
+                  ),
+                )),
           ],
         ),
       ),
@@ -246,7 +243,7 @@ class _IntegrationSettingsScreenState extends ConsumerState<IntegrationSettingsS
                 const SizedBox(width: 8),
                 const Text(
                   'Test Integration',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(fontWeight: FontWeight.w500),
                 ),
               ],
             ),
@@ -285,7 +282,7 @@ class _IntegrationSettingsScreenState extends ConsumerState<IntegrationSettingsS
   Future<void> _testShareToApp(String packageName) async {
     try {
       final integrationService = ref.read(integrationServiceProvider);
-      
+
       // Create a test task
       final testTask = TaskModel(
         id: 'test_${DateTime.now().millisecondsSinceEpoch}',
@@ -303,7 +300,7 @@ class _IntegrationSettingsScreenState extends ConsumerState<IntegrationSettingsS
       );
 
       final success = await integrationService.shareTask(testTask, targetApp: packageName);
-      
+
       if (success) {
         _showSnackBar('Test task shared successfully!', Colors.green);
       } else {
@@ -317,15 +314,15 @@ class _IntegrationSettingsScreenState extends ConsumerState<IntegrationSettingsS
   Future<void> _testShareIntent() async {
     try {
       final integrationService = ref.read(integrationServiceProvider);
-      
+
       // Simulate shared content
       const testContent = 'Buy groceries tomorrow at 3 PM - high priority task with shopping tag';
-      
+
       final task = await integrationService.handleSharedContent(
         testContent,
         sourceApp: 'test_app',
       );
-      
+
       if (task != null) {
         _showSnackBar('Test share intent processed successfully!', Colors.green);
       } else {
@@ -339,12 +336,12 @@ class _IntegrationSettingsScreenState extends ConsumerState<IntegrationSettingsS
   Future<void> _testQuickTask() async {
     try {
       final integrationService = ref.read(integrationServiceProvider);
-      
+
       final task = await integrationService.handleShortcutAction(
         'CREATE_QUICK_TASK',
         {'title': 'Test Quick Task', 'description': 'Created from integration test'},
       );
-      
+
       if (task != null) {
         _showSnackBar('Test quick task created successfully!', Colors.green);
       } else {
@@ -395,4 +392,3 @@ class _IntegrationSettingsScreenState extends ConsumerState<IntegrationSettingsS
     );
   }
 }
-

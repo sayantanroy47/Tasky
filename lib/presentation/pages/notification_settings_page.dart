@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../widgets/standardized_app_bar.dart';
-import '../widgets/theme_background_widget.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+
+import '../../core/design_system/design_tokens.dart';
+import '../../core/theme/typography_constants.dart';
+import '../../services/notification/notification_models.dart' as models;
+import '../providers/notification_providers.dart';
 import '../widgets/glassmorphism_container.dart';
 import '../widgets/modern_radio_widgets.dart';
-import '../../core/design_system/design_tokens.dart';
-
-import '../providers/notification_providers.dart';
-import '../../services/notification/notification_models.dart' as models;
-import '../../core/theme/typography_constants.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import '../widgets/standardized_app_bar.dart';
+import '../widgets/theme_background_widget.dart';
 
 /// Page for configuring notification settings
 class NotificationSettingsPage extends ConsumerWidget {
@@ -25,42 +25,42 @@ class NotificationSettingsPage extends ConsumerWidget {
         extendBodyBehindAppBar: true,
         appBar: const StandardizedAppBar(title: 'Notification Settings'),
         body: settingsAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(PhosphorIcons.warningCircle(), size: 64, color: Colors.red),
-              const SizedBox(height: 16),
-              Text('Error loading settings: $error'),
-              const SizedBox(height: 16),
-              GlassmorphismContainer(
-                level: GlassLevel.interactive,
-                borderRadius: BorderRadius.circular(8),
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: () => ref.refresh(notificationSettingsProvider),
-                    borderRadius: BorderRadius.circular(8),
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                      child: Text(
-                        'Retry',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, stack) => Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(PhosphorIcons.warningCircle(), size: 64, color: Colors.red),
+                const SizedBox(height: 16),
+                Text('Error loading settings: $error'),
+                const SizedBox(height: 16),
+                GlassmorphismContainer(
+                  level: GlassLevel.interactive,
+                  borderRadius: BorderRadius.circular(8),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () => ref.refresh(notificationSettingsProvider),
+                      borderRadius: BorderRadius.circular(8),
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        child: Text(
+                          'Retry',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
+          data: (settings) => _buildSettingsContent(context, ref, settings, permissionsAsync),
         ),
-        data: (settings) => _buildSettingsContent(context, ref, settings, permissionsAsync),
       ),
-    ),
     );
   }
 
@@ -117,68 +117,67 @@ class NotificationSettingsPage extends ConsumerWidget {
       level: GlassLevel.content,
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Permissions',
-              style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            permissionsAsync.when(
-              loading: () => const LinearProgressIndicator(),
-              error: (error, stack) => Text('Error: $error'),
-              data: (hasPermissions) => Row(
-                children: [
-                  Icon(
-                    hasPermissions ? PhosphorIcons.checkCircle() : PhosphorIcons.warningCircle(),
-                    color: hasPermissions ? Colors.green : Colors.red,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Permissions',
+            style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.w500),
+          ),
+          const SizedBox(height: 16),
+          permissionsAsync.when(
+            loading: () => const LinearProgressIndicator(),
+            error: (error, stack) => Text('Error: $error'),
+            data: (hasPermissions) => Row(
+              children: [
+                Icon(
+                  hasPermissions ? PhosphorIcons.checkCircle() : PhosphorIcons.warningCircle(),
+                  color: hasPermissions ? Colors.green : Colors.red,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    hasPermissions ? 'Notification permissions granted' : 'Notification permissions required',
                   ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      hasPermissions
-                          ? 'Notification permissions granted'
-                          : 'Notification permissions required',
-                    ),
-                  ),
-                  if (!hasPermissions)
-                    GlassmorphismContainer(
-                      level: GlassLevel.interactive,
-                      borderRadius: BorderRadius.circular(8),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: () => ref.read(notificationPermissionsProvider.notifier).requestPermissions(),
-                          borderRadius: BorderRadius.circular(8),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
-                                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                              borderRadius: BorderRadius.circular(8),
+                ),
+                if (!hasPermissions)
+                  GlassmorphismContainer(
+                    level: GlassLevel.interactive,
+                    borderRadius: BorderRadius.circular(8),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () => ref.read(notificationPermissionsProvider.notifier).requestPermissions(),
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
+                                Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
                             ),
-                            child: const Text(
-                              'Grant',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
-                              ),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Text(
+                            'Grant',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ),
                       ),
                     ),
-                ],
-              ),
+                  ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -191,38 +190,38 @@ class NotificationSettingsPage extends ConsumerWidget {
       level: GlassLevel.content,
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'General',
-              style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            SwitchListTile(
-              title: const Text('Enable Notifications'),
-              subtitle: const Text('Turn on/off all notifications'),
-              value: settings.enabled,
-              onChanged: (value) => ref.read(notificationSettingsProvider.notifier).toggleNotifications(value),
-            ),
-            SwitchListTile(
-              title: const Text('Overdue Task Notifications'),
-              subtitle: const Text('Get notified when tasks become overdue'),
-              value: settings.overdueNotifications,
-              onChanged: settings.enabled
-                  ? (value) => ref.read(notificationSettingsProvider.notifier).toggleOverdueNotifications(value)
-                  : null,
-            ),
-            SwitchListTile(
-              title: const Text('Vibration'),
-              subtitle: const Text('Vibrate when receiving notifications'),
-              value: settings.vibrate,
-              onChanged: settings.enabled
-                  ? (value) => ref.read(notificationSettingsProvider.notifier).toggleVibration(value)
-                  : null,
-            ),
-          ],
-        ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'General',
+            style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.w500),
+          ),
+          const SizedBox(height: 16),
+          SwitchListTile(
+            title: const Text('Enable Notifications'),
+            subtitle: const Text('Turn on/off all notifications'),
+            value: settings.enabled,
+            onChanged: (value) => ref.read(notificationSettingsProvider.notifier).toggleNotifications(value),
+          ),
+          SwitchListTile(
+            title: const Text('Overdue Task Notifications'),
+            subtitle: const Text('Get notified when tasks become overdue'),
+            value: settings.overdueNotifications,
+            onChanged: settings.enabled
+                ? (value) => ref.read(notificationSettingsProvider.notifier).toggleOverdueNotifications(value)
+                : null,
+          ),
+          SwitchListTile(
+            title: const Text('Vibration'),
+            subtitle: const Text('Vibrate when receiving notifications'),
+            value: settings.vibrate,
+            onChanged: settings.enabled
+                ? (value) => ref.read(notificationSettingsProvider.notifier).toggleVibration(value)
+                : null,
+          ),
+        ],
+      ),
     );
   }
 
@@ -235,22 +234,23 @@ class NotificationSettingsPage extends ConsumerWidget {
       level: GlassLevel.content,
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Task Reminders',
-              style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            ListTile(
-              title: const Text('Default Reminder Time'),
-              subtitle: Text(_formatDuration(settings.defaultReminder)),
-              trailing: Icon(PhosphorIcons.caretRight()),
-              enabled: settings.enabled,
-              onTap: settings.enabled ? () => _showReminderTimePicker(context, ref, settings) : null,
-            ),
-          ],
-        ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Task Reminders',
+            style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.w500),
+          ),
+          const SizedBox(height: 16),
+          ListTile(
+            title: const Text('Default Reminder Time'),
+            subtitle: Text(_formatDuration(settings.defaultReminder)),
+            trailing: Icon(PhosphorIcons.caretRight()),
+            enabled: settings.enabled,
+            onTap: settings.enabled ? () => _showReminderTimePicker(context, ref, settings) : null,
+          ),
+        ],
+      ),
     );
   }
 
@@ -263,32 +263,33 @@ class NotificationSettingsPage extends ConsumerWidget {
       level: GlassLevel.content,
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Daily Summary',
-              style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            SwitchListTile(
-              title: const Text('Daily Summary'),
-              subtitle: const Text('Get a summary of your tasks each morning'),
-              value: settings.dailySummary,
-              onChanged: settings.enabled
-                  ? (value) => ref.read(notificationSettingsProvider.notifier).toggleDailySummary(value)
-                  : null,
-            ),
-            ListTile(
-              title: const Text('Summary Time'),
-              subtitle: Text(_formatNotificationTime(settings.dailySummaryTime)),
-              trailing: Icon(PhosphorIcons.caretRight()),
-              enabled: settings.enabled && settings.dailySummary,
-              onTap: settings.enabled && settings.dailySummary
-                  ? () => _showTimePicker(context, ref, settings.dailySummaryTime)
-                  : null,
-            ),
-          ],
-        ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Daily Summary',
+            style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.w500),
+          ),
+          const SizedBox(height: 16),
+          SwitchListTile(
+            title: const Text('Daily Summary'),
+            subtitle: const Text('Get a summary of your tasks each morning'),
+            value: settings.dailySummary,
+            onChanged: settings.enabled
+                ? (value) => ref.read(notificationSettingsProvider.notifier).toggleDailySummary(value)
+                : null,
+          ),
+          ListTile(
+            title: const Text('Summary Time'),
+            subtitle: Text(_formatNotificationTime(settings.dailySummaryTime)),
+            trailing: Icon(PhosphorIcons.caretRight()),
+            enabled: settings.enabled && settings.dailySummary,
+            onTap: settings.enabled && settings.dailySummary
+                ? () => _showTimePicker(context, ref, settings.dailySummaryTime)
+                : null,
+          ),
+        ],
+      ),
     );
   }
 
@@ -303,54 +304,49 @@ class NotificationSettingsPage extends ConsumerWidget {
       level: GlassLevel.content,
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Quiet Hours',
-              style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.bold),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Quiet Hours',
+            style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.w500),
+          ),
+          const SizedBox(height: 16),
+          if (hasQuietHours) ...[
+            ListTile(
+              title: const Text('Start Time'),
+              subtitle: Text(_formatNotificationTime(settings.quietHoursStart!)),
+              trailing: Icon(PhosphorIcons.caretRight()),
+              enabled: settings.enabled,
+              onTap: settings.enabled ? () => _showQuietHoursStartPicker(context, ref, settings) : null,
             ),
-            const SizedBox(height: 16),
-            if (hasQuietHours) ...[
-              ListTile(
-                title: const Text('Start Time'),
-                subtitle: Text(_formatNotificationTime(settings.quietHoursStart!)),
-                trailing: Icon(PhosphorIcons.caretRight()),
-                enabled: settings.enabled,
-                onTap: settings.enabled
-                    ? () => _showQuietHoursStartPicker(context, ref, settings)
-                    : null,
-              ),
-              ListTile(
-                title: const Text('End Time'),
-                subtitle: Text(_formatNotificationTime(settings.quietHoursEnd!)),
-                trailing: Icon(PhosphorIcons.caretRight()),
-                enabled: settings.enabled,
-                onTap: settings.enabled
-                    ? () => _showQuietHoursEndPicker(context, ref, settings)
-                    : null,
-              ),
-              ListTile(
-                title: const Text('Remove Quiet Hours'),
-                leading: Icon(PhosphorIcons.trash()),
-                enabled: settings.enabled,
-                onTap: settings.enabled
-                    ? () => ref.read(notificationSettingsProvider.notifier).setQuietHours(null, null)
-                    : null,
-              ),
-            ] else ...[
-              ListTile(
-                title: const Text('Set Quiet Hours'),
-                subtitle: const Text('No notifications during specified hours'),
-                leading: Icon(PhosphorIcons.moon()),
-                trailing: Icon(PhosphorIcons.caretRight()),
-                enabled: settings.enabled,
-                onTap: settings.enabled
-                    ? () => _showQuietHoursSetup(context, ref)
-                    : null,
-              ),
-            ],
+            ListTile(
+              title: const Text('End Time'),
+              subtitle: Text(_formatNotificationTime(settings.quietHoursEnd!)),
+              trailing: Icon(PhosphorIcons.caretRight()),
+              enabled: settings.enabled,
+              onTap: settings.enabled ? () => _showQuietHoursEndPicker(context, ref, settings) : null,
+            ),
+            ListTile(
+              title: const Text('Remove Quiet Hours'),
+              leading: Icon(PhosphorIcons.trash()),
+              enabled: settings.enabled,
+              onTap: settings.enabled
+                  ? () => ref.read(notificationSettingsProvider.notifier).setQuietHours(null, null)
+                  : null,
+            ),
+          ] else ...[
+            ListTile(
+              title: const Text('Set Quiet Hours'),
+              subtitle: const Text('No notifications during specified hours'),
+              leading: Icon(PhosphorIcons.moon()),
+              trailing: Icon(PhosphorIcons.caretRight()),
+              enabled: settings.enabled,
+              onTap: settings.enabled ? () => _showQuietHoursSetup(context, ref) : null,
+            ),
           ],
-        ),
+        ],
+      ),
     );
   }
 
@@ -363,27 +359,27 @@ class NotificationSettingsPage extends ConsumerWidget {
       level: GlassLevel.content,
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Advanced',
-              style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            SwitchListTile(
-              title: const Text('Respect Do Not Disturb'),
-              subtitle: const Text('Honor system do-not-disturb settings'),
-              value: settings.respectDoNotDisturb,
-              onChanged: settings.enabled
-                  ? (value) {
-                      final updatedSettings = settings.copyWith(respectDoNotDisturb: value);
-                      ref.read(notificationSettingsProvider.notifier).updateSettings(updatedSettings);
-                    }
-                  : null,
-            ),
-          ],
-        ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Advanced',
+            style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.w500),
+          ),
+          const SizedBox(height: 16),
+          SwitchListTile(
+            title: const Text('Respect Do Not Disturb'),
+            subtitle: const Text('Honor system do-not-disturb settings'),
+            value: settings.respectDoNotDisturb,
+            onChanged: settings.enabled
+                ? (value) {
+                    final updatedSettings = settings.copyWith(respectDoNotDisturb: value);
+                    ref.read(notificationSettingsProvider.notifier).updateSettings(updatedSettings);
+                  }
+                : null,
+          ),
+        ],
+      ),
     );
   }
 
@@ -392,68 +388,133 @@ class NotificationSettingsPage extends ConsumerWidget {
       level: GlassLevel.content,
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Test',
-              style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            GlassmorphismContainer(
-              level: GlassLevel.interactive,
-              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: () async {
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Test',
+            style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.w500),
+          ),
+          const SizedBox(height: 16),
+          GlassmorphismContainer(
+            level: GlassLevel.interactive,
+            borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () async {
+                  try {
+                    // Check if notifications are enabled first
+                    final settings = ref.read(notificationSettingsProvider).value;
+                    if (settings != null && !settings.enabled) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Please enable notifications first'),
+                            backgroundColor: Colors.orange,
+                          ),
+                        );
+                      }
+                      return;
+                    }
+
+                    // Check permissions
+                    final permissionsAsync = ref.read(notificationPermissionsProvider);
+                    final hasPermissions = permissionsAsync.maybeWhen(
+                      data: (value) => value,
+                      orElse: () => false,
+                    );
+
+                    if (!hasPermissions) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Please grant notification permissions first'),
+                            backgroundColor: Colors.orange,
+                          ),
+                        );
+                      }
+                      return;
+                    }
+
+                    // Ensure plugin is initialized
+                    final notificationManager = ref.read(notificationManagerProvider);
+                    final isInitialized = await notificationManager.initialize();
+
+                    if (!isInitialized) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Failed to initialize notifications'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                      return;
+                    }
+
+                    // Send test notification
                     final testNotification = ref.read(testNotificationProvider);
                     await testNotification();
-                    
+
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Test notification sent!')),
+                        const SnackBar(
+                          content: Text('Test notification sent!'),
+                          backgroundColor: Colors.green,
+                        ),
                       );
                     }
-                  },
-                  borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
-                          Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          PhosphorIcons.bell(),
-                          color: Colors.white,
+                  } catch (error) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Failed to send test notification: $error'),
+                          backgroundColor: Colors.red,
+                          duration: const Duration(seconds: 4),
                         ),
-                        const SizedBox(width: 8),
-                        const Text(
-                          'Send Test Notification',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                      );
+                    }
+                  }
+                },
+                borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
+                        Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
                       ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
+                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        PhosphorIcons.bell(),
+                        color: Colors.white,
+                      ),
+                      const SizedBox(width: 8),
+                      const Text(
+                        'Send Test Notification',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -495,12 +556,12 @@ class NotificationSettingsPage extends ConsumerWidget {
         content: ModernRadioGroup<Duration>(
           groupValue: settings.defaultReminder,
           onChanged: (value) => Navigator.of(context).pop(value),
-          options: durations.map((duration) => 
-            ModernRadioOption<Duration>(
-              value: duration,
-              title: Text(_formatDuration(duration)),
-            )
-          ).toList(),
+          options: durations
+              .map((duration) => ModernRadioOption<Duration>(
+                    value: duration,
+                    title: Text(_formatDuration(duration)),
+                  ))
+              .toList(),
         ),
         actions: [
           TextButton(
@@ -584,9 +645,7 @@ class NotificationSettingsPage extends ConsumerWidget {
               child: const Text('Cancel'),
             ),
             TextButton(
-              onPressed: startTime != null && endTime != null
-                  ? () => Navigator.of(context).pop(true)
-                  : null,
+              onPressed: startTime != null && endTime != null ? () => Navigator.of(context).pop(true) : null,
               child: const Text('Set'),
             ),
           ],
@@ -637,5 +696,3 @@ class NotificationSettingsPage extends ConsumerWidget {
     }
   }
 }
-
-

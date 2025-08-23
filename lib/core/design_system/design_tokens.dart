@@ -5,63 +5,77 @@ import '../theme/typography_constants.dart';
 class DesignTokens {
   DesignTokens._();
 
-  /// Glass hierarchy levels with consistent properties
+  /// Sophisticated glass hierarchy with refined blur values for premium aesthetics
   static const Map<GlassLevel, GlassProperties> glassHierarchy = {
+    GlassLevel.whisper: GlassProperties(
+      blurRadius: 3.0,        // Ultra-subtle for sophisticated backgrounds
+      opacity: 0.02,          // Whisper-light transparency
+      borderOpacity: 0.05,    // Barely visible borders
+      shadowElevation: 0,
+      borderWidth: 0.5,
+    ),
     GlassLevel.background: GlassProperties(
-      blurRadius: 10.0,
-      opacity: 0.05,
-      borderOpacity: 0.1,
+      blurRadius: 6.0,        // Reduced from 10.0 for elegance
+      opacity: 0.04,          // Refined transparency
+      borderOpacity: 0.08,    // Subtle definition
       shadowElevation: 0,
       borderWidth: 0.5,
     ),
     GlassLevel.content: GlassProperties(
-      blurRadius: 15.0,
-      opacity: 0.1,
-      borderOpacity: 0.15,
-      shadowElevation: 2,
-      borderWidth: 0.8,
+      blurRadius: 8.0,        // Reduced from 15.0 for clarity
+      opacity: 0.06,          // Refined for readability
+      borderOpacity: 0.12,    // Clear content boundaries
+      shadowElevation: 1,
+      borderWidth: 0.5,       // Ultra-thin for sophistication
     ),
     GlassLevel.interactive: GlassProperties(
-      blurRadius: 20.0,
-      opacity: 0.15,
-      borderOpacity: 0.2,
-      shadowElevation: 4,
-      borderWidth: 1.0,
+      blurRadius: 10.0,       // Reduced from 20.0 for responsiveness
+      opacity: 0.08,          // Subtle interaction feedback
+      borderOpacity: 0.15,    // Clear interactive boundaries
+      shadowElevation: 2,
+      borderWidth: 0.5,       // Consistent thin borders
     ),
     GlassLevel.floating: GlassProperties(
-      blurRadius: 25.0,
-      opacity: 0.2,
-      borderOpacity: 0.25,
-      shadowElevation: 8,
-      borderWidth: 1.2,
+      blurRadius: 12.0,       // Reduced from 25.0 for sophisticated overlays
+      opacity: 0.1,           // Refined floating elements
+      borderOpacity: 0.2,     // Clear floating definition
+      shadowElevation: 4,
+      borderWidth: 0.5,       // Elegant thin borders
     ),
   };
 
   /// Accessibility glass properties for high contrast and reduced motion
   static const Map<GlassLevel, GlassProperties> accessibilityGlassHierarchy = {
+    GlassLevel.whisper: GlassProperties(
+      blurRadius: 2.0,        // Minimal blur for accessibility
+      opacity: 0.85,          // High contrast
+      borderOpacity: 0.9,     // Clear boundaries
+      shadowElevation: 0,
+      borderWidth: 1.0,
+    ),
     GlassLevel.background: GlassProperties(
-      blurRadius: 5.0,
+      blurRadius: 3.0,        // Reduced for clarity
       opacity: 0.8,
       borderOpacity: 0.9,
       shadowElevation: 0,
       borderWidth: 1.0,
     ),
     GlassLevel.content: GlassProperties(
-      blurRadius: 8.0,
+      blurRadius: 4.0,        // Reduced for readability
       opacity: 0.85,
       borderOpacity: 0.95,
       shadowElevation: 1,
       borderWidth: 1.5,
     ),
     GlassLevel.interactive: GlassProperties(
-      blurRadius: 10.0,
+      blurRadius: 5.0,        // Reduced for clarity
       opacity: 0.9,
       borderOpacity: 1.0,
       shadowElevation: 2,
       borderWidth: 2.0,
     ),
     GlassLevel.floating: GlassProperties(
-      blurRadius: 12.0,
+      blurRadius: 6.0,        // Reduced for accessibility
       opacity: 0.95,
       borderOpacity: 1.0,
       shadowElevation: 4,
@@ -94,8 +108,9 @@ class DesignTokens {
   static const components = ComponentTokens._();
 }
 
-/// Glass level enumeration
+/// Sophisticated glass level enumeration with refined hierarchy
 enum GlassLevel {
+  whisper,      // NEW: Ultra-subtle for premium backgrounds
   background,
   content,
   interactive,
@@ -137,14 +152,17 @@ class GlassProperties {
   );
 }
 
-/// Spacing tokens following 8px grid system
+/// Enhanced spacing tokens with golden ratio progression for sophisticated interfaces
 class SpacingTokens {
   const SpacingTokens._();
 
   // Base spacing unit (8px)
   static const double unit = 8.0;
+  
+  // Golden ratio constant for mathematical harmony
+  static const double phi = 1.618;
 
-  // Spacing scale
+  // Standard spacing scale (maintained for compatibility)
   static const double xs = unit * 0.5;    // 4px
   static const double sm = unit;          // 8px
   static const double md = unit * 2;      // 16px
@@ -153,12 +171,29 @@ class SpacingTokens {
   static const double xxl = unit * 6;     // 48px
   static const double xxxl = unit * 8;    // 64px
 
-  // Semantic spacing
-  static const double elementPadding = md;
-  static const double sectionPadding = lg;
-  static const double pagePadding = xl;
-  static const double componentMargin = sm;
-  static const double sectionMargin = lg;
+  // Enhanced golden ratio spacing for sophisticated interfaces
+  static const double phi1 = unit * phi;              // 13px - Natural rhythm
+  static const double phi2 = unit * phi * phi * 0.65; // 17px - Comfortable reading
+  static const double phi3 = unit * phi * phi;        // 21px - Spacious layout
+  static const double phi4 = unit * phi * phi * phi * 0.6; // 25px - Generous spacing
+  static const double phi5 = unit * phi * phi * phi;  // 34px - Luxurious breathing room
+  static const double phi6 = unit * phi * phi * phi * phi * 0.65; // 36px - Expansive sections
+  static const double phi7 = unit * phi * phi * phi * phi; // 55px - Hero isolation
+
+  // Semantic spacing (enhanced with golden ratio)
+  static const double elementPadding = phi3;     // 21px - Perfect card breathing room
+  static const double sectionPadding = phi5;     // 34px - Elegant section separation  
+  static const double pagePadding = xl;          // 32px - Page margins
+  static const double componentMargin = sm;      // 8px - Component spacing
+  static const double sectionMargin = phi5;      // 34px - Section separation
+  
+  // Task-specific sophisticated spacing
+  static const double taskCardHeight = 88.0;     // Golden ratio optimized height
+  static const double taskCardPadding = phi3;    // 21px internal padding
+  static const double taskCardMargin = sm;       // 8px between cards
+  static const double taskCardRadius = 12.0;     // Sophisticated corner radius
+  static const double welcomeSpacing = phi5;     // 34px for welcome section elegance
+  static const double tabSpacing = phi1;         // 13px for natural tab rhythm
 }
 
 /// Typography tokens with consistent scales

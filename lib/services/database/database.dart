@@ -12,6 +12,7 @@ import 'daos/subtask_dao.dart';
 import 'daos/project_dao.dart';
 import 'daos/tag_dao.dart';
 import 'daos/task_template_dao.dart';
+import 'daos/user_profile_dao.dart';
 
 part 'database.g.dart';
 
@@ -27,6 +28,7 @@ part 'database.g.dart';
   Projects,
   TaskDependencies,
   TaskTemplates,
+  UserProfiles,
 ])
 class AppDatabase extends _$AppDatabase {
   static AppDatabase? _instance;
@@ -49,14 +51,15 @@ class AppDatabase extends _$AppDatabase {
   
   /// Factory constructor for creating the database instance
   factory AppDatabase() => instance;  @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   // DAOs
   late final TaskDao taskDao = TaskDao(this);
   late final SubtaskDao subtaskDao = SubtaskDao(this);
   late final ProjectDao projectDao = ProjectDao(this);
   late final TagDao tagDao = TagDao(this);
-  late final TaskTemplateDao taskTemplateDao = TaskTemplateDao(this);  @override
+  late final TaskTemplateDao taskTemplateDao = TaskTemplateDao(this);
+  late final UserProfileDao userProfileDao = UserProfileDao(this);  @override
   MigrationStrategy get migration {
     return MigrationStrategy(
       onCreate: (Migrator m) async {
@@ -80,12 +83,11 @@ class AppDatabase extends _$AppDatabase {
               await m.createTable(taskTemplates);
             }
 
-            // Future migrations can be added here
-            // Example: Migration from version 2 to 3
-            // if (from <= 2 && to >= 3) {
-            //   print('Adding new columns (v2 -> v3)');
-            //   await m.addColumn(tasks, tasks.newColumn);
-            // }
+            // Migration from version 2 to 3
+            if (from <= 2 && to >= 3) {
+              developer.log('Adding UserProfiles table (v2 -> v3)', name: 'AppDatabase');
+              await m.createTable(userProfiles);
+            }
             
             // Add indexes for performance optimization
             await _createIndexes();

@@ -57,7 +57,7 @@ class _SmartTextState extends State<SmartText> {
   @override
   void didUpdateWidget(SmartText oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.text != widget.text || 
+    if (oldWidget.text != widget.text ||
         oldWidget.style != widget.style ||
         oldWidget.fontSize != widget.fontSize ||
         oldWidget.color != widget.color ||
@@ -77,15 +77,15 @@ class _SmartTextState extends State<SmartText> {
   @override
   Widget build(BuildContext context) {
     // final effectiveStyle = _effectiveStyle ?? Theme.of(context).textTheme.bodyMedium!;
-    
+
     if (widget.autoSize) {
       return _buildAutoSizeText();
     }
-    
+
     if (widget.expandable) {
       return _buildExpandableText();
     }
-    
+
     return _buildSimpleText();
   }
 
@@ -133,7 +133,7 @@ class _SmartTextState extends State<SmartText> {
         tp.layout(maxWidth: constraints.maxWidth);
 
         final needsExpansion = tp.didExceedMaxLines;
-        
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -195,7 +195,7 @@ class _AutoSizeText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final fontSize = _calculateOptimalFontSize();
-    
+
     return Text(
       text,
       style: style.copyWith(fontSize: fontSize),
@@ -209,7 +209,7 @@ class _AutoSizeText extends StatelessWidget {
   double _calculateOptimalFontSize() {
     double currentFontSize = style.fontSize ?? 14.0;
     currentFontSize = currentFontSize.clamp(minFontSize, maxFontSize);
-    
+
     while (currentFontSize > minFontSize) {
       final testStyle = style.copyWith(fontSize: currentFontSize);
       final span = TextSpan(text: text, style: testStyle);
@@ -220,14 +220,14 @@ class _AutoSizeText extends StatelessWidget {
         textDirection: TextDirection.ltr,
       );
       tp.layout(maxWidth: constraints.maxWidth);
-      
+
       if (!tp.didExceedMaxLines) {
         break;
       }
-      
+
       currentFontSize -= 1.0;
     }
-    
+
     return currentFontSize.clamp(minFontSize, maxFontSize);
   }
 }
@@ -257,13 +257,13 @@ class ResponsiveText extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final fontSize = _getFontSizeForScreenWidth(screenWidth);
-    
+
     final effectiveStyle = (baseStyle ?? Theme.of(context).textTheme.bodyMedium!).copyWith(
       fontSize: fontSize,
       color: color,
       fontWeight: fontWeight,
     );
-    
+
     return SmartText(
       text,
       style: effectiveStyle,
@@ -281,17 +281,16 @@ class ResponsiveText extends StatelessWidget {
       if (screenWidth < 900) return (baseStyle?.fontSize ?? 14) * 1.1;
       return (baseStyle?.fontSize ?? 14) * 1.2;
     }
-    
+
     // Custom breakpoints
-    final sortedBreakpoints = fontSizeBreakpoints!.entries.toList()
-      ..sort((a, b) => a.key.compareTo(b.key));
-    
+    final sortedBreakpoints = fontSizeBreakpoints!.entries.toList()..sort((a, b) => a.key.compareTo(b.key));
+
     for (final breakpoint in sortedBreakpoints.reversed) {
       if (screenWidth >= breakpoint.key) {
         return breakpoint.value;
       }
     }
-    
+
     return sortedBreakpoints.first.value;
   }
 }
@@ -324,8 +323,8 @@ class GradientText extends StatelessWidget {
       ),
       child: SmartText(
         text,
-        style: style?.copyWith(color: Colors.white) ?? 
-               Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white),
+        style: style?.copyWith(color: Colors.white) ??
+            Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.white),
         maxLines: maxLines,
         textAlign: textAlign,
         overflow: overflow,
@@ -355,8 +354,7 @@ class TypewriterText extends StatefulWidget {
   State<TypewriterText> createState() => _TypewriterTextState();
 }
 
-class _TypewriterTextState extends State<TypewriterText>
-    with SingleTickerProviderStateMixin {
+class _TypewriterTextState extends State<TypewriterText> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<int> _characterCount;
 
@@ -463,7 +461,7 @@ class HighlightedText extends StatelessWidget {
             (style ?? Theme.of(context).textTheme.bodyMedium!).copyWith(
               backgroundColor: Theme.of(context).colorScheme.primaryContainer,
               color: Theme.of(context).colorScheme.onPrimaryContainer,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w500,
             ),
       ));
 
@@ -539,12 +537,12 @@ class SmartTextField extends StatelessWidget {
   TextStyle? _getAutoSizedStyle(BuildContext context, BoxConstraints constraints) {
     final baseStyle = style ?? Theme.of(context).textTheme.bodyMedium!;
     final text = controller?.text ?? '';
-    
+
     if (text.isEmpty) return baseStyle;
-    
+
     double fontSize = baseStyle.fontSize ?? 14.0;
     fontSize = fontSize.clamp(minFontSize, maxFontSize);
-    
+
     while (fontSize > minFontSize) {
       final testStyle = baseStyle.copyWith(fontSize: fontSize);
       final span = TextSpan(text: text, style: testStyle);
@@ -554,14 +552,14 @@ class SmartTextField extends StatelessWidget {
         textDirection: TextDirection.ltr,
       );
       tp.layout(maxWidth: constraints.maxWidth - 24); // Account for padding
-      
+
       if (!tp.didExceedMaxLines) {
         break;
       }
-      
+
       fontSize -= 1.0;
     }
-    
+
     return baseStyle.copyWith(fontSize: fontSize.clamp(minFontSize, maxFontSize));
   }
 }

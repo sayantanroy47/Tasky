@@ -180,29 +180,89 @@ class WelcomeMessageService {
 
   /// Get a dynamic welcome message based on time of day and context
   WelcomeMessage getWelcomeMessage({
+    String? firstName,
     int? pendingTaskCount,
     int? completedToday,
     bool isFirstTimeUser = false,
   }) {
     final now = DateTime.now();
     final timeOfDay = _getTimeOfDay(now);
+    final displayName = firstName ?? 'there';
     
-    // Filter messages by time of day
-    final relevantMessages = _welcomeMessages.where((message) =>
-      message.timeOfDay == timeOfDay || message.timeOfDay == TimeOfDay.any
-    ).toList();
-    
-    // Special cases for first-time users or specific contexts
+    // Special cases for first-time users
     if (isFirstTimeUser) {
       return WelcomeMessage(
-        greeting: 'Welcome to Tasky! 🎉',
+        greeting: firstName != null ? 'Welcome to Tasky, $firstName! 🎉' : 'Welcome to Tasky! 🎉',
         subtitle: 'Let\'s build amazing habits together',
         timeOfDay: TimeOfDay.any,
       );
     }
     
-    // Return random message from relevant ones
-    return relevantMessages[_random.nextInt(relevantMessages.length)];
+    // Use static welcome messages based on time of day
+    return _getWelcomeMessageForTimeOfDay(timeOfDay, displayName);
+  }
+
+  /// Get welcome message from static list based on time of day
+  WelcomeMessage _getWelcomeMessageForTimeOfDay(TimeOfDay timeOfDay, String displayName) {
+    // Filter messages by time of day
+    final filteredMessages = _welcomeMessages.where((message) => 
+      message.timeOfDay == timeOfDay || message.timeOfDay == TimeOfDay.any
+    ).toList();
+    
+    // If no messages found for specific time, fall back to 'any' time messages
+    if (filteredMessages.isEmpty) {
+      final anyTimeMessages = _welcomeMessages.where((message) => 
+        message.timeOfDay == TimeOfDay.any
+      ).toList();
+      final baseMessage = anyTimeMessages.isNotEmpty 
+        ? anyTimeMessages[_random.nextInt(anyTimeMessages.length)]
+        : _welcomeMessages[_random.nextInt(_welcomeMessages.length)];
+      return _personalizeMessage(baseMessage, displayName);
+    }
+    
+    // Return random personalized message from filtered list
+    final baseMessage = filteredMessages[_random.nextInt(filteredMessages.length)];
+    return _personalizeMessage(baseMessage, displayName);
+  }
+
+  /// Personalize a welcome message with the user's name
+  WelcomeMessage _personalizeMessage(WelcomeMessage baseMessage, String displayName) {
+    // Add personalized greeting based on time of day
+    String personalizedGreeting;
+    switch (baseMessage.timeOfDay) {
+      case TimeOfDay.morning:
+        personalizedGreeting = _random.nextBool() 
+          ? 'Good morning, $displayName! ${baseMessage.greeting}'
+          : baseMessage.greeting.replaceFirst(RegExp(r'^[^!]+'), 'Morning, $displayName');
+        break;
+      case TimeOfDay.afternoon:
+        personalizedGreeting = _random.nextBool() 
+          ? 'Good afternoon, $displayName! ${baseMessage.greeting}'
+          : baseMessage.greeting.replaceFirst(RegExp(r'^[^!]+'), 'Afternoon, $displayName');
+        break;
+      case TimeOfDay.evening:
+        personalizedGreeting = _random.nextBool() 
+          ? 'Good evening, $displayName! ${baseMessage.greeting}'
+          : baseMessage.greeting.replaceFirst(RegExp(r'^[^!]+'), 'Evening, $displayName');
+        break;
+      case TimeOfDay.night:
+        personalizedGreeting = _random.nextBool() 
+          ? 'Hey there, $displayName! ${baseMessage.greeting}'
+          : baseMessage.greeting.replaceFirst(RegExp(r'^[^!]+'), 'Hello, $displayName');
+        break;
+      case TimeOfDay.any:
+        personalizedGreeting = _random.nextBool() 
+          ? 'Hello, $displayName! ${baseMessage.greeting}'
+          : baseMessage.greeting.replaceFirst(RegExp(r'^[^!]+'), 'Hey $displayName');
+        break;
+    }
+    
+    return WelcomeMessage(
+      greeting: personalizedGreeting,
+      subtitle: baseMessage.subtitle,
+      timeOfDay: baseMessage.timeOfDay,
+      icon: baseMessage.icon,
+    );
   }
 
   /// Get smart task summary based on current task state
