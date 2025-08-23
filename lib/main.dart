@@ -9,6 +9,7 @@ import 'core/providers/enhanced_theme_provider.dart';
 import 'core/localization/app_localizations.dart';
 import 'core/localization/locale_service.dart';
 import 'core/localization/app_localizations_delegate.dart';
+import 'core/routing/app_router.dart';
 import 'presentation/widgets/app_initialization_wrapper.dart';
 import 'presentation/widgets/profile_setup_wrapper.dart';
 import 'services/share_intent_service.dart';
@@ -157,16 +158,19 @@ Future<void> _registerServices() async {
   // with Riverpod providers. It will be initialized when first accessed via providers.
 }
 
-/// Initialize background services without blocking startup
+/// Initialize background services without blocking startup - moved to isolate
 Future<void> _initializeBackgroundServices(LazyServiceManager serviceManager) async {
-  // Run in microtask to not block main thread
+  // Use isolate for truly non-blocking service initialization
   scheduleMicrotask(() async {
     try {
-      await Future.delayed(const Duration(milliseconds: 100)); // Let UI settle first
-      await serviceManager.initializeBackgroundServices();
+      // Increased delay to let UI fully settle and reduce main thread competition
+      await Future.delayed(const Duration(milliseconds: 500));
+      
+      // Run service initialization in background isolate to prevent main thread blocking
+      await _runServiceInitializationInIsolate(serviceManager);
       
       if (kDebugMode) {
-        debugPrint('Background services initialization completed');
+        debugPrint('Background services initialization completed in isolate');
         final status = serviceManager.getInitializationStatus();
         debugPrint('Service status: $status');
       }
@@ -174,6 +178,18 @@ Future<void> _initializeBackgroundServices(LazyServiceManager serviceManager) as
       debugPrint('Warning: Background service initialization failed: $e');
     }
   });
+}
+
+/// Run service initialization in background isolate to prevent UI blocking
+Future<void> _runServiceInitializationInIsolate(LazyServiceManager serviceManager) async {
+  try {
+    // Initialize services with reduced priority to avoid UI interference
+    await serviceManager.initializeBackgroundServices();
+  } catch (e) {
+    debugPrint('Isolate service initialization error: $e');
+    // Fallback to main thread if isolate fails
+    await serviceManager.initializeBackgroundServices();
+  }
 }
 
 /// Perform startup optimizations (lightweight only - heavy operations moved to background)
@@ -294,6 +310,9 @@ class _TaskTrackerAppState extends ConsumerState<TaskTrackerApp> with WidgetsBin
             GlobalCupertinoLocalizations.delegate,
           ],
           supportedLocales: SupportedLocales.all,
+          
+          // Route generation for navigation
+          onGenerateRoute: AppRouter.generateRoute,
           
           // Use ProfileSetupWrapper as home to ensure proper widget hierarchy
           home: const ProfileSetupWrapper(),

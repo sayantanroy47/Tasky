@@ -3,6 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/entities/project.dart';
 import '../../services/project_service.dart';
+import '../../services/ui/slidable_action_service.dart';
+import '../../services/ui/slidable_theme_service.dart';
+import '../../services/ui/slidable_feedback_service.dart';
 import '../providers/project_providers.dart';
 import 'glassmorphism_container.dart';
 import '../../core/theme/typography_constants.dart';
@@ -32,7 +35,20 @@ class ProjectCard extends ConsumerWidget {
     final theme = Theme.of(context);
     final projectStatsAsync = ref.watch(projectStatsProvider(project.id));
 
-    return GlassProjectCard(
+    final leftActions = SlidableActionService.getProjectActions(
+      project,
+      onEdit: onEdit,
+      onViewTasks: () => _viewProjectTasks(context),
+      onShare: () => _shareProject(context),
+      onArchive: () => _toggleArchiveProject(ref),
+      onDelete: () => _showDeleteConfirmation(context, ref),
+    );
+
+    // Split actions for left and right panes
+    final startActions = leftActions.take(2).toList(); // Edit, View Tasks
+    final endActions = leftActions.skip(2).toList(); // Share, Archive, Delete
+
+    final projectCard = GlassProjectCard(
       onTap: onTap,
       accentColor: _parseColor(project.color, context),
       child: Column(
@@ -176,6 +192,15 @@ class ProjectCard extends ConsumerWidget {
             ],
           ),
     );
+
+    return SlidableThemeService.createProjectCardSlidable(
+      key: ValueKey('project-${project.id}'),
+      groupTag: 'project-cards',
+      leftActions: startActions,
+      rightActions: endActions,
+      accentColor: _parseColor(project.color, context),
+      child: projectCard,
+    );
   }
 
   Widget _buildProjectStats(BuildContext context, ProjectStats stats) {
@@ -302,6 +327,27 @@ class ProjectCard extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  // Helper methods for project slide actions
+  
+  void _viewProjectTasks(BuildContext context) {
+    SlidableFeedbackService.provideFeedback(SlidableActionType.neutral);
+    Navigator.of(context).pushNamed('/project-detail', arguments: project.id);
+  }
+
+  void _shareProject(BuildContext context) {
+    SlidableFeedbackService.provideFeedback(SlidableActionType.neutral);
+    // Implementation would share project details
+  }
+
+  void _toggleArchiveProject(WidgetRef ref) {
+    SlidableFeedbackService.provideFeedback(SlidableActionType.archive);
+    if (project.isArchived) {
+      ref.read(projectsProvider.notifier).unarchiveProject(project.id);
+    } else {
+      ref.read(projectsProvider.notifier).archiveProject(project.id);
+    }
   }
 
   void _handleAction(BuildContext context, WidgetRef ref, String action) {

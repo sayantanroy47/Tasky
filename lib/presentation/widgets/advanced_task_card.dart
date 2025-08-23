@@ -7,6 +7,9 @@ import '../../domain/models/enums.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../core/design_system/design_tokens.dart';
 import '../../core/theme/material3/motion_system.dart';
+import '../../services/ui/slidable_action_service.dart';
+import '../../services/ui/slidable_theme_service.dart';
+import '../../services/ui/slidable_feedback_service.dart';
 import 'glassmorphism_container.dart';
 import 'status_badge_widget.dart';
 import 'audio_indicator_widget.dart';
@@ -199,7 +202,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
     Widget cardWidget = _buildCardContent(theme);
 
     if (widget.enableSwipeActions) {
-      cardWidget = _buildSwipeableCard(cardWidget);
+      cardWidget = _buildSlidableCard(cardWidget);
     }
 
     if (widget.enableAnimations) {
@@ -240,61 +243,36 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
     );
   }
 
-  Widget _buildSwipeableCard(Widget child) {
-    return Dismissible(
-      key: ValueKey(widget.task.id),
-      direction: DismissDirection.horizontal,
-      confirmDismiss: (direction) async {
-        if (direction == DismissDirection.startToEnd) {
-          // Left to right swipe - complete task
-          widget.onToggleComplete?.call();
-          return false;
-        } else {
-          // Right to left swipe - show more actions
-          _showQuickActions();
-          return false;
-        }
-      },
-      background: _buildSwipeBackground(isLeft: true),
-      secondaryBackground: _buildSwipeBackground(isLeft: false),
+  Widget _buildSlidableCard(Widget child) {
+    final startActions = SlidableActionService.getTaskActions(
+      widget.task,
+      onComplete: widget.onToggleComplete,
+      onEdit: widget.onEdit,
+      onPin: () => _togglePin(),
+      onDelete: () => _confirmDelete(),
+      onArchive: () => _archiveTask(),
+      onReschedule: () => _rescheduleTask(),
+      onStopRecurring: () => _stopRecurring(),
+      onSkipInstance: () => _skipInstance(),
+      onDuplicate: widget.onDuplicate,
+    );
+
+    // Split actions for start and end panes based on context
+    final primaryActions = startActions.take(2).toList();
+    final secondaryActions = startActions.skip(2).toList();
+
+    return SlidableThemeService.createTaskCardSlidable(
+      key: ValueKey('task-${widget.task.id}'),
+      groupTag: 'task-cards',
+      isOverdue: widget.task.isOverdue,
+      isCompleted: widget.task.status == TaskStatus.completed,
+      useAdvancedMotion: widget.enableAnimations,
+      startActions: primaryActions,
+      endActions: secondaryActions,
       child: child,
     );
   }
 
-  Widget _buildSwipeBackground({required bool isLeft}) {
-    final theme = Theme.of(context);
-    
-    return Container(
-      decoration: BoxDecoration(
-        color: isLeft ? Colors.green : Colors.orange,
-        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-      ),
-      child: Align(
-        alignment: isLeft ? Alignment.centerLeft : Alignment.centerRight,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                isLeft ? PhosphorIcons.checkCircle() : PhosphorIcons.dotsThree(),
-                color: Colors.white,
-                size: 32,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                isLeft ? 'Complete' : 'Actions',
-                style: theme.textTheme.labelMedium?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
 
   Widget _buildCardContent(ThemeData theme) {
     switch (widget.style) {
@@ -965,9 +943,78 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
     );
   }
 
-  void _showQuickActions() {
-    // Implementation for quick actions panel
-    // This could be a custom overlay or another bottom sheet
+  void _togglePin() {
+    // Toggle pin status with feedback
+    SlidableFeedbackService.provideFeedback(SlidableActionType.neutral);
+    // Implementation would call the pin callback or service
+  }
+
+  void _confirmDelete() {
+    // Show confirmation dialog for destructive delete action
+    SlidableFeedbackService.provideFeedback(SlidableActionType.destructive);
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Task'),
+        content: const Text('Are you sure you want to delete this task?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.pop(context);
+              widget.onDelete?.call();
+            },
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _archiveTask() {
+    // Archive task with feedback
+    SlidableFeedbackService.provideFeedback(SlidableActionType.archive);
+    // Implementation would call archive service
+  }
+
+  void _rescheduleTask() {
+    // Show reschedule dialog
+    SlidableFeedbackService.provideFeedback(SlidableActionType.edit);
+    // Implementation would show date picker or reschedule dialog
+  }
+
+  void _stopRecurring() {
+    // Stop recurring task series with confirmation
+    SlidableFeedbackService.provideFeedback(SlidableActionType.destructive);
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Stop Recurring Task'),
+        content: const Text('This will stop all future instances of this recurring task.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.pop(context);
+              // Implementation would call stop recurring service
+            },
+            child: const Text('Stop Series'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _skipInstance() {
+    // Skip current instance of recurring task
+    SlidableFeedbackService.provideFeedback(SlidableActionType.neutral);
+    // Implementation would skip to next instance
   }
 
   void _showDependencyDetails(BuildContext context) {

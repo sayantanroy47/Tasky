@@ -33,6 +33,32 @@ class _ProfileSetupFlowState extends ConsumerState<ProfileSetupFlow> {
   static const int _totalSteps = 4;
 
   @override
+  void initState() {
+    super.initState();
+    
+    // Add listeners to text controllers to trigger UI updates
+    _firstNameController.addListener(() {
+      final text = _firstNameController.text;
+      final step = _currentStep;
+      final canProceed = _canProceed();
+      debugPrint('🔥 CRITICAL: FirstName listener fired!');
+      debugPrint('   - Text: "$text"');
+      debugPrint('   - Step: $step (display: ${step + 1})');
+      debugPrint('   - Can proceed: $canProceed');
+      debugPrint('   - Calling setState...');
+      setState(() {
+        debugPrint('   - setState() called successfully');
+      });
+    });
+    _lastNameController.addListener(() {
+      setState(() {}); // Trigger rebuild when text changes
+    });
+    _locationController.addListener(() {
+      setState(() {}); // Trigger rebuild when text changes  
+    });
+  }
+
+  @override
   void dispose() {
     _pageController.dispose();
     _firstNameController.dispose();
@@ -42,14 +68,25 @@ class _ProfileSetupFlowState extends ConsumerState<ProfileSetupFlow> {
   }
 
   void _nextStep() {
+    debugPrint('🚀 _nextStep() called!');
+    debugPrint('   - Current step before: $_currentStep');
+    debugPrint('   - Total steps: $_totalSteps');
+    debugPrint('   - Condition check: $_currentStep < ${_totalSteps - 1} = ${_currentStep < _totalSteps - 1}');
+    
     if (_currentStep < _totalSteps - 1) {
+      debugPrint('   - Condition TRUE - advancing step');
       setState(() {
         _currentStep++;
+        debugPrint('   - New current step: $_currentStep');
       });
+      debugPrint('   - Calling _pageController.nextPage()');
       _pageController.nextPage(
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeInOut,
       );
+      debugPrint('   - Page transition initiated');
+    } else {
+      debugPrint('   - Condition FALSE - NOT advancing step');
     }
   }
 
@@ -558,11 +595,23 @@ class _ProfileSetupFlowState extends ConsumerState<ProfileSetupFlow> {
                             : Icon(PhosphorIcons.checkCircle()),
                         label: const Text('Complete Setup'),
                       )
-                    : ElevatedButton.icon(
-                        onPressed: _canProceed() ? _nextStep : null,
-                        icon: Icon(PhosphorIcons.arrowRight()),
-                        label: const Text('Continue'),
-                      ),
+                    : (() {
+                        final canProceed = _canProceed();
+                        debugPrint('🔄 DIRECT BUTTON: Step $_currentStep, canProceed: $canProceed, firstName: "${_firstNameController.text.trim()}"');
+                        debugPrint('🔥 BUTTON WIDGET CREATED: onPressed = ${canProceed ? "ENABLED" : "DISABLED"}');
+                        
+                        return ElevatedButton.icon(
+                          onPressed: canProceed ? () {
+                            debugPrint('🚀 CONTINUE BUTTON PRESSED!');
+                            debugPrint('   - Current step: $_currentStep (display: ${_currentStep + 1})');
+                            debugPrint('   - First name: "${_firstNameController.text.trim()}"');
+                            debugPrint('   - Calling _nextStep()');
+                            _nextStep();
+                          } : null,
+                          icon: Icon(PhosphorIcons.arrowRight()),
+                          label: const Text('Continue'),
+                        );
+                      })(),
               ),
             ],
           ),
@@ -587,18 +636,24 @@ class _ProfileSetupFlowState extends ConsumerState<ProfileSetupFlow> {
   }
 
   bool _canProceed() {
+    debugPrint('_canProceed called: currentStep = $_currentStep, displayStep = ${_currentStep + 1}');
     switch (_currentStep) {
       case 0: // Welcome step
+        debugPrint('Welcome step - always can proceed');
         return true;
       case 1: // Name step
-        final canProceed = _firstNameController.text.trim().isNotEmpty;
-        debugPrint('Step 1 - Can proceed: $canProceed, firstName: "${_firstNameController.text.trim()}"');
+        final firstName = _firstNameController.text.trim();
+        final canProceed = firstName.isNotEmpty;
+        debugPrint('Name step (display: step 2) - firstName: "$firstName", canProceed: $canProceed');
         return canProceed;
       case 2: // Profile picture step
+        debugPrint('Profile picture step (display: step 3) - optional, can proceed');
         return true; // Optional step
       case 3: // Location step
+        debugPrint('Location step (display: step 4) - optional, can proceed');
         return true; // Optional step
       default:
+        debugPrint('Unknown step: $_currentStep - cannot proceed');
         return false;
     }
   }

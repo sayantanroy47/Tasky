@@ -198,11 +198,37 @@ class UniversalProfilePicture extends ConsumerWidget {
 
   /// Navigate to profile settings page
   void _navigateToProfileSettings(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const ProfileSettingsPage(),
-      ),
-    );
+    try {
+      debugPrint('🔥 PROFILE ICON CLICKED - Navigating to ProfileSettingsPage');
+      
+      if (!context.mounted) {
+        debugPrint('❌ Context not mounted - cannot navigate');
+        return;
+      }
+      
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) {
+            debugPrint('✅ Building ProfileSettingsPage');
+            return const ProfileSettingsPage();
+          },
+        ),
+      ).catchError((error) {
+        debugPrint('❌ Navigation error: $error');
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to open profile settings: $error')),
+          );
+        }
+      });
+    } catch (e) {
+      debugPrint('❌ Profile navigation crash: $e');
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Cannot open profile settings right now')),
+        );
+      }
+    }
   }
 }
 

@@ -8,8 +8,12 @@ import '../widgets/glassmorphism_container.dart';
 import '../widgets/enhanced_glass_button.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../core/design_system/design_tokens.dart';
+import '../../services/ui/slidable_action_service.dart';
+import '../../services/ui/slidable_theme_service.dart';
+import '../../services/ui/slidable_feedback_service.dart';
 
 import '../providers/task_providers.dart';
+import '../providers/task_provider.dart';
 import '../providers/profile_providers.dart';
 import '../../core/providers/core_providers.dart';
 import '../../domain/entities/task_model.dart';
@@ -30,6 +34,11 @@ class HomePage extends ConsumerStatefulWidget {
 class _HomePageState extends ConsumerState<HomePage> {
   late ScrollController _scrollController;
   
+  // Cache welcome data to prevent rebuild storms
+  Map<String, dynamic>? _cachedWelcomeData;
+  bool _welcomeDataInitialized = false;
+  String? _cachedFirstName; // Track previous firstName to detect changes
+  
   @override
   void initState() {
     super.initState();
@@ -42,21 +51,36 @@ class _HomePageState extends ConsumerState<HomePage> {
     super.dispose();
   }
   
-  /// Get welcome message and task summary data
+  /// Get welcome message and task summary data - cached to prevent rebuild storms
   Map<String, dynamic> _getWelcomeData() {
+    // Get current first name to check for changes
+    final profileAsync = ref.watch(currentProfileProvider);
+    final currentFirstName = profileAsync.maybeWhen(
+      data: (profile) => profile?.firstName,
+      orElse: () => null,
+    );
+    
+    // Clear cache if firstName changed (profile was updated)
+    if (_cachedFirstName != currentFirstName) {
+      _cachedWelcomeData = null;
+      _welcomeDataInitialized = false;
+      _cachedFirstName = currentFirstName;
+    }
+    
+    // Return cached data if available to prevent expensive rebuilds
+    if (_welcomeDataInitialized && _cachedWelcomeData != null) {
+      return _cachedWelcomeData!;
+    }
+    
     final pendingTasks = ref.watch(pendingTasksProvider);
     final completedTasks = ref.watch(completedTasksProvider);
-    final profileAsync = ref.watch(currentProfileProvider);
     
     final pendingCount = pendingTasks.maybeWhen(data: (tasks) => tasks.length, orElse: () => 0);
     final completedCount = completedTasks.maybeWhen(data: (tasks) => tasks.length, orElse: () => 0);
     final totalCount = pendingCount + completedCount;
     
-    // Get user's first name from profile
-    final firstName = profileAsync.maybeWhen(
-      data: (profile) => profile?.firstName,
-      orElse: () => null,
-    );
+    // Use the currentFirstName already fetched above
+    final firstName = currentFirstName;
     
     final welcomeService = WelcomeMessageService();
     final welcomeMessage = welcomeService.getWelcomeMessage(
@@ -71,13 +95,16 @@ class _HomePageState extends ConsumerState<HomePage> {
       totalTasks: totalCount,
     );
     
-    return {
+    _cachedWelcomeData = {
       'welcomeMessage': welcomeMessage,
       'taskSummary': taskSummary,
       'pendingCount': pendingCount,
       'completedCount': completedCount,
       'firstName': firstName,
     };
+    _welcomeDataInitialized = true;
+    
+    return _cachedWelcomeData!;
   }
   
   @override
@@ -466,19 +493,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               ],
             ),
             
-            const SizedBox(height: SpacingTokens.phi1), // Golden ratio spacing
-            
-            // Personalized subtitle (replacing the removed secondary text)
-            Text(
-              welcomeMessage.subtitle,
-              style: theme.textTheme.bodyLarge?.copyWith(
-                fontSize: 15.0,              // Refined size for readability
-                fontWeight: FontWeight.w400, // Regular weight
-                height: 1.5,                 // Relaxed for scanning
-                letterSpacing: 0.1,          // Slight spacing for clarity
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
+            // No secondary text as requested by user
           ],
         );
       }),
@@ -1004,9 +1019,15 @@ Shared from Tasky - Task Management App
 
   /// Sophisticated task card with golden ratio proportions and premium aesthetics
   Widget _buildCompactTaskCard(TaskModel task, ThemeData theme, {bool isOverdue = false}) {
-    return Container(
+    final balancedActions = SlidableActionService.getBalancedCompactTaskActions(
+      task,
+      onComplete: () => _toggleTaskCompletion(task),
+      onQuickEdit: () => _quickEditTask(task),
+      onMore: () => _showMoreActions(task),
+    );
+
+    final cardContent = SizedBox(
       height: SpacingTokens.taskCardHeight, // Golden ratio optimized height
-      margin: const EdgeInsets.only(bottom: SpacingTokens.taskCardMargin), // 8px margin
       child: GlassmorphismContainer(
         level: GlassLevel.whisper, // Ultra-subtle for sophisticated task focus
         borderRadius: BorderRadius.circular(SpacingTokens.taskCardRadius), // Sophisticated corner radius
@@ -1056,11 +1077,13 @@ Shared from Tasky - Task Management App
                 ),
                 
                 // Title and description in the middle (takes up most space)
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
+                Flexible(
+                  child: ClipRect(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
                       // Task title with audio indicator
                       Row(
                         children: [
@@ -1106,7 +1129,6 @@ Shared from Tasky - Task Management App
                       
                       // Elegant task metadata - priority only for sophisticated simplicity
                       if (task.priority != TaskPriority.medium) ...[
-                        const SizedBox(height: 4), // 4px spacing
                         Row(
                           children: [
                             Icon(
@@ -1134,6 +1156,7 @@ Shared from Tasky - Task Management App
                         ),
                       ],
                     ],
+                    ),
                   ),
                 ),
                 
@@ -1164,9 +1187,45 @@ Shared from Tasky - Task Management App
         ),
       ),
     );
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: SpacingTokens.taskCardMargin),
+      child: SlidableThemeService.createBalancedCompactCardSlidable(
+        key: ValueKey('compact-task-${task.id}'),
+        groupTag: 'home-compact-cards',
+        startActions: balancedActions['startActions'] ?? [], // Left side: Complete + Edit
+        endActions: balancedActions['endActions'] ?? [],     // Right side: More
+        enableFastSwipe: true, // Optimize for ListView performance
+        context: context, // Enable responsive sizing
+        child: cardContent,
+      ),
+    );
   }
 
+  // Helper methods for compact card slide actions
+  
+  void _toggleTaskCompletion(TaskModel task) async {
+    await SlidableFeedbackService.provideFeedback(SlidableActionType.complete);
+    try {
+      await ref.read(taskOperationsProvider).toggleTaskCompletion(task);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error updating task: $e')),
+        );
+      }
+    }
+  }
 
+  void _quickEditTask(TaskModel task) {
+    SlidableFeedbackService.provideFeedback(SlidableActionType.edit);
+    AppRouter.navigateToTaskDetail(context, task.id);
+  }
+
+  void _showMoreActions(TaskModel task) {
+    SlidableFeedbackService.provideFeedback(SlidableActionType.neutral);
+    _showTaskContextMenu(context, task);
+  }
 
   /// Get category-based icon for task cards
   IconData _getCategoryIcon(String category) {

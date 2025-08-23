@@ -14,19 +14,19 @@ class WelcomeMessageService {
   static final List<WelcomeMessage> _welcomeMessages = [
     // Morning motivations
     WelcomeMessage(
-      greeting: 'Good Morning, Achiever!',
-      subtitle: 'Time to turn dreams into done',
+      greeting: 'Good Morning!',
+      subtitle: 'Ready to start your day?',
       timeOfDay: TimeOfDay.morning,
       icon: PhosphorIcons.sparkle(),
     ),
     WelcomeMessage(
-      greeting: 'Rise and Grind!',
-      subtitle: 'Every task is a step toward greatness',
+      greeting: 'Good Morning!',
+      subtitle: 'Let\'s get things done',
       timeOfDay: TimeOfDay.morning,
     ),
     WelcomeMessage(
-      greeting: 'Morning, Taskmaster!',
-      subtitle: 'Ready to conquer your day?',
+      greeting: 'Good Morning!',
+      subtitle: 'What will you accomplish today?',
       timeOfDay: TimeOfDay.morning,
     ),
     WelcomeMessage(
@@ -114,66 +114,26 @@ class WelcomeMessageService {
       timeOfDay: TimeOfDay.night,
     ),
     
-    // Motivational (any time)
+    // General (any time)
     WelcomeMessage(
-      greeting: 'Progress Pioneer',
-      subtitle: 'Every small step counts',
+      greeting: 'Hello!',
+      subtitle: 'Ready to tackle your tasks?',
       timeOfDay: TimeOfDay.any,
     ),
     WelcomeMessage(
-      greeting: 'Task Champion',
-      subtitle: 'You\'ve got this!',
+      greeting: 'Welcome back',
+      subtitle: 'What would you like to work on?',
       timeOfDay: TimeOfDay.any,
-      icon: PhosphorIcons.barbell(),
+      icon: PhosphorIcons.checkCircle(),
     ),
     WelcomeMessage(
-      greeting: 'Productivity Legend',
-      subtitle: 'Making things happen, one task at a time',
-      timeOfDay: TimeOfDay.any,
-    ),
-    WelcomeMessage(
-      greeting: 'Goal Getter',
-      subtitle: 'Turning plans into progress',
+      greeting: 'Let\'s get started',
+      subtitle: 'Time to be productive',
       timeOfDay: TimeOfDay.any,
     ),
     WelcomeMessage(
-      greeting: 'Success Architect',
-      subtitle: 'Building your best life, daily',
-      timeOfDay: TimeOfDay.any,
-    ),
-    WelcomeMessage(
-      greeting: 'Achievement Unlocked',
-      subtitle: 'Ready for the next level?',
-      timeOfDay: TimeOfDay.any,
-    ),
-    WelcomeMessage(
-      greeting: 'Focus Commander',
-      subtitle: 'Directing energy toward excellence',
-      timeOfDay: TimeOfDay.any,
-    ),
-    WelcomeMessage(
-      greeting: 'Momentum Master',
-      subtitle: 'Keeping the productivity rolling',
-      timeOfDay: TimeOfDay.any,
-    ),
-    WelcomeMessage(
-      greeting: 'Efficiency Expert',
-      subtitle: 'Smart work meets hard work',
-      timeOfDay: TimeOfDay.any,
-    ),
-    WelcomeMessage(
-      greeting: 'Time Wizard',
-      subtitle: 'Making every moment count',
-      timeOfDay: TimeOfDay.any,
-    ),
-    WelcomeMessage(
-      greeting: 'Dream Builder',
-      subtitle: 'One task closer to your goals',
-      timeOfDay: TimeOfDay.any,
-    ),
-    WelcomeMessage(
-      greeting: 'Victory Awaits',
-      subtitle: 'Your dedicated effort will pay off',
+      greeting: 'Ready to focus?',
+      subtitle: 'Your tasks are waiting',
       timeOfDay: TimeOfDay.any,
     ),
   ];
@@ -227,33 +187,23 @@ class WelcomeMessageService {
 
   /// Personalize a welcome message with the user's name
   WelcomeMessage _personalizeMessage(WelcomeMessage baseMessage, String displayName) {
-    // Add personalized greeting based on time of day
+    // Create simple, single personalized greeting based on time of day
     String personalizedGreeting;
     switch (baseMessage.timeOfDay) {
       case TimeOfDay.morning:
-        personalizedGreeting = _random.nextBool() 
-          ? 'Good morning, $displayName! ${baseMessage.greeting}'
-          : baseMessage.greeting.replaceFirst(RegExp(r'^[^!]+'), 'Morning, $displayName');
+        personalizedGreeting = 'Good morning, $displayName';
         break;
       case TimeOfDay.afternoon:
-        personalizedGreeting = _random.nextBool() 
-          ? 'Good afternoon, $displayName! ${baseMessage.greeting}'
-          : baseMessage.greeting.replaceFirst(RegExp(r'^[^!]+'), 'Afternoon, $displayName');
+        personalizedGreeting = 'Good afternoon, $displayName';
         break;
       case TimeOfDay.evening:
-        personalizedGreeting = _random.nextBool() 
-          ? 'Good evening, $displayName! ${baseMessage.greeting}'
-          : baseMessage.greeting.replaceFirst(RegExp(r'^[^!]+'), 'Evening, $displayName');
+        personalizedGreeting = 'Good evening, $displayName';
         break;
       case TimeOfDay.night:
-        personalizedGreeting = _random.nextBool() 
-          ? 'Hey there, $displayName! ${baseMessage.greeting}'
-          : baseMessage.greeting.replaceFirst(RegExp(r'^[^!]+'), 'Hello, $displayName');
+        personalizedGreeting = 'Hello, $displayName';
         break;
       case TimeOfDay.any:
-        personalizedGreeting = _random.nextBool() 
-          ? 'Hello, $displayName! ${baseMessage.greeting}'
-          : baseMessage.greeting.replaceFirst(RegExp(r'^[^!]+'), 'Hey $displayName');
+        personalizedGreeting = 'Hello, $displayName';
         break;
     }
     

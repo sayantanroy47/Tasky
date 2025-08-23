@@ -123,3 +123,5 @@ Built-in performance monitoring service tracks app startup times and user intera
 3. Run relevant tests: `flutter test test/domain/` for domain changes
 4. Update golden tests if UI modified: `flutter test --update-goldens`
 5. Clean backup files periodically to maintain clean working directory
+- Make sure the flutter analyze issues are always 0.
+- When adding new functionality or refactoring code, make sure to test the code. Adapt the test case or write new tests but always make sure tests pass! IMPORTANT
