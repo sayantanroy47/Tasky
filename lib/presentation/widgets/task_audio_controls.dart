@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import '../../core/theme/typography_constants.dart';
 import '../providers/audio_providers.dart';
 
 enum AudioControlsMode {
@@ -141,7 +142,7 @@ class _TaskAudioControlsState extends ConsumerState<TaskAudioControls> {
             child: Text(
               _formatDuration(widget.duration ?? Duration.zero),
               style: theme.textTheme.bodySmall?.copyWith(
-                fontSize: 10,
+                fontSize: TypographyConstants.labelSmall, // 11.0 - Fixed accessibility violation (was 10px)
                 fontWeight: FontWeight.w500,
                 color: theme.colorScheme.onSurfaceVariant,
               ),
@@ -224,7 +225,7 @@ class _TaskAudioControlsState extends ConsumerState<TaskAudioControls> {
             child: Text(
               _formatDuration(widget.duration ?? Duration.zero),
               style: theme.textTheme.bodySmall?.copyWith(
-                fontSize: 10,
+                fontSize: TypographyConstants.labelSmall, // 11.0 - Fixed accessibility violation (was 10px)
                 fontWeight: FontWeight.w500,
                 color: theme.colorScheme.onSurfaceVariant,
               ),

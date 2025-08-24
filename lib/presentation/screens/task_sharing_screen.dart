@@ -99,10 +99,9 @@ class _TaskSharingScreenState extends ConsumerState<TaskSharingScreen> {
               children: [
                 Icon(PhosphorIcons.share(), color: Theme.of(context).primaryColor),
                 const SizedBox(width: 8),
-                const Text(
+                Text(
                   'Create Shared Task List',
-                  style: TextStyle(
-                    fontSize: 18,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -161,10 +160,9 @@ class _TaskSharingScreenState extends ConsumerState<TaskSharingScreen> {
               children: [
                 Icon(PhosphorIcons.userPlus(), color: Theme.of(context).primaryColor),
                 const SizedBox(width: 8),
-                const Text(
+                Text(
                   'Join Shared List',
-                  style: TextStyle(
-                    fontSize: 18,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -207,10 +205,9 @@ class _TaskSharingScreenState extends ConsumerState<TaskSharingScreen> {
               children: [
                 Icon(PhosphorIcons.list(), color: Theme.of(context).primaryColor),
                 const SizedBox(width: 8),
-                const Text(
+                Text(
                   'Your Shared Lists',
-                  style: TextStyle(
-                    fontSize: 18,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -223,13 +220,12 @@ class _TaskSharingScreenState extends ConsumerState<TaskSharingScreen> {
                   padding: const EdgeInsets.all(32.0),
                   child: Column(
                     children: [
-                      Icon(PhosphorIcons.folder(), size: 64, color: Colors.grey),
+                      Icon(PhosphorIcons.folder(), size: 64, color: Theme.of(context).colorScheme.onSurfaceVariant), // Fixed hardcoded color (was Colors.grey)
                       const SizedBox(height: 16),
-                      const Text(
+                      Text(
                         'No shared lists yet',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey,
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant, // Fixed hardcoded color (was Colors.grey)
                         ),
                       ),
                     ],
@@ -277,18 +273,18 @@ class _TaskSharingScreenState extends ConsumerState<TaskSharingScreen> {
           const SizedBox(height: 4),
           Row(
             children: [
-              Icon(PhosphorIcons.users(), size: 16, color: Colors.grey[600]),
+              Icon(PhosphorIcons.users(), size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant), // Fixed hardcoded color (was Colors.grey[600])
               const SizedBox(width: 4),
               Text(
                 '${sharedList.collaborators.length} collaborators',
-                style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant), // Fixed hardcoded color (was Colors.grey[600])
               ),
               const SizedBox(width: 12),
-              Icon(PhosphorIcons.checkSquare(), size: 16, color: Colors.grey[600]),
+              Icon(PhosphorIcons.checkSquare(), size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant), // Fixed hardcoded color (was Colors.grey[600])
               const SizedBox(width: 4),
               Text(
                 '${sharedList.taskIds.length} tasks',
-                style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant), // Fixed hardcoded color (was Colors.grey[600])
               ),
             ],
           ),
@@ -296,14 +292,14 @@ class _TaskSharingScreenState extends ConsumerState<TaskSharingScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
             decoration: BoxDecoration(
-              color: _getPermissionColor(userPermission).withValues(alpha: 0.1),
+              color: _getPermissionColor(userPermission, context).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
             ),
             child: Text(
               isOwner ? 'Owner' : userPermission.name.toUpperCase(),
               style: TextStyle(
-                color: _getPermissionColor(userPermission),
-                fontSize: 10,
+                color: _getPermissionColor(userPermission, context),
+                // Using theme labelSmall size
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -351,8 +347,8 @@ class _TaskSharingScreenState extends ConsumerState<TaskSharingScreen> {
             PopupMenuItem(
               value: 'leave',
               child: ListTile(
-                leading: Icon(PhosphorIcons.signOut(), color: Colors.red),
-                title: const Text('Leave', style: TextStyle(color: Colors.red)),
+                leading: Icon(PhosphorIcons.signOut(), color: Theme.of(context).colorScheme.error), // Fixed hardcoded color (was Colors.red)
+                title: Text('Leave', style: TextStyle(color: Theme.of(context).colorScheme.error)), // Fixed hardcoded color (was Colors.red)
                 contentPadding: EdgeInsets.zero,
               ),
             ),
@@ -361,14 +357,14 @@ class _TaskSharingScreenState extends ConsumerState<TaskSharingScreen> {
     );
   }
 
-  Color _getPermissionColor(CollaborationPermission permission) {
+  Color _getPermissionColor(CollaborationPermission permission, BuildContext context) {
     switch (permission) {
       case CollaborationPermission.view:
-        return Colors.blue;
+        return Theme.of(context).colorScheme.primary; // Fixed hardcoded color (was Colors.blue)
       case CollaborationPermission.edit:
-        return Colors.orange;
+        return Theme.of(context).colorScheme.secondary; // Fixed hardcoded color (was Colors.orange)
       case CollaborationPermission.admin:
-        return Colors.red;
+        return Theme.of(context).colorScheme.error; // Fixed hardcoded color (was Colors.red)
     }
   }
 
@@ -549,7 +545,7 @@ class _TaskSharingScreenState extends ConsumerState<TaskSharingScreen> {
                 _showErrorSnackBar('Failed to leave shared list: $e');
               }
             },
-            child: const Text('Leave', style: TextStyle(color: Colors.red)),
+            child: Text('Leave', style: TextStyle(color: Theme.of(context).colorScheme.error)), // Fixed hardcoded color (was Colors.red)
           ),
         ],
       ),
@@ -574,8 +570,8 @@ class _TaskSharingScreenState extends ConsumerState<TaskSharingScreen> {
               ),
               child: Text(
                 sharedList.shareCode!,
-                style: const TextStyle(
-                  fontSize: 24,
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  // Using theme headlineSmall for share code display
                   fontWeight: FontWeight.w500,
                   letterSpacing: 2,
                 ),
@@ -614,7 +610,7 @@ class _TaskSharingScreenState extends ConsumerState<TaskSharingScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: Colors.green,
+        backgroundColor: Theme.of(context).colorScheme.tertiary, // Fixed hardcoded color (was Colors.green)
       ),
     );
   }
@@ -623,7 +619,7 @@ class _TaskSharingScreenState extends ConsumerState<TaskSharingScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: Colors.red,
+        backgroundColor: Theme.of(context).colorScheme.error, // Fixed hardcoded color (was Colors.red)
       ),
     );
   }

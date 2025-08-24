@@ -4,6 +4,7 @@ import 'glassmorphism_container.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../core/theme/material3/motion_system.dart';
 import '../../core/design_system/design_tokens.dart';
+import '../../domain/models/enums.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Beautiful glassmorphism context menu system
@@ -492,8 +493,8 @@ class CommonContextMenuItems {
     return ContextMenuItem(
       title: 'Delete',
       icon: PhosphorIcons.trash(),
-      iconColor: Colors.red,
-      textColor: Colors.red,
+      iconColor: const Color(0xFFE53935), // Semantic destructive action color - Material Red
+      textColor: const Color(0xFFE53935), // Semantic destructive action color - Material Red
       shortcut: 'Del',
       onTap: onTap,
     );
@@ -521,7 +522,7 @@ class CommonContextMenuItems {
     return ContextMenuItem(
       title: 'Mark Complete',
       icon: PhosphorIcons.checkCircle(),
-      iconColor: Colors.green,
+      iconColor: const Color(0xFF4CAF50), // Semantic success/completion color - Material Green
       onTap: onTap,
     );
   }
@@ -547,13 +548,13 @@ class CommonContextMenuItems {
   static _PriorityConfig _getPriorityConfig(TaskPriority priority) {
     switch (priority) {
       case TaskPriority.low:
-        return _PriorityConfig('Low Priority', PhosphorIcons.flag(), Colors.green);
+        return _PriorityConfig('Low Priority', PhosphorIcons.flag(), const Color(0xFF4CAF50)); // Low priority - Material Green
       case TaskPriority.medium:
-        return _PriorityConfig('Medium Priority', PhosphorIcons.flag(), Colors.blue);
+        return _PriorityConfig('Medium Priority', PhosphorIcons.flag(), const Color(0xFF2196F3)); // Medium priority - Material Blue
       case TaskPriority.high:
-        return _PriorityConfig('High Priority', PhosphorIcons.flag(), Colors.orange);
+        return _PriorityConfig('High Priority', PhosphorIcons.flag(), const Color(0xFFFF9800)); // High priority - Material Orange
       case TaskPriority.urgent:
-        return _PriorityConfig('Urgent Priority', PhosphorIcons.flag(), Colors.red);
+        return _PriorityConfig('Urgent Priority', PhosphorIcons.flag(), const Color(0xFFE53935)); // Urgent priority - Material Red
     }
   }
 }
@@ -566,7 +567,5 @@ class _PriorityConfig {
   _PriorityConfig(this.name, this.icon, this.color);
 }
 
-// Mock TaskPriority enum for the example
-enum TaskPriority { low, medium, high, urgent }
 
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/theme/typography_constants.dart';
 import '../providers/subtask_providers.dart';
 
 /// Compact subtask progress indicator for task cards
@@ -53,7 +54,7 @@ class SubtaskProgressIndicator extends ConsumerWidget {
                 '$completed/$total',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
-                  fontSize: 10,
+                  fontSize: TypographyConstants.labelSmall, // 11.0 - Fixed accessibility violation (was 10px)
                 ),
               ),
             ],
@@ -112,7 +113,7 @@ class SubtaskLinearProgressIndicator extends ConsumerWidget {
                 '${percentage.toStringAsFixed(0)}%',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
-                  fontSize: 10,
+                  fontSize: TypographyConstants.labelSmall, // 11.0 - Fixed accessibility violation (was 10px)
                 ),
               ),
             ],
@@ -160,7 +161,7 @@ class SubtaskCompletionBadge extends ConsumerWidget {
             '$completed/$total',
             style: theme.textTheme.bodySmall?.copyWith(
               color: Colors.white,
-              fontSize: 10,
+              fontSize: TypographyConstants.labelSmall, // 11.0 - Fixed accessibility violation (was 10px)
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -176,7 +177,7 @@ class SubtaskCompletionBadge extends ConsumerWidget {
           '...',
           style: theme.textTheme.bodySmall?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
-            fontSize: 10,
+            fontSize: TypographyConstants.labelSmall, // 11.0 - Fixed accessibility violation (was 10px)
           ),
         ),
       ),

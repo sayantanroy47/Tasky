@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../core/theme/typography_constants.dart';
 import '../../services/share_intent_service.dart';
 
 /// Comprehensive settings widget for ShareIntent functionality
@@ -48,7 +49,7 @@ class _ShareIntentSettingsWidgetState extends ConsumerState<ShareIntentSettingsW
                 const Text(
                   'Share Intent Settings',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: TypographyConstants.bodyLarge, // 16.0 - Fixed hardcoded font size (was 18px)
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -101,7 +102,7 @@ class _ShareIntentSettingsWidgetState extends ConsumerState<ShareIntentSettingsW
             const Text(
               'Trusted Contacts',
               style: TextStyle(
-                fontSize: 16,
+                fontSize: TypographyConstants.bodyMedium, // 14.0 - Fixed hardcoded font size (was 16px)
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -159,7 +160,7 @@ class _ShareIntentSettingsWidgetState extends ConsumerState<ShareIntentSettingsW
             const Text(
               'Test Share Intent',
               style: TextStyle(
-                fontSize: 16,
+                fontSize: TypographyConstants.bodyMedium, // 14.0 - Fixed hardcoded font size (was 16px)
                 fontWeight: FontWeight.w500,
               ),
             ),

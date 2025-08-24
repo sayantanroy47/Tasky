@@ -9,6 +9,7 @@ import '../widgets/theme_background_widget.dart';
 import '../../services/speech/transcription_service.dart';
 import '../../services/speech/transcription_validator.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import '../widgets/standardized_error_states.dart';
 
 /// Demo page to showcase voice recording functionality
 class VoiceDemoPage extends ConsumerStatefulWidget {
@@ -173,10 +174,9 @@ class _VoiceDemoPageState extends ConsumerState<VoiceDemoPage> {
                     ElevatedButton.icon(
                       onPressed: _isTranscribing ? null : _testTranscription,
                       icon: _isTranscribing 
-                          ? const SizedBox(
-                              width: 16,
-                              height: 16,
-                              child: CircularProgressIndicator(strokeWidth: 2),
+                          ? StandardizedErrorStates.loading(
+                              style: LoadingStyle.minimal,
+                              compact: true,
                             )
                           : Icon(PhosphorIcons.microphone()),
                       label: Text(_isTranscribing ? 'Transcribing...' : 'Test Transcription'),
@@ -302,7 +302,7 @@ class _VoiceDemoPageState extends ConsumerState<VoiceDemoPage> {
                                   child: Text(
                                     '• ${issue.severity.name}: ${issue.message}',
                                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      fontSize: 11,
+                                      // Using theme labelSmall size
                                     ),
                                   ),
                                 ),
@@ -313,7 +313,7 @@ class _VoiceDemoPageState extends ConsumerState<VoiceDemoPage> {
                                   child: Text(
                                     '• ... and ${_lastValidationResult!.issues.length - 3} more',
                                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      fontSize: 11,
+                                      // Using theme labelSmall size
                                       fontStyle: FontStyle.italic,
                                     ),
                                   ),

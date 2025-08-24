@@ -266,13 +266,11 @@ void main() {
         final overdueTask1 = TaskModel.create(
           title: 'Overdue Task 1',
           dueDate: DateTime.now().subtract(const Duration(days: 1)),
-          status: TaskStatus.todo,
         );
 
         final overdueTask2 = TaskModel.create(
           title: 'Overdue Task 2',
           dueDate: DateTime.now().subtract(const Duration(days: 3)),
-          status: TaskStatus.inProgress,
         );
 
         await tester.pumpWidget(

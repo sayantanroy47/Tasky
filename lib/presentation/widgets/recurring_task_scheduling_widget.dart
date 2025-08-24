@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../domain/entities/task_model.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+
+import '../../core/routing/app_router.dart';
+import '../../core/theme/typography_constants.dart';
 import '../../domain/entities/recurrence_pattern.dart';
+import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
+import '../pages/recurring_task_creation_page.dart';
 import '../providers/recurring_task_providers.dart';
 import 'glassmorphism_container.dart';
 import 'loading_error_widgets.dart' as loading_widgets;
-import '../../core/theme/typography_constants.dart';
-import '../../core/routing/app_router.dart';
-import '../pages/recurring_task_creation_page.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Comprehensive recurring task management widget
 class RecurringTaskSchedulingWidget extends ConsumerWidget {
@@ -229,7 +230,7 @@ class RecurringTaskSchedulingWidget extends ConsumerWidget {
                     child: Text(
                       task.title,
                       style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w500,
                         decoration: task.isCompleted ? TextDecoration.lineThrough : null,
                       ),
                     ),
@@ -363,7 +364,7 @@ class RecurringTaskSchedulingWidget extends ConsumerWidget {
       child: Text(
         recurrence.type.name.toUpperCase(),
         style: TextStyle(
-          fontSize: 10,
+          fontSize: TypographyConstants.labelSmall, // 11.0 - Fixed accessibility violation (was 10px)
           fontWeight: FontWeight.w500,
           color: chipColor,
         ),
@@ -398,7 +399,7 @@ class RecurringTaskSchedulingWidget extends ConsumerWidget {
       child: Text(
         priority.name.toUpperCase(),
         style: TextStyle(
-          fontSize: 10,
+          fontSize: TypographyConstants.labelSmall, // 11.0 - Fixed accessibility violation (was 10px)
           fontWeight: FontWeight.w500,
           color: chipColor,
         ),
@@ -433,7 +434,7 @@ class RecurringTaskSchedulingWidget extends ConsumerWidget {
       child: Text(
         status.name.toUpperCase(),
         style: TextStyle(
-          fontSize: 10,
+          fontSize: TypographyConstants.labelSmall, // 11.0 - Fixed accessibility violation (was 10px)
           fontWeight: FontWeight.w500,
           color: chipColor,
         ),

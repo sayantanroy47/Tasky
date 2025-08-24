@@ -14,6 +14,7 @@ class SlidableActionService {
   /// Gets context-aware actions for task cards based on task state
   static List<SlidableAction> getTaskActions(
     TaskModel task, {
+    required ColorScheme colorScheme,
     VoidCallback? onComplete,
     VoidCallback? onEdit,
     VoidCallback? onPin,
@@ -30,6 +31,7 @@ class SlidableActionService {
     if (task.status == TaskStatus.completed) {
       actions.addAll(_getCompletedTaskActions(
         task,
+        colorScheme: colorScheme,
         onComplete: onComplete,
         onArchive: onArchive,
         onDelete: onDelete,
@@ -37,6 +39,7 @@ class SlidableActionService {
     } else if (task.isOverdue) {
       actions.addAll(_getOverdueTaskActions(
         task,
+        colorScheme: colorScheme,
         onComplete: onComplete,
         onEdit: onEdit,
         onReschedule: onReschedule,
@@ -45,6 +48,7 @@ class SlidableActionService {
     } else if (task.recurrence != null) {
       actions.addAll(_getRecurringTaskActions(
         task,
+        colorScheme: colorScheme,
         onComplete: onComplete,
         onEdit: onEdit,
         onStopRecurring: onStopRecurring,
@@ -53,6 +57,7 @@ class SlidableActionService {
     } else {
       actions.addAll(_getStandardTaskActions(
         task,
+        colorScheme: colorScheme,
         onComplete: onComplete,
         onEdit: onEdit,
         onPin: onPin,
@@ -67,6 +72,7 @@ class SlidableActionService {
   /// Gets balanced compact actions with proper 2-2 distribution for better UX
   static Map<String, List<SlidableAction>> getBalancedCompactTaskActions(
     TaskModel task, {
+    required ColorScheme colorScheme,
     VoidCallback? onComplete,
     VoidCallback? onQuickEdit,
     VoidCallback? onDelete,
@@ -78,7 +84,7 @@ class SlidableActionService {
           onPressed: onComplete,
           actionType: SlidableActionType.complete,
           actionName: 'Complete',
-          backgroundColor: Colors.green.shade700, // Darker for better contrast
+          backgroundColor: colorScheme.primary,
           foregroundColor: Colors.white,
           icon: PhosphorIcons.check(),
           iconSize: 24, // Slightly smaller to balance with text
@@ -89,7 +95,7 @@ class SlidableActionService {
           onPressed: onQuickEdit,
           actionType: SlidableActionType.edit,
           actionName: 'QuickEdit',
-          backgroundColor: Colors.blue.shade700, // Darker for better contrast
+          backgroundColor: colorScheme.secondary,
           foregroundColor: Colors.white,
           icon: PhosphorIcons.pencil(), // Changed from lightning to pencil for clarity
           iconSize: 24, // Slightly smaller to balance with text
@@ -102,7 +108,7 @@ class SlidableActionService {
           onPressed: onDelete,
           actionType: SlidableActionType.destructive,
           actionName: 'Delete',
-          backgroundColor: Colors.red.shade700, // Darker for better contrast
+          backgroundColor: colorScheme.error,
           foregroundColor: Colors.white,
           icon: PhosphorIcons.trash(),
           iconSize: 24, // Slightly smaller to balance with text
@@ -113,7 +119,7 @@ class SlidableActionService {
           onPressed: onMore,
           actionType: SlidableActionType.neutral,
           actionName: 'More',
-          backgroundColor: Colors.grey.shade800, // Darker for better contrast
+          backgroundColor: colorScheme.surfaceContainerHigh,
           foregroundColor: Colors.white,
           icon: PhosphorIcons.dotsThreeOutline(),
           iconSize: 24, // Slightly smaller to balance with text
@@ -128,6 +134,7 @@ class SlidableActionService {
   @Deprecated('Use getBalancedCompactTaskActions for better UX')
   static List<SlidableAction> getCompactTaskActions(
     TaskModel task, {
+    required ColorScheme colorScheme,
     VoidCallback? onComplete,
     VoidCallback? onQuickEdit,
     VoidCallback? onMore,
@@ -137,7 +144,7 @@ class SlidableActionService {
         onPressed: onComplete,
         actionType: SlidableActionType.complete,
         actionName: 'Complete',
-        backgroundColor: Colors.green.shade600,
+        backgroundColor: colorScheme.primary,
         foregroundColor: Colors.white,
         icon: PhosphorIcons.check(),
         label: 'Complete',
@@ -146,7 +153,7 @@ class SlidableActionService {
         onPressed: onQuickEdit,
         actionType: SlidableActionType.edit,
         actionName: 'QuickEdit',
-        backgroundColor: Colors.blue.shade600,
+        backgroundColor: colorScheme.secondary,
         foregroundColor: Colors.white,
         icon: PhosphorIcons.lightning(),
         label: 'Edit',
@@ -155,7 +162,7 @@ class SlidableActionService {
         onPressed: onMore,
         actionType: SlidableActionType.neutral,
         actionName: 'More',
-        backgroundColor: Colors.grey.shade700,
+        backgroundColor: colorScheme.surfaceContainerHigh,
         foregroundColor: Colors.white,
         icon: PhosphorIcons.dotsThreeOutline(),
         label: 'More',
@@ -166,6 +173,7 @@ class SlidableActionService {
   /// Gets project-specific slidable actions
   static List<SlidableAction> getProjectActions(
     Project project, {
+    required ColorScheme colorScheme,
     VoidCallback? onEdit,
     VoidCallback? onViewTasks,
     VoidCallback? onArchive,
@@ -178,7 +186,7 @@ class SlidableActionService {
         onPressed: onEdit,
         actionType: SlidableActionType.edit,
         actionName: 'ProjectEdit',
-        backgroundColor: Colors.blue.shade600,
+        backgroundColor: colorScheme.secondary,
         foregroundColor: Colors.white,
         icon: PhosphorIcons.pencil(),
         label: 'Edit',
@@ -187,7 +195,7 @@ class SlidableActionService {
         onPressed: onViewTasks,
         actionType: SlidableActionType.neutral,
         actionName: 'ProjectViewTasks',
-        backgroundColor: Colors.teal.shade600,
+        backgroundColor: colorScheme.tertiary,
         foregroundColor: Colors.white,
         icon: PhosphorIcons.eye(),
         label: 'Tasks',
@@ -197,7 +205,7 @@ class SlidableActionService {
         onPressed: onShare,
         actionType: SlidableActionType.neutral,
         actionName: 'ProjectShare',
-        backgroundColor: Colors.purple.shade600,
+        backgroundColor: colorScheme.primaryContainer,
         foregroundColor: Colors.white,
         icon: PhosphorIcons.share(),
         label: 'Share',
@@ -206,7 +214,7 @@ class SlidableActionService {
         onPressed: (_) async {
           await _safeExecuteCallback(onArchive, SlidableActionType.archive, 'ProjectArchive');
         },
-        backgroundColor: Colors.orange,
+        backgroundColor: colorScheme.secondaryContainer,
         foregroundColor: Colors.white,
         icon: PhosphorIcons.archive(),
         // label: 'Archive', // Removed text
@@ -215,7 +223,7 @@ class SlidableActionService {
         onPressed: (_) async {
           await _safeExecuteCallback(onDelete, SlidableActionType.destructive, 'TaskDelete');
         },
-        backgroundColor: Colors.red.shade600,
+        backgroundColor: colorScheme.error,
         foregroundColor: Colors.white,
         icon: PhosphorIcons.trash(),
         // label: 'Delete', // Removed text
@@ -227,6 +235,7 @@ class SlidableActionService {
   
   static List<SlidableAction> _getStandardTaskActions(
     TaskModel task, {
+    required ColorScheme colorScheme,
     VoidCallback? onComplete,
     VoidCallback? onEdit,
     VoidCallback? onPin,
@@ -238,7 +247,7 @@ class SlidableActionService {
         onPressed: (_) async {
           await _safeExecuteCallback(onComplete, SlidableActionType.complete, 'TaskComplete');
         },
-        backgroundColor: Colors.green,
+        backgroundColor: colorScheme.primary,
         foregroundColor: Colors.white,
         icon: PhosphorIcons.check(),
         // label: 'Complete', // Removed text
@@ -247,7 +256,7 @@ class SlidableActionService {
         onPressed: (_) async {
           await _safeExecuteCallback(onEdit, SlidableActionType.edit, 'TaskEdit');
         },
-        backgroundColor: Colors.blue,
+        backgroundColor: colorScheme.secondary,
         foregroundColor: Colors.white,
         icon: PhosphorIcons.pencil(),
         // label: 'Edit', // Removed text
@@ -257,7 +266,7 @@ class SlidableActionService {
           _provideFeedback(SlidableActionType.neutral);
           onPin?.call();
         },
-        backgroundColor: Colors.purple,
+        backgroundColor: colorScheme.tertiary,
         foregroundColor: Colors.white,
         icon: task.isPinned ? PhosphorIcons.pushPinSlash() : PhosphorIcons.pushPin(),
         // label: task.isPinned ? 'Unpin' : 'Pin', // Removed text
@@ -266,7 +275,7 @@ class SlidableActionService {
         onPressed: (_) async {
           await _safeExecuteCallback(onDelete, SlidableActionType.destructive, 'TaskDelete');
         },
-        backgroundColor: Colors.red.shade600,
+        backgroundColor: colorScheme.error,
         foregroundColor: Colors.white,
         icon: PhosphorIcons.trash(),
         // label: 'Delete', // Removed text
@@ -276,6 +285,7 @@ class SlidableActionService {
 
   static List<SlidableAction> _getCompletedTaskActions(
     TaskModel task, {
+    required ColorScheme colorScheme,
     VoidCallback? onComplete,
     VoidCallback? onArchive,
     VoidCallback? onDelete,
@@ -285,7 +295,7 @@ class SlidableActionService {
         onPressed: (_) async {
           await _safeExecuteCallback(onComplete, SlidableActionType.complete, 'TaskComplete');
         },
-        backgroundColor: Colors.orange,
+        backgroundColor: colorScheme.secondaryContainer,
         foregroundColor: Colors.white,
         icon: PhosphorIcons.arrowCounterClockwise(),
         // label: 'Uncomplete', // Removed text
@@ -294,7 +304,7 @@ class SlidableActionService {
         onPressed: (_) async {
           await _safeExecuteCallback(onArchive, SlidableActionType.archive, 'TaskArchive');
         },
-        backgroundColor: Colors.teal,
+        backgroundColor: colorScheme.tertiary,
         foregroundColor: Colors.white,
         icon: PhosphorIcons.archive(),
         // label: 'Archive', // Removed text
@@ -303,7 +313,7 @@ class SlidableActionService {
         onPressed: (_) async {
           await _safeExecuteCallback(onDelete, SlidableActionType.destructive, 'TaskDelete');
         },
-        backgroundColor: Colors.red.shade600,
+        backgroundColor: colorScheme.error,
         foregroundColor: Colors.white,
         icon: PhosphorIcons.trash(),
         // label: 'Delete', // Removed text
@@ -313,6 +323,7 @@ class SlidableActionService {
 
   static List<SlidableAction> _getOverdueTaskActions(
     TaskModel task, {
+    required ColorScheme colorScheme,
     VoidCallback? onComplete,
     VoidCallback? onEdit,
     VoidCallback? onReschedule,
@@ -323,7 +334,7 @@ class SlidableActionService {
         onPressed: (_) async {
           await _safeExecuteCallback(onComplete, SlidableActionType.complete, 'TaskComplete');
         },
-        backgroundColor: Colors.green,
+        backgroundColor: colorScheme.primary,
         foregroundColor: Colors.white,
         icon: PhosphorIcons.checkCircle(),
         // label: 'Complete', // Removed text
@@ -333,7 +344,7 @@ class SlidableActionService {
           _provideFeedback(SlidableActionType.neutral);
           onReschedule?.call();
         },
-        backgroundColor: Colors.orange,
+        backgroundColor: colorScheme.secondaryContainer,
         foregroundColor: Colors.white,
         icon: PhosphorIcons.calendar(),
         // label: 'Reschedule', // Removed text
@@ -342,7 +353,7 @@ class SlidableActionService {
         onPressed: (_) async {
           await _safeExecuteCallback(onEdit, SlidableActionType.edit, 'TaskEdit');
         },
-        backgroundColor: Colors.blue,
+        backgroundColor: colorScheme.secondary,
         foregroundColor: Colors.white,
         icon: PhosphorIcons.pencil(),
         // label: 'Edit', // Removed text
@@ -351,7 +362,7 @@ class SlidableActionService {
         onPressed: (_) async {
           await _safeExecuteCallback(onDelete, SlidableActionType.destructive, 'TaskDelete');
         },
-        backgroundColor: Colors.red.shade600,
+        backgroundColor: colorScheme.error,
         foregroundColor: Colors.white,
         icon: PhosphorIcons.trash(),
         // label: 'Delete', // Removed text
@@ -361,6 +372,7 @@ class SlidableActionService {
 
   static List<SlidableAction> _getRecurringTaskActions(
     TaskModel task, {
+    required ColorScheme colorScheme,
     VoidCallback? onComplete,
     VoidCallback? onEdit,
     VoidCallback? onStopRecurring,
@@ -371,7 +383,7 @@ class SlidableActionService {
         onPressed: (_) async {
           await _safeExecuteCallback(onComplete, SlidableActionType.complete, 'TaskComplete');
         },
-        backgroundColor: Colors.green,
+        backgroundColor: colorScheme.primary,
         foregroundColor: Colors.white,
         icon: PhosphorIcons.check(),
         // label: 'Complete', // Removed text
@@ -380,7 +392,7 @@ class SlidableActionService {
         onPressed: (_) async {
           await _safeExecuteCallback(onEdit, SlidableActionType.edit, 'TaskEdit');
         },
-        backgroundColor: Colors.blue,
+        backgroundColor: colorScheme.secondary,
         foregroundColor: Colors.white,
         icon: PhosphorIcons.gear(),
         // label: 'Edit', // Removed text
@@ -390,7 +402,7 @@ class SlidableActionService {
           _provideFeedback(SlidableActionType.neutral);
           onSkipInstance?.call();
         },
-        backgroundColor: Colors.teal,
+        backgroundColor: colorScheme.tertiary,
         foregroundColor: Colors.white,
         icon: PhosphorIcons.skipForward(),
         // label: 'Skip', // Removed text
@@ -400,7 +412,7 @@ class SlidableActionService {
           _provideFeedback(SlidableActionType.destructive);
           onStopRecurring?.call();
         },
-        backgroundColor: Colors.red,
+        backgroundColor: colorScheme.error,
         foregroundColor: Colors.white,
         icon: PhosphorIcons.stop(),
         // label: 'Stop Series', // Removed text

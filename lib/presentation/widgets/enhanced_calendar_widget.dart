@@ -7,9 +7,10 @@ import '../../domain/entities/calendar_event.dart';
 import '../../domain/models/enums.dart';
 import '../providers/enhanced_calendar_provider.dart';
 import '../../core/theme/typography_constants.dart';
-import '../../core/providers/navigation_provider.dart';
-import '../widgets/enhanced_task_creation_dialog.dart';
+import '../pages/manual_task_creation_page.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'glassmorphism_container.dart';
+import '../../core/design_system/design_tokens.dart';
 
 /// Enhanced calendar widget that integrates tasks and events
 class EnhancedCalendarWidget extends ConsumerWidget {
@@ -22,21 +23,21 @@ class EnhancedCalendarWidget extends ConsumerWidget {
 
     return Column(
       children: [
-        // Calendar statistics with compact spacing
+        // Calendar statistics with design system spacing
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),
+          padding: const EdgeInsets.symmetric(horizontal: SpacingTokens.xs, vertical: SpacingTokens.xs / 2),
           child: _buildCalendarStats(context, ref),
         ),
         
-        const SizedBox(height: 8),
+        const SizedBox(height: SpacingTokens.sm),
         
-        // View mode selector with padding
+        // View mode selector with design system padding
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+          padding: const EdgeInsets.symmetric(horizontal: SpacingTokens.xs),
           child: _buildViewModeSelector(context, calendarState, calendarNotifier),
         ),
         
-        const SizedBox(height: 8),
+        const SizedBox(height: SpacingTokens.sm),
         
         // Calendar with enhanced sizing constraints and geometry validation
         Expanded(
@@ -65,7 +66,7 @@ class EnhancedCalendarWidget extends ConsumerWidget {
               return Container(
                 height: availableHeight, // Use all available height
                 width: availableWidth, // Use all available width
-                padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                padding: const EdgeInsets.symmetric(horizontal: SpacingTokens.xs / 2),
                 child: _buildCalendarView(context, calendarState, calendarNotifier, ref),
               );
             },
@@ -74,9 +75,9 @@ class EnhancedCalendarWidget extends ConsumerWidget {
         
         const SizedBox(height: 8),
         
-        // Selected date details with proper spacing
+        // Selected date details with design system spacing
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 2.0),
+          padding: const EdgeInsets.symmetric(horizontal: SpacingTokens.xs, vertical: SpacingTokens.xs / 2),
           child: _buildSelectedDateDetails(context, ref, calendarState),
         ),
       ],
@@ -86,12 +87,10 @@ class EnhancedCalendarWidget extends ConsumerWidget {
   Widget _buildCalendarStats(BuildContext context, WidgetRef ref) {
     final stats = ref.watch(calendarStatsProvider);
     
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), // Even more compact padding
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(6),
-      ),
+    return GlassmorphismContainer(
+      level: GlassLevel.content,
+      padding: const EdgeInsets.symmetric(horizontal: SpacingTokens.sm, vertical: SpacingTokens.xs),
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
@@ -133,11 +132,9 @@ class EnhancedCalendarWidget extends ConsumerWidget {
     EnhancedCalendarState state,
     EnhancedCalendarNotifier notifier,
   ) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(8),
-      ),
+    return GlassmorphismContainer(
+      level: GlassLevel.interactive,
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: CalendarViewMode.values.map((mode) {
@@ -150,11 +147,11 @@ class EnhancedCalendarWidget extends ConsumerWidget {
               }
             },
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              margin: const EdgeInsets.symmetric(horizontal: 2),
+              padding: const EdgeInsets.symmetric(horizontal: SpacingTokens.elementPadding, vertical: SpacingTokens.md / 1.3),
+              margin: const EdgeInsets.symmetric(horizontal: SpacingTokens.xs / 2),
               decoration: BoxDecoration(
                 color: isSelected ? Theme.of(context).colorScheme.primary : null,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
               ),
               child: Text(
                 _getViewModeLabel(mode),
@@ -193,28 +190,39 @@ class EnhancedCalendarWidget extends ConsumerWidget {
     try {
       final tasksByDate = notifier.getTasksByDate();
       final eventsByDate = notifier.getEventsByDate();
+      
+      // Task and event count logging for debugging markers
+      final totalTasks = tasksByDate.values.fold(0, (sum, tasks) => sum + tasks.length);
+      if (totalTasks > 0) {
+        debugPrint('Calendar Debug: Loaded $totalTasks tasks with due dates');
+      }
 
       // Convert tasks to calendar appointments with enhanced styling
       final appointments = <Appointment>[];
       
-      // Add tasks as appointments with improved visibility
+      // Add tasks as appointments with enhanced date normalization and visibility
       for (final entry in tasksByDate.entries) {
         for (final task in entry.value) {
+          // Normalize date to ensure exact calendar day matching (crucial for indicators)
+          final normalizedDate = DateTime(entry.key.year, entry.key.month, entry.key.day, 12, 0, 0);
+          
           final hasSpecificTime = task.dueDate != null && 
             (task.dueDate!.hour != 0 || task.dueDate!.minute != 0);
           
           final taskColor = _getEnhancedTaskColor(task, context);
           
+          // Create appointment for calendar display
+          
           appointments.add(Appointment(
-            startTime: entry.key,
+            startTime: normalizedDate,
             endTime: hasSpecificTime 
-              ? entry.key.add(const Duration(hours: 1))
-              : entry.key.add(const Duration(days: 1)),
+              ? normalizedDate.add(const Duration(hours: 2)) // Longer duration for visibility
+              : normalizedDate.add(const Duration(hours: 23, minutes: 59)), // Almost full day
             subject: _getTaskDisplayText(task),
             color: taskColor,
             notes: task.description ?? '',
-            isAllDay: !hasSpecificTime,
-            id: task.id, // Add unique ID for task identification
+            isAllDay: false, // Force non-all-day for better indicator visibility
+            id: task.id,
           ));
         }
       }
@@ -233,33 +241,16 @@ class EnhancedCalendarWidget extends ConsumerWidget {
           ));
         }
       }
+      
+      // Log appointment count for debugging
+      if (appointments.isNotEmpty) {
+        debugPrint('Calendar Debug: Created ${appointments.length} appointments for display');
+      }
 
-      return GestureDetector(
-        onHorizontalDragEnd: (DragEndDetails details) {
-          // Add swipe navigation for month view
-          if (state.viewMode == CalendarViewMode.month) {
-            final velocity = details.primaryVelocity ?? 0;
-            if (velocity < -500) {
-              // Swiped left - next month
-              final nextMonth = DateTime(
-                state.focusedDate.year,
-                state.focusedDate.month + 1,
-                1,
-              );
-              notifier.changeFocusedDate(nextMonth);
-            } else if (velocity > 500) {
-              // Swiped right - previous month
-              final prevMonth = DateTime(
-                state.focusedDate.year,
-                state.focusedDate.month - 1,
-                1,
-              );
-              notifier.changeFocusedDate(prevMonth);
-            }
-          }
-        },
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
         child: SfCalendar(
-          key: ValueKey('calendar_${state.viewMode.name}_${state.focusedDate.millisecondsSinceEpoch}'), // Unique key to prevent duplicate GlobalKey errors
+          key: ValueKey('calendar_${state.viewMode.name}'), // Stable key that only changes with view mode
           view: _mapViewModeToCalendarView(state.viewMode),
           initialDisplayDate: state.focusedDate,
           initialSelectedDate: state.selectedDate,
@@ -267,14 +258,23 @@ class EnhancedCalendarWidget extends ConsumerWidget {
           
           // Enhanced month view settings with optimized cell space
           monthViewSettings: MonthViewSettings(
+            // Always use indicator mode for consistent marker display
             appointmentDisplayMode: MonthAppointmentDisplayMode.indicator,
             showAgenda: false, // Disable agenda to give more space to cells
             dayFormat: 'EEE',
-            appointmentDisplayCount: 6, // Increased to show more task indicators
+            appointmentDisplayCount: 25, // Increased for maximum indicator visibility
+            
+            // Enhanced indicator styling for better visibility
+            
+            // Maximize space for indicators
+            agendaViewHeight: 0, // Minimize agenda height
+            showTrailingAndLeadingDates: true, // Show full month context
             navigationDirection: MonthNavigationDirection.horizontal,
+            
+            // Force indicator display even for overlapping appointments
+            numberOfWeeksInView: 6, // Show full 6-week month view
             monthCellStyle: MonthCellStyle(
               backgroundColor: Theme.of(context).colorScheme.surface,
-              todayBackgroundColor: Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 1.0),
               leadingDatesBackgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
               trailingDatesBackgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
               textStyle: TextStyle(
@@ -295,7 +295,7 @@ class EnhancedCalendarWidget extends ConsumerWidget {
               ),
             ),
             agendaStyle: AgendaStyle(
-              backgroundColor: Colors.transparent,
+              backgroundColor: Theme.of(context).colorScheme.surface.withValues(alpha: 0.8),
               appointmentTextStyle: TextStyle(
                 color: Theme.of(context).colorScheme.onSurface,
                 fontSize: TypographyConstants.bodyMedium,
@@ -344,25 +344,27 @@ class EnhancedCalendarWidget extends ConsumerWidget {
           headerHeight: 55, // Slightly increased header height
           cellBorderColor: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
           selectionDecoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
+            color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.1), // Reduced opacity for better text visibility
             border: Border.all(
               color: Theme.of(context).colorScheme.primary,
-              width: 3.0, // Slightly thicker border for better visibility
+              width: 2.0, // Design system standard border width
             ),
-            borderRadius: BorderRadius.circular(10), // More rounded corners
+            borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
             boxShadow: [
               BoxShadow(
-                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.4),
-                blurRadius: 6,
-                spreadRadius: 1,
+                color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.2),
+                blurRadius: 4,
+                spreadRadius: 0,
                 offset: const Offset(0, 2),
               ),
             ],
           ),
-          todayHighlightColor: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.9),
+          // Subtle today highlight for better visibility while maintaining design consistency
+          todayHighlightColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.15),
+          // Use same text style as regular dates for consistency
           todayTextStyle: TextStyle(
-            color: Theme.of(context).colorScheme.onSecondaryContainer,
-            fontWeight: TypographyConstants.medium,
+            color: Theme.of(context).colorScheme.onSurface,
+            fontWeight: TypographyConstants.regular,
             fontSize: TypographyConstants.bodyLarge,
           ),
           onTap: (CalendarTapDetails details) {
@@ -411,8 +413,8 @@ class EnhancedCalendarWidget extends ConsumerWidget {
                 }
               });
             }
-          },
-        ),
+          }
+      ),
       );
     } catch (e) {
       debugPrint('Calendar rendering error: $e');
@@ -474,31 +476,38 @@ class EnhancedCalendarWidget extends ConsumerWidget {
   }
 
   Color _getEnhancedTaskColor(TaskModel task, BuildContext context) {
-    // Get base color by priority using system theme colors
+    // Ultra-vibrant colors specifically designed for calendar indicator visibility
     Color baseColor;
     switch (task.priority) {
       case TaskPriority.urgent:
-        baseColor = Theme.of(context).colorScheme.error;
+        // Bright red that stands out on any background
+        baseColor = const Color(0xFFE53E3E); // Material Red 500
         break;
       case TaskPriority.high:
-        baseColor = Theme.of(context).colorScheme.errorContainer;
+        // Vibrant orange for high visibility
+        baseColor = const Color(0xFFFF8C00); // Dark Orange
         break;
       case TaskPriority.medium:
-        baseColor = Theme.of(context).colorScheme.primary;
+        // Electric blue for medium priority
+        baseColor = const Color(0xFF0066FF); // Bright Blue
         break;
       case TaskPriority.low:
-        baseColor = Theme.of(context).colorScheme.secondary;
+        // Vibrant green for low priority
+        baseColor = const Color(0xFF00C851); // Green
         break;
     }
     
-    // Modify color based on task status
+    // Always use maximum visibility colors for calendar indicators
     if (task.status == TaskStatus.completed) {
-      return baseColor.withValues(alpha: 0.6); // Slightly transparent for completed tasks
-    } else if (task.status == TaskStatus.inProgress) {
-      return baseColor.withValues(alpha: 0.9); // High visibility for in-progress
+      // Darker but still visible for completed tasks
+      return Color.fromARGB(255, 
+        (baseColor.r * 255.0 * 0.6).round() & 0xff, 
+        (baseColor.g * 255.0 * 0.6).round() & 0xff, 
+        (baseColor.b * 255.0 * 0.6).round() & 0xff);
     }
     
-    return baseColor.withValues(alpha: 0.8); // Standard visibility for pending
+    // Maximum saturation and visibility for active tasks
+    return baseColor;
   }
   
   String _getTaskDisplayText(TaskModel task) {
@@ -679,22 +688,19 @@ class EnhancedCalendarWidget extends ConsumerWidget {
   }
 
   void _navigateToTaskCreation(BuildContext context, WidgetRef ref, DateTime date) {
-    // Navigate to home tab and trigger task creation with the selected date
-    ref.read(navigationProvider.notifier).navigateToIndex(0); // Switch to home tab
-    
-    // Show the same task creation dialog as the home screen plus button
-    Future.microtask(() {
-      if (context.mounted) {
-        showDialog(
-          context: context,
-          builder: (context) {
-            return EnhancedTaskCreationDialog(
-              prePopulatedData: {'dueDate': date}, // Pass the selected date in prePopulatedData
-            );
+    // Navigate to manual task creation page with the selected date
+    final dateString = date.toIso8601String();
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ManualTaskCreationPage(
+          prePopulatedData: {
+            'dueDate': dateString,
+            'creationMode': 'calendar',
           },
-        );
-      }
-    });
+        ),
+      ),
+    );
   }
 }
 

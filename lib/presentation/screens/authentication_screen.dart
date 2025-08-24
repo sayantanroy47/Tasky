@@ -167,7 +167,7 @@ class _BiometricAuthWidgetState extends ConsumerState<BiometricAuthWidget> with 
               level: GlassLevel.floating,
               width: 80,
               height: 80,
-              borderRadius: BorderRadius.circular(40),
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusXLarge), // 20.0 - Fixed border radius hierarchy (was 40px)
               glassTint: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
               child: Center(
                 child: Icon(
@@ -212,7 +212,7 @@ class _BiometricAuthWidgetState extends ConsumerState<BiometricAuthWidget> with 
                     level: GlassLevel.floating,
                     width: 120,
                     height: 120,
-                    borderRadius: BorderRadius.circular(60),
+                    borderRadius: BorderRadius.circular(TypographyConstants.radiusXXLarge), // 24.0 - Fixed border radius hierarchy (was 60px)
                     glassTint: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                     borderColor: Theme.of(context).colorScheme.primary,
                     borderWidth: 2,
@@ -247,12 +247,12 @@ class _BiometricAuthWidgetState extends ConsumerState<BiometricAuthWidget> with 
             // Fallback to PIN
             GlassmorphismContainer(
               level: GlassLevel.content,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
                   onTap: widget.onFallbackToPin,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: Text(
@@ -348,7 +348,7 @@ class _PinAuthWidgetState extends ConsumerState<PinAuthWidget> {
               level: GlassLevel.floating,
               width: 80,
               height: 80,
-              borderRadius: BorderRadius.circular(40),
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusXXLarge), // 24.0 - Fixed border radius hierarchy (was 40px)
               glassTint: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
               child: Center(
                 child: Icon(
@@ -393,7 +393,7 @@ class _PinAuthWidgetState extends ConsumerState<PinAuthWidget> {
                   width: 20,
                   height: 20,
                   margin: const EdgeInsets.symmetric(horizontal: 8),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium), // 12.0 - Fixed border radius hierarchy (was 10px)
                   glassTint: isFilled ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.8) : null,
                   borderColor: Theme.of(context).colorScheme.outline,
                   child: isFilled
@@ -493,12 +493,12 @@ class _PinAuthWidgetState extends ConsumerState<PinAuthWidget> {
       level: GlassLevel.interactive,
       width: 64,
       height: 64,
-      borderRadius: BorderRadius.circular(32),
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusXLarge), // 20.0 - Fixed border radius hierarchy (was 32px)
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: _isAuthenticating ? null : () => _onNumberPressed(number),
-          borderRadius: BorderRadius.circular(32),
+          borderRadius: BorderRadius.circular(TypographyConstants.radiusXLarge), // 20.0 - Fixed border radius hierarchy (was 32px)
           child: Container(
             decoration: BoxDecoration(
               shape: BoxShape.circle,
@@ -532,12 +532,12 @@ class _PinAuthWidgetState extends ConsumerState<PinAuthWidget> {
       level: GlassLevel.interactive,
       width: 64,
       height: 64,
-      borderRadius: BorderRadius.circular(32),
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusXLarge), // 20.0 - Fixed border radius hierarchy (was 32px)
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: _isAuthenticating || _enteredPin.isEmpty ? null : _onBackspacePressed,
-          borderRadius: BorderRadius.circular(32),
+          borderRadius: BorderRadius.circular(TypographyConstants.radiusXLarge), // 20.0 - Fixed border radius hierarchy (was 32px)
           child: Container(
             decoration: BoxDecoration(
               shape: BoxShape.circle,
@@ -663,7 +663,7 @@ class _LockoutWidgetState extends ConsumerState<LockoutWidget> {
               level: GlassLevel.floating,
               width: 120,
               height: 120,
-              borderRadius: BorderRadius.circular(60),
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusXXLarge), // 24.0 - Fixed border radius hierarchy (was 60px)
               glassTint: Theme.of(context).colorScheme.error.withValues(alpha: 0.1),
               borderColor: Theme.of(context).colorScheme.error.withValues(alpha: 0.3),
               child: Center(
@@ -756,7 +756,7 @@ class SetupAuthWidget extends ConsumerWidget {
               level: GlassLevel.floating,
               width: 120,
               height: 120,
-              borderRadius: BorderRadius.circular(60),
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusXXLarge), // 24.0 - Fixed border radius hierarchy (was 60px)
               glassTint: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
               child: Center(
                 child: Icon(
@@ -802,7 +802,7 @@ class SetupAuthWidget extends ConsumerWidget {
             // Skip button
             GlassmorphismContainer(
               level: GlassLevel.content,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
@@ -811,7 +811,7 @@ class SetupAuthWidget extends ConsumerWidget {
                     // This is a temporary workaround
                     Navigator.of(context).pushReplacementNamed('/home');
                   },
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: Text(

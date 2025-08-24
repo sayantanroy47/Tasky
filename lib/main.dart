@@ -29,9 +29,10 @@ final performanceServiceProvider = Provider<PerformanceService>((ref) {
   return PerformanceService();
 });
 
-/// Share intent service provider
-final shareIntentServiceProvider = Provider<ShareIntentService>((ref) {
-  return ShareIntentService();
+/// Share intent service provider - lazily initialized when first accessed
+final shareIntentServiceProvider = FutureProvider<ShareIntentService>((ref) async {
+  final serviceManager = LazyServiceManager();
+  return await serviceManager.getService<ShareIntentService>(ServiceIds.shareIntent);
 });
 
 void main() async {
@@ -40,27 +41,22 @@ void main() async {
   
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Register all services with lazy service manager
-  await _registerServices();
+  // Only initialize absolutely critical performance service on main thread
+  final perfService = PerformanceService();
+  await perfService.initialize();
   
-  // Initialize only critical services that must be ready before UI shows
-  final serviceManager = LazyServiceManager();
-  await serviceManager.initializeCriticalServices();
+  // Record initial startup time
+  perfService.recordStartupTime(DateTime.now().difference(appStartTime));
   
-  // Get critical services
-  final perfService = await serviceManager.getService<PerformanceService>(ServiceIds.performance);
-  final shareIntentService = await serviceManager.getService<ShareIntentService>(ServiceIds.shareIntent);
+  // Defer ALL service registration and initialization to background
+  _initializeServicesInBackground();
   
-  // Startup optimizations (lightweight only)
-  await _performStartupOptimizations(appStartTime, perfService);
-  
-  // Start background service initialization (non-blocking)
-  _initializeBackgroundServices(serviceManager);
+  // Minimal startup optimizations (only fast operations)
+  _performFastStartupOptimizations();
   
   runApp(
     ProviderScope(
       overrides: [
-        shareIntentServiceProvider.overrideWithValue(shareIntentService),
         performanceServiceProvider.overrideWithValue(perfService),
       ],
       child: const TaskTrackerApp(),
@@ -83,10 +79,15 @@ Future<void> _registerServices() async {
     },
   );
   
+  // ShareIntentService - moved to low priority to avoid blocking startup
+  // Takes 2+ seconds to initialize and is only needed when sharing content
   serviceManager.registerService<ShareIntentService>(
     serviceId: ServiceIds.shareIntent,
-    priority: ServicePriority.critical,
+    priority: ServicePriority.low,
     initializer: () async {
+      if (kDebugMode) {
+        debugPrint('Initializing ShareIntentService (deferred)...');
+      }
       final service = ShareIntentService();
       await service.initialize();
       return service;
@@ -136,20 +137,18 @@ Future<void> _registerServices() async {
     },
   );
   
-  // Location services (medium priority - needed for location-based tasks)
+  // Location services - moved to low priority for lazy loading
+  // Only initialize when location-based features are actually used
   serviceManager.registerService<LocationServiceImpl>(
     serviceId: ServiceIds.locationService,
-    priority: ServicePriority.medium,
+    priority: ServicePriority.low,
     initializer: () async {
-      final service = LocationServiceImpl.getInstance();
-      // Pre-initialize location permissions if possible
-      try {
-        await service.checkPermission();
-      } catch (e) {
-        if (kDebugMode) {
-          debugPrint('Location permission check failed during initialization: $e');
-        }
+      if (kDebugMode) {
+        debugPrint('Initializing LocationService (lazy)...');
       }
+      final service = LocationServiceImpl.getInstance();
+      // Skip permission check during initialization to avoid blocking
+      // Permissions will be checked when location is actually needed
       return service as LocationServiceImpl;
     },
   );
@@ -158,19 +157,33 @@ Future<void> _registerServices() async {
   // with Riverpod providers. It will be initialized when first accessed via providers.
 }
 
-/// Initialize background services without blocking startup - moved to isolate
-Future<void> _initializeBackgroundServices(LazyServiceManager serviceManager) async {
+/// Initialize all services in background after app launch
+Future<void> _initializeServicesInBackground() async {
   // Use isolate for truly non-blocking service initialization
   scheduleMicrotask(() async {
     try {
-      // Increased delay to let UI fully settle and reduce main thread competition
-      await Future.delayed(const Duration(milliseconds: 500));
+      // Let UI settle first - increased delay for better UX
+      await Future.delayed(const Duration(milliseconds: 1000));
       
-      // Run service initialization in background isolate to prevent main thread blocking
+      Stopwatch? stopwatch;
+      if (kDebugMode) {
+        debugPrint('Starting background service initialization...');
+        stopwatch = Stopwatch()..start();
+      }
+      
+      // Register and initialize all services in background
+      await _registerServices();
+      final serviceManager = LazyServiceManager();
+      
+      // Initialize only critical services first (excluding shareIntent)
+      await serviceManager.initializeCriticalServices();
+      
+      // Then initialize background services
       await _runServiceInitializationInIsolate(serviceManager);
       
-      if (kDebugMode) {
-        debugPrint('Background services initialization completed in isolate');
+      if (kDebugMode && stopwatch != null) {
+        stopwatch.stop();
+        debugPrint('Background services initialized in ${stopwatch.elapsedMilliseconds}ms');
         final status = serviceManager.getInitializationStatus();
         debugPrint('Service status: $status');
       }
@@ -192,12 +205,10 @@ Future<void> _runServiceInitializationInIsolate(LazyServiceManager serviceManage
   }
 }
 
-/// Perform startup optimizations (lightweight only - heavy operations moved to background)
-Future<void> _performStartupOptimizations(DateTime appStartTime, PerformanceService perfService) async {
+/// Perform only the fastest startup optimizations on main thread
+void _performFastStartupOptimizations() {
   try {
-    // Only do lightweight operations here to not block startup
-    
-    // Set system UI overlay style - this is fast
+    // Only system UI overlay style - this is very fast (<5ms)
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
@@ -209,35 +220,33 @@ Future<void> _performStartupOptimizations(DateTime appStartTime, PerformanceServ
       ),
     );
     
-    // Record startup performance
-    perfService.recordStartupTime(DateTime.now().difference(appStartTime));
-    
-    // Move heavy operations to background
+    // Move ALL other system configurations to background
     scheduleMicrotask(() async {
       try {
-        // Set preferred orientations (can be slow)
+        await Future.delayed(const Duration(milliseconds: 1500)); // Let UI fully settle
+        
+        // Set preferred orientations (can take 50-200ms)
         await SystemChrome.setPreferredOrientations([
           DeviceOrientation.portraitUp,
           DeviceOrientation.portraitDown,
         ]);
         
-        // Hide navigation bar but keep status bar visible (can be slow)
+        // Hide navigation bar but keep status bar visible (can take 100ms+)
         await SystemChrome.setEnabledSystemUIMode(
           SystemUiMode.immersiveSticky,
           overlays: [SystemUiOverlay.top],
         );
         
         if (kDebugMode) {
-          debugPrint('Background startup optimizations completed');
+          debugPrint('Deferred system UI optimizations completed');
         }
       } catch (e) {
-        debugPrint('Warning: Background startup optimization failed: $e');
+        debugPrint('Warning: Deferred UI optimization failed: $e');
       }
     });
     
   } catch (e) {
-    // Log startup optimization errors but don't block app startup
-    debugPrint('Warning: Startup optimization failed: $e');
+    debugPrint('Warning: Fast startup optimization failed: $e');
   }
 }
 
@@ -277,6 +286,32 @@ class _TaskTrackerAppState extends ConsumerState<TaskTrackerApp> with WidgetsBin
     );
   }
   
+  /// Enable graphics optimizations to prevent buffer issues
+  void _enableGraphicsOptimizations() {
+    try {
+      // Enable hardware acceleration and optimize rendering
+      scheduleMicrotask(() async {
+        try {
+          // Optimize graphics buffer management
+          SystemChrome.setSystemUIOverlayStyle(
+            const SystemUiOverlayStyle(
+              statusBarColor: Colors.transparent,
+              systemNavigationBarColor: Colors.transparent,
+            ),
+          );
+          
+          if (kDebugMode) {
+            debugPrint('Graphics optimizations enabled');
+          }
+        } catch (e) {
+          debugPrint('Graphics optimization warning: $e');
+        }
+      });
+    } catch (e) {
+      debugPrint('Graphics optimization init failed: $e');
+    }
+  }
+  
   @override
   Widget build(BuildContext context) {
     final themeState = ref.watch(enhancedThemeProvider);
@@ -288,10 +323,14 @@ class _TaskTrackerAppState extends ConsumerState<TaskTrackerApp> with WidgetsBin
     final theme = themeState.flutterTheme ?? ThemeData.light();
     final darkTheme = themeState.darkFlutterTheme ?? ThemeData.dark();
     
+    // Enable graphics optimizations for better performance
+    _enableGraphicsOptimizations();
+    
     return AppInitializationWrapper(
-      child: GestureDetector(
-        onTap: _enforceUIMode, // Re-enforce on any tap
-        child: MaterialApp(
+      child: RepaintBoundary(
+        child: GestureDetector(
+          onTap: _enforceUIMode, // Re-enforce on any tap
+          child: MaterialApp(
           title: AppConstants.appName,
           navigatorKey: navigatorKey,
           debugShowCheckedModeBanner: false,
@@ -360,6 +399,7 @@ class _TaskTrackerAppState extends ConsumerState<TaskTrackerApp> with WidgetsBin
             }
             return child ?? const SizedBox();
           },
+          ),
         ),
       ),
     );

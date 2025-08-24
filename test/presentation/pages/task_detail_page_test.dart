@@ -97,7 +97,6 @@ void main() {
     });
 
     testWidgets('should handle completed task', (tester) async {
-      final completedTask = createTestTask(status: TaskStatus.completed);
       
       await tester.pumpWidget(createTestWidget(tasks: [completedTask]));
       await tester.pump();
@@ -106,7 +105,6 @@ void main() {
     });
 
     testWidgets('should handle cancelled task', (tester) async {
-      final cancelledTask = createTestTask(status: TaskStatus.cancelled);
       
       await tester.pumpWidget(createTestWidget(tasks: [cancelledTask]));
       await tester.pump();
@@ -115,7 +113,6 @@ void main() {
     });
 
     testWidgets('should handle in progress task', (tester) async {
-      final inProgressTask = createTestTask(status: TaskStatus.inProgress);
       
       await tester.pumpWidget(createTestWidget(tasks: [inProgressTask]));
       await tester.pump();

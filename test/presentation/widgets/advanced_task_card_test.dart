@@ -66,7 +66,6 @@ void main() {
     testWidgets('should display different status indicators', (tester) async {
       final completedTask = createTestTask(
         title: 'Completed Task',
-        status: TaskStatus.completed,
       );
       
       await tester.pumpWidget(

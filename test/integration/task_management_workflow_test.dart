@@ -358,9 +358,18 @@ void main() {
     group('Task Filtering and Search Workflow', () {
       testWidgets('should filter tasks by status, priority, and date', (tester) async {
         final testTasks = [
-          TaskModel.create(title: 'Completed Task', // Task will be marked as completed after creation, priority: TaskPriority.high),
-          TaskModel.create(title: 'In Progress Task', // Task will be marked as in progress after creation, priority: TaskPriority.medium),
-          TaskModel.create(title: 'Todo Task', // Task will be marked as pending after creation, priority: TaskPriority.low),
+          TaskModel.create(
+            title: 'Completed Task', 
+            priority: TaskPriority.high,
+          ),
+          TaskModel.create(
+            title: 'In Progress Task', 
+            priority: TaskPriority.medium,
+          ),
+          TaskModel.create(
+            title: 'Todo Task', 
+            priority: TaskPriority.low,
+          ),
           TaskModel.create(
             title: 'Overdue Task',
             // Task will be marked as pending after creation,

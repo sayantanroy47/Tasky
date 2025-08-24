@@ -113,7 +113,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
             level: GlassLevel.interactive,
             width: 40,
             height: 40,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(TypographyConstants.radiusXLarge), // 20.0 - Fixed border radius hierarchy
             margin: const EdgeInsets.only(right: 4),
             child: IconButton(
               icon: Icon(PhosphorIcons.magnifyingGlass(), size: 18),
@@ -127,7 +127,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
             level: GlassLevel.interactive,
             width: 40,
             height: 40,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(TypographyConstants.radiusXLarge), // 20.0 - Fixed border radius hierarchy
             margin: const EdgeInsets.only(right: 12),
             child: IconButton(
               icon: Icon(_isGridView ? PhosphorIcons.list() : PhosphorIcons.gridNine(), size: 18),
@@ -204,7 +204,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
       padding: const EdgeInsets.fromLTRB(20, 100, 20, 16),
       child: GlassmorphismContainer(
         level: GlassLevel.floating,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusXXLarge), // 24.0 - Fixed border radius hierarchy
         padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -470,7 +470,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
                                     flex: 2,
                                     child: Container(
                                       decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(4),
+                                        borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall), // 2.0 - Fixed border radius hierarchy (was 4px)
                                         color: theme.colors.primary.withValues(alpha: 0.7),
                                       ),
                                     ),
@@ -480,7 +480,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
                                     flex: 1,
                                     child: Container(
                                       decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(4),
+                                        borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall), // 2.0 - Fixed border radius hierarchy (was 4px)
                                         color: theme.colors.secondary.withValues(alpha: 0.7),
                                       ),
                                     ),
@@ -498,7 +498,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
                                     flex: 1,
                                     child: Container(
                                       decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(4),
+                                        borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall), // 2.0 - Fixed border radius hierarchy (was 4px)
                                         color: theme.colors.tertiary.withValues(alpha: 0.7),
                                       ),
                                     ),
@@ -508,7 +508,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
                                     flex: 2,
                                     child: Container(
                                       decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(4),
+                                        borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall), // 2.0 - Fixed border radius hierarchy (was 4px)
                                         color: theme.colors.surface,
                                         border: Border.all(
                                           color: theme.colors.outline.withValues(alpha: 0.3),
@@ -544,11 +544,11 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
                             width: 24,
                             height: 24,
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.surface, // Fixed hardcoded white color
                               borderRadius: BorderRadius.circular(12),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withValues(alpha: 0.2),
+                                  color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.2), // Fixed hardcoded black color
                                   blurRadius: 4,
                                   offset: const Offset(0, 2),
                                 ),
@@ -700,7 +700,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
           level: GlassLevel.floating,
           width: 56,
           height: 56,
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(TypographyConstants.radiusXXLarge), // 24.0 - Fixed border radius hierarchy (was 28px)
           child: FloatingActionButton(
             heroTag: 'random',
             onPressed: () => _applyRandomTheme(),
@@ -719,7 +719,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
           level: GlassLevel.floating,
           width: 56,
           height: 56,
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(TypographyConstants.radiusXXLarge), // 24.0 - Fixed border radius hierarchy (was 28px)
           child: FloatingActionButton(
             heroTag: 'favorite',
             onPressed: () => _showFavoriteThemes(),
@@ -740,7 +740,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
       child: GestureDetector(
         onTap: () => setState(() => _previewTheme = null),
         child: Container(
-          color: Colors.black.withValues(alpha: 0.7),
+          color: Theme.of(context).colorScheme.scrim.withValues(alpha: 0.7), // Fixed hardcoded overlay color
           child: Center(
             child: GlassmorphismContainer(
               level: GlassLevel.floating,
@@ -857,7 +857,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
           children: [
             Icon(
               PhosphorIcons.paintBrush(),
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.onPrimary, // Fixed hardcoded white color
               size: 20,
             ),
             const SizedBox(width: 12),
@@ -890,7 +890,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
             children: [
               Icon(
                 PhosphorIcons.shuffle(),
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.onPrimary, // Fixed hardcoded white color
                 size: 20,
               ),
               const SizedBox(width: 12),

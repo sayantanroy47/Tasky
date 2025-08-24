@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+
+import '../../services/gesture_customization_service.dart';
 import '../widgets/enhanced_ux_widgets.dart';
 import '../widgets/standardized_app_bar.dart';
-import '../../services/gesture_customization_service.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Screen for customizing gestures and haptic feedback
 class GestureSettingsScreen extends ConsumerWidget {
@@ -51,9 +52,9 @@ class GestureSettingsScreen extends ConsumerWidget {
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 24),
-              
+
               // Gesture Settings Section
               _buildSectionHeader(context, 'Gesture Settings'),
               EnhancedCard(
@@ -106,9 +107,9 @@ class GestureSettingsScreen extends ConsumerWidget {
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 24),
-              
+
               // Sensitivity Settings Section
               _buildSectionHeader(context, 'Sensitivity Settings'),
               EnhancedCard(
@@ -148,9 +149,9 @@ class GestureSettingsScreen extends ConsumerWidget {
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 24),
-              
+
               // Test Gestures Section
               _buildSectionHeader(context, 'Test Gestures'),
               EnhancedCard(
@@ -173,7 +174,7 @@ class GestureSettingsScreen extends ConsumerWidget {
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 32),
             ],
           );
@@ -188,9 +189,9 @@ class GestureSettingsScreen extends ConsumerWidget {
       child: Text(
         title,
         style: Theme.of(context).textTheme.titleMedium?.copyWith(
-          fontWeight: FontWeight.w600,
-          color: Theme.of(context).colorScheme.primary,
-        ),
+              fontWeight: FontWeight.w500,
+              color: Theme.of(context).colorScheme.primary,
+            ),
       ),
     );
   }
@@ -392,7 +393,7 @@ class GestureSettingsScreen extends ConsumerWidget {
             children: [
               Text(
                 title,
-                style: const TextStyle(fontWeight: FontWeight.w600),
+                style: const TextStyle(fontWeight: FontWeight.w500),
               ),
               const SizedBox(height: 4),
               Text(
@@ -443,4 +444,3 @@ class GestureSettingsScreen extends ConsumerWidget {
     );
   }
 }
-

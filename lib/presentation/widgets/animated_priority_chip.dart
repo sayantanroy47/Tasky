@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../domain/models/enums.dart';
-import '../../core/theme/material3/motion_system.dart';
-import '../../core/theme/typography_constants.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+
+import '../../core/theme/material3/motion_system.dart';
+import 'standardized_animations.dart';
+import 'standardized_colors.dart';
+import '../../core/theme/typography_constants.dart';
+import '../../domain/models/enums.dart';
 
 /// Animated priority chip with pulsing colors and effects
 /// Different priorities have different animation speeds and intensities
@@ -33,12 +36,11 @@ class PulsingPriorityChip extends StatefulWidget {
   State<PulsingPriorityChip> createState() => _PulsingPriorityChipState();
 }
 
-class _PulsingPriorityChipState extends State<PulsingPriorityChip>
-    with TickerProviderStateMixin {
+class _PulsingPriorityChipState extends State<PulsingPriorityChip> with TickerProviderStateMixin {
   late AnimationController _pulseController;
   late AnimationController _pressController;
   late AnimationController _glowController;
-  
+
   late Animation<double> _pulseAnimation;
   late Animation<double> _pressAnimation;
   late Animation<double> _glowAnimation;
@@ -56,7 +58,7 @@ class _PulsingPriorityChipState extends State<PulsingPriorityChip>
   @override
   void didUpdateWidget(PulsingPriorityChip oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.showPulse != oldWidget.showPulse || 
+    if (widget.showPulse != oldWidget.showPulse ||
         widget.enabled != oldWidget.enabled ||
         widget.priority != oldWidget.priority) {
       if (widget.showPulse && widget.enabled) {
@@ -123,26 +125,27 @@ class _PulsingPriorityChipState extends State<PulsingPriorityChip>
   Duration _getPulseDuration() {
     switch (widget.priority) {
       case TaskPriority.urgent:
-        return const Duration(milliseconds: 800); // Fast pulse
+        return StandardizedAnimations.fast; // Fast pulse
       case TaskPriority.high:
-        return const Duration(milliseconds: 1200); // Medium pulse
+        return StandardizedAnimations.normal; // Medium pulse
       case TaskPriority.medium:
-        return const Duration(milliseconds: 1800); // Slow pulse
+        return StandardizedAnimations.slow; // Slow pulse
       case TaskPriority.low:
-        return const Duration(milliseconds: 2500); // Very slow pulse
+        return StandardizedAnimations.slowest; // Very slow pulse
     }
   }
 
-  Color _getPriorityColor() {
+  Color _getPriorityColor(BuildContext context) {
+    final theme = Theme.of(context);
     switch (widget.priority) {
       case TaskPriority.urgent:
-        return Colors.deepPurple;
+        return theme.colorScheme.error; // Semantic urgent color
       case TaskPriority.high:
-        return Colors.red;
+        return StandardizedColors(theme).priorityHigh; // Semantic high priority color
       case TaskPriority.medium:
-        return Colors.orange;
+        return theme.colorScheme.secondary; // Medium priority semantic color
       case TaskPriority.low:
-        return Colors.blue;
+        return theme.colorScheme.tertiary; // Low priority semantic color
     }
   }
 
@@ -204,7 +207,7 @@ class _PulsingPriorityChipState extends State<PulsingPriorityChip>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Transform.scale(
       scale: widget.scale,
       child: AnimatedBuilder(
@@ -214,16 +217,17 @@ class _PulsingPriorityChipState extends State<PulsingPriorityChip>
           _glowAnimation,
         ]),
         builder: (context, child) {
-          final baseColor = _getPriorityColor();
+          final baseColor = _getPriorityColor(context);
           final pulseIntensity = _getPulseIntensity();
           final pulseValue = widget.showPulse && widget.enabled ? _pulseAnimation.value : 1.0;
-          
+
           // Calculate pulsing color
           final currentColor = Color.lerp(
-            baseColor.withValues(alpha: 0.6),
-            baseColor,
-            pulseValue,
-          ) ?? baseColor;
+                baseColor.withValues(alpha: 0.6),
+                baseColor,
+                pulseValue,
+              ) ??
+              baseColor;
 
           return GestureDetector(
             onTapDown: _onTapDown,
@@ -246,25 +250,27 @@ class _PulsingPriorityChipState extends State<PulsingPriorityChip>
                     color: currentColor.withValues(alpha: 0.3),
                     width: 1,
                   ),
-                  boxShadow: widget.enabled && widget.showPulse ? [
-                    BoxShadow(
-                      color: currentColor.withValues(alpha: _glowAnimation.value * pulseIntensity),
-                      blurRadius: 8 + (_glowAnimation.value * 4),
-                      spreadRadius: 2 + (_glowAnimation.value * 2),
-                    ),
-                    if (widget.priority == TaskPriority.urgent)
-                      BoxShadow(
-                        color: currentColor.withValues(alpha: _glowAnimation.value * 0.2),
-                        blurRadius: 16,
-                        spreadRadius: 4,
-                      ),
-                  ] : [
-                    BoxShadow(
-                      color: theme.shadowColor.withValues(alpha: 0.1),
-                      blurRadius: 2,
-                      offset: const Offset(0, 1),
-                    ),
-                  ],
+                  boxShadow: widget.enabled && widget.showPulse
+                      ? [
+                          BoxShadow(
+                            color: currentColor.withValues(alpha: _glowAnimation.value * pulseIntensity),
+                            blurRadius: 8 + (_glowAnimation.value * 4),
+                            spreadRadius: 2 + (_glowAnimation.value * 2),
+                          ),
+                          if (widget.priority == TaskPriority.urgent)
+                            BoxShadow(
+                              color: currentColor.withValues(alpha: _glowAnimation.value * 0.2),
+                              blurRadius: 16,
+                              spreadRadius: 4,
+                            ),
+                        ]
+                      : [
+                          BoxShadow(
+                            color: theme.shadowColor.withValues(alpha: 0.1),
+                            blurRadius: 2,
+                            offset: const Offset(0, 1),
+                          ),
+                        ],
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -279,7 +285,7 @@ class _PulsingPriorityChipState extends State<PulsingPriorityChip>
                       _getPriorityText(),
                       style: theme.textTheme.labelSmall?.copyWith(
                         color: _getTextColor(currentColor),
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w500,
                         letterSpacing: 0.5,
                       ),
                     ),
@@ -309,7 +315,7 @@ class _PulsingPriorityChipState extends State<PulsingPriorityChip>
   Color _getTextColor(Color backgroundColor) {
     // Calculate contrast and return appropriate text color
     final luminance = backgroundColor.computeLuminance();
-    return luminance > 0.5 ? Colors.black87 : Colors.white;
+    return luminance > 0.5 ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.surface; // Theme-aware contrast
   }
 
   @override
@@ -440,4 +446,3 @@ enum PriorityChipStyle {
   outlined,
   minimal,
 }
-

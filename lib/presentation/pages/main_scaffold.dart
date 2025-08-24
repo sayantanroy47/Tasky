@@ -1,26 +1,28 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/providers/navigation_provider.dart';
-import '../../core/theme/typography_constants.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+
 import '../../core/accessibility/accessibility_constants.dart';
 import '../../core/design_system/design_tokens.dart';
 import '../../core/design_system/responsive_builder.dart';
 import '../../core/design_system/responsive_constants.dart';
-
-import 'home_page_m3.dart';
-import 'calendar_page.dart';
-import 'analytics_page.dart';
-import 'settings_page.dart';
-import 'voice_recording_page.dart';
-import 'voice_only_creation_page.dart';
-import 'location_task_creation_page.dart';
-import '../widgets/enhanced_task_creation_dialog.dart';
-
-import '../widgets/theme_background_widget.dart';
-import '../widgets/glassmorphism_container.dart';
+import '../../core/providers/navigation_provider.dart';
+import '../../core/theme/typography_constants.dart';
 import '../widgets/adaptive_navigation.dart';
-import 'dart:ui';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import '../widgets/glassmorphism_container.dart';
+import '../widgets/standardized_fab.dart';
+import '../widgets/standardized_text.dart';
+import '../widgets/theme_background_widget.dart';
+import 'analytics_page.dart';
+import 'calendar_page.dart';
+import 'home_page_m3.dart';
+import 'location_task_creation_page.dart';
+import 'manual_task_creation_page.dart';
+import 'settings_page.dart';
+import 'voice_only_creation_page.dart';
+import 'voice_recording_page.dart';
 
 /// Responsive main scaffold with adaptive navigation
 class MainScaffold extends ConsumerWidget {
@@ -92,7 +94,11 @@ class MainScaffold extends ConsumerWidget {
         children: pages,
       ),
       bottomNavigationBar: _buildBottomNavigation(context, ref, selectedIndex, navigationItems),
-      floatingActionButton: _buildFloatingActionButton(context),
+      floatingActionButton: StandardizedFABVariants.create(
+        onPressed: () => _showTaskCreationMenu(context),
+        heroTag: 'mainFAB',
+        isLarge: true,
+      ),
       floatingActionButtonLocation: const CenterDockedFloatingActionButtonLocation(),
     );
   }
@@ -136,7 +142,7 @@ class MainScaffold extends ConsumerWidget {
                       size: 24,
                     ),
                   ),
-                  
+
                   // Navigation items
                   Expanded(
                     child: Column(
@@ -144,7 +150,7 @@ class MainScaffold extends ConsumerWidget {
                         final index = entry.key;
                         final item = entry.value;
                         final isSelected = selectedIndex == index;
-                        
+
                         return Container(
                           margin: const EdgeInsets.only(bottom: 8),
                           child: Semantics(
@@ -159,16 +165,15 @@ class MainScaffold extends ConsumerWidget {
                                 width: 48,
                                 height: 48,
                                 decoration: BoxDecoration(
-                                  color: isSelected 
-                                    ? Theme.of(context).colorScheme.primaryContainer 
-                                    : Colors.transparent,
+                                  color:
+                                      isSelected ? Theme.of(context).colorScheme.primaryContainer : Colors.transparent,
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Icon(
                                   isSelected ? item.selectedIcon : item.icon,
-                                  color: isSelected 
-                                    ? Theme.of(context).colorScheme.primary 
-                                    : Theme.of(context).colorScheme.onSurfaceVariant,
+                                  color: isSelected
+                                      ? Theme.of(context).colorScheme.primary
+                                      : Theme.of(context).colorScheme.onSurfaceVariant,
                                   size: 24,
                                 ),
                               ),
@@ -178,14 +183,17 @@ class MainScaffold extends ConsumerWidget {
                       }).toList(),
                     ),
                   ),
-                  
+
                   // FAB
-                  _buildFloatingActionButton(context),
+                  StandardizedFABVariants.create(
+                    onPressed: () => _showTaskCreationMenu(context),
+                    heroTag: 'tabletFAB',
+                  ),
                 ],
               ),
             ),
           ),
-          
+
           // Main content
           Expanded(
             child: IndexedStack(
@@ -245,15 +253,15 @@ class MainScaffold extends ConsumerWidget {
                         Text(
                           'Task Tracker',
                           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.w500,
-                          ),
+                                fontWeight: FontWeight.w500,
+                              ),
                         ),
                       ],
                     ),
                   ),
-                  
+
                   const SizedBox(height: 16),
-                  
+
                   // Navigation items
                   Expanded(
                     child: Column(
@@ -261,7 +269,7 @@ class MainScaffold extends ConsumerWidget {
                         final index = entry.key;
                         final item = entry.value;
                         final isSelected = selectedIndex == index;
-                        
+
                         return Container(
                           margin: const EdgeInsets.only(bottom: 8),
                           child: Semantics(
@@ -272,19 +280,19 @@ class MainScaffold extends ConsumerWidget {
                             child: ListTile(
                               leading: Icon(
                                 isSelected ? item.selectedIcon : item.icon,
-                                color: isSelected 
-                                  ? Theme.of(context).colorScheme.primary 
-                                  : Theme.of(context).colorScheme.onSurfaceVariant,
+                                color: isSelected
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Theme.of(context).colorScheme.onSurfaceVariant,
                                 size: 28,
                               ),
                               title: Text(
                                 item.label,
                                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: isSelected 
-                                    ? Theme.of(context).colorScheme.primary 
-                                    : Theme.of(context).colorScheme.onSurfaceVariant,
-                                  fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
-                                ),
+                                      color: isSelected
+                                          ? Theme.of(context).colorScheme.primary
+                                          : Theme.of(context).colorScheme.onSurfaceVariant,
+                                      fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
+                                    ),
                               ),
                               selected: isSelected,
                               selectedTileColor: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
@@ -298,19 +306,22 @@ class MainScaffold extends ConsumerWidget {
                       }).toList(),
                     ),
                   ),
-                  
+
                   // Bottom section with FAB
                   const Divider(),
                   const SizedBox(height: 16),
                   SizedBox(
                     width: double.infinity,
-                    child: _buildFloatingActionButton(context),
+                    child: StandardizedFABVariants.create(
+                      onPressed: () => _showTaskCreationMenu(context),
+                      heroTag: 'desktopFAB',
+                    ),
                   ),
                 ],
               ),
             ),
           ),
-          
+
           // Main content with max width constraint
           Expanded(
             child: Center(
@@ -338,7 +349,7 @@ class MainScaffold extends ConsumerWidget {
     List<AdaptiveNavigationItem> navigationItems,
   ) {
     final theme = Theme.of(context);
-    
+
     return Container(
       decoration: BoxDecoration(
         // Enhanced glassmorphism background with better transparency
@@ -380,10 +391,10 @@ class MainScaffold extends ConsumerWidget {
                     isSelected: selectedIndex == i,
                     onTap: () => ref.read(navigationProvider.notifier).navigateToIndex(i),
                   ),
-                
+
                 // Enhanced spacer for FAB with proper sizing
                 const SizedBox(width: 88), // Increased width for better spacing
-                
+
                 // Last two navigation items
                 for (int i = 2; i < navigationItems.length; i++)
                   _buildNavItem(
@@ -400,90 +411,6 @@ class MainScaffold extends ConsumerWidget {
     );
   }
 
-  /// Build floating action button with enhanced Material 3 design and glassmorphism
-  Widget _buildFloatingActionButton(BuildContext context) {
-    final theme = Theme.of(context);
-    
-    return Container(
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        // Enhanced multi-layer glow effects
-        boxShadow: [
-          // Outer glow - most prominent
-          BoxShadow(
-            color: theme.colorScheme.primary.withValues(alpha: 0.5),
-            blurRadius: 20,
-            spreadRadius: 4,
-          ),
-          // Middle glow
-          BoxShadow(
-            color: theme.colorScheme.primary.withValues(alpha: 0.3),
-            blurRadius: 12,
-            spreadRadius: 2,
-          ),
-          // Inner glow for depth
-          BoxShadow(
-            color: theme.colorScheme.primary.withValues(alpha: 0.2),
-            blurRadius: 6,
-            spreadRadius: 1,
-          ),
-        ],
-      ),
-      child: Semantics(
-        label: AccessibilityConstants.fabSemanticLabel,
-        hint: AccessibilityConstants.fabSemanticHint,
-        button: true,
-        child: SizedBox(
-          width: 72, // Increased size for better prominence and notch compatibility
-          height: 72,
-          child: ClipOval(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  // Theme border around FAB
-                  border: Border.all(
-                    color: theme.colorScheme.outline.withValues(alpha: 0.3),
-                    width: 1.5,
-                  ),
-                  // Enhanced glassmorphism effect
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      theme.colorScheme.primary.withValues(alpha: 0.95),
-                      theme.colorScheme.primary.withValues(alpha: 0.85),
-                      theme.colorScheme.secondary.withValues(alpha: 0.1),
-                    ],
-                    stops: const [0.0, 0.7, 1.0],
-                  ),
-                ),
-                child: FloatingActionButton.large(
-                  heroTag: 'mainFAB',
-                  onPressed: () => _showTaskCreationMenu(context),
-                  backgroundColor: Colors.transparent, // Use container gradient
-                  foregroundColor: theme.colorScheme.onPrimary,
-                  elevation: 0, // Remove default elevation to use custom shadow
-                  shape: const CircleBorder(),
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      PhosphorIcons.plus(),
-                      size: 36, // Larger icon for better visibility
-                      weight: 600, // Make icon bolder
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 
   /// Build navigation item for bottom app bar with accessibility and glassmorphism
   Widget _buildNavItem({
@@ -493,7 +420,7 @@ class MainScaffold extends ConsumerWidget {
     required VoidCallback onTap,
   }) {
     final theme = Theme.of(context);
-    
+
     return Semantics(
       label: '${item.label} ${AccessibilityConstants.navigationSemanticLabel}',
       hint: item.tooltip,
@@ -521,30 +448,30 @@ class MainScaffold extends ConsumerWidget {
                       duration: const Duration(milliseconds: 200),
                       width: 32,
                       height: 32,
-                    decoration: isSelected ? BoxDecoration(
-                      color: theme.colorScheme.primary.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: theme.colorScheme.primary.withValues(alpha: 0.3),
-                        width: 1.5,
+                      decoration: isSelected
+                          ? BoxDecoration(
+                              color: theme.colorScheme.primary.withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                                width: 1.5,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: theme.colorScheme.primary.withValues(alpha: 0.25),
+                                  blurRadius: 8,
+                                  spreadRadius: 0,
+                                ),
+                              ],
+                            )
+                          : null,
+                      child: Icon(
+                        isSelected ? item.selectedIcon : item.icon,
+                        size: 24,
+                        color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
                       ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: theme.colorScheme.primary.withValues(alpha: 0.25),
-                          blurRadius: 8,
-                          spreadRadius: 0,
-                        ),
-                      ],
-                    ) : null,
-                    child: Icon(
-                      isSelected ? item.selectedIcon : item.icon,
-                      size: 24,
-                      color: isSelected 
-                          ? theme.colorScheme.primary 
-                          : theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
-                ),
                 ),
               ],
             ),
@@ -557,7 +484,7 @@ class MainScaffold extends ConsumerWidget {
   /// Show task creation options menu
   void _showTaskCreationMenu(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -568,129 +495,115 @@ class MainScaffold extends ConsumerWidget {
           borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
           margin: EdgeInsets.zero,
           child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header
-                Text(
-                  'Create New Task',
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w500,
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header
+                  StandardizedTextVariants.sectionHeader(
+                    'Create New Task',
                   ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Choose how you\'d like to create your task',
-                  style: theme.textTheme.bodyMedium?.copyWith(
+                  const SizedBox(height: 8),
+                  StandardizedTextVariants.body(
+                    'Choose how you\'d like to create your task',
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
-                ),
-                const SizedBox(height: 24),
-                
-                // Task Creation Options in order: AI, Voice-Only, Location, Manual
-                _buildTaskCreationOption(
-                  context: context,
-                  icon: PhosphorIcons.microphone(),
-                  iconColor: theme.colorScheme.primary,
-                  title: 'AI Voice Entry',
-                  subtitle: 'Speak your task, we\'ll transcribe it',
-                  onTap: () async {
-                    Navigator.pop(context);
-                    
-                    await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const VoiceRecordingPage(),
-                      ),
-                    );
-                  },
-                ),
-                
-                const SizedBox(height: 12),
-                
-                _buildTaskCreationOption(
-                  context: context,
-                  icon: PhosphorIcons.waveform(),
-                  iconColor: Colors.orange,
-                  title: 'Voice-Only',
-                  subtitle: 'Record audio notes without transcription',
-                  onTap: () async {
-                    Navigator.pop(context);
-                    
-                    await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const VoiceOnlyCreationPage(),
-                      ),
-                    );
-                  },
-                ),
-                
-                const SizedBox(height: 12),
-                
-                _buildTaskCreationOption(
-                  context: context,
-                  icon: PhosphorIcons.mapPin(),
-                  iconColor: Colors.blue,
-                  title: 'Location-Based',
-                  subtitle: 'Create task with geofencing alerts',
-                  onTap: () async {
-                    Navigator.pop(context);
-                    
-                    await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const LocationTaskCreationPage(),
-                      ),
-                    );
-                  },
-                ),
-                
-                const SizedBox(height: 12),
-                
-                _buildTaskCreationOption(
-                  context: context,
-                  icon: PhosphorIcons.pencil(),
-                  iconColor: Colors.green,
-                  title: 'Manual Entry',
-                  subtitle: 'Type your task details manually',
-                  onTap: () {
-                    Navigator.pop(context);
-                    debugPrint('Manual: Showing Enhanced Task Creation Dialog');
-                    try {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          debugPrint('Manual: Building EnhancedTaskCreationDialog');
-                          return const EnhancedTaskCreationDialog(
-                            prePopulatedData: <String, String>{
+                  const SizedBox(height: 24),
+
+                  // Task Creation Options in order: AI, Voice-Only, Location, Manual
+                  _buildTaskCreationOption(
+                    context: context,
+                    icon: PhosphorIcons.microphone(),
+                    iconColor: theme.colorScheme.primary,
+                    title: 'AI Voice Entry',
+                    subtitle: 'Speak your task, we\'ll transcribe it',
+                    onTap: () async {
+                      Navigator.pop(context);
+
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const VoiceRecordingPage(),
+                        ),
+                      );
+                    },
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  _buildTaskCreationOption(
+                    context: context,
+                    icon: PhosphorIcons.waveform(),
+                    iconColor: Colors.orange,
+                    title: 'Voice-Only',
+                    subtitle: 'Record audio notes without transcription',
+                    onTap: () async {
+                      Navigator.pop(context);
+
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const VoiceOnlyCreationPage(),
+                        ),
+                      );
+                    },
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  _buildTaskCreationOption(
+                    context: context,
+                    icon: PhosphorIcons.mapPin(),
+                    iconColor: Colors.blue,
+                    title: 'Location-Based',
+                    subtitle: 'Create task with geofencing alerts',
+                    onTap: () async {
+                      Navigator.pop(context);
+
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const LocationTaskCreationPage(),
+                        ),
+                      );
+                    },
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  _buildTaskCreationOption(
+                    context: context,
+                    icon: PhosphorIcons.pencil(),
+                    iconColor: Colors.green,
+                    title: 'Manual Entry',
+                    subtitle: 'Type your task details manually',
+                    onTap: () async {
+                      Navigator.pop(context);
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ManualTaskCreationPage(
+                            prePopulatedData: <String, dynamic>{
                               'creationMode': 'manual',
                             },
-                          );
-                        },
+                          ),
+                        ),
                       );
-                    } catch (e) {
-                      debugPrint('Manual: Error showing dialog: $e');
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Dialog error: $e')),
-                      );
-                    }
-                  },
-                ),
-                
-                const SizedBox(height: 16),
-              ],
+                    },
+                  ),
+
+                  const SizedBox(height: 16),
+                ],
+              ),
             ),
           ),
-        ),
         ),
       ),
     );
   }
-  
+
   /// Build individual task creation option
   Widget _buildTaskCreationOption({
     required BuildContext context,
@@ -701,14 +614,14 @@ class MainScaffold extends ConsumerWidget {
     required VoidCallback onTap,
   }) {
     final theme = Theme.of(context);
-    
+
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge), // 16.0 - Fixed border radius hierarchy
       child: GlassmorphismContainer(
         level: GlassLevel.interactive,
         padding: const EdgeInsets.all(16),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge), // 16.0 - Fixed border radius hierarchy
         child: Row(
           children: [
             Container(
@@ -716,7 +629,7 @@ class MainScaffold extends ConsumerWidget {
               height: 48,
               decoration: BoxDecoration(
                 color: iconColor.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium), // 12.0 - Fixed border radius hierarchy
               ),
               child: Icon(
                 icon,
@@ -729,18 +642,14 @@ class MainScaffold extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  StandardizedTextVariants.cardTitle(
                     title,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
                   ),
                   const SizedBox(height: 2),
-                  Text(
+                  StandardizedText(
                     subtitle,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
+                    style: StandardizedTextStyle.bodySmall,
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
                 ],
               ),
@@ -765,23 +674,21 @@ class CenterDockedFloatingActionButtonLocation extends FloatingActionButtonLocat
   Offset getOffset(ScaffoldPrelayoutGeometry scaffoldGeometry) {
     // Get the FAB size (72x72 as defined in _buildFloatingActionButton)
     const fabSize = 72.0;
-    
+
     // Get the bottom navigation bar height (80px as defined in _buildBottomNavigation)
     const bottomNavHeight = 80.0;
-    
+
     // Calculate horizontal center
     final double fabX = (scaffoldGeometry.scaffoldSize.width - fabSize) / 2.0;
-    
+
     // Calculate vertical center within the bottom navigation bar
     // Position FAB so its center aligns with the center of the 80px toolbar
     // Fixed position - ignore system insets to prevent FAB movement
     final double fabY = scaffoldGeometry.scaffoldSize.height - bottomNavHeight + (bottomNavHeight - fabSize) / 2.0;
-    
+
     return Offset(fabX, fabY);
   }
 
   @override
   String toString() => 'CenterDockedFloatingActionButtonLocation';
 }
-
-

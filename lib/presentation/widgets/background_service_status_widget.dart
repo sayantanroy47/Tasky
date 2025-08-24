@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/background_service_providers.dart';
-import '../../core/theme/typography_constants.dart';
-import '../../core/design_system/design_tokens.dart';
-import 'glassmorphism_container.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+
+import '../../core/design_system/design_tokens.dart';
+import '../../core/theme/typography_constants.dart';
+import '../providers/background_service_providers.dart';
+import 'glassmorphism_container.dart';
 
 /// Widget to display background service status and controls
 class BackgroundServiceStatusWidget extends ConsumerWidget {
@@ -36,7 +37,7 @@ class BackgroundServiceStatusWidget extends ConsumerWidget {
               Text(
                 'Background Services',
                 style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
               const Spacer(),
@@ -48,23 +49,22 @@ class BackgroundServiceStatusWidget extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: 12),
-          
           backgroundServiceState.when(
             loading: () => const Center(
               child: CircularProgressIndicator(),
             ),
             ready: (status) => _buildStatusContent(
-              context, 
-              theme, 
-              status, 
-              false, 
+              context,
+              theme,
+              status,
+              false,
               backgroundServiceNotifier,
             ),
             running: (status) => _buildStatusContent(
-              context, 
-              theme, 
-              status, 
-              true, 
+              context,
+              theme,
+              status,
+              true,
               backgroundServiceNotifier,
             ),
             error: (message) => _buildErrorContent(theme, message),
@@ -107,9 +107,9 @@ class BackgroundServiceStatusWidget extends ConsumerWidget {
             ),
           ],
         ),
-        
+
         const SizedBox(height: 12),
-        
+
         // Status details
         if (status['last_cleanup'] != null) ...[
           _buildStatusRow(
@@ -120,7 +120,7 @@ class BackgroundServiceStatusWidget extends ConsumerWidget {
           ),
           const SizedBox(height: 8),
         ],
-        
+
         if (status['analytics_cleanup'] != null) ...[
           _buildStatusRow(
             theme,
@@ -140,9 +140,9 @@ class BackgroundServiceStatusWidget extends ConsumerWidget {
           ),
           const SizedBox(height: 8),
         ],
-        
+
         const SizedBox(height: 12),
-        
+
         // Manual trigger buttons
         Row(
           children: [
@@ -284,12 +284,12 @@ class BackgroundServiceStatusWidget extends ConsumerWidget {
 
   String _formatDateTime(String? dateTimeString) {
     if (dateTimeString == null) return 'Never';
-    
+
     try {
       final dateTime = DateTime.parse(dateTimeString);
       final now = DateTime.now();
       final difference = now.difference(dateTime);
-      
+
       if (difference.inDays > 0) {
         return '${difference.inDays}d ago';
       } else if (difference.inHours > 0) {
@@ -304,4 +304,3 @@ class BackgroundServiceStatusWidget extends ConsumerWidget {
     }
   }
 }
-

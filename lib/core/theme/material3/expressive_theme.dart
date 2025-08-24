@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+
 import '../app_theme_data.dart' as app_theme_data;
+import '../models/theme_effects.dart' as theme_effects;
 import '../models/theme_metadata.dart';
 import '../models/theme_typography.dart';
-import '../models/theme_effects.dart' as theme_effects;
 import '../typography_constants.dart';
 import 'color_system.dart';
 import 'motion_system.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Material 3 Expressive Theme - "Future 2050"
 /// A cutting-edge theme with dynamic colors, fluid animations, and futuristic design
@@ -15,14 +16,14 @@ class ExpressiveTheme {
   static app_theme_data.AppThemeData create({bool isDark = false}) {
     final now = DateTime.now();
     final colorSystem = ExpressiveColorSystem(isDark: isDark);
-    
+
     return app_theme_data.AppThemeData(
       metadata: ThemeMetadata(
         id: isDark ? 'expressive_dark' : 'expressive_light',
         name: isDark ? 'Expressive Dark 2050' : 'Expressive Light 2050',
-        description: isDark 
-          ? 'Futuristic dark theme with dynamic gradients, fluid animations, and Material 3 expressive design'
-          : 'Bright futuristic theme with vibrant colors, smooth transitions, and Material 3 expressive elements',
+        description: isDark
+            ? 'Futuristic dark theme with dynamic gradients, fluid animations, and Material 3 expressive design'
+            : 'Bright futuristic theme with vibrant colors, smooth transitions, and Material 3 expressive elements',
         author: 'Google Material Design + Tasky Team',
         version: '2.0.0',
         tags: ['material3', 'expressive', 'futuristic', 'dynamic', 'animated', '2050'],
@@ -34,7 +35,6 @@ class ExpressiveTheme {
         isPremium: true,
         popularityScore: 10.0,
       ),
-      
       colors: colorSystem.toThemeColors(),
       typography: _createExpressiveTypography(isDark: isDark, colorSystem: colorSystem),
       animations: ExpressiveMotionSystem.createAnimations(),
@@ -46,7 +46,7 @@ class ExpressiveTheme {
 
   /// Create light variant
   static app_theme_data.AppThemeData createLight() => create(isDark: false);
-  
+
   /// Create dark variant
   static app_theme_data.AppThemeData createDark() => create(isDark: true);
 
@@ -83,17 +83,17 @@ class ExpressiveTheme {
       ),
       displaySmall: TextStyle(
         fontFamily: 'Google Sans',
-        fontSize: TypographyConstants.displayLarge, // was 36, using displayLarge
+        fontSize: TypographyConstants.displaySmall, // was 36, now correct mapping
         fontWeight: FontWeight.w400,
         letterSpacing: 0,
         height: 1.22,
         color: colorSystem.onBackground,
       ),
-      
+
       // Headline styles - Expressive and dynamic
       headlineLarge: TextStyle(
         fontFamily: 'Google Sans',
-        fontSize: TypographyConstants.displayLarge, // was 32
+        fontSize: TypographyConstants.headlineLarge, // was 32, now correct mapping
         fontWeight: FontWeight.w500,
         letterSpacing: 0,
         height: 1.25,
@@ -101,7 +101,7 @@ class ExpressiveTheme {
       ),
       headlineMedium: TextStyle(
         fontFamily: 'Google Sans',
-        fontSize: TypographyConstants.displayMedium, // was 28
+        fontSize: TypographyConstants.headlineMedium, // was 28, now correct mapping
         fontWeight: FontWeight.w500,
         letterSpacing: 0,
         height: 1.29,
@@ -109,17 +109,17 @@ class ExpressiveTheme {
       ),
       headlineSmall: TextStyle(
         fontFamily: 'Google Sans',
-        fontSize: TypographyConstants.displaySmall, // was 24
+        fontSize: TypographyConstants.headlineSmall, // was 24, now correct mapping
         fontWeight: FontWeight.w500,
         letterSpacing: 0,
         height: 1.33,
         color: colorSystem.onBackground,
       ),
-      
+
       // Title styles - Clear hierarchy
       titleLarge: TextStyle(
         fontFamily: 'Google Sans',
-        fontSize: TypographyConstants.headlineLarge, // was 22
+        fontSize: TypographyConstants.titleLarge, // was 22, now correct mapping
         fontWeight: FontWeight.w500,
         letterSpacing: 0,
         height: 1.27,
@@ -127,21 +127,21 @@ class ExpressiveTheme {
       ),
       titleMedium: TextStyle(
         fontFamily: 'Google Sans Text',
-        fontSize: TypographyConstants.bodyLarge, // was 16
-        fontWeight: FontWeight.w600,
+        fontSize: TypographyConstants.titleMedium, // was 16, now correct mapping
+        fontWeight: FontWeight.w500,
         letterSpacing: 0.15,
         height: 1.5,
         color: colorSystem.onBackground,
       ),
       titleSmall: TextStyle(
         fontFamily: 'Google Sans Text',
-        fontSize: TypographyConstants.bodyMedium, // was 14
-        fontWeight: FontWeight.w600,
+        fontSize: TypographyConstants.titleSmall, // was 14, now correct mapping
+        fontWeight: FontWeight.w500,
         letterSpacing: 0.1,
         height: 1.43,
         color: colorSystem.onBackground,
       ),
-      
+
       // Body styles - Readable and clean
       bodyLarge: TextStyle(
         fontFamily: 'Google Sans Text',
@@ -167,7 +167,7 @@ class ExpressiveTheme {
         height: 1.33,
         color: colorSystem.onSurfaceVariant,
       ),
-      
+
       // Label styles - UI elements
       labelLarge: TextStyle(
         fontFamily: 'Google Sans Text',
@@ -193,19 +193,19 @@ class ExpressiveTheme {
         height: 1.45,
         color: colorSystem.onSurfaceVariant,
       ),
-      
+
       // Custom App Styles
       taskTitle: TextStyle(
         fontFamily: 'Google Sans',
-        fontSize: TypographyConstants.headlineSmall, // was 18
-        fontWeight: FontWeight.w600,
+        fontSize: TypographyConstants.taskTitle, // was 18, now correct mapping
+        fontWeight: FontWeight.w500,
         letterSpacing: 0,
         height: 1.33,
         color: colorSystem.onSurface,
       ),
       taskDescription: TextStyle(
         fontFamily: 'Google Sans Text',
-        fontSize: TypographyConstants.bodyMedium, // was 14
+        fontSize: TypographyConstants.taskDescription, // was 14, now correct mapping
         fontWeight: FontWeight.w400,
         letterSpacing: 0.25,
         height: 1.43,
@@ -213,7 +213,7 @@ class ExpressiveTheme {
       ),
       taskMeta: TextStyle(
         fontFamily: 'Google Sans Text',
-        fontSize: TypographyConstants.bodySmall, // was 12
+        fontSize: TypographyConstants.taskMeta, // was 12, now correct mapping
         fontWeight: FontWeight.w500,
         letterSpacing: 0.5,
         height: 1.33,
@@ -221,7 +221,7 @@ class ExpressiveTheme {
       ),
       cardTitle: TextStyle(
         fontFamily: 'Google Sans',
-        fontSize: TypographyConstants.headlineMedium, // was 20
+        fontSize: TypographyConstants.titleSmall, // was 20, should be smaller for cards
         fontWeight: FontWeight.w500,
         letterSpacing: 0,
         height: 1.3,
@@ -237,15 +237,15 @@ class ExpressiveTheme {
       ),
       buttonText: TextStyle(
         fontFamily: 'Google Sans Text',
-        fontSize: TypographyConstants.bodyMedium, // was 14
-        fontWeight: FontWeight.w600,
+        fontSize: TypographyConstants.buttonText, // was 14, now correct mapping
+        fontWeight: FontWeight.w500,
         letterSpacing: 0.75,
         height: 1.43,
         color: colorSystem.onPrimary,
       ),
       inputText: TextStyle(
         fontFamily: 'Google Sans Text',
-        fontSize: TypographyConstants.bodyLarge, // was 16
+        fontSize: TypographyConstants.inputText, // was 16, now correct mapping
         fontWeight: FontWeight.w400,
         letterSpacing: 0.15,
         height: 1.5,
@@ -253,7 +253,7 @@ class ExpressiveTheme {
       ),
       appBarTitle: TextStyle(
         fontFamily: 'Google Sans',
-        fontSize: TypographyConstants.headlineLarge, // was 22
+        fontSize: TypographyConstants.appBarTitle, // was 22, now correct mapping
         fontWeight: FontWeight.w500,
         letterSpacing: 0,
         height: 1.27,
@@ -261,7 +261,7 @@ class ExpressiveTheme {
       ),
       navigationLabel: TextStyle(
         fontFamily: 'Google Sans Text',
-        fontSize: TypographyConstants.bodySmall, // was 12
+        fontSize: TypographyConstants.navigationLabel, // was 12, now correct mapping
         fontWeight: FontWeight.w500,
         letterSpacing: 0.5,
         height: 1.33,
@@ -276,20 +276,17 @@ class ExpressiveTheme {
       shadowStyle: theme_effects.ShadowStyle.soft,
       gradientStyle: theme_effects.GradientStyle.subtle,
       borderStyle: theme_effects.BorderStyle.rounded,
-      
       blurConfig: theme_effects.BlurConfig(
         enabled: true,
         style: theme_effects.BlurStyle.outer,
         intensity: isDark ? 0.3 : 0.2,
       ),
-      
       glowConfig: theme_effects.GlowConfig(
         enabled: true,
         intensity: isDark ? 0.7 : 0.5,
         spread: 4.0,
         style: theme_effects.GlowStyle.outer,
       ),
-      
       backgroundEffects: theme_effects.BackgroundEffectConfig(
         enableParticles: false, // Keep it performant
         enableGradientMesh: true,
@@ -327,14 +324,12 @@ class ExpressiveTheme {
         centerTitle: false, // Material 3 style
         toolbarHeight: 64.0,
       ),
-      
       card: app_theme_data.CardConfig(
         elevation: 0, // Use color/blur instead
         borderRadius: TypographyConstants.radiusStandard, // Large radius for expressive design
         margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
         padding: EdgeInsets.all(20.0),
       ),
-      
       button: app_theme_data.ButtonConfig(
         borderRadius: TypographyConstants.radiusStandard, // Pill-shaped buttons
         padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 14.0),
@@ -342,27 +337,23 @@ class ExpressiveTheme {
         height: 48.0,
         style: app_theme_data.ButtonStyle.filled,
       ),
-      
       input: app_theme_data.InputConfig(
         borderRadius: TypographyConstants.radiusStandard,
         contentPadding: EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
         borderStyle: app_theme_data.InputBorderStyle.outline,
         filled: true,
       ),
-      
       fab: app_theme_data.FABConfig(
         shape: app_theme_data.FABShape.extended,
         elevation: 0, // Use color instead
         width: null, // Auto size
         height: 56.0,
       ),
-      
       navigation: app_theme_data.NavigationConfig(
         type: app_theme_data.NavigationType.bottomNav,
         elevation: 0,
         showLabels: true,
       ),
-      
       taskCard: app_theme_data.TaskCardConfig(
         borderRadius: TypographyConstants.radiusStandard,
         margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
@@ -378,11 +369,11 @@ class ExpressiveTheme {
   static ThemeData toFlutterTheme({required bool isDark}) {
     final expressive = create(isDark: isDark);
     final colors = expressive.colors;
-    
+
     return ThemeData(
       useMaterial3: true,
       brightness: isDark ? Brightness.dark : Brightness.light,
-      
+
       // Color scheme
       colorScheme: ColorScheme(
         brightness: isDark ? Brightness.dark : Brightness.light,
@@ -413,7 +404,7 @@ class ExpressiveTheme {
         inversePrimary: colors.primary,
         surfaceTint: colors.primary,
       ),
-      
+
       // Typography
       textTheme: TextTheme(
         displayLarge: expressive.typography.displayLarge,
@@ -432,7 +423,7 @@ class ExpressiveTheme {
         labelMedium: expressive.typography.labelMedium,
         labelSmall: expressive.typography.labelSmall,
       ),
-      
+
       // Component themes
       appBarTheme: AppBarTheme(
         elevation: expressive.components.appBar.elevation,
@@ -440,11 +431,9 @@ class ExpressiveTheme {
         toolbarHeight: expressive.components.appBar.toolbarHeight,
         backgroundColor: Colors.transparent,
         foregroundColor: colors.onSurface,
-        systemOverlayStyle: isDark 
-          ? SystemUiOverlayStyle.light 
-          : SystemUiOverlayStyle.dark,
+        systemOverlayStyle: isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
       ),
-      
+
       cardTheme: CardThemeData(
         elevation: expressive.components.card.elevation,
         shape: RoundedRectangleBorder(
@@ -452,7 +441,7 @@ class ExpressiveTheme {
         ),
         color: colors.surface,
       ),
-      
+
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ButtonStyle(
           elevation: WidgetStateProperty.all(0),
@@ -477,7 +466,7 @@ class ExpressiveTheme {
           minimumSize: WidgetStateProperty.all(Size(64, expressive.components.button.height)),
         ),
       ),
-      
+
       inputDecorationTheme: InputDecorationTheme(
         filled: expressive.components.input.filled,
         fillColor: colors.surfaceVariant.withValues(alpha: 0.3),
@@ -495,7 +484,7 @@ class ExpressiveTheme {
           borderSide: BorderSide(color: colors.primary, width: 2),
         ),
       ),
-      
+
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         elevation: 0,
         backgroundColor: colors.primaryContainer,
@@ -504,7 +493,7 @@ class ExpressiveTheme {
           borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
         ),
       ),
-      
+
       navigationBarTheme: NavigationBarThemeData(
         elevation: 0,
         backgroundColor: colors.surface,
@@ -514,5 +503,3 @@ class ExpressiveTheme {
     );
   }
 }
-
-

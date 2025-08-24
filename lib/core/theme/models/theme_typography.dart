@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../local_fonts.dart';
 
 /// Typography system for themes
@@ -76,6 +77,10 @@ class ThemeTypography {
   });
 
   /// Create typography from font family and base properties
+  /// 
+  /// ⚠️  WARNING: This factory uses _calculateScaledSizes which creates different
+  /// font sizes than TypographyConstants. All themes should construct typography
+  /// directly using TypographyConstants for consistency.
   factory ThemeTypography.fromFontFamily({
     required String fontFamily,
     String? displayFontFamily,
@@ -231,7 +236,7 @@ class ThemeTypography {
       taskTitle: LocalFonts.getFont(
         fontFamily,
         fontSize: sizes['titleMedium']!,
-        fontWeight: FontWeight.w600,
+        fontWeight: FontWeight.w500,
         letterSpacing: 0.1,
         color: textColor,
       ),
@@ -295,6 +300,11 @@ class ThemeTypography {
   }
 
   /// Calculate scaled text sizes based on base size and ratio
+  /// 
+  /// ⚠️  WARNING: This scaling system is NOT USED and creates different font sizes
+  /// than the standard TypographyConstants system (57px vs 30px for displayLarge).
+  /// All themes should use TypographyConstants directly for consistency.
+  /// This method is kept for potential future dynamic scaling features.
   static Map<String, double> _calculateScaledSizes(double baseSize, double ratio) {
     return {
       'displayLarge': baseSize * ratio * ratio * ratio * ratio, // 57

@@ -1,11 +1,8 @@
-import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:drift/drift.dart';
+import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:drift/native.dart';
 
 import 'package:task_tracker_app/services/database/database.dart';
-import 'package:task_tracker_app/services/database/tables.dart';
-import 'package:task_tracker_app/domain/entities/task_model.dart';
 import 'package:task_tracker_app/domain/entities/task_enums.dart';
 
 void main() {
@@ -63,7 +60,6 @@ void main() {
             title: 'Transaction Test',
             description: const Value('Test description'),
             priority: TaskPriority.medium.index,
-            status: TaskStatus.inProgress.index,
             createdAt: DateTime.now(),
             metadata: '{}',
           ));
@@ -82,7 +78,6 @@ void main() {
               title: 'Should Rollback',
               description: const Value('Test description'),
               priority: TaskPriority.medium.index,
-              status: TaskStatus.inProgress.index,
               createdAt: DateTime.now(),
               metadata: '{}',
             ));
@@ -110,7 +105,6 @@ void main() {
               title: 'Batch Task $i',
               description: Value('Description $i'),
               priority: TaskPriority.medium.index,
-              status: TaskStatus.inProgress.index,
               createdAt: DateTime.now(),
               metadata: '{}',
             ));
@@ -133,7 +127,6 @@ void main() {
               title: 'Large Query Task $i',
               description: Value('Description $i'),
               priority: TaskPriority.values[i % TaskPriority.values.length].index,
-              status: TaskStatus.values[i % TaskStatus.values.length].index,
               createdAt: DateTime.now(),
               metadata: '{}',
             ));
@@ -156,7 +149,6 @@ void main() {
           title: 'Unique Test 1',
           description: const Value('First task'),
           priority: TaskPriority.medium.index,
-          status: TaskStatus.inProgress.index,
           createdAt: DateTime.now(),
           metadata: '{}',
         ));
@@ -167,11 +159,9 @@ void main() {
             id: 'unique-test',
             title: 'Unique Test 2',
             description: const Value('Duplicate ID'),
-            isCompleted: false,
+            metadata: '{}',
             priority: TaskPriority.medium.index,
-            status: TaskStatus.todo.index,
             createdAt: DateTime.now(),
-            updatedAt: DateTime.now(),
           )),
           throwsA(isA<SqliteException>()),
         );
@@ -184,9 +174,8 @@ void main() {
             id: '', // Empty ID should fail validation at application level
             title: 'Invalid Task',
             description: const Value('Missing required fields'),
-            isCompleted: false,
+            metadata: '{}',
             priority: TaskPriority.medium.index,
-            status: TaskStatus.todo.index,
             createdAt: DateTime.now(),
             updatedAt: DateTime.now(),
           )),
@@ -203,9 +192,8 @@ void main() {
             id: 'query-task-1',
             title: 'Query Task High Priority',
             description: const Value('High priority task'),
-            isCompleted: false,
+            metadata: '{}',
             priority: TaskPriority.high.index,
-            status: TaskStatus.inProgress.index,
             createdAt: DateTime.now().subtract(const Duration(days: 1)),
             updatedAt: DateTime.now(),
           ));
@@ -214,9 +202,8 @@ void main() {
             id: 'query-task-2',
             title: 'Query Task Low Priority',
             description: const Value('Low priority task'),
-            isCompleted: true,
+            metadata: '{}',
             priority: TaskPriority.low.index,
-            status: TaskStatus.completed.index,
             createdAt: DateTime.now().subtract(const Duration(days: 2)),
             updatedAt: DateTime.now(),
           ));
@@ -225,9 +212,8 @@ void main() {
             id: 'query-task-3',
             title: 'Query Task Medium Priority',
             description: const Value('Medium priority task'),
-            isCompleted: false,
+            metadata: '{}',
             priority: TaskPriority.medium.index,
-            status: TaskStatus.todo.index,
             createdAt: DateTime.now(),
             updatedAt: DateTime.now(),
           ));
@@ -236,7 +222,7 @@ void main() {
 
       test('should filter tasks by completion status', () async {
         final completedTasks = await (database.select(database.tasks)
-          ..where((t) => t.isCompleted.equals(true))).get();
+          ..where((t) => t.status.equals(TaskStatus.completed.index))).get();
         
         expect(completedTasks, hasLength(1));
         expect(completedTasks.first.title, contains('Low Priority'));
@@ -261,7 +247,7 @@ void main() {
 
       test('should support complex queries with multiple conditions', () async {
         final incompleteMediumTasks = await (database.select(database.tasks)
-          ..where((t) => t.isCompleted.equals(false) & t.priority.equals(TaskPriority.medium.index))).get();
+          ..where((t) => t.status.equals(TaskStatus.pending.index) & t.priority.equals(TaskPriority.medium.index))).get();
         
         expect(incompleteMediumTasks, hasLength(1));
         expect(incompleteMediumTasks.first.title, contains('Medium Priority'));

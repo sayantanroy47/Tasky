@@ -27,7 +27,6 @@ void main() {
         createdAt: testDate,
         dueDate: testDate.add(const Duration(days: 1)),
         priority: TaskPriority.high,
-        status: TaskStatus.pending,
         tags: const ['work', 'urgent'],
         subTasks: [testSubTask],
         locationTrigger: 'Office',
@@ -138,7 +137,6 @@ void main() {
           title: 'Simple Task',
           createdAt: testDate,
           priority: TaskPriority.high,
-          status: TaskStatus.pending,
         );
         
         final json = simpleTask.toJson();
@@ -156,7 +154,6 @@ void main() {
           title: 'Simple Task',
           createdAt: testDate,
           priority: TaskPriority.high,
-          status: TaskStatus.pending,
         );
         
         final json = simpleTask.toJson();
@@ -175,14 +172,13 @@ void main() {
         final updatedTask = testTask.copyWith(
           title: 'Updated Task',
           priority: TaskPriority.low,
-          status: TaskStatus.completed,
           isPinned: false,
         );
 
         expect(updatedTask.id, testTask.id);
         expect(updatedTask.title, 'Updated Task');
         expect(updatedTask.priority, TaskPriority.low);
-        expect(updatedTask.status, TaskStatus.completed);
+        expect(updatedTask.status, TaskStatus.pending); // Status should remain unchanged unless explicitly set
         expect(updatedTask.isPinned, false);
         expect(updatedTask.description, testTask.description);
         expect(updatedTask.createdAt, testTask.createdAt);
@@ -394,7 +390,6 @@ void main() {
 
       test('should return false for non-completed task with completion date', () {
         final invalidTask = testTask.copyWith(
-          status: TaskStatus.pending,
           completedAt: DateTime.now(),
         );
         expect(invalidTask.isValid(), false);
@@ -444,7 +439,6 @@ void main() {
           title: testTask.title,
           createdAt: testTask.createdAt,
           dueDate: DateTime.now().subtract(const Duration(hours: 1)),
-          status: TaskStatus.pending,
         );
         expect(pastTask.isOverdue, true);
 
@@ -453,7 +447,6 @@ void main() {
           title: testTask.title,
           createdAt: testTask.createdAt,
           dueDate: DateTime.now().add(const Duration(hours: 1)),
-          status: TaskStatus.pending,
         );
         expect(futureTask.isOverdue, false);
 

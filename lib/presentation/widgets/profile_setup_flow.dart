@@ -1,11 +1,14 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+
+import '../../core/design_system/design_tokens.dart';
+import '../../core/theme/typography_constants.dart';
 import '../providers/profile_providers.dart';
 import 'glassmorphism_container.dart';
-import '../../core/design_system/design_tokens.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// First-time profile setup flow with step-by-step wizard
 class ProfileSetupFlow extends ConsumerStatefulWidget {
@@ -35,7 +38,7 @@ class _ProfileSetupFlowState extends ConsumerState<ProfileSetupFlow> {
   @override
   void initState() {
     super.initState();
-    
+
     // Add listeners to text controllers to trigger UI updates
     _firstNameController.addListener(() {
       final text = _firstNameController.text;
@@ -54,7 +57,7 @@ class _ProfileSetupFlowState extends ConsumerState<ProfileSetupFlow> {
       setState(() {}); // Trigger rebuild when text changes
     });
     _locationController.addListener(() {
-      setState(() {}); // Trigger rebuild when text changes  
+      setState(() {}); // Trigger rebuild when text changes
     });
   }
 
@@ -72,7 +75,7 @@ class _ProfileSetupFlowState extends ConsumerState<ProfileSetupFlow> {
     debugPrint('   - Current step before: $_currentStep');
     debugPrint('   - Total steps: $_totalSteps');
     debugPrint('   - Condition check: $_currentStep < ${_totalSteps - 1} = ${_currentStep < _totalSteps - 1}');
-    
+
     if (_currentStep < _totalSteps - 1) {
       debugPrint('   - Condition TRUE - advancing step');
       setState(() {
@@ -114,16 +117,12 @@ class _ProfileSetupFlowState extends ConsumerState<ProfileSetupFlow> {
 
     try {
       final profileOperations = ref.read(profileOperationsProvider);
-      
+
       await profileOperations.createProfile(
         firstName: _firstNameController.text.trim(),
-        lastName: _lastNameController.text.trim().isEmpty 
-          ? null 
-          : _lastNameController.text.trim(),
+        lastName: _lastNameController.text.trim().isEmpty ? null : _lastNameController.text.trim(),
         imagePath: _selectedImagePath,
-        location: _locationController.text.trim().isEmpty 
-          ? null 
-          : _locationController.text.trim(),
+        location: _locationController.text.trim().isEmpty ? null : _locationController.text.trim(),
       );
 
       if (mounted) {
@@ -178,7 +177,7 @@ class _ProfileSetupFlowState extends ConsumerState<ProfileSetupFlow> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
       body: SafeArea(
@@ -186,7 +185,7 @@ class _ProfileSetupFlowState extends ConsumerState<ProfileSetupFlow> {
           children: [
             // Progress indicator
             _buildProgressIndicator(theme),
-            
+
             // Content
             Expanded(
               child: PageView(
@@ -200,7 +199,7 @@ class _ProfileSetupFlowState extends ConsumerState<ProfileSetupFlow> {
                 ],
               ),
             ),
-            
+
             // Navigation buttons
             _buildNavigationButtons(theme),
           ],
@@ -257,7 +256,7 @@ class _ProfileSetupFlowState extends ConsumerState<ProfileSetupFlow> {
           Text(
             'Welcome to Tasky!',
             style: theme.textTheme.displaySmall?.copyWith(
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w500,
               color: theme.colorScheme.onSurface,
             ),
             textAlign: TextAlign.center,
@@ -286,7 +285,7 @@ class _ProfileSetupFlowState extends ConsumerState<ProfileSetupFlow> {
                 Text(
                   'Quick & Easy Setup',
                   style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -331,7 +330,7 @@ class _ProfileSetupFlowState extends ConsumerState<ProfileSetupFlow> {
           Text(
             'What\'s your name?',
             style: theme.textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w500,
             ),
           ),
           const SizedBox(height: 8),
@@ -389,7 +388,7 @@ class _ProfileSetupFlowState extends ConsumerState<ProfileSetupFlow> {
           Text(
             'Add a profile picture?',
             style: theme.textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w500,
             ),
           ),
           const SizedBox(height: 8),
@@ -483,8 +482,8 @@ class _ProfileSetupFlowState extends ConsumerState<ProfileSetupFlow> {
           initials,
           style: TextStyle(
             color: theme.colorScheme.onPrimary,
-            fontSize: 36,
-            fontWeight: FontWeight.w600,
+            fontSize: TypographyConstants.displayMedium, // 45.0 - Fixed hardcoded font size (was 36px)
+            fontWeight: FontWeight.w500,
           ),
         ),
       ),
@@ -507,7 +506,7 @@ class _ProfileSetupFlowState extends ConsumerState<ProfileSetupFlow> {
           Text(
             'Where are you located?',
             style: theme.textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w500,
             ),
           ),
           const SizedBox(height: 8),
@@ -576,9 +575,7 @@ class _ProfileSetupFlowState extends ConsumerState<ProfileSetupFlow> {
                     label: const Text('Back'),
                   ),
                 ),
-              
               if (_currentStep > 0) const SizedBox(width: 16),
-              
               Expanded(
                 child: _currentStep == _totalSteps - 1
                     ? ElevatedButton.icon(
@@ -597,17 +594,20 @@ class _ProfileSetupFlowState extends ConsumerState<ProfileSetupFlow> {
                       )
                     : (() {
                         final canProceed = _canProceed();
-                        debugPrint('[REFRESH] DIRECT BUTTON: Step $_currentStep, canProceed: $canProceed, firstName: "${_firstNameController.text.trim()}"');
+                        debugPrint(
+                            '[REFRESH] DIRECT BUTTON: Step $_currentStep, canProceed: $canProceed, firstName: "${_firstNameController.text.trim()}"');
                         debugPrint('BUTTON WIDGET CREATED: onPressed = ${canProceed ? "ENABLED" : "DISABLED"}');
-                        
+
                         return ElevatedButton.icon(
-                          onPressed: canProceed ? () {
-                            debugPrint('CONTINUE BUTTON PRESSED!');
-                            debugPrint('   - Current step: $_currentStep (display: ${_currentStep + 1})');
-                            debugPrint('   - First name: "${_firstNameController.text.trim()}"');
-                            debugPrint('   - Calling _nextStep()');
-                            _nextStep();
-                          } : null,
+                          onPressed: canProceed
+                              ? () {
+                                  debugPrint('CONTINUE BUTTON PRESSED!');
+                                  debugPrint('   - Current step: $_currentStep (display: ${_currentStep + 1})');
+                                  debugPrint('   - First name: "${_firstNameController.text.trim()}"');
+                                  debugPrint('   - Calling _nextStep()');
+                                  _nextStep();
+                                }
+                              : null,
                           icon: Icon(PhosphorIcons.arrowRight()),
                           label: const Text('Continue'),
                         );
@@ -615,7 +615,7 @@ class _ProfileSetupFlowState extends ConsumerState<ProfileSetupFlow> {
               ),
             ],
           ),
-          
+
           // Skip option (only show on non-final steps)
           if (_currentStep < _totalSteps - 1) ...[
             const SizedBox(height: 16),
@@ -670,7 +670,7 @@ class _ProfileSetupFlowState extends ConsumerState<ProfileSetupFlow> {
 
     try {
       final profileOperations = ref.read(profileOperationsProvider);
-      
+
       await profileOperations.createProfile(
         firstName: 'User', // Default first name
         lastName: null,

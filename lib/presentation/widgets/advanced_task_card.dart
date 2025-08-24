@@ -1,25 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../domain/entities/task_model.dart';
-import '../../domain/entities/task_audio_extensions.dart';
-import '../../domain/models/enums.dart';
-import '../../core/theme/typography_constants.dart';
-import '../../core/design_system/design_tokens.dart';
-import '../../core/theme/material3/motion_system.dart';
-import '../../core/utils/category_utils.dart';
-import '../../services/ui/slidable_action_service.dart';
-import '../../services/ui/slidable_theme_service.dart';
-import '../../services/ui/slidable_feedback_service.dart';
-import 'glassmorphism_container.dart';
-import 'status_badge_widget.dart';
-import 'audio_indicator_widget.dart';
-import 'task_dependency_status.dart';
-import 'subtask_progress_indicator.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../core/design_system/design_tokens.dart';
+import '../../core/theme/material3/motion_system.dart';
+import '../../core/theme/typography_constants.dart';
+import '../../core/utils/category_utils.dart';
+import '../../domain/entities/project.dart';
+import '../../domain/entities/task_audio_extensions.dart';
+import '../../domain/entities/task_model.dart';
+import '../../domain/models/enums.dart';
+import '../../services/ui/slidable_action_service.dart';
+import '../../services/ui/slidable_feedback_service.dart';
+import '../../services/ui/slidable_theme_service.dart';
+import '../providers/project_providers.dart';
+import 'audio_indicator_widget.dart';
+import 'glassmorphism_container.dart';
+import 'standardized_card.dart';
+import 'standardized_text.dart';
+import 'status_badge_widget.dart';
+import 'subtask_progress_indicator.dart';
+import 'task_dependency_status.dart';
+
 /// Advanced task card widget with comprehensive features and animations
-/// 
+///
 /// Features:
 /// - Multiple card styles (elevated, filled, outlined, compact, glass, minimal)
 /// - Glassmorphism effects with proper theming
@@ -45,6 +49,7 @@ class AdvancedTaskCard extends ConsumerStatefulWidget {
   final VoidCallback? onDuplicate;
   final Function(TaskPriority)? onPriorityChanged;
   final Function(TaskStatus)? onStatusChanged;
+  final Function(Project)? onProjectTap;
   final bool showProgress;
   final bool showSubtasks;
   final bool showAudioIndicator;
@@ -73,6 +78,7 @@ class AdvancedTaskCard extends ConsumerStatefulWidget {
     this.onDuplicate,
     this.onPriorityChanged,
     this.onStatusChanged,
+    this.onProjectTap,
     this.showProgress = false,
     this.showSubtasks = false,
     this.showAudioIndicator = true,
@@ -93,18 +99,16 @@ class AdvancedTaskCard extends ConsumerStatefulWidget {
   ConsumerState<AdvancedTaskCard> createState() => _AdvancedTaskCardState();
 }
 
-class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
-    with TickerProviderStateMixin {
+class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with TickerProviderStateMixin {
   late AnimationController _scaleController;
   late AnimationController _slideController;
   late AnimationController _completionController;
   late AnimationController _glowController;
-  
+
   late Animation<double> _scaleAnimation;
   late Animation<Offset> _slideAnimation;
   late Animation<double> _completionAnimation;
   late Animation<double> _glowAnimation;
-
 
   @override
   void initState() {
@@ -129,7 +133,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
     );
 
     _glowController = AnimationController(
-      duration: const Duration(milliseconds: 2000),
+      duration: MotionTokens.slower, // 800ms instead of hardcoded 2000ms
       vsync: this,
     );
 
@@ -186,7 +190,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
   @override
   void didUpdateWidget(AdvancedTaskCard oldWidget) {
     super.didUpdateWidget(oldWidget);
-    
+
     if (oldWidget.task.isCompleted != widget.task.isCompleted) {
       if (widget.task.isCompleted) {
         _completionController.forward();
@@ -199,7 +203,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     Widget cardWidget = _buildCardContent(theme);
 
     if (widget.enableSwipeActions) {
@@ -232,10 +236,8 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
             child: Stack(
               children: [
                 child,
-                if (widget.task.priority.isHighPriority && !widget.task.isCompleted)
-                  _buildPriorityGlow(),
-                if (_completionAnimation.value > 0)
-                  _buildCompletionOverlay(),
+                if (widget.task.priority.isHighPriority && !widget.task.isCompleted) _buildPriorityGlow(),
+                if (_completionAnimation.value > 0) _buildCompletionOverlay(),
               ],
             ),
           ),
@@ -245,8 +247,10 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
   }
 
   Widget _buildSlidableCard(Widget child) {
+    final theme = Theme.of(context);
     final startActions = SlidableActionService.getTaskActions(
       widget.task,
+      colorScheme: theme.colorScheme,
       onComplete: widget.onToggleComplete,
       onEdit: widget.onEdit,
       onPin: () => _togglePin(),
@@ -274,109 +278,63 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
     );
   }
 
-
   Widget _buildCardContent(ThemeData theme) {
+    // Map legacy TaskCardStyle to StandardizedCardStyle
+    final standardizedStyle = _mapToStandardizedStyle(widget.style);
+    
+    return MouseRegion(
+      onEnter: (_) => _handleHover(true),
+      onExit: (_) => _handleHover(false),
+      child: StandardizedCard(
+        style: standardizedStyle,
+        onTap: widget.enableAnimations ? null : widget.onTap, // Handle tap in GestureDetector if animations enabled
+        onLongPress: widget.enableContextMenu ? _showContextMenu : null,
+        margin: EdgeInsets.zero, // Container already handles margin
+        elevation: widget.elevation,
+        accentColor: widget.accentColor,
+        enableFeedback: widget.enableAnimations,
+        child: widget.enableAnimations
+          ? GestureDetector(
+              onTap: widget.onTap,
+              onTapDown: (_) => _handleTapDown(),
+              onTapUp: (_) => _handleTapUp(),
+              onTapCancel: () => _handleTapUp(),
+              child: _buildCardContentByStyle(theme),
+            )
+          : _buildCardContentByStyle(theme),
+      ),
+    );
+  }
+
+  Widget _buildCardContentByStyle(ThemeData theme) {
     switch (widget.style) {
-      case TaskCardStyle.elevated:
-        return _buildElevatedCard(theme);
-      case TaskCardStyle.filled:
-        return _buildFilledCard(theme);
-      case TaskCardStyle.outlined:
-        return _buildOutlinedCard(theme);
       case TaskCardStyle.compact:
-        return _buildCompactCard(theme);
-      case TaskCardStyle.glass:
-        return _buildGlassCard(theme);
+        return _buildCompactContent(theme);
       case TaskCardStyle.minimal:
-        return _buildMinimalCard(theme);
+        return _buildMinimalContent(theme);
+      default:
+        return _buildMainContent(theme);
     }
   }
 
-  Widget _buildElevatedCard(ThemeData theme) {
-    return Card(
-      elevation: widget.elevation ?? 4,
-      shadowColor: widget.accentColor?.withValues(alpha: 0.3),
-      child: _buildCardInner(theme),
-    );
+  /// Map legacy TaskCardStyle to StandardizedCardStyle
+  StandardizedCardStyle _mapToStandardizedStyle(TaskCardStyle style) {
+    switch (style) {
+      case TaskCardStyle.elevated:
+        return StandardizedCardStyle.elevated;
+      case TaskCardStyle.filled:
+        return StandardizedCardStyle.filled;
+      case TaskCardStyle.outlined:
+        return StandardizedCardStyle.outlined;
+      case TaskCardStyle.compact:
+        return StandardizedCardStyle.compact;
+      case TaskCardStyle.glass:
+        return StandardizedCardStyle.glass;
+      case TaskCardStyle.minimal:
+        return StandardizedCardStyle.minimal;
+    }
   }
 
-  Widget _buildFilledCard(ThemeData theme) {
-    return Container(
-      decoration: BoxDecoration(
-        color: widget.accentColor?.withValues(alpha: 0.1) ?? theme.colorScheme.surfaceContainer,
-        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-        border: widget.accentColor != null 
-            ? Border.all(color: widget.accentColor!.withValues(alpha: 0.3))
-            : null,
-      ),
-      child: _buildCardInner(theme),
-    );
-  }
-
-  Widget _buildOutlinedCard(ThemeData theme) {
-    return Container(
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        border: Border.all(
-          color: widget.accentColor ?? theme.colorScheme.outline.withValues(alpha: 0.3),
-          width: widget.accentColor != null ? 2 : 1,
-        ),
-        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-      ),
-      child: _buildCardInner(theme),
-    );
-  }
-
-  Widget _buildCompactCard(ThemeData theme) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
-      ),
-      child: _buildCompactContent(theme),
-    );
-  }
-
-  Widget _buildGlassCard(ThemeData theme) {
-    return GlassmorphismContainer(
-      level: GlassLevel.content,
-      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-      padding: EdgeInsets.zero,
-      borderColor: widget.accentColor?.withValues(alpha: 0.3),
-      child: _buildCardInner(theme),
-    );
-  }
-
-  Widget _buildMinimalCard(ThemeData theme) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-      ),
-      child: _buildMinimalContent(theme),
-    );
-  }
-
-  Widget _buildCardInner(ThemeData theme) {
-    return InkWell(
-      onTap: widget.onTap,
-      onTapDown: (_) => _handleTapDown(),
-      onTapUp: (_) => _handleTapUp(),
-      onTapCancel: () => _handleTapUp(),
-      onLongPress: widget.enableContextMenu ? _showContextMenu : null,
-      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-      child: MouseRegion(
-        onEnter: (_) => _handleHover(true),
-        onExit: (_) => _handleHover(false),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: _buildMainContent(theme),
-        ),
-      ),
-    );
-  }
 
   Widget _buildMainContent(ThemeData theme) {
     return Column(
@@ -384,15 +342,15 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
       children: [
         _buildHeader(theme),
         if (widget.task.description?.isNotEmpty == true) ...[
-          const SizedBox(height: 8),
+          const SizedBox(height: SpacingTokens.xs), // 8.0 - Fixed spacing hierarchy
           _buildDescription(theme),
         ],
         if (widget.customContent != null) ...[
-          const SizedBox(height: 12),
+          const SizedBox(height: SpacingTokens.sm), // 12.0 - Fixed spacing hierarchy
           widget.customContent!,
         ],
         if (widget.showSubtasks) ...[
-          const SizedBox(height: 12),
+          const SizedBox(height: SpacingTokens.sm), // 12.0 - Fixed spacing hierarchy
           SubtaskLinearProgressIndicator(
             taskId: widget.task.id,
             height: 4,
@@ -400,10 +358,10 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
           ),
         ],
         if (widget.showProgress) ...[
-          const SizedBox(height: 12),
+          const SizedBox(height: SpacingTokens.sm), // 12.0 - Fixed spacing hierarchy
           _buildProgress(theme),
         ],
-        const SizedBox(height: 12),
+        const SizedBox(height: SpacingTokens.sm), // 12.0 - Fixed spacing hierarchy
         _buildFooter(theme),
       ],
     );
@@ -420,24 +378,18 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
             theme: theme,
             iconSizeRatio: 0.5,
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: SpacingTokens.xs), // 8.0 - Fixed spacing hierarchy
         ],
         _buildPriorityIndicator(theme, size: 16),
-        const SizedBox(width: 12),
+        const SizedBox(width: SpacingTokens.sm), // 12.0 - Fixed spacing hierarchy
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              StandardizedTextVariants.taskTitle(
                 widget.task.title,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  decoration: widget.task.isCompleted
-                      ? TextDecoration.lineThrough
-                      : null,
-                ),
+                isCompleted: widget.task.isCompleted,
                 maxLines: 1,
-                overflow: TextOverflow.ellipsis,
               ),
               if (widget.task.dueDate != null)
                 Text(
@@ -450,7 +402,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
           ),
         ),
         if (widget.showAudioIndicator && widget.task.hasVoiceMetadata) ...[
-          const SizedBox(width: 8),
+          const SizedBox(width: SpacingTokens.xs), // 8.0 - Fixed spacing hierarchy
           AudioIndicatorWidget(
             task: widget.task,
             size: 16,
@@ -458,14 +410,14 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
           ),
         ],
         if (widget.showSubtasks) ...[
-          const SizedBox(width: 8),
+          const SizedBox(width: SpacingTokens.xs), // 8.0 - Fixed spacing hierarchy
           SubtaskProgressIndicator(
             taskId: widget.task.id,
             size: 16,
             showCount: true,
           ),
         ],
-        const SizedBox(width: 8),
+        const SizedBox(width: SpacingTokens.xs), // 8.0 - Fixed spacing hierarchy
         StatusBadgeWidget(
           status: widget.task.status,
           compact: true,
@@ -478,17 +430,13 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
     return Row(
       children: [
         Expanded(
-          child: Text(
+          child: StandardizedTextVariants.taskTitle(
             widget.task.title,
-            style: theme.textTheme.bodyLarge?.copyWith(
-              decoration: widget.task.isCompleted
-                  ? TextDecoration.lineThrough
-                  : null,
-            ),
+            isCompleted: widget.task.isCompleted,
           ),
         ),
         if (widget.task.dueDate != null) ...[
-          const SizedBox(width: 12),
+          const SizedBox(width: SpacingTokens.sm), // 12.0 - Fixed spacing hierarchy
           Text(
             _formatDueDate(widget.task.dueDate!),
             style: theme.textTheme.bodySmall?.copyWith(
@@ -509,10 +457,10 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
             color: theme.colorScheme.onSurfaceVariant,
             size: 20,
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: SpacingTokens.xs), // 8.0 - Fixed spacing hierarchy
         ],
         _buildPriorityIndicator(theme),
-        const SizedBox(width: 12),
+        const SizedBox(width: SpacingTokens.sm), // 12.0 - Fixed spacing hierarchy
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -520,23 +468,15 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
               Row(
                 children: [
                   Expanded(
-                    child: Text(
+                    child: StandardizedTextVariants.taskTitle(
                       widget.task.title,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        decoration: widget.task.isCompleted
-                            ? TextDecoration.lineThrough
-                            : null,
-                        color: widget.task.isCompleted
-                            ? theme.colorScheme.onSurfaceVariant
-                            : null,
-                      ),
+                      isCompleted: widget.task.isCompleted,
+                      color: widget.task.isCompleted ? theme.colorScheme.onSurfaceVariant : null,
                       maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                   if (widget.task.isPinned) ...[
-                    const SizedBox(width: 8),
+                    const SizedBox(width: SpacingTokens.xs), // 8.0 - Fixed spacing hierarchy
                     Icon(
                       PhosphorIcons.pushPin(),
                       size: 16,
@@ -545,13 +485,12 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
                   ],
                 ],
               ),
-              if (widget.showProjectInfo && widget.task.projectId != null)
-                _buildProjectInfo(theme),
+              if (widget.showProjectInfo && widget.task.projectId != null) _buildProjectInfo(theme),
             ],
           ),
         ),
         if (widget.showAudioIndicator && widget.task.hasVoiceMetadata) ...[
-          const SizedBox(width: 8),
+          const SizedBox(width: SpacingTokens.xs), // 8.0 - Fixed spacing hierarchy
           AudioIndicatorWidget(
             task: widget.task,
             size: 20,
@@ -559,14 +498,14 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
           ),
         ],
         if (widget.showDependencyStatus) ...[
-          const SizedBox(width: 8),
+          const SizedBox(width: SpacingTokens.xs), // 8.0 - Fixed spacing hierarchy
           TaskDependencyStatus(
             task: widget.task,
             showDetails: true,
             onTap: () => _showDependencyDetails(context),
           ),
         ],
-        const SizedBox(width: 8),
+        const SizedBox(width: SpacingTokens.xs), // 8.0 - Fixed spacing hierarchy
         StatusBadgeWidget(
           status: widget.task.status,
           compact: true,
@@ -577,7 +516,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
 
   Widget _buildPriorityIndicator(ThemeData theme, {double size = 24}) {
     final priorityColor = widget.task.priority.color;
-    
+
     return Container(
       width: size,
       height: size,
@@ -598,26 +537,145 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
   }
 
   Widget _buildProjectInfo(ThemeData theme) {
-    // This would need to be connected to a project provider
+    // Return empty container if task doesn't have a project
+    if (widget.task.projectId == null || widget.task.projectId!.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
     return Padding(
       padding: const EdgeInsets.only(top: 4),
-      child: Row(
-        children: [
-          Icon(
-            PhosphorIcons.folder(),
-            size: 14,
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-          const SizedBox(width: 4),
-          Text(
-            'Project', // Replace with actual project name
-            style: theme.textTheme.labelSmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
+      child: Consumer(
+        builder: (context, ref, child) {
+          final projectAsync = ref.watch(projectProvider(widget.task.projectId!));
+
+          return projectAsync.when(
+            data: (project) {
+              if (project == null) {
+                return const SizedBox.shrink(); // Project was deleted
+              }
+              return _buildProjectBadge(project, theme);
+            },
+            loading: () => _buildLoadingProjectBadge(theme),
+            error: (error, stackTrace) => _buildErrorProjectBadge(theme),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildProjectBadge(Project project, ThemeData theme) {
+    final projectColor = _parseColor(project.color);
+
+    return GestureDetector(
+      onTap: widget.onProjectTap != null ? () => widget.onProjectTap!(project) : null,
+      child: GlassmorphismContainer(
+        level: GlassLevel.interactive,
+        borderRadius: BorderRadius.circular(TypographyConstants.chipRadius),
+        glassTint: projectColor.withValues(alpha: 0.1),
+        padding: const EdgeInsets.symmetric(
+          horizontal: TypographyConstants.spacingSmall / 2, // 4px
+          vertical: 2,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              _getProjectIcon(project),
+              size: 12,
+              color: projectColor,
             ),
+            const SizedBox(width: TypographyConstants.spacingSmall / 2), // 4px
+            StandardizedText(
+              project.name,
+              style: StandardizedTextStyle.labelSmall,
+              color: projectColor,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoadingProjectBadge(ThemeData theme) {
+    return GlassmorphismContainer(
+      level: GlassLevel.interactive,
+      borderRadius: BorderRadius.circular(TypographyConstants.chipRadius),
+      glassTint: theme.colorScheme.primary.withValues(alpha: 0.1),
+      padding: const EdgeInsets.symmetric(
+        horizontal: TypographyConstants.spacingSmall / 2,
+        vertical: 2,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            width: 12,
+            height: 12,
+            child: CircularProgressIndicator(
+              strokeWidth: 1.5,
+              valueColor: AlwaysStoppedAnimation<Color>(
+                theme.colorScheme.primary,
+              ),
+            ),
+          ),
+          const SizedBox(width: TypographyConstants.spacingSmall / 2),
+          StandardizedText(
+            'Loading...',
+            style: StandardizedTextStyle.labelSmall,
+            color: theme.colorScheme.primary,
           ),
         ],
       ),
     );
+  }
+
+  Widget _buildErrorProjectBadge(ThemeData theme) {
+    return GlassmorphismContainer(
+      level: GlassLevel.interactive,
+      borderRadius: BorderRadius.circular(TypographyConstants.chipRadius),
+      glassTint: theme.colorScheme.error.withValues(alpha: 0.1),
+      padding: const EdgeInsets.symmetric(
+        horizontal: TypographyConstants.spacingSmall / 2,
+        vertical: 2,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            PhosphorIcons.warning(),
+            size: 12,
+            color: theme.colorScheme.error,
+          ),
+          const SizedBox(width: TypographyConstants.spacingSmall / 2),
+          StandardizedText(
+            'Project Error',
+            style: StandardizedTextStyle.labelSmall,
+            color: theme.colorScheme.error,
+          ),
+        ],
+      ),
+    );
+  }
+
+  IconData _getProjectIcon(Project project) {
+    // Since Project doesn't have category field, use folder icon
+    // You can extend this to use project-specific icons or categories in the future
+    return PhosphorIcons.folder();
+  }
+
+  Color _parseColor(String colorString) {
+    try {
+      final String cleanColor = colorString.replaceAll('#', '');
+      if (cleanColor.length == 6) {
+        return Color(int.parse('FF$cleanColor', radix: 16));
+      }
+      if (cleanColor.length == 8) {
+        return Color(int.parse(cleanColor, radix: 16));
+      }
+    } catch (e) {
+      // Fallback to default color
+    }
+    return const Color(0xFF6200EE); // Default material primary color
   }
 
   Widget _buildDescription(ThemeData theme) {
@@ -631,7 +689,6 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
     );
   }
 
-
   Widget _buildProgress(ThemeData theme) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -642,7 +699,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
             Text(
               'Progress',
               style: theme.textTheme.labelMedium?.copyWith(
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w500,
               ),
             ),
             SubtaskProgressIndicator(
@@ -652,7 +709,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
             ),
           ],
         ),
-        const SizedBox(height: 4),
+        const SizedBox(height: SpacingTokens.xs), // 4.0 - Fixed spacing hierarchy
         SubtaskLinearProgressIndicator(
           taskId: widget.task.id,
           height: 6,
@@ -671,30 +728,30 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
             size: 16,
             color: _getDueDateColor(theme),
           ),
-          const SizedBox(width: 4),
+          const SizedBox(width: SpacingTokens.xs), // 4.0 - Fixed spacing hierarchy
           Expanded(
             child: Text(
-              widget.showDetailedDate 
+              widget.showDetailedDate
                   ? _formatDetailedDate(widget.task.dueDate!)
                   : _formatDueDate(widget.task.dueDate!),
               style: theme.textTheme.bodySmall?.copyWith(
                 color: _getDueDateColor(theme),
-                fontWeight: _isOverdue() ? FontWeight.w600 : null,
+                fontWeight: _isOverdue() ? FontWeight.w500 : null,
               ),
             ),
           ),
         ] else
           const Spacer(),
         if (widget.task.tags.isNotEmpty) ...[
-          const SizedBox(width: 8),
+          const SizedBox(width: SpacingTokens.xs), // 8.0 - Fixed spacing hierarchy
           _buildTagsPreview(theme),
         ],
         if (widget.additionalActions?.isNotEmpty == true) ...[
-          const SizedBox(width: 8),
+          const SizedBox(width: SpacingTokens.xs), // 8.0 - Fixed spacing hierarchy
           ...widget.additionalActions!,
         ],
         if (widget.enableContextMenu) ...[
-          const SizedBox(width: 8),
+          const SizedBox(width: SpacingTokens.xs), // 8.0 - Fixed spacing hierarchy
           _buildActionsButton(theme),
         ],
       ],
@@ -704,30 +761,30 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
   Widget _buildTagsPreview(ThemeData theme) {
     final tags = widget.task.tags;
     const maxTags = 3; // Show more icons since they're more compact
-    
+
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         ...tags.take(maxTags).map((tag) => Padding(
-          padding: const EdgeInsets.only(right: 6),
-          child: Container(
-            width: 28,
-            height: 28,
-            decoration: BoxDecoration(
-              color: CategoryUtils.getCategoryColor(tag, theme: theme).withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: CategoryUtils.getCategoryColor(tag, theme: theme).withValues(alpha: 0.3),
-                width: 0.5,
+              padding: const EdgeInsets.only(right: 6),
+              child: Container(
+                width: 28,
+                height: 28,
+                decoration: BoxDecoration(
+                  color: CategoryUtils.getCategoryColor(tag, theme: theme).withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: CategoryUtils.getCategoryColor(tag, theme: theme).withValues(alpha: 0.3),
+                    width: 0.5,
+                  ),
+                ),
+                child: Icon(
+                  CategoryUtils.getCategoryIcon(tag),
+                  size: 14,
+                  color: CategoryUtils.getCategoryColor(tag, theme: theme),
+                ),
               ),
-            ),
-            child: Icon(
-              CategoryUtils.getCategoryIcon(tag),
-              size: 14,
-              color: CategoryUtils.getCategoryColor(tag, theme: theme),
-            ),
-          ),
-        )),
+            )),
         if (tags.length > maxTags)
           Container(
             width: 28,
@@ -745,8 +802,8 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
                 '+${tags.length - maxTags}',
                 style: theme.textTheme.labelSmall?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w600,
+                  // Using theme labelSmall size
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ),
@@ -760,7 +817,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
       onTap: _showContextMenu,
       borderRadius: BorderRadius.circular(16),
       child: Padding(
-        padding: const EdgeInsets.all(4),
+        padding: const EdgeInsets.all(SpacingTokens.xs),
         child: Icon(
           PhosphorIcons.dotsThreeVertical(),
           size: 18,
@@ -780,8 +837,8 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
               borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
               boxShadow: [
                 BoxShadow(
-                  color: widget.task.priority.color.withValues(alpha: 
-                    0.3 * _glowAnimation.value,
+                  color: widget.task.priority.color.withValues(
+                    alpha: 0.3 * _glowAnimation.value,
                   ),
                   blurRadius: 12 * _glowAnimation.value,
                   spreadRadius: 2 * _glowAnimation.value,
@@ -801,7 +858,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
         builder: (context, child) {
           return Container(
             decoration: BoxDecoration(
-              color: Colors.green.withValues(alpha: 0.1 * _completionAnimation.value),
+              color: Theme.of(context).colorScheme.tertiary.withValues(alpha: 0.1 * _completionAnimation.value), // Fixed hardcoded green color
               borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
             ),
             child: Center(
@@ -809,7 +866,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
                 scale: _completionAnimation.value,
                 child: Icon(
                   PhosphorIcons.checkCircle(),
-                  color: Colors.green,
+                  color: Theme.of(context).colorScheme.tertiary, // Fixed hardcoded green color
                   size: 48,
                 ),
               ),
@@ -855,7 +912,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
 
   Widget _buildContextMenuSheet() {
     final theme = Theme.of(context);
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16),
       child: Column(
@@ -869,19 +926,19 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
               borderRadius: BorderRadius.circular(2),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: SpacingTokens.md), // 16.0 - Fixed spacing hierarchy
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
               widget.task.title,
               style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w500,
               ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: SpacingTokens.md), // 16.0 - Fixed spacing hierarchy
           _buildMenuTile(
             icon: widget.task.isCompleted ? PhosphorIcons.arrowClockwise() : PhosphorIcons.checkCircle(),
             title: widget.task.isCompleted ? 'Mark Incomplete' : 'Mark Complete',
@@ -941,7 +998,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
     bool isDestructive = false,
   }) {
     final theme = Theme.of(context);
-    
+
     return ListTile(
       leading: Icon(
         icon,
@@ -1064,7 +1121,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
     if (_isOverdue()) {
       return theme.colorScheme.error;
     } else if (_isDueToday()) {
-      return Colors.orange;
+      return Theme.of(context).colorScheme.secondary; // Fixed hardcoded orange for due today
     } else if (_isDueTomorrow()) {
       return theme.colorScheme.primary;
     } else {
@@ -1105,9 +1162,9 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final taskDate = DateTime(dueDate.year, dueDate.month, dueDate.day);
-    
+
     final difference = taskDate.difference(today).inDays;
-    
+
     if (difference == 0) {
       return 'Today';
     } else if (difference == 1) {
@@ -1125,20 +1182,16 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard>
 
   String _formatDetailedDate(DateTime dueDate) {
     final weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    final months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-    ];
-    
+    final months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
     final weekday = weekdays[dueDate.weekday - 1];
     final month = months[dueDate.month - 1];
     final day = dueDate.day;
     final hour = dueDate.hour;
     final minute = dueDate.minute.toString().padLeft(2, '0');
-    
+
     return '$weekday, $month $day at $hour:$minute';
   }
-
 }
 
 /// Task card size variants
@@ -1146,7 +1199,7 @@ enum TaskCardSize {
   small,
   medium,
   large;
-  
+
   double get height {
     switch (this) {
       case TaskCardSize.small:
@@ -1159,7 +1212,7 @@ enum TaskCardSize {
   }
 }
 
-/// Quick task card for minimal displays
+/// Quick task card for minimal displays using StandardizedCard
 class QuickTaskCard extends StatelessWidget {
   final TaskModel task;
   final VoidCallback? onTap;
@@ -1175,16 +1228,16 @@ class QuickTaskCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+
+    return StandardizedCardVariants.quickTask(
+      onTap: onTap,
+      accentColor: task.priority.color,
       child: ListTile(
-        onTap: onTap,
         leading: IconButton(
           onPressed: onToggleComplete,
           icon: Icon(
             task.isCompleted ? PhosphorIcons.checkCircle() : PhosphorIcons.circle(),
-            color: task.isCompleted ? Colors.green : null,
+            color: task.isCompleted ? Theme.of(context).colorScheme.tertiary : null, // Fixed hardcoded green for completion
           ),
         ),
         title: Text(
@@ -1193,9 +1246,7 @@ class QuickTaskCard extends StatelessWidget {
             decoration: task.isCompleted ? TextDecoration.lineThrough : null,
           ),
         ),
-        subtitle: task.dueDate != null
-            ? Text('Due ${_formatQuickDate(task.dueDate!)}')
-            : null,
+        subtitle: task.dueDate != null ? Text('Due ${_formatQuickDate(task.dueDate!)}') : null,
         trailing: Container(
           width: 12,
           height: 12,
@@ -1212,14 +1263,12 @@ class QuickTaskCard extends StatelessWidget {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final taskDate = DateTime(date.year, date.month, date.day);
-    
+
     final difference = taskDate.difference(today).inDays;
-    
+
     if (difference == 0) return 'today';
     if (difference == 1) return 'tomorrow';
     if (difference == -1) return 'yesterday';
     return '${date.day}/${date.month}';
   }
 }
-
-

@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../core/theme/typography_constants.dart';
 import '../../domain/entities/project.dart';
 import '../../services/project_service.dart';
 import '../../services/ui/slidable_action_service.dart';
-import '../../services/ui/slidable_theme_service.dart';
 import '../../services/ui/slidable_feedback_service.dart';
+import '../../services/ui/slidable_theme_service.dart';
 import '../providers/project_providers.dart';
-import 'glassmorphism_container.dart';
-import '../../core/theme/typography_constants.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'standardized_card.dart';
+import 'standardized_error_states.dart';
 
 /// A card widget that displays project information
-/// 
+///
 /// Shows project name, description, progress, and provides
 /// actions for editing, archiving, and deleting projects.
 class ProjectCard extends ConsumerWidget {
@@ -37,6 +38,7 @@ class ProjectCard extends ConsumerWidget {
 
     final leftActions = SlidableActionService.getProjectActions(
       project,
+      colorScheme: theme.colorScheme,
       onEdit: onEdit,
       onViewTasks: () => _viewProjectTasks(context),
       onShare: () => _shareProject(context),
@@ -48,149 +50,148 @@ class ProjectCard extends ConsumerWidget {
     final startActions = leftActions.take(2).toList(); // Edit, View Tasks
     final endActions = leftActions.skip(2).toList(); // Share, Archive, Delete
 
-    final projectCard = GlassProjectCard(
+    final projectCard = StandardizedCardVariants.project(
       onTap: onTap,
       accentColor: _parseColor(project.color, context),
       child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Header with project name and actions
+          Row(
             children: [
-              // Header with project name and actions
-              Row(
-                children: [
-                  // Project color indicator
-                  Container(
-                    width: 4,
-                    height: 24,
-                    decoration: BoxDecoration(
-                      color: _parseColor(project.color, context),
-                      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+              // Project color indicator
+              Container(
+                width: 4,
+                height: 24,
+                decoration: BoxDecoration(
+                  color: _parseColor(project.color, context),
+                  borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                ),
+              ),
+              const SizedBox(width: 12),
+
+              // Project name and description
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      project.name,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w500,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  
-                  // Project name and description
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          project.name,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
+                    if (project.description != null && project.description!.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          project.description!,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
                           ),
-                          maxLines: 1,
+                          maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        if (project.description != null && project.description!.isNotEmpty)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 4),
-                            child: Text(
-                              project.description!,
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                  
-                  // Actions menu
-                  if (showActions)
-                    PopupMenuButton<String>(
-                      onSelected: (value) => _handleAction(context, ref, value),
-                      itemBuilder: (context) => [
-                        PopupMenuItem(
-                          value: 'edit',
-                          child: Row(
-                            children: [
-                              Icon(PhosphorIcons.pencil()),
-                              const SizedBox(width: 8),
-                              const Text('Edit'),
-                            ],
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: project.isArchived ? 'unarchive' : 'archive',
-                          child: Row(
-                            children: [
-                              Icon(project.isArchived ? PhosphorIcons.archive() : PhosphorIcons.archive()),
-                              const SizedBox(width: 8),
-                              Text(project.isArchived ? 'Unarchive' : 'Archive'),
-                            ],
-                          ),
-                        ),
-                        PopupMenuItem(
-                          value: 'delete',
-                          child: Builder(
-                            builder: (context) => Row(
-                              children: [
-                                Icon(PhosphorIcons.trash(), color: Theme.of(context).colorScheme.error),
-                                const SizedBox(width: 8),
-                                Text('Delete', style: TextStyle(color: Theme.of(context).colorScheme.error)),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                ],
-              ),
-              
-              const SizedBox(height: 16),
-              
-              // Project statistics
-              projectStatsAsync.when(
-                data: (stats) => _buildProjectStats(context, stats),
-                loading: () => const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(16),
-                    child: CircularProgressIndicator(),
-                  ),
-                ),
-                error: (error, _) => Text(
-                  'Error loading stats: $error',
-                  style: TextStyle(color: theme.colorScheme.error),
+                      ),
+                  ],
                 ),
               ),
-              
-              // Deadline and status indicators
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  // Task count
-                  _buildInfoChip(
-                    context,
-                    icon: PhosphorIcons.checkSquare(),
-                    label: '${project.taskCount} tasks',
-                  ),
-                  
-                  const SizedBox(width: 8),
-                  
-                  // Deadline
-                  if (project.hasDeadline)
-                    _buildInfoChip(
-                      context,
-                      icon: PhosphorIcons.clock(),
-                      label: _formatDeadline(project.deadline!),
-                      color: project.isOverdue ? theme.colorScheme.error : null,
+
+              // Actions menu
+              if (showActions)
+                PopupMenuButton<String>(
+                  onSelected: (value) => _handleAction(context, ref, value),
+                  itemBuilder: (context) => [
+                    PopupMenuItem(
+                      value: 'edit',
+                      child: Row(
+                        children: [
+                          Icon(PhosphorIcons.pencil()),
+                          const SizedBox(width: 8),
+                          const Text('Edit'),
+                        ],
+                      ),
                     ),
-                  
-                  const Spacer(),
-                  
-                  // Archived indicator
-                  if (project.isArchived)
-                    Icon(
-                      PhosphorIcons.archive(),
-                      size: 16,
-                      color: theme.colorScheme.onSurfaceVariant,
+                    PopupMenuItem(
+                      value: project.isArchived ? 'unarchive' : 'archive',
+                      child: Row(
+                        children: [
+                          Icon(project.isArchived ? PhosphorIcons.archive() : PhosphorIcons.archive()),
+                          const SizedBox(width: 8),
+                          Text(project.isArchived ? 'Unarchive' : 'Archive'),
+                        ],
+                      ),
                     ),
-                ],
-              ),
+                    PopupMenuItem(
+                      value: 'delete',
+                      child: Builder(
+                        builder: (context) => Row(
+                          children: [
+                            Icon(PhosphorIcons.trash(), color: Theme.of(context).colorScheme.error),
+                            const SizedBox(width: 8),
+                            Text('Delete', style: TextStyle(color: Theme.of(context).colorScheme.error)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
             ],
           ),
+
+          const SizedBox(height: 16),
+
+          // Project statistics
+          projectStatsAsync.when(
+            data: (stats) => _buildProjectStats(context, stats),
+            loading: () => StandardizedErrorStateVariants.loadingData(
+              message: 'Loading project stats...',
+              compact: true,
+            ),
+            error: (error, _) => StandardizedErrorStates.error(
+              message: 'Failed to load project statistics',
+              severity: ErrorSeverity.moderate,
+              compact: true,
+            ),
+          ),
+
+          // Deadline and status indicators
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              // Task count
+              _buildInfoChip(
+                context,
+                icon: PhosphorIcons.checkSquare(),
+                label: '${project.taskCount} tasks',
+              ),
+
+              const SizedBox(width: 8),
+
+              // Deadline
+              if (project.hasDeadline)
+                _buildInfoChip(
+                  context,
+                  icon: PhosphorIcons.clock(),
+                  label: _formatDeadline(project.deadline!),
+                  color: project.isOverdue ? theme.colorScheme.error : null,
+                ),
+
+              const Spacer(),
+
+              // Archived indicator
+              if (project.isArchived)
+                Icon(
+                  PhosphorIcons.archive(),
+                  size: 16,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+            ],
+          ),
+        ],
+      ),
     );
 
     return SlidableThemeService.createProjectCardSlidable(
@@ -205,7 +206,7 @@ class ProjectCard extends ConsumerWidget {
 
   Widget _buildProjectStats(BuildContext context, ProjectStats stats) {
     final theme = Theme.of(context);
-    
+
     return Column(
       children: [
         // Progress bar
@@ -224,14 +225,14 @@ class ProjectCard extends ConsumerWidget {
             Text(
               '${(stats.completionPercentage * 100).round()}%',
               style: theme.textTheme.bodySmall?.copyWith(
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ],
         ),
-        
+
         const SizedBox(height: 8),
-        
+
         // Task breakdown
         Row(
           children: [
@@ -270,19 +271,20 @@ class ProjectCard extends ConsumerWidget {
     );
   }
 
-  Widget _buildStatItem(BuildContext context, {
+  Widget _buildStatItem(
+    BuildContext context, {
     required String label,
     required String value,
     required Color color,
   }) {
     final theme = Theme.of(context);
-    
+
     return Column(
       children: [
         Text(
           value,
           style: theme.textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w500,
             color: color,
           ),
         ),
@@ -296,17 +298,18 @@ class ProjectCard extends ConsumerWidget {
     );
   }
 
-  Widget _buildInfoChip(BuildContext context, {
+  Widget _buildInfoChip(
+    BuildContext context, {
     required IconData icon,
     required String label,
     Color? color,
   }) {
     final theme = Theme.of(context);
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: (color ?? theme.colorScheme.surfaceContainerHighest).withValues(alpha:  0.1),
+        color: (color ?? theme.colorScheme.surfaceContainerHighest).withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       ),
       child: Row(
@@ -330,7 +333,7 @@ class ProjectCard extends ConsumerWidget {
   }
 
   // Helper methods for project slide actions
-  
+
   void _viewProjectTasks(BuildContext context) {
     SlidableFeedbackService.provideFeedback(SlidableActionType.neutral);
     Navigator.of(context).pushNamed('/project-detail', arguments: project.id);
@@ -407,7 +410,7 @@ class ProjectCard extends ConsumerWidget {
   String _formatDeadline(DateTime deadline) {
     final now = DateTime.now();
     final difference = deadline.difference(now).inDays;
-    
+
     if (difference < 0) {
       return 'Overdue';
     } else if (difference == 0) {
@@ -421,6 +424,3 @@ class ProjectCard extends ConsumerWidget {
     }
   }
 }
-
-
-

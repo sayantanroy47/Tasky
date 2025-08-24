@@ -1,24 +1,27 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'dart:ui';
-import '../widgets/standardized_app_bar.dart';
-import '../widgets/theme_background_widget.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+
+import '../../core/design_system/design_tokens.dart';
+import '../../core/routing/app_router.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
-import '../../core/routing/app_router.dart';
 import '../providers/task_provider.dart';
 import '../providers/task_providers.dart';
-import '../widgets/simple_theme_toggle.dart';
 import '../widgets/advanced_task_card.dart';
-import '../widgets/task_form_dialog.dart';
-import '../widgets/loading_error_widgets.dart' as loading_widgets;
 import '../widgets/custom_dialogs.dart';
 import '../widgets/glassmorphism_container.dart';
-import '../../core/design_system/design_tokens.dart';
+import '../widgets/loading_error_widgets.dart' as loading_widgets;
 import '../widgets/manual_task_creation_dialog.dart';
+import '../widgets/simple_theme_toggle.dart';
+import '../widgets/standardized_app_bar.dart';
+import '../widgets/standardized_fab.dart';
+import '../widgets/standardized_text.dart';
+import '../widgets/task_form_dialog.dart';
+import '../widgets/theme_background_widget.dart';
 import 'voice_recording_page.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class TasksPage extends ConsumerWidget {
   const TasksPage({super.key});
@@ -51,11 +54,14 @@ class TasksPage extends ConsumerWidget {
             child: TasksPageBody(),
           ),
         ),
-        floatingActionButton: _buildFloatingActionButton(context),
+        floatingActionButton: StandardizedFABVariants.create(
+          onPressed: () => _showTaskCreationMenu(context),
+          heroTag: 'tasksFAB',
+          isLarge: true,
+        ),
       ),
     );
   }
-
 
   void _showFilterDialog(BuildContext context, WidgetRef ref) {
     showDialog(
@@ -64,76 +70,11 @@ class TasksPage extends ConsumerWidget {
     );
   }
 
-  /// Build enhanced floating action button with glassmorphism
-  Widget _buildFloatingActionButton(BuildContext context) {
-    final theme = Theme.of(context);
-    
-    return Container(
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        // Outer glow effect
-        boxShadow: [
-          BoxShadow(
-            color: theme.colorScheme.primary.withValues(alpha: 0.3),
-            blurRadius: 20,
-            spreadRadius: 5,
-          ),
-          BoxShadow(
-            color: theme.colorScheme.primary.withValues(alpha: 0.1),
-            blurRadius: 40,
-            spreadRadius: 10,
-          ),
-        ],
-      ),
-      child: ClipOval(
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  theme.colorScheme.primary.withValues(alpha: 0.95),
-                  theme.colorScheme.primary.withValues(alpha: 0.85),
-                  theme.colorScheme.secondary.withValues(alpha: 0.1),
-                ],
-                stops: const [0.0, 0.7, 1.0],
-              ),
-              border: Border.all(
-                color: theme.colorScheme.primary.withValues(alpha: 0.3),
-                width: 1.5,
-              ),
-            ),
-            child: FloatingActionButton.large(
-              heroTag: 'tasksFAB',
-              onPressed: () => _showTaskCreationMenu(context),
-              backgroundColor: Colors.transparent,
-              foregroundColor: theme.colorScheme.onPrimary,
-              elevation: 0,
-              shape: const CircleBorder(),
-              child: Container(
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  PhosphorIcons.plus(),
-                  size: 36,
-                  weight: 600,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 
   /// Show task creation options menu
   void _showTaskCreationMenu(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -150,21 +91,16 @@ class TasksPage extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Header
-                Text(
+                StandardizedTextVariants.sectionHeader(
                   'Create New Task',
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
                 ),
                 const SizedBox(height: 8),
-                Text(
+                StandardizedTextVariants.body(
                   'Choose how you\'d like to create your task',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
                 const SizedBox(height: 24),
-                
+
                 // Task Creation Options
                 _buildTaskCreationOption(
                   context: context,
@@ -182,10 +118,9 @@ class TasksPage extends ConsumerWidget {
                     );
                   },
                 ),
-                
+
                 const SizedBox(height: 12),
-                
-                
+
                 _buildTaskCreationOption(
                   context: context,
                   icon: PhosphorIcons.pencil(),
@@ -202,7 +137,7 @@ class TasksPage extends ConsumerWidget {
                     );
                   },
                 ),
-                
+
                 const SizedBox(height: 16),
               ],
             ),
@@ -222,21 +157,21 @@ class TasksPage extends ConsumerWidget {
     required VoidCallback onTap,
   }) {
     final theme = Theme.of(context);
-    
+
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge), // 16.0 - Fixed border radius hierarchy
       child: GlassmorphismContainer(
         level: GlassLevel.interactive,
         padding: const EdgeInsets.all(16),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge), // 16.0 - Fixed border radius hierarchy
         child: Row(
           children: [
             GlassmorphismContainer(
               level: GlassLevel.interactive,
               width: 48,
               height: 48,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium), // 12.0 - Fixed border radius hierarchy
               glassTint: iconColor.withValues(alpha: 0.15),
               child: Icon(
                 icon,
@@ -249,18 +184,14 @@ class TasksPage extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  StandardizedTextVariants.cardTitle(
                     title,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
                   ),
                   const SizedBox(height: 4),
-                  Text(
+                  StandardizedText(
                     subtitle,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
+                    style: StandardizedTextStyle.bodySmall,
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
                 ],
               ),
@@ -326,6 +257,7 @@ class _SearchBarState extends ConsumerState<_SearchBar> {
     _searchController.text = ref.read(searchQueryProvider);
     _searchController.addListener(_onSearchChanged);
   }
+
   @override
   void dispose() {
     _searchController.removeListener(_onSearchChanged);
@@ -336,10 +268,11 @@ class _SearchBarState extends ConsumerState<_SearchBar> {
   void _onSearchChanged() {
     ref.read(searchQueryProvider.notifier).state = _searchController.text.trim();
   }
+
   @override
   Widget build(BuildContext context) {
     final searchQuery = ref.watch(searchQueryProvider);
-    
+
     return GlassmorphismContainer(
       level: GlassLevel.interactive,
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
@@ -384,15 +317,12 @@ class _SmartFilters extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final filter = ref.watch(taskFilterProvider);
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        StandardizedTextVariants.cardTitle(
           'Quick Filters',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w500,
-          ),
         ),
         const SizedBox(height: 8),
         SingleChildScrollView(
@@ -437,32 +367,30 @@ class _SmartFilters extends ConsumerWidget {
 
   bool _isTodayFilterActive(TaskFilter filter) {
     if (filter.dueDateFrom == null || filter.dueDateTo == null) return false;
-    
+
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final tomorrow = today.add(const Duration(days: 1));
-    
-    return filter.dueDateFrom!.isAtSameMomentAs(today) && 
-           filter.dueDateTo!.isAtSameMomentAs(tomorrow);
+
+    return filter.dueDateFrom!.isAtSameMomentAs(today) && filter.dueDateTo!.isAtSameMomentAs(tomorrow);
   }
 
   bool _isThisWeekFilterActive(TaskFilter filter) {
     if (filter.dueDateFrom == null || filter.dueDateTo == null) return false;
-    
+
     final now = DateTime.now();
     final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
     final startOfWeekDate = DateTime(startOfWeek.year, startOfWeek.month, startOfWeek.day);
     final endOfWeekDate = startOfWeekDate.add(const Duration(days: 7));
-    
-    return filter.dueDateFrom!.isAtSameMomentAs(startOfWeekDate) && 
-           filter.dueDateTo!.isAtSameMomentAs(endOfWeekDate);
+
+    return filter.dueDateFrom!.isAtSameMomentAs(startOfWeekDate) && filter.dueDateTo!.isAtSameMomentAs(endOfWeekDate);
   }
 
   void _applyTodayFilter(WidgetRef ref) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final tomorrow = today.add(const Duration(days: 1));
-    
+
     ref.read(taskFilterProvider.notifier).state = TaskFilter(
       dueDateFrom: today,
       dueDateTo: tomorrow,
@@ -474,7 +402,7 @@ class _SmartFilters extends ConsumerWidget {
     final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
     final startOfWeekDate = DateTime(startOfWeek.year, startOfWeek.month, startOfWeek.day);
     final endOfWeekDate = startOfWeekDate.add(const Duration(days: 7));
-    
+
     ref.read(taskFilterProvider.notifier).state = TaskFilter(
       dueDateFrom: startOfWeekDate,
       dueDateTo: endOfWeekDate,
@@ -514,15 +442,13 @@ class _SmartFilterChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return GlassmorphismContainer(
       level: isSelected ? GlassLevel.interactive : GlassLevel.content,
-      borderRadius: BorderRadius.circular(20),
-      glassTint: isSelected 
-          ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
-          : null,
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusXLarge), // 20.0 - Fixed border radius hierarchy
+      glassTint: isSelected ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1) : null,
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(TypographyConstants.radiusXLarge), // 20.0 - Fixed border radius hierarchy
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
@@ -536,16 +462,12 @@ class _SmartFilterChip extends StatelessWidget {
                       end: Alignment.bottomRight,
                     )
                   : null,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusXLarge), // 20.0 - Fixed border radius hierarchy
             ),
-            child: Text(
+            child: StandardizedText(
               label,
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                color: isSelected 
-                    ? Colors.white
-                    : Theme.of(context).colorScheme.onSurface,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-              ),
+              style: StandardizedTextStyle.labelMedium,
+              color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurface,
             ),
           ),
         ),
@@ -567,15 +489,15 @@ class _ActiveFiltersIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final activeFilters = <String>[];
-    
+
     if (searchQuery.isNotEmpty) {
       activeFilters.add('Search: "$searchQuery"');
     }
-    
+
     if (filter.status != null) {
       activeFilters.add('Status: ${filter.status!.displayName}');
     }
-    
+
     if (filter.priority != null) {
       activeFilters.add('Priority: ${filter.priority!.displayName}');
     }
@@ -593,27 +515,25 @@ class _ActiveFiltersIndicator extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           Expanded(
-            child: Text(
+            child: StandardizedText(
               'Active filters: ${activeFilters.join(', ')}',
-              style: Theme.of(context).textTheme.bodySmall,
+              style: StandardizedTextStyle.bodySmall,
             ),
           ),
           GlassmorphismContainer(
             level: GlassLevel.interactive,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
             child: Material(
               color: Colors.transparent,
               child: InkWell(
                 onTap: onClearFilters,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  child: Text(
+                  child: StandardizedText(
                     'Clear',
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.primary,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: StandardizedTextStyle.labelMedium,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
               ),
@@ -630,37 +550,37 @@ class _TaskList extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final searchQuery = ref.watch(searchQueryProvider);
     final filter = ref.watch(taskFilterProvider);
-    
+
     if (searchQuery.isNotEmpty) {
       return ref.watch(searchedTasksProvider).when(
-        data: (tasks) => _buildTaskList(context, ref, tasks),
-        loading: () => const loading_widgets.LoadingWidget(),
-        error: (error, stack) => loading_widgets.ErrorWidget(
-          message: 'Failed to search tasks',
-          details: error.toString(),
-          onRetry: () => ref.refresh(searchedTasksProvider),
-        ),
-      );
+            data: (tasks) => _buildTaskList(context, ref, tasks),
+            loading: () => const loading_widgets.LoadingWidget(),
+            error: (error, stack) => loading_widgets.ErrorWidget(
+              message: 'Failed to search tasks',
+              details: error.toString(),
+              onRetry: () => ref.refresh(searchedTasksProvider),
+            ),
+          );
     } else if (filter.hasFilters) {
       return ref.watch(filteredTasksProvider).when(
-        data: (tasks) => _buildTaskList(context, ref, tasks),
-        loading: () => const loading_widgets.LoadingWidget(),
-        error: (error, stack) => loading_widgets.ErrorWidget(
-          message: 'Failed to filter tasks',
-          details: error.toString(),
-          onRetry: () => ref.refresh(filteredTasksProvider),
-        ),
-      );
+            data: (tasks) => _buildTaskList(context, ref, tasks),
+            loading: () => const loading_widgets.LoadingWidget(),
+            error: (error, stack) => loading_widgets.ErrorWidget(
+              message: 'Failed to filter tasks',
+              details: error.toString(),
+              onRetry: () => ref.refresh(filteredTasksProvider),
+            ),
+          );
     } else {
       return ref.watch(tasksProvider).when(
-        data: (tasks) => _buildTaskList(context, ref, tasks),
-        loading: () => const loading_widgets.LoadingWidget(),
-        error: (error, stack) => loading_widgets.ErrorWidget(
-          message: 'Failed to load tasks',
-          details: error.toString(),
-          onRetry: () => ref.refresh(tasksProvider),
-        ),
-      );
+            data: (tasks) => _buildTaskList(context, ref, tasks),
+            loading: () => const loading_widgets.LoadingWidget(),
+            error: (error, stack) => loading_widgets.ErrorWidget(
+              message: 'Failed to load tasks',
+              details: error.toString(),
+              onRetry: () => ref.refresh(tasksProvider),
+            ),
+          );
     }
   }
 
@@ -670,16 +590,18 @@ class _TaskList extends ConsumerWidget {
     }
 
     return Column(
-      children: tasks.map((task) => AdvancedTaskCard(
-        task: task,
-        onTap: () => _navigateToTaskDetail(context, task.id),
-        onEdit: () => _editTask(context, task),
-        onDelete: () => _deleteTask(context, ref, task),
-        showProgress: true,
-        showSubtasks: task.subTasks.isNotEmpty,
-        style: TaskCardStyle.elevated,
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      )).toList(),
+      children: tasks
+          .map((task) => AdvancedTaskCard(
+                task: task,
+                onTap: () => _navigateToTaskDetail(context, task.id),
+                onEdit: () => _editTask(context, task),
+                onDelete: () => _deleteTask(context, ref, task),
+                showProgress: true,
+                showSubtasks: task.subTasks.isNotEmpty,
+                style: TaskCardStyle.elevated,
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              ))
+          .toList(),
     );
   }
 
@@ -689,7 +611,6 @@ class _TaskList extends ConsumerWidget {
       arguments: taskId,
     );
   }
-
 
   void _editTask(BuildContext context, TaskModel task) {
     Navigator.of(context).push(
@@ -737,20 +658,15 @@ class _EmptyTaskList extends StatelessWidget {
             color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
           const SizedBox(height: 16),
-          Text(
+          StandardizedText(
             'No tasks found',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w600,
-              fontSize: 20,
-            ),
+            style: StandardizedTextStyle.titleLarge,
           ),
           const SizedBox(height: 8),
-          Text(
+          StandardizedText(
             'Create your first task to get started!',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontSize: 14,
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
+            style: StandardizedTextStyle.bodyMedium,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
             textAlign: TextAlign.center,
           ),
         ],
@@ -771,6 +687,7 @@ class _FilterDialogState extends ConsumerState<_FilterDialog> {
     super.initState();
     _currentFilter = ref.read(taskFilterProvider);
   }
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -784,18 +701,12 @@ class _FilterDialogState extends ConsumerState<_FilterDialog> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              StandardizedTextVariants.sectionHeader(
                 'Filter Tasks',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
               ),
               const SizedBox(height: 24),
-              Text(
+              StandardizedTextVariants.cardTitle(
                 'Status',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
               ),
               const SizedBox(height: 8),
               Wrap(
@@ -810,21 +721,18 @@ class _FilterDialogState extends ConsumerState<_FilterDialog> {
                     }),
                   ),
                   ...TaskStatus.values.map((status) => _buildFilterChip(
-                    context,
-                    status.displayName,
-                    _currentFilter.status == status,
-                    () => setState(() {
-                      _currentFilter = _currentFilter.copyWith(status: status);
-                    }),
-                  )),
+                        context,
+                        status.displayName,
+                        _currentFilter.status == status,
+                        () => setState(() {
+                          _currentFilter = _currentFilter.copyWith(status: status);
+                        }),
+                      )),
                 ],
               ),
               const SizedBox(height: 16),
-              Text(
+              StandardizedTextVariants.cardTitle(
                 'Priority',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
               ),
               const SizedBox(height: 8),
               Wrap(
@@ -839,13 +747,13 @@ class _FilterDialogState extends ConsumerState<_FilterDialog> {
                     }),
                   ),
                   ...TaskPriority.values.map((priority) => _buildFilterChip(
-                    context,
-                    priority.displayName,
-                    _currentFilter.priority == priority,
-                    () => setState(() {
-                      _currentFilter = _currentFilter.copyWith(priority: priority);
-                    }),
-                  )),
+                        context,
+                        priority.displayName,
+                        _currentFilter.priority == priority,
+                        () => setState(() {
+                          _currentFilter = _currentFilter.copyWith(priority: priority);
+                        }),
+                      )),
                 ],
               ),
               const SizedBox(height: 24),
@@ -854,19 +762,18 @@ class _FilterDialogState extends ConsumerState<_FilterDialog> {
                 children: [
                   GlassmorphismContainer(
                     level: GlassLevel.interactive,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                     child: Material(
                       color: Colors.transparent,
                       child: InkWell(
                         onTap: () => Navigator.of(context).pop(),
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          child: Text(
+                          child: StandardizedText(
                             'Cancel',
-                            style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
+                            style: StandardizedTextStyle.labelLarge,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                       ),
@@ -875,19 +782,18 @@ class _FilterDialogState extends ConsumerState<_FilterDialog> {
                   const SizedBox(width: 8),
                   GlassmorphismContainer(
                     level: GlassLevel.interactive,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                     child: Material(
                       color: Colors.transparent,
                       child: InkWell(
                         onTap: _clearFilters,
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          child: Text(
+                          child: StandardizedText(
                             'Clear',
-                            style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                              color: Theme.of(context).colorScheme.error,
-                            ),
+                            style: StandardizedTextStyle.labelLarge,
+                            color: Theme.of(context).colorScheme.error,
                           ),
                         ),
                       ),
@@ -896,12 +802,12 @@ class _FilterDialogState extends ConsumerState<_FilterDialog> {
                   const SizedBox(width: 8),
                   GlassmorphismContainer(
                     level: GlassLevel.interactive,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                     child: Material(
                       color: Colors.transparent,
                       child: InkWell(
                         onTap: _applyFilters,
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                           decoration: BoxDecoration(
@@ -913,14 +819,12 @@ class _FilterDialogState extends ConsumerState<_FilterDialog> {
                               begin: Alignment.topLeft,
                               end: Alignment.bottomRight,
                             ),
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                           ),
-                          child: Text(
+                          child: StandardizedText(
                             'Apply',
-                            style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                            ),
+                            style: StandardizedTextStyle.labelLarge,
+                            color: Colors.white,
                           ),
                         ),
                       ),
@@ -948,15 +852,13 @@ class _FilterDialogState extends ConsumerState<_FilterDialog> {
   Widget _buildFilterChip(BuildContext context, String label, bool isSelected, VoidCallback onTap) {
     return GlassmorphismContainer(
       level: isSelected ? GlassLevel.interactive : GlassLevel.content,
-      borderRadius: BorderRadius.circular(20),
-      glassTint: isSelected 
-          ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1)
-          : null,
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusXLarge), // 20.0 - Fixed border radius hierarchy
+      glassTint: isSelected ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.1) : null,
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(TypographyConstants.radiusXLarge), // 20.0 - Fixed border radius hierarchy
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
@@ -970,16 +872,12 @@ class _FilterDialogState extends ConsumerState<_FilterDialog> {
                       end: Alignment.bottomRight,
                     )
                   : null,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusXLarge), // 20.0 - Fixed border radius hierarchy
             ),
-            child: Text(
+            child: StandardizedText(
               label,
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: isSelected 
-                    ? Colors.white
-                    : Theme.of(context).colorScheme.onSurface,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-              ),
+              style: StandardizedTextStyle.labelSmall,
+              color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurface,
             ),
           ),
         ),
@@ -987,6 +885,3 @@ class _FilterDialogState extends ConsumerState<_FilterDialog> {
     );
   }
 }
-
-
-

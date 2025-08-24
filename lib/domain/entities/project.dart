@@ -21,6 +21,13 @@ class Project extends Equatable {
   
   /// Color associated with the project (hex color code)
   final String color;
+
+  /// Category ID reference to ProjectCategory (replaces legacy category string)
+  final String? categoryId;
+
+  /// Legacy category string (for backward compatibility during migration)
+  /// @deprecated Use categoryId instead. Will be removed in future version.
+  final String? category;
   
   /// When this project was created
   final DateTime createdAt;
@@ -42,6 +49,8 @@ class Project extends Equatable {
     required this.name,
     this.description,
     required this.color,
+    this.categoryId,
+    this.category,
     required this.createdAt,
     this.updatedAt,
     this.taskIds = const [],
@@ -54,6 +63,8 @@ class Project extends Equatable {
     required String name,
     String? description,
     String color = '#2196F3', // Default blue color
+    String? categoryId,
+    String? category, // @deprecated - for backward compatibility
     DateTime? deadline,
   }) {
     return Project(
@@ -61,6 +72,8 @@ class Project extends Equatable {
       name: name,
       description: description,
       color: color,
+      categoryId: categoryId,
+      category: category,
       createdAt: DateTime.now(),
       deadline: deadline,
     );
@@ -78,6 +91,8 @@ class Project extends Equatable {
     String? name,
     String? description,
     String? color,
+    String? categoryId,
+    String? category, // @deprecated - for backward compatibility
     DateTime? createdAt,
     DateTime? updatedAt,
     List<String>? taskIds,
@@ -89,6 +104,8 @@ class Project extends Equatable {
       name: name ?? this.name,
       description: description ?? this.description,
       color: color ?? this.color,
+      categoryId: categoryId ?? this.categoryId,
+      category: category ?? this.category,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       taskIds: taskIds ?? this.taskIds,
@@ -139,12 +156,16 @@ class Project extends Equatable {
     String? name,
     String? description,
     String? color,
+    String? categoryId,
+    String? category, // @deprecated - for backward compatibility
     DateTime? deadline,
   }) {
     return copyWith(
       name: name ?? this.name,
       description: description ?? this.description,
       color: color ?? this.color,
+      categoryId: categoryId ?? this.categoryId,
+      category: category ?? this.category,
       deadline: deadline ?? this.deadline,
       updatedAt: DateTime.now(),
     );
@@ -184,12 +205,52 @@ class Project extends Equatable {
   /// Returns true if the project is active (not archived)
   bool get isActive => !isArchived;
 
+  // ============================================================================
+  // MIGRATION HELPERS - Support both legacy and new category systems
+  // ============================================================================
+
+  /// Returns true if this project has a category assigned
+  bool get hasCategory => categoryId != null || (category != null && category!.isNotEmpty);
+
+  /// Returns true if this project uses the new category system
+  bool get usesNewCategorySystem => categoryId != null;
+
+  /// Returns true if this project uses the legacy category system
+  bool get usesLegacyCategorySystem => category != null && category!.isNotEmpty && categoryId == null;
+
+  /// Gets the effective category for display (prioritizes new system)
+  String? get effectiveCategory {
+    if (usesNewCategorySystem) return categoryId;
+    if (usesLegacyCategorySystem) return category;
+    return null;
+  }
+
+  /// Migrates from legacy category to new category system
+  Project migrateToNewCategorySystem(String newCategoryId) {
+    return copyWith(
+      categoryId: newCategoryId,
+      category: null, // Clear legacy category
+      updatedAt: DateTime.now(),
+    );
+  }
+
+  /// Migrates from new category system back to legacy (for rollback)
+  Project migrateToLegacyCategorySystem(String legacyCategoryName) {
+    return copyWith(
+      categoryId: null, // Clear new category
+      category: legacyCategoryName,
+      updatedAt: DateTime.now(),
+    );
+  }
+
   @override
   List<Object?> get props => [
         id,
         name,
         description,
         color,
+        categoryId,
+        category,
         createdAt,
         updatedAt,
         taskIds,
@@ -200,6 +261,7 @@ class Project extends Equatable {
   @override
   String toString() {
     return 'Project(id: $id, name: $name, taskCount: ${taskIds.length}, '
+           'categoryId: $categoryId, category: $category, '
            'isArchived: $isArchived, deadline: $deadline)';
   }
 }

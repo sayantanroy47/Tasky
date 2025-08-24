@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/typography_constants.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'standardized_icons.dart';
 
 
 /// Widget displaying AI usage statistics and insights
@@ -20,9 +21,9 @@ class AIUsageStatistics extends ConsumerWidget {
           children: [
             Row(
               children: [
-                Icon(
+                StandardizedIconVariants.feature(
                   PhosphorIcons.chartBar(),
-                  color: Theme.of(context).colorScheme.primary,
+                  semanticLabel: 'AI Usage Statistics',
                 ),
                 const SizedBox(width: 8),
                 Text(
@@ -56,25 +57,25 @@ class AIUsageStatistics extends ConsumerWidget {
                   title: 'Tasks Parsed',
                   value: mockStats['totalParsed'].toString(),
                   icon: PhosphorIcons.checkSquare(),
-                  color: Colors.blue,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
                 _StatCard(
                   title: 'Success Rate',
                   value: '${mockStats['successRate']}%',
                   icon: PhosphorIcons.checkCircle(),
-                  color: Colors.green,
+                  color: Theme.of(context).colorScheme.tertiary,
                 ),
                 _StatCard(
                   title: 'Tags Suggested',
                   value: mockStats['tagsSuggested'].toString(),
                   icon: PhosphorIcons.tag(),
-                  color: Colors.orange,
+                  color: Theme.of(context).colorScheme.secondary,
                 ),
                 _StatCard(
                   title: 'Time Saved',
                   value: '${mockStats['timeSaved']}min',
                   icon: PhosphorIcons.timer(),
-                  color: Colors.purple,
+                  color: Theme.of(context).colorScheme.tertiary.withValues(alpha: 0.8),
                 ),
               ],
             ),
@@ -90,10 +91,11 @@ class AIUsageStatistics extends ConsumerWidget {
               ),
               child: Row(
                 children: [
-                  Icon(
+                  StandardizedIcon(
                     PhosphorIcons.brain(),
-                    color: Theme.of(context).colorScheme.primary,
-                    size: 20,
+                    size: StandardizedIconSize.md,
+                    style: StandardizedIconStyle.accent,
+                    semanticLabel: 'AI Intelligence',
                   ),
                   const SizedBox(width: 8),
                   Expanded(
@@ -116,13 +118,13 @@ class AIUsageStatistics extends ConsumerWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: Colors.green.withValues(alpha: 0.2),
+                      color: Theme.of(context).colorScheme.tertiary.withValues(alpha: 0.2), // Fixed hardcoded green - semantic success color
                       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                     ),
                     child: Text(
                       'Active',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.green.shade700,
+                        color: Theme.of(context).colorScheme.tertiary, // Fixed hardcoded green - semantic success color
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -179,9 +181,9 @@ class AIUsageStatistics extends ConsumerWidget {
 
   void _exportStats(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Statistics exported successfully'),
-        backgroundColor: Colors.green,
+      SnackBar(
+        content: const Text('Statistics exported successfully'),
+        backgroundColor: Theme.of(context).colorScheme.tertiary, // Fixed hardcoded green - semantic success color
       ),
     );
   }
@@ -203,13 +205,13 @@ class AIUsageStatistics extends ConsumerWidget {
             onPressed: () {
               Navigator.of(context).pop();
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Statistics reset successfully'),
-                  backgroundColor: Colors.green,
+                SnackBar(
+                  content: const Text('Statistics reset successfully'),
+                  backgroundColor: Theme.of(context).colorScheme.tertiary, // Fixed hardcoded green - semantic success color
                 ),
               );
             },
-            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+            style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error), // Fixed hardcoded red - semantic error color
             child: const Text('Reset'),
           ),
         ],

@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+
+import '../../core/accessibility/touch_target_validator.dart';
+import '../../core/theme/typography_constants.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
-import '../providers/task_providers.dart';
-import '../providers/task_provider.dart' show taskOperationsProvider;
 import '../providers/project_providers.dart';
+import '../providers/task_provider.dart' show taskOperationsProvider;
+import '../providers/task_providers.dart';
 import 'glassmorphism_container.dart';
 import 'loading_error_widgets.dart' as loading_widgets;
-import '../../core/theme/typography_constants.dart';
-import '../../core/accessibility/touch_target_validator.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'standardized_spacing.dart';
 
 /// Comprehensive batch operations widget for managing multiple tasks
 class BatchTaskOperationsWidget extends ConsumerStatefulWidget {
@@ -32,7 +34,7 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
   TaskStatus? _filterStatus;
   TaskPriority? _filterPriority;
   String? _filterProject;
-  
+
   @override
   void initState() {
     super.initState();
@@ -44,14 +46,12 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final tasksAsync = ref.watch(tasksProvider);
-    
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       appBar: AppBar(
         title: Text(
-          _selectedTaskIds.isEmpty 
-            ? 'Batch Operations' 
-            : '${_selectedTaskIds.length} tasks selected',
+          _selectedTaskIds.isEmpty ? 'Batch Operations' : '${_selectedTaskIds.length} tasks selected',
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -130,11 +130,10 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
         children: [
           // Search and Filter Section
           _buildSearchAndFilters(theme),
-          
+
           // Selection Controls
-          if (_selectedTaskIds.isNotEmpty)
-            _buildSelectionControls(theme),
-          
+          if (_selectedTaskIds.isNotEmpty) _buildSelectionControls(theme),
+
           // Tasks List
           Expanded(
             child: tasksAsync.when(
@@ -157,8 +156,8 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
   /// Build search and filters section
   Widget _buildSearchAndFilters(ThemeData theme) {
     return GlassmorphismContainer(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(16),
+      margin: StandardizedSpacing.margin(SpacingSize.md),
+      padding: StandardizedSpacing.padding(SpacingSize.md),
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       child: Column(
         children: [
@@ -179,9 +178,9 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
             ),
             onChanged: (value) => setState(() => _searchQuery = value),
           ),
-          
-          const SizedBox(height: 12),
-          
+
+          StandardizedGaps.md, // Consistent 16px spacing
+
           // Filter chips
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -193,24 +192,24 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
                   selected: _filterStatus != null,
                   onSelected: (_) => _showStatusFilter(),
                 ),
-                const SizedBox(width: 8),
-                
+                StandardizedGaps.hSm,
+
                 // Priority filter
                 FilterChip(
                   label: Text(_filterPriority?.displayName ?? 'All Priorities'),
                   selected: _filterPriority != null,
                   onSelected: (_) => _showPriorityFilter(),
                 ),
-                const SizedBox(width: 8),
-                
+                StandardizedGaps.hSm,
+
                 // Project filter
                 FilterChip(
                   label: Text(_filterProject ?? 'All Projects'),
                   selected: _filterProject != null,
                   onSelected: (_) => _showProjectFilter(),
                 ),
-                const SizedBox(width: 8),
-                
+                StandardizedGaps.hSm,
+
                 // Clear filters
                 if (_filterStatus != null || _filterPriority != null || _filterProject != null)
                   ActionChip(
@@ -233,8 +232,8 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
   /// Build selection controls
   Widget _buildSelectionControls(ThemeData theme) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.all(12),
+      margin: StandardizedSpacing.marginSymmetric(horizontal: SpacingSize.md),
+      padding: StandardizedSpacing.padding(SpacingSize.sm),
       decoration: BoxDecoration(
         color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
@@ -247,7 +246,7 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
             color: theme.colorScheme.primary,
             size: 20,
           ),
-          const SizedBox(width: 8),
+          StandardizedGaps.hSm,
           Expanded(
             child: Text(
               '${_selectedTaskIds.length} task${_selectedTaskIds.length == 1 ? '' : 's'} selected',
@@ -269,7 +268,7 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
   /// Build tasks list
   Widget _buildTasksList(ThemeData theme, List<TaskModel> allTasks) {
     final filteredTasks = _filterTasks(allTasks);
-    
+
     if (filteredTasks.isEmpty) {
       return Center(
         child: Column(
@@ -280,14 +279,14 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
               size: 64,
               color: theme.colorScheme.onSurfaceVariant,
             ),
-            const SizedBox(height: 16),
+            StandardizedGaps.md,
             Text(
               'No tasks found',
               style: theme.textTheme.titleLarge?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
-            const SizedBox(height: 8),
+            StandardizedGaps.sm,
             Text(
               'Try adjusting your filters or search query',
               style: theme.textTheme.bodyMedium?.copyWith(
@@ -301,19 +300,19 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: StandardizedSpacing.padding(SpacingSize.md),
       itemCount: filteredTasks.length,
       itemBuilder: (context, index) {
         final task = filteredTasks[index];
         final isSelected = _selectedTaskIds.contains(task.id);
-        
+
         return Card(
-          margin: const EdgeInsets.only(bottom: 8),
+          margin: StandardizedSpacing.marginOnly(bottom: SpacingSize.sm),
           child: InkWell(
             onTap: () => _toggleTaskSelection(task.id),
             borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
             child: Padding(
-              padding: const EdgeInsets.all(12),
+              padding: StandardizedSpacing.padding(SpacingSize.sm),
               child: Row(
                 children: [
                   // Selection checkbox
@@ -321,9 +320,9 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
                     value: isSelected,
                     onChanged: (_) => _toggleTaskSelection(task.id),
                   ),
-                  
-                  const SizedBox(width: 12),
-                  
+
+                  StandardizedGaps.horizontal(SpacingSize.sm),
+
                   // Task content
                   Expanded(
                     child: Column(
@@ -332,7 +331,7 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
                         Text(
                           task.title,
                           style: theme.textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w500,
                             decoration: task.isCompleted ? TextDecoration.lineThrough : null,
                           ),
                         ),
@@ -409,7 +408,7 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
       child: Text(
         priority.name.toUpperCase(),
         style: TextStyle(
-          fontSize: 10,
+          fontSize: TypographyConstants.labelSmall, // 11.0 - Fixed critical WCAG violation (was 10px)
           fontWeight: FontWeight.w500,
           color: chipColor,
         ),
@@ -444,7 +443,7 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
       child: Text(
         status.name.toUpperCase(),
         style: TextStyle(
-          fontSize: 10,
+          fontSize: TypographyConstants.labelSmall, // 11.0 - Fixed critical WCAG violation (was 10px)
           fontWeight: FontWeight.w500,
           color: chipColor,
         ),
@@ -461,29 +460,27 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
         final title = task.title.toLowerCase();
         final description = (task.description ?? '').toLowerCase();
         final tags = task.tags.join(' ').toLowerCase();
-        
-        if (!title.contains(query) && 
-            !description.contains(query) && 
-            !tags.contains(query)) {
+
+        if (!title.contains(query) && !description.contains(query) && !tags.contains(query)) {
           return false;
         }
       }
-      
+
       // Status filter
       if (_filterStatus != null && task.status != _filterStatus) {
         return false;
       }
-      
+
       // Priority filter
       if (_filterPriority != null && task.priority != _filterPriority) {
         return false;
       }
-      
+
       // Project filter
       if (_filterProject != null && task.projectId != _filterProject) {
         return false;
       }
-      
+
       return true;
     }).toList();
   }
@@ -534,7 +531,7 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
       final tasksAsync = ref.read(tasksProvider);
       final allTasks = tasksAsync.valueOrNull ?? [];
       final selectedTasks = allTasks.where((t) => _selectedTaskIds.contains(t.id));
-      
+
       for (final task in selectedTasks) {
         final updatedTask = task.copyWith(
           status: completed ? TaskStatus.completed : TaskStatus.pending,
@@ -542,7 +539,7 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
         );
         await ref.read(taskOperationsProvider).updateTask(updatedTask);
       }
-      
+
       _showSuccess('Tasks ${completed ? 'completed' : 'marked as incomplete'} successfully');
       setState(() => _selectedTaskIds.clear());
       widget.onOperationComplete?.call();
@@ -557,7 +554,7 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
       final tasksAsync = ref.read(tasksProvider);
       final allTasks = tasksAsync.valueOrNull ?? [];
       final selectedTasks = allTasks.where((t) => _selectedTaskIds.contains(t.id));
-      
+
       for (final task in selectedTasks) {
         final duplicatedTask = TaskModel.create(
           title: '${task.title} (Copy)',
@@ -572,7 +569,7 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
         );
         await ref.read(taskOperationsProvider).createTask(duplicatedTask);
       }
-      
+
       _showSuccess('${selectedTasks.length} tasks duplicated successfully');
       setState(() => _selectedTaskIds.clear());
       widget.onOperationComplete?.call();
@@ -609,17 +606,17 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
               ),
             ),
             ...TaskStatus.values.map((status) => ListTile(
-              title: Text(status.displayName),
-              leading: AccessibleRadio<TaskStatus?>(
-                value: status,
-                groupValue: _filterStatus,
-                semanticLabel: 'Filter by ${status.displayName}',
-                onChanged: (value) {
-                  setState(() => _filterStatus = value);
-                  Navigator.pop(context);
-                },
-              ),
-            )),
+                  title: Text(status.displayName),
+                  leading: AccessibleRadio<TaskStatus?>(
+                    value: status,
+                    groupValue: _filterStatus,
+                    semanticLabel: 'Filter by ${status.displayName}',
+                    onChanged: (value) {
+                      setState(() => _filterStatus = value);
+                      Navigator.pop(context);
+                    },
+                  ),
+                )),
           ],
         ),
       ),
@@ -648,17 +645,17 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
               ),
             ),
             ...TaskPriority.values.map((priority) => ListTile(
-              title: Text(priority.displayName),
-              leading: AccessibleRadio<TaskPriority?>(
-                value: priority,
-                groupValue: _filterPriority,
-                semanticLabel: 'Filter by ${priority.displayName}',
-                onChanged: (value) {
-                  setState(() => _filterPriority = value);
-                  Navigator.pop(context);
-                },
-              ),
-            )),
+                  title: Text(priority.displayName),
+                  leading: AccessibleRadio<TaskPriority?>(
+                    value: priority,
+                    groupValue: _filterPriority,
+                    semanticLabel: 'Filter by ${priority.displayName}',
+                    onChanged: (value) {
+                      setState(() => _filterPriority = value);
+                      Navigator.pop(context);
+                    },
+                  ),
+                )),
           ],
         ),
       ),
@@ -690,17 +687,17 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
                   ),
                 ),
                 ...projects.map((project) => ListTile(
-                  title: Text(project.name),
-                  leading: AccessibleRadio<String?>(
-                    value: project.id,
-                    groupValue: _filterProject,
-                    semanticLabel: 'Filter by project ${project.name}',
-                    onChanged: (value) {
-                      setState(() => _filterProject = value);
-                      Navigator.pop(context);
-                    },
-                  ),
-                )),
+                      title: Text(project.name),
+                      leading: AccessibleRadio<String?>(
+                        value: project.id,
+                        groupValue: _filterProject,
+                        semanticLabel: 'Filter by project ${project.name}',
+                        onChanged: (value) {
+                          setState(() => _filterProject = value);
+                          Navigator.pop(context);
+                        },
+                      ),
+                    )),
               ],
             ),
           ),
@@ -753,12 +750,12 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
                   },
                 ),
                 ...projects.map((project) => ListTile(
-                  title: Text(project.name),
-                  onTap: () {
-                    Navigator.pop(context);
-                    _moveToProject(project.id);
-                  },
-                )),
+                      title: Text(project.name),
+                      onTap: () {
+                        Navigator.pop(context);
+                        _moveToProject(project.id);
+                      },
+                    )),
               ],
             ),
           ),
@@ -804,12 +801,12 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
       final tasksAsync = ref.read(tasksProvider);
       final allTasks = tasksAsync.valueOrNull ?? [];
       final selectedTasks = allTasks.where((t) => _selectedTaskIds.contains(t.id));
-      
+
       for (final task in selectedTasks) {
         final updatedTask = task.copyWith(priority: newPriority);
         await ref.read(taskOperationsProvider).updateTask(updatedTask);
       }
-      
+
       _showSuccess('Priority changed to ${newPriority.displayName}');
       setState(() => _selectedTaskIds.clear());
       widget.onOperationComplete?.call();
@@ -824,16 +821,14 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
       final tasksAsync = ref.read(tasksProvider);
       final allTasks = tasksAsync.valueOrNull ?? [];
       final selectedTasks = allTasks.where((t) => _selectedTaskIds.contains(t.id));
-      
+
       for (final task in selectedTasks) {
         final updatedTask = task.copyWith(projectId: projectId);
         await ref.read(taskOperationsProvider).updateTask(updatedTask);
       }
-      
+
       _showSuccess(
-        projectId != null 
-          ? 'Tasks moved to project'
-          : 'Tasks removed from project',
+        projectId != null ? 'Tasks moved to project' : 'Tasks removed from project',
       );
       setState(() => _selectedTaskIds.clear());
       widget.onOperationComplete?.call();
@@ -848,16 +843,16 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
       final tasksAsync = ref.read(tasksProvider);
       final allTasks = tasksAsync.valueOrNull ?? [];
       final selectedTasks = allTasks.where((t) => _selectedTaskIds.contains(t.id));
-      
+
       for (final task in selectedTasks) {
         await ref.read(taskOperationsProvider).deleteTask(
-          task, 
-          context: context,
-          showFeedback: false, // We'll show batch feedback instead
-          requireConfirmation: false, // Already confirmed in dialog
-        );
+              task,
+              context: context,
+              showFeedback: false, // We'll show batch feedback instead
+              requireConfirmation: false, // Already confirmed in dialog
+            );
       }
-      
+
       _showSuccess('${_selectedTaskIds.length} tasks deleted successfully');
       setState(() => _selectedTaskIds.clear());
       widget.onOperationComplete?.call();
@@ -871,7 +866,7 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final taskDate = DateTime(date.year, date.month, date.day);
-    
+
     if (taskDate == today) {
       return 'Today';
     } else if (taskDate == today.add(const Duration(days: 1))) {
@@ -908,4 +903,3 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
     }
   }
 }
-

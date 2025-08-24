@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../core/design_system/design_tokens.dart';
-import '../../core/constants/phosphor_icons.dart';
 import '../../presentation/providers/task_providers.dart';
 import '../../presentation/providers/kanban_providers.dart';
 import 'glassmorphism_container.dart';
@@ -337,7 +335,7 @@ class _KanbanViewOptionsSheetState extends ConsumerState<KanbanViewOptionsSheet>
                 final column = entry.value;
                 
                 return _buildColumnTile(column, index, theme);
-              }).toList(),
+              }),
             ],
           ),
 
@@ -496,7 +494,7 @@ class _TaskCreationDialogState extends ConsumerState<TaskCreationDialog> {
   
   TaskPriority _priority = TaskPriority.medium;
   DateTime? _dueDate;
-  List<String> _selectedTags = [];
+  final List<String> _selectedTags = [];
   bool _isLoading = false;
 
   @override
@@ -858,7 +856,7 @@ class TagSelectionDialog extends ConsumerStatefulWidget {
 
 class _TagSelectionDialogState extends ConsumerState<TagSelectionDialog> {
   final _newTagController = TextEditingController();
-  List<String> _selectedTags = [];
+  final List<String> _selectedTags = [];
 
   @override
   void dispose() {

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/standardized_app_bar.dart';
-import '../widgets/theme_background_widget.dart';
 import '../widgets/universal_profile_picture.dart';
 import '../providers/profile_providers.dart';
 import '../../core/theme/typography_constants.dart';
@@ -44,19 +43,18 @@ class _ProfileSettingsPageState extends ConsumerState<ProfileSettingsPage> {
     final theme = Theme.of(context);
     final profileAsync = ref.watch(currentProfileProvider);
     
-    return ThemeBackgroundWidget(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: const StandardizedAppBar(
-          title: 'Profile Settings',
-          centerTitle: true,
-        ),
-        body: SafeArea(
-          child: profileAsync.when(
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (error, stackTrace) => _buildErrorState(theme),
-            data: (profile) => _buildProfileForm(theme, profile),
-          ),
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      extendBodyBehindAppBar: true,
+      appBar: const StandardizedAppBar(
+        title: 'Profile Settings',
+        centerTitle: true,
+      ),
+      body: SafeArea(
+        child: profileAsync.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, stackTrace) => _buildErrorState(theme),
+          data: (profile) => _buildProfileForm(theme, profile),
         ),
       ),
     );
@@ -116,7 +114,12 @@ class _ProfileSettingsPageState extends ConsumerState<ProfileSettingsPage> {
           child: ConstrainedBox(
             constraints: BoxConstraints(minHeight: constraints.maxHeight),
             child: Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.only(
+                top: kToolbarHeight + 28, // App bar height + spacing
+                left: 20,
+                right: 20,
+                bottom: 20,
+              ),
               child: Form(
                 key: _formKey,
                 child: Column(

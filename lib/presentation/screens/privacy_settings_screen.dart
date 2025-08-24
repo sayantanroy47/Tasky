@@ -1,25 +1,26 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../widgets/enhanced_ux_widgets.dart';
-import '../widgets/standardized_app_bar.dart';
-import '../../services/privacy_service.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+
 import '../../core/accessibility/touch_target_validator.dart';
-import 'dart:convert';
-import '../widgets/glassmorphism_container.dart';
 import '../../core/design_system/design_tokens.dart';
 import '../../core/theme/typography_constants.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import '../../services/privacy_service.dart';
+import '../widgets/enhanced_ux_widgets.dart';
+import '../widgets/glassmorphism_container.dart';
+import '../widgets/standardized_app_bar.dart';
 
 /// Screen for managing privacy settings and data compliance
 class PrivacySettingsScreen extends ConsumerWidget {
   const PrivacySettingsScreen({super.key});
-  
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final privacySettings = ref.watch(privacySettingsProvider);
     final retentionSettings = ref.watch(dataRetentionSettingsProvider);
-    
+
     return Scaffold(
       appBar: StandardizedAppBar(
         title: 'Privacy & Data',
@@ -86,9 +87,9 @@ class PrivacySettingsScreen extends ConsumerWidget {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Data Collection Section
             _buildSectionHeader(context, 'Data Collection'),
             GlassmorphismContainer(
@@ -146,9 +147,9 @@ class PrivacySettingsScreen extends ConsumerWidget {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // AI and Voice Processing Section
             _buildSectionHeader(context, 'AI & Voice Processing'),
             GlassmorphismContainer(
@@ -185,9 +186,9 @@ class PrivacySettingsScreen extends ConsumerWidget {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Cloud and Sharing Section
             _buildSectionHeader(context, 'Cloud & Sharing'),
             GlassmorphismContainer(
@@ -238,9 +239,9 @@ class PrivacySettingsScreen extends ConsumerWidget {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Data Retention Section
             _buildSectionHeader(context, 'Data Retention'),
             GlassmorphismContainer(
@@ -298,9 +299,9 @@ class PrivacySettingsScreen extends ConsumerWidget {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Data Rights Section
             _buildSectionHeader(context, 'Your Data Rights'),
             GlassmorphismContainer(
@@ -351,7 +352,7 @@ class PrivacySettingsScreen extends ConsumerWidget {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 32),
           ],
         );
@@ -378,8 +379,8 @@ class PrivacySettingsScreen extends ConsumerWidget {
           Text(
             error.toString(),
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
@@ -407,11 +408,11 @@ class PrivacySettingsScreen extends ConsumerWidget {
                     ),
                     borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                   ),
-                  child: const Text(
+                  child: Text(
                     'Retry',
                     style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context).colorScheme.onPrimary, // Fixed hardcoded color (was Colors.white)
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),
@@ -429,9 +430,9 @@ class PrivacySettingsScreen extends ConsumerWidget {
       child: Text(
         title,
         style: Theme.of(context).textTheme.titleMedium?.copyWith(
-          fontWeight: FontWeight.w600,
-          color: Theme.of(context).colorScheme.primary,
-        ),
+              fontWeight: FontWeight.w500,
+              color: Theme.of(context).colorScheme.primary,
+            ),
       ),
     );
   }
@@ -474,7 +475,7 @@ class PrivacySettingsScreen extends ConsumerWidget {
                 ipAddress: await privacyService.getDeviceIP(),
                 userAgent: await privacyService.getDeviceInfo(),
               ));
-              
+
               onConsent();
               if (context.mounted) {
                 Navigator.of(context).pop();
@@ -544,7 +545,7 @@ class PrivacySettingsScreen extends ConsumerWidget {
     Function(int) onChanged,
   ) {
     final options = [0, 7, 30, 90, 180, 365];
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -586,10 +587,10 @@ class PrivacySettingsScreen extends ConsumerWidget {
     try {
       final privacyService = ref.read(privacyServiceProvider);
       final userData = await privacyService.exportUserData();
-      
+
       // In a real app, this would save to file or share
       final jsonString = const JsonEncoder.withIndent('  ').convert(userData);
-      
+
       if (context.mounted) {
         showDialog(
           context: context,
@@ -621,7 +622,7 @@ class PrivacySettingsScreen extends ConsumerWidget {
   void _showDataProcessingLog(BuildContext context, WidgetRef ref) async {
     final privacyService = ref.read(privacyServiceProvider);
     final logs = await privacyService.getDataProcessingLogs();
-    
+
     if (context.mounted) {
       showDialog(
         context: context,
@@ -644,7 +645,7 @@ class PrivacySettingsScreen extends ConsumerWidget {
                         ),
                         leading: Icon(
                           log.success ? PhosphorIcons.checkCircle() : PhosphorIcons.warningCircle(),
-                          color: log.success ? Colors.green : Colors.red,
+                          color: log.success ? Theme.of(context).colorScheme.tertiary : Theme.of(context).colorScheme.error, // Fixed hardcoded colors (was Colors.green/Colors.red)
                         ),
                         isThreeLine: true,
                       );
@@ -665,7 +666,7 @@ class PrivacySettingsScreen extends ConsumerWidget {
   void _showConsentManagement(BuildContext context, WidgetRef ref) async {
     final privacyService = ref.read(privacyServiceProvider);
     final consents = await privacyService.getConsentRecords();
-    
+
     if (context.mounted) {
       showDialog(
         context: context,
@@ -688,7 +689,7 @@ class PrivacySettingsScreen extends ConsumerWidget {
                         ),
                         leading: Icon(
                           consent.granted ? PhosphorIcons.checkCircle() : PhosphorIcons.xCircle(),
-                          color: consent.granted ? Colors.green : Colors.red,
+                          color: consent.granted ? Theme.of(context).colorScheme.tertiary : Theme.of(context).colorScheme.error, // Fixed hardcoded colors (was Colors.green/Colors.red)
                         ),
                         trailing: consent.granted
                             ? IconButton(
@@ -735,13 +736,13 @@ class PrivacySettingsScreen extends ConsumerWidget {
             onPressed: () async {
               final privacyService = ref.read(privacyServiceProvider);
               await privacyService.deleteAllUserData();
-              
+
               if (context.mounted) {
                 Navigator.of(context).pop();
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('All data has been deleted'),
-                    backgroundColor: Colors.red,
+                  SnackBar(
+                    content: const Text('All data has been deleted'),
+                    backgroundColor: Theme.of(context).colorScheme.error, // Fixed hardcoded color (was Colors.red)
                   ),
                 );
               }
@@ -813,4 +814,3 @@ class PrivacySettingsScreen extends ConsumerWidget {
     }
   }
 }
-

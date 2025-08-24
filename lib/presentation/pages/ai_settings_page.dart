@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../widgets/glassmorphism_container.dart';
 import '../widgets/standardized_app_bar.dart';
+import '../widgets/standardized_page_dialogs.dart';
 import '../widgets/theme_background_widget.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../services/ai/ai_task_parsing_service.dart';
@@ -238,54 +239,24 @@ class _AISettingsPageState extends ConsumerState<AISettingsPage> {
   }
 
   void _showHelpDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('How AI Parsing Works'),
-        content: const SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'AI task parsing helps you create tasks faster by understanding natural language input.',
-                style: TextStyle(fontWeight: FontWeight.w500),
-              ),
-              SizedBox(height: 16),
-              Text('Features:'),
-              SizedBox(height: 8),
-              Text('• Extracts task titles and descriptions'),
-              Text('• Identifies due dates from phrases like "tomorrow" or "next week"'),
-              Text('• Determines priority from words like "urgent" or "important"'),
-              Text('• Suggests relevant tags based on content'),
-              Text('• Breaks down complex tasks into subtasks'),
-              SizedBox(height: 16),
-              Text(
-                'Example:',
-                style: TextStyle(fontWeight: FontWeight.w500),
-              ),
-              SizedBox(height: 8),
-              Text(
-                '"Urgent: Submit quarterly report by Friday. Need to gather data, write summary, and review with team."',
-                style: TextStyle(fontStyle: FontStyle.italic),
-              ),
-              SizedBox(height: 8),
-              Text('This would create a high-priority task with:'),
-              Text('• Title: "Submit quarterly report"'),
-              Text('• Due date: Next Friday'),
-              Text('• Priority: High'),
-              Text('• Tags: work, report, deadline'),
-              Text('• Subtasks: gather data, write summary, review with team'),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Got it'),
-          ),
-        ],
-      ),
+    context.showInfoDialog(
+      title: 'How AI Parsing Works',
+      message: '''AI task parsing helps you create tasks faster by understanding natural language input.
+
+Features:
+• Extracts task titles and descriptions
+• Identifies due dates from phrases like "tomorrow" or "next week"
+• Recognizes priority levels from words like "urgent" or "low priority"
+• Suggests tags based on content
+• Parses locations for location-based reminders
+
+Examples:
+"Urgent: Buy groceries tomorrow at 3pm"
+→ Creates high priority task due tomorrow at 3pm
+
+"Call mom next week about vacation"
+→ Creates task with family tag due next week''',
+      icon: PhosphorIcons.brain(),
     );
   }
 

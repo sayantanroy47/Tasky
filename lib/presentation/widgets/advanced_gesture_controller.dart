@@ -103,7 +103,7 @@ class _AdvancedGestureControllerState extends State<AdvancedGestureController>
     );
 
     _glowAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _glowController, curve: Curves.easeInOut),
+      CurvedAnimation(parent: _glowController, curve: MotionTokens.easeInOut),
     );
 
     _swipeAnimation = Tween<Offset>(begin: Offset.zero, end: Offset.zero).animate(

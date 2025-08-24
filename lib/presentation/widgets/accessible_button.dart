@@ -134,7 +134,7 @@ class _AccessibleButtonState extends State<AccessibleButton>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 100),
+      duration: const Duration(milliseconds: 100), // Keep ultra-fast for accessibility feedback
       vsync: this,
     );
     

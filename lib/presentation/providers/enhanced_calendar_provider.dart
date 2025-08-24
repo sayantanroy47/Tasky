@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
 import '../../domain/entities/calendar_event.dart';
@@ -117,6 +118,12 @@ class EnhancedCalendarNotifier extends StateNotifier<EnhancedCalendarState> {
     final events = _calendarService.getAllEvents();
     final tasksForDate = _getTasksForDate(allTasks, state.selectedDate);
 
+    // Log task loading summary for debugging
+    final tasksWithDueDates = allTasks.where((task) => task.dueDate != null).toList();
+    if (tasksWithDueDates.isNotEmpty) {
+      debugPrint('Calendar Provider: Loaded ${tasksWithDueDates.length} tasks with due dates');
+    }
+
     state = state.copyWith(
       allTasks: allTasks,
       events: events,
@@ -155,13 +162,13 @@ class EnhancedCalendarNotifier extends StateNotifier<EnhancedCalendarState> {
     );
   }
 
-  /// Change focused date (for navigation) with debouncing
+  /// Change focused date (for navigation) with minimal debouncing
   DateTime? _lastFocusedUpdate;
   void changeFocusedDate(DateTime date) {
-    // Debounce rapid updates to prevent performance issues and duplicate keys
+    // Minimal debouncing to prevent rapid updates while allowing navigation
     final now = DateTime.now();
     if (_lastFocusedUpdate != null && 
-        now.difference(_lastFocusedUpdate!).inMilliseconds < 50) {
+        now.difference(_lastFocusedUpdate!).inMilliseconds < 10) {
       return;
     }
     
@@ -237,6 +244,7 @@ class EnhancedCalendarNotifier extends StateNotifier<EnhancedCalendarState> {
 
   /// Create task for specific date
   Future<bool> createTaskForDate(TaskModel task) async {
+    
     try {
       final taskRepository = _ref.read(taskRepositoryProvider);
       await taskRepository.updateTask(task); // Use updateTask for inserts too

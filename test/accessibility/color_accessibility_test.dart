@@ -97,7 +97,7 @@ void main() {
         expect(aaPasses, isTrue);
         // AAA has higher standards
         if (!aaaPasses) {
-          print('Dark gray passes AA but not AAA - this is expected');
+          // Dark gray passes AA but not AAA - this is expected
         }
       });
     });
@@ -111,11 +111,7 @@ void main() {
 
         final report = ColorContrastValidator.generateReport(lightColorScheme);
 
-        print('Light theme accessibility report:');
-        print('Total issues: ${report.totalIssues}');
-        print('Critical issues: ${report.criticalIssues}');
-        print('High issues: ${report.highIssues}');
-        print('Grade: ${report.gradeLetter} - ${report.gradeDescription}');
+        // Light theme accessibility report validation
 
         // Light themes should generally have good contrast
         expect(report.criticalIssues, equals(0));
@@ -130,11 +126,7 @@ void main() {
 
         final report = ColorContrastValidator.generateReport(darkColorScheme);
 
-        print('Dark theme accessibility report:');
-        print('Total issues: ${report.totalIssues}');
-        print('Critical issues: ${report.criticalIssues}');
-        print('High issues: ${report.highIssues}');
-        print('Grade: ${report.gradeLetter} - ${report.gradeDescription}');
+        // Dark theme accessibility report validation
 
         // Dark themes should also have good contrast
         expect(report.criticalIssues, equals(0));
@@ -176,11 +168,7 @@ void main() {
 
         final report = ColorContrastValidator.generateReport(highContrastScheme);
 
-        print('High contrast theme accessibility report:');
-        print('Total issues: ${report.totalIssues}');
-        print('Critical issues: ${report.criticalIssues}');
-        print('High issues: ${report.highIssues}');
-        print('Grade: ${report.gradeLetter} - ${report.gradeDescription}');
+        // High contrast theme accessibility report validation
 
         // High contrast theme should have excellent accessibility
         expect(report.criticalIssues, equals(0));
@@ -224,21 +212,15 @@ void main() {
 
         final report = ColorContrastValidator.generateReport(poorColorScheme);
 
-        print('Poor contrast theme accessibility report:');
-        print('Total issues: ${report.totalIssues}');
-        print('Critical issues: ${report.criticalIssues}');
-        print('High issues: ${report.highIssues}');
-        print('Grade: ${report.gradeLetter} - ${report.gradeDescription}');
+        // Poor contrast theme accessibility report validation
 
         // Should detect multiple issues
         expect(report.totalIssues, greaterThan(0));
         expect(report.isAccessible, isFalse);
         expect(report.overallGrade, isIn([AccessibilityGrade.c, AccessibilityGrade.d, AccessibilityGrade.f]));
 
-        // Print specific issues for debugging
-        for (final issue in report.issues) {
-          print('Issue: ${issue.context} - ${issue.message} (Ratio: ${issue.getContrastRatio().toStringAsFixed(2)})');
-        }
+        // Validate specific issues exist
+        expect(report.issues, isNotEmpty);
       });
     });
 
@@ -270,8 +252,8 @@ void main() {
         final ratio = ColorContrastValidator.calculateContrastRatio(adjustedColor, backgroundColor);
         expect(ratio, greaterThanOrEqualTo(4.5));
 
-        print('Adjusted color from ${originalColor.value.toRadixString(16)} to ${adjustedColor.value.toRadixString(16)}');
-        print('Contrast ratio improved to ${ratio.toStringAsFixed(2)}');
+        // Verify color adjustment improved contrast
+        expect(adjustedColor, isNot(equals(originalColor)));
       });
 
       test('should get accessible text colors', () {
@@ -310,9 +292,7 @@ void main() {
 
         final report = ColorContrastValidator.generateReport(accessibleScheme);
 
-        print('Generated accessible scheme report:');
-        print('Total issues: ${report.totalIssues}');
-        print('Grade: ${report.gradeLetter}');
+        // Generated accessible scheme report validation
 
         // Generated scheme should have minimal issues
         expect(report.criticalIssues, equals(0));
@@ -331,9 +311,7 @@ void main() {
         final blueWhiteRatio = ColorContrastValidator.calculateContrastRatio(pureBlue, Colors.white);
         final greenWhiteRatio = ColorContrastValidator.calculateContrastRatio(pureGreen, Colors.white);
 
-        print('Red on white ratio: ${redWhiteRatio.toStringAsFixed(2)}');
-        print('Blue on white ratio: ${blueWhiteRatio.toStringAsFixed(2)}');
-        print('Green on white ratio: ${greenWhiteRatio.toStringAsFixed(2)}');
+        // Pure color contrast ratios should be measurable
 
         // All should have measurable ratios
         expect(redWhiteRatio, greaterThan(1.0));
@@ -351,8 +329,7 @@ void main() {
         final transparentRatio = ColorContrastValidator.calculateContrastRatio(semiTransparent, Colors.white);
         final opaqueRatio = ColorContrastValidator.calculateContrastRatio(opaque, Colors.white);
 
-        print('Semi-transparent red ratio: ${transparentRatio.toStringAsFixed(2)}');
-        print('Opaque red ratio: ${opaqueRatio.toStringAsFixed(2)}');
+        // Transparency considerations in contrast calculations
 
         // Current implementation ignores alpha
         expect(transparentRatio, equals(opaqueRatio));
@@ -366,11 +343,11 @@ void main() {
           (const Color(0xFFCCCCCC), Colors.white, 'Very light gray on white'),
         ];
 
-        for (final (foreground, background, description) in testColors) {
+        for (final (foreground, background, _) in testColors) {
           final level = ColorContrastValidator.getComplianceLevel(foreground, background);
           final ratio = ColorContrastValidator.calculateContrastRatio(foreground, background);
           
-          print('$description: Ratio ${ratio.toStringAsFixed(2)} - ${level.name.toUpperCase()}');
+          // Validate compliance levels make sense
           
           // Verify compliance levels make sense
           switch (level) {

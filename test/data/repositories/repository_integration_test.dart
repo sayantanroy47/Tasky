@@ -1,10 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:drift/native.dart';
 
-import 'package:task_tracker_app/services/database/database.dart';
+import 'package:task_tracker_app/services/database/database.dart' hide SubTask, Project;
 import 'package:task_tracker_app/data/repositories/task_repository_impl.dart';
 import 'package:task_tracker_app/data/repositories/subtask_repository_impl.dart';
 import 'package:task_tracker_app/data/repositories/project_repository_impl.dart';
+import 'package:task_tracker_app/data/datasources/subtask_local_datasource.dart';
+import 'package:task_tracker_app/data/datasources/project_local_datasource.dart';
+import 'package:task_tracker_app/data/datasources/task_local_datasource.dart';
 import 'package:task_tracker_app/domain/entities/task_model.dart';
 import 'package:task_tracker_app/domain/entities/subtask.dart';
 import 'package:task_tracker_app/domain/entities/project.dart';
@@ -20,7 +23,7 @@ void main() {
     setUp(() async {
       database = AppDatabase.forTesting(NativeDatabase.memory());
       taskRepository = TaskRepositoryImpl(database);
-      subtaskRepository = SubtaskRepositoryImpl(database);
+      subtaskRepository = SubtaskRepositoryImpl(localDataSource: SubtaskLocalDataSource(database: database));
       projectRepository = ProjectRepositoryImpl(database);
     });
 
@@ -184,7 +187,6 @@ void main() {
         final subtask1 = SubTask.create(
           title: 'First Subtask',
           taskId: parentTaskId,
-          description: 'First subtask description',
         );
 
         final subtask2 = SubTask.create(
@@ -192,8 +194,8 @@ void main() {
           taskId: parentTaskId,
         );
 
-        await subtaskRepository.createSubtask(subtask1);
-        await subtaskRepository.createSubtask(subtask2);
+        await subtaskRepository.addSubtask(subtask1);
+        await subtaskRepository.addSubtask(subtask2);
 
         // Read subtasks
         final subtasksForTask = await subtaskRepository.getSubtasksForTask(parentTaskId);
@@ -209,14 +211,24 @@ void main() {
         final initialCompletedCount = await subtaskRepository.getCompletedSubtaskCount(parentTaskId);
         expect(initialCompletedCount, equals(0));
 
-        final totalCount = await subtaskRepository.getTotalSubtaskCount(parentTaskId);
+        final totalCount = await subtaskRepository.getSubtaskCount(parentTaskId);
         expect(totalCount, equals(2));
 
         final initialPercentage = await subtaskRepository.getSubtaskCompletionPercentage(parentTaskId);
         expect(initialPercentage, equals(0.0));
 
         // Toggle completion
-        await subtaskRepository.toggleSubtaskCompletion(subtask1.id);
+        // Toggle completion by updating the subtask
+        final updatedSubtask1 = SubTask(
+          id: subtask1.id,
+          taskId: subtask1.taskId,
+          title: subtask1.title,
+          isCompleted: !subtask1.isCompleted,
+          completedAt: subtask1.isCompleted ? null : DateTime.now(),
+          sortOrder: subtask1.sortOrder,
+          createdAt: subtask1.createdAt,
+        );
+        await subtaskRepository.updateSubtask(updatedSubtask1);
 
         final afterToggleCount = await subtaskRepository.getCompletedSubtaskCount(parentTaskId);
         expect(afterToggleCount, equals(1));
@@ -259,11 +271,11 @@ void main() {
         ));
 
         for (final subtask in subtasks) {
-          await subtaskRepository.createSubtask(subtask);
+          await subtaskRepository.addSubtask(subtask);
         }
 
         // Get sorted subtasks (should be in creation order initially)
-        final initialOrder = await subtaskRepository.getSubtasksSorted(parentTaskId);
+        final initialOrder = await subtaskRepository.getSubtasksForTask(parentTaskId);
         expect(initialOrder.length, equals(4));
 
         // Test reordering
@@ -276,7 +288,7 @@ void main() {
 
         await subtaskRepository.reorderSubtasks(parentTaskId, newOrder);
 
-        final reorderedSubtasks = await subtaskRepository.getSubtasksSorted(parentTaskId);
+        final reorderedSubtasks = await subtaskRepository.getSubtasksForTask(parentTaskId);
         expect(reorderedSubtasks[0].id, equals(subtasks[2].id));
         expect(reorderedSubtasks[1].id, equals(subtasks[0].id));
         expect(reorderedSubtasks[2].id, equals(subtasks[3].id));
@@ -296,7 +308,7 @@ void main() {
         ));
 
         for (final subtask in subtasks) {
-          await subtaskRepository.createSubtask(subtask);
+          await subtaskRepository.addSubtask(subtask);
         }
 
         final subtaskIds = subtasks.map((s) => s.id).toList();
@@ -544,15 +556,25 @@ void main() {
           taskId: parentTask.id,
         );
 
-        await subtaskRepository.createSubtask(subtask1);
-        await subtaskRepository.createSubtask(subtask2);
+        await subtaskRepository.addSubtask(subtask1);
+        await subtaskRepository.addSubtask(subtask2);
 
         // Test subtask retrieval for task
         final taskSubtasks = await subtaskRepository.getSubtasksForTask(parentTask.id);
         expect(taskSubtasks.length, equals(2));
 
         // Test completion statistics
-        await subtaskRepository.toggleSubtaskCompletion(subtask1.id);
+        // Toggle completion by updating the subtask
+        final updatedSubtask1 = SubTask(
+          id: subtask1.id,
+          taskId: subtask1.taskId,
+          title: subtask1.title,
+          isCompleted: !subtask1.isCompleted,
+          completedAt: subtask1.isCompleted ? null : DateTime.now(),
+          sortOrder: subtask1.sortOrder,
+          createdAt: subtask1.createdAt,
+        );
+        await subtaskRepository.updateSubtask(updatedSubtask1);
 
         final completionPercentage = await subtaskRepository.getSubtaskCompletionPercentage(parentTask.id);
         expect(completionPercentage, equals(50.0));

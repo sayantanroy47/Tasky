@@ -120,7 +120,7 @@ class PerformanceDashboardScreen extends ConsumerWidget {
               Text(
                 'Frame Rate Performance',
                 style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],
@@ -169,7 +169,7 @@ class PerformanceDashboardScreen extends ConsumerWidget {
               Text(
                 'Performance Metrics',
                 style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
               const Spacer(),
@@ -216,7 +216,7 @@ class PerformanceDashboardScreen extends ConsumerWidget {
               Text(
                 'Memory Usage',
                 style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],
@@ -262,7 +262,7 @@ class PerformanceDashboardScreen extends ConsumerWidget {
               Text(
                 'Analytics Summary',
                 style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],
@@ -276,7 +276,7 @@ class PerformanceDashboardScreen extends ConsumerWidget {
             Text(
               'Top Performance Metrics',
               style: theme.textTheme.bodyLarge?.copyWith(
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w500,
               ),
             ),
             const SizedBox(height: 8),

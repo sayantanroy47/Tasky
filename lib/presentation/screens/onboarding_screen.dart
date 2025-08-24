@@ -28,31 +28,31 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
       title: 'Welcome to Task Tracker',
       description: 'Your intelligent task management companion that helps you stay organized and productive.',
       icon: PhosphorIcons.checkSquare(),
-      color: Colors.blue,
+      color: const Color(0xFF2196F3), // Material Blue - keeping original intent for onboarding theme
     ),
     OnboardingPage(
       title: 'Voice-Powered Tasks',
       description: 'Create tasks using your voice. Just speak naturally and let AI parse your intentions.',
       icon: PhosphorIcons.microphone(),
-      color: Colors.green,
+      color: const Color(0xFF4CAF50), // Material Green - keeping original intent for onboarding theme
     ),
     OnboardingPage(
       title: 'Smart Organization',
       description: 'Automatically categorize tasks, set priorities, and get intelligent suggestions.',
       icon: PhosphorIcons.sparkle(),
-      color: Colors.purple,
+      color: const Color(0xFF9C27B0), // Material Purple - keeping original intent for onboarding theme
     ),
     OnboardingPage(
       title: 'Calendar Integration',
       description: 'Schedule tasks, view them in calendar format, and sync with your device calendar.',
       icon: PhosphorIcons.calendar(),
-      color: Colors.orange,
+      color: const Color(0xFFFF9800), // Material Orange - keeping original intent for onboarding theme
     ),
     OnboardingPage(
       title: 'Offline & Sync',
       description: 'Work offline and sync across devices. Your data is always available when you need it.',
       icon: PhosphorIcons.cloudArrowUp(),
-      color: Colors.teal,
+      color: const Color(0xFF009688), // Material Teal - keeping original intent for onboarding theme
     ),
   ];
   @override
@@ -411,7 +411,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
                   height: 8,
                   decoration: const BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.blue,
+                    color: Color(0xFF2196F3), // Material Blue - keeping original intent for calendar demo
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -426,7 +426,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> with Ticker
                   height: 8,
                   decoration: const BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.green,
+                    color: Color(0xFF4CAF50), // Material Green - keeping original intent for calendar demo
                   ),
                 ),
                 const SizedBox(width: 8),

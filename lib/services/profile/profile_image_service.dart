@@ -1,11 +1,12 @@
 import 'dart:io';
-import 'dart:ui' as ui;
 import 'dart:typed_data';
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 /// Service for handling profile image operations
-/// 
+///
 /// This service provides functionality for:
 /// - Image selection from gallery
 /// - Image validation and optimization
@@ -24,7 +25,7 @@ class ProfileImageService {
   static const double jpegQuality = 0.85;
 
   /// Picks an image from the device gallery
-  /// 
+  ///
   /// Returns the path to the selected image, or null if cancelled
   Future<String?> pickImageFromGallery() async {
     try {
@@ -51,12 +52,12 @@ class ProfileImageService {
   }
 
   /// Validates an image file
-  /// 
+  ///
   /// Checks file size, format, and dimensions
   Future<bool> validateImage(String imagePath) async {
     try {
       final file = File(imagePath);
-      
+
       // Check if file exists
       if (!await file.exists()) {
         return false;
@@ -87,7 +88,7 @@ class ProfileImageService {
   }
 
   /// Generates an avatar image from initials
-  /// 
+  ///
   /// Creates a circular avatar with initials and returns the image bytes
   Future<Uint8List> generateAvatarFromInitials({
     required String initials,
@@ -114,7 +115,7 @@ class ProfileImageService {
           style: TextStyle(
             color: textColor,
             fontSize: size * 0.4,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w500,
             letterSpacing: size * 0.02,
           ),
         ),
@@ -122,20 +123,20 @@ class ProfileImageService {
       );
 
       textPainter.layout();
-      
+
       // Center the text
       final textOffset = Offset(
         (size - textPainter.width) / 2,
         (size - textPainter.height) / 2,
       );
-      
+
       textPainter.paint(canvas, textOffset);
 
       // Convert to image
       final picture = recorder.endRecording();
       final image = await picture.toImage(size, size);
       final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-      
+
       picture.dispose();
       image.dispose();
 
@@ -162,7 +163,7 @@ class ProfileImageService {
   }
 
   /// Selects an avatar color based on initials
-  /// 
+  ///
   /// Uses a hash of the initials to consistently select the same color
   Color selectAvatarColor(String initials) {
     final colors = getAvatarColors();
@@ -171,7 +172,7 @@ class ProfileImageService {
   }
 
   /// Generates a complete avatar from name
-  /// 
+  ///
   /// Creates initials from the name and generates an avatar image
   Future<Uint8List> generateAvatarFromName({
     required String firstName,
@@ -210,20 +211,20 @@ class ProfileImageService {
   }
 
   /// Resizes an image to fit within the specified dimensions
-  /// 
+  ///
   /// Maintains aspect ratio and reduces file size
   Future<String> resizeImage(String imagePath, {int maxSize = maxImageSize}) async {
     try {
       final file = File(imagePath);
       final bytes = await file.readAsBytes();
-      
+
       // Decode image
       final codec = await ui.instantiateImageCodec(
         bytes,
         targetWidth: maxSize,
         targetHeight: maxSize,
       );
-      
+
       final frame = await codec.getNextFrame();
       final resizedImage = frame.image;
 
@@ -231,7 +232,7 @@ class ProfileImageService {
       final byteData = await resizedImage.toByteData(
         format: ui.ImageByteFormat.png,
       );
-      
+
       if (byteData == null) {
         throw Exception('Failed to convert resized image to bytes');
       }
@@ -250,7 +251,7 @@ class ProfileImageService {
   }
 
   /// Saves avatar bytes to a temporary file
-  /// 
+  ///
   /// Used for saving generated avatars
   Future<String> saveAvatarToTemp(Uint8List avatarBytes, String fileName) async {
     try {
@@ -322,9 +323,9 @@ class ImageInfo {
 /// Exception thrown by ProfileImageService
 class ProfileImageException implements Exception {
   final String message;
-  
+
   const ProfileImageException(this.message);
-  
+
   @override
   String toString() => 'ProfileImageException: $message';
 }

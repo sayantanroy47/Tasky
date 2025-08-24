@@ -1,12 +1,20 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:speech_to_text/speech_to_text.dart';
-import '../widgets/enhanced_task_creation_dialog.dart';
-import '../../services/audio/audio_concatenation_service.dart';
-import '../../services/audio/audio_recording_service.dart';
 import 'dart:async';
 import 'dart:math' as math;
+
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:speech_to_text/speech_to_text.dart';
+
+import '../../core/theme/typography_constants.dart';
+import '../../services/audio/audio_concatenation_service.dart';
+import '../../services/audio/audio_recording_service.dart';
+import '../widgets/standardized_error_states.dart';
+import '../widgets/standardized_text.dart';
+import '../widgets/standardized_animations.dart';
+import '../widgets/theme_background_widget.dart';
+import '../widgets/standardized_app_bar.dart';
+import 'manual_task_creation_page.dart';
 
 /// Recording data model for individual recordings
 class Recording {
@@ -14,7 +22,7 @@ class Recording {
   final String transcription;
   final DateTime timestamp;
   final Duration duration;
-  
+
   Recording({
     required this.audioFilePath,
     required this.transcription,
@@ -26,30 +34,27 @@ class Recording {
 /// Recording session manager for multi-recording functionality
 class RecordingSession {
   final List<Recording> recordings = [];
-  
+
   String get combinedTranscription {
-    return recordings
-        .map((r) => r.transcription)
-        .where((t) => t.isNotEmpty)
-        .join('\n\n');
+    return recordings.map((r) => r.transcription).where((t) => t.isNotEmpty).join('\n\n');
   }
-  
+
   Duration get totalDuration {
     return recordings.fold(Duration.zero, (sum, r) => sum + r.duration);
   }
-  
+
   bool get hasRecordings => recordings.isNotEmpty;
-  
+
   void addRecording(Recording recording) {
     recordings.add(recording);
   }
-  
+
   void removeRecording(int index) {
     if (index >= 0 && index < recordings.length) {
       recordings.removeAt(index);
     }
   }
-  
+
   void clear() {
     recordings.clear();
   }
@@ -62,7 +67,7 @@ class WaveformVisualizer extends StatefulWidget {
   final double height;
   final int barCount;
   final double audioLevel; // Real audio amplitude (0.0 to 1.0)
-  
+
   const WaveformVisualizer({
     super.key,
     required this.isRecording,
@@ -71,31 +76,30 @@ class WaveformVisualizer extends StatefulWidget {
     this.barCount = 30,
     this.audioLevel = 0.0,
   });
-  
+
   @override
   State<WaveformVisualizer> createState() => _WaveformVisualizerState();
 }
 
-class _WaveformVisualizerState extends State<WaveformVisualizer>
-    with TickerProviderStateMixin {
+class _WaveformVisualizerState extends State<WaveformVisualizer> with TickerProviderStateMixin {
   late AnimationController _controller;
   late List<Animation<double>> _animations;
   final List<double> _heights = [];
-  
+
   @override
   void initState() {
     super.initState();
-    
+
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 1500),
+      duration: StandardizedAnimations.loadingState,
       vsync: this,
     );
-    
+
     // Initialize heights
     for (int i = 0; i < widget.barCount; i++) {
       _heights.add(0.1);
     }
-    
+
     // Create staggered animations for each bar
     _animations = List.generate(widget.barCount, (index) {
       final startTime = index / widget.barCount * 0.5;
@@ -110,20 +114,20 @@ class _WaveformVisualizerState extends State<WaveformVisualizer>
         ),
       );
     });
-    
+
     _controller.addListener(() {
       if (!mounted || !widget.isRecording || _controller.isCompleted) return;
-      
+
       try {
         setState(() {
           for (int i = 0; i < widget.barCount && i < _animations.length && i < _heights.length; i++) {
             if (_animations[i].isCompleted || _animations[i].isDismissed) continue;
-            
+
             // Use REAL audio level with slight variation per bar for visual effect
             final baseAudioLevel = widget.audioLevel.clamp(0.0, 1.0);
             final barVariation = (math.sin(_controller.value * math.pi * 2 + i * 0.5) * 0.1);
             final realHeight = math.max(0.1, (baseAudioLevel * 0.8 + 0.2) + barVariation);
-            
+
             _heights[i] = realHeight.clamp(0.1, 1.0);
           }
         });
@@ -135,13 +139,13 @@ class _WaveformVisualizerState extends State<WaveformVisualizer>
       }
     });
   }
-  
+
   @override
   void didUpdateWidget(WaveformVisualizer oldWidget) {
     super.didUpdateWidget(oldWidget);
-    
+
     if (!mounted) return;
-    
+
     try {
       if (widget.isRecording && !oldWidget.isRecording) {
         if (!_controller.isAnimating) {
@@ -162,7 +166,7 @@ class _WaveformVisualizerState extends State<WaveformVisualizer>
       debugPrint('WaveformVisualizer didUpdateWidget error: $e');
     }
   }
-  
+
   @override
   void dispose() {
     try {
@@ -173,7 +177,7 @@ class _WaveformVisualizerState extends State<WaveformVisualizer>
     }
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -185,23 +189,23 @@ class _WaveformVisualizerState extends State<WaveformVisualizer>
           // Safe access to heights array with bounds checking
           final height = index < _heights.length ? _heights[index].clamp(0.1, 1.0) : 0.1;
           final opacity = (0.7 + height * 0.3).clamp(0.3, 1.0);
-          
+
           return AnimatedContainer(
-            duration: const Duration(milliseconds: 100),
+            duration: StandardizedAnimations.quick,
             width: 4,
             height: (widget.height * height).clamp(widget.height * 0.1, widget.height),
             decoration: BoxDecoration(
-              color: widget.isRecording 
-                  ? widget.color.withValues(alpha: opacity)
-                  : widget.color.withValues(alpha: 0.3),
-              borderRadius: BorderRadius.circular(2),
-              boxShadow: widget.isRecording ? [
-                BoxShadow(
-                  color: widget.color.withValues(alpha: 0.3),
-                  blurRadius: 4,
-                  spreadRadius: 1,
-                ),
-              ] : null,
+              color: widget.isRecording ? widget.color.withValues(alpha: opacity) : widget.color.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall), // 2.0 - Fixed border radius hierarchy
+              boxShadow: widget.isRecording
+                  ? [
+                      BoxShadow(
+                        color: widget.color.withValues(alpha: 0.3),
+                        blurRadius: 4,
+                        spreadRadius: 1,
+                      ),
+                    ]
+                  : null,
             ),
           );
         }),
@@ -213,88 +217,86 @@ class _WaveformVisualizerState extends State<WaveformVisualizer>
 /// Multi-Recording Voice Entry Page
 class VoiceRecordingPage extends ConsumerStatefulWidget {
   const VoiceRecordingPage({super.key});
-  
+
   @override
   ConsumerState<VoiceRecordingPage> createState() => _VoiceRecordingPageState();
 }
 
-class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
-    with TickerProviderStateMixin {
-  
+class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage> with TickerProviderStateMixin {
   late AnimationController _pulseController;
   late AnimationController _fadeController;
   late Animation<double> _pulseAnimation;
   late Animation<double> _fadeAnimation;
-  
+
   final RecordingSession _session = RecordingSession();
-  
+
   bool _isRecording = false;
   bool _isProcessing = false;
   String _currentTranscription = '';
   String _statusMessage = 'Ready to record';
   Duration _currentRecordingDuration = Duration.zero;
   double _currentAudioLevel = 0.0;
-  
+
   // Speech to text service
   late SpeechToText _speechToText;
   bool _speechEnabled = false;
-  
+
   // Audio concatenation service for multi-recording sessions
   late AudioConcatenationService _concatenationService;
   bool _concatenationEnabled = false;
-  
+
   // Dual stream services - restored for proper audio + transcription recording
   late AudioRecordingService _audioRecorder;
   bool _audioEnabled = false;
-  
+
   // Service states for fallback handling - removed unused fields
-  
+
   Timer? _durationTimer;
-  
+
   @override
   void initState() {
     super.initState();
-    
+
     _pulseController = AnimationController(
-      duration: const Duration(milliseconds: 1000),
+      duration: StandardizedAnimations.slowest,
       vsync: this,
     );
-    
+
     _fadeController = AnimationController(
-      duration: const Duration(milliseconds: 300),
+      duration: StandardizedAnimations.slow,
       vsync: this,
     );
-    
+
     _pulseAnimation = Tween<double>(begin: 0.8, end: 1.2).animate(
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
-    
+
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut),
     );
-    
+
     _initializeServices();
     _fadeController.forward();
   }
-  
+
   @override
   void dispose() {
     _pulseController.dispose();
     _fadeController.dispose();
     _durationTimer?.cancel();
-    
+
     // Clean up audio services
     if (_audioEnabled) {
       _audioRecorder.dispose();
     }
-    
+
     if (_concatenationEnabled) {
       _concatenationService.dispose();
     }
-    
+
     super.dispose();
   }
-  
+
   Future<void> _initializeServices() async {
     try {
       // Initialize speech to text with detailed error checking
@@ -316,31 +318,30 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
           }
         },
       );
-      
+
       debugPrint('[MIC] Speech enabled: $_speechEnabled');
       debugPrint('[MIC] Speech available: ${await _speechToText.hasPermission}');
-      
+
       // Initialize audio recording service
       _audioRecorder = AudioRecordingService();
       _audioEnabled = await _audioRecorder.initialize();
       debugPrint('[AUDIO] Audio recording enabled: $_audioEnabled');
-      
+
       // Initialize audio concatenation service
       _concatenationService = AudioConcatenationService();
       _concatenationEnabled = await _concatenationService.initialize();
       debugPrint('[AUDIO] Audio concatenation enabled: $_concatenationEnabled');
-      
+
       // Check microphone permission for speech recognition
       final hasPermission = await _speechToText.hasPermission;
       if (!hasPermission) {
         debugPrint('[MIC] Requesting microphone permission for speech recognition...');
       }
-      
+
       if (mounted) {
         setState(() {
-          _statusMessage = _speechEnabled
-              ? 'Ready to record with multi-file concatenation'
-              : 'Speech recognition not available';
+          _statusMessage =
+              _speechEnabled ? 'Ready to record with multi-file concatenation' : 'Speech recognition not available';
         });
       }
     } catch (e) {
@@ -352,38 +353,35 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
       }
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Colors.black,
-              theme.colorScheme.primary.withValues(alpha: 0.1),
-              Colors.black,
-            ],
-            stops: const [0.0, 0.5, 1.0],
-          ),
+
+    return ThemeBackgroundWidget(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        extendBodyBehindAppBar: true,
+        appBar: StandardizedAppBar(
+          title: 'Voice Recording',
+          actions: [
+            if (_session.hasRecordings)
+              IconButton(
+                onPressed: _showClearConfirmation,
+                icon: Icon(PhosphorIcons.trash()),
+                tooltip: 'Clear all recordings',
+              ),
+          ],
         ),
-        child: SafeArea(
+        body: SafeArea(
           child: FadeTransition(
             opacity: _fadeAnimation,
             child: Column(
               children: [
-                // Custom App Bar
-                _buildCustomAppBar(theme),
-                
                 // Main Content
                 Expanded(
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.fromLTRB(20, 100, 20, 20), // Account for AppBar
                     child: Column(
                       children: [
                         // Session Overview Card
@@ -391,21 +389,21 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
                           _buildSessionOverviewCard(theme),
                           const SizedBox(height: 24),
                         ],
-                        
+
                         // Waveform Visualization
                         _buildWaveformSection(theme),
                         const SizedBox(height: 40),
-                        
+
                         // Recording Status & Button
                         _buildRecordingCenter(theme),
                         const SizedBox(height: 40),
-                        
+
                         // Live Transcription (always show during recording)
                         if (_isRecording || _currentTranscription.isNotEmpty || _isProcessing) ...[
                           _buildLiveTranscription(theme),
                           const SizedBox(height: 24),
                         ],
-                        
+
                         // Recordings List
                         if (_session.hasRecordings) ...[
                           _buildRecordingsList(theme),
@@ -415,7 +413,7 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
                     ),
                   ),
                 ),
-                
+
                 // Bottom Action Bar
                 _buildBottomActionBar(theme),
               ],
@@ -425,73 +423,25 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
       ),
     );
   }
-  
-  Widget _buildCustomAppBar(ThemeData theme) {
-    return Container(
-      height: 60,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
-        children: [
-          IconButton(
-            onPressed: () => Navigator.of(context).pop(),
-            icon: Icon(
-              PhosphorIcons.x(),
-              color: theme.colorScheme.onSurface,
-            ),
-            style: IconButton.styleFrom(
-              backgroundColor: theme.colorScheme.surface.withValues(alpha: 0.1),
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Text(
-              'AI Voice Entry',
-              style: theme.textTheme.headlineSmall?.copyWith(
-                color: theme.colorScheme.onSurface,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-          if (_session.hasRecordings) ...[
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primary.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Text(
-                '${_session.recordings.length} recordings',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.primary,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-  
+
+
   Widget _buildWaveformSection(ThemeData theme) {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surface.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(20),
+        color: theme.colorScheme.surface.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusXLarge), // 20.0 - Fixed border radius hierarchy
         border: Border.all(
-          color: theme.colorScheme.primary.withValues(alpha: 0.2),
+          color: theme.colorScheme.primary.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
       child: Column(
         children: [
-          Text(
+          StandardizedText(
             _isRecording ? 'Recording Audio...' : 'Ready to Record',
-            style: theme.textTheme.titleMedium?.copyWith(
-              color: theme.colorScheme.onSurface,
-              fontWeight: FontWeight.w600,
-            ),
+            style: StandardizedTextStyle.titleMedium,
+            color: theme.colorScheme.onSurface,
           ),
           const SizedBox(height: 16),
           WaveformVisualizer(
@@ -505,27 +455,26 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
       ),
     );
   }
-  
+
   Widget _buildRecordingCenter(ThemeData theme) {
     return Column(
       children: [
         // Status message
-        Text(
+        StandardizedText(
           _statusMessage,
-          style: theme.textTheme.bodyLarge?.copyWith(
-            color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
-          ),
+          style: StandardizedTextStyle.bodyLarge,
+          color: theme.colorScheme.onSurface.withValues(alpha: 0.8),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 20),
-        
+
         // Recording duration (when recording)
         if (_isRecording) ...[
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
               color: Colors.red.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusXLarge), // 20.0 - Fixed border radius hierarchy
               border: Border.all(
                 color: Colors.red.withValues(alpha: 0.3),
               ),
@@ -542,25 +491,21 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
                   ),
                 ),
                 const SizedBox(width: 8),
-                Text(
+                StandardizedText(
                   _formatDuration(_currentRecordingDuration),
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    color: Colors.red,
-                    fontWeight: FontWeight.w500,
-                    // Use monospace styling for consistent width
-                    fontFamily: 'monospace',
-                  ),
+                  style: StandardizedTextStyle.titleMedium,
+                  color: theme.colorScheme.error,
                 ),
               ],
             ),
           ),
           const SizedBox(height: 24),
         ],
-        
+
         // Main recording button
         _buildRecordingButton(theme),
         const SizedBox(height: 24),
-        
+
         // Additional action buttons
         if (_session.hasRecordings && !_isRecording) ...[
           Row(
@@ -593,14 +538,14 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
       ],
     );
   }
-  
+
   Widget _buildLiveTranscription(ThemeData theme) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: theme.colorScheme.secondaryContainer.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium), // 12.0 - Fixed border radius hierarchy
         border: Border.all(
           color: theme.colorScheme.secondary.withValues(alpha: 0.3),
         ),
@@ -616,57 +561,41 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
                 size: 20,
               ),
               const SizedBox(width: 8),
-              Text(
+              StandardizedText(
                 'Live Transcription',
-                style: theme.textTheme.titleSmall?.copyWith(
-                  color: theme.colorScheme.secondary,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: StandardizedTextStyle.titleSmall,
+                color: theme.colorScheme.secondary,
               ),
             ],
           ),
           const SizedBox(height: 12),
           if (_isProcessing)
-            const Center(
+            Center(
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
+                  StandardizedErrorStateVariants.loadingData(
+                    message: 'Processing...',
+                    compact: true,
                   ),
-                  SizedBox(width: 8),
-                  Text('Processing...'),
                 ],
               ),
             )
           else
-            Text(
-              _currentTranscription.isEmpty 
-                  ? (_isRecording 
-                      ? 'Listening... Start speaking now!'
-                      : 'Speak to see transcription appear here...')
+            StandardizedText(
+              _currentTranscription.isEmpty
+                  ? (_isRecording ? 'Listening... Start speaking now!' : 'Speak to see transcription appear here...')
                   : _currentTranscription,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: _currentTranscription.isEmpty 
-                    ? (_isRecording 
-                        ? theme.colorScheme.primary
-                        : theme.colorScheme.onSurfaceVariant)
-                    : theme.colorScheme.onSecondaryContainer,
-                fontStyle: _currentTranscription.isEmpty 
-                    ? FontStyle.italic 
-                    : FontStyle.normal,
-                fontWeight: _isRecording && _currentTranscription.isEmpty
-                    ? FontWeight.w600
-                    : FontWeight.normal,
-              ),
+              style: StandardizedTextStyle.bodyMedium,
+              color: _currentTranscription.isEmpty
+                  ? (_isRecording ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant)
+                  : theme.colorScheme.onSecondaryContainer,
             ),
         ],
       ),
     );
   }
-  
+
   Widget _buildBottomActionBar(ThemeData theme) {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -705,14 +634,14 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
       ),
     );
   }
-  
+
   Widget _buildSessionOverviewCard(ThemeData theme) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium), // 12.0 - Fixed border radius hierarchy
         border: Border.all(
           color: theme.colorScheme.primary.withValues(alpha: 0.3),
         ),
@@ -728,36 +657,31 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
                 size: 20,
               ),
               const SizedBox(width: 8),
-              Text(
+              StandardizedText(
                 'Recording Session',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  color: theme.colorScheme.primary,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: StandardizedTextStyle.titleMedium,
+                color: theme.colorScheme.primary,
               ),
               const Spacer(),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: theme.colorScheme.primary,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                 ),
-                child: Text(
+                child: StandardizedText(
                   '${_session.recordings.length}',
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    color: theme.colorScheme.onPrimary,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: StandardizedTextStyle.labelMedium,
+                  color: theme.colorScheme.onPrimary,
                 ),
               ),
             ],
           ),
           const SizedBox(height: 8),
-          Text(
+          StandardizedText(
             'Total duration: ${_formatDuration(_session.totalDuration)}',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onPrimaryContainer,
-            ),
+            style: StandardizedTextStyle.bodyMedium,
+            color: theme.colorScheme.onPrimaryContainer,
           ),
           if (_session.combinedTranscription.isNotEmpty) ...[
             const SizedBox(height: 12),
@@ -766,11 +690,11 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: theme.colorScheme.surface.withValues(alpha: 0.8),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
               ),
-              child: Text(
+              child: StandardizedText(
                 _session.combinedTranscription,
-                style: theme.textTheme.bodyMedium,
+                style: StandardizedTextStyle.bodyMedium,
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -780,6 +704,7 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
       ),
     );
   }
+
   Widget _buildRecordingButton(ThemeData theme) {
     return GestureDetector(
       onTap: _isProcessing ? null : (_isRecording ? _stopRecording : _startRecording),
@@ -818,16 +743,13 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
       ),
     );
   }
-  
+
   Widget _buildRecordingsList(ThemeData theme) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        StandardizedTextVariants.sectionHeader(
           'Recordings (${_session.recordings.length})',
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w500,
-          ),
         ),
         const SizedBox(height: 12),
         ...List.generate(_session.recordings.length, (index) {
@@ -837,7 +759,7 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
               border: Border.all(
                 color: theme.colorScheme.outline.withValues(alpha: 0.3),
               ),
@@ -852,12 +774,10 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Center(
-                    child: Text(
+                    child: StandardizedText(
                       '${index + 1}',
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        fontWeight: FontWeight.w500,
-                        color: theme.colorScheme.primary,
-                      ),
+                      style: StandardizedTextStyle.labelMedium,
+                      color: theme.colorScheme.primary,
                     ),
                   ),
                 ),
@@ -866,20 +786,17 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        recording.transcription.isEmpty 
-                            ? 'No transcription available' 
-                            : recording.transcription,
-                        style: theme.textTheme.bodyMedium,
+                      StandardizedText(
+                        recording.transcription.isEmpty ? 'No transcription available' : recording.transcription,
+                        style: StandardizedTextStyle.bodyMedium,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 4),
-                      Text(
+                      StandardizedText(
                         _formatDuration(recording.duration),
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
+                        style: StandardizedTextStyle.bodySmall,
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ],
                   ),
@@ -898,7 +815,7 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
       ],
     );
   }
-  
+
   Future<void> _startRecording() async {
     if (!_speechEnabled) {
       setState(() {
@@ -909,16 +826,16 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
 
     try {
       debugPrint('[MIC] Starting speech recognition (primary mode)...');
-      
+
       setState(() {
         _isRecording = true;
         _statusMessage = 'Recording...';
         _currentRecordingDuration = Duration.zero;
         _currentTranscription = '';
       });
-      
+
       _pulseController.repeat(reverse: true);
-      
+
       // Start duration timer
       _durationTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
         if (mounted && _isRecording) {
@@ -927,7 +844,7 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
           });
         }
       });
-      
+
       // Use ONLY speech recognition to avoid microphone conflicts
       await _speechToText.listen(
         onResult: (result) {
@@ -949,17 +866,14 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
           // Use sound level from speech recognition for visual feedback
           if (mounted) {
             setState(() {
-              final normalizedLevel = level >= 0 
-                ? level.clamp(0.0, 1.0)
-                : ((level + 60) / 60).clamp(0.0, 1.0);
+              final normalizedLevel = level >= 0 ? level.clamp(0.0, 1.0) : ((level + 60) / 60).clamp(0.0, 1.0);
               _currentAudioLevel = normalizedLevel;
             });
           }
         },
       );
-      
+
       debugPrint('[MIC] Speech recognition started successfully');
-      
     } catch (e) {
       setState(() {
         _isRecording = false;
@@ -969,32 +883,32 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
       _durationTimer?.cancel();
     }
   }
-  
+
   Future<void> _stopRecording() async {
     if (!_isRecording) return;
 
     try {
       debugPrint('[MIC] Stopping speech recognition...');
-      
+
       setState(() {
         _isProcessing = true;
         _statusMessage = 'Processing recording...';
         _currentAudioLevel = 0.0; // Reset audio level
       });
-      
+
       _pulseController.stop();
       _durationTimer?.cancel();
-      
+
       // Stop speech recognition
       await _speechToText.stop();
-      
+
       // For now, create recording with transcription only (no audio file)
       // In future iterations, we can add separate audio recording when transcription is complete
       if (_currentTranscription.isNotEmpty) {
         debugPrint('[SUCCESS] SAVING TRANSCRIPTION RECORDING:');
         debugPrint('  - Transcription: $_currentTranscription');
         debugPrint('  - Duration: $_currentRecordingDuration');
-        
+
         // Generate a placeholder audio path for concatenation compatibility
         // This allows the concatenation system to work while we resolve dual-stream conflicts
         String? audioFilePath;
@@ -1003,28 +917,28 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
           // For now, leave empty but structure is ready for future enhancement
           audioFilePath = ''; // Empty = transcription only
         }
-        
+
         final recording = Recording(
           audioFilePath: audioFilePath ?? '', // Ready for future audio integration
           transcription: _currentTranscription,
           timestamp: DateTime.now(),
           duration: _currentRecordingDuration,
         );
-        
+
         _session.addRecording(recording);
         debugPrint('[SUCCESS] Recording added to session. Total recordings: ${_session.recordings.length}');
-        
+
         setState(() {
           _isRecording = false;
           _isProcessing = false;
-          
+
           // Simple status message for speech-only recording
           _statusMessage = _currentTranscription.isEmpty
               ? 'Recording saved (no transcription). Add more or continue to task creation.'
-              : (_session.recordings.length == 1 
+              : (_session.recordings.length == 1
                   ? 'Great! Add more recordings or continue to task creation'
                   : 'Recording added! Add more or continue to task creation');
-          
+
           _currentTranscription = '';
           _currentRecordingDuration = Duration.zero;
         });
@@ -1045,7 +959,7 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
       });
     }
   }
-  
+
   void _deleteRecording(int index) {
     showDialog(
       context: context,
@@ -1073,7 +987,7 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
       ),
     );
   }
-  
+
   void _showClearConfirmation() {
     showDialog(
       context: context,
@@ -1099,25 +1013,23 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
       ),
     );
   }
-  
+
   Future<void> _proceedToTaskCreation() async {
     if (!_session.hasRecordings) return;
-    
+
     debugPrint('[DART] Starting task creation with ${_session.recordings.length} recordings...');
-    
+
     setState(() {
       _statusMessage = 'Preparing audio files...';
     });
-    
+
     String? finalAudioPath;
-    
+
     try {
       // Extract all audio file paths from recordings (handle mixed recordings)
-      final audioFilePaths = _session.recordings
-          .map((recording) => recording.audioFilePath)
-          .where((path) => path.isNotEmpty)
-          .toList();
-      
+      final audioFilePaths =
+          _session.recordings.map((recording) => recording.audioFilePath).where((path) => path.isNotEmpty).toList();
+
       // Enhanced logging for mixed recordings
       debugPrint('[DART] Mixed recording analysis:');
       debugPrint('  - Total recordings: ${_session.recordings.length}');
@@ -1127,15 +1039,15 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
       for (int i = 0; i < audioFilePaths.length; i++) {
         debugPrint('  $i: ${audioFilePaths[i]}');
       }
-      
+
       // Concatenate audio files if multiple exist and concatenation is enabled
       if (_concatenationEnabled && audioFilePaths.length > 1) {
         debugPrint('[AUDIO] Concatenating ${audioFilePaths.length} audio files...');
-        
+
         setState(() {
           _statusMessage = 'Combining audio files...';
         });
-        
+
         finalAudioPath = await _concatenationService.concatenateAudioFiles(
           audioFilePaths,
           onProgress: (progress) {
@@ -1146,7 +1058,7 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
             }
           },
         );
-        
+
         if (finalAudioPath != null) {
           debugPrint('[SUCCESS] Audio concatenation successful: $finalAudioPath');
         } else {
@@ -1160,7 +1072,7 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
       } else {
         debugPrint('No audio files available');
       }
-      
+
       // Prepare return data with concatenated or primary audio file
       final returnData = {
         'transcribedText': _session.combinedTranscription,
@@ -1178,26 +1090,28 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
           'hasMultipleRecordings': _session.recordings.length > 1,
         },
       };
-      
+
       debugPrint('[DART] Task creation data prepared:');
       debugPrint('  - Combined transcription length: ${_session.combinedTranscription.length} chars');
       debugPrint('  - Final audio file: $finalAudioPath');
       debugPrint('  - Total duration: ${_session.totalDuration}');
       debugPrint('  - Recording count: ${_session.recordings.length}');
-      
+
       setState(() {
         _statusMessage = 'Opening task creation...';
       });
-      
-      // Navigate to enhanced task creation dialog
+
+      // Navigate to manual task creation page
       if (!mounted) return;
-      final result = await showDialog(
-        context: context,
-        builder: (context) => EnhancedTaskCreationDialog(
-          prePopulatedData: returnData,
+      final result = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ManualTaskCreationPage(
+            prePopulatedData: returnData,
+          ),
         ),
       );
-      
+
       // If task was created successfully, pop this page
       if (result != null && mounted) {
         Navigator.of(context).pop(result);
@@ -1209,20 +1123,20 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
           });
         }
       }
-      
     } catch (e) {
       debugPrint('[ERROR] Error in _proceedToTaskCreation: $e');
       if (mounted) {
         setState(() {
           _statusMessage = 'Error preparing audio: $e';
         });
-        
+
         // Show error dialog
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
             title: const Text('Audio Processing Error'),
-            content: Text('Failed to prepare audio files: $e\n\nYou can still create a task with the transcription only.'),
+            content:
+                Text('Failed to prepare audio files: $e\n\nYou can still create a task with the transcription only.'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
@@ -1234,7 +1148,7 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
       }
     }
   }
-  
+
   String _formatDuration(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, '0');
     final minutes = twoDigits(duration.inMinutes.remainder(60));
@@ -1242,4 +1156,3 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage>
     return '$minutes:$seconds';
   }
 }
-

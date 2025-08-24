@@ -1,57 +1,58 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:share_plus/share_plus.dart';
-import '../widgets/standardized_app_bar.dart';
-import '../widgets/simple_theme_toggle.dart';
-import '../../domain/entities/task_audio_extensions.dart';
-import '../widgets/glassmorphism_container.dart';
-import '../widgets/enhanced_glass_button.dart';
-import '../widgets/audio_indicator_widget.dart';
-import '../../core/theme/typography_constants.dart';
-import '../../core/design_system/design_tokens.dart';
-import '../../services/ui/slidable_action_service.dart';
-import '../../services/ui/slidable_theme_service.dart';
-import '../../services/ui/slidable_feedback_service.dart';
 
-import '../providers/task_providers.dart';
-import '../providers/task_provider.dart';
-import '../providers/profile_providers.dart';
+import '../../core/design_system/design_tokens.dart';
 import '../../core/providers/core_providers.dart';
+import '../../core/routing/app_router.dart';
+import '../../core/theme/typography_constants.dart';
+import '../../domain/entities/task_audio_extensions.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
+import '../../services/ui/slidable_action_service.dart';
+import '../../services/ui/slidable_feedback_service.dart';
+import '../../services/ui/slidable_theme_service.dart';
 import '../../services/welcome_message_service.dart';
-import '../../core/routing/app_router.dart';
-
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import '../providers/profile_providers.dart';
+import '../providers/task_provider.dart';
+import '../providers/task_providers.dart';
+import '../widgets/audio_indicator_widget.dart';
+import '../widgets/enhanced_glass_button.dart';
+import '../widgets/glassmorphism_container.dart';
+import '../widgets/simple_theme_toggle.dart';
+import '../widgets/standardized_app_bar.dart';
+import '../widgets/standardized_icons.dart' show StandardizedIcon, StandardizedIconSize, StandardizedIconStyle;
+import '../widgets/standardized_text.dart';
 
 /// Futuristic Material 3 Home Page
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
-  
+
   @override
   ConsumerState<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
   late ScrollController _scrollController;
-  
+
   // Cache welcome data to prevent rebuild storms
   Map<String, dynamic>? _cachedWelcomeData;
   bool _welcomeDataInitialized = false;
   String? _cachedFirstName; // Track previous firstName to detect changes
-  
+
   @override
   void initState() {
     super.initState();
     _scrollController = ScrollController();
   }
-  
+
   @override
   void dispose() {
     _scrollController.dispose();
     super.dispose();
   }
-  
+
   /// Get welcome message and task summary data - cached to prevent rebuild storms
   Map<String, dynamic> _getWelcomeData() {
     // Get current first name to check for changes
@@ -60,42 +61,42 @@ class _HomePageState extends ConsumerState<HomePage> {
       data: (profile) => profile?.firstName,
       orElse: () => null,
     );
-    
+
     // Clear cache if firstName changed (profile was updated)
     if (_cachedFirstName != currentFirstName) {
       _cachedWelcomeData = null;
       _welcomeDataInitialized = false;
       _cachedFirstName = currentFirstName;
     }
-    
+
     // Return cached data if available to prevent expensive rebuilds
     if (_welcomeDataInitialized && _cachedWelcomeData != null) {
       return _cachedWelcomeData!;
     }
-    
+
     final pendingTasks = ref.watch(pendingTasksProvider);
     final completedTasks = ref.watch(completedTasksProvider);
-    
+
     final pendingCount = pendingTasks.maybeWhen(data: (tasks) => tasks.length, orElse: () => 0);
     final completedCount = completedTasks.maybeWhen(data: (tasks) => tasks.length, orElse: () => 0);
     final totalCount = pendingCount + completedCount;
-    
+
     // Use the currentFirstName already fetched above
     final firstName = currentFirstName;
-    
+
     final welcomeService = WelcomeMessageService();
     final welcomeMessage = welcomeService.getWelcomeMessage(
       firstName: firstName,
       pendingTaskCount: pendingCount,
       completedToday: completedCount,
     );
-    
+
     final taskSummary = welcomeService.getTaskSummary(
       pendingTasks: pendingCount,
       completedToday: completedCount,
       totalTasks: totalCount,
     );
-    
+
     _cachedWelcomeData = {
       'welcomeMessage': welcomeMessage,
       'taskSummary': taskSummary,
@@ -104,14 +105,14 @@ class _HomePageState extends ConsumerState<HomePage> {
       'firstName': firstName,
     };
     _welcomeDataInitialized = true;
-    
+
     return _cachedWelcomeData!;
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Scaffold(
       backgroundColor: Colors.transparent, // Make scaffold transparent to show background
       extendBodyBehindAppBar: true, // Show phone status bar
@@ -139,12 +140,12 @@ class _HomePageState extends ConsumerState<HomePage> {
           slivers: [
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(SpacingTokens.md),
                 child: Column(
                   children: [
                     // Sophisticated welcome - condensed for task focus
                     _buildWelcomeSection(context, theme),
-                    const SizedBox(height: SpacingTokens.phi1), 
+                    const SizedBox(height: SpacingTokens.phi1),
                     // Task overview with detailed stats
                     _buildTaskOverview(theme),
                     const SizedBox(height: SpacingTokens.welcomeSpacing), // Golden ratio spacing
@@ -163,7 +164,7 @@ class _HomePageState extends ConsumerState<HomePage> {
       ),
     );
   }
-  
+
   void _showTaskSearch(BuildContext context) {
     showDialog(
       context: context,
@@ -174,134 +175,129 @@ class _HomePageState extends ConsumerState<HomePage> {
   Widget _buildSearchDialog(BuildContext context) {
     final theme = Theme.of(context);
     String searchQuery = '';
-    
+
     return Dialog(
       backgroundColor: Colors.transparent,
       child: GlassmorphismContainer(
         level: GlassLevel.floating,
         borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(SpacingTokens.lg),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              'Search Tasks',
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
-            ),
+            StandardizedTextVariants.pageHeader('Search Tasks'),
             const SizedBox(height: 16),
             GlassmorphismContainer(
               level: GlassLevel.interactive,
               borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
               child: TextField(
-                  autofocus: true,
-                  decoration: InputDecoration(
-                    hintText: 'Enter search terms...',
-                    prefixIcon: Icon(PhosphorIcons.magnifyingGlass()),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                      borderSide: BorderSide.none,
-                    ),
-                    filled: true,
-                    fillColor: Colors.transparent,
+                autofocus: true,
+                decoration: InputDecoration(
+                  hintText: 'Enter search terms...',
+                  prefixIcon: Icon(PhosphorIcons.magnifyingGlass()),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                    borderSide: BorderSide.none,
                   ),
-                  onChanged: (value) => searchQuery = value,
+                  filled: true,
+                  fillColor: Colors.transparent,
                 ),
+                onChanged: (value) => searchQuery = value,
+              ),
             ),
             const SizedBox(height: 16),
             ConstrainedBox(
-            constraints: const BoxConstraints(
-              minHeight: 150,
-              maxHeight: 400,
-            ),
-            child: SizedBox(
-              width: double.maxFinite,
-              child: Consumer(
-                builder: (context, ref, child) {
-                final allTasks = ref.watch(tasksProvider);
-                return allTasks.when(
-                  data: (tasks) {
-                    if (searchQuery.isEmpty) {
-                      return _buildEmptyState(theme);
-                    }
-                    
-                    final filteredTasks = tasks
-                        .where((task) => 
-                            task.title.toLowerCase().contains(searchQuery.toLowerCase()) ||
-                            (task.description?.toLowerCase().contains(searchQuery.toLowerCase()) ?? false))
-                        .toList();
-                    
-                    if (filteredTasks.isEmpty) {
-                      return Center(
-                        child: Text('No tasks found for "$searchQuery"'),
-                      );
-                    }
-                    
-                    return ListView.builder(
-                      itemCount: filteredTasks.length,
-                      itemBuilder: (context, index) {
-                        final task = filteredTasks[index];
-                        return ListTile(
-                          title: Text(task.title),
-                          subtitle: task.description?.isNotEmpty == true ? Text(task.description!) : null,
-                          onTap: () {
-                            Navigator.of(context).pop();
-                            AppRouter.navigateToTaskDetail(context, task.id);
+              constraints: const BoxConstraints(
+                minHeight: 150,
+                maxHeight: 400,
+              ),
+              child: SizedBox(
+                width: double.maxFinite,
+                child: Consumer(
+                  builder: (context, ref, child) {
+                    final allTasks = ref.watch(tasksProvider);
+                    return allTasks.when(
+                      data: (tasks) {
+                        if (searchQuery.isEmpty) {
+                          return _buildEmptyState(theme);
+                        }
+
+                        final filteredTasks = tasks
+                            .where((task) =>
+                                task.title.toLowerCase().contains(searchQuery.toLowerCase()) ||
+                                (task.description?.toLowerCase().contains(searchQuery.toLowerCase()) ?? false))
+                            .toList();
+
+                        if (filteredTasks.isEmpty) {
+                          return Center(
+                            child: Text('No tasks found for "$searchQuery"'),
+                          );
+                        }
+
+                        return ListView.builder(
+                          itemCount: filteredTasks.length,
+                          itemBuilder: (context, index) {
+                            final task = filteredTasks[index];
+                            return ListTile(
+                              title: Text(task.title),
+                              subtitle: task.description?.isNotEmpty == true ? Text(task.description!) : null,
+                              onTap: () {
+                                Navigator.of(context).pop();
+                                AppRouter.navigateToTaskDetail(context, task.id);
+                              },
+                              trailing: PopupMenuButton<String>(
+                                onSelected: (value) {
+                                  Navigator.of(context).pop();
+                                  switch (value) {
+                                    case 'edit':
+                                      _editTask(task);
+                                      break;
+                                    case 'share':
+                                      _shareTask(task);
+                                      break;
+                                    case 'delete':
+                                      _deleteTask(task);
+                                      break;
+                                  }
+                                },
+                                itemBuilder: (context) => [
+                                  PopupMenuItem(
+                                    value: 'edit',
+                                    child: ListTile(
+                                      leading: Icon(PhosphorIcons.pencil()),
+                                      title: const Text('Edit'),
+                                    ),
+                                  ),
+                                  PopupMenuItem(
+                                    value: 'share',
+                                    child: ListTile(
+                                      leading: Icon(PhosphorIcons.share()),
+                                      title: const Text('Share'),
+                                    ),
+                                  ),
+                                  PopupMenuItem(
+                                    value: 'delete',
+                                    child: ListTile(
+                                      leading: Icon(PhosphorIcons.trash()),
+                                      title: const Text('Delete'),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
                           },
-                          trailing: PopupMenuButton<String>(
-                            onSelected: (value) {
-                              Navigator.of(context).pop();
-                              switch (value) {
-                                case 'edit':
-                                  _editTask(task);
-                                  break;
-                                case 'share':
-                                  _shareTask(task);
-                                  break;
-                                case 'delete':
-                                  _deleteTask(task);
-                                  break;
-                              }
-                            },
-                            itemBuilder: (context) => [
-                              PopupMenuItem(
-                                value: 'edit',
-                                child: ListTile(
-                                  leading: Icon(PhosphorIcons.pencil()),
-                                  title: const Text('Edit'),
-                                ),
-                              ),
-                              PopupMenuItem(
-                                value: 'share',
-                                child: ListTile(
-                                  leading: Icon(PhosphorIcons.share()),
-                                  title: const Text('Share'),
-                                ),
-                              ),
-                              PopupMenuItem(
-                                value: 'delete',
-                                child: ListTile(
-                                  leading: Icon(PhosphorIcons.trash()),
-                                  title: const Text('Delete'),
-                                ),
-                              ),
-                            ],
-                          ),
                         );
                       },
+                      loading: () => const Center(child: CircularProgressIndicator()),
+                      error: (error, _) => Center(child: Text('Error: $error')),
                     );
                   },
-                  loading: () => const Center(child: CircularProgressIndicator()),
-                  error: (error, _) => Center(child: Text('Error: $error')),
-                );
-              },
+                ),
+              ),
             ),
-          ),
+          ],
         ),
-        ],
       ),
-    ),
     );
   }
 
@@ -312,8 +308,8 @@ class _HomePageState extends ConsumerState<HomePage> {
         backgroundColor: Colors.transparent,
         child: GlassmorphismContainer(
           level: GlassLevel.floating,
-          borderRadius: BorderRadius.circular(16),
-          padding: const EdgeInsets.all(24),
+          borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge), // 16.0 - Fixed border radius hierarchy
+          padding: const EdgeInsets.all(SpacingTokens.lg),
           child: ConstrainedBox(
             constraints: const BoxConstraints(
               maxWidth: double.maxFinite,
@@ -326,8 +322,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                 Text(
                   'Task Insights',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
+                        fontWeight: TypographyConstants.medium,
+                      ),
                 ),
                 const SizedBox(height: 16),
                 Expanded(
@@ -338,21 +334,25 @@ class _HomePageState extends ConsumerState<HomePage> {
                         data: (tasks) {
                           final completedTasks = tasks.where((t) => t.isCompleted).length;
                           final pendingTasks = tasks.where((t) => !t.isCompleted).length;
-                          final urgentTasks = tasks.where((t) => t.priority == TaskPriority.urgent && !t.isCompleted).length;
+                          final urgentTasks =
+                              tasks.where((t) => t.priority == TaskPriority.urgent && !t.isCompleted).length;
                           final overdueTasks = tasks.where((t) {
                             if (t.dueDate == null || t.isCompleted) return false;
                             return t.dueDate!.isBefore(DateTime.now());
                           }).length;
-                          
+
                           return SingleChildScrollView(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 _buildInsightRow('Total Tasks', '${tasks.length}', PhosphorIcons.list()),
-                                _buildInsightRow('Completed', '$completedTasks', PhosphorIcons.checkCircle(), color: Colors.green),
-                                _buildInsightRow('Pending', '$pendingTasks', PhosphorIcons.clock(), color: Colors.orange),
-                                _buildInsightRow('Urgent', '$urgentTasks', PhosphorIcons.arrowUp(), color: Colors.red),
-                                _buildInsightRow('Overdue', '$overdueTasks', PhosphorIcons.warning(), color: Colors.red),
+                                _buildInsightRow('Completed', '$completedTasks', PhosphorIcons.checkCircle(),
+                                    color: Theme.of(context).colorScheme.primary),
+                                _buildInsightRow('Pending', '$pendingTasks', PhosphorIcons.clock(),
+                                    color: Theme.of(context).colorScheme.secondary),
+                                _buildInsightRow('Urgent', '$urgentTasks', PhosphorIcons.arrowUp(), color: Theme.of(context).colorScheme.error),
+                                _buildInsightRow('Overdue', '$overdueTasks', PhosphorIcons.warning(),
+                                    color: Theme.of(context).colorScheme.error),
                               ],
                             ),
                           );
@@ -387,7 +387,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           Icon(icon, color: color),
           const SizedBox(width: 12),
           Expanded(child: Text(label)),
-          Text(value, style: TextStyle(fontWeight: FontWeight.w500, color: color)),
+          Text(value, style: TextStyle(fontWeight: TypographyConstants.medium, color: color)),
         ],
       ),
     );
@@ -396,7 +396,8 @@ class _HomePageState extends ConsumerState<HomePage> {
   void _showTaskContextMenu(BuildContext context, TaskModel task) {
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
       builder: (context) => Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
@@ -405,7 +406,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           children: [
             GlassmorphismContainer(
               level: GlassLevel.interactive,
-              borderRadius: BorderRadius.circular(2),
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall), // 2.0 - Fixed border radius hierarchy
               child: const SizedBox(
                 width: 40,
                 height: 4,
@@ -417,8 +418,8 @@ class _HomePageState extends ConsumerState<HomePage> {
               child: Text(
                 task.title,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+                      fontWeight: TypographyConstants.medium,
+                    ),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -442,8 +443,8 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
             const Divider(),
             ListTile(
-              leading: Icon(PhosphorIcons.trash(), color: Colors.red),
-              title: const Text('Delete Task', style: TextStyle(color: Colors.red)),
+              leading: Icon(PhosphorIcons.trash(), color: Theme.of(context).colorScheme.error),
+              title: Text('Delete Task', style: TextStyle(color: Theme.of(context).colorScheme.error)),
               onTap: () {
                 Navigator.of(context).pop();
                 _deleteTask(task);
@@ -454,17 +455,17 @@ class _HomePageState extends ConsumerState<HomePage> {
       ),
     );
   }
-  
+
   /// Personalized welcome section with elegant minimal design
   Widget _buildWelcomeSection(BuildContext context, ThemeData theme) {
     return GlassmorphismContainer(
-      level: GlassLevel.whisper,  // Ultra-subtle background for elegance
+      level: GlassLevel.whisper, // Ultra-subtle background for elegance
       borderRadius: BorderRadius.circular(BorderRadiusTokens.card),
       padding: const EdgeInsets.all(SpacingTokens.elementPadding),
       child: Builder(builder: (context) {
         final welcomeData = _getWelcomeData();
         final welcomeMessage = welcomeData['welcomeMessage'] as WelcomeMessage;
-        
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -480,32 +481,26 @@ class _HomePageState extends ConsumerState<HomePage> {
                   const SizedBox(width: 12),
                 ],
                 Expanded(
-                  child: Text(
+                  child: StandardizedText(
                     welcomeMessage.greeting,
-                    style: theme.textTheme.displaySmall?.copyWith(
-                      fontSize: 24.0,              // Premium display size
-                      fontWeight: FontWeight.w300, // Light weight for sophistication
-                      height: 1.3,                 // Refined line height
-                      letterSpacing: -0.2,         // Tighter for elegance
-                      color: theme.colorScheme.onSurface,
-                    ),
+                    style: StandardizedTextStyle.headlineSmall,
+                    color: theme.colorScheme.onSurface,
                   ),
                 ),
               ],
             ),
-            
+
             // No secondary text as requested by user
           ],
         );
       }),
     );
   }
-  
 
   /// Builds the main task overview section with quick stats and insights
   Widget _buildTaskOverview(ThemeData theme) {
     final allTasks = ref.watch(tasksProvider);
-    
+
     return allTasks.when(
       loading: () => _buildLoadingState(theme),
       error: (error, stack) => _buildErrorState(theme, error.toString()),
@@ -513,24 +508,26 @@ class _HomePageState extends ConsumerState<HomePage> {
         final today = DateTime.now();
         final todayStart = DateTime(today.year, today.month, today.day);
         final todayEnd = todayStart.add(const Duration(days: 1));
-        
+
         // Calculate task counts
-        final todayTasks = tasks.where((task) => 
-          !task.isCompleted && 
-          (task.dueDate == null || task.dueDate!.isAfter(todayStart)) &&
-          (task.dueDate == null || task.dueDate!.isBefore(todayEnd))
-        ).toList();
-        
+        final todayTasks = tasks
+            .where((task) =>
+                !task.isCompleted &&
+                (task.dueDate == null || task.dueDate!.isAfter(todayStart)) &&
+                (task.dueDate == null || task.dueDate!.isBefore(todayEnd)))
+            .toList();
+
         final pendingCount = todayTasks.length;
         final urgentCount = todayTasks.where((t) => t.priority == TaskPriority.urgent).length;
         final highCount = todayTasks.where((t) => t.priority == TaskPriority.high).length;
-        final completedToday = tasks.where((task) => 
-          task.isCompleted && 
-          task.completedAt != null &&
-          task.completedAt!.isAfter(todayStart) &&
-          task.completedAt!.isBefore(todayEnd)
-        ).length;
-        
+        final completedToday = tasks
+            .where((task) =>
+                task.isCompleted &&
+                task.completedAt != null &&
+                task.completedAt!.isAfter(todayStart) &&
+                task.completedAt!.isBefore(todayEnd))
+            .length;
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -538,7 +535,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             GlassmorphismContainer(
               level: GlassLevel.content,
               borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(SpacingTokens.md),
               child: Row(
                 children: [
                   _buildQuickStat(
@@ -588,30 +585,27 @@ class _HomePageState extends ConsumerState<HomePage> {
           GlassmorphismContainer(
             level: GlassLevel.content,
             borderRadius: BorderRadius.circular(100), // Make it circular
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(SpacingTokens.lg),
             glassTint: theme.colorScheme.primaryContainer.withValues(alpha: 0.8),
-            child: Icon(
+            child: StandardizedIcon(
               PhosphorIcons.rocket(),
-              size: 48,
+              size: StandardizedIconSize.xxxl,
               color: theme.colorScheme.onPrimaryContainer,
             ),
           ),
           const SizedBox(height: 16),
-          Text(
+          const StandardizedText(
             'Ready to get started?',
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w500,
-            ),
+            style: StandardizedTextStyle.titleMedium,
             textAlign: TextAlign.center,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 8),
-          Text(
+          StandardizedText(
             'Create your first task',
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
+            style: StandardizedTextStyle.bodySmall,
+            color: theme.colorScheme.onSurfaceVariant,
             textAlign: TextAlign.center,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -623,8 +617,9 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   Widget _buildLoadingState(ThemeData theme) {
     return Column(
-      children: List.generate(3, (index) => 
-        GlassmorphismContainer(
+      children: List.generate(
+        3,
+        (index) => GlassmorphismContainer(
           level: GlassLevel.background,
           height: 120,
           margin: const EdgeInsets.only(bottom: 8),
@@ -656,28 +651,25 @@ class _HomePageState extends ConsumerState<HomePage> {
     return Center(
       child: Column(
         children: [
-          Icon(
+          StandardizedIcon(
             PhosphorIcons.warningCircle(),
-            size: 48,
-            color: theme.colorScheme.error,
+            size: StandardizedIconSize.xxxl,
+            style: StandardizedIconStyle.error,
           ),
           const SizedBox(height: 16),
-          Text(
+          StandardizedText(
             'Something went wrong',
-            style: theme.textTheme.titleSmall?.copyWith(
-              color: theme.colorScheme.error,
-              fontWeight: FontWeight.w500,
-            ),
+            style: StandardizedTextStyle.titleSmall,
+            color: theme.colorScheme.error,
             textAlign: TextAlign.center,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 8),
-          Text(
+          StandardizedText(
             'Unable to load tasks',
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
+            style: StandardizedTextStyle.bodySmall,
+            color: theme.colorScheme.onSurfaceVariant,
             textAlign: TextAlign.center,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -706,8 +698,8 @@ class _HomePageState extends ConsumerState<HomePage> {
         backgroundColor: Colors.transparent,
         child: GlassmorphismContainer(
           level: GlassLevel.floating,
-          borderRadius: BorderRadius.circular(16),
-          padding: const EdgeInsets.all(24),
+          borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge), // 16.0 - Fixed border radius hierarchy
+          padding: const EdgeInsets.all(SpacingTokens.lg),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -715,8 +707,8 @@ class _HomePageState extends ConsumerState<HomePage> {
               Text(
                 'Delete Task',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
+                      fontWeight: TypographyConstants.medium,
+                    ),
               ),
               const SizedBox(height: 16),
               Text(
@@ -753,7 +745,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                       'Delete',
                       style: TextStyle(
                         color: Colors.white,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: TypographyConstants.medium,
                       ),
                     ),
                   ),
@@ -776,7 +768,7 @@ ${task.dueDate != null ? 'Due: ${task.dueDate!.toString()}' : ''}
 
 Shared from Tasky - Task Management App
 ''';
-    
+
     // Use the platform's native sharing capabilities
     SharePlus.instance.share(
       ShareParams(
@@ -785,7 +777,7 @@ Shared from Tasky - Task Management App
       ),
     );
   }
-  
+
   /// Sophisticated task tabs with text-only elegance and positive psychology
   Widget _buildTaskTabsSection(BuildContext context, ThemeData theme) {
     return DefaultTabController(
@@ -796,11 +788,11 @@ Shared from Tasky - Task Management App
           // Sophisticated tab bar with elegant styling
           Container(
             height: 56, // Increased for touch accessibility
-            padding: const EdgeInsets.all(4), // 4px padding
+            padding: const EdgeInsets.all(SpacingTokens.xs), // 4px padding
             child: TabBar(
               // Sophisticated gradient indicator for premium feel
               indicator: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                 gradient: LinearGradient(
                   colors: [
                     theme.colorScheme.primary.withValues(alpha: 0.1),
@@ -812,25 +804,25 @@ Shared from Tasky - Task Management App
                   width: 0.5, // Ultra-thin for sophistication
                 ),
               ),
-              
+
               // Sophisticated typography and colors
               labelColor: theme.colorScheme.primary,
               unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
               dividerColor: Colors.transparent,
               indicatorSize: TabBarIndicatorSize.tab,
-              
+
               // Elegant text styling
-              labelStyle: const TextStyle(
-                fontSize: 16, // titleMedium for clarity
-                fontWeight: FontWeight.w400, // Regular weight for sophistication
+              labelStyle: theme.textTheme.titleMedium?.copyWith(
+                // Using theme titleMedium (16) for clarity
+                fontWeight: TypographyConstants.regular, // Regular weight for sophistication
                 letterSpacing: 0.1, // Subtle letter spacing
               ),
-              unselectedLabelStyle: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w300, // Light weight for unselected
+              unselectedLabelStyle: theme.textTheme.titleMedium?.copyWith(
+                // Using theme titleMedium (16) for consistency
+                fontWeight: TypographyConstants.light, // Light weight for unselected
                 letterSpacing: 0.1,
               ),
-              
+
               tabs: [
                 // Text-only tabs for sophisticated elegance
                 Semantics(
@@ -855,7 +847,7 @@ Shared from Tasky - Task Management App
             ),
           ),
           const SizedBox(height: SpacingTokens.tabSpacing), // Golden ratio spacing
-          
+
           // Task content prioritized - increased from 65% to 75% of screen height
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.75, // More space for tasks
@@ -867,33 +859,33 @@ Shared from Tasky - Task Management App
               ],
             ),
           ),
-          
+
           // Enhanced bottom padding to prevent FAB overlap with larger FAB
           const SizedBox(height: 120),
         ],
       ),
     );
   }
-  
+
   // Removed _buildFixedTab method - using simple text-only tabs for sophistication
 
   /// Build today's tasks list - only tasks due today, not created today
   Widget _buildTodayTasksList(BuildContext context, ThemeData theme) {
     final todayDueTasks = ref.watch(todayTasksProvider);
-    
+
     return todayDueTasks.when(
       data: (tasks) {
         if (tasks.isEmpty) {
           return _buildEmptyTasksList(theme, 'No tasks due today', PhosphorIcons.calendar());
         }
-        
+
         // Sort by priority and creation time
         tasks.sort((a, b) {
           final priorityComparison = b.priority.index.compareTo(a.priority.index);
           if (priorityComparison != 0) return priorityComparison;
           return b.createdAt.compareTo(a.createdAt);
         });
-        
+
         return ListView.builder(
           padding: const EdgeInsets.only(bottom: 80), // FAB clearance
           itemCount: tasks.length,
@@ -911,24 +903,24 @@ Shared from Tasky - Task Management App
   /// Build focus tasks list (renamed for positive psychology)
   Widget _buildFocusTasksList(BuildContext context, ThemeData theme) {
     final overdueTasks = ref.watch(overdueTasksProvider);
-    
+
     return overdueTasks.when(
       data: (tasks) {
         if (tasks.isEmpty) {
           return _buildEmptyTasksList(theme, 'No overdue tasks', PhosphorIcons.checkCircle());
         }
-        
+
         // Sort by priority and how overdue they are
         tasks.sort((a, b) {
           final priorityCompare = b.priority.index.compareTo(a.priority.index);
           if (priorityCompare != 0) return priorityCompare;
-          
+
           if (a.dueDate == null && b.dueDate == null) return 0;
           if (a.dueDate == null) return 1;
           if (b.dueDate == null) return -1;
           return a.dueDate!.compareTo(b.dueDate!); // Most overdue first
         });
-        
+
         return ListView.builder(
           padding: const EdgeInsets.only(bottom: 80), // FAB clearance
           itemCount: tasks.length,
@@ -946,7 +938,7 @@ Shared from Tasky - Task Management App
   /// Build planned tasks list (renamed for clarity)
   Widget _buildPlannedTasksList(BuildContext context, ThemeData theme) {
     final allTasks = ref.watch(tasksProvider);
-    
+
     return allTasks.when(
       data: (tasks) {
         // Filter future tasks (not today and not overdue)
@@ -957,22 +949,22 @@ Shared from Tasky - Task Management App
           final taskDate = DateTime(task.dueDate!.year, task.dueDate!.month, task.dueDate!.day);
           return taskDate.isAfter(today);
         }).toList();
-        
+
         // Sort by priority and due date
         futureTasks.sort((a, b) {
           final priorityCompare = b.priority.index.compareTo(a.priority.index);
           if (priorityCompare != 0) return priorityCompare;
-          
+
           if (a.dueDate == null && b.dueDate == null) return 0;
           if (a.dueDate == null) return 1;
           if (b.dueDate == null) return -1;
           return a.dueDate!.compareTo(b.dueDate!);
         });
-        
+
         if (futureTasks.isEmpty) {
           return _buildEmptyTasksList(theme, 'No future tasks', PhosphorIcons.clock());
         }
-        
+
         return ListView.builder(
           padding: const EdgeInsets.only(bottom: 80), // FAB clearance
           itemCount: futureTasks.length,
@@ -991,6 +983,7 @@ Shared from Tasky - Task Management App
   Widget _buildCompactTaskCard(TaskModel task, ThemeData theme, {bool isOverdue = false}) {
     final balancedActions = SlidableActionService.getBalancedCompactTaskActions(
       task,
+      colorScheme: theme.colorScheme,
       onComplete: () => _toggleTaskCompletion(task),
       onQuickEdit: () => _quickEditTask(task),
       onDelete: () => _confirmDeleteTask(task),
@@ -1021,7 +1014,7 @@ Shared from Tasky - Task Management App
                       height: 32,
                       decoration: BoxDecoration(
                         color: task.priority.color,
-                        borderRadius: BorderRadius.circular(2),
+                        borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall), // 2.0 - Fixed border radius hierarchy
                       ),
                     ),
                     const SizedBox(width: SpacingTokens.phi1), // Golden ratio spacing
@@ -1031,7 +1024,7 @@ Shared from Tasky - Task Management App
                       height: 32,
                       decoration: BoxDecoration(
                         color: task.priority.color.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                         border: Border.all(
                           color: task.priority.color.withValues(alpha: 0.2),
                           width: 0.5,
@@ -1052,7 +1045,7 @@ Shared from Tasky - Task Management App
                     const SizedBox(width: SpacingTokens.phi1), // Golden ratio spacing
                   ],
                 ),
-                
+
                 // Title and description in the middle (takes up most space)
                 Expanded(
                   child: Column(
@@ -1067,11 +1060,9 @@ Shared from Tasky - Task Management App
                             child: Text(
                               task.title,
                               style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.w500,
+                                fontWeight: TypographyConstants.medium,
                                 color: theme.colorScheme.onSurface,
-                                decoration: task.status == TaskStatus.completed
-                                    ? TextDecoration.lineThrough
-                                    : null,
+                                decoration: task.status == TaskStatus.completed ? TextDecoration.lineThrough : null,
                                 height: 1.2,
                                 letterSpacing: 0.1,
                               ),
@@ -1090,17 +1081,15 @@ Shared from Tasky - Task Management App
                           ],
                         ],
                       ),
-                      
+
                       const SizedBox(height: 2),
-                      
+
                       // Elegant task metadata - priority only for sophisticated simplicity
                       if (task.priority != TaskPriority.medium) ...[
                         Row(
                           children: [
                             Icon(
-                              task.priority == TaskPriority.urgent
-                                  ? PhosphorIcons.arrowUp()
-                                  : PhosphorIcons.caretUp(),
+                              task.priority == TaskPriority.urgent ? PhosphorIcons.arrowUp() : PhosphorIcons.caretUp(),
                               size: 10,
                               color: task.priority == TaskPriority.urgent
                                   ? theme.colorScheme.error
@@ -1110,8 +1099,8 @@ Shared from Tasky - Task Management App
                             Text(
                               task.priority.name.toUpperCase(),
                               style: theme.textTheme.labelSmall?.copyWith(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w500,
+                                // Using theme labelSmall size
+                                fontWeight: TypographyConstants.medium,
                                 color: task.priority == TaskPriority.urgent
                                     ? theme.colorScheme.error
                                     : theme.colorScheme.secondary,
@@ -1124,7 +1113,7 @@ Shared from Tasky - Task Management App
                     ],
                   ),
                 ),
-                
+
                 // Sophisticated completion indicator on the right
                 if (task.status == TaskStatus.completed) ...[
                   const SizedBox(width: 16), // 16px spacing
@@ -1159,7 +1148,7 @@ Shared from Tasky - Task Management App
         key: ValueKey('compact-task-${task.id}'),
         groupTag: 'home-compact-cards',
         startActions: balancedActions['startActions'] ?? [], // Left side: Complete + Edit
-        endActions: balancedActions['endActions'] ?? [],     // Right side: More
+        endActions: balancedActions['endActions'] ?? [], // Right side: More
         enableFastSwipe: true, // Optimize for ListView performance
         context: context, // Enable responsive sizing
         child: cardContent,
@@ -1168,7 +1157,7 @@ Shared from Tasky - Task Management App
   }
 
   // Helper methods for compact card slide actions
-  
+
   void _toggleTaskCompletion(TaskModel task) async {
     await SlidableFeedbackService.provideFeedback(SlidableActionType.complete);
     try {
@@ -1197,7 +1186,6 @@ Shared from Tasky - Task Management App
     _deleteTask(task);
   }
 
-
   /// Build progress indicator for task cards
 
   /// Build empty tasks list state
@@ -1206,9 +1194,9 @@ Shared from Tasky - Task Management App
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
+          StandardizedIcon(
             icon,
-            size: 48,
+            size: StandardizedIconSize.xxxl,
             color: theme.colorScheme.outline,
           ),
           const SizedBox(height: 12),
@@ -1260,7 +1248,6 @@ Shared from Tasky - Task Management App
       ),
     );
   }
-
 
   /// Generate natural language task summary
 
@@ -1317,15 +1304,13 @@ Shared from Tasky - Task Management App
     IconData insightIcon = PhosphorIcons.info();
 
     if (urgentCount > 0) {
-      insight = urgentCount == 1 
-        ? '1 urgent task needs immediate attention'
-        : '$urgentCount urgent tasks need immediate attention';
+      insight = urgentCount == 1
+          ? '1 urgent task needs immediate attention'
+          : '$urgentCount urgent tasks need immediate attention';
       insightColor = theme.colorScheme.error;
       insightIcon = PhosphorIcons.arrowUp();
     } else if (highCount > 0) {
-      insight = highCount == 1
-        ? '1 high priority task to focus on'
-        : '$highCount high priority tasks to focus on';
+      insight = highCount == 1 ? '1 high priority task to focus on' : '$highCount high priority tasks to focus on';
       insightColor = theme.colorScheme.secondary;
       insightIcon = PhosphorIcons.caretUp();
     } else if (pendingCount > 0) {
@@ -1338,7 +1323,7 @@ Shared from Tasky - Task Management App
 
     return GlassmorphismContainer(
       level: GlassLevel.content,
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(SpacingTokens.md * 0.75), // 12px
       borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall),
       glassTint: insightColor.withValues(alpha: 0.1),
       borderColor: insightColor.withValues(alpha: 0.3),
@@ -1365,30 +1350,29 @@ Shared from Tasky - Task Management App
       ),
     );
   }
-
 }
 
 /// Search Dialog with Material 3 design
 class SearchDialog extends ConsumerStatefulWidget {
   const SearchDialog({super.key});
-  
+
   @override
   ConsumerState<SearchDialog> createState() => _SearchDialogState();
 }
 
 class _SearchDialogState extends ConsumerState<SearchDialog> {
   final TextEditingController _searchController = TextEditingController();
-  
+
   @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Dialog(
       backgroundColor: Colors.transparent,
       child: GlassmorphismContainer(
@@ -1397,7 +1381,7 @@ class _SearchDialogState extends ConsumerState<SearchDialog> {
         glassTint: theme.colorScheme.surface,
         borderColor: theme.colorScheme.outline.withValues(alpha: 0.2),
         borderWidth: 1.0,
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(SpacingTokens.lg),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -1432,5 +1416,3 @@ class _SearchDialogState extends ConsumerState<SearchDialog> {
     );
   }
 }
-
-

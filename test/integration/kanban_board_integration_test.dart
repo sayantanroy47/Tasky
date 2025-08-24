@@ -322,7 +322,7 @@ Future<void> _testHighContrastMode(WidgetTester tester) async {
 Future<void> _testFocusManagement(WidgetTester tester) async {
   // Test that focus moves correctly between elements
   final focusedElements = find.byWidgetPredicate(
-    (widget) => widget is Focus && (widget as Focus).focusNode?.hasFocus == true
+    (widget) => widget is Focus && (widget).focusNode?.hasFocus == true
   );
   expect(focusedElements, findsAtLeast(1));
 }

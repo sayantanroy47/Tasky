@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/profile_providers.dart';
-import 'profile_setup_flow.dart';
-import '../pages/main_scaffold.dart';
-import 'glassmorphism_container.dart';
-import '../../core/design_system/design_tokens.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+
+import '../../core/design_system/design_tokens.dart';
+import '../pages/main_scaffold.dart';
+import '../providers/profile_providers.dart';
+import 'glassmorphism_container.dart';
+import 'profile_setup_flow.dart';
 
 /// Wrapper that shows profile setup flow for first-time users
 class ProfileSetupWrapper extends ConsumerWidget {
@@ -92,7 +93,7 @@ class ProfileSetupWrapper extends ConsumerWidget {
               Text(
                 'Profile Setup Error',
                 style: theme.textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w500,
                   color: theme.colorScheme.error,
                 ),
                 textAlign: TextAlign.center,
@@ -122,7 +123,7 @@ class ProfileSetupWrapper extends ConsumerWidget {
                     Text(
                       'Error Details',
                       style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w500,
                         color: theme.colorScheme.onErrorContainer,
                       ),
                     ),

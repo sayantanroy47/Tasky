@@ -9,7 +9,7 @@ import '../../presentation/pages/analytics_page.dart';
 import '../../presentation/pages/projects_page.dart';
 import '../../presentation/pages/task_detail_page.dart';
 import '../../presentation/pages/voice_demo_page.dart';
-import '../../presentation/pages/data_export_page.dart';
+// import '../../presentation/pages/data_export_page.dart';
 import '../../presentation/pages/help_page.dart';
 import '../../presentation/pages/task_dependencies_page.dart';
 import '../../presentation/screens/integration_settings_screen.dart';
@@ -165,7 +165,7 @@ class AppRouter {
         );
       case '/data-export':
         return MaterialPageRoute(
-          builder: (_) => const ThemeBackgroundWidget(child: DataExportPage()),
+          builder: (_) => const ThemeBackgroundWidget(child: Placeholder()),
           settings: settings,
         );
       case '/integration-settings':
@@ -282,7 +282,7 @@ class NotFoundScreen extends StatelessWidget {
               Text(
                 'The requested page "$requestedRoute" could not be found.',
                 style: TextStyle(
-                  fontSize: 16,
+                  // Using theme titleMedium size
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
                 textAlign: TextAlign.center,
@@ -347,7 +347,7 @@ class RouteErrorScreen extends StatelessWidget {
               Text(
                 'Route: $routeName',
                 style: TextStyle(
-                  fontSize: 14,
+                  // Using theme titleSmall size
                   fontWeight: FontWeight.w500,
                   color: theme.colorScheme.primary,
                 ),
@@ -363,7 +363,7 @@ class RouteErrorScreen extends StatelessWidget {
                 child: Text(
                   errorMessage,
                   style: TextStyle(
-                    fontSize: 16,
+                    // Using theme titleMedium size
                     color: theme.colorScheme.onErrorContainer,
                   ),
                   textAlign: TextAlign.center,

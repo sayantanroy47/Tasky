@@ -1,14 +1,16 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+
+import '../../core/theme/typography_constants.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
 import '../../services/location/location_models.dart';
 import '../providers/location_providers.dart';
 import '../providers/task_provider.dart' show taskOperationsProvider;
 import 'glassmorphism_container.dart';
-import '../../core/theme/typography_constants.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Enhanced dialog for creating location-based tasks with smart suggestions
 class EnhancedLocationTaskDialog extends ConsumerStatefulWidget {
@@ -30,7 +32,7 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _locationSearchController = TextEditingController();
-  
+
   TaskPriority _priority = TaskPriority.medium;
   DateTime? _dueDate = DateTime.now();
   GeofenceType _triggerType = GeofenceType.enter;
@@ -42,7 +44,7 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
   @override
   void initState() {
     super.initState();
-    
+
     // Pre-populate if editing
     if (widget.taskToEdit != null) {
       final task = widget.taskToEdit!;
@@ -51,13 +53,13 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
       _priority = task.priority;
       _dueDate = task.dueDate;
     }
-    
+
     // Use preselected location if provided
     if (widget.preselectedLocation != null) {
       _selectedLocation = widget.preselectedLocation;
       _locationSearchController.text = _formatLocationDisplay(_selectedLocation!);
     }
-    
+
     _loadLocationSuggestions();
   }
 
@@ -113,9 +115,7 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          widget.taskToEdit != null 
-                            ? 'Edit Location Task' 
-                            : 'Create Location-Based Task',
+                          widget.taskToEdit != null ? 'Edit Location Task' : 'Create Location-Based Task',
                           style: theme.textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.w500,
                           ),
@@ -127,9 +127,9 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
                       ),
                     ],
                   ),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   Expanded(
                     child: SingleChildScrollView(
                       child: Column(
@@ -137,28 +137,28 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
                         children: [
                           // Task Details Section
                           _buildTaskDetailsSection(theme),
-                          
+
                           const SizedBox(height: 24),
-                          
+
                           // Location Section
                           _buildLocationSection(theme, locationPermission, currentLocation),
-                          
+
                           const SizedBox(height: 24),
-                          
+
                           // Trigger Configuration Section
                           _buildTriggerConfigSection(theme),
-                          
+
                           const SizedBox(height: 24),
-                          
+
                           // Location Suggestions
                           _buildLocationSuggestions(theme),
                         ],
                       ),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Action Buttons
                   _buildActionButtons(theme),
                 ],
@@ -178,11 +178,11 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
         Text(
           'Task Details',
           style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w500,
           ),
         ),
         const SizedBox(height: 12),
-        
+
         // Title field
         TextFormField(
           controller: _titleController,
@@ -202,9 +202,9 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
           },
           onChanged: (_) => _updateLocationSuggestions(),
         ),
-        
+
         const SizedBox(height: 12),
-        
+
         // Description field
         TextFormField(
           controller: _descriptionController,
@@ -219,9 +219,9 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
           maxLines: 3,
           onChanged: (_) => _updateLocationSuggestions(),
         ),
-        
+
         const SizedBox(height: 12),
-        
+
         // Priority and due date row
         Row(
           children: [
@@ -267,13 +267,9 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
                     ),
                   ),
                   child: Text(
-                    _dueDate != null 
-                      ? _formatDate(_dueDate!)
-                      : 'No due date',
+                    _dueDate != null ? _formatDate(_dueDate!) : 'No due date',
                     style: TextStyle(
-                      color: _dueDate != null 
-                        ? theme.colorScheme.onSurface
-                        : theme.colorScheme.onSurfaceVariant,
+                      color: _dueDate != null ? theme.colorScheme.onSurface : theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ),
@@ -299,7 +295,7 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
             Text(
               'Location Setup',
               style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w500,
               ),
             ),
             const Spacer(),
@@ -312,7 +308,7 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
           ],
         ),
         const SizedBox(height: 12),
-        
+
         // Location search field
         TextFormField(
           controller: _locationSearchController,
@@ -351,7 +347,7 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
           },
           onChanged: _onLocationSearchChanged,
         ),
-        
+
         // Location permission status
         locationPermission.when(
           data: (status) {
@@ -360,19 +356,19 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
                 margin: const EdgeInsets.only(top: 8),
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.orange.withValues(alpha: 0.1),
+                  color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.1), // Fixed hardcoded orange warning background
                   borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
-                  border: Border.all(color: Colors.orange.withValues(alpha: 0.3)),
+                  border: Border.all(color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.3)), // Fixed hardcoded orange warning border
                 ),
                 child: Row(
                   children: [
-                    Icon(PhosphorIcons.warning(), color: Colors.orange, size: 20),
+                    Icon(PhosphorIcons.warning(), color: Theme.of(context).colorScheme.secondary, size: 20), // Fixed hardcoded orange warning icon
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         'Location permission required for location-based reminders',
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: Colors.orange.shade700,
+                          color: Theme.of(context).colorScheme.secondary, // Fixed hardcoded orange warning text
                         ),
                       ),
                     ),
@@ -389,7 +385,7 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
           loading: () => const SizedBox.shrink(),
           error: (_, __) => const SizedBox.shrink(),
         ),
-        
+
         // Selected location display
         if (_selectedLocation != null) ...[
           const SizedBox(height: 12),
@@ -446,11 +442,11 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
         Text(
           'Location Trigger',
           style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w500,
           ),
         ),
         const SizedBox(height: 12),
-        
+
         // Trigger type selection
         DropdownButtonFormField<GeofenceType>(
           initialValue: _triggerType,
@@ -479,9 +475,9 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
             });
           },
         ),
-        
+
         const SizedBox(height: 12),
-        
+
         // Geofence radius slider
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -519,14 +515,14 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
   /// Build location suggestions
   Widget _buildLocationSuggestions(ThemeData theme) {
     if (_suggestedLocations.isEmpty) return const SizedBox.shrink();
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Quick Locations',
           style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w500,
           ),
         ),
         const SizedBox(height: 8),
@@ -580,16 +576,16 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
       });
       return;
     }
-    
+
     // Debounce the search to avoid too many API calls
     await Future.delayed(const Duration(milliseconds: 500));
-    
+
     if (_locationSearchController.text != query) return; // User typed more
-    
+
     try {
       final locationService = ref.read(locationServiceProvider);
       final location = await locationService.getCoordinatesFromAddress(query);
-      
+
       if (location != null && mounted) {
         setState(() {
           _selectedLocation = location;
@@ -606,9 +602,9 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
     final title = _titleController.text.toLowerCase();
     final description = _descriptionController.text.toLowerCase();
     final content = '$title $description';
-    
+
     final smartSuggestions = <String>[];
-    
+
     // Add context-based suggestions
     if (content.contains('grocery') || content.contains('shop') || content.contains('buy')) {
       smartSuggestions.addAll(['Grocery Store', 'Mall', 'Pharmacy']);
@@ -622,10 +618,9 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
     if (content.contains('meeting') || content.contains('work') || content.contains('office')) {
       smartSuggestions.addAll(['Work', 'Office', 'Conference Room']);
     }
-    
+
     setState(() {
-      _suggestedLocations = <String>{...smartSuggestions, ..._suggestedLocations}
-          .toList();
+      _suggestedLocations = <String>{...smartSuggestions, ..._suggestedLocations}.toList();
     });
   }
 
@@ -653,11 +648,11 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
     setState(() {
       _locationSearchController.text = locationName;
     });
-    
+
     try {
       final locationService = ref.read(locationServiceProvider);
       final location = await locationService.getCoordinatesFromAddress(locationName);
-      
+
       if (location != null && mounted) {
         setState(() {
           _selectedLocation = location;
@@ -676,14 +671,14 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
     try {
       final locationService = ref.read(locationServiceProvider);
       final status = await locationService.requestPermission();
-      
+
       if (mounted) {
         switch (status) {
           case LocationPermissionStatus.granted:
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Location permission granted!'),
-                backgroundColor: Colors.green,
+              SnackBar(
+                content: const Text('Location permission granted!'),
+                backgroundColor: Theme.of(context).colorScheme.tertiary, // Fixed hardcoded green success color
                 behavior: SnackBarBehavior.floating,
               ),
             );
@@ -692,27 +687,27 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
             break;
           case LocationPermissionStatus.denied:
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Location permission denied. Some features may not work.'),
-                backgroundColor: Colors.orange,
+              SnackBar(
+                content: const Text('Location permission denied. Some features may not work.'),
+                backgroundColor: Theme.of(context).colorScheme.secondary, // Fixed hardcoded orange warning color
                 behavior: SnackBarBehavior.floating,
               ),
             );
             break;
           case LocationPermissionStatus.deniedForever:
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Location permission permanently denied. Please enable in app settings.'),
-                backgroundColor: Colors.red,
+              SnackBar(
+                content: const Text('Location permission permanently denied. Please enable in app settings.'),
+                backgroundColor: Theme.of(context).colorScheme.error, // Fixed hardcoded red error color
                 behavior: SnackBarBehavior.floating,
               ),
             );
             break;
           case LocationPermissionStatus.whileInUse:
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Location permission granted while app is in use.'),
-                backgroundColor: Colors.green,
+              SnackBar(
+                content: const Text('Location permission granted while app is in use.'),
+                backgroundColor: Theme.of(context).colorScheme.tertiary, // Fixed hardcoded green success color
                 behavior: SnackBarBehavior.floating,
               ),
             );
@@ -721,9 +716,9 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
             break;
           case LocationPermissionStatus.always:
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Location permission granted for all times.'),
-                backgroundColor: Colors.green,
+              SnackBar(
+                content: const Text('Location permission granted for all times.'),
+                backgroundColor: Theme.of(context).colorScheme.tertiary, // Fixed hardcoded green success color
                 behavior: SnackBarBehavior.floating,
               ),
             );
@@ -732,18 +727,18 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
             break;
           case LocationPermissionStatus.unableToDetermine:
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Unable to determine location permission status.'),
-                backgroundColor: Colors.orange,
+              SnackBar(
+                content: const Text('Unable to determine location permission status.'),
+                backgroundColor: Theme.of(context).colorScheme.secondary, // Fixed hardcoded orange warning color
                 behavior: SnackBarBehavior.floating,
               ),
             );
             break;
           case LocationPermissionStatus.serviceDisabled:
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Location services are disabled. Please enable them in device settings.'),
-                backgroundColor: Colors.red,
+              SnackBar(
+                content: const Text('Location services are disabled. Please enable them in device settings.'),
+                backgroundColor: Theme.of(context).colorScheme.error, // Fixed hardcoded red error color
                 behavior: SnackBarBehavior.floating,
               ),
             );
@@ -774,9 +769,7 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
         taskId: '', // Will be set after task creation
         geofence: GeofenceData(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
-          name: _locationSearchController.text.isNotEmpty 
-            ? _locationSearchController.text 
-            : 'Task Location',
+          name: _locationSearchController.text.isNotEmpty ? _locationSearchController.text : 'Task Location',
           latitude: _selectedLocation!.latitude,
           longitude: _selectedLocation!.longitude,
           radius: _geofenceRadius,
@@ -791,9 +784,7 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
       // Create task with location trigger
       final task = TaskModel.create(
         title: _titleController.text.trim(),
-        description: _descriptionController.text.trim().isEmpty 
-          ? null 
-          : _descriptionController.text.trim(),
+        description: _descriptionController.text.trim().isEmpty ? null : _descriptionController.text.trim(),
         dueDate: _dueDate,
         priority: _priority,
         locationTrigger: jsonEncode(trigger.toJson()), // Store trigger data as JSON string
@@ -823,17 +814,15 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
 
       // Add location trigger
       await ref.read(locationTriggersProvider.notifier).addLocationTrigger(
-        trigger.copyWith(taskId: task.id),
-      );
+            trigger.copyWith(taskId: task.id),
+          );
 
       if (mounted) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              widget.taskToEdit != null 
-                ? 'Location task updated successfully'
-                : 'Location task created successfully',
+              widget.taskToEdit != null ? 'Location task updated successfully' : 'Location task created successfully',
             ),
             behavior: SnackBarBehavior.floating,
           ),
@@ -858,14 +847,14 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 365)),
     );
-    
+
     if (date != null && mounted) {
       if (!context.mounted) return;
       final time = await showTimePicker(
         context: context,
         initialTime: TimeOfDay.fromDateTime(_dueDate ?? DateTime.now()),
       );
-      
+
       if (time != null) {
         setState(() {
           _dueDate = DateTime(
@@ -971,7 +960,7 @@ extension LocationTriggerExtension on LocationTrigger {
       'createdAt': createdAt.toIso8601String(),
     };
   }
-  
+
   LocationTrigger copyWith({
     String? id,
     String? taskId,
@@ -988,4 +977,3 @@ extension LocationTriggerExtension on LocationTrigger {
     );
   }
 }
-

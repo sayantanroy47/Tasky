@@ -2,10 +2,10 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../../core/theme/app_theme_data.dart';
-import '../../../core/theme/typography_constants.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../../core/theme/app_theme_data.dart';
+import '../../../core/theme/typography_constants.dart';
 
 /// Ultra-modern theme card with refined design and micro-interactions
 class UltraModernThemeCard extends StatefulWidget {
@@ -30,15 +30,13 @@ class UltraModernThemeCard extends StatefulWidget {
   State<UltraModernThemeCard> createState() => _UltraModernThemeCardState();
 }
 
-class _UltraModernThemeCardState extends State<UltraModernThemeCard>
-    with TickerProviderStateMixin {
-  
+class _UltraModernThemeCardState extends State<UltraModernThemeCard> with TickerProviderStateMixin {
   // Animation Controllers
   late AnimationController _hoverController;
   late AnimationController _effectController;
   late AnimationController _selectionController;
   late AnimationController _pressController;
-  
+
   // Animations
   late Animation<double> _hoverAnimation;
   late Animation<double> _effectAnimation;
@@ -46,7 +44,7 @@ class _UltraModernThemeCardState extends State<UltraModernThemeCard>
   late Animation<double> _pressAnimation;
   late Animation<double> _elevationAnimation;
   late Animation<double> _borderAnimation;
-  
+
   // State
   bool _isHovered = false;
   // bool _isPressed = false;
@@ -71,8 +69,8 @@ class _UltraModernThemeCardState extends State<UltraModernThemeCard>
       duration: const Duration(seconds: 4),
       vsync: this,
     )..repeat();
-    _effectAnimation = Tween<double>(begin: 0.0, end: 1.0)
-        .animate(CurvedAnimation(parent: _effectController, curve: Curves.linear));
+    _effectAnimation =
+        Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _effectController, curve: Curves.linear));
 
     // Selection animation
     _selectionController = AnimationController(
@@ -91,10 +89,8 @@ class _UltraModernThemeCardState extends State<UltraModernThemeCard>
         .animate(CurvedAnimation(parent: _pressController, curve: Curves.easeInOut));
 
     // Derived animations
-    _elevationAnimation = Tween<double>(begin: 2.0, end: 8.0)
-        .animate(_hoverAnimation);
-    _borderAnimation = Tween<double>(begin: 0.1, end: 0.3)
-        .animate(_hoverAnimation);
+    _elevationAnimation = Tween<double>(begin: 2.0, end: 8.0).animate(_hoverAnimation);
+    _borderAnimation = Tween<double>(begin: 0.1, end: 0.3).animate(_hoverAnimation);
 
     // Start selection animation if selected
     if (widget.isSelected) {
@@ -160,7 +156,7 @@ class _UltraModernThemeCardState extends State<UltraModernThemeCard>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return MouseRegion(
       onEnter: (_) => _handleHover(true),
       onExit: (_) => _handleHover(false),
@@ -226,23 +222,23 @@ class _UltraModernThemeCardState extends State<UltraModernThemeCard>
                 children: [
                   // Ultra-modern background
                   _buildUltraModernBackground(colors, isDark),
-                  
+
                   // Glassmorphism overlay
                   _buildGlassmorphismOverlay(theme, colors),
-                  
+
                   // Content
                   _buildCardContent(theme, colors, metadata),
-                  
+
                   // Selection indicator
                   if (widget.isSelected) _buildSelectionIndicator(colors),
-                  
+
                   // Ultra-thin border
                   _buildUltraThinBorder(colors),
                 ],
               ),
             ),
           ),
-          
+
           // Floating elements
           if (_isHovered) _buildFloatingElements(colors),
         ],
@@ -252,7 +248,7 @@ class _UltraModernThemeCardState extends State<UltraModernThemeCard>
 
   Widget _buildUltraModernBackground(dynamic colors, bool isDark) {
     final themeId = widget.theme.metadata.id;
-    
+
     if (themeId.contains('matrix')) {
       return _buildMatrixBackground(colors, isDark);
     } else if (themeId.contains('vegeta')) {
@@ -284,22 +280,24 @@ class _UltraModernThemeCardState extends State<UltraModernThemeCard>
           ),
         ),
         // Matrix rain particles
-        ...List.generate(6, (i) => Positioned(
-          left: (i * 40.0 + _effectAnimation.value * 20) % 300,
-          top: (_effectAnimation.value * 350 + i * 60) % (widget.height + 50) - 30,
-          child: Opacity(
-            opacity: 0.3 + (math.sin(_effectAnimation.value * math.pi * 2 + i) * 0.2),
-            child: Text(
-              ['01', '10', '11', '00'][i % 4],
-              style: TextStyle(
-                color: colors.primary,
-                fontSize: 10 + (i % 2) * 2,
-                fontFamily: 'monospace',
-                fontWeight: FontWeight.w300,
-              ),
-            ),
-          ),
-        )),
+        ...List.generate(
+            6,
+            (i) => Positioned(
+                  left: (i * 40.0 + _effectAnimation.value * 20) % 300,
+                  top: (_effectAnimation.value * 350 + i * 60) % (widget.height + 50) - 30,
+                  child: Opacity(
+                    opacity: 0.3 + (math.sin(_effectAnimation.value * math.pi * 2 + i) * 0.2),
+                    child: Text(
+                      ['01', '10', '11', '00'][i % 4],
+                      style: TextStyle(
+                        color: colors.primary,
+                        fontSize: 10 + (i % 2) * 2,
+                        fontFamily: 'monospace',
+                        fontWeight: FontWeight.w300,
+                      ),
+                    ),
+                  ),
+                )),
       ],
     );
   }
@@ -463,9 +461,9 @@ class _UltraModernThemeCardState extends State<UltraModernThemeCard>
                   size: 20,
                 ),
               ),
-              
+
               const Spacer(),
-              
+
               // Popularity indicator
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -490,7 +488,7 @@ class _UltraModernThemeCardState extends State<UltraModernThemeCard>
                       metadata.popularityScore.toStringAsFixed(1),
                       style: TextStyle(
                         color: colors.primary,
-                        fontSize: 10,
+                        fontSize: TypographyConstants.labelSmall, // 11.0 - Fixed critical WCAG violation (was 10px)
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -499,9 +497,9 @@ class _UltraModernThemeCardState extends State<UltraModernThemeCard>
               ),
             ],
           ),
-          
+
           const Spacer(),
-          
+
           // Theme details section
           Container(
             padding: const EdgeInsets.all(16),
@@ -527,13 +525,13 @@ class _UltraModernThemeCardState extends State<UltraModernThemeCard>
                 _buildHighlightedText(
                   metadata.name,
                   theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w500,
                     color: theme.colorScheme.onSurface,
                   ),
                 ),
-                
+
                 const SizedBox(height: 8),
-                
+
                 // Ultra-thin color palette
                 Row(
                   children: [
@@ -542,9 +540,9 @@ class _UltraModernThemeCardState extends State<UltraModernThemeCard>
                     _buildUltraThinColorSwatch(colors.secondary),
                     const SizedBox(width: 6),
                     _buildUltraThinColorSwatch(colors.accent),
-                    
+
                     const Spacer(),
-                    
+
                     // Theme category badge
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
@@ -560,7 +558,7 @@ class _UltraModernThemeCardState extends State<UltraModernThemeCard>
                         metadata.category.toUpperCase(),
                         style: TextStyle(
                           color: colors.primary,
-                          fontSize: 8,
+                          fontSize: TypographyConstants.labelSmall, // 11.0 - Fixed accessibility violation
                           fontWeight: FontWeight.w500,
                           letterSpacing: 0.5,
                         ),
@@ -568,9 +566,9 @@ class _UltraModernThemeCardState extends State<UltraModernThemeCard>
                     ),
                   ],
                 ),
-                
+
                 const SizedBox(height: 8),
-                
+
                 // Description with search highlighting
                 _buildHighlightedText(
                   metadata.description,
@@ -622,7 +620,7 @@ class _UltraModernThemeCardState extends State<UltraModernThemeCard>
             text: text.substring(queryIndex, queryIndex + query.length),
             style: style?.copyWith(
               backgroundColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w500,
             ),
           ),
           TextSpan(text: text.substring(queryIndex + query.length)),
@@ -693,12 +691,10 @@ class _UltraModernThemeCardState extends State<UltraModernThemeCard>
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard * 1.5),
           border: Border.all(
-            color: widget.isSelected 
+            color: widget.isSelected
                 ? colors.primary.withValues(alpha: 0.6 + (_selectionAnimation.value * 0.4))
                 : colors.outline.withValues(alpha: 0.1 + (_hoverAnimation.value * 0.2)),
-            width: widget.isSelected 
-                ? 0.3 + (_selectionAnimation.value * 0.5)
-                : _borderAnimation.value,
+            width: widget.isSelected ? 0.3 + (_selectionAnimation.value * 0.5) : _borderAnimation.value,
           ),
         ),
       ),
@@ -727,4 +723,3 @@ class _UltraModernThemeCardState extends State<UltraModernThemeCard>
     );
   }
 }
-

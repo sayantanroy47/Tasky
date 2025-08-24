@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../widgets/standardized_app_bar.dart';
-import '../widgets/glassmorphism_container.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+
 import '../../core/design_system/design_tokens.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../services/accessibility_service.dart';
 import '../widgets/accessible_widgets.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import '../widgets/glassmorphism_container.dart';
+import '../widgets/standardized_app_bar.dart';
 
 /// Screen for managing accessibility settings
 class AccessibilitySettingsScreen extends ConsumerWidget {
   const AccessibilitySettingsScreen({super.key});
-  
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final accessibilityService = ref.read(accessibilityServiceProvider);
@@ -50,7 +51,6 @@ class AccessibilitySettingsScreen extends ConsumerWidget {
                   ),
                   semanticLabel: 'High contrast mode setting',
                 ),
-                
                 AccessibleListTile(
                   leading: Icon(PhosphorIcons.textAa()),
                   title: const Text('Large Text'),
@@ -64,7 +64,6 @@ class AccessibilitySettingsScreen extends ConsumerWidget {
                   ),
                   semanticLabel: 'Large text mode setting',
                 ),
-                
                 AccessibleListTile(
                   leading: Icon(PhosphorIcons.clock()),
                   title: const Text('Reduce Motion'),
@@ -78,7 +77,6 @@ class AccessibilitySettingsScreen extends ConsumerWidget {
                   ),
                   semanticLabel: 'Reduce motion setting',
                 ),
-                
                 AccessibleListTile(
                   leading: Icon(PhosphorIcons.palette()),
                   title: const Text('Color Blind Support'),
@@ -90,9 +88,9 @@ class AccessibilitySettingsScreen extends ConsumerWidget {
               ],
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Audio and haptic section
           _buildSectionHeader(context, 'Audio & Haptic'),
           GlassmorphismContainer(
@@ -114,7 +112,6 @@ class AccessibilitySettingsScreen extends ConsumerWidget {
                   ),
                   semanticLabel: 'Screen reader support setting',
                 ),
-                
                 AccessibleListTile(
                   leading: Icon(PhosphorIcons.microphone()),
                   title: const Text('Voice Over'),
@@ -128,7 +125,6 @@ class AccessibilitySettingsScreen extends ConsumerWidget {
                   ),
                   semanticLabel: 'Voice over setting',
                 ),
-                
                 AccessibleListTile(
                   leading: Icon(PhosphorIcons.vibrate()),
                   title: const Text('Haptic Feedback'),
@@ -142,7 +138,6 @@ class AccessibilitySettingsScreen extends ConsumerWidget {
                   ),
                   semanticLabel: 'Haptic feedback setting',
                 ),
-                
               ],
             ),
           ),
@@ -157,9 +152,9 @@ class AccessibilitySettingsScreen extends ConsumerWidget {
       child: Text(
         title,
         style: Theme.of(context).textTheme.titleMedium?.copyWith(
-          fontWeight: FontWeight.w600,
-          color: Theme.of(context).colorScheme.primary,
-        ),
+              fontWeight: FontWeight.w500,
+              color: Theme.of(context).colorScheme.primary,
+            ),
       ),
     );
   }
@@ -182,5 +177,3 @@ class AccessibilitySettingsScreen extends ConsumerWidget {
     // Implementation would go here
   }
 }
-
-

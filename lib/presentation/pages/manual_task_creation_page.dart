@@ -1,72 +1,99 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import '../../domain/entities/task_model.dart';
-import '../../domain/models/enums.dart';
-import '../providers/task_provider.dart' show taskOperationsProvider;
-import '../widgets/glassmorphism_container.dart';
-import '../widgets/theme_background_widget.dart';
-import '../widgets/standardized_app_bar.dart';
-import '../../core/theme/typography_constants.dart';
+
 import '../../core/design_system/design_tokens.dart';
 import '../../core/theme/material3/motion_system.dart';
+import '../../core/theme/typography_constants.dart';
+import '../../domain/entities/task_model.dart';
+import '../../domain/models/enums.dart';
+import '../../domain/entities/recurrence_pattern.dart';
+import '../providers/task_provider.dart' show taskOperationsProvider;
+import '../widgets/glassmorphism_container.dart';
+import '../widgets/standardized_app_bar.dart';
+import '../widgets/standardized_text.dart';
+import '../widgets/theme_background_widget.dart';
+import '../widgets/recurrence_pattern_picker.dart';
 
 /// Ultra-modern full-screen manual task creation page
 class ManualTaskCreationPage extends ConsumerStatefulWidget {
-  final Map<String, String>? prePopulatedData;
-  
+  final Map<String, dynamic>? prePopulatedData;
+
   const ManualTaskCreationPage({
     super.key,
     this.prePopulatedData,
   });
-  
+
   @override
   ConsumerState<ManualTaskCreationPage> createState() => _ManualTaskCreationPageState();
 }
 
-class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
-    with TickerProviderStateMixin {
-  
+class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage> with TickerProviderStateMixin {
   // Animation controllers
   late AnimationController _fadeController;
   late Animation<double> _fadeAnimation;
-  
+
   // Form controllers
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
-  
+
   // Task properties
   TaskPriority _priority = TaskPriority.medium;
   DateTime? _dueDate = DateTime.now();
   TimeOfDay? _dueTime;
   DateTime? _reminderDate;
   TimeOfDay? _reminderTime;
+  String? _audioFilePath;
   bool _isCreating = false;
   
+  // Recurring task properties
+  bool _isRecurringTask = false;
+  RecurrencePattern? _recurrencePattern;
+
   @override
   void initState() {
     super.initState();
-    
+
     _fadeController = AnimationController(
       duration: ExpressiveMotionSystem.durationMedium2,
       vsync: this,
     );
-    
+
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _fadeController, curve: Curves.easeOut),
     );
-    
+
     // Pre-populate from widget data
     if (widget.prePopulatedData != null) {
-      _titleController.text = widget.prePopulatedData!['title'] ?? '';
-      _descriptionController.text = widget.prePopulatedData!['description'] ?? '';
+      // Handle title from manual entry - transcribedText should go to description
+      _titleController.text = (widget.prePopulatedData!['title'] as String?) ?? '';
+      _descriptionController.text = (widget.prePopulatedData!['description'] as String?) ?? 
+                                   (widget.prePopulatedData!['transcribedText'] as String?) ?? '';
+      
+      // Handle due date pre-population
+      final dueDateString = widget.prePopulatedData!['dueDate'] as String?;
+      if (dueDateString != null && dueDateString.isNotEmpty) {
+        try {
+          _dueDate = DateTime.parse(dueDateString);
+        } catch (e) {
+          debugPrint('Error parsing due date: $dueDateString, error: $e');
+        }
+      }
+      
+      // Handle audio file from voice recording
+      final audioFilePath = widget.prePopulatedData!['audioFilePath'] as String?;
+      if (audioFilePath != null && audioFilePath.isNotEmpty) {
+        _audioFilePath = audioFilePath;
+        debugPrint('Pre-populated audio file: $audioFilePath');
+      }
     }
-    
+
     _fadeController.forward();
   }
-  
+
   @override
   void dispose() {
     _fadeController.dispose();
@@ -74,7 +101,7 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
     _descriptionController.dispose();
     super.dispose();
   }
-  
+
   String _formatDuration(DateTime date, TimeOfDay? time) {
     final now = DateTime.now();
     final dateTime = DateTime(
@@ -84,27 +111,27 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
       time?.hour ?? 0,
       time?.minute ?? 0,
     );
-    
+
     if (dateTime.day == now.day && dateTime.month == now.month && dateTime.year == now.year) {
       return time != null ? 'Today at ${time.format(context)}' : 'Today';
     }
-    
+
     final tomorrow = now.add(const Duration(days: 1));
     if (dateTime.day == tomorrow.day && dateTime.month == tomorrow.month && dateTime.year == tomorrow.year) {
       return time != null ? 'Tomorrow at ${time.format(context)}' : 'Tomorrow';
     }
-    
+
     final dateStr = '${date.day}/${date.month}/${date.year}';
     return time != null ? '$dateStr at ${time.format(context)}' : dateStr;
   }
-  
+
   Future<void> _createTask() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
-    
+
     setState(() => _isCreating = true);
-    
+
     try {
       DateTime? fullDueDate;
       if (_dueDate != null) {
@@ -116,7 +143,7 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
           _dueTime?.minute ?? 59,
         );
       }
-      
+
       DateTime? fullReminderDate;
       if (_reminderDate != null) {
         fullReminderDate = DateTime(
@@ -127,7 +154,7 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
           _reminderTime?.minute ?? 0,
         );
       }
-      
+
       final task = TaskModel.create(
         title: _titleController.text,
         description: _descriptionController.text.isNotEmpty ? _descriptionController.text : null,
@@ -135,13 +162,19 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
         dueDate: fullDueDate,
         metadata: {
           'created_from': 'manual_creation',
-          'creation_mode': widget.prePopulatedData?['creationMode'] ?? 'manual',
+          'creation_mode': (widget.prePopulatedData?['creationMode'] as String?) ?? 'manual',
           'reminder_date': fullReminderDate?.toIso8601String(),
+          // Use correct audio metadata format matching voice-only page and TaskAudioExtensions
+          if (_audioFilePath != null) 'audio': _buildAudioMetadata(),
+          if (_audioFilePath != null) 'isVoiceCreated': widget.prePopulatedData?['creationMode'] == 'voiceToText',
+          if (_audioFilePath != null) 'hasTranscription': (widget.prePopulatedData?['transcribedText'] as String?)?.isNotEmpty ?? false,
+          if (_isRecurringTask && _recurrencePattern != null) 'recurrence_pattern': _recurrencePattern!.toJson(),
+          if (_isRecurringTask) 'is_recurring': 'true',
         },
       );
-      
+
       await ref.read(taskOperationsProvider).createTask(task);
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -167,11 +200,11 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
       }
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return ThemeBackgroundWidget(
       child: Scaffold(
         backgroundColor: Colors.transparent,
@@ -180,7 +213,7 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
           title: 'Create Task',
           actions: [
             SizedBox(
-              width: 80,
+              width: 100,
               child: TextButton(
                 onPressed: _isCreating ? null : _createTask,
                 child: _isCreating
@@ -204,35 +237,40 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
                 child: Column(
                   children: [
                     const SizedBox(height: 20),
-                    
+
                     // Title Section
                     _buildTitleSection(context, theme),
-                    
+
                     const SizedBox(height: 20),
-                    
+
                     // Description Section
                     _buildDescriptionSection(context, theme),
-                    
+
                     const SizedBox(height: 20),
-                    
+
                     // Priority Section
                     _buildPrioritySection(context, theme),
-                    
+
                     const SizedBox(height: 20),
-                    
+
                     // Due Date Section
                     _buildDueDateSection(context, theme),
-                    
+
                     const SizedBox(height: 20),
-                    
+
                     // Reminder Section
                     _buildReminderSection(context, theme),
-                    
+
+                    const SizedBox(height: 20),
+
+                    // Recurring Task Section
+                    _buildRecurringTaskSection(context, theme),
+
                     const SizedBox(height: 32),
-                    
+
                     // Create Button
                     _buildCreateButton(context, theme),
-                    
+
                     const SizedBox(height: 100), // Bottom padding
                   ],
                 ),
@@ -243,7 +281,7 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
       ),
     );
   }
-  
+
   Widget _buildTitleSection(BuildContext context, ThemeData theme) {
     return GlassmorphismContainer(
       level: GlassLevel.content,
@@ -260,12 +298,7 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
                 color: theme.colorScheme.primary,
               ),
               const SizedBox(width: 8),
-              Text(
-                'Task Title',
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+              StandardizedTextVariants.sectionHeader('Title'),
             ],
           ),
           const SizedBox(height: 12),
@@ -289,7 +322,7 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
       ),
     );
   }
-  
+
   Widget _buildDescriptionSection(BuildContext context, ThemeData theme) {
     return GlassmorphismContainer(
       level: GlassLevel.content,
@@ -297,7 +330,8 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
       borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [Row(
+        children: [
+          Row(
             children: [
               Icon(
                 PhosphorIcons.textAa(),
@@ -305,18 +339,12 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
                 color: theme.colorScheme.primary,
               ),
               const SizedBox(width: 8),
-              Text(
-                'Description',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+              StandardizedTextVariants.sectionHeader('Description'),
               const SizedBox(width: 8),
-              Text(
+              StandardizedText(
                 '(Optional)',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
+                style: StandardizedTextStyle.taskMeta,
+                color: theme.colorScheme.onSurfaceVariant,
               ),
             ],
           ),
@@ -336,7 +364,7 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
       ),
     );
   }
-  
+
   Widget _buildPrioritySection(BuildContext context, ThemeData theme) {
     return GlassmorphismContainer(
       level: GlassLevel.content,
@@ -344,7 +372,8 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
       borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: [Row(
+        children: [
+          Row(
             children: [
               Icon(
                 PhosphorIcons.flag(),
@@ -352,12 +381,7 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
                 color: theme.colorScheme.primary,
               ),
               const SizedBox(width: 8),
-              Text(
-                'Priority',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+              StandardizedTextVariants.sectionHeader('Priority'),
             ],
           ),
           const SizedBox(height: 12),
@@ -369,7 +393,7 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
                   : priority == TaskPriority.medium
                       ? theme.colorScheme.secondary
                       : theme.colorScheme.tertiary;
-              
+
               return Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 2),
@@ -390,19 +414,19 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
                         child: Column(
                           children: [
                             Icon(
-                              priority == TaskPriority.high ? PhosphorIcons.caretUp() :
-                              priority == TaskPriority.medium ? PhosphorIcons.minus() :
-                              PhosphorIcons.caretDown(),
+                              priority == TaskPriority.high
+                                  ? PhosphorIcons.caretUp()
+                                  : priority == TaskPriority.medium
+                                      ? PhosphorIcons.minus()
+                                      : PhosphorIcons.caretDown(),
                               color: isSelected ? color : theme.colorScheme.onSurfaceVariant,
                               size: 20,
                             ),
                             const SizedBox(height: 4),
-                            Text(
+                            StandardizedText(
                               priority.name.toUpperCase(),
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                fontWeight: FontWeight.w500,
-                                color: isSelected ? color : theme.colorScheme.onSurfaceVariant,
-                              ),
+                              style: StandardizedTextStyle.labelMedium,
+                              color: isSelected ? color : theme.colorScheme.onSurfaceVariant,
                             ),
                           ],
                         ),
@@ -417,231 +441,209 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
       ),
     );
   }
-  
+
   Widget _buildDueDateSection(BuildContext context, ThemeData theme) {
     return GlassmorphismContainer(
       level: GlassLevel.content,
       padding: const EdgeInsets.all(20),
       borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [Row(
-            children: [
-              Icon(
-                PhosphorIcons.calendar(),
-                size: 20,
-                color: theme.colorScheme.primary,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                'Due Date',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                '(Optional)',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: () async {
-                    final date = await showDatePicker(
-                      context: context,
-                      initialDate: _dueDate ?? DateTime.now(),
-                      firstDate: DateTime.now(),
-                      lastDate: DateTime.now().add(const Duration(days: 365)),
-                    );
-                    if (date != null) {
-                      setState(() => _dueDate = date);
-                    }
-                  },
-                  icon: Icon(PhosphorIcons.calendar()),
-                  label: Text(_dueDate != null 
-                      ? '${_dueDate!.day}/${_dueDate!.month}/${_dueDate!.year}'
-                      : 'Select Date'),
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: _dueDate == null ? null : () async {
-                    final time = await showTimePicker(
-                      context: context,
-                      initialTime: _dueTime ?? const TimeOfDay(hour: 23, minute: 59),
-                    );
-                    if (time != null) {
-                      setState(() => _dueTime = time);
-                    }
-                  },
-                  icon: Icon(PhosphorIcons.clock()),
-                  label: Text(_dueTime != null 
-                      ? _dueTime!.format(context)
-                      : 'Set Time'),
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                  ),
-                ),
-              ),
-              if (_dueDate != null)
-                IconButton(
-                  onPressed: () => setState(() {
-                    _dueDate = null;
-                    _dueTime = null;
-                  }),
-                  icon: Icon(PhosphorIcons.x()),
-                  tooltip: 'Clear due date',
-                ),
-            ],
-          ),
-          
-          if (_dueDate != null) ...[
-            const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                'Due: ${_formatDuration(_dueDate!, _dueTime)}',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: theme.colorScheme.primary,
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(
+          children: [
+            Icon(
+              PhosphorIcons.calendar(),
+              size: 20,
+              color: theme.colorScheme.primary,
+            ),
+            const SizedBox(width: 8),
+            StandardizedTextVariants.sectionHeader('Due Date'),
+            const SizedBox(width: 8),
+            StandardizedText(
+              '(Optional)',
+              style: StandardizedTextStyle.taskMeta,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: () async {
+                  final date = await showDatePicker(
+                    context: context,
+                    initialDate: _dueDate ?? DateTime.now(),
+                    firstDate: DateTime.now(),
+                    lastDate: DateTime.now().add(const Duration(days: 365)),
+                  );
+                  if (date != null) {
+                    setState(() => _dueDate = date);
+                  }
+                },
+                icon: Icon(PhosphorIcons.calendar()),
+                label: Text(_dueDate != null ? '${_dueDate!.day}/${_dueDate!.month}/${_dueDate!.year}' : 'Select Date'),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
               ),
             ),
-          ]]),
+            const SizedBox(width: 8),
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: _dueDate == null
+                    ? null
+                    : () async {
+                        final time = await showTimePicker(
+                          context: context,
+                          initialTime: _dueTime ?? const TimeOfDay(hour: 23, minute: 59),
+                        );
+                        if (time != null) {
+                          setState(() => _dueTime = time);
+                        }
+                      },
+                icon: Icon(PhosphorIcons.clock()),
+                label: Text(_dueTime != null ? _dueTime!.format(context) : 'Set Time'),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+              ),
+            ),
+            if (_dueDate != null)
+              IconButton(
+                onPressed: () => setState(() {
+                  _dueDate = null;
+                  _dueTime = null;
+                }),
+                icon: Icon(PhosphorIcons.x()),
+                tooltip: 'Clear due date',
+              ),
+          ],
+        ),
+        if (_dueDate != null) ...[
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: StandardizedText(
+              'Due: ${_formatDuration(_dueDate!, _dueTime)}',
+              style: StandardizedTextStyle.labelMedium,
+              color: theme.colorScheme.primary,
+            ),
+          ),
+        ]
+      ]),
     );
   }
-  
+
   Widget _buildReminderSection(BuildContext context, ThemeData theme) {
     return GlassmorphismContainer(
       level: GlassLevel.content,
       padding: const EdgeInsets.all(20),
       borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [Row(
-            children: [
-              Icon(
-                PhosphorIcons.bell(),
-                size: 20,
-                color: theme.colorScheme.primary,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                'Reminder',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                '(Optional)',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: () async {
-                    final date = await showDatePicker(
-                      context: context,
-                      initialDate: _reminderDate ?? DateTime.now(),
-                      firstDate: DateTime.now(),
-                      lastDate: DateTime.now().add(const Duration(days: 365)),
-                    );
-                    if (date != null) {
-                      setState(() => _reminderDate = date);
-                    }
-                  },
-                  icon: Icon(PhosphorIcons.calendar()),
-                  label: Text(_reminderDate != null 
-                      ? '${_reminderDate!.day}/${_reminderDate!.month}/${_reminderDate!.year}'
-                      : 'Select Date'),
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: _reminderDate == null ? null : () async {
-                    final time = await showTimePicker(
-                      context: context,
-                      initialTime: _reminderTime ?? const TimeOfDay(hour: 9, minute: 0),
-                    );
-                    if (time != null) {
-                      setState(() => _reminderTime = time);
-                    }
-                  },
-                  icon: Icon(PhosphorIcons.clock()),
-                  label: Text(_reminderTime != null 
-                      ? _reminderTime!.format(context)
-                      : 'Set Time'),
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                  ),
-                ),
-              ),
-              if (_reminderDate != null)
-                IconButton(
-                  onPressed: () => setState(() {
-                    _reminderDate = null;
-                    _reminderTime = null;
-                  }),
-                  icon: Icon(PhosphorIcons.x()),
-                  tooltip: 'Clear reminder',
-                ),
-            ],
-          ),
-          
-          if (_reminderDate != null) ...[
-            const SizedBox(height: 8),
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.secondaryContainer.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                'Reminder: ${_formatDuration(_reminderDate!, _reminderTime)}',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: theme.colorScheme.secondary,
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(
+          children: [
+            Icon(
+              PhosphorIcons.bell(),
+              size: 20,
+              color: theme.colorScheme.primary,
+            ),
+            const SizedBox(width: 8),
+            StandardizedTextVariants.sectionHeader('Reminder'),
+            const SizedBox(width: 8),
+            StandardizedText(
+              '(Optional)',
+              style: StandardizedTextStyle.taskMeta,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: () async {
+                  final date = await showDatePicker(
+                    context: context,
+                    initialDate: _reminderDate ?? DateTime.now(),
+                    firstDate: DateTime.now(),
+                    lastDate: DateTime.now().add(const Duration(days: 365)),
+                  );
+                  if (date != null) {
+                    setState(() => _reminderDate = date);
+                  }
+                },
+                icon: Icon(PhosphorIcons.calendar()),
+                label: Text(_reminderDate != null
+                    ? '${_reminderDate!.day}/${_reminderDate!.month}/${_reminderDate!.year}'
+                    : 'Select Date'),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
                 ),
               ),
             ),
-          ]]),
+            const SizedBox(width: 8),
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: _reminderDate == null
+                    ? null
+                    : () async {
+                        final time = await showTimePicker(
+                          context: context,
+                          initialTime: _reminderTime ?? const TimeOfDay(hour: 9, minute: 0),
+                        );
+                        if (time != null) {
+                          setState(() => _reminderTime = time);
+                        }
+                      },
+                icon: Icon(PhosphorIcons.clock()),
+                label: Text(_reminderTime != null ? _reminderTime!.format(context) : 'Set Time'),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+              ),
+            ),
+            if (_reminderDate != null)
+              IconButton(
+                onPressed: () => setState(() {
+                  _reminderDate = null;
+                  _reminderTime = null;
+                }),
+                icon: Icon(PhosphorIcons.x()),
+                tooltip: 'Clear reminder',
+              ),
+          ],
+        ),
+        if (_reminderDate != null) ...[
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.secondaryContainer.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: StandardizedText(
+              'Reminder: ${_formatDuration(_reminderDate!, _reminderTime)}',
+              style: StandardizedTextStyle.labelMedium,
+              color: theme.colorScheme.secondary,
+            ),
+          ),
+        ]
+      ]),
     );
   }
-  
+
   Widget _buildCreateButton(BuildContext context, ThemeData theme) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton.icon(
         onPressed: _isCreating ? null : _createTask,
-        icon: _isCreating 
+        icon: _isCreating
             ? const SizedBox(
                 width: 16,
                 height: 16,
@@ -661,5 +663,79 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
       ),
     );
   }
-}
 
+  Widget _buildRecurringTaskSection(BuildContext context, ThemeData theme) {
+    return GlassmorphismContainer(
+      level: GlassLevel.content,
+      padding: const EdgeInsets.all(20),
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(
+          children: [
+            Icon(
+              PhosphorIcons.clockCounterClockwise(),
+              size: 20,
+              color: theme.colorScheme.primary,
+            ),
+            const SizedBox(width: 8),
+            StandardizedTextVariants.sectionHeader('Recurring Task'),
+            const Spacer(),
+            Switch(
+              value: _isRecurringTask,
+              onChanged: (value) {
+                setState(() {
+                  _isRecurringTask = value;
+                  if (!value) {
+                    _recurrencePattern = null;
+                  }
+                });
+              },
+            ),
+          ],
+        ),
+        if (_isRecurringTask) ...[
+          const SizedBox(height: 16),
+          RecurrencePatternPicker(
+            initialPattern: _recurrencePattern,
+            onPatternChanged: (pattern) {
+              setState(() {
+                _recurrencePattern = pattern;
+              });
+            },
+          ),
+        ],
+      ]),
+    );
+  }
+
+  /// Build audio metadata in the correct format expected by TaskAudioExtensions
+  Map<String, dynamic> _buildAudioMetadata() {
+    final audioData = widget.prePopulatedData?['audioData'] as Map<String, dynamic>?;
+    
+    // Use data from voice recording if available, otherwise create basic metadata
+    if (audioData != null) {
+      return {
+        'filePath': _audioFilePath!,
+        'duration': audioData['totalDuration'] ?? 0,
+        'format': audioData['format'] ?? 'aac',
+        'fileSize': audioData['fileSize'],
+        'recordingTimestamp': audioData['recordingTimestamp'] ?? DateTime.now().toIso8601String(),
+        // Additional metadata from concatenated recordings
+        'isConcatenated': audioData['isConcatenated'] ?? false,
+        'originalFileCount': audioData['originalFileCount'] ?? 1,
+        'hasMultipleRecordings': audioData['hasMultipleRecordings'] ?? false,
+        'recordingCount': audioData['recordingCount'] ?? 1,
+      };
+    } else {
+      // Fallback for cases without detailed audio metadata
+      return {
+        'filePath': _audioFilePath!,
+        'duration': 0,
+        'format': 'aac',
+        'recordingTimestamp': DateTime.now().toIso8601String(),
+        'isConcatenated': false,
+        'originalFileCount': 1,
+      };
+    }
+  }
+}

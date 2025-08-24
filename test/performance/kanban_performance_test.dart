@@ -3,11 +3,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mockito/mockito.dart';
 
-import 'package:tasky/domain/entities/task_model.dart';
-import 'package:tasky/domain/models/enums.dart';
-import 'package:tasky/presentation/widgets/kanban_board_view.dart';
-import 'package:tasky/presentation/widgets/kanban_performance_optimizer.dart';
-import 'package:tasky/presentation/providers/kanban_providers.dart';
+import 'package:task_tracker_app/domain/entities/task_model.dart';
+import 'package:task_tracker_app/domain/models/enums.dart';
+import 'package:task_tracker_app/presentation/widgets/kanban_board_view.dart';
+import 'package:task_tracker_app/presentation/widgets/kanban_performance_optimizer.dart';
+import 'package:task_tracker_app/presentation/providers/kanban_providers.dart';
 
 import '../presentation/widgets/kanban_board_test.mocks.dart';
 
@@ -146,7 +146,9 @@ void main() {
       final operations = KanbanOperations(mockRepository);
       
       // Setup mock responses
-      when(mockRepository.updateTask(any)).thenAnswer((_) async {});
+      when(mockRepository.updateTask(any)).thenAnswer((_) async {
+        return null;
+      });
       
       // Benchmark moving tasks between columns
       final stopwatch = Stopwatch()..start();
@@ -199,7 +201,9 @@ void main() {
       final operations = KanbanOperations(mockRepository);
       
       // Setup mock responses
-      when(mockRepository.updateTask(any)).thenAnswer((_) async {});
+      when(mockRepository.updateTask(any)).thenAnswer((_) async {
+        return null;
+      });
       
       // Test batch priority update
       final stopwatch1 = Stopwatch()..start();
@@ -232,7 +236,7 @@ void main() {
       final tasks = _generateLargeTasokDataset(500);
       
       // Test cache performance
-      final cacheKey = 'test_filter';
+      const cacheKey = 'test_filter';
       
       // First call should be cache miss
       final stopwatch1 = Stopwatch()..start();

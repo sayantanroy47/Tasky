@@ -20,7 +20,7 @@ class SimpleMatrixRainPainter extends CustomPainter {
       color: isDark 
           ? const Color(0xFF00FF00).withValues(alpha: 0.6)
           : const Color(0xFF006600).withValues(alpha: 0.3),
-      fontSize: 12,
+      fontSize: 12, // Hardcoded for decorative background - not UI typography
       fontFamily: 'monospace',
     );
 

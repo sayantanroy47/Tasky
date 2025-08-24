@@ -48,7 +48,7 @@ class NotificationSettingsPage extends ConsumerWidget {
                           'Retry',
                           style: TextStyle(
                             color: Colors.white,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ),
@@ -166,7 +166,7 @@ class NotificationSettingsPage extends ConsumerWidget {
                             'Grant',
                             style: TextStyle(
                               color: Colors.white,
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ),
@@ -504,7 +504,7 @@ class NotificationSettingsPage extends ConsumerWidget {
                         'Send Test Notification',
                         style: TextStyle(
                           color: Colors.white,
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],

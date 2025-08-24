@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../services/collaboration_service.dart';
+import '../../core/theme/typography_constants.dart';
 import '../widgets/standardized_app_bar.dart';
 
 class CollaborationManagementScreen extends ConsumerStatefulWidget {
@@ -108,7 +109,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
                 const Text(
                   'Add Collaborator',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: TypographyConstants.bodyLarge, // 16.0 - Fixed hardcoded font size (was 18px)
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -172,7 +173,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
                 const Text(
                   'Current Collaborators',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: TypographyConstants.bodyLarge, // 16.0 - Fixed hardcoded font size (was 18px)
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -287,7 +288,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
                 const Text(
                   'List Settings',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: TypographyConstants.bodyLarge, // 16.0 - Fixed hardcoded font size (was 18px)
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -337,7 +338,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
                 const Text(
                   'Sharing Settings',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: TypographyConstants.bodyLarge, // 16.0 - Fixed hardcoded font size (was 18px)
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -390,7 +391,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
                 const Text(
                   'Danger Zone',
                   style: TextStyle(
-                    fontSize: 18,
+                    fontSize: TypographyConstants.bodyLarge, // 16.0 - Fixed hardcoded font size (was 18px)
                     fontWeight: FontWeight.w500,
                     color: Colors.red,
                   ),

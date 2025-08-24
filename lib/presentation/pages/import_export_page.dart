@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../services/import_export_service.dart';
 import '../../core/providers/core_providers.dart';
+import '../../domain/models/enums.dart';
 import '../providers/task_providers.dart';
 import '../widgets/standardized_app_bar.dart';
 import '../widgets/theme_background_widget.dart';
+import '../widgets/standardized_text.dart';
 import '../../core/theme/typography_constants.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
@@ -86,17 +88,11 @@ class ImportExportPage extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Export Tasks',
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      Text(
+                      StandardizedTextVariants.sectionHeader('Export Tasks'),
+                      StandardizedText(
                         'Download your tasks and data',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
+                        style: StandardizedTextStyle.bodyMedium,
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ],
                   ),
@@ -171,19 +167,15 @@ class ImportExportPage extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 12),
-              Text(
+              StandardizedTextVariants.cardTitle(
                 title,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 4),
-              Text(
+              StandardizedText(
                 subtitle,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
+                style: StandardizedTextStyle.bodySmall,
+                color: theme.colorScheme.onSurfaceVariant,
                 textAlign: TextAlign.center,
               ),
             ],
@@ -228,17 +220,11 @@ class ImportExportPage extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Import Tasks',
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      Text(
+                      StandardizedTextVariants.sectionHeader('Import Tasks'),
+                      StandardizedText(
                         'Upload tasks from file',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
+                        style: StandardizedTextStyle.bodyMedium,
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ],
                   ),
@@ -282,11 +268,10 @@ class ImportExportPage extends ConsumerWidget {
                   ),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: Text(
+                    child: StandardizedText(
                       'Supported formats: JSON (.json), CSV (.csv)',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
+                      style: StandardizedTextStyle.bodySmall,
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],
@@ -317,12 +302,7 @@ class ImportExportPage extends ConsumerWidget {
                   size: 24,
                 ),
                 const SizedBox(width: 12),
-                Text(
-                  'Important Information',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
+                StandardizedTextVariants.cardTitle('Important Information'),
               ],
             ),
             
@@ -381,17 +361,14 @@ class ImportExportPage extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              StandardizedText(
                 title,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
+                style: StandardizedTextStyle.labelLarge,
               ),
-              Text(
+              StandardizedText(
                 description,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
+                style: StandardizedTextStyle.bodySmall,
+                color: theme.colorScheme.onSurfaceVariant,
               ),
             ],
           ),
@@ -480,7 +457,7 @@ class ImportExportPage extends ConsumerWidget {
           children: [
             Icon(
               PhosphorIcons.checkCircle(),
-              color: Colors.green,
+              color: Theme.of(context).colorScheme.primary,
               size: 28,
             ),
             const SizedBox(width: 12),
@@ -506,7 +483,7 @@ class ImportExportPage extends ConsumerWidget {
           children: [
             Icon(
               PhosphorIcons.warningCircle(),
-              color: Colors.red,
+              color: Theme.of(context).colorScheme.error,
               size: 28,
             ),
             const SizedBox(width: 12),
@@ -532,7 +509,7 @@ class ImportExportPage extends ConsumerWidget {
           children: [
             Icon(
               result.isSuccessful ? PhosphorIcons.checkCircle() : PhosphorIcons.warning(),
-              color: result.isSuccessful ? Colors.green : Colors.orange,
+              color: result.isSuccessful ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.tertiary,
               size: 28,
             ),
             const SizedBox(width: 12),
@@ -551,13 +528,13 @@ class ImportExportPage extends ConsumerWidget {
               
               if (result.hasErrors) ...[
                 const SizedBox(height: 16),
-                const Text(
+                const StandardizedText(
                   'Errors:',
-                  style: TextStyle(fontWeight: FontWeight.w500),
+                  style: StandardizedTextStyle.labelLarge,
                 ),
                 const SizedBox(height: 8),
                 ...result.errors.take(5).map((error) => 
-                  Text('• $error', style: const TextStyle(fontSize: TypographyConstants.bodySmall))
+                  StandardizedText('• $error', style: StandardizedTextStyle.bodySmall)
                 ),
                 if (result.errors.length > 5)
                   Text('... and ${result.errors.length - 5} more errors'),

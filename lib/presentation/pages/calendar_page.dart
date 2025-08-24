@@ -6,6 +6,7 @@ import '../widgets/enhanced_calendar_widget.dart';
 import '../providers/enhanced_calendar_provider.dart';
 import '../../domain/entities/calendar_event.dart';
 import '../../core/theme/typography_constants.dart';
+import '../../core/design_system/design_tokens.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Calendar page for viewing tasks in calendar format
@@ -44,10 +45,10 @@ class CalendarPage extends ConsumerWidget {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.only(
-            top: 4.0, // Minimal top padding
-            left: 8.0, // Reduced horizontal padding
-            right: 8.0,
-            bottom: 4.0, // Minimal bottom padding
+            top: SpacingTokens.xs, // Minimal top padding (4px)
+            left: SpacingTokens.sm, // Standard horizontal padding (8px)
+            right: SpacingTokens.sm,
+            bottom: SpacingTokens.xs, // Minimal bottom padding (4px)
           ),
           child: calendarState.isLoading
               ? const Center(child: CircularProgressIndicator())
@@ -55,7 +56,7 @@ class CalendarPage extends ConsumerWidget {
                   ? _buildErrorWidget(context, ref, calendarState.errorMessage!)
                   : GlassmorphismContainer(
                       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                      padding: const EdgeInsets.all(8.0), // Reduced internal padding
+                      padding: const EdgeInsets.all(SpacingTokens.sm), // Standard padding (8px)
                       child: const EnhancedCalendarWidget(),
                     ),
         ),
@@ -73,20 +74,20 @@ class CalendarPage extends ConsumerWidget {
             size: 64,
             color: Theme.of(context).colorScheme.error,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: SpacingTokens.md), // 16px
           Text(
             'Calendar Error',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
               color: Theme.of(context).colorScheme.error,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: SpacingTokens.sm), // 8px
           Text(
             error,
             style: Theme.of(context).textTheme.bodyMedium,
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: SpacingTokens.md), // 16px
           ElevatedButton(
             onPressed: () {
               ref.read(enhancedCalendarProvider.notifier).refresh();
@@ -150,7 +151,7 @@ class _CreateEventDialogState extends ConsumerState<_CreateEventDialog> {
                 border: OutlineInputBorder(),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: SpacingTokens.md), // 16px
             
             TextField(
               controller: _descriptionController,
@@ -160,7 +161,7 @@ class _CreateEventDialogState extends ConsumerState<_CreateEventDialog> {
               ),
               maxLines: 3,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: SpacingTokens.md), // 16px
             
             TextField(
               controller: _locationController,
@@ -169,7 +170,7 @@ class _CreateEventDialogState extends ConsumerState<_CreateEventDialog> {
                 border: OutlineInputBorder(),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: SpacingTokens.md), // 16px
             
             // Date picker
             ListTile(
@@ -230,7 +231,7 @@ class _CreateEventDialogState extends ConsumerState<_CreateEventDialog> {
               ),
             ],
             
-            const SizedBox(height: 16),
+            const SizedBox(height: SpacingTokens.md), // 16px
             
             // Color picker
             Column(
@@ -240,7 +241,7 @@ class _CreateEventDialogState extends ConsumerState<_CreateEventDialog> {
                   'Color',
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: SpacingTokens.sm), // 8px
                 Wrap(
                   spacing: 8,
                   children: colors.map((color) {

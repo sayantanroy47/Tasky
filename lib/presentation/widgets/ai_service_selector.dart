@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/design_system/design_tokens.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../core/accessibility/touch_target_validator.dart';
 
@@ -28,19 +29,19 @@ class AIServiceSelector extends ConsumerWidget {
                   PhosphorIcons.cloud(),
                   color: Theme.of(context).colorScheme.primary,
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: SpacingTokens.xs), // 8.0 - Fixed spacing hierarchy
                 Text(
                   'AI Service Provider',
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: SpacingTokens.xs), // 8.0 - Fixed spacing hierarchy
             Text(
               'Choose which AI service to use for task parsing',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: SpacingTokens.md), // 16.0 - Fixed spacing hierarchy
             
             // Local Processing Option
             ListTile(
@@ -93,26 +94,26 @@ class AIServiceSelector extends ConsumerWidget {
               trailing: Icon(PhosphorIcons.robot()),
             ),
             
-            const SizedBox(height: 16),
+            const SizedBox(height: SpacingTokens.md), // 16.0 - Fixed spacing hierarchy
             
             // API Key Configuration
             if (config.serviceType != AIServiceType.local) ...[
               const Divider(),
-              const SizedBox(height: 16),
+              const SizedBox(height: SpacingTokens.md), // 16.0 - Fixed spacing hierarchy
               Row(
                 children: [
                   Icon(
                     PhosphorIcons.key(),
                     color: Theme.of(context).colorScheme.primary,
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: SpacingTokens.xs), // 8.0 - Fixed spacing hierarchy
                   Text(
                     'API Configuration',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: SpacingTokens.md), // 16.0 - Fixed spacing hierarchy
               FutureBuilder<bool>(
                 future: _hasApiKey(config.serviceType),
                 builder: (context, snapshot) {
@@ -132,7 +133,7 @@ class AIServiceSelector extends ConsumerWidget {
             ],
             
             // Service Status
-            const SizedBox(height: 16),
+            const SizedBox(height: SpacingTokens.md), // 16.0 - Fixed spacing hierarchy
             FutureBuilder<bool>(
               future: _hasApiKey(config.serviceType),
               builder: (context, snapshot) {
@@ -150,7 +151,7 @@ class AIServiceSelector extends ConsumerWidget {
                         color: _getStatusColor(context, config.serviceType, hasKey),
                         size: 20,
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: SpacingTokens.xs), // 8.0 - Fixed spacing hierarchy
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -371,7 +372,7 @@ class _APIConfigDialogState extends State<APIConfigDialog> {
               'Enter your API credentials to enable ${widget.serviceType.displayName} parsing.',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: SpacingTokens.md), // 16.0 - Fixed spacing hierarchy
             
             // API Key Field
             FutureBuilder<String?>(
@@ -412,7 +413,7 @@ class _APIConfigDialogState extends State<APIConfigDialog> {
                 );
               },
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: SpacingTokens.md), // 16.0 - Fixed spacing hierarchy
             
             // Base URL Field (Advanced)
             ExpansionTile(
@@ -430,7 +431,7 @@ class _APIConfigDialogState extends State<APIConfigDialog> {
               ],
             ),
             
-            const SizedBox(height: 16),
+            const SizedBox(height: SpacingTokens.md), // 16.0 - Fixed spacing hierarchy
             
             // Privacy Notice
             Container(
@@ -447,7 +448,7 @@ class _APIConfigDialogState extends State<APIConfigDialog> {
                     color: Theme.of(context).colorScheme.primary,
                     size: 20,
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: SpacingTokens.xs), // 8.0 - Fixed spacing hierarchy
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

@@ -5,14 +5,14 @@ import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-import 'package:tasky/domain/entities/task_model.dart';
-import 'package:tasky/domain/models/enums.dart';
-import 'package:tasky/domain/repositories/task_repository.dart';
-import 'package:tasky/presentation/widgets/kanban_board_view.dart';
-import 'package:tasky/presentation/widgets/kanban_column.dart';
-import 'package:tasky/presentation/widgets/kanban_dialogs.dart';
-import 'package:tasky/presentation/providers/kanban_providers.dart';
-import 'package:tasky/presentation/providers/task_providers.dart';
+import 'package:task_tracker_app/domain/entities/task_model.dart';
+import 'package:task_tracker_app/domain/models/enums.dart';
+import 'package:task_tracker_app/domain/repositories/task_repository.dart';
+import 'package:task_tracker_app/presentation/widgets/kanban_board_view.dart';
+import 'package:task_tracker_app/presentation/widgets/kanban_column.dart';
+import 'package:task_tracker_app/presentation/widgets/kanban_dialogs.dart';
+import 'package:task_tracker_app/presentation/providers/kanban_providers.dart';
+import 'package:task_tracker_app/presentation/providers/task_providers.dart';
 
 @GenerateNiceMocks([MockSpec<TaskRepository>()])
 import 'kanban_board_test.mocks.dart';
@@ -237,7 +237,6 @@ void main() {
       const config = KanbanColumnConfig(
         id: 'test',
         title: 'Test Column',
-        status: TaskStatus.pending,
         icon: PhosphorIcons.circle,
         color: Colors.blue,
       );
@@ -265,7 +264,6 @@ void main() {
       const config = KanbanColumnConfig(
         id: 'test',
         title: 'Test Column',
-        status: TaskStatus.pending,
         icon: PhosphorIcons.circle,
         color: Colors.blue,
       );
@@ -295,7 +293,6 @@ void main() {
       const config = KanbanColumnConfig(
         id: 'test',
         title: 'Test Column',
-        status: TaskStatus.pending,
         icon: PhosphorIcons.circle,
         color: Colors.blue,
         isCollapsible: true,
@@ -331,18 +328,17 @@ void main() {
       const config = KanbanColumnConfig(
         id: 'test',
         title: 'Empty Column',
-        status: TaskStatus.pending,
         icon: PhosphorIcons.circle,
         color: Colors.blue,
       );
 
       await tester.pumpWidget(
-        ProviderScope(
+        const ProviderScope(
           child: MaterialApp(
             home: Scaffold(
               body: KanbanColumn(
                 config: config,
-                tasks: const [],
+                tasks: [],
               ),
             ),
           ),
@@ -359,7 +355,6 @@ void main() {
       const config = KanbanColumnConfig(
         id: 'test',
         title: 'Test Column',
-        status: TaskStatus.pending,
         icon: PhosphorIcons.circle,
         color: Colors.blue,
       );
@@ -484,8 +479,8 @@ void main() {
   group('TaskCreationDialog', () {
     testWidgets('renders form fields correctly', (WidgetTester tester) async {
       await tester.pumpWidget(
-        ProviderScope(
-          child: const MaterialApp(
+        const ProviderScope(
+          child: MaterialApp(
             home: Scaffold(
               body: TaskCreationDialog(
                 initialStatus: TaskStatus.pending,
@@ -506,8 +501,8 @@ void main() {
 
     testWidgets('validates required fields', (WidgetTester tester) async {
       await tester.pumpWidget(
-        ProviderScope(
-          child: const MaterialApp(
+        const ProviderScope(
+          child: MaterialApp(
             home: Scaffold(
               body: TaskCreationDialog(
                 initialStatus: TaskStatus.pending,
@@ -575,7 +570,6 @@ void main() {
         KanbanColumnConfig(
           id: 'custom',
           title: 'Custom',
-          status: TaskStatus.pending,
           icon: PhosphorIcons.star,
           color: Colors.purple,
         ),
@@ -668,26 +662,23 @@ List<TaskModel> _createTestTasks() {
       title: 'Test Task 1',
       description: 'First test task',
       priority: TaskPriority.high,
-      tags: ['test', 'urgent'],
+      tags: const ['test', 'urgent'],
       dueDate: now.add(const Duration(days: 1)),
-    ).copyWith(status: TaskStatus.pending),
     
     TaskModel.create(
       title: 'Test Task 2',
       description: 'Second test task',
       priority: TaskPriority.medium,
-      tags: ['test'],
+      tags: const ['test'],
       dueDate: now.add(const Duration(days: 3)),
-    ).copyWith(status: TaskStatus.inProgress),
     
     TaskModel.create(
       title: 'Test Task 3',
       description: 'Third test task',
       priority: TaskPriority.low,
-      tags: ['completed'],
+      tags: const ['completed'],
       dueDate: now.subtract(const Duration(days: 1)),
     ).copyWith(
-      status: TaskStatus.completed,
       completedAt: now,
     ),
     
@@ -695,8 +686,7 @@ List<TaskModel> _createTestTasks() {
       title: 'Overdue Task',
       description: 'This task is overdue',
       priority: TaskPriority.urgent,
-      tags: ['overdue'],
+      tags: const ['overdue'],
       dueDate: now.subtract(const Duration(days: 5)),
-    ).copyWith(status: TaskStatus.pending),
   ];
 }

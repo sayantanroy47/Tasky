@@ -4,9 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/project.dart';
 import '../providers/project_providers.dart';
 import '../../core/theme/typography_constants.dart';
-import 'glassmorphism_container.dart';
-import '../../core/design_system/design_tokens.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'theme_aware_dialog_components.dart';
 
 /// Dialog for creating and editing projects
 /// 
@@ -34,6 +33,8 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> {
   String _selectedColor = '#2196F3'; // Default blue color
   DateTime? _selectedDeadline;
   bool _isLoading = false;
+  
+  bool get isEditing => widget.project != null;
   
   // Predefined color options
   final List<String> _colorOptions = [
@@ -69,46 +70,38 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> {
   
   @override
   Widget build(BuildContext context) {
+    return ThemeAwareTaskDialog(
+      title: isEditing ? 'Edit Project' : 'Create Project',
+      subtitle: isEditing ? 'Update project details' : 'Add a new project to organize your tasks',
+      icon: isEditing ? PhosphorIcons.pencil() : PhosphorIcons.folder(),
+      onBack: () => Navigator.of(context).pop(),
+      actions: [
+        ThemeAwareButton(
+          label: 'Cancel',
+          onPressed: () => Navigator.of(context).pop(),
+          icon: PhosphorIcons.x(),
+        ),
+        ThemeAwareButton(
+          label: isEditing ? 'Update Project' : 'Create Project',
+          onPressed: _isLoading ? null : _saveProject,
+          icon: isEditing ? PhosphorIcons.floppyDisk() : PhosphorIcons.plus(),
+          isPrimary: true,
+          isLoading: _isLoading,
+        ),
+      ],
+      child: _buildProjectForm(context),
+    );
+  }
+
+  Widget _buildProjectForm(BuildContext context) {
     final theme = Theme.of(context);
-    final isEditing = widget.project != null;
     
-    return Dialog(
-      backgroundColor: Colors.transparent,
-      child: GlassmorphismContainer(
-        level: GlassLevel.floating,
-        padding: const EdgeInsets.all(24),
-        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-        child: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header
-                Row(
-                  children: [
-                    Icon(
-                      isEditing ? PhosphorIcons.pencil() : PhosphorIcons.plus(),
-                      color: _parseColor(_selectedColor),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        isEditing ? 'Edit Project' : 'Create Project',
-                        style: theme.textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      icon: Icon(PhosphorIcons.x()),
-                    ),
-                  ],
-                ),
-                
-                const SizedBox(height: 24),
+    return Form(
+      key: _formKey,
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
                 
                 // Project name field
                 TextFormField(
@@ -117,7 +110,7 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> {
                     labelText: 'Project Name *',
                     hintText: 'Enter project name',
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                      borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium),
                     ),
                     prefixIcon: Icon(PhosphorIcons.folder()),
                   ),
@@ -133,7 +126,7 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> {
                   textCapitalization: TextCapitalization.words,
                 ),
                 
-                const SizedBox(height: 16),
+                const SizedBox(height: TypographyConstants.paddingMedium),
                 
                 // Project description field
                 TextFormField(
@@ -142,7 +135,7 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> {
                     labelText: 'Description',
                     hintText: 'Enter project description (optional)',
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                      borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium),
                     ),
                     prefixIcon: Icon(PhosphorIcons.fileText()),
                   ),
@@ -150,68 +143,78 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> {
                   textCapitalization: TextCapitalization.sentences,
                 ),
                 
-                const SizedBox(height: 16),
+                const SizedBox(height: TypographyConstants.paddingMedium),
                 
                 // Color selection
                 Text(
                   'Project Color',
                   style: theme.textTheme.bodyLarge?.copyWith(
-                    fontWeight: FontWeight.w500,
+                    fontWeight: TypographyConstants.medium,
                   ),
                 ),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: _colorOptions.map((color) {
-                    final isSelected = color == _selectedColor;
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _selectedColor = color;
-                        });
-                      },
-                      child: Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: _parseColor(color),
-                          shape: BoxShape.circle,
-                          border: isSelected
-                              ? Border.all(
-                                  color: theme.colorScheme.onSurface,
-                                  width: 3,
+                const SizedBox(height: TypographyConstants.spacingSmall),
+                SizedBox(
+                  height: 100,
+                  child: GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: (MediaQuery.of(context).size.width / 60).floor().clamp(3, 6),
+                      crossAxisSpacing: TypographyConstants.spacingSmall,
+                      mainAxisSpacing: TypographyConstants.spacingSmall,
+                    ),
+                    itemCount: _colorOptions.length,
+                    itemBuilder: (context, index) {
+                      final color = _colorOptions[index];
+                      final isSelected = color == _selectedColor;
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _selectedColor = color;
+                          });
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: _parseColor(color),
+                            shape: BoxShape.circle,
+                            border: isSelected
+                                ? Border.all(
+                                    color: theme.colorScheme.onSurface,
+                                    width: 3,
+                                  )
+                                : Border.all(
+                                    color: theme.colorScheme.outline.withValues(alpha: 0.3),
+                                    width: 1,
+                                  ),
+                          ),
+                          child: isSelected
+                              ? Icon(
+                                  PhosphorIcons.check(),
+                                  color: _parseColor(color).computeLuminance() > 0.5
+                                      ? Colors.black
+                                      : Colors.white,
+                                  size: 16,
                                 )
-                              : Border.all(
-                                  color: theme.colorScheme.outline.withValues(alpha: 0.3),
-                                ),
+                              : null,
                         ),
-                        child: isSelected
-                            ? Icon(
-                                PhosphorIcons.check(),
-                                color: _parseColor(color).computeLuminance() > 0.5
-                                    ? Colors.black
-                                    : Colors.white,
-                                size: 20,
-                              )
-                            : null,
-                      ),
-                    );
-                  }).toList(),
+                      );
+                    },
+                  ),
                 ),
                 
-                const SizedBox(height: 16),
+                const SizedBox(height: TypographyConstants.paddingMedium),
                 
                 // Deadline selection
                 InkWell(
                   onTap: _selectDeadline,
+                  borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium),
                   child: Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
                     decoration: BoxDecoration(
                       border: Border.all(
                         color: theme.colorScheme.outline.withValues(alpha: 0.5),
                       ),
-                      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                      borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium),
                     ),
                     child: Row(
                       children: [
@@ -219,7 +222,7 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> {
                           PhosphorIcons.calendar(),
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: TypographyConstants.spacingMedium),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -230,6 +233,7 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> {
                                   color: theme.colorScheme.onSurfaceVariant,
                                 ),
                               ),
+                              const SizedBox(height: 2),
                               Text(
                                 _selectedDeadline == null
                                     ? 'No deadline set'
@@ -254,17 +258,16 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> {
                   ),
                 ),
                 
-                const SizedBox(height: 24),
+                const SizedBox(height: TypographyConstants.paddingLarge),
                 
                 // Action buttons
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
+                OverflowBar(
+                  alignment: MainAxisAlignment.end,
                   children: [
                     TextButton(
                       onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
                       child: const Text('Cancel'),
                     ),
-                    const SizedBox(width: 12),
                     ElevatedButton(
                       onPressed: _isLoading ? null : _saveProject,
                       style: ElevatedButton.styleFrom(
@@ -272,6 +275,9 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> {
                         foregroundColor: _parseColor(_selectedColor).computeLuminance() > 0.5
                             ? Colors.black
                             : Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium),
+                        ),
                       ),
                       child: _isLoading
                           ? const SizedBox(
@@ -286,9 +292,7 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> {
               ],
             ),
           ),
-        ),
-      ),
-    );
+        );
   }
   
   Future<void> _selectDeadline() async {

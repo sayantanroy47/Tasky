@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import '../../domain/models/enums.dart';
-import '../../core/theme/typography_constants.dart';
-import '../../core/design_system/design_tokens.dart';
-import 'glassmorphism_container.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+
+import '../../core/design_system/design_tokens.dart';
+import '../../core/theme/typography_constants.dart';
+import '../../domain/models/enums.dart';
+import 'glassmorphism_container.dart';
 
 /// Enhanced status badge widget with icon and text
 class StatusBadgeWidget extends StatelessWidget {
@@ -78,7 +79,7 @@ class StatusBadgeWidget extends StatelessWidget {
               config.label,
               style: TextStyle(
                 fontSize: fontSize ?? TypographyConstants.textXS,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w500,
                 color: Colors.white, // White text on colored background
               ),
             ),
@@ -217,7 +218,7 @@ class PriorityBadgeWidget extends StatelessWidget {
               config.label,
               style: TextStyle(
                 fontSize: fontSize ?? TypographyConstants.textXS,
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w500,
                 color: Colors.white, // White text on colored background
               ),
             ),

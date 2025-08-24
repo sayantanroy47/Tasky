@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/theme/typography_constants.dart';
-import '../../services/responsive_design_service.dart';
-import '../../services/accessibility_service.dart';
-import 'glassmorphism_container.dart';
+
 import '../../core/design_system/design_tokens.dart';
+import '../../core/theme/typography_constants.dart';
+import '../../services/accessibility_service.dart';
+import '../../services/responsive_design_service.dart';
+import 'glassmorphism_container.dart';
 
 /// Enhanced responsive widget that adapts to screen size
 class ResponsiveWidget extends ConsumerWidget {
@@ -45,8 +46,7 @@ class EnhancedButton extends ConsumerStatefulWidget {
   ConsumerState<EnhancedButton> createState() => _EnhancedButtonState();
 }
 
-class _EnhancedButtonState extends ConsumerState<EnhancedButton>
-    with SingleTickerProviderStateMixin {
+class _EnhancedButtonState extends ConsumerState<EnhancedButton> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
   @override
@@ -64,11 +64,13 @@ class _EnhancedButtonState extends ConsumerState<EnhancedButton>
       curve: Curves.easeInOut,
     ));
   }
+
   @override
   void dispose() {
     _animationController.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     final accessibilityService = ref.read(accessibilityServiceProvider);
@@ -92,20 +94,22 @@ class _EnhancedButtonState extends ConsumerState<EnhancedButton>
                   child: Material(
                     color: Colors.transparent,
                     child: InkWell(
-                      onTap: widget.onPressed == null ? null : () async {
-                        if (widget.enableHaptics) {
-                          await accessibilityService.provideHapticFeedback(
-                            HapticFeedbackType.selection,
-                          );
-                        }
-                        
-                        if (!settings.reducedMotionMode) {
-                          await _animationController.forward();
-                          await _animationController.reverse();
-                        }
-                        
-                        widget.onPressed!();
-                      },
+                      onTap: widget.onPressed == null
+                          ? null
+                          : () async {
+                              if (widget.enableHaptics) {
+                                await accessibilityService.provideHapticFeedback(
+                                  HapticFeedbackType.selection,
+                                );
+                              }
+
+                              if (!settings.reducedMotionMode) {
+                                await _animationController.forward();
+                                await _animationController.reverse();
+                              }
+
+                              widget.onPressed!();
+                            },
                       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                       child: Container(
                         height: config.buttonHeight,
@@ -124,7 +128,7 @@ class _EnhancedButtonState extends ConsumerState<EnhancedButton>
                           child: DefaultTextStyle(
                             style: const TextStyle(
                               color: Colors.white,
-                              fontWeight: FontWeight.w600,
+                              fontWeight: FontWeight.w500,
                             ),
                             child: widget.child,
                           ),
@@ -170,8 +174,7 @@ class EnhancedCard extends ConsumerStatefulWidget {
   ConsumerState<EnhancedCard> createState() => _EnhancedCardState();
 }
 
-class _EnhancedCardState extends ConsumerState<EnhancedCard>
-    with SingleTickerProviderStateMixin {
+class _EnhancedCardState extends ConsumerState<EnhancedCard> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
 
@@ -183,7 +186,7 @@ class _EnhancedCardState extends ConsumerState<EnhancedCard>
       duration: const Duration(milliseconds: 200),
       vsync: this,
     );
-    
+
     _scaleAnimation = Tween<double>(
       begin: 1.0,
       end: 0.98,
@@ -192,11 +195,13 @@ class _EnhancedCardState extends ConsumerState<EnhancedCard>
       curve: Curves.easeInOut,
     ));
   }
+
   @override
   void dispose() {
     _animationController.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     final accessibilityService = ref.read(accessibilityServiceProvider);
@@ -211,9 +216,8 @@ class _EnhancedCardState extends ConsumerState<EnhancedCard>
             animation: _animationController,
             builder: (context, child) {
               return Transform.scale(
-                scale: _isPressed && widget.enablePressEffect && !settings.reducedMotionMode
-                    ? _scaleAnimation.value
-                    : 1.0,
+                scale:
+                    _isPressed && widget.enablePressEffect && !settings.reducedMotionMode ? _scaleAnimation.value : 1.0,
                 child: GlassmorphismContainer(
                   level: GlassLevel.content,
                   margin: widget.margin ?? config.margin,
@@ -222,12 +226,14 @@ class _EnhancedCardState extends ConsumerState<EnhancedCard>
                   child: Material(
                     color: Colors.transparent,
                     child: InkWell(
-                      onTap: widget.onTap == null ? null : () async {
-                        await accessibilityService.provideHapticFeedback(
-                          HapticFeedbackType.selection,
-                        );
-                        widget.onTap!();
-                      },
+                      onTap: widget.onTap == null
+                          ? null
+                          : () async {
+                              await accessibilityService.provideHapticFeedback(
+                                HapticFeedbackType.selection,
+                              );
+                              widget.onTap!();
+                            },
                       onTapDown: (_) {
                         if (widget.enablePressEffect && !settings.reducedMotionMode) {
                           setState(() => _isPressed = true);
@@ -299,30 +305,36 @@ class EnhancedGestureDetector extends ConsumerWidget {
     return Semantics(
       label: semanticLabel,
       child: GestureDetector(
-        onTap: onTap == null ? null : () async {
-          if (enableHaptics) {
-            await accessibilityService.provideHapticFeedback(
-              HapticFeedbackType.selection,
-            );
-          }
-          onTap!();
-        },
-        onDoubleTap: onDoubleTap == null ? null : () async {
-          if (enableHaptics) {
-            await accessibilityService.provideHapticFeedback(
-              HapticFeedbackType.medium,
-            );
-          }
-          onDoubleTap!();
-        },
-        onLongPress: onLongPress == null ? null : () async {
-          if (enableHaptics) {
-            await accessibilityService.provideHapticFeedback(
-              HapticFeedbackType.heavy,
-            );
-          }
-          onLongPress!();
-        },
+        onTap: onTap == null
+            ? null
+            : () async {
+                if (enableHaptics) {
+                  await accessibilityService.provideHapticFeedback(
+                    HapticFeedbackType.selection,
+                  );
+                }
+                onTap!();
+              },
+        onDoubleTap: onDoubleTap == null
+            ? null
+            : () async {
+                if (enableHaptics) {
+                  await accessibilityService.provideHapticFeedback(
+                    HapticFeedbackType.medium,
+                  );
+                }
+                onDoubleTap!();
+              },
+        onLongPress: onLongPress == null
+            ? null
+            : () async {
+                if (enableHaptics) {
+                  await accessibilityService.provideHapticFeedback(
+                    HapticFeedbackType.heavy,
+                  );
+                }
+                onLongPress!();
+              },
         onPanEnd: (details) {
           final velocity = details.velocity.pixelsPerSecond;
           final dx = velocity.dx;
@@ -411,8 +423,7 @@ class EnhancedTextField extends ConsumerStatefulWidget {
   ConsumerState<EnhancedTextField> createState() => _EnhancedTextFieldState();
 }
 
-class _EnhancedTextFieldState extends ConsumerState<EnhancedTextField>
-    with SingleTickerProviderStateMixin {
+class _EnhancedTextFieldState extends ConsumerState<EnhancedTextField> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<Color?> _borderColorAnimation;
   late FocusNode _focusNode;
@@ -425,9 +436,10 @@ class _EnhancedTextFieldState extends ConsumerState<EnhancedTextField>
       duration: const Duration(milliseconds: 200),
       vsync: this,
     );
-    
+
     _focusNode.addListener(_onFocusChange);
   }
+
   @override
   void dispose() {
     _focusNode.removeListener(_onFocusChange);
@@ -446,6 +458,7 @@ class _EnhancedTextFieldState extends ConsumerState<EnhancedTextField>
       _animationController.reverse();
     }
   }
+
   @override
   Widget build(BuildContext context) {
     final accessibilityService = ref.read(accessibilityServiceProvider);
@@ -486,9 +499,7 @@ class _EnhancedTextFieldState extends ConsumerState<EnhancedTextField>
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                       borderSide: BorderSide(
-                        color: settings.highContrastMode 
-                            ? Colors.black 
-                            : Colors.transparent,
+                        color: settings.highContrastMode ? Colors.black : Colors.transparent,
                         width: settings.highContrastMode ? 2 : 0,
                       ),
                     ),
@@ -506,22 +517,25 @@ class _EnhancedTextFieldState extends ConsumerState<EnhancedTextField>
                   obscureText: widget.obscureText,
                   keyboardType: widget.keyboardType,
                   onChanged: widget.onChanged,
-                  onTap: widget.onTap == null ? null : () async {
-                    await accessibilityService.provideHapticFeedback(
-                      HapticFeedbackType.selection,
-                    );
-                    widget.onTap!();
-                  },
+                  onTap: widget.onTap == null
+                      ? null
+                      : () async {
+                          await accessibilityService.provideHapticFeedback(
+                            HapticFeedbackType.selection,
+                          );
+                          widget.onTap!();
+                        },
                   readOnly: widget.readOnly,
                   maxLines: widget.maxLines,
                   autofocus: widget.autofocus,
-                  style: settings.largeTextMode 
+                  style: settings.largeTextMode
                       ? Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          fontSize: 18 * config.fontSizeMultiplier,
-                        )
+                            fontSize: 18 * config.fontSizeMultiplier,
+                          )
                       : Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          fontSize: (Theme.of(context).textTheme.bodyLarge?.fontSize ?? 16) * config.fontSizeMultiplier,
-                        ),
+                            fontSize:
+                                (Theme.of(context).textTheme.bodyLarge?.fontSize ?? 16) * config.fontSizeMultiplier,
+                          ),
                 ),
               );
             },
@@ -550,8 +564,7 @@ class EnhancedLoadingIndicator extends ConsumerStatefulWidget {
   ConsumerState<EnhancedLoadingIndicator> createState() => _EnhancedLoadingIndicatorState();
 }
 
-class _EnhancedLoadingIndicatorState extends ConsumerState<EnhancedLoadingIndicator>
-    with TickerProviderStateMixin {
+class _EnhancedLoadingIndicatorState extends ConsumerState<EnhancedLoadingIndicator> with TickerProviderStateMixin {
   late AnimationController _rotationController;
   late AnimationController _pulseController;
   late Animation<double> _rotationAnimation;
@@ -563,17 +576,17 @@ class _EnhancedLoadingIndicatorState extends ConsumerState<EnhancedLoadingIndica
       duration: const Duration(seconds: 2),
       vsync: this,
     )..repeat();
-    
+
     _pulseController = AnimationController(
       duration: const Duration(milliseconds: 1000),
       vsync: this,
     )..repeat(reverse: true);
-    
+
     _rotationAnimation = Tween<double>(
       begin: 0,
       end: 1,
     ).animate(_rotationController);
-    
+
     _pulseAnimation = Tween<double>(
       begin: 0.8,
       end: 1.2,
@@ -582,12 +595,14 @@ class _EnhancedLoadingIndicatorState extends ConsumerState<EnhancedLoadingIndica
       curve: Curves.easeInOut,
     ));
   }
+
   @override
   void dispose() {
     _rotationController.dispose();
     _pulseController.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     final settings = ref.watch(accessibilitySettingsProvider);
@@ -651,7 +666,7 @@ class _EnhancedLoadingIndicatorState extends ConsumerState<EnhancedLoadingIndica
             ),
           ),
         );
-      
+
       case LoadingIndicatorType.pulse:
         return AnimatedBuilder(
           animation: _pulseAnimation,
@@ -679,7 +694,7 @@ class _EnhancedLoadingIndicatorState extends ConsumerState<EnhancedLoadingIndica
             );
           },
         );
-      
+
       case LoadingIndicatorType.dots:
         return _buildDotsIndicator();
     }
@@ -695,7 +710,7 @@ class _EnhancedLoadingIndicatorState extends ConsumerState<EnhancedLoadingIndica
             final delay = index * 0.2;
             final animationValue = (_pulseController.value + delay) % 1.0;
             final scale = 0.5 + (0.5 * (1 - (animationValue - 0.5).abs() * 2));
-            
+
             return Transform.scale(
               scale: scale,
               child: GlassmorphismContainer(
@@ -751,8 +766,7 @@ class EnhancedFAB extends ConsumerStatefulWidget {
   ConsumerState<EnhancedFAB> createState() => _EnhancedFABState();
 }
 
-class _EnhancedFABState extends ConsumerState<EnhancedFAB>
-    with SingleTickerProviderStateMixin {
+class _EnhancedFABState extends ConsumerState<EnhancedFAB> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
   late Animation<double> _pulseAnimation;
@@ -763,7 +777,7 @@ class _EnhancedFABState extends ConsumerState<EnhancedFAB>
       duration: const Duration(milliseconds: 200),
       vsync: this,
     );
-    
+
     _scaleAnimation = Tween<double>(
       begin: 1.0,
       end: 0.9,
@@ -771,7 +785,7 @@ class _EnhancedFABState extends ConsumerState<EnhancedFAB>
       parent: _animationController,
       curve: Curves.easeInOut,
     ));
-    
+
     _pulseAnimation = Tween<double>(
       begin: 1.0,
       end: 1.1,
@@ -784,11 +798,13 @@ class _EnhancedFABState extends ConsumerState<EnhancedFAB>
       _animationController.repeat(reverse: true);
     }
   }
+
   @override
   void dispose() {
     _animationController.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     final accessibilityService = ref.read(accessibilityServiceProvider);
@@ -804,7 +820,7 @@ class _EnhancedFABState extends ConsumerState<EnhancedFAB>
           final scale = widget.enablePulseAnimation && !settings.reducedMotionMode
               ? _pulseAnimation.value
               : _scaleAnimation.value;
-          
+
           return Transform.scale(
             scale: scale,
             child: GlassmorphismContainer(
@@ -815,18 +831,20 @@ class _EnhancedFABState extends ConsumerState<EnhancedFAB>
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  onTap: widget.onPressed == null ? null : () async {
-                    await accessibilityService.provideHapticFeedback(
-                      HapticFeedbackType.medium,
-                    );
-                    
-                    if (!widget.enablePulseAnimation && !settings.reducedMotionMode) {
-                      await _animationController.forward();
-                      await _animationController.reverse();
-                    }
-                    
-                    widget.onPressed!();
-                  },
+                  onTap: widget.onPressed == null
+                      ? null
+                      : () async {
+                          await accessibilityService.provideHapticFeedback(
+                            HapticFeedbackType.medium,
+                          );
+
+                          if (!widget.enablePulseAnimation && !settings.reducedMotionMode) {
+                            await _animationController.forward();
+                            await _animationController.reverse();
+                          }
+
+                          widget.onPressed!();
+                        },
                   borderRadius: BorderRadius.circular((widget.mini ? 40.0 : 56.0) / 2),
                   child: Container(
                     decoration: BoxDecoration(

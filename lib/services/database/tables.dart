@@ -81,11 +81,39 @@ class Projects extends Table {
   TextColumn get name => text()();
   TextColumn get description => text().nullable()();
   TextColumn get color => text()();
+  TextColumn get categoryId => text().nullable()(); // Reference to ProjectCategories
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime().nullable()();
   BoolColumn get isArchived => boolean().withDefault(const Constant(false))();
   DateTimeColumn get deadline => dateTime().nullable()();  @override
   Set<Column> get primaryKey => {id};
+}
+
+/// ProjectCategories table definition
+/// 
+/// Stores both system-defined and user-defined project categories
+/// with Phosphor icons and design system colors
+class ProjectCategories extends Table {
+  TextColumn get id => text()();
+  TextColumn get name => text()();
+  TextColumn get iconName => text()(); // Phosphor icon name as string
+  TextColumn get color => text()(); // Hex color code from design system
+  TextColumn get parentId => text().nullable()(); // For hierarchical categories
+  BoolColumn get isSystemDefined => boolean().withDefault(const Constant(false))();
+  BoolColumn get isActive => boolean().withDefault(const Constant(true))();
+  IntColumn get sortOrder => integer().withDefault(const Constant(0))();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime().nullable()();
+  TextColumn get metadata => text().withDefault(const Constant('{}'))(); // JSON blob for extensibility
+
+  @override
+  Set<Column> get primaryKey => {id};
+
+  @override
+  List<String> get customConstraints => [
+    'FOREIGN KEY (parent_id) REFERENCES project_categories (id) ON DELETE SET NULL',
+    'UNIQUE (name) WHERE is_active = 1', // Unique active category names
+  ];
 }
 
 /// TaskDependencies table definition
@@ -149,4 +177,149 @@ class UserProfiles extends Table {
 
   @override
   Set<Column> get primaryKey => {id};
+}
+
+/// ProjectTemplates table definition
+/// 
+/// Stores comprehensive project templates for wizard-based project creation
+class ProjectTemplates extends Table {
+  TextColumn get id => text()();
+  TextColumn get name => text()();
+  TextColumn get description => text().nullable()();
+  TextColumn get shortDescription => text().nullable()();
+  IntColumn get type => integer()(); // 0=simple, 1=wizard, 2=advanced
+  TextColumn get categoryId => text().nullable()();
+  TextColumn get industryTags => text()(); // JSON array
+  IntColumn get difficultyLevel => integer().withDefault(const Constant(1))();
+  IntColumn get estimatedHours => integer().nullable()();
+  TextColumn get projectNameTemplate => text()();
+  TextColumn get projectDescriptionTemplate => text().nullable()();
+  TextColumn get defaultColor => text().withDefault(const Constant('#2196F3'))();
+  TextColumn get projectCategoryId => text().nullable()();
+  IntColumn get deadlineOffsetDays => integer().nullable()();
+  TextColumn get taskTemplates => text()(); // JSON array of task template IDs
+  TextColumn get variables => text()(); // JSON array of template variables
+  TextColumn get wizardSteps => text()(); // JSON array of wizard steps
+  TextColumn get taskDependencies => text()(); // JSON map of dependencies
+  TextColumn get milestones => text()(); // JSON array of milestones
+  TextColumn get resourceTemplates => text()(); // JSON map of resource templates
+  TextColumn get metadata => text()(); // JSON blob
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime().nullable()();
+  TextColumn get createdBy => text().nullable()();
+  BoolColumn get isSystemTemplate => boolean().withDefault(const Constant(false))();
+  BoolColumn get isPublished => boolean().withDefault(const Constant(false))();
+  TextColumn get version => text().withDefault(const Constant('1.0.0'))();
+  TextColumn get usageStats => text()(); // JSON blob for usage statistics
+  TextColumn get rating => text().nullable()(); // JSON blob for rating info
+  TextColumn get previewImages => text()(); // JSON array of image URLs
+  TextColumn get tags => text()(); // JSON array of tag strings
+  TextColumn get supportedLocales => text()(); // JSON array of locale strings
+  BoolColumn get isPremium => boolean().withDefault(const Constant(false))();
+  TextColumn get sizeEstimate => text()(); // JSON blob for size estimate
+
+  @override
+  Set<Column> get primaryKey => {id};
+
+  @override
+  List<String> get customConstraints => [
+    'FOREIGN KEY (category_id) REFERENCES project_categories (id) ON DELETE SET NULL',
+    'FOREIGN KEY (project_category_id) REFERENCES project_categories (id) ON DELETE SET NULL',
+  ];
+}
+
+/// ProjectTemplateVariables table definition
+/// 
+/// Stores template variables for dynamic project creation
+class ProjectTemplateVariables extends Table {
+  TextColumn get id => text()();
+  TextColumn get templateId => text()();
+  TextColumn get variableKey => text()();
+  TextColumn get displayName => text()();
+  IntColumn get type => integer()(); // Variable type enum
+  TextColumn get description => text().nullable()();
+  BoolColumn get isRequired => boolean().withDefault(const Constant(false))();
+  TextColumn get defaultValue => text().nullable()(); // JSON serialized value
+  TextColumn get options => text()(); // JSON array for choice types
+  TextColumn get validationPattern => text().nullable()();
+  TextColumn get validationError => text().nullable()();
+  TextColumn get minValue => text().nullable()(); // JSON serialized value
+  TextColumn get maxValue => text().nullable()(); // JSON serialized value
+  BoolColumn get isConditional => boolean().withDefault(const Constant(false))();
+  TextColumn get dependentVariables => text()(); // JSON array
+  IntColumn get sortOrder => integer().withDefault(const Constant(0))();
+
+  @override
+  Set<Column> get primaryKey => {id};
+
+  @override
+  List<String> get customConstraints => [
+    'FOREIGN KEY (template_id) REFERENCES project_templates (id) ON DELETE CASCADE',
+    'UNIQUE (template_id, variable_key)',
+  ];
+}
+
+/// ProjectTemplateWizardSteps table definition
+/// 
+/// Stores wizard steps for guided project template creation
+class ProjectTemplateWizardSteps extends Table {
+  TextColumn get id => text()();
+  TextColumn get templateId => text()();
+  TextColumn get title => text()();
+  TextColumn get description => text().nullable()();
+  TextColumn get variableKeys => text()(); // JSON array
+  TextColumn get showCondition => text().nullable()();
+  IntColumn get stepOrder => integer()();
+  BoolColumn get isOptional => boolean().withDefault(const Constant(false))();
+  TextColumn get iconName => text().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+
+  @override
+  List<String> get customConstraints => [
+    'FOREIGN KEY (template_id) REFERENCES project_templates (id) ON DELETE CASCADE',
+    'UNIQUE (template_id, step_order)',
+  ];
+}
+
+/// ProjectTemplateMilestones table definition
+/// 
+/// Stores milestone definitions for project templates
+class ProjectTemplateMilestones extends Table {
+  TextColumn get id => text()();
+  TextColumn get templateId => text()();
+  TextColumn get name => text()();
+  TextColumn get description => text().nullable()();
+  IntColumn get dayOffset => integer()();
+  TextColumn get requiredTaskIds => text()(); // JSON array
+  TextColumn get iconName => text().nullable()();
+  IntColumn get sortOrder => integer().withDefault(const Constant(0))();
+
+  @override
+  Set<Column> get primaryKey => {id};
+
+  @override
+  List<String> get customConstraints => [
+    'FOREIGN KEY (template_id) REFERENCES project_templates (id) ON DELETE CASCADE',
+  ];
+}
+
+/// ProjectTemplateTaskTemplates table definition
+/// 
+/// Junction table linking project templates to their task templates
+class ProjectTemplateTaskTemplates extends Table {
+  TextColumn get projectTemplateId => text()();
+  TextColumn get taskTemplateId => text()();
+  IntColumn get sortOrder => integer().withDefault(const Constant(0))();
+  TextColumn get taskDependencies => text()(); // JSON array of dependent task template IDs
+
+  @override
+  Set<Column> get primaryKey => {projectTemplateId, taskTemplateId};
+
+  @override
+  List<String> get customConstraints => [
+    'FOREIGN KEY (project_template_id) REFERENCES project_templates (id) ON DELETE CASCADE',
+    'FOREIGN KEY (task_template_id) REFERENCES task_templates (id) ON DELETE CASCADE',
+  ];
 }

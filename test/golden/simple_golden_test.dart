@@ -2,18 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:golden_toolkit/golden_toolkit.dart';
 
-import 'package:task_tracker_app/domain/entities/task_model.dart';
-import 'package:task_tracker_app/domain/models/enums.dart';
 
 void main() {
   group('Simple Golden Tests', () {
-    final testTask = TaskModel.create(
-      title: 'Golden Test Task',
-      description: 'This is a test task for golden testing',
-      priority: TaskPriority.high,
-      dueDate: DateTime(2024, 12, 25, 14, 30),
-      tags: const ['urgent', 'testing'],
-    );
+    // Test task model for golden testing scenarios
 
     testGoldens('Basic Widget Showcase - Light Theme', (tester) async {
       await tester.pumpWidgetBuilder(

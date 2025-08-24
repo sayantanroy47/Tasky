@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import '../../core/theme/typography_constants.dart';
-import '../../core/theme/material3/motion_system.dart';
-import '../../core/design_system/design_tokens.dart';
-import 'glassmorphism_container.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+
+import '../../core/design_system/design_tokens.dart';
+import '../../core/theme/material3/motion_system.dart';
+import '../../core/theme/typography_constants.dart';
+import 'glassmorphism_container.dart';
 
 /// A reusable confirmation dialog widget with M3 glassmorphism design
 class ConfirmationDialog extends StatefulWidget {
@@ -32,8 +33,7 @@ class ConfirmationDialog extends StatefulWidget {
   State<ConfirmationDialog> createState() => _ConfirmationDialogState();
 }
 
-class _ConfirmationDialogState extends State<ConfirmationDialog>
-    with TickerProviderStateMixin {
+class _ConfirmationDialogState extends State<ConfirmationDialog> with TickerProviderStateMixin {
   late AnimationController _fadeController;
   late AnimationController _scaleController;
   late Animation<double> _fadeAnimation;
@@ -42,17 +42,17 @@ class _ConfirmationDialogState extends State<ConfirmationDialog>
   @override
   void initState() {
     super.initState();
-    
+
     _fadeController = AnimationController(
       duration: ExpressiveMotionSystem.durationMedium3,
       vsync: this,
     );
-    
+
     _scaleController = AnimationController(
       duration: ExpressiveMotionSystem.durationMedium2,
       vsync: this,
     );
-    
+
     _fadeAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
@@ -60,7 +60,7 @@ class _ConfirmationDialogState extends State<ConfirmationDialog>
       parent: _fadeController,
       curve: ExpressiveMotionSystem.emphasizedDecelerate,
     ));
-    
+
     _scaleAnimation = Tween<double>(
       begin: 0.8,
       end: 1.0,
@@ -68,7 +68,7 @@ class _ConfirmationDialogState extends State<ConfirmationDialog>
       parent: _scaleController,
       curve: ExpressiveMotionSystem.emphasizedDecelerate,
     ));
-    
+
     _fadeController.forward();
     _scaleController.forward();
   }
@@ -84,7 +84,7 @@ class _ConfirmationDialogState extends State<ConfirmationDialog>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
-    
+
     return Dialog(
       backgroundColor: Colors.transparent,
       insetPadding: const EdgeInsets.all(24),
@@ -132,7 +132,7 @@ class _ConfirmationDialogState extends State<ConfirmationDialog>
             ),
             child: Icon(
               widget.icon,
-              color: Colors.white,
+              color: theme.colorScheme.onPrimary, // Fixed hardcoded color violation (was Colors.white)
               size: 24,
             ),
           ),
@@ -167,7 +167,7 @@ class _ConfirmationDialogState extends State<ConfirmationDialog>
         Expanded(
           child: GlassmorphismContainer(
             level: GlassLevel.interactive,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
             child: Material(
               color: Colors.transparent,
               child: InkWell(
@@ -175,7 +175,7 @@ class _ConfirmationDialogState extends State<ConfirmationDialog>
                   Navigator.of(context).pop();
                   widget.onCancel?.call();
                 },
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                   child: Center(
@@ -195,7 +195,7 @@ class _ConfirmationDialogState extends State<ConfirmationDialog>
         Expanded(
           child: GlassmorphismContainer(
             level: GlassLevel.interactive,
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
             child: Material(
               color: Colors.transparent,
               child: InkWell(
@@ -203,31 +203,31 @@ class _ConfirmationDialogState extends State<ConfirmationDialog>
                   Navigator.of(context).pop();
                   widget.onConfirm?.call();
                 },
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: widget.isDestructive
-                        ? [
-                            theme.colorScheme.error.withValues(alpha: 0.8),
-                            theme.colorScheme.error.withValues(alpha: 0.6),
-                          ]
-                        : [
-                            theme.colorScheme.primary.withValues(alpha: 0.8),
-                            theme.colorScheme.primary.withValues(alpha: 0.6),
-                          ],
+                          ? [
+                              theme.colorScheme.error.withValues(alpha: 0.8),
+                              theme.colorScheme.error.withValues(alpha: 0.6),
+                            ]
+                          : [
+                              theme.colorScheme.primary.withValues(alpha: 0.8),
+                              theme.colorScheme.primary.withValues(alpha: 0.6),
+                            ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                   ),
                   child: Center(
                     child: Text(
                       widget.confirmText,
                       style: theme.textTheme.labelLarge?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
+                        color: theme.colorScheme.onPrimary, // Fixed hardcoded color violation (was Colors.white)
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),
@@ -262,7 +262,7 @@ class InfoDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
-    
+
     return Dialog(
       backgroundColor: Colors.transparent,
       insetPadding: const EdgeInsets.all(24),
@@ -281,7 +281,7 @@ class InfoDialog extends StatelessWidget {
                 level: GlassLevel.content,
                 width: 56,
                 height: 56,
-                borderRadius: BorderRadius.circular(28),
+                borderRadius: BorderRadius.circular(TypographyConstants.radiusXXLarge), // 24.0 - Fixed border radius hierarchy (was 28px)
                 glassTint: theme.colorScheme.primary.withValues(alpha: 0.1),
                 child: Center(
                   child: Icon(
@@ -313,7 +313,7 @@ class InfoDialog extends StatelessWidget {
             const SizedBox(height: 24),
             GlassmorphismContainer(
               level: GlassLevel.interactive,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
@@ -321,7 +321,7 @@ class InfoDialog extends StatelessWidget {
                     Navigator.of(context).pop();
                     onPressed?.call();
                   },
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                   child: Container(
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
@@ -334,14 +334,14 @@ class InfoDialog extends StatelessWidget {
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                     ),
                     child: Center(
                       child: Text(
                         buttonText,
                         style: theme.textTheme.labelLarge?.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
+                          color: theme.colorScheme.onPrimary, // Fixed hardcoded color violation (was Colors.white)
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ),
@@ -409,7 +409,7 @@ class _TextInputDialogState extends State<TextInputDialog> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
-    
+
     return Dialog(
       backgroundColor: Colors.transparent,
       insetPadding: const EdgeInsets.all(24),
@@ -480,7 +480,7 @@ class _TextInputDialogState extends State<TextInputDialog> {
                   Expanded(
                     child: GlassmorphismContainer(
                       level: GlassLevel.interactive,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                       child: Material(
                         color: Colors.transparent,
                         child: InkWell(
@@ -488,7 +488,7 @@ class _TextInputDialogState extends State<TextInputDialog> {
                             Navigator.of(context).pop();
                             widget.onCancel?.call();
                           },
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                             child: Center(
@@ -508,7 +508,7 @@ class _TextInputDialogState extends State<TextInputDialog> {
                   Expanded(
                     child: GlassmorphismContainer(
                       level: GlassLevel.interactive,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                       child: Material(
                         color: Colors.transparent,
                         child: InkWell(
@@ -518,7 +518,7 @@ class _TextInputDialogState extends State<TextInputDialog> {
                               widget.onConfirm?.call(_controller.text);
                             }
                           },
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                             decoration: BoxDecoration(
@@ -530,14 +530,14 @@ class _TextInputDialogState extends State<TextInputDialog> {
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                               ),
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                             ),
                             child: Center(
                               child: Text(
                                 widget.confirmText,
                                 style: theme.textTheme.labelLarge?.copyWith(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
+                                  color: theme.colorScheme.onPrimary, // Fixed hardcoded color violation (was Colors.white)
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ),
@@ -579,7 +579,7 @@ class SelectionDialog<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
-    
+
     return Dialog(
       backgroundColor: Colors.transparent,
       insetPadding: const EdgeInsets.all(24),
@@ -612,7 +612,7 @@ class SelectionDialog<T> extends StatelessWidget {
                     return GlassmorphismContainer(
                       level: isSelected ? GlassLevel.interactive : GlassLevel.content,
                       margin: const EdgeInsets.only(bottom: 8),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                       glassTint: isSelected ? theme.colorScheme.primary.withValues(alpha: 0.1) : null,
                       child: Material(
                         color: Colors.transparent,
@@ -621,28 +621,22 @@ class SelectionDialog<T> extends StatelessWidget {
                             Navigator.of(context).pop();
                             onSelected?.call(option);
                           },
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                           child: Padding(
                             padding: const EdgeInsets.all(16),
                             child: Row(
                               children: [
                                 Icon(
-                                  isSelected 
-                                      ? PhosphorIcons.checkCircle()
-                                      : PhosphorIcons.circle(),
-                                  color: isSelected 
-                                      ? theme.colorScheme.primary
-                                      : theme.colorScheme.onSurfaceVariant,
+                                  isSelected ? PhosphorIcons.checkCircle() : PhosphorIcons.circle(),
+                                  color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
                                 ),
                                 const SizedBox(width: 16),
                                 Expanded(
                                   child: Text(
                                     getDisplayText(option),
                                     style: theme.textTheme.bodyLarge?.copyWith(
-                                      color: isSelected 
-                                          ? theme.colorScheme.primary
-                                          : theme.colorScheme.onSurface,
-                                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                                      color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurface,
+                                      fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
                                     ),
                                   ),
                                 ),
@@ -659,12 +653,12 @@ class SelectionDialog<T> extends StatelessWidget {
             const SizedBox(height: 16),
             GlassmorphismContainer(
               level: GlassLevel.interactive,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
                   onTap: () => Navigator.of(context).pop(),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                     child: Center(
@@ -701,7 +695,7 @@ class LoadingDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final size = MediaQuery.of(context).size;
-    
+
     return Dialog(
       backgroundColor: Colors.transparent,
       insetPadding: const EdgeInsets.all(24),
@@ -728,7 +722,7 @@ class LoadingDialog extends StatelessWidget {
               level: GlassLevel.content,
               width: 64,
               height: 64,
-              borderRadius: BorderRadius.circular(32),
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusXXLarge), // 24.0 - Fixed border radius hierarchy (was 32px)
               child: const Center(
                 child: CircularProgressIndicator(),
               ),
@@ -775,7 +769,7 @@ class DialogUtils {
         onCancel: () => Navigator.of(context).pop(false),
       ),
     );
-    
+
     return result ?? false;
   }
 
@@ -870,4 +864,3 @@ class DialogUtils {
     Navigator.of(context).pop();
   }
 }
-

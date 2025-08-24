@@ -144,75 +144,46 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
   
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    
-    return Dialog(
-      backgroundColor: Colors.transparent,
-      insetPadding: const EdgeInsets.all(16),
-      child: GlassmorphismContainer(
-        level: GlassLevel.floating,
-        borderRadius: BorderRadius.circular(TypographyConstants.dialogRadius),
-        padding: EdgeInsets.zero,
-        child: ConstrainedBox(
-        constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width - 32,
-          maxHeight: MediaQuery.of(context).size.height * 0.85,
-          minHeight: 200,
+    return ThemeAwareTaskDialog(
+      title: _getDialogTitle(),
+      subtitle: widget.editingTask != null ? 'Update task details' : 'Add a new task to your list',
+      icon: widget.editingTask != null ? PhosphorIcons.pencil() : PhosphorIcons.plus(),
+      onBack: () => Navigator.of(context).pop(),
+      actions: [
+        ThemeAwareButton(
+          label: 'Cancel',
+          onPressed: () => Navigator.of(context).pop(),
+          icon: PhosphorIcons.x(),
         ),
-        child: SizedBox(
-          width: MediaQuery.of(context).size.width - 32,
-          child: Scaffold(
-            backgroundColor: Colors.transparent,
-            resizeToAvoidBottomInset: true,
-        appBar: AppBar(
-          title: Text(_getDialogTitle()),
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          leading: IconButton(
-            onPressed: () => Navigator.of(context).pop(),
-            icon: Icon(PhosphorIcons.x()),
-          ),
-          actions: [
-            // Use IconButton with constrained width to avoid infinite width constraints in AppBar
-            SizedBox(
-              width: 80, // Constrain width to prevent infinite width error
-              child: _isLoading 
-                ? const Center(
-                    child: SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    ),
-                  )
-                : TextButton.icon(
-                    onPressed: _saveTask,
-                    icon: Icon(PhosphorIcons.floppyDisk(), size: 18),
-                    label: const Text('Save'),
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    ),
-                  ),
-            ),
-            const SizedBox(width: 8),
-          ],
+        ThemeAwareButton(
+          label: widget.editingTask != null ? 'Update Task' : 'Save Task',
+          onPressed: _isLoading ? null : _saveTask,
+          icon: widget.editingTask != null ? PhosphorIcons.floppyDisk() : PhosphorIcons.plus(),
+          isPrimary: true,
+          isLoading: _isLoading,
         ),
-        body: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      ],
+      child: _buildTaskForm(context),
+    );
+  }
+
+  Widget _buildTaskForm(BuildContext context) {
+    return Form(
+      key: _formKey,
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Audio attachment section (if present)
                 if (_audioFilePath != null) ...[
                   _buildAudioSection(theme),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: SpacingTokens.md),
                 ],
                 
                 // Creation mode indicator
                 if (_creationMode != null) ...[
                   _buildCreationModeIndicator(theme),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: SpacingTokens.md),
                 ],
                 
                 // Title field with validation
@@ -240,7 +211,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
                     },
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: SpacingTokens.lg * 0.85), // 20px
                 
                 // Description field
                 SizedBox(
@@ -258,27 +229,27 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
                     textCapitalization: TextCapitalization.sentences,
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: SpacingTokens.lg * 0.85), // 20px
                 
                 // Priority selector with visual indicators
                 _buildEnhancedPrioritySelector(theme),
-                const SizedBox(height: 20),
+                const SizedBox(height: SpacingTokens.lg * 0.85), // 20px
                 
                 // Project selector
                 _buildProjectSelector(theme),
-                const SizedBox(height: 20),
+                const SizedBox(height: SpacingTokens.lg * 0.85), // 20px
                 
                 // Due date and time picker
                 _buildEnhancedDateTimePicker(context, theme),
-                const SizedBox(height: 20),
+                const SizedBox(height: SpacingTokens.lg * 0.85), // 20px
                 
                 // Tags section
                 _buildTagsSection(theme),
-                const SizedBox(height: 20),
+                const SizedBox(height: SpacingTokens.lg * 0.85), // 20px
                 
                 // Recurring task section
                 _buildRecurrenceSection(theme),
-                const SizedBox(height: 20),
+                const SizedBox(height: SpacingTokens.lg * 0.85), // 20px
                 
                 // Additional notes
                 SizedBox(
@@ -297,66 +268,13 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
                     onChanged: (value) => _notes = value,
                   ),
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: SpacingTokens.xl),
               ],
             ),
           ),
         ),
-        // Bottom Save Button Bar
-        bottomNavigationBar: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: theme.colorScheme.surface.withValues(alpha: 0.95),
-            border: Border(
-              top: BorderSide(
-                color: theme.colorScheme.outline.withValues(alpha: 0.2),
-              ),
-            ),
-          ),
-          child: SafeArea(
-            child: Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon: Icon(PhosphorIcons.x()),
-                    label: const Text('Cancel'),
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  flex: 2,
-                  child: FilledButton.icon(
-                    onPressed: _isLoading ? null : _saveTask,
-                    icon: _isLoading 
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                        )
-                      : Icon(PhosphorIcons.floppyDisk()),
-                    label: Text(_isLoading ? 'Saving Task...' : 'Save Task'),
-                    style: FilledButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      textStyle: TypographyConstants.getStyle(
-                        fontSize: TypographyConstants.buttonText,
-                        fontWeight: TypographyConstants.medium,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ), // Bottom Save Button Bar
-        ), // Close Scaffold
-      ), // Close SizedBox
-      ), // Close ConstrainedBox
-      ), // Close GlassmorphismContainer
-    ); // Close Dialog
+      ),
+    );
   }
   
   String _getDialogTitle() {
@@ -371,10 +289,10 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
   
   Widget _buildEnhancedPrioritySelector(ThemeData theme) {
     final priorities = [
-      {'value': TaskPriority.low, 'label': 'Low', 'icon': PhosphorIcons.arrowDown(), 'color': Colors.green},
-      {'value': TaskPriority.medium, 'label': 'Medium', 'icon': PhosphorIcons.minus(), 'color': Colors.orange},
-      {'value': TaskPriority.high, 'label': 'High', 'icon': PhosphorIcons.arrowUp(), 'color': Colors.red},
-      {'value': TaskPriority.urgent, 'label': 'Urgent', 'icon': PhosphorIcons.warning(), 'color': Colors.purple},
+      {'value': TaskPriority.low, 'label': 'Low', 'icon': PhosphorIcons.arrowDown(), 'color': theme.colorScheme.primary},
+      {'value': TaskPriority.medium, 'label': 'Medium', 'icon': PhosphorIcons.minus(), 'color': theme.colorScheme.secondary},
+      {'value': TaskPriority.high, 'label': 'High', 'icon': PhosphorIcons.arrowUp(), 'color': theme.colorScheme.tertiary},
+      {'value': TaskPriority.urgent, 'label': 'Urgent', 'icon': PhosphorIcons.warning(), 'color': theme.colorScheme.error},
     ];
 
     return Column(
@@ -467,7 +385,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
                                 width: 12,
                                 height: 12,
                                 decoration: BoxDecoration(
-                                  color: project.color.isNotEmpty ? Color(int.tryParse(project.color) ?? 0xFF2196F3) : Colors.blue,
+                                  color: project.color.isNotEmpty ? Color(int.tryParse(project.color) ?? 0xFF2196F3) : const Color(0xFF2196F3), // Fixed hardcoded Colors.blue
                                   shape: BoxShape.circle,
                                 ),
                               ),
@@ -498,7 +416,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
                     border: Border.all(color: theme.colorScheme.outline),
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall), // 2.0 - Fixed border radius hierarchy (was 4px)
                   ),
                   child: Row(
                     children: [
@@ -525,7 +443,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
                     border: Border.all(color: theme.colorScheme.error),
-                    borderRadius: BorderRadius.circular(4),
+                    borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall), // 2.0 - Fixed border radius hierarchy (was 4px)
                   ),
                   child: Row(
                     children: [
@@ -679,7 +597,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
         ),
         // Custom tags (non-predefined categories)
         if (_tags.where((tag) => !_predefinedCategories.any((cat) => cat.id == tag.toLowerCase())).isNotEmpty) ...[
-          const SizedBox(height: 16),
+          const SizedBox(height: SpacingTokens.md),
           Text(
             'Custom Tags',
             style: TypographyConstants.getStyle(
@@ -727,11 +645,9 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
                 : theme.colorScheme.primary,
           ),
           const SizedBox(width: 4),
-          Flexible(
-            child: Text(
-              category.label,
-              overflow: TextOverflow.ellipsis,
-            ),
+          Text(
+            category.label,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
@@ -779,7 +695,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: SpacingTokens.md),
               TextField(
                 controller: controller,
                 decoration: const InputDecoration(
@@ -956,7 +872,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
       ),
       child: Row(
         children: [
@@ -990,7 +906,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: theme.colorScheme.secondaryContainer.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
       ),
       child: Row(
         children: [

@@ -377,7 +377,7 @@ class SlidableThemeService {
 
   /// Gets appropriate duration for slidable animations
   static Duration getAnimationDuration(bool isQuickAction) {
-    return Duration(milliseconds: isQuickAction ? 200 : 350);
+    return isQuickAction ? MotionTokens.fast : MotionTokens.normal;
   }
 
   /// Motion type optimization for 60fps performance across different contexts

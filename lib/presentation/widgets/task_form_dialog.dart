@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/theme/typography_constants.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../core/design_system/design_tokens.dart';
-import '../../domain/entities/task_model.dart';
+import '../../core/theme/typography_constants.dart';
 import '../../domain/entities/recurrence_pattern.dart';
-
+import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
 import '../providers/task_provider.dart' show taskOperationsProvider;
-
 import 'glassmorphism_container.dart';
-import 'theme_aware_dialog_components.dart';
 import 'project_selector.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'theme_aware_dialog_components.dart';
 
 /// Category option for task categorization
 class CategoryOption {
@@ -60,19 +58,19 @@ class _TaskFormDialogState extends ConsumerState<TaskFormDialog> {
       value: 'low',
       name: 'Low',
       icon: PhosphorIcons.arrowDown(),
-      color: Colors.green,
+      color: const Color(0xFF4CAF50), // Material Green for low priority
     ),
     PriorityOption(
       value: 'medium',
       name: 'Medium',
       icon: PhosphorIcons.minus(),
-      color: Colors.orange,
+      color: const Color(0xFFFF9800), // Material Orange for medium priority
     ),
     PriorityOption(
       value: 'high',
       name: 'High',
       icon: PhosphorIcons.arrowUp(),
-      color: Colors.red,
+      color: const Color(0xFFE53935), // Material Red for high priority
     ),
     PriorityOption(
       value: 'urgent',
@@ -505,7 +503,7 @@ class _TaskFormDialogState extends ConsumerState<TaskFormDialog> {
                 color: isSelected
                     ? theme.colorScheme.primary
                     : theme.colorScheme.onSurfaceVariant,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
               ),
             ),
           ],

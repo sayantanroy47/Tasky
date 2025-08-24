@@ -239,7 +239,6 @@ void main() {
       test('should get tasks with filter', () async {
         // Arrange
         const filter = TaskFilter(
-          status: TaskStatus.pending,
           priority: TaskPriority.high,
           searchQuery: 'test',
         );

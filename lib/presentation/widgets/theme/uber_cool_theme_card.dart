@@ -212,7 +212,7 @@ class _UberCoolThemeCardState extends State<UberCoolThemeCard> with SingleTicker
             metadata.name,
             TextStyle(
               fontSize: TypographyConstants.textBase,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w500,
               color: colors.onSurface,
               letterSpacing: 0.2,
               height: 1.2,

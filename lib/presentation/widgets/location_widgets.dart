@@ -47,12 +47,12 @@ class LocationPermissionWidget extends ConsumerWidget {
           Icon(
             PhosphorIcons.mapPin(),
             size: 64,
-            color: Colors.grey,
+            color: Theme.of(context).colorScheme.onSurfaceVariant, // Fixed hardcoded color (was Colors.grey)
           ),
           const SizedBox(height: 16),
           const Text(
             'Location Permission Required',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+            style: TextStyle(fontSize: TypographyConstants.bodyLarge, fontWeight: FontWeight.w500), // 16.0 - Fixed hardcoded font size (was 18px)
           ),
           const SizedBox(height: 8),
           const Text(

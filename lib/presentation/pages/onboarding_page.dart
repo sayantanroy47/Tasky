@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+
+import '../../core/design_system/design_tokens.dart';
 import '../../core/design_system/responsive_builder.dart';
 import '../../core/design_system/responsive_constants.dart';
-import '../../core/design_system/design_tokens.dart';
 import '../../core/localization/app_localizations.dart';
+import '../../core/theme/typography_constants.dart';
 import '../../services/onboarding_service.dart';
 import '../widgets/glassmorphism_container.dart';
 import '../widgets/theme_background_widget.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import '../widgets/standardized_animations.dart';
 
 /// Comprehensive onboarding page for new users
 class OnboardingPage extends ConsumerStatefulWidget {
@@ -17,13 +20,12 @@ class OnboardingPage extends ConsumerStatefulWidget {
   ConsumerState<OnboardingPage> createState() => _OnboardingPageState();
 }
 
-class _OnboardingPageState extends ConsumerState<OnboardingPage>
-    with TickerProviderStateMixin {
+class _OnboardingPageState extends ConsumerState<OnboardingPage> with TickerProviderStateMixin {
   late PageController _pageController;
   late AnimationController _fadeController;
   late AnimationController _slideController;
   late AnimationController _scaleController;
-  
+
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
   late Animation<double> _scaleAnimation;
@@ -43,7 +45,8 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage>
     OnboardingStep(
       title: 'Voice-Powered Tasks',
       subtitle: 'Speak Your Mind',
-      description: 'Create tasks by simply speaking. Our AI understands context and creates perfect tasks from your voice.',
+      description:
+          'Create tasks by simply speaking. Our AI understands context and creates perfect tasks from your voice.',
       icon: PhosphorIcons.microphone(),
       gradient: [Colors.green, Colors.teal],
       features: ['Natural language processing', 'Context awareness', 'Multi-language support'],
@@ -83,29 +86,29 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage>
 
   void _setupAnimations() {
     _fadeController = AnimationController(
-      duration: const Duration(milliseconds: 600),
+      duration: StandardizedAnimations.slower,
       vsync: this,
     );
-    
+
     _slideController = AnimationController(
-      duration: const Duration(milliseconds: 400),
+      duration: StandardizedAnimations.drawerTransition,
       vsync: this,
     );
-    
+
     _scaleController = AnimationController(
-      duration: const Duration(milliseconds: 300),
+      duration: StandardizedAnimations.modalTransition,
       vsync: this,
     );
 
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _fadeController, curve: Curves.easeIn),
     );
-    
+
     _slideAnimation = Tween<Offset>(
       begin: const Offset(1.0, 0.0),
       end: Offset.zero,
     ).animate(CurvedAnimation(parent: _slideController, curve: Curves.easeOut));
-    
+
     _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
       CurvedAnimation(parent: _scaleController, curve: Curves.elasticOut),
     );
@@ -131,7 +134,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage>
 
   Future<void> _nextPage() async {
     if (_isAnimating) return;
-    
+
     setState(() => _isAnimating = true);
 
     if (_currentPage < _steps.length - 1) {
@@ -143,7 +146,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage>
 
       // Move to next page
       await _pageController.nextPage(
-        duration: const Duration(milliseconds: 300),
+        duration: StandardizedAnimations.modalTransition,
         curve: Curves.easeInOut,
       );
 
@@ -161,7 +164,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage>
 
   Future<void> _previousPage() async {
     if (_isAnimating || _currentPage == 0) return;
-    
+
     setState(() => _isAnimating = true);
 
     // Animate out current content
@@ -172,7 +175,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage>
 
     // Move to previous page
     await _pageController.previousPage(
-      duration: const Duration(milliseconds: 300),
+      duration: StandardizedAnimations.modalTransition,
       curve: Curves.easeInOut,
     );
 
@@ -192,7 +195,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage>
   Future<void> _finishOnboarding() async {
     final onboardingService = ref.read(onboardingServiceProvider);
     await onboardingService.completeOnboarding();
-    
+
     if (mounted) {
       Navigator.of(context).pushReplacementNamed('/home');
     }
@@ -201,7 +204,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     return ThemeBackgroundWidget(
       child: ResponsiveBuilder(
         builder: (context, config) {
@@ -246,7 +249,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage>
     AppLocalizations l10n,
   ) {
     final theme = Theme.of(context);
-    
+
     return Padding(
       padding: config.padding,
       child: Column(
@@ -349,7 +352,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage>
         builder: (context, child) {
           final scale = 1.0 + (index * 0.2) + (_scaleController.value * 0.1);
           final opacity = (1.0 - index * 0.3) * (1.0 - _scaleController.value * 0.5);
-          
+
           return Transform.scale(
             scale: scale,
             child: Container(
@@ -380,12 +383,10 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage>
       children: [
         // Title
         Text(
-          step.title.startsWith('onboarding_') 
-              ? _getLocalizedString(l10n, step.title)
-              : step.title,
+          step.title.startsWith('onboarding_') ? _getLocalizedString(l10n, step.title) : step.title,
           style: theme.textTheme.headlineMedium?.copyWith(
             fontWeight: FontWeight.w500,
-            fontSize: config.isMobile ? 28 : 36,
+            // Removed hardcoded fontSize - using theme.textTheme.headlineMedium default (28.0)
           ),
           textAlign: TextAlign.center,
         ),
@@ -394,13 +395,11 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage>
 
         // Subtitle
         Text(
-          step.subtitle.startsWith('onboarding_') 
-              ? _getLocalizedString(l10n, step.subtitle)
-              : step.subtitle,
+          step.subtitle.startsWith('onboarding_') ? _getLocalizedString(l10n, step.subtitle) : step.subtitle,
           style: theme.textTheme.titleLarge?.copyWith(
             color: theme.colorScheme.primary,
-            fontSize: config.isMobile ? 18 : 22,
-            fontWeight: FontWeight.w600,
+            // Removed hardcoded fontSize - using theme.textTheme.titleLarge default (22.0)
+            fontWeight: FontWeight.w500,
           ),
           textAlign: TextAlign.center,
         ),
@@ -413,7 +412,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage>
           child: Text(
             step.description,
             style: theme.textTheme.bodyLarge?.copyWith(
-              fontSize: config.isMobile ? 16 : 18,
+              // Removed hardcoded fontSize - using theme.textTheme.bodyLarge default (16.0)
               height: 1.5,
             ),
             textAlign: TextAlign.center,
@@ -468,7 +467,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage>
           mainAxisSize: MainAxisSize.min,
           children: List.generate(_steps.length, (index) {
             return AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
+              duration: StandardizedAnimations.modalTransition,
               margin: const EdgeInsets.symmetric(horizontal: 4),
               width: _currentPage == index ? 24 : 8,
               height: 8,
@@ -500,7 +499,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage>
           // Previous button
           AnimatedOpacity(
             opacity: _currentPage > 0 ? 1.0 : 0.0,
-            duration: const Duration(milliseconds: 200),
+            duration: StandardizedAnimations.pageTransition,
             child: GestureDetector(
               onTap: _currentPage > 0 ? _previousPage : null,
               child: GlassmorphismContainer(
@@ -518,11 +517,11 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage>
                       size: config.isMobile ? 18 : 20,
                     ),
                     const SizedBox(width: 8),
-                    Text(
+                    const Text(
                       'Back',
                       style: TextStyle(
-                        fontSize: config.isMobile ? 14 : 16,
-                        fontWeight: FontWeight.w600,
+                        fontSize: TypographyConstants.bodyMedium, // 14.0 - Fixed hardcoded font size
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ],
@@ -555,20 +554,16 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage>
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      _currentPage == _steps.length - 1
-                          ? l10n.onboardingFinish
-                          : l10n.onboardingNext,
+                      _currentPage == _steps.length - 1 ? l10n.onboardingFinish : l10n.onboardingNext,
                       style: TextStyle(
-                        color: Colors.white,
-                        fontSize: config.isMobile ? 14 : 16,
+                        color: Theme.of(context).colorScheme.onPrimary, // Fixed hardcoded color (was Colors.white)
+                        fontSize: TypographyConstants.bodyMedium, // 14.0 - Fixed hardcoded font size
                         fontWeight: FontWeight.w500,
                       ),
                     ),
                     const SizedBox(width: 8),
                     Icon(
-                      _currentPage == _steps.length - 1
-                          ? PhosphorIcons.check()
-                          : PhosphorIcons.arrowRight(),
+                      _currentPage == _steps.length - 1 ? PhosphorIcons.check() : PhosphorIcons.arrowRight(),
                       color: Colors.white,
                       size: config.isMobile ? 18 : 20,
                     ),
@@ -602,9 +597,9 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage>
           child: Text(
             l10n.onboardingSkip,
             style: Theme.of(context).textTheme.labelLarge?.copyWith(
-              fontWeight: FontWeight.w600,
-              fontSize: config.isMobile ? 14 : 16,
-            ),
+                  fontWeight: FontWeight.w500,
+                  // Removed hardcoded fontSize - using theme.textTheme.labelLarge default (14.0)
+                ),
           ),
         ),
       ),
@@ -641,4 +636,3 @@ class OnboardingStep {
     this.features = const [],
   });
 }
-

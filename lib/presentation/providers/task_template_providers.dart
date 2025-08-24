@@ -1,16 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/task_template.dart';
 import '../../domain/repositories/task_template_repository.dart';
-import '../../data/repositories/task_template_repository_impl.dart';
-import '../../data/datasources/local/task_template_local_datasource.dart';
+// Removed unused imports - using core provider instead
 import '../../core/providers/core_providers.dart';
 
-/// Provider for TaskTemplateRepository
-final taskTemplateRepositoryProvider = Provider<TaskTemplateRepository>((ref) {
-  final database = ref.watch(databaseProvider);
-  final localDataSource = TaskTemplateLocalDataSource(database);
-  return TaskTemplateRepositoryImpl(localDataSource);
-});
+// TaskTemplateRepository provider is now defined in core_providers.dart
 
 /// State notifier for managing task templates
 class TaskTemplateNotifier extends StateNotifier<AsyncValue<List<TaskTemplate>>> {

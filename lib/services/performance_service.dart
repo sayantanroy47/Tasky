@@ -92,6 +92,17 @@ class PerformanceService {
     return null;
   }
 
+  /// Track an operation by executing it and recording the execution time
+  Future<T> trackOperation<T>(String operationName, Future<T> Function() operation) async {
+    startTimer(operationName);
+    try {
+      final result = await operation();
+      return result;
+    } finally {
+      stopTimer(operationName);
+    }
+  }
+
   /// Record memory usage
   void recordMemoryUsage() {
     // In a real app, you'd use dart:developer or platform channels

@@ -527,7 +527,9 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
               final locationPermission = ref.watch(locationPermissionProvider);
               return locationPermission.when(
                 data: (status) {
-                  if (status != LocationPermissionStatus.granted) {
+                  if (status != LocationPermissionStatus.granted && 
+                      status != LocationPermissionStatus.whileInUse && 
+                      status != LocationPermissionStatus.always) {
                     return Container(
                       width: double.infinity,
                       margin: const EdgeInsets.only(top: 12),
@@ -545,15 +547,17 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
                             Expanded(
                               child: Text(
                                 'Location permission required for location-based reminders',
-                                style: theme.textTheme.bodySmall?.copyWith(
+                                style: theme.textTheme.labelSmall?.copyWith(
                                   color: Colors.orange.shade700,
                                 ),
                               ),
                             ),
                             const SizedBox(width: 8),
-                            TextButton(
-                              onPressed: _requestLocationPermission,
-                              child: const Text('Enable Location'),
+                            Flexible(
+                              child: TextButton(
+                                onPressed: _requestLocationPermission,
+                                child: const Text('Enable Location'),
+                              ),
                             ),
                           ],
                         ),
@@ -664,7 +668,9 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
                         children: [
                           Icon(_getTriggerTypeIcon(type), size: 16),
                           const SizedBox(width: 8),
-                          Text(_getTriggerTypeDisplay(type)),
+                          Expanded(
+                            child: Text(_getTriggerTypeDisplay(type)),
+                          ),
                         ],
                       ),
                     );
@@ -693,7 +699,9 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
                         children: [
                           Icon(_getPriorityIcon(priority), size: 16),
                           const SizedBox(width: 8),
-                          Text(priority.name.toUpperCase()),
+                          Expanded(
+                            child: Text(priority.name.toUpperCase()),
+                          ),
                         ],
                       ),
                     );
@@ -1000,7 +1008,9 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
         error: (_, __) => ref.read(locationServiceProvider).checkPermission(),
       );
       
-      if (permissionStatus != LocationPermissionStatus.granted) {
+      if (permissionStatus != LocationPermissionStatus.granted && 
+          permissionStatus != LocationPermissionStatus.whileInUse && 
+          permissionStatus != LocationPermissionStatus.always) {
         _requestLocationPermission();
         return;
       }
@@ -1166,7 +1176,7 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
           children: [
             const Text(
               'To create location-based tasks with geofencing alerts, this app needs access to your device\'s location.',
-              style: TextStyle(fontSize: 16),
+              style: TextStyle(fontSize: TypographyConstants.bodyMedium), // 14.0 - Fixed hardcoded font size (was 16px)
             ),
             const SizedBox(height: 16),
             Container(

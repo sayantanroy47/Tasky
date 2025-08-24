@@ -21,16 +21,15 @@ class ExpressiveBottomNavigation extends StatefulWidget {
   State<ExpressiveBottomNavigation> createState() => _ExpressiveBottomNavigationState();
 }
 
-class _ExpressiveBottomNavigationState extends State<ExpressiveBottomNavigation>
-    with TickerProviderStateMixin {
+class _ExpressiveBottomNavigationState extends State<ExpressiveBottomNavigation> with TickerProviderStateMixin {
   late AnimationController _selectionController;
   late AnimationController _pressController;
   late AnimationController _rippleController;
-  
+
   late Animation<double> _selectionAnimation;
   late Animation<double> _pressAnimation;
   late Animation<double> _rippleAnimation;
-  
+
   int? _pressedIndex;
   int? _rippleIndex;
   late PageController _indicatorController;
@@ -38,56 +37,56 @@ class _ExpressiveBottomNavigationState extends State<ExpressiveBottomNavigation>
   @override
   void initState() {
     super.initState();
-    
+
     _selectionController = AnimationController(
       duration: ExpressiveMotionSystem.durationMedium2,
       vsync: this,
     );
-    
+
     _pressController = AnimationController(
       duration: ExpressiveMotionSystem.durationShort2,
       vsync: this,
     );
-    
+
     _rippleController = AnimationController(
       duration: ExpressiveMotionSystem.durationMedium3,
       vsync: this,
     );
-    
+
     _selectionAnimation = CurvedAnimation(
       parent: _selectionController,
       curve: ExpressiveMotionSystem.emphasizedDecelerate,
     );
-    
+
     _pressAnimation = CurvedAnimation(
       parent: _pressController,
       curve: Curves.easeInOut,
     );
-    
+
     _rippleAnimation = CurvedAnimation(
       parent: _rippleController,
       curve: Curves.easeOut,
     );
-    
+
     _indicatorController = PageController(
       initialPage: widget.selectedIndex,
       viewportFraction: 0.25,
     );
-    
+
     _selectionController.forward();
   }
 
   @override
   void didUpdateWidget(ExpressiveBottomNavigation oldWidget) {
     super.didUpdateWidget(oldWidget);
-    
+
     if (oldWidget.selectedIndex != widget.selectedIndex) {
       _indicatorController.animateToPage(
         widget.selectedIndex,
         duration: ExpressiveMotionSystem.durationMedium2,
         curve: ExpressiveMotionSystem.emphasizedDecelerate,
       );
-      
+
       _selectionController.reset();
       _selectionController.forward();
     }
@@ -105,7 +104,7 @@ class _ExpressiveBottomNavigationState extends State<ExpressiveBottomNavigation>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -163,7 +162,7 @@ class _ExpressiveBottomNavigationState extends State<ExpressiveBottomNavigation>
                   );
                 },
               ),
-              
+
               // Navigation items
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -172,7 +171,7 @@ class _ExpressiveBottomNavigationState extends State<ExpressiveBottomNavigation>
                   final destination = entry.value;
                   final isSelected = index == widget.selectedIndex;
                   final isPressed = index == _pressedIndex;
-                  
+
                   return _buildNavigationItem(
                     context,
                     destination,
@@ -182,7 +181,7 @@ class _ExpressiveBottomNavigationState extends State<ExpressiveBottomNavigation>
                   );
                 }).toList(),
               ),
-              
+
               // Ripple effect
               if (_rippleIndex != null)
                 AnimatedBuilder(
@@ -196,8 +195,8 @@ class _ExpressiveBottomNavigationState extends State<ExpressiveBottomNavigation>
                         height: 48,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: theme.colorScheme.primary.withValues(alpha: 
-                            0.2 * (1 - _rippleAnimation.value),
+                          color: theme.colorScheme.primary.withValues(
+                            alpha: 0.2 * (1 - _rippleAnimation.value),
                           ),
                         ),
                       ),
@@ -219,7 +218,7 @@ class _ExpressiveBottomNavigationState extends State<ExpressiveBottomNavigation>
     bool isPressed,
   ) {
     final theme = Theme.of(context);
-    
+
     return Expanded(
       child: GestureDetector(
         onTapDown: (details) {
@@ -227,7 +226,7 @@ class _ExpressiveBottomNavigationState extends State<ExpressiveBottomNavigation>
             _pressedIndex = index;
           });
           _pressController.forward();
-          
+
           // Haptic feedback
           HapticFeedback.lightImpact();
         },
@@ -240,10 +239,8 @@ class _ExpressiveBottomNavigationState extends State<ExpressiveBottomNavigation>
         child: AnimatedBuilder(
           animation: _pressAnimation,
           builder: (context, child) {
-            final scale = isPressed 
-                ? 1.0 - (_pressAnimation.value * 0.1)
-                : 1.0;
-                
+            final scale = isPressed ? 1.0 - (_pressAnimation.value * 0.1) : 1.0;
+
             return Transform.scale(
               scale: scale,
               child: Container(
@@ -278,24 +275,20 @@ class _ExpressiveBottomNavigationState extends State<ExpressiveBottomNavigation>
                         child: Icon(
                           isSelected ? destination.selectedIcon ?? destination.icon : destination.icon,
                           size: 20,
-                          color: isSelected
-                              ? theme.colorScheme.primary
-                              : theme.colorScheme.onSurfaceVariant,
+                          color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ),
-                    
+
                     const SizedBox(height: 2),
-                    
+
                     // Label with animation
                     AnimatedDefaultTextStyle(
                       duration: ExpressiveMotionSystem.durationShort3,
                       style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                        color: isSelected
-                            ? theme.colorScheme.primary
-                            : theme.colorScheme.onSurfaceVariant,
+                        fontSize: TypographyConstants.labelSmall, // 11.0 - Fixed accessibility violation (was 10px)
+                        fontWeight: isSelected ? FontWeight.w500 : FontWeight.w400,
+                        color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
                       ),
                       child: Text(
                         destination.label,
@@ -315,12 +308,12 @@ class _ExpressiveBottomNavigationState extends State<ExpressiveBottomNavigation>
 
   void _handleTapUp(int index) {
     _pressController.reverse();
-    
+
     setState(() {
       _rippleIndex = index;
       _pressedIndex = null;
     });
-    
+
     _rippleController.forward().then((_) {
       _rippleController.reset();
       if (mounted) {
@@ -329,7 +322,7 @@ class _ExpressiveBottomNavigationState extends State<ExpressiveBottomNavigation>
         });
       }
     });
-    
+
     widget.onDestinationSelected(index);
   }
 
@@ -346,19 +339,19 @@ class _ExpressiveBottomNavigationState extends State<ExpressiveBottomNavigation>
     const padding = 16.0;
     final availableWidth = screenWidth - (padding * 2);
     final spacing = (availableWidth - (itemWidth * widget.destinations.length)) / (widget.destinations.length - 1);
-    
+
     return padding + (widget.selectedIndex * (itemWidth + spacing));
   }
 
   double _calculateRipplePosition(BuildContext context) {
     if (_rippleIndex == null) return 0;
-    
+
     final screenWidth = MediaQuery.of(context).size.width;
     final itemWidth = _calculateItemWidth(context);
     const padding = 16.0;
     final availableWidth = screenWidth - (padding * 2);
     final spacing = (availableWidth - (itemWidth * widget.destinations.length)) / (widget.destinations.length - 1);
-    
+
     return padding + (_rippleIndex! * (itemWidth + spacing));
   }
 

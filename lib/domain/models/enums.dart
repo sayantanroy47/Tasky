@@ -57,6 +57,9 @@ enum TaskPriority {
   bool get isHighPriority {
     return this == TaskPriority.high || this == TaskPriority.urgent;
   }
+
+  /// Alias for isHighPriority for backward compatibility
+  bool get isHigh => isHighPriority;
 }
 
 /// Task status
@@ -259,7 +262,8 @@ enum ExportFormat {
   json,
   csv,
   txt,
-  pdf;
+  pdf,
+  excel;
 
   /// Get display name
   String get displayName {
@@ -272,6 +276,8 @@ enum ExportFormat {
         return 'Text';
       case ExportFormat.pdf:
         return 'PDF';
+      case ExportFormat.excel:
+        return 'Excel';
     }
   }
 
@@ -286,6 +292,8 @@ enum ExportFormat {
         return '.txt';
       case ExportFormat.pdf:
         return '.pdf';
+      case ExportFormat.excel:
+        return '.xlsx';
     }
   }
 }

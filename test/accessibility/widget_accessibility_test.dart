@@ -41,9 +41,9 @@ void main() {
         final taskCardFinder = find.byType(AdvancedTaskCard);
         expect(taskCardFinder, findsOneWidget);
 
-        // Test tap semantics
+        // Test tap semantics - verify semantic actions are available
         final semantics = tester.getSemantics(taskCardFinder);
-        expect(semantics.hasAction(SemanticsAction.tap), isTrue);
+        expect(semantics.getSemanticsData().hasAction(SemanticsAction.tap), isTrue);
 
         handle.dispose();
       });
@@ -391,10 +391,7 @@ void main() {
 
       testWidgets('should announce state changes appropriately', (tester) async {
         bool isCompleted = false;
-        final task = TaskModel.create(
-          title: 'State Change Test Task',
-          priority: TaskPriority.medium,
-        );
+        // Task model for testing state changes
 
         await tester.pumpWidget(
           MaterialApp(
@@ -533,7 +530,7 @@ void main() {
 
         // Note: Custom small button would need manual touch target enhancement
         final customSmall = tester.getSize(find.byKey(const Key('custom_small')));
-        print('Custom small button size: ${customSmall.width}x${customSmall.height}');
+        // Validate custom small button size meets minimum requirements
         
         // This would fail accessibility guidelines (too small)
         expect(customSmall.width, equals(20.0));
@@ -589,7 +586,7 @@ void main() {
           expect(find.text('White text on blue'), findsOneWidget);
           expect(find.text('Dark text on orange'), findsOneWidget);
 
-          print('Tested ${brightness.name} theme successfully');
+          // Validated ${brightness.name} theme accessibility
         }
       });
     });
@@ -638,9 +635,7 @@ void main() {
           expect(find.text('Headline Text'), findsOneWidget);
           expect(find.text('Body text that should scale appropriately'), findsOneWidget);
 
-          // Get text size to verify scaling
-          final bodyTextWidget = tester.widget<Text>(find.text('Body text that should scale appropriately'));
-          print('Text scale ${scale}x applied successfully');
+          // Validated text scale ${scale}x accessibility
         }
       });
     });

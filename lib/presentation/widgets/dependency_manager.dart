@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../core/design_system/design_tokens.dart';
+import '../../core/theme/typography_constants.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
 import '../providers/dependency_providers.dart';
 import '../providers/task_providers.dart';
-import '../../core/theme/typography_constants.dart';
-import '../../core/design_system/design_tokens.dart';
 import 'glassmorphism_container.dart';
 import 'status_badge_widget.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Comprehensive dependency management widget for tasks
-/// 
+///
 /// Provides functionality to:
 /// - View task dependencies and prerequisites
 /// - Add/remove dependencies
@@ -37,8 +37,7 @@ class DependencyManager extends ConsumerStatefulWidget {
   ConsumerState<DependencyManager> createState() => _DependencyManagerState();
 }
 
-class _DependencyManagerState extends ConsumerState<DependencyManager>
-    with TickerProviderStateMixin {
+class _DependencyManagerState extends ConsumerState<DependencyManager> with TickerProviderStateMixin {
   late TabController _tabController;
   String? _selectedTaskId;
   bool _showAddDependencyDialog = false;
@@ -48,7 +47,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager>
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
     _selectedTaskId = widget.initialTaskId;
-    
+
     if (_selectedTaskId != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ref.read(dependencyManagerProvider.notifier).selectTask(_selectedTaskId!);
@@ -83,8 +82,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager>
             Expanded(child: _buildTabContent(theme, dependencyState)),
           ] else
             _buildEmptyState(theme),
-          if (_showAddDependencyDialog)
-            _buildAddDependencyDialog(theme),
+          if (_showAddDependencyDialog) _buildAddDependencyDialog(theme),
         ],
       ),
     );
@@ -106,7 +104,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager>
               Text(
                 'Dependency Manager',
                 style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
               Text(
@@ -214,7 +212,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager>
         labelColor: theme.colorScheme.primary,
         unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
         labelStyle: theme.textTheme.labelMedium?.copyWith(
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w500,
         ),
         tabs: const [
           Tab(text: 'Prerequisites'),
@@ -256,7 +254,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager>
             Text(
               'Prerequisites (${state.prerequisites.length})',
               style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w500,
               ),
             ),
             IconButton(
@@ -293,7 +291,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager>
         Text(
           'Dependent Tasks (${state.dependents.length})',
           style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w500,
           ),
         ),
         const SizedBox(height: 12),
@@ -341,7 +339,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager>
           Text(
             'Blocked Tasks',
             style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w500,
             ),
           ),
           const SizedBox(height: 12),
@@ -354,7 +352,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager>
           Text(
             'Ready Tasks',
             style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w500,
             ),
           ),
           const SizedBox(height: 12),
@@ -447,30 +445,22 @@ class _DependencyManagerState extends ConsumerState<DependencyManager>
       itemBuilder: (context, index) {
         final task = chain[index];
         final isCurrentTask = task.id == _selectedTaskId;
-        
+
         return Container(
           margin: const EdgeInsets.symmetric(vertical: 4),
           decoration: BoxDecoration(
-            color: isCurrentTask 
-                ? theme.colorScheme.primaryContainer.withValues(alpha: 0.3)
-                : null,
-            borderRadius: BorderRadius.circular(8),
-            border: isCurrentTask 
-                ? Border.all(color: theme.colorScheme.primary, width: 2)
-                : null,
+            color: isCurrentTask ? theme.colorScheme.primaryContainer.withValues(alpha: 0.3) : null,
+            borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
+            border: isCurrentTask ? Border.all(color: theme.colorScheme.primary, width: 2) : null,
           ),
           child: ListTile(
             leading: CircleAvatar(
               radius: 16,
-              backgroundColor: isCurrentTask 
-                  ? theme.colorScheme.primary
-                  : theme.colorScheme.surfaceContainer,
+              backgroundColor: isCurrentTask ? theme.colorScheme.primary : theme.colorScheme.surfaceContainer,
               child: Text(
                 '${index + 1}',
                 style: theme.textTheme.labelSmall?.copyWith(
-                  color: isCurrentTask 
-                      ? theme.colorScheme.onPrimary
-                      : theme.colorScheme.onSurfaceVariant,
+                  color: isCurrentTask ? theme.colorScheme.onPrimary : theme.colorScheme.onSurfaceVariant,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -478,7 +468,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager>
             title: Text(
               task.title,
               style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: isCurrentTask ? FontWeight.w600 : null,
+                fontWeight: isCurrentTask ? FontWeight.w500 : null,
               ),
             ),
             subtitle: Row(
@@ -545,7 +535,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager>
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
         border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(
@@ -571,44 +561,47 @@ class _DependencyManagerState extends ConsumerState<DependencyManager>
   Widget _buildTaskList(ThemeData theme, List<TaskModel> tasks, {required bool isBlocked}) {
     if (tasks.isEmpty) {
       return _buildEmptyDependencies(
-        theme, 
+        theme,
         isBlocked ? 'No blocked tasks' : 'No ready tasks',
       );
     }
 
     return Column(
-      children: tasks.take(5).map((task) => Card(
-        margin: const EdgeInsets.symmetric(vertical: 2),
-        child: ListTile(
-          leading: Icon(
-            isBlocked ? PhosphorIcons.prohibit() : PhosphorIcons.checkCircle(),
-            color: isBlocked ? Colors.red : Colors.green,
-          ),
-          title: Text(
-            task.title,
-            style: theme.textTheme.bodyMedium,
-          ),
-          subtitle: Row(
-            children: [
-              Icon(
-                _getPriorityIcon(task.priority),
-                color: _getPriorityColor(task.priority),
-                size: 14,
-              ),
-              const SizedBox(width: 4),
-              Text(
-                task.priority.name.toUpperCase(),
-                style: theme.textTheme.labelSmall,
-              ),
-            ],
-          ),
-          trailing: StatusBadgeWidget(
-            status: task.status,
-            compact: true,
-          ),
-          onTap: () => _navigateToTask(task.id),
-        ),
-      )).toList(),
+      children: tasks
+          .take(5)
+          .map((task) => Card(
+                margin: const EdgeInsets.symmetric(vertical: 2),
+                child: ListTile(
+                  leading: Icon(
+                    isBlocked ? PhosphorIcons.prohibit() : PhosphorIcons.checkCircle(),
+                    color: isBlocked ? Colors.red : Colors.green,
+                  ),
+                  title: Text(
+                    task.title,
+                    style: theme.textTheme.bodyMedium,
+                  ),
+                  subtitle: Row(
+                    children: [
+                      Icon(
+                        _getPriorityIcon(task.priority),
+                        color: _getPriorityColor(task.priority),
+                        size: 14,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        task.priority.name.toUpperCase(),
+                        style: theme.textTheme.labelSmall,
+                      ),
+                    ],
+                  ),
+                  trailing: StatusBadgeWidget(
+                    status: task.status,
+                    compact: true,
+                  ),
+                  onTap: () => _navigateToTask(task.id),
+                ),
+              ))
+          .toList(),
     );
   }
 
@@ -762,15 +755,13 @@ class _DependencyManagerState extends ConsumerState<DependencyManager>
       loading: () => const CircularProgressIndicator(),
       error: (error, stack) => Text('Error: $error'),
       data: (tasks) {
-        final availableTasks = tasks
-            .where((task) => task.id != _selectedTaskId && !task.isCompleted)
-            .toList();
+        final availableTasks = tasks.where((task) => task.id != _selectedTaskId && !task.isCompleted).toList();
 
         return Container(
           height: 200,
           decoration: BoxDecoration(
             border: Border.all(color: theme.colorScheme.outline),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
           ),
           child: ListView.builder(
             itemCount: availableTasks.length,
@@ -824,9 +815,9 @@ class _DependencyManagerState extends ConsumerState<DependencyManager>
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final taskDate = DateTime(date.year, date.month, date.day);
-    
+
     final difference = taskDate.difference(today).inDays;
-    
+
     if (difference == 0) {
       return 'Today';
     } else if (difference == 1) {
@@ -860,7 +851,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager>
       final success = await ref
           .read(dependencyManagerProvider.notifier)
           .addDependency(_selectedTaskId!, _selectedDependencyTaskId!);
-      
+
       if (success) {
         setState(() {
           _showAddDependencyDialog = false;
@@ -872,10 +863,9 @@ class _DependencyManagerState extends ConsumerState<DependencyManager>
 
   Future<void> _removeDependency(String prerequisiteTaskId, bool isPrerequisite) async {
     if (_selectedTaskId != null) {
-      final success = await ref
-          .read(dependencyManagerProvider.notifier)
-          .removeDependency(_selectedTaskId!, prerequisiteTaskId);
-      
+      final success =
+          await ref.read(dependencyManagerProvider.notifier).removeDependency(_selectedTaskId!, prerequisiteTaskId);
+
       if (success) {
         // Refresh the dependencies
         ref.read(dependencyManagerProvider.notifier).selectTask(_selectedTaskId!);
@@ -910,7 +900,8 @@ class SimpleDependencyWidget extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         canCompleteAsync.when(
-          loading: () => const SizedBox(width: 16,
+          loading: () => const SizedBox(
+            width: 16,
             height: 16,
             child: CircularProgressIndicator(strokeWidth: 2),
           ),
@@ -942,4 +933,3 @@ class SimpleDependencyWidget extends ConsumerWidget {
     );
   }
 }
-

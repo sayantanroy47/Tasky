@@ -266,7 +266,7 @@ class LocaleSelector extends ConsumerWidget {
         return ListTile(
           leading: showFlags ? Text(
             SupportedLocales.getFlag(locale),
-            style: const TextStyle(fontSize: 24),
+            // Using theme headlineSmall for country flag display
           ) : null,
           title: Text(
             showNativeNames 

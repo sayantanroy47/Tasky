@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:drift/drift.dart';
+import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:drift/native.dart';
 
 import 'package:task_tracker_app/services/database/database.dart';
@@ -25,7 +25,6 @@ void main() {
         description: 'Test task description',
         dueDate: DateTime.now().add(const Duration(days: 1)),
         priority: TaskPriority.medium,
-        status: TaskStatus.todo,
         tags: const ['test', 'unit-test'],
         metadata: const {'test': 'data'},
       );
@@ -51,7 +50,6 @@ void main() {
           description: 'Complex task description',
           dueDate: DateTime.now().add(const Duration(days: 7)),
           priority: TaskPriority.high,
-          status: TaskStatus.inProgress,
           tags: const ['complex', 'priority', 'urgent'],
           metadata: const {'complexity': 'high', 'estimatedHours': 8},
         ).copyWith(subTasks: [
@@ -80,7 +78,7 @@ void main() {
         expect(retrieved, isNotNull);
         expect(retrieved!.title, equals('Minimal Task'));
         expect(retrieved.priority, equals(TaskPriority.medium)); // Default
-        expect(retrieved.status, equals(TaskStatus.todo)); // Default
+        expect(retrieved.status, equals(TaskStatus.pending)); // Default
       });
 
       test('should validate task ID during creation', () async {
@@ -111,13 +109,11 @@ void main() {
           title: 'Completed Task',
           description: 'A completed task',
           priority: TaskPriority.low,
-          status: TaskStatus.completed,
         ));
         await taskDao.createTask(TaskModel.create(
           title: 'High Priority Task',
           description: 'An urgent task',
           priority: TaskPriority.urgent,
-          status: TaskStatus.inProgress,
           dueDate: DateTime.now().add(const Duration(hours: 2)),
         ));
       });
@@ -143,7 +139,7 @@ void main() {
       });
 
       test('should get tasks by status', () async {
-        final todoTasks = await taskDao.getTasksByStatus(TaskStatus.todo);
+        final pendingTasks = await taskDao.getTasksByStatus(TaskStatus.pending);
         expect(todoTasks, hasLength(1));
         
         final completedTasks = await taskDao.getTasksByStatus(TaskStatus.completed);
@@ -203,7 +199,6 @@ void main() {
           title: 'Updated Task Title',
           description: 'Updated description',
           priority: TaskPriority.high,
-          status: TaskStatus.inProgress,
         );
 
         await taskDao.updateTask(updatedTask);
@@ -217,7 +212,6 @@ void main() {
       });
 
       test('should update task status via updateTask', () async {
-        final updatedTask = testTask.copyWith(status: TaskStatus.completed);
         await taskDao.updateTask(updatedTask);
         
         final retrieved = await taskDao.getTaskById(testTask.id);
@@ -381,25 +375,21 @@ void main() {
         // Create various tasks for statistics
         await taskDao.createTask(TaskModel.create(
           title: 'Completed Task 1',
-          status: TaskStatus.completed,
           priority: TaskPriority.high,
         ));
         
         await taskDao.createTask(TaskModel.create(
           title: 'Completed Task 2',
-          status: TaskStatus.completed,
           priority: TaskPriority.medium,
         ));
         
         await taskDao.createTask(TaskModel.create(
           title: 'In Progress Task',
-          status: TaskStatus.inProgress,
           priority: TaskPriority.high,
         ));
         
         await taskDao.createTask(TaskModel.create(
           title: 'Todo Task',
-          status: TaskStatus.todo,
           priority: TaskPriority.low,
         ));
       });

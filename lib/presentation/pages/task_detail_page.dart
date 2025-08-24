@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../domain/entities/task_model.dart';
-import '../../domain/entities/task_audio_extensions.dart';
-import '../../domain/models/enums.dart';
-import '../providers/task_providers.dart';
-import '../providers/audio_providers.dart';
-import '../widgets/glassmorphism_container.dart';
-import '../widgets/status_badge_widget.dart';
-import '../widgets/theme_background_widget.dart';
-import '../widgets/standardized_app_bar.dart';
-import '../widgets/enhanced_subtask_list.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../core/design_system/design_tokens.dart';
 import '../../core/theme/typography_constants.dart';
+import '../../domain/entities/task_audio_extensions.dart';
+import '../../domain/entities/task_model.dart';
+import '../../domain/models/enums.dart';
+import '../providers/audio_providers.dart';
 import '../providers/task_provider.dart' show taskOperationsProvider;
+import '../providers/task_providers.dart';
+import '../widgets/enhanced_subtask_list.dart';
+import '../widgets/glassmorphism_container.dart';
+import '../widgets/standardized_app_bar.dart';
+import '../widgets/standardized_text.dart';
+import '../widgets/status_badge_widget.dart';
 import '../widgets/task_form_dialog.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import '../widgets/theme_background_widget.dart';
+import '../widgets/standardized_icons.dart' show StandardizedIcon, StandardizedIconSize, StandardizedIconStyle;
+import '../widgets/standardized_page_dialogs.dart';
+import '../widgets/standardized_notifications.dart';
 
 /// Task detail page showing comprehensive task information
 class TaskDetailPage extends ConsumerWidget {
@@ -30,9 +33,10 @@ class TaskDetailPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final allTasksAsync = ref.watch(tasksProvider);
-    
+
     return allTasksAsync.when(
-      loading: () => const ThemeBackgroundWidget(child: Scaffold(
+      loading: () => const ThemeBackgroundWidget(
+        child: Scaffold(
           backgroundColor: Colors.transparent,
           extendBodyBehindAppBar: true,
           appBar: StandardizedAppBar(title: 'Task Details'),
@@ -48,7 +52,11 @@ class TaskDetailPage extends ConsumerWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(PhosphorIcons.warningCircle(), size: 64, color: Colors.red),
+                StandardizedIcon(
+                  PhosphorIcons.warningCircle(),
+                  size: StandardizedIconSize.xxxl,
+                  style: StandardizedIconStyle.error,
+                ),
                 const SizedBox(height: 16),
                 Text('Error loading task: $error'),
                 const SizedBox(height: 16),
@@ -63,10 +71,10 @@ class TaskDetailPage extends ConsumerWidget {
       ),
       data: (tasks) {
         final task = tasks.cast<TaskModel?>().firstWhere(
-          (t) => t?.id == taskId,
-          orElse: () => null,
-        );
-        
+              (t) => t?.id == taskId,
+              orElse: () => null,
+            );
+
         if (task == null) {
           return ThemeBackgroundWidget(
             child: Scaffold(
@@ -77,7 +85,11 @@ class TaskDetailPage extends ConsumerWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(PhosphorIcons.checkSquare(), size: 64, color: Colors.grey),
+                    StandardizedIcon(
+                      PhosphorIcons.checkSquare(),
+                      size: StandardizedIconSize.xxxl,
+                      style: StandardizedIconStyle.disabled,
+                    ),
                     const SizedBox(height: 16),
                     const Text('Task not found'),
                   ],
@@ -118,26 +130,35 @@ class _TaskDetailView extends ConsumerWidget {
               itemBuilder: (context) => [
                 PopupMenuItem(
                   value: 'duplicate',
-                  child: ListTile(
-                    leading: Icon(PhosphorIcons.copy()),
-                    title: const Text('Duplicate'),
-                    contentPadding: EdgeInsets.zero,
+                  child: SizedBox(
+                    width: 150,
+                    child: ListTile(
+                      leading: Icon(PhosphorIcons.copy()),
+                      title: const Text('Duplicate'),
+                      contentPadding: EdgeInsets.zero,
+                    ),
                   ),
                 ),
                 PopupMenuItem(
                   value: 'share',
-                  child: ListTile(
-                    leading: Icon(PhosphorIcons.share()),
-                    title: const Text('Share'),
-                    contentPadding: EdgeInsets.zero,
+                  child: SizedBox(
+                    width: 150,
+                    child: ListTile(
+                      leading: Icon(PhosphorIcons.share()),
+                      title: const Text('Share'),
+                      contentPadding: EdgeInsets.zero,
+                    ),
                   ),
                 ),
                 PopupMenuItem(
                   value: 'delete',
-                  child: ListTile(
-                    leading: Icon(PhosphorIcons.trash(), color: Colors.red),
-                    title: const Text('Delete', style: TextStyle(color: Colors.red)),
-                    contentPadding: EdgeInsets.zero,
+                  child: SizedBox(
+                    width: 150,
+                    child: ListTile(
+                      leading: Icon(PhosphorIcons.trash(), color: Colors.red),
+                      title: const Text('Delete', style: TextStyle(color: Colors.red)),
+                      contentPadding: EdgeInsets.zero,
+                    ),
                   ),
                 ),
               ],
@@ -152,19 +173,19 @@ class _TaskDetailView extends ConsumerWidget {
               // Task header
               _TaskHeader(task: task),
               const SizedBox(height: 24),
-              
+
               // Task dependencies
               if (task.dependencies.isNotEmpty) ...[
                 _TaskDependencies(task: task),
                 const SizedBox(height: 24),
               ],
-              
+
               // Audio/voice section for voice tasks
               if (task.hasVoiceMetadata) ...[
                 const SizedBox(height: 24),
                 _buildVoiceSection(task),
               ],
-              
+
               // Subtasks section
               const SizedBox(height: 24),
               EnhancedSubTaskList(
@@ -172,7 +193,7 @@ class _TaskDetailView extends ConsumerWidget {
                 isEditable: true,
                 showHeader: true,
               ),
-              
+
               // Lazy-loaded sections for better performance
               const SizedBox(height: 24),
               _LazySection(
@@ -180,14 +201,14 @@ class _TaskDetailView extends ConsumerWidget {
                 icon: PhosphorIcons.paperclip(),
                 builder: () => _buildAttachmentsSection(context, theme, task),
               ),
-              
+
               const SizedBox(height: 24),
               _LazySection(
                 title: 'Activity History',
                 icon: PhosphorIcons.clockCounterClockwise(),
                 builder: () => _buildHistorySection(context, theme, task),
               ),
-              
+
               const SizedBox(height: 24),
               _LazySection(
                 title: 'Collaboration',
@@ -202,12 +223,14 @@ class _TaskDetailView extends ConsumerWidget {
   }
 
   void _editTask(BuildContext context, WidgetRef ref) {
-    // Navigate to task form dialog in edit mode
-    showDialog(
-      context: context,
-      builder: (context) => TaskFormDialog(
-        task: task,
-        isEditing: true,
+    // Navigate to task form in full-screen edit mode
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => TaskFormDialog(
+          task: task,
+          isEditing: true,
+        ),
+        fullscreenDialog: true,
       ),
     );
   }
@@ -235,9 +258,9 @@ class _TaskDetailView extends ConsumerWidget {
       completedAt: null,
       status: TaskStatus.pending,
     );
-    
+
     ref.read(taskOperationsProvider).createTask(duplicatedTask);
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Task duplicated successfully')),
     );
@@ -246,10 +269,10 @@ class _TaskDetailView extends ConsumerWidget {
   void _shareTask(BuildContext context, WidgetRef ref) {
     // Implement basic task sharing
     final taskText = _generateShareText(task);
-    
+
     // For now, copy to clipboard - can be extended to use Share package
     // Clipboard.setData(ClipboardData(text: taskText));
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Task details: $taskText'),
@@ -261,22 +284,22 @@ class _TaskDetailView extends ConsumerWidget {
   String _generateShareText(TaskModel task) {
     final buffer = StringBuffer();
     buffer.writeln('Task: ${task.title}');
-    
+
     if (task.description != null) {
       buffer.writeln('Description: ${task.description}');
     }
-    
+
     buffer.writeln('Status: ${task.status.name}');
     buffer.writeln('Priority: ${task.priority.name}');
-    
+
     if (task.dueDate != null) {
       buffer.writeln('Due: ${_formatDateTime(task.dueDate!)}');
     }
-    
+
     if (task.tags.isNotEmpty) {
       buffer.writeln('Tags: ${task.tags.join(', ')}');
     }
-    
+
     return buffer.toString();
   }
 
@@ -284,37 +307,25 @@ class _TaskDetailView extends ConsumerWidget {
     return '${dateTime.day}/${dateTime.month}/${dateTime.year} at ${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
   }
 
-  void _deleteTask(BuildContext context, WidgetRef ref) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Task'),
-        content: const Text('Are you sure you want to delete this task?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              ref.read(taskOperationsProvider).deleteTask(task);
-              Navigator.of(context).pop(); // Close dialog
-              Navigator.of(context).pop(); // Go back to previous screen
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Task deleted successfully')),
-              );
-            },
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
+  void _deleteTask(BuildContext context, WidgetRef ref) async {
+    final confirmed = await context.showConfirmationDialog(
+      title: 'Delete Task',
+      message: 'Are you sure you want to delete this task?',
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      isDestructive: true,
     );
+    
+    if (confirmed == true) {
+      ref.read(taskOperationsProvider).deleteTask(task);
+      Navigator.of(context).pop(); // Go back to previous screen
+      context.notifyTaskDeleted();
+    }
   }
-
 
   Widget _buildAttachmentsSection(BuildContext context, ThemeData theme, TaskModel task) {
     final attachments = task.metadata['attachments'] as List<Map<String, dynamic>>? ?? [];
-    
+
     return GlassmorphismContainer(
       level: GlassLevel.content,
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
@@ -330,12 +341,7 @@ class _TaskDetailView extends ConsumerWidget {
                 size: 20,
               ),
               const SizedBox(width: 8),
-              Text(
-                'Attachments',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+              StandardizedTextVariants.sectionHeader('Attachments'),
               const Spacer(),
               IconButton(
                 onPressed: () => _addAttachment(context, task),
@@ -355,61 +361,57 @@ class _TaskDetailView extends ConsumerWidget {
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
                   const SizedBox(height: 8),
-                  Text(
+                  StandardizedText(
                     'No attachments yet',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
+                    style: StandardizedTextStyle.bodyMedium,
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
                 ],
               ),
             )
           else
             ...attachments.map((attachment) => Container(
-              margin: const EdgeInsets.only(bottom: 8),
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceContainer,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: theme.colorScheme.outline.withValues(alpha: 0.2),
-                ),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    _getAttachmentIcon(attachment['type'] as String? ?? ''),
-                    color: theme.colorScheme.primary,
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          attachment['name'] as String? ?? 'Unknown',
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        if (attachment['size'] != null)
-                          Text(
-                            _formatFileSize(attachment['size'] as int),
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                      ],
+                  margin: const EdgeInsets.only(bottom: 8),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surfaceContainer,
+                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
+                    border: Border.all(
+                      color: theme.colorScheme.outline.withValues(alpha: 0.2),
                     ),
                   ),
-                  IconButton(
-                    onPressed: () => _openAttachment(attachment),
-                    icon: Icon(PhosphorIcons.arrowSquareOut()),
-                    iconSize: 16,
+                  child: Row(
+                    children: [
+                      Icon(
+                        _getAttachmentIcon(attachment['type'] as String? ?? ''),
+                        color: theme.colorScheme.primary,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            StandardizedText(
+                              attachment['name'] as String? ?? 'Unknown',
+                              style: StandardizedTextStyle.titleMedium,
+                            ),
+                            if (attachment['size'] != null)
+                              StandardizedText(
+                                _formatFileSize(attachment['size'] as int),
+                                style: StandardizedTextStyle.bodySmall,
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                          ],
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () => _openAttachment(attachment),
+                        icon: Icon(PhosphorIcons.arrowSquareOut()),
+                        iconSize: 16,
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            )),
+                )),
         ],
       ),
     );
@@ -417,7 +419,7 @@ class _TaskDetailView extends ConsumerWidget {
 
   Widget _buildHistorySection(BuildContext context, ThemeData theme, TaskModel task) {
     final history = _generateTaskHistory(task);
-    
+
     return GlassmorphismContainer(
       level: GlassLevel.content,
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
@@ -433,65 +435,59 @@ class _TaskDetailView extends ConsumerWidget {
                 size: 20,
               ),
               const SizedBox(width: 8),
-              Text(
-                'Activity History',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+              StandardizedTextVariants.sectionHeader('Activity History'),
             ],
           ),
           const SizedBox(height: 16),
           if (history.isEmpty)
             Center(
-              child: Text(
+              child: StandardizedText(
                 'No activity history',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
+                style: StandardizedTextStyle.bodyMedium,
+                color: theme.colorScheme.onSurfaceVariant,
               ),
             )
           else
             Column(
-              children: history.take(5).map((entry) => Container(
-                margin: const EdgeInsets.only(bottom: 12),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: 8,
-                      height: 8,
-                      margin: const EdgeInsets.only(top: 8),
-                      decoration: BoxDecoration(
-                        color: entry['color'] as Color,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            entry['action'] as String,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.w500,
+              children: history
+                  .take(5)
+                  .map((entry) => Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              width: 8,
+                              height: 8,
+                              margin: const EdgeInsets.only(top: 8),
+                              decoration: BoxDecoration(
+                                color: entry['color'] as Color,
+                                shape: BoxShape.circle,
+                              ),
                             ),
-                          ),
-                          Text(
-                            _formatDateTime(entry['timestamp'] is DateTime 
-                              ? entry['timestamp'] as DateTime 
-                              : DateTime.now()),
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  StandardizedText(
+                                    entry['action'] as String,
+                                    style: StandardizedTextStyle.titleMedium,
+                                  ),
+                                  StandardizedText(
+                                    _formatDateTime(entry['timestamp'] is DateTime
+                                        ? entry['timestamp'] as DateTime
+                                        : DateTime.now()),
+                                    style: StandardizedTextStyle.bodySmall,
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              )).toList(),
+                          ],
+                        ),
+                      ))
+                  .toList(),
             ),
           if (history.length > 5)
             Center(
@@ -507,7 +503,7 @@ class _TaskDetailView extends ConsumerWidget {
 
   Widget _buildCollaborationSection(BuildContext context, ThemeData theme, TaskModel task, WidgetRef ref) {
     final collaborators = task.metadata['collaborators'] as List<String>? ?? [];
-    
+
     return GlassmorphismContainer(
       level: GlassLevel.content,
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
@@ -523,12 +519,7 @@ class _TaskDetailView extends ConsumerWidget {
                 size: 20,
               ),
               const SizedBox(width: 8),
-              Text(
-                'Collaboration',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+              StandardizedTextVariants.sectionHeader('Collaboration'),
               const Spacer(),
               IconButton(
                 onPressed: () => _inviteCollaborator(context, task),
@@ -548,11 +539,10 @@ class _TaskDetailView extends ConsumerWidget {
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
                   const SizedBox(height: 8),
-                  Text(
+                  StandardizedText(
                     'No collaborators yet',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
+                    style: StandardizedTextStyle.bodyMedium,
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
                   const SizedBox(height: 8),
                   TextButton(
@@ -564,42 +554,40 @@ class _TaskDetailView extends ConsumerWidget {
             )
           else
             ...collaborators.map((email) => Container(
-              margin: const EdgeInsets.only(bottom: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceContainer,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: theme.colorScheme.outline.withValues(alpha: 0.2),
-                ),
-              ),
-              child: Row(
-                children: [
-                  CircleAvatar(
-                    radius: 16,
-                    backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.2),
-                    child: Text(
-                      email.substring(0, 1).toUpperCase(),
-                      style: TextStyle(
-                        color: theme.colorScheme.primary,
-                        fontWeight: FontWeight.w600,
+                  margin: const EdgeInsets.only(bottom: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surfaceContainer,
+                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
+                    border: Border.all(
+                      color: theme.colorScheme.outline.withValues(alpha: 0.2),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 16,
+                        backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.2),
+                        child: StandardizedText(
+                          email.substring(0, 1).toUpperCase(),
+                          style: StandardizedTextStyle.labelLarge,
+                          color: theme.colorScheme.primary,
+                        ),
                       ),
-                    ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: StandardizedText(
+                          email,
+                          style: StandardizedTextStyle.bodyMedium,
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () => _removeCollaborator(context, task, email),
+                        icon: Icon(PhosphorIcons.minusCircle(), size: 16),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      email,
-                      style: theme.textTheme.bodyMedium,
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () => _removeCollaborator(context, task, email),
-                    icon: Icon(PhosphorIcons.minusCircle(), size: 16),
-                  ),
-                ],
-              ),
-            )),
+                )),
           const SizedBox(height: 8),
           Row(
             children: [
@@ -765,7 +753,6 @@ class _TaskDetailView extends ConsumerWidget {
     return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
   }
 
-
   Widget _buildVoiceSection(TaskModel task) {
     // For voice tasks, show either audio player or transcription display
     if (task.hasPlayableAudio) {
@@ -779,7 +766,7 @@ class _TaskDetailView extends ConsumerWidget {
       // Voice-created but no audio file (e.g., native speech-to-text) - show transcription
       return _VoiceTranscriptionDisplay(task: task);
     }
-    
+
     return const SizedBox.shrink();
   }
 }
@@ -792,8 +779,6 @@ class _TaskHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    
     return GlassmorphismContainer(
       level: GlassLevel.content,
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
@@ -806,28 +791,26 @@ class _TaskHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
-                child: Text(
+                child: StandardizedTextVariants.taskTitle(
                   task.title,
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
+                  maxLines: null,
                 ),
               ),
               const SizedBox(width: 12),
               StatusBadgeWidget(status: task.status),
             ],
           ),
-          
+
           if (task.description != null) ...[
             const SizedBox(height: 16),
-            Text(
+            StandardizedTextVariants.taskDescription(
               task.description!,
-              style: theme.textTheme.bodyLarge,
+              maxLines: null,
             ),
           ],
-          
+
           const SizedBox(height: 16),
-          
+
           // Task metadata
           Wrap(
             spacing: 16,
@@ -860,7 +843,6 @@ class _TaskHeader extends StatelessWidget {
   }
 }
 
-
 /// Info chip widget for displaying task metadata
 class _InfoChip extends StatelessWidget {
   final IconData icon;
@@ -874,23 +856,22 @@ class _InfoChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge), // 16.0 - Fixed border radius hierarchy
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, size: 16, color: theme.colorScheme.onSurfaceVariant),
           const SizedBox(width: 6),
-          Text(
+          StandardizedText(
             label,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
+            style: StandardizedTextStyle.bodySmall,
+            color: theme.colorScheme.onSurfaceVariant,
           ),
         ],
       ),
@@ -908,9 +889,9 @@ class _VoiceTranscriptionDisplay extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final transcription = task.transcriptionText ?? task.description ?? '';
-    
+
     if (transcription.isEmpty) return const SizedBox.shrink();
-    
+
     return GlassmorphismContainer(
       level: GlassLevel.interactive,
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
@@ -930,12 +911,10 @@ class _VoiceTranscriptionDisplay extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: Text(
+                child: StandardizedText(
                   'Voice Transcription',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w500,
-                    color: theme.colorScheme.secondary,
-                  ),
+                  style: StandardizedTextStyle.titleMedium,
+                  color: theme.colorScheme.secondary,
                 ),
               ),
               const SizedBox(width: 8),
@@ -943,24 +922,22 @@ class _VoiceTranscriptionDisplay extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: theme.colorScheme.secondary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium), // 12.0 - Fixed border radius hierarchy
                   border: Border.all(
                     color: theme.colorScheme.secondary.withValues(alpha: 0.2),
                   ),
                 ),
-                child: Text(
+                child: StandardizedText(
                   task.creationMode == 'voiceToText' ? 'Speech-to-Text' : 'Voice Created',
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: theme.colorScheme.secondary,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: StandardizedTextStyle.labelLarge,
+                  color: theme.colorScheme.secondary,
                 ),
               ),
             ],
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Transcription text
           Container(
             width: double.infinity,
@@ -972,29 +949,26 @@ class _VoiceTranscriptionDisplay extends StatelessWidget {
                 color: theme.colorScheme.outline.withValues(alpha: 0.1),
               ),
             ),
-            child: Text(
+            child: StandardizedText(
               transcription,
-              style: theme.textTheme.bodyLarge?.copyWith(
-                height: 1.5,
-              ),
+              style: StandardizedTextStyle.bodyLarge,
+              lineHeight: 1.5,
             ),
           ),
-          
+
           if (task.audioRecordingTimestamp != null) ...[
             const SizedBox(height: 12),
-            Text(
+            StandardizedText(
               'Recorded: ${_formatDateTime(task.audioRecordingTimestamp!)}',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-                fontStyle: FontStyle.italic,
-              ),
+              style: StandardizedTextStyle.bodySmall,
+              color: theme.colorScheme.onSurfaceVariant,
             ),
           ],
         ],
       ),
     );
   }
-  
+
   String _formatDateTime(DateTime dateTime) {
     return '${dateTime.day}/${dateTime.month}/${dateTime.year} at ${dateTime.hour}:${dateTime.minute.toString().padLeft(2, '0')}';
   }
@@ -1023,7 +997,7 @@ class _FullAudioPlayerState extends ConsumerState<_FullAudioPlayer> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return GlassmorphismContainer(
       level: GlassLevel.interactive,
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
@@ -1042,26 +1016,23 @@ class _FullAudioPlayerState extends ConsumerState<_FullAudioPlayer> {
                 color: theme.colorScheme.tertiary,
               ),
               const SizedBox(width: 8),
-              Text(
+              StandardizedText(
                 'Voice Recording',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                  color: theme.colorScheme.tertiary,
-                ),
+                style: StandardizedTextStyle.titleMedium,
+                color: theme.colorScheme.tertiary,
               ),
               const Spacer(),
               if (widget.duration != null)
-                Text(
+                StandardizedText(
                   _formatDuration(widget.duration!),
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
+                  style: StandardizedTextStyle.bodySmall,
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
             ],
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Controls
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -1100,17 +1071,17 @@ class _FullAudioPlayerState extends ConsumerState<_FullAudioPlayer> {
 
   void _togglePlayPause() async {
     setState(() => _isLoading = true);
-    
+
     try {
       final audioService = ref.read(audioPlayerServiceProvider);
-      
+
       if (_isPlaying) {
         await audioService.stop();
       } else {
         await audioService.loadAudio(widget.audioFilePath, widget.taskId);
         await audioService.play();
       }
-      
+
       setState(() => _isPlaying = !_isPlaying);
     } catch (e) {
       if (mounted) {
@@ -1142,7 +1113,7 @@ class _TaskDependencies extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    
+
     return GlassmorphismContainer(
       level: GlassLevel.content,
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
@@ -1160,47 +1131,42 @@ class _TaskDependencies extends ConsumerWidget {
                 color: theme.colorScheme.secondary,
               ),
               const SizedBox(width: 8),
-              Text(
+              StandardizedText(
                 'Task Dependencies',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                  color: theme.colorScheme.secondary,
-                ),
+                style: StandardizedTextStyle.titleMedium,
+                color: theme.colorScheme.secondary,
               ),
             ],
           ),
           const SizedBox(height: 16),
-          
+
           // Dependencies list
           if (task.dependencies.isNotEmpty) ...[
-            Text(
+            StandardizedText(
               'Depends on:',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+              style: StandardizedTextStyle.titleMedium,
             ),
             const SizedBox(height: 8),
             ...task.dependencies.map((depId) => Container(
-              margin: const EdgeInsets.symmetric(vertical: 4),
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: theme.colorScheme.outline.withValues(alpha: 0.2),
-                ),
-              ),
-              child: Text(
-                'Task ID: $depId',
-                style: theme.textTheme.bodySmall,
-              ),
-            )),
+                  margin: const EdgeInsets.symmetric(vertical: 4),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
+                    border: Border.all(
+                      color: theme.colorScheme.outline.withValues(alpha: 0.2),
+                    ),
+                  ),
+                  child: StandardizedText(
+                    'Task ID: $depId',
+                    style: StandardizedTextStyle.bodySmall,
+                  ),
+                )),
           ] else ...[
-            Text(
+            StandardizedText(
               'No dependencies',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+              style: StandardizedTextStyle.bodyMedium,
+              color: theme.colorScheme.onSurfaceVariant,
             ),
           ],
         ],
@@ -1232,7 +1198,7 @@ class _LazySectionState extends State<_LazySection> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return GlassmorphismContainer(
       level: GlassLevel.content,
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
@@ -1262,11 +1228,8 @@ class _LazySectionState extends State<_LazySection> {
                   ),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: Text(
+                    child: StandardizedTextVariants.sectionHeader(
                       widget.title,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w500,
-                      ),
                     ),
                   ),
                   AnimatedRotation(
@@ -1282,7 +1245,7 @@ class _LazySectionState extends State<_LazySection> {
               ),
             ),
           ),
-          
+
           // Expandable content
           AnimatedContainer(
             duration: const Duration(milliseconds: 200),

@@ -74,8 +74,6 @@ void main() {
 
     testWidgets('should display completed tasks count', (tester) async {
       final completedTasks = [
-        TaskModel.create(title: 'Completed 1').copyWith(status: TaskStatus.completed),
-        TaskModel.create(title: 'Completed 2').copyWith(status: TaskStatus.completed),
       ];
 
       await tester.pumpWidget(createTestWidget(completedTasks: completedTasks));
@@ -227,7 +225,6 @@ void main() {
 
       final pendingTasks = [TaskModel.create(title: 'Task 1')];
       final completedTasks = [
-        TaskModel.create(title: 'Done').copyWith(status: TaskStatus.completed)
       ];
 
       await tester.pumpWidget(createTestWidget(

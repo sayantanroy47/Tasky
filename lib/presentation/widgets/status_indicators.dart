@@ -212,7 +212,7 @@ class _NetworkStatusIndicatorState extends ConsumerState<NetworkStatusIndicator>
                                 _connectionSpeed,
                                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
                                       color: _getConnectionColor(),
-                                      fontSize: config.isMobile ? 10 : 11,
+                                      fontSize: TypographyConstants.labelSmall, // 11.0 - Fixed critical mobile WCAG violation (was 10px on mobile)
                                     ),
                               ),
                             ),

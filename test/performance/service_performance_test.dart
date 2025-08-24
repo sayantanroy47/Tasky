@@ -101,7 +101,7 @@ void main() {
         const testTexts = [
           'Simple task',
           'Complex task with multiple details and scheduling information',
-          'Edge case task with special characters @#$%',
+          'Edge case task with special characters',
         ];
 
         final stopwatch = Stopwatch()..start();

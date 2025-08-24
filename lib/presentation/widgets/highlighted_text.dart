@@ -34,7 +34,7 @@ class HighlightedText extends StatelessWidget {
     }
 
     final spans = _buildTextSpans(context);
-    
+
     return RichText(
       text: TextSpan(children: spans),
       maxLines: maxLines,
@@ -47,16 +47,17 @@ class HighlightedText extends StatelessWidget {
     final spans = <TextSpan>[];
     final lowerText = text.toLowerCase();
     final lowerHighlight = highlight.toLowerCase();
-    
+
     int start = 0;
     int index = lowerText.indexOf(lowerHighlight);
-    
+
     final defaultStyle = style ?? DefaultTextStyle.of(context).style;
-    final defaultHighlightStyle = highlightStyle ?? TextStyle(
-      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-      color: Theme.of(context).colorScheme.onPrimaryContainer,
-      fontWeight: FontWeight.w600,
-    );
+    final defaultHighlightStyle = highlightStyle ??
+        TextStyle(
+          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+          color: Theme.of(context).colorScheme.onPrimaryContainer,
+          fontWeight: FontWeight.w500,
+        );
 
     while (index != -1) {
       // Add text before the highlight
@@ -66,17 +67,17 @@ class HighlightedText extends StatelessWidget {
           style: defaultStyle,
         ));
       }
-      
+
       // Add the highlighted text
       spans.add(TextSpan(
         text: text.substring(index, index + highlight.length),
         style: defaultStyle.merge(defaultHighlightStyle),
       ));
-      
+
       start = index + highlight.length;
       index = lowerText.indexOf(lowerHighlight, start);
     }
-    
+
     // Add remaining text
     if (start < text.length) {
       spans.add(TextSpan(
@@ -84,7 +85,7 @@ class HighlightedText extends StatelessWidget {
         style: defaultStyle,
       ));
     }
-    
+
     return spans;
   }
 }
@@ -123,7 +124,7 @@ class MultiHighlightedText extends StatelessWidget {
     }
 
     final spans = _buildTextSpans(context);
-    
+
     return RichText(
       text: TextSpan(children: spans),
       maxLines: maxLines,
@@ -135,7 +136,7 @@ class MultiHighlightedText extends StatelessWidget {
   List<TextSpan> _buildTextSpans(BuildContext context) {
     final spans = <TextSpan>[];
     final lowerText = text.toLowerCase();
-    
+
     final defaultStyle = style ?? DefaultTextStyle.of(context).style;
     final defaultHighlightColors = [
       Theme.of(context).colorScheme.primaryContainer,
@@ -145,11 +146,11 @@ class MultiHighlightedText extends StatelessWidget {
 
     // Create a list of all highlight positions
     final highlightPositions = <_HighlightPosition>[];
-    
+
     for (int i = 0; i < highlights.length; i++) {
       final highlight = highlights[i].toLowerCase();
       if (highlight.isEmpty) continue;
-      
+
       int index = lowerText.indexOf(highlight);
       while (index != -1) {
         highlightPositions.add(_HighlightPosition(
@@ -161,15 +162,15 @@ class MultiHighlightedText extends StatelessWidget {
         index = lowerText.indexOf(highlight, index + 1);
       }
     }
-    
+
     // Sort by start position
     highlightPositions.sort((a, b) => a.start.compareTo(b.start));
-    
+
     // Merge overlapping highlights
     final mergedPositions = _mergeOverlappingHighlights(highlightPositions);
-    
+
     int currentPos = 0;
-    
+
     for (final position in mergedPositions) {
       // Add text before highlight
       if (position.start > currentPos) {
@@ -178,27 +179,24 @@ class MultiHighlightedText extends StatelessWidget {
           style: defaultStyle,
         ));
       }
-      
+
       // Add highlighted text
-      final highlightStyle = highlightStyles != null && 
-                           position.highlightIndex < highlightStyles!.length
-        ? highlightStyles![position.highlightIndex]
-        : TextStyle(
-            backgroundColor: defaultHighlightColors[
-              position.highlightIndex % defaultHighlightColors.length
-            ],
-            color: Theme.of(context).colorScheme.onPrimaryContainer,
-            fontWeight: FontWeight.w600,
-          );
-      
+      final highlightStyle = highlightStyles != null && position.highlightIndex < highlightStyles!.length
+          ? highlightStyles![position.highlightIndex]
+          : TextStyle(
+              backgroundColor: defaultHighlightColors[position.highlightIndex % defaultHighlightColors.length],
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
+              fontWeight: FontWeight.w500,
+            );
+
       spans.add(TextSpan(
         text: position.originalText,
         style: defaultStyle.merge(highlightStyle),
       ));
-      
+
       currentPos = position.end;
     }
-    
+
     // Add remaining text
     if (currentPos < text.length) {
       spans.add(TextSpan(
@@ -206,19 +204,19 @@ class MultiHighlightedText extends StatelessWidget {
         style: defaultStyle,
       ));
     }
-    
+
     return spans;
   }
 
   List<_HighlightPosition> _mergeOverlappingHighlights(List<_HighlightPosition> positions) {
     if (positions.isEmpty) return positions;
-    
+
     final merged = <_HighlightPosition>[];
     _HighlightPosition current = positions.first;
-    
+
     for (int i = 1; i < positions.length; i++) {
       final next = positions[i];
-      
+
       if (next.start <= current.end) {
         // Overlapping - merge them
         current = _HighlightPosition(
@@ -236,7 +234,7 @@ class MultiHighlightedText extends StatelessWidget {
         current = next;
       }
     }
-    
+
     merged.add(current);
     return merged;
   }

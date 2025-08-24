@@ -11,6 +11,12 @@ import '../widgets/theme_background_widget.dart';
 import '../../core/design_system/design_tokens.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../core/theme/material3/motion_system.dart';
+import '../widgets/standardized_error_states.dart';
+import '../widgets/standardized_icons.dart' show StandardizedIcon, StandardizedIconSize, StandardizedIconStyle;
+import '../widgets/standardized_border_radius.dart';
+import '../widgets/standardized_colors.dart';
+import '../widgets/standardized_spacing.dart';
+import '../widgets/standardized_text.dart';
 import '../../services/audio/audio_concatenation_service.dart';
 import '../../domain/models/audio_models.dart';
 import 'task_detail_page.dart';
@@ -96,7 +102,7 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to initialize audio recording: $e'),
-            backgroundColor: Colors.red,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
@@ -198,9 +204,9 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
                   ],
                 ),
                 child: Material(
-                  color: Colors.transparent,
+                  color: context.colors.backgroundTransparent,
                   child: InkWell(
-                    borderRadius: BorderRadius.circular(24),
+                    borderRadius: StandardizedBorderRadius.chip,
                     onTap: () => Navigator.of(context).pop(),
                     child: Icon(
                       PhosphorIcons.arrowLeft(),
@@ -253,7 +259,7 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
   Widget _buildTitleSection(BuildContext context, ThemeData theme) {
     return GlassmorphismContainer(
       level: GlassLevel.content,
-      padding: const EdgeInsets.all(24),
+      padding: StandardizedSpacing.padding(SpacingSize.lg),
       borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -266,12 +272,7 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
                 color: theme.colorScheme.primary,
               ),
               const SizedBox(width: 8),
-              Text(
-                'Voice Note',
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: TypographyConstants.medium,
-                ),
-              ),
+              StandardizedTextVariants.sectionHeader('Voice Note'),
             ],
           ),
           const SizedBox(height: 12),
@@ -294,7 +295,7 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
   Widget _buildPrioritySection(BuildContext context, ThemeData theme) {
     return GlassmorphismContainer(
       level: GlassLevel.content,
-      padding: const EdgeInsets.all(20),
+      padding: StandardizedSpacing.padding(SpacingSize.md),
       borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -307,12 +308,7 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
                 color: theme.colorScheme.primary,
               ),
               const SizedBox(width: 8),
-              Text(
-                'Priority',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: TypographyConstants.medium,
-                ),
-              ),
+              StandardizedTextVariants.cardTitle('Priority'),
             ],
           ),
           const SizedBox(height: 12),
@@ -331,13 +327,13 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
                   child: Material(
                     color: Colors.transparent,
                     child: InkWell(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: StandardizedBorderRadius.md,
                       onTap: () => setState(() => _priority = priority),
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         decoration: BoxDecoration(
                           color: isSelected ? color.withValues(alpha: 0.2) : Colors.transparent,
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: StandardizedBorderRadius.md,
                           border: Border.all(
                             color: isSelected ? color : theme.colorScheme.outline.withValues(alpha: 0.3),
                           ),
@@ -352,12 +348,10 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
                               size: 20,
                             ),
                             const SizedBox(height: 4),
-                            Text(
+                            StandardizedText(
                               priority.name.toUpperCase(),
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                fontWeight: TypographyConstants.medium,
-                                color: isSelected ? color : theme.colorScheme.onSurfaceVariant,
-                              ),
+                              style: StandardizedTextStyle.labelMedium,
+                              color: isSelected ? color : theme.colorScheme.onSurfaceVariant,
                             ),
                           ],
                         ),
@@ -376,21 +370,19 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
   Widget _buildRecordingSection(BuildContext context, ThemeData theme) {
     return GlassmorphismContainer(
       level: GlassLevel.content,
-      padding: const EdgeInsets.all(32),
+      padding: StandardizedSpacing.padding(SpacingSize.xl),
       borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
       child: Column(
         children: [
           // Status text
-          Text(
+          StandardizedText(
             _getStatusText(),
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: TypographyConstants.medium,
-              color: _isRecording
-                  ? theme.colorScheme.error
-                  : _hasRecording
-                      ? theme.colorScheme.primary
-                      : theme.colorScheme.onSurfaceVariant,
-            ),
+            style: StandardizedTextStyle.titleMedium,
+            color: _isRecording
+                ? theme.colorScheme.error
+                : _hasRecording
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.onSurfaceVariant,
             textAlign: TextAlign.center,
           ),
           
@@ -422,17 +414,18 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
                   onTap: _isProcessing ? null : _toggleRecording,
                   child: Center(
                     child: _isProcessing 
-                        ? const SizedBox(width: 32,
+                        ? SizedBox(
+                            width: 32,
                             height: 32,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 3,
+                            child: StandardizedErrorStates.loading(
+                              style: LoadingStyle.minimal,
+                              compact: true,
                             ),
                           )
-                        : Icon(
+                        : StandardizedIcon(
                             _getRecordingButtonIcon(),
-                            color: Colors.white,
-                            size: 48,
+                            size: StandardizedIconSize.xxxl,
+                            style: StandardizedIconStyle.onPrimary,
                           ),
                   ),
                 ),
@@ -443,15 +436,12 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
           const SizedBox(height: 24),
           
           // Duration display
-          Text(
+          StandardizedText(
             _formatDuration(_recordingDuration),
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontFamily: 'Courier',
-              fontWeight: FontWeight.w500,
-              color: _isRecording
-                  ? theme.colorScheme.error
-                  : theme.colorScheme.primary,
-            ),
+            style: StandardizedTextStyle.headlineSmall,
+            color: _isRecording
+                ? theme.colorScheme.error
+                : theme.colorScheme.primary,
           ),
           
           if ((_hasRecording || _audioSegments.isNotEmpty) && !_isRecording) ...[ 
@@ -463,9 +453,9 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
                   child: OutlinedButton.icon(
                     onPressed: _deleteRecording,
                     icon: PhosphorIcon(PhosphorIcons.trash(), size: 14),
-                    label: const Text(
+                    label: Text(
                       'Delete All',
-                      style: TextStyle(fontSize: 11),
+                      style: Theme.of(context).textTheme.labelSmall,
                       overflow: TextOverflow.visible,
                     ),
                     style: OutlinedButton.styleFrom(
@@ -481,9 +471,9 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
                   child: OutlinedButton.icon(
                     onPressed: _addNewSegment,
                     icon: PhosphorIcon(PhosphorIcons.plus(), size: 14),
-                    label: const Text(
+                    label: Text(
                       'Add',
-                      style: TextStyle(fontSize: 11),
+                      style: Theme.of(context).textTheme.labelSmall,
                       overflow: TextOverflow.visible,
                     ),
                     style: OutlinedButton.styleFrom(
@@ -505,7 +495,7 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
                     label: Text(
                       _isPlaying ? 'Pause' : 
                       _isPaused ? 'Resume' : 'Play',
-                      style: const TextStyle(fontSize: 11),
+                      style: Theme.of(context).textTheme.labelSmall,
                       overflow: TextOverflow.visible,
                     ),
                     style: ElevatedButton.styleFrom(
@@ -544,11 +534,12 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
           child: ElevatedButton.icon(
             onPressed: _canCreateTask() && !_isProcessing ? _createVoiceTask : null,
             icon: _isProcessing
-                ? const SizedBox(width: 16,
+                ? SizedBox(
+                    width: 16,
                     height: 16,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    child: StandardizedErrorStates.loading(
+                      style: LoadingStyle.minimal,
+                      compact: true,
                     ),
                   )
                 : PhosphorIcon(PhosphorIcons.plus()),
@@ -1015,7 +1006,7 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
   Widget _buildAudioSegmentsSection(BuildContext context, ThemeData theme) {
     return GlassmorphismContainer(
       level: GlassLevel.content,
-      padding: const EdgeInsets.all(20),
+      padding: StandardizedSpacing.padding(SpacingSize.md),
       borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1028,12 +1019,7 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
                 color: theme.colorScheme.primary,
               ),
               const SizedBox(width: 8),
-              Text(
-                'Audio Segments (${_audioSegments.length})',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: TypographyConstants.medium,
-                ),
-              ),
+              StandardizedTextVariants.cardTitle('Audio Segments (${_audioSegments.length})'),
             ],
           ),
           const SizedBox(height: 12),
@@ -1041,7 +1027,7 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
             final segment = _audioSegments[index];
             return Container(
               margin: const EdgeInsets.only(bottom: 8),
-              padding: const EdgeInsets.all(12),
+              padding: StandardizedSpacing.padding(SpacingSize.sm),
               decoration: BoxDecoration(
                 color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(8),
@@ -1067,11 +1053,8 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                        Text(
+                        StandardizedTextVariants.meta(
                           _formatDuration(segment.duration),
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
                         ),
                       ],
                     ),
@@ -1095,7 +1078,7 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
   Widget _buildAdvancedControlsSection(BuildContext context, ThemeData theme) {
     return GlassmorphismContainer(
       level: GlassLevel.content,
-      padding: const EdgeInsets.all(20),
+      padding: StandardizedSpacing.padding(SpacingSize.md),
       borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1108,12 +1091,7 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
                 color: theme.colorScheme.primary,
               ),
               const SizedBox(width: 8),
-              Text(
-                'Playback Controls',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: TypographyConstants.medium,
-                ),
-              ),
+              StandardizedTextVariants.cardTitle('Playback Controls'),
             ],
           ),
           const SizedBox(height: 16),
@@ -1178,7 +1156,7 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
   Widget _buildFileManagementSection(BuildContext context, ThemeData theme) {
     return GlassmorphismContainer(
       level: GlassLevel.content,
-      padding: const EdgeInsets.all(20),
+      padding: StandardizedSpacing.padding(SpacingSize.md),
       borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1191,12 +1169,7 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
                 color: theme.colorScheme.primary,
               ),
               const SizedBox(width: 8),
-              Text(
-                'File Settings',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: TypographyConstants.medium,
-                ),
-              ),
+              StandardizedTextVariants.cardTitle('File Settings'),
             ],
           ),
           const SizedBox(height: 12),

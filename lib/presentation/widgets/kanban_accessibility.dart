@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
@@ -93,7 +92,6 @@ class KanbanAccessibilityManager {
       label: '${config.title} column',
       hint: 'Contains $taskCount task${taskCount != 1 ? 's' : ''}. Double tap to ${config.isCollapsible ? 'collapse' : 'add task'}',
       container: true,
-      hasImplicitScrolling: true,
       onTap: config.isCollapsible ? onToggleCollapse : onAddTask,
       customSemanticsActions: {
         if (onAddTask != null)

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+
+import '../../core/design_system/design_tokens.dart';
+import '../../core/theme/typography_constants.dart';
 import '../../services/analytics/analytics_models.dart';
 import 'glassmorphism_container.dart';
-import '../../core/theme/typography_constants.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Collection of reusable widgets for analytics display
 
@@ -48,8 +50,8 @@ class AnalyticsMetricCard extends StatelessWidget {
                     child: Text(
                       title,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
                     ),
                   ),
                 ],
@@ -58,15 +60,15 @@ class AnalyticsMetricCard extends StatelessWidget {
               Text(
                 value,
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  color: color,
-                  fontWeight: FontWeight.w500,
-                ),
+                      color: color,
+                      fontWeight: FontWeight.w500,
+                    ),
               ),
               Text(
                 subtitle,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
               ),
               if (trend != null) ...[
                 const SizedBox(height: 4),
@@ -80,22 +82,22 @@ class AnalyticsMetricCard extends StatelessWidget {
                               : PhosphorIcons.minus(),
                       size: 12,
                       color: isPositiveTrend == true
-                          ? Colors.green
+                          ? Theme.of(context).colorScheme.tertiary // Success/positive trend color
                           : isPositiveTrend == false
-                              ? Colors.red
-                              : Colors.grey,
+                              ? Theme.of(context).colorScheme.error // Error/negative trend color
+                              : Theme.of(context).colorScheme.onSurfaceVariant, // Neutral trend color
                     ),
                     const SizedBox(width: 4),
                     Text(
                       trend!,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: isPositiveTrend == true
-                            ? Colors.green
-                            : isPositiveTrend == false
-                                ? Colors.red
-                                : Colors.grey,
-                        fontWeight: FontWeight.w500,
-                      ),
+                            color: isPositiveTrend == true
+                                ? Theme.of(context).colorScheme.tertiary // Success/positive trend color
+                                : isPositiveTrend == false
+                                    ? Theme.of(context).colorScheme.error // Error/negative trend color
+                                    : Theme.of(context).colorScheme.onSurfaceVariant, // Neutral trend color
+                            fontWeight: FontWeight.w500,
+                          ),
                     ),
                   ],
                 ),
@@ -287,8 +289,8 @@ class CategoryItem extends StatelessWidget {
               Text(
                 '${(completionRate * 100).round()}% completion rate',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
               ),
             ],
           ),
@@ -303,8 +305,8 @@ class CategoryItem extends StatelessWidget {
             Text(
               '$percentage%',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
+                    fontWeight: FontWeight.w500,
+                  ),
             ),
           ],
         ),
@@ -342,14 +344,14 @@ class ProductivityInsightsWidget extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             ...insights.map((insight) => Padding(
-              padding: const EdgeInsets.only(bottom: 12.0),
-              child: InsightItem(
-                icon: insight.icon,
-                title: insight.title,
-                description: insight.description,
-                color: insight.color,
-              ),
-            )),
+                  padding: const EdgeInsets.only(bottom: 12.0),
+                  child: InsightItem(
+                    icon: insight.icon,
+                    title: insight.title,
+                    description: insight.description,
+                    color: insight.color,
+                  ),
+                )),
           ],
         ),
       ),
@@ -360,9 +362,7 @@ class ProductivityInsightsWidget extends StatelessWidget {
     final insights = <ProductivityInsight>[];
 
     // Peak productivity hour
-    final peakHour = hourlyProductivity.entries
-        .reduce((a, b) => a.value > b.value ? a : b)
-        .key;
+    final peakHour = hourlyProductivity.entries.reduce((a, b) => a.value > b.value ? a : b).key;
     final peakHourFormatted = _formatHour(peakHour);
     insights.add(ProductivityInsight(
       icon: PhosphorIcons.clock(),
@@ -448,9 +448,9 @@ class InsightItem extends StatelessWidget {
     return Row(
       children: [
         Container(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(SpacingTokens.xs), // 8.0 - Fixed spacing hierarchy
           decoration: BoxDecoration(
-            color: color.withValues(alpha:  0.1),
+            color: color.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
           ),
           child: Icon(icon, color: color, size: 20),
@@ -467,8 +467,8 @@ class InsightItem extends StatelessWidget {
               Text(
                 description,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
               ),
             ],
           ),
@@ -499,7 +499,7 @@ class StreakWidget extends StatelessWidget {
               children: [
                 Icon(
                   PhosphorIcons.fire(),
-                  color: streakInfo.isStreakActive ? Colors.orange : Colors.grey,
+                  color: streakInfo.isStreakActive ? Theme.of(context).colorScheme.secondary : Theme.of(context).colorScheme.onSurfaceVariant, // Fixed hardcoded colors
                   size: 24,
                 ),
                 const SizedBox(width: 8),
@@ -536,8 +536,8 @@ class StreakWidget extends StatelessWidget {
               Text(
                 'Last completion: ${_formatDate(streakInfo.lastCompletionDate!)}',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
               ),
             ],
           ],
@@ -583,8 +583,8 @@ class _StreakMetric extends StatelessWidget {
         Text(
           title,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-          ),
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
         ),
         const SizedBox(height: 4),
         Row(
@@ -593,9 +593,9 @@ class _StreakMetric extends StatelessWidget {
             Text(
               value,
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                color: isActive ? Colors.orange : Theme.of(context).colorScheme.primary,
-                fontWeight: FontWeight.w500,
-              ),
+                    color: isActive ? Theme.of(context).colorScheme.secondary : Theme.of(context).colorScheme.primary, // Fixed hardcoded orange
+                    fontWeight: FontWeight.w500,
+                  ),
             ),
             const SizedBox(width: 4),
             Padding(
@@ -603,8 +603,8 @@ class _StreakMetric extends StatelessWidget {
               child: Text(
                 subtitle,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
               ),
             ),
           ],
@@ -665,26 +665,20 @@ class TimePeriodSelector extends StatelessWidget {
     VoidCallback onTap,
   ) {
     final theme = Theme.of(context);
-    
+
     return GlassmorphismContainer(
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      glassTint: isSelected 
-          ? theme.colorScheme.primary.withValues(alpha: 0.2)
-          : null,
-      borderColor: isSelected 
-          ? theme.colorScheme.primary.withValues(alpha: 0.3)
-          : null,
+      glassTint: isSelected ? theme.colorScheme.primary.withValues(alpha: 0.2) : null,
+      borderColor: isSelected ? theme.colorScheme.primary.withValues(alpha: 0.3) : null,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
         child: Text(
           label,
           style: theme.textTheme.labelMedium?.copyWith(
-            color: isSelected 
-                ? theme.colorScheme.primary
-                : theme.colorScheme.onSurfaceVariant,
-            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+            color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
+            fontWeight: isSelected ? FontWeight.w500 : FontWeight.w400,
           ),
         ),
       ),
@@ -716,11 +710,11 @@ class ProductivityPatternsWidget extends StatelessWidget {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 16),
-            
+
             // Consistency score
             Row(
               children: [
-                Icon(PhosphorIcons.trendUp(), color: Colors.blue, size: 20),
+                Icon(PhosphorIcons.trendUp(), color: Theme.of(context).colorScheme.primary, size: 20), // Fixed hardcoded blue
                 const SizedBox(width: 8),
                 Text(
                   'Consistency Score: ${(patterns.consistencyScore * 100).round()}%',
@@ -729,7 +723,7 @@ class ProductivityPatternsWidget extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 16),
-            
+
             // Peak hours
             if (patterns.peaks.isNotEmpty) ...[
               Text(
@@ -738,21 +732,21 @@ class ProductivityPatternsWidget extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               ...patterns.peaks.take(3).map((peak) => Padding(
-                padding: const EdgeInsets.only(bottom: 4.0),
-                child: Row(
-                  children: [
-                    Icon(PhosphorIcons.clock(), color: Colors.orange, size: 16),
-                    const SizedBox(width: 8),
-                    Text(
-                      '${_formatHour(peak.hour)} - ${(peak.efficiency * 100).round()}% efficiency',
-                      style: Theme.of(context).textTheme.bodySmall,
+                    padding: const EdgeInsets.only(bottom: 4.0),
+                    child: Row(
+                      children: [
+                        Icon(PhosphorIcons.clock(), color: Theme.of(context).colorScheme.secondary, size: 16), // Fixed hardcoded orange
+                        const SizedBox(width: 8),
+                        Text(
+                          '${_formatHour(peak.hour)} - ${(peak.efficiency * 100).round()}% efficiency',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              )),
+                  )),
               const SizedBox(height: 16),
             ],
-            
+
             // Category efficiency
             if (patterns.categoryEfficiency.isNotEmpty) ...[
               Text(
@@ -760,38 +754,36 @@ class ProductivityPatternsWidget extends StatelessWidget {
                 style: Theme.of(context).textTheme.titleSmall,
               ),
               const SizedBox(height: 8),
-              ...(patterns.categoryEfficiency.entries
-                  .toList()
-                  ..sort((a, b) => b.value.compareTo(a.value)))
+              ...(patterns.categoryEfficiency.entries.toList()..sort((a, b) => b.value.compareTo(a.value)))
                   .take(3)
                   .map((entry) => Padding(
-                    padding: const EdgeInsets.only(bottom: 4.0),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 12,
-                          height: 12,
-                          decoration: BoxDecoration(
-                            color: _getCategoryColor(entry.key),
-                            shape: BoxShape.circle,
-                          ),
+                        padding: const EdgeInsets.only(bottom: 4.0),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 12,
+                              height: 12,
+                              decoration: BoxDecoration(
+                                color: _getCategoryColor(entry.key),
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                entry.key,
+                                style: Theme.of(context).textTheme.bodySmall,
+                              ),
+                            ),
+                            Text(
+                              '${(entry.value * 100).round()}%',
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            entry.key,
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                        ),
-                        Text(
-                          '${(entry.value * 100).round()}%',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  )),
+                      )),
             ],
           ],
         ),
@@ -843,7 +835,7 @@ class PeakHoursAnalysisWidget extends StatelessWidget {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 16),
-            
+
             // Peak hours
             Row(
               children: [
@@ -859,7 +851,8 @@ class PeakHoursAnalysisWidget extends StatelessWidget {
                 Expanded(
                   child: _MetricCard(
                     title: 'Optimal Window',
-                    value: '${_formatHour(analysis.recommendedWorkingWindow.startHour)}-${_formatHour(analysis.recommendedWorkingWindow.endHour)}',
+                    value:
+                        '${_formatHour(analysis.recommendedWorkingWindow.startHour)}-${_formatHour(analysis.recommendedWorkingWindow.endHour)}',
                     icon: PhosphorIcons.clock(),
                     color: Colors.blue,
                   ),
@@ -867,7 +860,7 @@ class PeakHoursAnalysisWidget extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 16),
-            
+
             // Productivity scores
             Row(
               children: [
@@ -891,7 +884,7 @@ class PeakHoursAnalysisWidget extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 16),
-            
+
             // Optimization suggestions
             if (analysis.suggestions.isNotEmpty) ...[
               Text(
@@ -900,31 +893,31 @@ class PeakHoursAnalysisWidget extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               ...analysis.suggestions.take(2).map((suggestion) => Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        suggestion.title,
-                        style: Theme.of(context).textTheme.titleSmall,
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Container(
+                      padding: const EdgeInsets.all(SpacingTokens.sm), // 12.0 - Fixed spacing hierarchy
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        suggestion.description,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            suggestion.title,
+                            style: Theme.of(context).textTheme.titleSmall,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            suggestion.description,
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
-              )),
+                    ),
+                  )),
             ],
           ],
         ),
@@ -962,7 +955,7 @@ class AdvancedCategoryAnalyticsWidget extends StatelessWidget {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 16),
-            
+
             // Performance ranking
             if (analytics.ranking.topPerformingCategories.isNotEmpty) ...[
               Text(
@@ -987,8 +980,8 @@ class AdvancedCategoryAnalyticsWidget extends StatelessWidget {
                       Text(
                         '${(score * 100).round()}%',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          fontWeight: FontWeight.w500,
-                        ),
+                              fontWeight: FontWeight.w500,
+                            ),
                       ),
                     ],
                   ),
@@ -996,7 +989,7 @@ class AdvancedCategoryAnalyticsWidget extends StatelessWidget {
               }),
               const SizedBox(height: 16),
             ],
-            
+
             // Category insights
             if (analytics.insights.isNotEmpty) ...[
               Text(
@@ -1005,31 +998,31 @@ class AdvancedCategoryAnalyticsWidget extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               ...analytics.insights.take(3).map((insight) => Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        insight.title,
-                        style: Theme.of(context).textTheme.titleSmall,
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Container(
+                      padding: const EdgeInsets.all(SpacingTokens.sm), // 12.0 - Fixed spacing hierarchy
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        insight.description,
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            insight.title,
+                            style: Theme.of(context).textTheme.titleSmall,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            insight.description,
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
-              )),
+                    ),
+                  )),
             ],
           ],
         ),
@@ -1060,18 +1053,18 @@ class AdvancedProductivityInsightsWidget extends StatelessWidget {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 16),
-            
+
             // Overall productivity score
             Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(SpacingTokens.md), // 16.0 - Fixed spacing hierarchy
               decoration: BoxDecoration(
-                color: _getScoreColor(insights.overallScore.overall).withValues(alpha:  0.1),
+                color: _getScoreColor(insights.overallScore.overall).withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
               ),
               child: Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(SpacingTokens.sm), // 12.0 - Fixed spacing hierarchy
                     decoration: BoxDecoration(
                       color: _getScoreColor(insights.overallScore.overall),
                       shape: BoxShape.circle,
@@ -1079,9 +1072,9 @@ class AdvancedProductivityInsightsWidget extends StatelessWidget {
                     child: Text(
                       insights.overallScore.grade,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w500,
-                      ),
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                          ),
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -1096,8 +1089,8 @@ class AdvancedProductivityInsightsWidget extends StatelessWidget {
                         Text(
                           '${insights.overallScore.overall.round()}/100',
                           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.w500,
-                          ),
+                                fontWeight: FontWeight.w500,
+                              ),
                         ),
                       ],
                     ),
@@ -1106,7 +1099,7 @@ class AdvancedProductivityInsightsWidget extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            
+
             // Score breakdown
             Row(
               children: [
@@ -1146,7 +1139,7 @@ class AdvancedProductivityInsightsWidget extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 16),
-            
+
             // Top suggestions
             if (insights.suggestions.isNotEmpty) ...[
               Text(
@@ -1155,49 +1148,49 @@ class AdvancedProductivityInsightsWidget extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               ...insights.suggestions.take(3).map((suggestion) => Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: _getImpactColor(suggestion.impactScore).withValues(alpha:  0.2),
-                          borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                        ),
-                        child: Icon(
-                          _getSuggestionIcon(suggestion.actionType),
-                          color: _getImpactColor(suggestion.impactScore),
-                          size: 16,
-                        ),
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Container(
+                      padding: const EdgeInsets.all(SpacingTokens.sm), // 12.0 - Fixed spacing hierarchy
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              suggestion.title,
-                              style: Theme.of(context).textTheme.titleSmall,
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(SpacingTokens.xs + 2), // 6.0 - Fixed spacing hierarchy
+                            decoration: BoxDecoration(
+                              color: _getImpactColor(suggestion.impactScore).withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                             ),
-                            Text(
-                              suggestion.description,
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                              ),
+                            child: Icon(
+                              _getSuggestionIcon(suggestion.actionType),
+                              color: _getImpactColor(suggestion.impactScore),
+                              size: 16,
                             ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  suggestion.title,
+                                  style: Theme.of(context).textTheme.titleSmall,
+                                ),
+                                Text(
+                                  suggestion.description,
+                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                      ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
-              )),
+                    ),
+                  )),
             ],
           ],
         ),
@@ -1247,9 +1240,9 @@ class _MetricCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(SpacingTokens.sm), // 12.0 - Fixed spacing hierarchy
       decoration: BoxDecoration(
-        color: color.withValues(alpha:  0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       ),
       child: Column(
@@ -1263,8 +1256,8 @@ class _MetricCard extends StatelessWidget {
                 child: Text(
                   title,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                 ),
               ),
             ],
@@ -1273,8 +1266,8 @@ class _MetricCard extends StatelessWidget {
           Text(
             value,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
-              fontWeight: FontWeight.w500,
-            ),
+                  fontWeight: FontWeight.w500,
+                ),
           ),
         ],
       ),
@@ -1306,8 +1299,8 @@ class _ScoreItem extends StatelessWidget {
         Text(
           '${score.round()}%',
           style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w500,
-          ),
+                fontWeight: FontWeight.w500,
+              ),
         ),
       ],
     );
@@ -1411,6 +1404,3 @@ class _ExportButton extends StatelessWidget {
     );
   }
 }
-
-
-

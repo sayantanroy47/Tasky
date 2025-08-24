@@ -12,6 +12,7 @@ import 'daos/subtask_dao.dart';
 import 'daos/project_dao.dart';
 import 'daos/tag_dao.dart';
 import 'daos/task_template_dao.dart';
+import 'daos/project_template_dao.dart';
 import 'daos/user_profile_dao.dart';
 
 part 'database.g.dart';
@@ -26,9 +27,23 @@ part 'database.g.dart';
   Tags,
   TaskTags,
   Projects,
+  ProjectCategories,
   TaskDependencies,
   TaskTemplates,
+  ProjectTemplates,
+  ProjectTemplateVariables,
+  ProjectTemplateWizardSteps,
+  ProjectTemplateMilestones,
+  ProjectTemplateTaskTemplates,
   UserProfiles,
+], daos: [
+  TaskDao,
+  SubtaskDao,
+  ProjectDao,
+  TagDao,
+  TaskTemplateDao,
+  ProjectTemplateDao,
+  UserProfileDao,
 ])
 class AppDatabase extends _$AppDatabase {
   static AppDatabase? _instance;
@@ -54,11 +69,17 @@ class AppDatabase extends _$AppDatabase {
   int get schemaVersion => 3;
 
   // DAOs
+  @override
   late final TaskDao taskDao = TaskDao(this);
+  @override
   late final SubtaskDao subtaskDao = SubtaskDao(this);
+  @override
   late final ProjectDao projectDao = ProjectDao(this);
+  @override
   late final TagDao tagDao = TagDao(this);
+  @override
   late final TaskTemplateDao taskTemplateDao = TaskTemplateDao(this);
+  @override
   late final UserProfileDao userProfileDao = UserProfileDao(this);  @override
   MigrationStrategy get migration {
     return MigrationStrategy(

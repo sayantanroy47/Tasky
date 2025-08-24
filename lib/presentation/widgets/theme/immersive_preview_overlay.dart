@@ -1,10 +1,11 @@
 import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../../core/theme/app_theme_data.dart';
-
-import '../glassmorphism_container.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+
+import '../../../core/theme/app_theme_data.dart';
+import '../glassmorphism_container.dart';
 
 /// Immersive full-screen theme preview overlay with live UI component showcase
 class ImmersivePreviewOverlay extends StatefulWidget {
@@ -23,18 +24,16 @@ class ImmersivePreviewOverlay extends StatefulWidget {
   State<ImmersivePreviewOverlay> createState() => _ImmersivePreviewOverlayState();
 }
 
-class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
-    with TickerProviderStateMixin {
-  
+class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay> with TickerProviderStateMixin {
   late AnimationController _overlayController;
   late AnimationController _contentController;
   late AnimationController _componentController;
-  
+
   late Animation<double> _overlayAnimation;
   late Animation<double> _contentAnimation;
   late Animation<double> _componentAnimation;
   late Animation<Offset> _slideAnimation;
-  
+
   int _selectedComponentIndex = 0;
   final PageController _pageController = PageController();
 
@@ -51,8 +50,8 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
       duration: const Duration(milliseconds: 400),
       vsync: this,
     );
-    _overlayAnimation = Tween<double>(begin: 0.0, end: 1.0)
-        .animate(CurvedAnimation(parent: _overlayController, curve: Curves.easeOut));
+    _overlayAnimation =
+        Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: _overlayController, curve: Curves.easeOut));
 
     // Content slide-in animation
     _contentController = AnimationController(
@@ -118,7 +117,7 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
                     ),
                   ),
                 ),
-                
+
                 // Main preview content
                 SlideTransition(
                   position: _slideAnimation,
@@ -127,7 +126,7 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
                     child: _buildPreviewContent(),
                   ),
                 ),
-                
+
                 // Top controls
                 Positioned(
                   top: MediaQuery.of(context).padding.top + 16,
@@ -138,7 +137,7 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
                     child: _buildTopControls(),
                   ),
                 ),
-                
+
                 // Bottom action bar
                 Positioned(
                   bottom: MediaQuery.of(context).padding.bottom + 16,
@@ -160,7 +159,7 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
   ThemeData _buildPreviewThemeData() {
     // Create a preview ThemeData based on the selected theme
     final colors = widget.theme.colors;
-    
+
     return ThemeData(
       useMaterial3: true,
       brightness: widget.theme.metadata.id.contains('dark') ? Brightness.dark : Brightness.light,
@@ -192,7 +191,7 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
           children: [
             // Theme header
             _buildThemeHeader(),
-            
+
             // Component showcase
             Expanded(
               child: AnimatedBuilder(
@@ -217,7 +216,7 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
   Widget _buildThemeHeader() {
     final theme = Theme.of(context);
     final metadata = widget.theme.metadata;
-    
+
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -258,9 +257,7 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
                   size: 32,
                 ),
               ),
-              
               const SizedBox(width: 20),
-              
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -268,7 +265,7 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
                     Text(
                       metadata.name,
                       style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w500,
                         color: theme.colorScheme.onSurface,
                       ),
                     ),
@@ -284,9 +281,9 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
               ),
             ],
           ),
-          
+
           const SizedBox(height: 20),
-          
+
           // Color palette showcase
           _buildColorPalette(),
         ],
@@ -296,14 +293,14 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
 
   Widget _buildColorPalette() {
     final colors = widget.theme.colors;
-    
+
     return Row(
       children: [
         Text(
           'Color Palette',
           style: Theme.of(context).textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w500,
-          ),
+                fontWeight: FontWeight.w500,
+              ),
         ),
         const SizedBox(width: 16),
         Expanded(
@@ -349,9 +346,9 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
           Text(
             label,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              fontSize: 10,
-              fontWeight: FontWeight.w500,
-            ),
+                  fontSize: TypographyConstants.labelSmall, // 11.0 - Fixed critical WCAG violation (was 10px)
+                  fontWeight: FontWeight.w500,
+                ),
             textAlign: TextAlign.center,
           ),
         ],
@@ -386,11 +383,11 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
           Text(
             'Buttons & Actions',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+                  fontWeight: FontWeight.w500,
+                ),
           ),
           const SizedBox(height: 24),
-          
+
           // Primary buttons
           Row(
             children: [
@@ -411,9 +408,9 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
               ),
             ],
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Text buttons and FAB
           Row(
             children: [
@@ -433,9 +430,9 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
               ),
             ],
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Chips
           Wrap(
             spacing: 8,
@@ -469,11 +466,10 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
           Text(
             'Cards & Surfaces',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+                  fontWeight: FontWeight.w500,
+                ),
           ),
           const SizedBox(height: 24),
-          
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -539,11 +535,10 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
           Text(
             'Inputs & Forms',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+                  fontWeight: FontWeight.w500,
+                ),
           ),
           const SizedBox(height: 24),
-          
           TextField(
             decoration: InputDecoration(
               labelText: 'Text Field',
@@ -552,9 +547,7 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
               border: const OutlineInputBorder(),
             ),
           ),
-          
           const SizedBox(height: 16),
-          
           Row(
             children: [
               Expanded(
@@ -573,9 +566,7 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
               ),
             ],
           ),
-          
           const SizedBox(height: 16),
-          
           Slider(
             value: 0.5,
             onChanged: (_) {},
@@ -595,11 +586,10 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
           Text(
             'Navigation & Lists',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+                  fontWeight: FontWeight.w500,
+                ),
           ),
           const SizedBox(height: 24),
-          
           Card(
             child: Column(
               children: [
@@ -654,7 +644,7 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
             ),
           ),
         ),
-        
+
         // Component navigation dots
         Row(
           children: List.generate(4, (index) {
@@ -680,7 +670,7 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
             );
           }),
         ),
-        
+
         const SizedBox(width: 48), // Balance for close button
       ],
     );
@@ -708,9 +698,7 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
             ),
           ),
         ),
-        
         const SizedBox(width: 16),
-        
         Expanded(
           child: GlassmorphismContainer(
             blur: 20,
@@ -734,4 +722,3 @@ class _ImmersivePreviewOverlayState extends State<ImmersivePreviewOverlay>
     );
   }
 }
-

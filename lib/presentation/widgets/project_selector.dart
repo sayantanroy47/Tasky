@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/theme/typography_constants.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../core/design_system/design_tokens.dart';
+import '../../core/theme/typography_constants.dart';
 import '../../domain/entities/project.dart';
 import '../providers/project_providers.dart';
 import 'glassmorphism_container.dart';
-import '../../core/design_system/design_tokens.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Widget for selecting a project from a list
-/// 
+///
 /// Provides a dropdown or bottom sheet for selecting a project,
 /// with options to create a new project or clear selection.
 class ProjectSelector extends ConsumerWidget {
@@ -18,7 +18,7 @@ class ProjectSelector extends ConsumerWidget {
   final bool allowNone;
   final String? hintText;
   final bool showCreateOption;
-  
+
   const ProjectSelector({
     super.key,
     this.selectedProjectId,
@@ -27,17 +27,17 @@ class ProjectSelector extends ConsumerWidget {
     this.hintText,
     this.showCreateOption = true,
   });
-  
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final projectsAsync = ref.watch(projectsProvider);
-    
+
     return projectsAsync.when(
       data: (projects) {
         // Filter to only active projects
         final activeProjects = projects.where((p) => !p.isArchived).toList();
-        
+
         final selectedProject = selectedProjectId != null
             ? activeProjects.firstWhere(
                 (p) => p.id == selectedProjectId,
@@ -50,7 +50,7 @@ class ProjectSelector extends ConsumerWidget {
                 ),
               )
             : null;
-        
+
         return InkWell(
           onTap: () => _showProjectSelectionBottomSheet(context, ref, activeProjects),
           child: Container(
@@ -65,9 +65,8 @@ class ProjectSelector extends ConsumerWidget {
               children: [
                 Icon(
                   PhosphorIcons.folder(),
-                  color: selectedProject != null
-                      ? _parseColor(selectedProject.color)
-                      : theme.colorScheme.onSurfaceVariant,
+                  color:
+                      selectedProject != null ? _parseColor(selectedProject.color) : theme.colorScheme.onSurfaceVariant,
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -110,7 +109,8 @@ class ProjectSelector extends ConsumerWidget {
         ),
         child: Row(
           children: [
-            const SizedBox(width: 20,
+            const SizedBox(
+              width: 20,
               height: 20,
               child: CircularProgressIndicator(strokeWidth: 2),
             ),
@@ -152,7 +152,7 @@ class ProjectSelector extends ConsumerWidget {
       ),
     );
   }
-  
+
   void _showProjectSelectionBottomSheet(BuildContext context, WidgetRef ref, List<Project> projects) {
     showModalBottomSheet(
       context: context,
@@ -176,8 +176,8 @@ class ProjectSelector extends ConsumerWidget {
                   child: Text(
                     'Select Project',
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+                          fontWeight: FontWeight.w500,
+                        ),
                   ),
                 ),
                 IconButton(
@@ -186,9 +186,9 @@ class ProjectSelector extends ConsumerWidget {
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // None option
             if (allowNone)
               ListTile(
@@ -201,10 +201,11 @@ class ProjectSelector extends ConsumerWidget {
                 },
                 selected: selectedProjectId == null,
               ),
-            
+
             // Project list
             if (projects.isEmpty)
-              Padding(padding: const EdgeInsets.all(32),
+              Padding(
+                padding: const EdgeInsets.all(32),
                 child: Column(
                   children: [
                     Icon(PhosphorIcons.folder(), size: 48, color: Colors.grey),
@@ -222,35 +223,35 @@ class ProjectSelector extends ConsumerWidget {
               )
             else
               ...projects.map((project) => ListTile(
-                leading: Container(
-                  width: 24,
-                  height: 24,
-                  decoration: BoxDecoration(
-                    color: _parseColor(project.color),
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                title: Text(project.name),
-                subtitle: project.description != null && project.description!.isNotEmpty
-                    ? Text(
-                        project.description!,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      )
-                    : null,
-                trailing: project.id == selectedProjectId
-                    ? Icon(
-                        PhosphorIcons.check(),
+                    leading: Container(
+                      width: 24,
+                      height: 24,
+                      decoration: BoxDecoration(
                         color: _parseColor(project.color),
-                      )
-                    : null,
-                onTap: () {
-                  onProjectSelected(project);
-                  Navigator.of(context).pop();
-                },
-                selected: project.id == selectedProjectId,
-              )),
-            
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    title: Text(project.name),
+                    subtitle: project.description != null && project.description!.isNotEmpty
+                        ? Text(
+                            project.description!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          )
+                        : null,
+                    trailing: project.id == selectedProjectId
+                        ? Icon(
+                            PhosphorIcons.check(),
+                            color: _parseColor(project.color),
+                          )
+                        : null,
+                    onTap: () {
+                      onProjectSelected(project);
+                      Navigator.of(context).pop();
+                    },
+                    selected: project.id == selectedProjectId,
+                  )),
+
             // Create new project option
             if (showCreateOption) ...[
               const Divider(),
@@ -264,7 +265,7 @@ class ProjectSelector extends ConsumerWidget {
                 },
               ),
             ],
-            
+
             // Bottom padding for safe area
             SizedBox(height: MediaQuery.of(context).padding.bottom),
           ],
@@ -272,7 +273,7 @@ class ProjectSelector extends ConsumerWidget {
       ),
     );
   }
-  
+
   void _showCreateProjectDialog(BuildContext context, WidgetRef ref) {
     // This would show the ProjectFormDialog
     // For now, show a simple snackbar
@@ -282,7 +283,7 @@ class ProjectSelector extends ConsumerWidget {
       ),
     );
   }
-  
+
   Color _parseColor(String colorString) {
     try {
       return Color(int.parse(colorString.replaceFirst('#', '0xFF')));
@@ -297,23 +298,23 @@ class CompactProjectSelector extends ConsumerWidget {
   final String? selectedProjectId;
   final Function(Project?) onProjectSelected;
   final bool allowNone;
-  
+
   const CompactProjectSelector({
     super.key,
     this.selectedProjectId,
     required this.onProjectSelected,
     this.allowNone = true,
   });
-  
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final projectsAsync = ref.watch(projectsProvider);
-    
+
     return projectsAsync.when(
       data: (projects) {
         final activeProjects = projects.where((p) => !p.isArchived).toList();
-        
+
         return DropdownButtonFormField<String?>(
           initialValue: selectedProjectId,
           decoration: InputDecoration(
@@ -330,27 +331,27 @@ class CompactProjectSelector extends ConsumerWidget {
                 child: Text('No Project'),
               ),
             ...activeProjects.map((project) => DropdownMenuItem<String?>(
-              value: project.id,
-              child: Row(
-                children: [
-                  Container(
-                    width: 12,
-                    height: 12,
-                    decoration: BoxDecoration(
-                      color: _parseColor(project.color),
-                      shape: BoxShape.circle,
-                    ),
+                  value: project.id,
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 12,
+                        height: 12,
+                        decoration: BoxDecoration(
+                          color: _parseColor(project.color),
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          project.name,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      project.name,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-            )),
+                )),
           ],
           onChanged: (value) {
             if (value == null) {
@@ -370,7 +371,8 @@ class CompactProjectSelector extends ConsumerWidget {
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
           ),
-          prefixIcon: const SizedBox(width: 24,
+          prefixIcon: const SizedBox(
+            width: 24,
             height: 24,
             child: Padding(
               padding: EdgeInsets.all(10),
@@ -395,7 +397,7 @@ class CompactProjectSelector extends ConsumerWidget {
       ),
     );
   }
-  
+
   Color _parseColor(String colorString) {
     try {
       return Color(int.parse(colorString.replaceFirst('#', '0xFF')));
@@ -404,5 +406,3 @@ class CompactProjectSelector extends ConsumerWidget {
     }
   }
 }
-
-

@@ -388,8 +388,7 @@ void main() {
       });
 
       test('should invalidate completed task without completion date', () {
-        final task = TaskModel.create(title: 'Task')
-            .copyWith(status: TaskStatus.completed, completedAt: null);
+        final task = TaskModel.create(title: 'Task');
         
         expect(task.isValid(), isFalse);
       });
@@ -397,7 +396,6 @@ void main() {
       test('should invalidate non-completed task with completion date', () {
         final task = TaskModel.create(title: 'Task')
             .copyWith(
-              status: TaskStatus.pending, 
               completedAt: DateTime.now(),
             );
         

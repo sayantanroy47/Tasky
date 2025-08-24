@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'typography_constants.dart';
 
 /// Typography system for the Task Tracker App
@@ -17,22 +18,22 @@ class AppTypography {
       displayLarge: displayLarge(colorScheme),
       displayMedium: displayMedium(colorScheme),
       displaySmall: displaySmall(colorScheme),
-      
+
       // Headline styles
       headlineLarge: headlineLarge(colorScheme),
       headlineMedium: headlineMedium(colorScheme),
       headlineSmall: headlineSmall(colorScheme),
-      
+
       // Title styles
       titleLarge: titleLarge(colorScheme),
       titleMedium: titleMedium(colorScheme),
       titleSmall: titleSmall(colorScheme),
-      
+
       // Body styles
       bodyLarge: bodyLarge(colorScheme),
       bodyMedium: bodyMedium(colorScheme),
       bodySmall: bodySmall(colorScheme),
-      
+
       // Label styles
       labelLarge: labelLarge(colorScheme),
       labelMedium: labelMedium(colorScheme),
@@ -55,7 +56,7 @@ class AppTypography {
   static TextStyle displayMedium(ColorScheme colorScheme) {
     return TextStyle(
       fontFamily: fontFamily,
-      fontSize: TypographyConstants.displayLarge, // was 45, closest match
+      fontSize: TypographyConstants.displayMedium, // was 45, now correct mapping
       fontWeight: FontWeight.w400,
       letterSpacing: 0,
       height: 1.16,
@@ -66,7 +67,7 @@ class AppTypography {
   static TextStyle displaySmall(ColorScheme colorScheme) {
     return TextStyle(
       fontFamily: fontFamily,
-      fontSize: TypographyConstants.displayLarge, // was 36
+      fontSize: TypographyConstants.displaySmall, // was 36, now correct mapping
       fontWeight: FontWeight.w400,
       letterSpacing: 0,
       height: 1.22,
@@ -78,7 +79,7 @@ class AppTypography {
   static TextStyle headlineLarge(ColorScheme colorScheme) {
     return TextStyle(
       fontFamily: fontFamily,
-      fontSize: TypographyConstants.displayLarge, // was 32
+      fontSize: TypographyConstants.headlineLarge, // was 32, now correct mapping
       fontWeight: FontWeight.w400,
       letterSpacing: 0,
       height: 1.25,
@@ -89,7 +90,7 @@ class AppTypography {
   static TextStyle headlineMedium(ColorScheme colorScheme) {
     return TextStyle(
       fontFamily: fontFamily,
-      fontSize: TypographyConstants.displayMedium, // was 28
+      fontSize: TypographyConstants.headlineMedium, // was 28, now correct mapping
       fontWeight: FontWeight.w400,
       letterSpacing: 0,
       height: 1.29,
@@ -100,7 +101,7 @@ class AppTypography {
   static TextStyle headlineSmall(ColorScheme colorScheme) {
     return TextStyle(
       fontFamily: fontFamily,
-      fontSize: TypographyConstants.displaySmall, // was 24
+      fontSize: TypographyConstants.headlineSmall, // was 24, now correct mapping
       fontWeight: FontWeight.w400,
       letterSpacing: 0,
       height: 1.33,
@@ -112,7 +113,7 @@ class AppTypography {
   static TextStyle titleLarge(ColorScheme colorScheme) {
     return TextStyle(
       fontFamily: fontFamily,
-      fontSize: TypographyConstants.headlineLarge, // was 22
+      fontSize: TypographyConstants.titleLarge, // was 22, now correct mapping
       fontWeight: FontWeight.w400,
       letterSpacing: 0,
       height: 1.27,
@@ -123,7 +124,7 @@ class AppTypography {
   static TextStyle titleMedium(ColorScheme colorScheme) {
     return TextStyle(
       fontFamily: fontFamily,
-      fontSize: TypographyConstants.bodyLarge, // was 16
+      fontSize: TypographyConstants.titleMedium, // was 16, now correct mapping
       fontWeight: FontWeight.w500,
       letterSpacing: 0.15,
       height: 1.50,
@@ -134,7 +135,7 @@ class AppTypography {
   static TextStyle titleSmall(ColorScheme colorScheme) {
     return TextStyle(
       fontFamily: fontFamily,
-      fontSize: TypographyConstants.bodyMedium, // was 14
+      fontSize: TypographyConstants.titleSmall, // was 14, now correct mapping
       fontWeight: FontWeight.w500,
       letterSpacing: 0.1,
       height: 1.43,
@@ -180,7 +181,7 @@ class AppTypography {
   static TextStyle labelLarge(ColorScheme colorScheme) {
     return TextStyle(
       fontFamily: fontFamily,
-      fontSize: TypographyConstants.bodyMedium, // was 14
+      fontSize: TypographyConstants.labelLarge, // was 14, now correct mapping
       fontWeight: FontWeight.w500,
       letterSpacing: 0.1,
       height: 1.43,
@@ -191,7 +192,7 @@ class AppTypography {
   static TextStyle labelMedium(ColorScheme colorScheme) {
     return TextStyle(
       fontFamily: fontFamily,
-      fontSize: TypographyConstants.bodySmall, // was 12
+      fontSize: TypographyConstants.labelMedium, // was 12, now correct mapping
       fontWeight: FontWeight.w500,
       letterSpacing: 0.5,
       height: 1.33,
@@ -213,7 +214,7 @@ class AppTypography {
   // Custom styles for specific use cases
   static TextStyle taskTitle(ColorScheme colorScheme) {
     return titleMedium(colorScheme).copyWith(
-      fontWeight: FontWeight.w600,
+      fontWeight: FontWeight.w500,
     );
   }
 
@@ -231,7 +232,7 @@ class AppTypography {
 
   static TextStyle taskPriority(ColorScheme colorScheme) {
     return labelSmall(colorScheme).copyWith(
-      fontWeight: FontWeight.w600,
+      fontWeight: FontWeight.w500,
       letterSpacing: 0.8,
     );
   }

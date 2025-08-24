@@ -23,6 +23,12 @@ final activeProjectsProvider = StateNotifierProvider<ActiveProjectsNotifier, Asy
 
 final selectedProjectProvider = StateProvider<domain.Project?>((ref) => null);
 
+// Single project provider by ID
+final projectProvider = FutureProvider.family<domain.Project?, String>((ref, projectId) async {
+  final projectService = ref.read(projectServiceProvider);
+  return await projectService.getProjectById(projectId);
+});
+
 final projectStatsProvider = FutureProvider.family<ProjectStats, String>((ref, projectId) async {
   final projectService = ref.read(projectServiceProvider);
   return await projectService.getProjectStats(projectId);

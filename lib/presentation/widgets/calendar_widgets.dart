@@ -898,7 +898,7 @@ class TaskEventCard extends ConsumerWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
                       color: _getPriorityColor(task.priority).withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                       border: Border.all(
                         color: _getPriorityColor(task.priority),
                         width: 1,
@@ -907,7 +907,7 @@ class TaskEventCard extends ConsumerWidget {
                     child: Text(
                       task.priority.name.toUpperCase(),
                       style: TextStyle(
-                        fontSize: 10,
+                        fontSize: TypographyConstants.labelSmall, // 11.0 - Fixed critical WCAG violation (was 10px)
                         fontWeight: FontWeight.w500,
                         color: _getPriorityColor(task.priority),
                       ),
@@ -953,12 +953,12 @@ class TaskEventCard extends ConsumerWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                     ),
                     child: Text(
                       '#$tag',
                       style: TextStyle(
-                        fontSize: 10,
+                        fontSize: TypographyConstants.labelSmall, // 11.0 - Fixed critical WCAG violation (was 10px)
                         color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),

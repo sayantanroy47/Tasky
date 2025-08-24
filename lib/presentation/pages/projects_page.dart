@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../widgets/standardized_app_bar.dart';
-import '../widgets/theme_background_widget.dart';
-import '../../core/theme/typography_constants.dart';
-
-import '../../domain/entities/project.dart';
-import '../providers/project_providers.dart';
-import '../widgets/project_card.dart';
-import '../widgets/project_form_dialog.dart';
-import '../widgets/glassmorphism_container.dart';
-import '../../core/design_system/design_tokens.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../core/design_system/design_tokens.dart';
+import '../../core/theme/typography_constants.dart';
+import '../../domain/entities/project.dart';
+import '../providers/project_providers.dart';
+import '../widgets/glassmorphism_container.dart';
+import '../widgets/project_card.dart';
+import '../widgets/project_form_dialog.dart';
+import '../widgets/standardized_app_bar.dart';
+import '../widgets/standardized_fab.dart';
+import '../widgets/standardized_text.dart';
+import '../widgets/theme_background_widget.dart';
+
 /// Page for managing projects
-/// 
+///
 /// Displays all projects with their statistics, allows creating,
 /// editing, and managing projects.
 class ProjectsPage extends ConsumerStatefulWidget {
@@ -22,8 +24,7 @@ class ProjectsPage extends ConsumerStatefulWidget {
   ConsumerState<ProjectsPage> createState() => _ProjectsPageState();
 }
 
-class _ProjectsPageState extends ConsumerState<ProjectsPage>
-    with SingleTickerProviderStateMixin {
+class _ProjectsPageState extends ConsumerState<ProjectsPage> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   String _searchQuery = '';
   @override
@@ -31,15 +32,17 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
   }
+
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return ThemeBackgroundWidget(
       child: Scaffold(
         backgroundColor: Colors.transparent,
@@ -67,97 +70,92 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
             ),
           ],
         ),
-        floatingActionButton: FloatingActionButton(
-          heroTag: 'projectsFAB',
+        floatingActionButton: StandardizedFABVariants.createProject(
           onPressed: _createProject,
-          tooltip: 'Create Project',
-          child: Icon(PhosphorIcons.plus()),
+          heroTag: 'projectsFAB',
         ),
         body: Padding(
           padding: const EdgeInsets.only(top: kToolbarHeight + 48), // Account for TabBar
           child: Column(
-        children: [
-          // Search bar (if searching)
-          if (_searchQuery.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: GlassmorphismContainer(
-                level: GlassLevel.content,
-                borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    Icon(
-                      PhosphorIcons.magnifyingGlass(),
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'Searching for: "$_searchQuery"',
-                        style: TextStyle(
+            children: [
+              // Search bar (if searching)
+              if (_searchQuery.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: GlassmorphismContainer(
+                    level: GlassLevel.content,
+                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        Icon(
+                          PhosphorIcons.magnifyingGlass(),
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
-                      ),
-                    ),
-                    GlassmorphismContainer(
-                      level: GlassLevel.interactive,
-                      borderRadius: BorderRadius.circular(20),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: () {
-                            setState(() {
-                              _searchQuery = '';
-                            });
-                          },
-                          borderRadius: BorderRadius.circular(20),
-                          child: Padding(padding: const EdgeInsets.all(8),
-                            child: Icon(PhosphorIcons.x(), size: 20),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: StandardizedText(
+                            'Searching for: "$_searchQuery"',
+                            style: StandardizedTextStyle.bodyMedium,
+                            color: theme.colorScheme.onSurfaceVariant,
                           ),
                         ),
-                      ),
+                        GlassmorphismContainer(
+                          level: GlassLevel.interactive,
+                          borderRadius: BorderRadius.circular(20),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () {
+                                setState(() {
+                                  _searchQuery = '';
+                                });
+                              },
+                              borderRadius: BorderRadius.circular(20),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: Icon(PhosphorIcons.x(), size: 20),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
+                  ),
+                ),
+
+              // Tab content
+              Expanded(
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    _buildActiveProjectsTab(),
+                    _buildArchivedProjectsTab(),
+                    _buildAtRiskProjectsTab(),
                   ],
                 ),
               ),
-            ),
-          
-          // Tab content
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                _buildActiveProjectsTab(),
-                _buildArchivedProjectsTab(),
-                _buildAtRiskProjectsTab(),
-              ],
-            ),
+            ],
           ),
-          ],
         ),
       ),
-    ),
     );
   }
 
   Widget _buildActiveProjectsTab() {
     final projectsAsync = ref.watch(projectsProvider);
-    
+
     return projectsAsync.when(
       data: (projects) {
-        final activeProjects = projects
-            .where((project) => !project.isArchived)
-            .where((project) => _matchesSearch(project))
-            .toList();
+        final activeProjects =
+            projects.where((project) => !project.isArchived).where((project) => _matchesSearch(project)).toList();
 
         if (activeProjects.isEmpty) {
           return _buildEmptyState(
             icon: PhosphorIcons.folder(),
             title: _searchQuery.isEmpty ? 'No Active Projects' : 'No Projects Found',
-            subtitle: _searchQuery.isEmpty 
-                ? 'Create your first project to get started'
-                : 'Try adjusting your search terms',
+            subtitle:
+                _searchQuery.isEmpty ? 'Create your first project to get started' : 'Try adjusting your search terms',
             actionLabel: _searchQuery.isEmpty ? 'Create Project' : null,
             onAction: _searchQuery.isEmpty ? _createProject : null,
           );
@@ -187,21 +185,17 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
 
   Widget _buildArchivedProjectsTab() {
     final projectsAsync = ref.watch(projectsProvider);
-    
+
     return projectsAsync.when(
       data: (projects) {
-        final archivedProjects = projects
-            .where((project) => project.isArchived)
-            .where((project) => _matchesSearch(project))
-            .toList();
+        final archivedProjects =
+            projects.where((project) => project.isArchived).where((project) => _matchesSearch(project)).toList();
 
         if (archivedProjects.isEmpty) {
           return _buildEmptyState(
             icon: PhosphorIcons.archive(),
             title: _searchQuery.isEmpty ? 'No Archived Projects' : 'No Archived Projects Found',
-            subtitle: _searchQuery.isEmpty 
-                ? 'Archived projects will appear here'
-                : 'Try adjusting your search terms',
+            subtitle: _searchQuery.isEmpty ? 'Archived projects will appear here' : 'Try adjusting your search terms',
           );
         }
 
@@ -229,20 +223,16 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
 
   Widget _buildAtRiskProjectsTab() {
     final atRiskProjectsAsync = ref.watch(projectsAtRiskProvider);
-    
+
     return atRiskProjectsAsync.when(
       data: (projects) {
-        final filteredProjects = projects
-            .where((project) => _matchesSearch(project))
-            .toList();
+        final filteredProjects = projects.where((project) => _matchesSearch(project)).toList();
 
         if (filteredProjects.isEmpty) {
           return _buildEmptyState(
             icon: PhosphorIcons.checkCircle(),
             title: _searchQuery.isEmpty ? 'No Projects at Risk' : 'No At-Risk Projects Found',
-            subtitle: _searchQuery.isEmpty 
-                ? 'All your projects are on track!'
-                : 'Try adjusting your search terms',
+            subtitle: _searchQuery.isEmpty ? 'All your projects are on track!' : 'Try adjusting your search terms',
           );
         }
 
@@ -267,16 +257,17 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
                       ),
                       const SizedBox(width: 8),
                       Expanded(
-                        child: Text(
+                        child: StandardizedText(
                           'These projects need attention due to overdue tasks, approaching deadlines, or low completion rates.',
-                          style: TextStyle(color: Colors.orange.shade700),
+                          style: StandardizedTextStyle.bodyMedium,
+                          color: Colors.orange.shade700,
                         ),
                       ),
                     ],
                   ),
                 ),
               ),
-              
+
               // Projects list
               Expanded(
                 child: ListView.builder(
@@ -310,7 +301,7 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
     VoidCallback? onAction,
   }) {
     final theme = Theme.of(context);
-    
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -323,19 +314,17 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
               color: theme.colorScheme.onSurfaceVariant,
             ),
             const SizedBox(height: 16),
-            Text(
+            StandardizedText(
               title,
-              style: theme.textTheme.headlineSmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+              style: StandardizedTextStyle.headlineSmall,
+              color: theme.colorScheme.onSurfaceVariant,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
-            Text(
+            StandardizedText(
               subtitle,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+              style: StandardizedTextStyle.bodyMedium,
+              color: theme.colorScheme.onSurfaceVariant,
               textAlign: TextAlign.center,
             ),
             if (actionLabel != null && onAction != null) ...[
@@ -361,12 +350,9 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
                         ),
                         borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                       ),
-                      child: Text(
+                      child: StandardizedTextVariants.button(
                         actionLabel,
-                        style: theme.textTheme.labelLarge?.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        color: Colors.white,
                       ),
                     ),
                   ),
@@ -381,7 +367,7 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
 
   Widget _buildErrorState(String error) {
     final theme = Theme.of(context);
-    
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -394,19 +380,17 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
               color: theme.colorScheme.error,
             ),
             const SizedBox(height: 16),
-            Text(
+            StandardizedText(
               'Error Loading Projects',
-              style: theme.textTheme.headlineSmall?.copyWith(
-                color: theme.colorScheme.error,
-              ),
+              style: StandardizedTextStyle.headlineSmall,
+              color: theme.colorScheme.error,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
-            Text(
+            StandardizedText(
               error,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+              style: StandardizedTextStyle.bodyMedium,
+              color: theme.colorScheme.onSurfaceVariant,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
@@ -431,12 +415,9 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
                       ),
                       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                     ),
-                    child: Text(
+                    child: StandardizedTextVariants.button(
                       'Retry',
-                      style: theme.textTheme.labelLarge?.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      color: Colors.white,
                     ),
                   ),
                 ),
@@ -450,10 +431,9 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
 
   bool _matchesSearch(Project project) {
     if (_searchQuery.isEmpty) return true;
-    
+
     final query = _searchQuery.toLowerCase();
-    return project.name.toLowerCase().contains(query) ||
-           (project.description?.toLowerCase().contains(query) ?? false);
+    return project.name.toLowerCase().contains(query) || (project.description?.toLowerCase().contains(query) ?? false);
   }
 
   void _showSearchDialog() {
@@ -470,11 +450,9 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              StandardizedText(
                 'Search Projects',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
+                style: StandardizedTextStyle.headlineSmall,
               ),
               const SizedBox(height: 16),
               GlassmorphismContainer(
@@ -526,11 +504,10 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
                         borderRadius: BorderRadius.circular(8),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          child: Text(
+                          child: StandardizedText(
                             'Cancel',
-                            style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
+                            style: StandardizedTextStyle.labelLarge,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                       ),
@@ -563,12 +540,9 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
                             ),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: Text(
+                          child: StandardizedTextVariants.button(
                             'Search',
-                            style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                            ),
+                            color: Colors.white,
                           ),
                         ),
                       ),
@@ -589,20 +563,24 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
   }
 
   void _createProject() {
-    showDialog(
-      context: context,
-      builder: (context) => ProjectFormDialog(
-        onSuccess: _refreshProjects,
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => ProjectFormDialog(
+          onSuccess: _refreshProjects,
+        ),
+        fullscreenDialog: true,
       ),
     );
   }
 
   void _editProject(Project project) {
-    showDialog(
-      context: context,
-      builder: (context) => ProjectFormDialog(
-        project: project,
-        onSuccess: _refreshProjects,
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => ProjectFormDialog(
+          project: project,
+          onSuccess: _refreshProjects,
+        ),
+        fullscreenDialog: true,
       ),
     );
   }
@@ -614,6 +592,3 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage>
     );
   }
 }
-
-
-

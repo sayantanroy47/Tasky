@@ -11,6 +11,8 @@ Project _$ProjectFromJson(Map<String, dynamic> json) => Project(
       name: json['name'] as String,
       description: json['description'] as String?,
       color: json['color'] as String,
+      categoryId: json['categoryId'] as String?,
+      category: json['category'] as String?,
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: json['updatedAt'] == null
           ? null
@@ -30,6 +32,8 @@ Map<String, dynamic> _$ProjectToJson(Project instance) => <String, dynamic>{
       'name': instance.name,
       'description': instance.description,
       'color': instance.color,
+      'categoryId': instance.categoryId,
+      'category': instance.category,
       'createdAt': instance.createdAt.toIso8601String(),
       'updatedAt': instance.updatedAt?.toIso8601String(),
       'taskIds': instance.taskIds,

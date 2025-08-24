@@ -30,8 +30,11 @@ class _AppInitializationWrapperState extends ConsumerState<AppInitializationWrap
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final shareIntentService = ref.read(shareIntentServiceProvider);
       final taskRepository = ref.read(taskRepositoryProvider);
-      shareIntentService.setContext(context);
-      shareIntentService.setTaskRepository(taskRepository);
+      
+      shareIntentService.whenData((service) {
+        service.setContext(context);
+        service.setTaskRepository(taskRepository);
+      });
       
       // Initialize background service processing
       ref.read(backgroundProcessingProvider);

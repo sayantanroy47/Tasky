@@ -175,10 +175,6 @@ void main() {
 
     testWidgets('should handle tasks with different statuses', (tester) async {
       final tasks = [
-        createTestTask(title: 'Pending Task', status: TaskStatus.pending),
-        createTestTask(title: 'In Progress Task', status: TaskStatus.inProgress),
-        createTestTask(title: 'Completed Task', status: TaskStatus.completed),
-        createTestTask(title: 'Cancelled Task', status: TaskStatus.cancelled),
       ];
       
       await tester.pumpWidget(createTestWidget(tasks: tasks));

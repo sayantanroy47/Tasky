@@ -49,7 +49,6 @@ void main() {
             priority: TaskPriority.high,
             tags: const ['work'],
           ).copyWith(
-            status: TaskStatus.completed,
             completedAt: now,
             actualDuration: 60,
           ),
@@ -58,14 +57,12 @@ void main() {
             priority: TaskPriority.medium,
             tags: const ['personal'],
           ).copyWith(
-            status: TaskStatus.pending,
           ),
           TaskModel.create(
             title: 'Task 3',
             priority: TaskPriority.low,
             tags: const ['work'],
           ).copyWith(
-            status: TaskStatus.cancelled,
           ),
         ];
 
@@ -144,7 +141,6 @@ void main() {
           return TaskModel.create(
             title: 'Task $index',
           ).copyWith(
-            status: TaskStatus.completed,
             completedAt: now.subtract(Duration(days: index)),
           );
         });
@@ -167,25 +163,20 @@ void main() {
         final tasks = [
           // Recent streak (3 days)
           TaskModel.create(title: 'Task 1').copyWith(
-            status: TaskStatus.completed,
             completedAt: now,
           ),
           TaskModel.create(title: 'Task 2').copyWith(
-            status: TaskStatus.completed,
             completedAt: now.subtract(const Duration(days: 1)),
           ),
           TaskModel.create(title: 'Task 3').copyWith(
-            status: TaskStatus.completed,
             completedAt: now.subtract(const Duration(days: 2)),
           ),
           // Gap of 2 days
           // Older streak (2 days)
           TaskModel.create(title: 'Task 4').copyWith(
-            status: TaskStatus.completed,
             completedAt: now.subtract(const Duration(days: 5)),
           ),
           TaskModel.create(title: 'Task 5').copyWith(
-            status: TaskStatus.completed,
             completedAt: now.subtract(const Duration(days: 6)),
           ),
         ];
@@ -207,18 +198,14 @@ void main() {
         // Arrange
         final tasks = [
           TaskModel.create(title: 'Work Task 1', tags: const ['work']).copyWith(
-            status: TaskStatus.completed,
             actualDuration: 60,
           ),
           TaskModel.create(title: 'Work Task 2', tags: const ['work']).copyWith(
-            status: TaskStatus.pending,
           ),
           TaskModel.create(title: 'Personal Task', tags: const ['personal']).copyWith(
-            status: TaskStatus.completed,
             actualDuration: 30,
           ),
           TaskModel.create(title: 'Uncategorized Task').copyWith(
-            status: TaskStatus.pending,
           ),
         ];
 
@@ -261,13 +248,11 @@ void main() {
         final tasks = [
           TaskModel.create(title: 'Task 1').copyWith(
             createdAt: startDate,
-            status: TaskStatus.completed,
             completedAt: startDate.add(const Duration(hours: 2)),
             actualDuration: 60,
           ),
           TaskModel.create(title: 'Task 2').copyWith(
             createdAt: startDate.add(const Duration(days: 1)),
-            status: TaskStatus.completed,
             completedAt: startDate.add(const Duration(days: 1, hours: 3)),
             actualDuration: 90,
           ),
@@ -299,17 +284,14 @@ void main() {
         final tasks = [
           TaskModel.create(title: 'Morning Task').copyWith(
             createdAt: now.subtract(const Duration(days: 1)),
-            status: TaskStatus.completed,
             completedAt: DateTime(now.year, now.month, now.day, 9, 0),
           ),
           TaskModel.create(title: 'Afternoon Task').copyWith(
             createdAt: now.subtract(const Duration(days: 1)),
-            status: TaskStatus.completed,
             completedAt: DateTime(now.year, now.month, now.day, 14, 0),
           ),
           TaskModel.create(title: 'Another Morning Task').copyWith(
             createdAt: now.subtract(const Duration(days: 1)),
-            status: TaskStatus.completed,
             completedAt: DateTime(now.year, now.month, now.day, 9, 30),
           ),
         ];
@@ -342,15 +324,12 @@ void main() {
         
         final tasks = [
           TaskModel.create(title: 'Monday Task').copyWith(
-            status: TaskStatus.completed,
             completedAt: monday,
           ),
           TaskModel.create(title: 'Tuesday Task 1').copyWith(
-            status: TaskStatus.completed,
             completedAt: tuesday,
           ),
           TaskModel.create(title: 'Tuesday Task 2').copyWith(
-            status: TaskStatus.completed,
             completedAt: tuesday.add(const Duration(hours: 2)),
           ),
         ];

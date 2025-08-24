@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+
+import '../../core/theme/typography_constants.dart';
+import '../../services/analytics/analytics_models.dart';
+import '../providers/analytics_providers.dart';
+import '../widgets/analytics_widgets.dart';
 import '../widgets/glassmorphism_container.dart';
 import '../widgets/standardized_app_bar.dart';
-import '../widgets/analytics_widgets.dart';
-import '../../core/theme/typography_constants.dart';
-import '../providers/analytics_providers.dart';
-import '../../services/analytics/analytics_models.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import '../widgets/task_heatmap_widget.dart';
+import 'detailed_heatmap_page.dart';
 
 /// Analytics page for viewing productivity metrics and insights
 class AnalyticsPage extends ConsumerWidget {
   const AnalyticsPage({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    
     return Scaffold(
       backgroundColor: Colors.transparent,
       extendBodyBehindAppBar: true, // Show phone status bar
@@ -68,7 +70,7 @@ class AnalyticsPageBody extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedPeriod = ref.watch(analyticsTimePeriodProvider);
-    
+
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -86,15 +88,65 @@ class AnalyticsPageBody extends ConsumerWidget {
               ),
             ],
           ),
-          
+
           const SizedBox(height: 16),
-          
+
+          // Task Activity Heatmap - First card showing daily completion patterns
+          Consumer(
+            builder: (context, ref, child) {
+              final heatmapAsync = ref.watch(heatmapDataProvider);
+              return heatmapAsync.when(
+                data: (heatmapData) => TaskHeatmapWidget(
+                  dailyStats: heatmapData,
+                  title: 'Task Activity Heatmap',
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const DetailedHeatmapPage(),
+                      ),
+                    );
+                  },
+                ),
+                loading: () => GlassmorphismContainer(
+                  borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                  padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            PhosphorIcons.calendar(),
+                            size: 20,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Task Activity Heatmap',
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w500,
+                                ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+                      const Center(child: CircularProgressIndicator()),
+                      const SizedBox(height: 24),
+                    ],
+                  ),
+                ),
+                error: (error, stack) => _ErrorWidget(error: error.toString()),
+              );
+            },
+          ),
+
+          const SizedBox(height: 24),
+
           // Key metrics
           Consumer(
             builder: (context, ref, child) {
               final summaryAsync = ref.watch(analyticsSummaryProvider);
               final metricsAsync = ref.watch(productivityMetricsProvider);
-              
+
               return summaryAsync.when(
                 data: (summary) => metricsAsync.when(
                   data: (metrics) => Column(
@@ -156,9 +208,9 @@ class AnalyticsPageBody extends ConsumerWidget {
               );
             },
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Streak widget
           Consumer(
             builder: (context, ref, child) {
@@ -174,9 +226,9 @@ class AnalyticsPageBody extends ConsumerWidget {
               );
             },
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Daily completion chart
           Consumer(
             builder: (context, ref, child) {
@@ -185,7 +237,7 @@ class AnalyticsPageBody extends ConsumerWidget {
                 data: (dailyStats) {
                   final values = dailyStats.map((stat) => stat.completedTasks.toDouble()).toList();
                   final labels = dailyStats.map((stat) => _formatDateLabel(stat.date)).toList();
-                  
+
                   return SimpleBarChart(
                     values: values,
                     labels: labels,
@@ -201,9 +253,9 @@ class AnalyticsPageBody extends ConsumerWidget {
               );
             },
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Category breakdown
           Consumer(
             builder: (context, ref, child) {
@@ -222,16 +274,16 @@ class AnalyticsPageBody extends ConsumerWidget {
               );
             },
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Productivity insights
           Consumer(
             builder: (context, ref, child) {
               final metricsAsync = ref.watch(productivityMetricsProvider);
               final hourlyAsync = ref.watch(hourlyProductivityProvider);
               final weekdayAsync = ref.watch(weekdayProductivityProvider);
-              
+
               return metricsAsync.when(
                 data: (metrics) => hourlyAsync.when(
                   data: (hourly) => weekdayAsync.when(
@@ -265,11 +317,11 @@ class AnalyticsPageBody extends ConsumerWidget {
               );
             },
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Advanced analytics sections
-          
+
           // Productivity patterns
           Consumer(
             builder: (context, ref, child) {
@@ -285,9 +337,9 @@ class AnalyticsPageBody extends ConsumerWidget {
               );
             },
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Peak hours analysis
           Consumer(
             builder: (context, ref, child) {
@@ -303,9 +355,9 @@ class AnalyticsPageBody extends ConsumerWidget {
               );
             },
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Advanced category analytics
           Consumer(
             builder: (context, ref, child) {
@@ -321,9 +373,9 @@ class AnalyticsPageBody extends ConsumerWidget {
               );
             },
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Advanced productivity insights
           Consumer(
             builder: (context, ref, child) {
@@ -339,9 +391,9 @@ class AnalyticsPageBody extends ConsumerWidget {
               );
             },
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Analytics export
           AnalyticsExportWidget(
             onExportJson: () => _exportAnalytics(context, ref, AnalyticsExportFormat.json),
@@ -353,7 +405,6 @@ class AnalyticsPageBody extends ConsumerWidget {
       ),
     );
   }
-
 
   String _formatDuration(double minutes) {
     if (minutes < 60) {
@@ -380,7 +431,7 @@ class AnalyticsPageBody extends ConsumerWidget {
       );
 
       await ref.read(analyticsExportProvider(format).future);
-      
+
       // In a real implementation, you would save the file or share it
       // For now, we'll just show a success message
       if (context.mounted) {
@@ -470,29 +521,25 @@ class _ErrorWidget extends StatelessWidget {
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
       child: Column(
-          children: [
-            Icon(
-              PhosphorIcons.warningCircle(),
-              color: Theme.of(context).colorScheme.error,
-              size: 48,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Error loading analytics',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              error,
-              style: Theme.of(context).textTheme.bodySmall,
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
+        children: [
+          Icon(
+            PhosphorIcons.warningCircle(),
+            color: Theme.of(context).colorScheme.error,
+            size: 48,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Error loading analytics',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            error,
+            style: Theme.of(context).textTheme.bodySmall,
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
     );
   }
 }
-
-
-
-

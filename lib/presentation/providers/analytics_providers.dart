@@ -3,6 +3,7 @@ import '../../services/analytics/analytics_service.dart';
 import '../../services/analytics/analytics_models.dart';
 import '../../data/repositories/task_repository_impl.dart';
 import '../../core/providers/core_providers.dart';
+import 'task_providers.dart';
 
 /// Providers for analytics functionality
 
@@ -29,6 +30,9 @@ final analyticsSummaryProvider = FutureProvider<AnalyticsSummary>((ref) async {
   final period = ref.watch(analyticsTimePeriodProvider);
   final customRange = ref.watch(customDateRangeProvider);
   
+  // Watch task changes to invalidate analytics when tasks are updated
+  ref.watch(tasksProvider);
+  
   return await analyticsService.getAnalyticsSummary(
     period,
     customRange: customRange,
@@ -38,12 +42,20 @@ final analyticsSummaryProvider = FutureProvider<AnalyticsSummary>((ref) async {
 /// Productivity metrics provider
 final productivityMetricsProvider = FutureProvider<ProductivityMetrics>((ref) async {
   final analyticsService = ref.watch(analyticsServiceProvider);
+  
+  // Watch task changes to invalidate analytics when tasks are updated
+  ref.watch(tasksProvider);
+  
   return await analyticsService.getProductivityMetrics();
 });
 
 /// Streak information provider
 final streakInfoProvider = FutureProvider<StreakInfo>((ref) async {
   final analyticsService = ref.watch(analyticsServiceProvider);
+  
+  // Watch task changes to invalidate analytics when tasks are updated
+  ref.watch(tasksProvider);
+  
   return await analyticsService.getStreakInfo();
 });
 
@@ -52,6 +64,9 @@ final categoryAnalyticsProvider = FutureProvider<List<CategoryAnalytics>>((ref) 
   final analyticsService = ref.watch(analyticsServiceProvider);
   final period = ref.watch(analyticsTimePeriodProvider);
   final customRange = ref.watch(customDateRangeProvider);
+  
+  // Watch task changes to invalidate analytics when tasks are updated
+  ref.watch(tasksProvider);
   
   return await analyticsService.getCategoryAnalytics(
     period,
@@ -65,7 +80,25 @@ final dailyStatsProvider = FutureProvider<List<DailyStats>>((ref) async {
   final period = ref.watch(analyticsTimePeriodProvider);
   final customRange = ref.watch(customDateRangeProvider);
   
+  // Watch task changes to invalidate analytics when tasks are updated
+  ref.watch(tasksProvider);
+  
   final dateRange = customRange ?? period.dateRange;
+  return await analyticsService.getDailyStats(dateRange);
+});
+
+/// Heatmap data provider - gets 6 months of daily stats for heatmap visualization
+final heatmapDataProvider = FutureProvider.autoDispose<List<DailyStats>>((ref) async {
+  final analyticsService = ref.watch(analyticsServiceProvider);
+  
+  // Watch task changes to invalidate analytics when tasks are updated
+  ref.watch(tasksProvider);
+  
+  // Get data for the last 6 months for a comprehensive heatmap view
+  final endDate = DateTime.now().add(const Duration(days: 1)); // Include today
+  final startDate = DateTime(endDate.year, endDate.month - 6, endDate.day);
+  
+  final dateRange = DateRange(start: startDate, end: endDate);
   return await analyticsService.getDailyStats(dateRange);
 });
 
@@ -164,6 +197,7 @@ final refreshAnalyticsProvider = Provider<void Function()>((ref) {
     ref.invalidate(streakInfoProvider);
     ref.invalidate(categoryAnalyticsProvider);
     ref.invalidate(dailyStatsProvider);
+    ref.invalidate(heatmapDataProvider);
     ref.invalidate(hourlyProductivityProvider);
     ref.invalidate(weekdayProductivityProvider);
     ref.invalidate(completionRateTrendProvider);

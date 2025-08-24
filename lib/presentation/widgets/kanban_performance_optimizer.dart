@@ -370,7 +370,7 @@ class _OptimizedDraggableState<T> extends State<_OptimizedDraggable<T>> {
         duration: OptimizedDragAndDrop._animationDuration,
         curve: Curves.easeInOut,
         transform: Matrix4.identity()
-          ..scale(_isDragging ? 1.05 : 1.0),
+          ..scaleByDouble(_isDragging ? 1.05 : 1.0),
         child: widget.child,
       ),
     );
@@ -420,7 +420,7 @@ class _OptimizedDragTargetState<T> extends State<_OptimizedDragTarget<T>> {
           duration: OptimizedDragAndDrop._animationDuration,
           curve: Curves.easeInOut,
           transform: Matrix4.identity()
-            ..scale(_isHovering ? 1.02 : 1.0),
+            ..scaleByDouble(_isHovering ? 1.02 : 1.0),
           child: widget.child,
         );
       },

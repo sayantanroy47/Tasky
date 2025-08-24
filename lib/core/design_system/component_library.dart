@@ -120,7 +120,7 @@ class ComponentLibrary {
               Text(
                 title,
                 style: const TextStyle(
-                  fontSize: 20,
+                  // Using theme titleLarge size
                   fontWeight: FontWeight.w500,
                 ),
               ),

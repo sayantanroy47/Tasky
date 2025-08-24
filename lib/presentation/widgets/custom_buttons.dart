@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'enhanced_glass_button.dart';
-import 'glassmorphism_container.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+
 import '../../core/design_system/design_tokens.dart';
 import '../../core/theme/typography_constants.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'enhanced_glass_button.dart';
+import 'glassmorphism_container.dart';
 
 /// Custom primary button with glassmorphism styling
 class PrimaryButton extends StatelessWidget {
@@ -34,24 +35,24 @@ class PrimaryButton extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (isLoading)
-              const SizedBox(
+              SizedBox(
                 width: 16,
                 height: 16,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.onPrimary,
                 ),
               )
             else if (icon != null) ...[
-              Icon(icon, size: 18, color: Colors.white),
+              Icon(icon, size: 18, color: Theme.of(context).colorScheme.onPrimary),
               const SizedBox(width: 8),
             ],
             Text(
               text,
               style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
-              ),
+                    fontWeight: FontWeight.w500,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
             ),
           ],
         ),
@@ -106,7 +107,7 @@ class SecondaryButton extends StatelessWidget {
             Text(
               text,
               style: theme.textTheme.labelLarge?.copyWith(
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w500,
                 color: theme.colorScheme.primary,
               ),
             ),
@@ -143,10 +144,12 @@ class CustomTextButton extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: isLoading ? null : () {
-            HapticFeedback.selectionClick();
-            onPressed?.call();
-          },
+          onTap: isLoading
+              ? null
+              : () {
+                  HapticFeedback.selectionClick();
+                  onPressed?.call();
+                },
           borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -200,22 +203,22 @@ class VoiceActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     Widget icon;
     Color glassColor;
-    
+
     if (isProcessing) {
-      icon = const SizedBox(
+      icon = SizedBox(
         width: 24,
         height: 24,
-        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+        child: CircularProgressIndicator(strokeWidth: 2, color: theme.colorScheme.onPrimary),
       );
       glassColor = theme.colorScheme.secondary;
     } else if (isListening) {
-      icon = Icon(PhosphorIcons.microphone(), color: Colors.white);
-      glassColor = AppColors.voiceRecording;
+      icon = Icon(PhosphorIcons.microphone(), color: Theme.of(context).colorScheme.onPrimary);
+      glassColor = theme.colorScheme.tertiary; // Voice recording accent color
     } else {
-      icon = Icon(PhosphorIcons.microphoneSlash(), color: Colors.white);
+      icon = Icon(PhosphorIcons.microphoneSlash(), color: Theme.of(context).colorScheme.onPrimary);
       glassColor = theme.colorScheme.primaryContainer;
     }
 
@@ -271,10 +274,12 @@ class DestructiveButton extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: isLoading ? null : () {
-            HapticFeedback.mediumImpact();
-            onPressed?.call();
-          },
+          onTap: isLoading
+              ? null
+              : () {
+                  HapticFeedback.mediumImpact();
+                  onPressed?.call();
+                },
           borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
           child: Container(
             decoration: BoxDecoration(
@@ -293,23 +298,23 @@ class DestructiveButton extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (isLoading)
-                  const SizedBox(
+                  SizedBox(
                     width: 16,
                     height: 16,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
-                      color: Colors.white,
+                      color: theme.colorScheme.onPrimary,
                     ),
                   )
                 else if (icon != null) ...[
-                  Icon(icon, size: 18, color: Colors.white),
+                  Icon(icon, size: 18, color: Theme.of(context).colorScheme.onPrimary),
                   const SizedBox(width: 8),
                 ],
                 Text(
                   text,
                   style: theme.textTheme.labelLarge?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                    color: Theme.of(context).colorScheme.onPrimary,
                   ),
                 ),
               ],
@@ -321,10 +326,5 @@ class DestructiveButton extends StatelessWidget {
 
     return isExpanded ? SizedBox(width: double.infinity, child: button) : button;
   }
-}
-
-/// App colors for the VoiceActionButton
-class AppColors {
-  static const Color voiceRecording = Color(0xFFE91E63);
 }
 

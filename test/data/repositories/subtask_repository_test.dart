@@ -6,22 +6,25 @@ import 'package:mockito/annotations.dart';
 import 'package:task_tracker_app/services/database/database.dart';
 import 'package:task_tracker_app/services/database/daos/subtask_dao.dart';
 import 'package:task_tracker_app/data/repositories/subtask_repository_impl.dart';
+import 'package:task_tracker_app/data/datasources/subtask_local_datasource.dart';
 import 'package:task_tracker_app/domain/entities/subtask.dart';
 
 import 'subtask_repository_test.mocks.dart';
 
-@GenerateMocks([AppDatabase, SubtaskDao])
+@GenerateMocks([AppDatabase, SubtaskDao, SubtaskLocalDataSource])
 void main() {
   group('SubtaskRepositoryImpl', () {
     late SubtaskRepositoryImpl repository;
     late MockAppDatabase mockDatabase;
     late MockSubtaskDao mockSubtaskDao;
+    late MockSubtaskLocalDataSource mockLocalDataSource;
 
     setUp(() {
       mockDatabase = MockAppDatabase();
       mockSubtaskDao = MockSubtaskDao();
+      mockLocalDataSource = MockSubtaskLocalDataSource();
       when(mockDatabase.subtaskDao).thenReturn(mockSubtaskDao);
-      repository = SubtaskRepositoryImpl(mockDatabase);
+      repository = SubtaskRepositoryImpl(localDataSource: mockLocalDataSource);
     });
 
     group('Basic CRUD Operations', () {

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import '../../core/theme/typography_constants.dart';
+
 import '../../core/design_system/design_tokens.dart';
+import '../../core/theme/typography_constants.dart';
 import 'glassmorphism_container.dart';
 import 'theme_aware_dialog_background.dart';
 
@@ -130,6 +131,7 @@ class ThemeAwareTaskDialog extends ConsumerWidget {
         borderColor: Colors.transparent,
         child: Row(
           children: actions!
+              .map((action) => Flexible(child: action))
               .expand((action) => [action, const SizedBox(width: 16)])
               .take(actions!.length * 2 - 1)
               .toList(),
@@ -246,17 +248,13 @@ class ThemeAwarePrioritySelector extends ConsumerWidget {
           runSpacing: 8,
           children: priorities.map((priority) {
             final isSelected = selectedPriority == priority.value;
-            
+
             return GestureDetector(
               onTap: () => onPriorityChanged(priority.value),
               child: GlassmorphismContainer(
                 level: isSelected ? GlassLevel.interactive : GlassLevel.content,
-                glassTint: isSelected 
-                    ? priority.color.withValues(alpha: 0.3)
-                    : null,
-                borderColor: isSelected 
-                    ? priority.color 
-                    : theme.colorScheme.outline.withValues(alpha: 0.3),
+                glassTint: isSelected ? priority.color.withValues(alpha: 0.3) : null,
+                borderColor: isSelected ? priority.color : theme.colorScheme.outline.withValues(alpha: 0.3),
                 borderWidth: isSelected ? 2.0 : 1.0,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
@@ -275,9 +273,7 @@ class ThemeAwarePrioritySelector extends ConsumerWidget {
                     Text(
                       priority.name,
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        fontWeight: isSelected 
-                            ? FontWeight.w500 
-                            : FontWeight.normal,
+                        fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
                         color: theme.colorScheme.onSurface,
                       ),
                     ),
@@ -316,7 +312,7 @@ class ThemeAwareButton extends ConsumerWidget {
     if (isPrimary) {
       return FilledButton.icon(
         onPressed: isLoading ? null : onPressed,
-        icon: isLoading 
+        icon: isLoading
             ? const SizedBox(
                 width: 16,
                 height: 16,
@@ -371,16 +367,16 @@ class RoundedGlassButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    
+
     return GlassmorphismContainer(
       level: isPrimary ? GlassLevel.interactive : GlassLevel.content,
       width: width,
       height: height ?? 56,
       borderRadius: BorderRadius.circular(28), // Fully rounded
-      glassTint: isPrimary 
+      glassTint: isPrimary
           ? theme.colorScheme.primary.withValues(alpha: 0.3)
           : theme.colorScheme.surface.withValues(alpha: 0.8),
-      borderColor: isPrimary 
+      borderColor: isPrimary
           ? theme.colorScheme.primary.withValues(alpha: 0.5)
           : theme.colorScheme.outline.withValues(alpha: 0.3),
       borderWidth: isPrimary ? 2.0 : 1.0,
@@ -401,29 +397,22 @@ class RoundedGlassButton extends ConsumerWidget {
                     height: 20,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
-                      color: isPrimary 
-                          ? theme.colorScheme.onPrimary 
-                          : theme.colorScheme.primary,
+                      color: isPrimary ? theme.colorScheme.onPrimary : theme.colorScheme.primary,
                     ),
                   )
                 else if (icon != null)
                   Icon(
                     icon!,
                     size: 20,
-                    color: isPrimary 
-                        ? theme.colorScheme.onPrimary 
-                        : theme.colorScheme.primary,
+                    color: isPrimary ? theme.colorScheme.onPrimary : theme.colorScheme.primary,
                   ),
-                if ((icon != null || isLoading) && label.isNotEmpty) 
-                  const SizedBox(width: 8),
+                if ((icon != null || isLoading) && label.isNotEmpty) const SizedBox(width: 8),
                 if (label.isNotEmpty)
                   Text(
                     label,
                     style: theme.textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: isPrimary 
-                          ? theme.colorScheme.onPrimary 
-                          : theme.colorScheme.primary,
+                      fontWeight: FontWeight.w500,
+                      color: isPrimary ? theme.colorScheme.onPrimary : theme.colorScheme.primary,
                     ),
                   ),
               ],

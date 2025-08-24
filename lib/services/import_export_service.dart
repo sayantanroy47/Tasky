@@ -128,6 +128,18 @@ class ImportExportService {
           data = await exportToCSV();
           fileName = 'tasky_export_$timestamp.csv';
           break;
+        case ExportFormat.txt:
+          data = await exportToJSON(); // Use JSON for now
+          fileName = 'tasky_export_$timestamp.txt';
+          break;
+        case ExportFormat.pdf:
+          data = await exportToJSON(); // Use JSON for now
+          fileName = 'tasky_export_$timestamp.pdf';
+          break;
+        case ExportFormat.excel:
+          data = await exportToCSV(); // Use CSV for now
+          fileName = 'tasky_export_$timestamp.xlsx';
+          break;
       }
       
       return await saveExportToFile(data, fileName);
@@ -376,31 +388,6 @@ class ImportExportService {
   }
 }
 
-/// Export format options
-enum ExportFormat {
-  json,
-  csv,
-}
-
-extension ExportFormatExtension on ExportFormat {
-  String get displayName {
-    switch (this) {
-      case ExportFormat.json:
-        return 'JSON';
-      case ExportFormat.csv:
-        return 'CSV';
-    }
-  }
-  
-  String get fileExtension {
-    switch (this) {
-      case ExportFormat.json:
-        return 'json';
-      case ExportFormat.csv:
-        return 'csv';
-    }
-  }
-}
 
 /// Result of import operation
 class ImportResult {

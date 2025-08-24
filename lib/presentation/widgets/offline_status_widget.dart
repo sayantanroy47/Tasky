@@ -1,18 +1,19 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:async';
 import 'dart:io';
 import 'dart:math' as math;
 
-import '../../domain/models/enums.dart';
-import '../../core/theme/typography_constants.dart';
-import '../../core/design_system/design_tokens.dart';
-import '../../core/theme/material3/motion_system.dart';
-import 'glassmorphism_container.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../core/design_system/design_tokens.dart';
+import '../../core/theme/material3/motion_system.dart';
+import '../../core/theme/typography_constants.dart';
+import '../../domain/models/enums.dart';
+import 'glassmorphism_container.dart';
+
 /// Comprehensive offline status widget with connectivity monitoring
-/// 
+///
 /// Features:
 /// - Real-time connection status monitoring
 /// - Sync queue indicators and progress
@@ -60,13 +61,12 @@ class OfflineStatusWidget extends ConsumerStatefulWidget {
   ConsumerState<OfflineStatusWidget> createState() => _OfflineStatusWidgetState();
 }
 
-class _OfflineStatusWidgetState extends ConsumerState<OfflineStatusWidget>
-    with TickerProviderStateMixin {
+class _OfflineStatusWidgetState extends ConsumerState<OfflineStatusWidget> with TickerProviderStateMixin {
   late AnimationController _statusController;
   late AnimationController _syncController;
   late AnimationController _pulseController;
   late AnimationController _slideController;
-  
+
   late Animation<double> _statusOpacity;
   late Animation<double> _syncRotation;
   late Animation<double> _pulseScale;
@@ -74,7 +74,7 @@ class _OfflineStatusWidgetState extends ConsumerState<OfflineStatusWidget>
 
   Timer? _connectivityTimer;
   Timer? _retryTimer;
-  
+
   OfflineStatus _currentStatus = OfflineStatus.online;
   final NetworkType _networkType = NetworkType.wifi;
   bool _isSyncing = false;
@@ -172,11 +172,10 @@ class _OfflineStatusWidgetState extends ConsumerState<OfflineStatusWidget>
 
   Future<void> _checkConnectivity() async {
     try {
-      final result = await InternetAddress.lookup('google.com')
-          .timeout(const Duration(seconds: 3));
-      
+      final result = await InternetAddress.lookup('google.com').timeout(const Duration(seconds: 3));
+
       final hasConnection = result.isNotEmpty && result[0].rawAddress.isNotEmpty;
-      
+
       if (hasConnection != _hasConnectivity) {
         setState(() {
           _hasConnectivity = hasConnection;
@@ -186,17 +185,16 @@ class _OfflineStatusWidgetState extends ConsumerState<OfflineStatusWidget>
             _lastError = null;
           }
         });
-        
+
         _animateStatusChange();
-        
+
         if (hasConnection) {
           _triggerAutoSync();
         }
       }
-      
+
       // Update connection quality
       _updateConnectionQuality();
-      
     } catch (e) {
       if (_hasConnectivity) {
         setState(() {
@@ -223,7 +221,7 @@ class _OfflineStatusWidgetState extends ConsumerState<OfflineStatusWidget>
     _statusController.forward();
     _slideController.reset();
     _slideController.forward();
-    
+
     if (_currentStatus == OfflineStatus.offline) {
       _pulseController.repeat(reverse: true);
     } else {
@@ -249,11 +247,11 @@ class _OfflineStatusWidgetState extends ConsumerState<OfflineStatusWidget>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     if (widget.compact) {
       return _buildCompactWidget(theme);
     }
-    
+
     return _buildFullWidget(theme);
   }
 
@@ -288,7 +286,7 @@ class _OfflineStatusWidgetState extends ConsumerState<OfflineStatusWidget>
                     _getStatusText(),
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: _getStatusColor(theme),
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                   if (_isSyncing || _pendingSyncItems > 0) ...[
@@ -380,7 +378,7 @@ class _OfflineStatusWidgetState extends ConsumerState<OfflineStatusWidget>
               Text(
                 _getStatusText(),
                 style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w500,
                   color: _getStatusColor(theme),
                 ),
               ),
@@ -394,10 +392,8 @@ class _OfflineStatusWidgetState extends ConsumerState<OfflineStatusWidget>
             ],
           ),
         ),
-        if (_isSyncing || _pendingSyncItems > 0)
-          _buildSyncIndicator(theme),
-        if (widget.showDataUsage)
-          _buildDataUsageIndicator(theme),
+        if (_isSyncing || _pendingSyncItems > 0) _buildSyncIndicator(theme),
+        if (widget.showDataUsage) _buildDataUsageIndicator(theme),
       ],
     );
   }
@@ -463,7 +459,7 @@ class _OfflineStatusWidgetState extends ConsumerState<OfflineStatusWidget>
           value,
           style: theme.textTheme.bodySmall?.copyWith(
             color: color,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w500,
           ),
         ),
       ],
@@ -480,7 +476,7 @@ class _OfflineStatusWidgetState extends ConsumerState<OfflineStatusWidget>
             Text(
               'Sync Progress',
               style: theme.textTheme.labelMedium?.copyWith(
-                fontWeight: FontWeight.w600,
+                fontWeight: FontWeight.w500,
               ),
             ),
             Text(
@@ -533,7 +529,7 @@ class _OfflineStatusWidgetState extends ConsumerState<OfflineStatusWidget>
                 'Sync Issues',
                 style: theme.textTheme.labelMedium?.copyWith(
                   color: theme.colorScheme.error,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],
@@ -733,10 +729,10 @@ class _OfflineStatusWidgetState extends ConsumerState<OfflineStatusWidget>
 
   String _formatLastSyncTime() {
     if (_lastSyncTime == null) return 'Never';
-    
+
     final now = DateTime.now();
     final difference = now.difference(_lastSyncTime!);
-    
+
     if (difference.inMinutes < 1) {
       return 'Just now';
     } else if (difference.inHours < 1) {
@@ -757,15 +753,15 @@ class _OfflineStatusWidgetState extends ConsumerState<OfflineStatusWidget>
       _isSyncing = true;
       _syncProgress = 0.0;
     });
-    
+
     _syncController.repeat();
-    
+
     // Simulate sync progress
     Timer.periodic(const Duration(milliseconds: 100), (timer) {
       setState(() {
         _syncProgress += 0.02;
       });
-      
+
       if (_syncProgress >= 1.0) {
         timer.cancel();
         setState(() {
@@ -776,7 +772,7 @@ class _OfflineStatusWidgetState extends ConsumerState<OfflineStatusWidget>
         });
         _syncController.stop();
         _syncController.reset();
-        
+
         widget.onManualSync?.call();
       }
     });
@@ -788,16 +784,16 @@ class _OfflineStatusWidgetState extends ConsumerState<OfflineStatusWidget>
       _failedSyncItems = 0;
       _lastError = null;
     });
-    
+
     // Start exponential backoff retry
     _scheduleRetry();
-    
+
     widget.onRetry?.call();
   }
 
   void _scheduleRetry() {
     final delay = Duration(seconds: math.pow(2, _retryAttempts).toInt().clamp(1, 60));
-    
+
     _retryTimer?.cancel();
     _retryTimer = Timer(delay, () {
       if (mounted && _hasConnectivity) {
@@ -831,7 +827,7 @@ enum ConnectionQuality {
 /// Simplified offline indicator for app bars
 class OfflineIndicator extends ConsumerWidget {
   final bool showWhenOnline;
-  
+
   const OfflineIndicator({
     super.key,
     this.showWhenOnline = false,
@@ -843,11 +839,11 @@ class OfflineIndicator extends ConsumerWidget {
       stream: _connectivityStream(),
       builder: (context, snapshot) {
         final isOffline = !(snapshot.data ?? true);
-        
+
         if (!isOffline && !showWhenOnline) {
           return const SizedBox.shrink();
         }
-        
+
         return const OfflineStatusWidget(
           compact: true,
           showDetails: false,
@@ -872,7 +868,7 @@ class OfflineIndicator extends ConsumerWidget {
 class OfflineBanner extends StatelessWidget {
   final Widget child;
   final bool showBanner;
-  
+
   const OfflineBanner({
     super.key,
     required this.child,
@@ -902,7 +898,7 @@ class OfflineBanner extends StatelessWidget {
 /// Offline status provider (mock implementation)
 class OfflineStatusNotifier extends StateNotifier<OfflineStatus> {
   OfflineStatusNotifier() : super(OfflineStatus.online);
-  
+
   void updateStatus(OfflineStatus status) {
     state = status;
   }
@@ -911,6 +907,3 @@ class OfflineStatusNotifier extends StateNotifier<OfflineStatus> {
 final offlineStatusProvider = StateNotifierProvider<OfflineStatusNotifier, OfflineStatus>(
   (ref) => OfflineStatusNotifier(),
 );
-
-
-
