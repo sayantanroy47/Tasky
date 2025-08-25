@@ -653,8 +653,8 @@ class _PhosphorIconsShowcase extends StatelessWidget {
   Widget build(BuildContext context) {
     final iconCategories = {
       'Project Management': [
-        PhosphorIcons.folder()(),
-        PhosphorIcons.folder()Open(),
+        PhosphorIcons.folder(),
+        PhosphorIcons.folderOpen(),
         PhosphorIcons.kanban(),
         PhosphorIcons.listChecks(),
       ],
@@ -802,7 +802,7 @@ class _ProjectManagementWidgetShowcase extends StatelessWidget {
                     labelText: 'Project Name',
                     hintText: 'Enter project name',
                     border: OutlineInputBorder(),
-                    prefixIcon: Icon(PhosphorIcons.folder()),
+                    prefixIcon: Icon(Icons.folder),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -812,7 +812,7 @@ class _ProjectManagementWidgetShowcase extends StatelessWidget {
                     labelText: 'Description',
                     hintText: 'Enter project description',
                     border: OutlineInputBorder(),
-                    prefixIcon: Icon(PhosphorIcons.note()),
+                    prefixIcon: Icon(Icons.note),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -820,7 +820,7 @@ class _ProjectManagementWidgetShowcase extends StatelessWidget {
                   decoration: const InputDecoration(
                     labelText: 'Category',
                     border: OutlineInputBorder(),
-                    prefixIcon: Icon(PhosphorIcons.tag()),
+                    prefixIcon: Icon(Icons.tag),
                   ),
                   items: ['Work', 'Personal', 'Learning', 'Health']
                       .map((category) => DropdownMenuItem(
@@ -997,7 +997,7 @@ class _FormElementsShowcase extends StatelessWidget {
             labelText: 'Standard Text Field',
             hintText: 'Enter text here',
             border: OutlineInputBorder(),
-            prefixIcon: Icon(PhosphorIcons.textAa()),
+            prefixIcon: Icon(Icons.text_fields),
           ),
         ),
         const SizedBox(height: 16),
@@ -1008,8 +1008,8 @@ class _FormElementsShowcase extends StatelessWidget {
             hintText: 'Enter text here',
             filled: true,
             border: OutlineInputBorder(),
-            prefixIcon: Icon(PhosphorIcons.textAa()),
-            suffixIcon: Icon(PhosphorIcons.eye()),
+            prefixIcon: Icon(Icons.text_fields),
+            suffixIcon: Icon(Icons.visibility),
           ),
         ),
         const SizedBox(height: 16),
@@ -1020,7 +1020,7 @@ class _FormElementsShowcase extends StatelessWidget {
             labelText: 'Multiline Text Field',
             hintText: 'Enter multiple lines of text here',
             border: OutlineInputBorder(),
-            prefixIcon: Icon(PhosphorIcons.note()),
+            prefixIcon: Icon(Icons.note),
           ),
         ),
         const SizedBox(height: 24),
@@ -1030,7 +1030,7 @@ class _FormElementsShowcase extends StatelessWidget {
           decoration: const InputDecoration(
             labelText: 'Dropdown Selection',
             border: OutlineInputBorder(),
-            prefixIcon: Icon(PhosphorIcons.caretDown()),
+            prefixIcon: Icon(Icons.arrow_drop_down),
           ),
           items: ['Option 1', 'Option 2', 'Option 3']
               .map((option) => DropdownMenuItem(
@@ -1395,7 +1395,7 @@ class _AccessibilityFeaturesShowcase extends StatelessWidget {
                     ),
                     IconButton(
                       onPressed: () {},
-                      icon: Icon(PhosphorIcons.edit()),
+                      icon: const Icon(Icons.edit),
                       tooltip: 'Edit item (48dp minimum)',
                     ),
                     IconButton(

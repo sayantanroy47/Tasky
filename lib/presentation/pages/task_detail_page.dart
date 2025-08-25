@@ -20,6 +20,7 @@ import '../widgets/theme_background_widget.dart';
 import '../widgets/standardized_icons.dart' show StandardizedIcon, StandardizedIconSize, StandardizedIconStyle;
 import '../widgets/standardized_page_dialogs.dart';
 import '../widgets/standardized_notifications.dart';
+import '../widgets/standardized_colors.dart';
 
 /// Task detail page showing comprehensive task information
 class TaskDetailPage extends ConsumerWidget {
@@ -58,11 +59,11 @@ class TaskDetailPage extends ConsumerWidget {
                   style: StandardizedIconStyle.error,
                 ),
                 const SizedBox(height: 16),
-                Text('Error loading task: $error'),
+                StandardizedText('Error loading task: $error', style: StandardizedTextStyle.bodyMedium),
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Go Back'),
+                  child: const StandardizedText('Go Back', style: StandardizedTextStyle.buttonText),
                 ),
               ],
             ),
@@ -91,7 +92,7 @@ class TaskDetailPage extends ConsumerWidget {
                       style: StandardizedIconStyle.disabled,
                     ),
                     const SizedBox(height: 16),
-                    const Text('Task not found'),
+                    const StandardizedText('Task not found', style: StandardizedTextStyle.bodyMedium),
                   ],
                 ),
               ),
@@ -134,7 +135,7 @@ class _TaskDetailView extends ConsumerWidget {
                     width: 150,
                     child: ListTile(
                       leading: Icon(PhosphorIcons.copy()),
-                      title: const Text('Duplicate'),
+                      title: const StandardizedText('Duplicate', style: StandardizedTextStyle.bodyMedium),
                       contentPadding: EdgeInsets.zero,
                     ),
                   ),
@@ -145,7 +146,7 @@ class _TaskDetailView extends ConsumerWidget {
                     width: 150,
                     child: ListTile(
                       leading: Icon(PhosphorIcons.share()),
-                      title: const Text('Share'),
+                      title: const StandardizedText('Share', style: StandardizedTextStyle.bodyMedium),
                       contentPadding: EdgeInsets.zero,
                     ),
                   ),
@@ -155,8 +156,8 @@ class _TaskDetailView extends ConsumerWidget {
                   child: SizedBox(
                     width: 150,
                     child: ListTile(
-                      leading: Icon(PhosphorIcons.trash(), color: Colors.red),
-                      title: const Text('Delete', style: TextStyle(color: Colors.red)),
+                      leading: Icon(PhosphorIcons.trash(), color: context.errorColor),
+                      title: StandardizedText('Delete', style: StandardizedTextStyle.bodyMedium, color: context.errorColor),
                       contentPadding: EdgeInsets.zero,
                     ),
                   ),
@@ -262,7 +263,7 @@ class _TaskDetailView extends ConsumerWidget {
     ref.read(taskOperationsProvider).createTask(duplicatedTask);
 
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Task duplicated successfully')),
+      const SnackBar(content: StandardizedText('Task duplicated successfully', style: StandardizedTextStyle.bodyMedium)),
     );
   }
 
@@ -275,7 +276,7 @@ class _TaskDetailView extends ConsumerWidget {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Task details: $taskText'),
+        content: StandardizedText('Task details: $taskText', style: StandardizedTextStyle.bodyMedium),
         duration: const Duration(seconds: 3),
       ),
     );
@@ -418,7 +419,7 @@ class _TaskDetailView extends ConsumerWidget {
   }
 
   Widget _buildHistorySection(BuildContext context, ThemeData theme, TaskModel task) {
-    final history = _generateTaskHistory(task);
+    final history = _generateTaskHistory(task, context);
 
     return GlassmorphismContainer(
       level: GlassLevel.content,
@@ -493,7 +494,7 @@ class _TaskDetailView extends ConsumerWidget {
             Center(
               child: TextButton(
                 onPressed: () => _showFullHistory(context, task),
-                child: Text('View all ${history.length} entries'),
+                child: StandardizedText('View all ${history.length} entries', style: StandardizedTextStyle.buttonText),
               ),
             ),
         ],
@@ -547,7 +548,7 @@ class _TaskDetailView extends ConsumerWidget {
                   const SizedBox(height: 8),
                   TextButton(
                     onPressed: () => _inviteCollaborator(context, task),
-                    child: const Text('Invite someone'),
+                    child: const StandardizedText('Invite someone', style: StandardizedTextStyle.buttonText),
                   ),
                 ],
               ),
@@ -595,7 +596,7 @@ class _TaskDetailView extends ConsumerWidget {
                 child: ElevatedButton.icon(
                   onPressed: () => _shareTask(context, ref),
                   icon: Icon(PhosphorIcons.share()),
-                  label: const Text('Share Task'),
+                  label: const StandardizedText('Share Task', style: StandardizedTextStyle.buttonText),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: theme.colorScheme.primaryContainer,
                     foregroundColor: theme.colorScheme.onPrimaryContainer,
@@ -607,7 +608,7 @@ class _TaskDetailView extends ConsumerWidget {
                 child: ElevatedButton.icon(
                   onPressed: () => _exportTask(context, task),
                   icon: Icon(PhosphorIcons.download()),
-                  label: const Text('Export'),
+                  label: const StandardizedText('Export', style: StandardizedTextStyle.buttonText),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: theme.colorScheme.secondaryContainer,
                     foregroundColor: theme.colorScheme.onSecondaryContainer,
@@ -625,7 +626,7 @@ class _TaskDetailView extends ConsumerWidget {
 
   void _addAttachment(BuildContext context, TaskModel task) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Attachment feature coming soon!')),
+      const SnackBar(content: StandardizedText('Attachment feature coming soon!', style: StandardizedTextStyle.bodyMedium)),
     );
   }
 
@@ -637,7 +638,7 @@ class _TaskDetailView extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Invite Collaborator'),
+        title: const StandardizedText('Invite Collaborator', style: StandardizedTextStyle.titleMedium),
         content: TextField(
           decoration: InputDecoration(
             hintText: 'Enter email address...',
@@ -648,16 +649,16 @@ class _TaskDetailView extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            child: const StandardizedText('Cancel', style: StandardizedTextStyle.buttonText),
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.of(context).pop();
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Invitation sent!')),
+                const SnackBar(content: StandardizedText('Invitation sent!', style: StandardizedTextStyle.bodyMedium)),
               );
             },
-            child: const Text('Invite'),
+            child: const StandardizedText('Invite', style: StandardizedTextStyle.buttonText),
           ),
         ],
       ),
@@ -668,21 +669,21 @@ class _TaskDetailView extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Remove Collaborator'),
-        content: Text('Remove $email from this task?'),
+        title: const StandardizedText('Remove Collaborator', style: StandardizedTextStyle.titleMedium),
+        content: StandardizedText('Remove $email from this task?', style: StandardizedTextStyle.bodyMedium),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            child: const StandardizedText('Cancel', style: StandardizedTextStyle.buttonText),
           ),
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Collaborator removed')),
+                const SnackBar(content: StandardizedText('Collaborator removed', style: StandardizedTextStyle.bodyMedium)),
               );
             },
-            child: const Text('Remove'),
+            child: const StandardizedText('Remove', style: StandardizedTextStyle.buttonText),
           ),
         ],
       ),
@@ -691,7 +692,7 @@ class _TaskDetailView extends ConsumerWidget {
 
   void _exportTask(BuildContext context, TaskModel task) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Export feature coming soon!')),
+      const SnackBar(content: StandardizedText('Export feature coming soon!', style: StandardizedTextStyle.bodyMedium)),
     );
   }
 
@@ -699,33 +700,33 @@ class _TaskDetailView extends ConsumerWidget {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => Scaffold(
-          appBar: AppBar(title: const Text('Full History')),
+          appBar: AppBar(title: const StandardizedText('Full History', style: StandardizedTextStyle.titleLarge)),
           body: const Center(
-            child: Text('Full history view coming soon!'),
+            child: StandardizedText('Full history view coming soon!', style: StandardizedTextStyle.bodyMedium),
           ),
         ),
       ),
     );
   }
 
-  List<Map<String, dynamic>> _generateTaskHistory(TaskModel task) {
+  List<Map<String, dynamic>> _generateTaskHistory(TaskModel task, BuildContext context) {
     return [
       {
         'action': 'Task created',
         'timestamp': task.createdAt,
-        'color': Colors.green,
+        'color': Theme.of(context).colorScheme.tertiary,
       },
       if (task.updatedAt != task.createdAt)
         {
           'action': 'Task updated',
           'timestamp': task.updatedAt,
-          'color': Colors.blue,
+          'color': Theme.of(context).colorScheme.primary,
         },
       if (task.isCompleted)
         {
           'action': 'Task completed',
           'timestamp': task.updatedAt,
-          'color': Colors.green,
+          'color': Theme.of(context).colorScheme.tertiary,
         },
     ];
   }
@@ -1087,7 +1088,7 @@ class _FullAudioPlayerState extends ConsumerState<_FullAudioPlayer> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error: $e'),
+            content: StandardizedText('Error: $e', style: StandardizedTextStyle.bodyMedium),
             behavior: SnackBarBehavior.floating,
           ),
         );

@@ -56,24 +56,25 @@ class _AISettingsPageState extends ConsumerState<AISettingsPage> {
                           color: Theme.of(context).colorScheme.primary,
                         ),
                         const SizedBox(width: 8),
-                        Text(
+                        const StandardizedText(
                           'AI Task Parsing',
-                          style: Theme.of(context).textTheme.titleLarge,
+                          style: StandardizedTextStyle.titleLarge,
                         ),
                       ],
                     ),
                     const SizedBox(height: 8),
-                    Text(
+                    const StandardizedText(
                       'Use AI to automatically extract task details from natural language',
-                      style: Theme.of(context).textTheme.bodyMedium,
+                      style: StandardizedTextStyle.bodyMedium,
                     ),
                     const SizedBox(height: 16),
                     SwitchListTile(
-                      title: const Text('Enable AI Parsing'),
-                      subtitle: Text(
+                      title: const StandardizedText('Enable AI Parsing', style: StandardizedTextStyle.titleMedium),
+                      subtitle: StandardizedText(
                         config.enabled
                             ? 'AI will help parse your tasks'
                             : 'Only local parsing will be used',
+                        style: StandardizedTextStyle.bodyMedium,
                       ),
                       value: config.enabled,
                       onChanged: (value) {
@@ -106,37 +107,37 @@ class _AISettingsPageState extends ConsumerState<AISettingsPage> {
                           color: Theme.of(context).colorScheme.primary,
                         ),
                         const SizedBox(width: 8),
-                        Text(
+                        const StandardizedText(
                           'Auto-Apply Settings',
-                          style: Theme.of(context).textTheme.titleLarge,
+                          style: StandardizedTextStyle.titleLarge,
                         ),
                       ],
                     ),
                     const SizedBox(height: 8),
-                    Text(
+                    const StandardizedText(
                       'Choose which AI suggestions to apply automatically',
-                      style: Theme.of(context).textTheme.bodyMedium,
+                      style: StandardizedTextStyle.bodyMedium,
                     ),
                     const SizedBox(height: 16),
                     SwitchListTile(
-                      title: const Text('Auto-apply Tags'),
-                      subtitle: const Text('Automatically add suggested tags to tasks'),
+                      title: const StandardizedText('Auto-apply Tags', style: StandardizedTextStyle.titleMedium),
+                      subtitle: const StandardizedText('Automatically add suggested tags to tasks', style: StandardizedTextStyle.bodyMedium),
                       value: config.autoApplyTags,
                       onChanged: config.enabled
                           ? (value) => configNotifier.setAutoApplyTags(value)
                           : null,
                     ),
                     SwitchListTile(
-                      title: const Text('Auto-apply Priority'),
-                      subtitle: const Text('Automatically set task priority from text'),
+                      title: const StandardizedText('Auto-apply Priority', style: StandardizedTextStyle.titleMedium),
+                      subtitle: const StandardizedText('Automatically set task priority from text', style: StandardizedTextStyle.bodyMedium),
                       value: config.autoApplyPriority,
                       onChanged: config.enabled
                           ? (value) => configNotifier.setAutoApplyPriority(value)
                           : null,
                     ),
                     SwitchListTile(
-                      title: const Text('Auto-apply Due Date'),
-                      subtitle: const Text('Automatically set due dates from text'),
+                      title: const StandardizedText('Auto-apply Due Date', style: StandardizedTextStyle.titleMedium),
+                      subtitle: const StandardizedText('Automatically set due dates from text', style: StandardizedTextStyle.bodyMedium),
                       value: config.autoApplyDueDate,
                       onChanged: config.enabled
                           ? (value) => configNotifier.setAutoApplyDueDate(value)
@@ -162,16 +163,16 @@ class _AISettingsPageState extends ConsumerState<AISettingsPage> {
                           color: Theme.of(context).colorScheme.primary,
                         ),
                         const SizedBox(width: 8),
-                        Text(
+                        const StandardizedText(
                           'Display Settings',
-                          style: Theme.of(context).textTheme.titleLarge,
+                          style: StandardizedTextStyle.titleLarge,
                         ),
                       ],
                     ),
                     const SizedBox(height: 16),
                     SwitchListTile(
-                      title: const Text('Show Confidence Scores'),
-                      subtitle: const Text('Display AI confidence levels for parsed tasks'),
+                      title: const StandardizedText('Show Confidence Scores', style: StandardizedTextStyle.titleMedium),
+                      subtitle: const StandardizedText('Display AI confidence levels for parsed tasks', style: StandardizedTextStyle.bodyMedium),
                       value: config.showConfidence,
                       onChanged: config.enabled
                           ? (value) => configNotifier.setShowConfidence(value)
@@ -208,24 +209,24 @@ class _AISettingsPageState extends ConsumerState<AISettingsPage> {
                           color: Theme.of(context).colorScheme.primary,
                         ),
                         const SizedBox(width: 8),
-                        Text(
+                        const StandardizedText(
                           'Help & Information',
-                          style: Theme.of(context).textTheme.titleLarge,
+                          style: StandardizedTextStyle.titleLarge,
                         ),
                       ],
                     ),
                     const SizedBox(height: 16),
                     ListTile(
                       leading: Icon(PhosphorIcons.info()),
-                      title: const Text('How AI Parsing Works'),
-                      subtitle: const Text('Learn about AI task parsing features'),
+                      title: const StandardizedText('How AI Parsing Works', style: StandardizedTextStyle.titleMedium),
+                      subtitle: const StandardizedText('Learn about AI task parsing features', style: StandardizedTextStyle.bodyMedium),
                       trailing: Icon(PhosphorIcons.caretRight()),
                       onTap: () => _showHelpDialog(context),
                     ),
                     ListTile(
                       leading: Icon(PhosphorIcons.shieldWarning()),
-                      title: const Text('Privacy Policy'),
-                      subtitle: const Text('View our AI data handling policy'),
+                      title: const StandardizedText('Privacy Policy', style: StandardizedTextStyle.titleMedium),
+                      subtitle: const StandardizedText('View our AI data handling policy', style: StandardizedTextStyle.bodyMedium),
                       trailing: Icon(PhosphorIcons.caretRight()),
                       onTap: () => _showPrivacyDialog(context),
                     ),
@@ -265,7 +266,7 @@ Examples:
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('AI Privacy Policy'),
+        title: const StandardizedText('AI Privacy Policy', style: StandardizedTextStyle.titleLarge),
         content: const SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -276,22 +277,22 @@ Examples:
                 style: StandardizedTextStyle.titleMedium,
               ),
               SizedBox(height: 16),
-              Text('Local Processing:'),
-              Text('• Local parsing keeps all data on your device'),
-              Text('• No internet connection required'),
-              Text('• Complete privacy and offline functionality'),
+              StandardizedText('Local Processing:', style: StandardizedTextStyle.titleSmall),
+              StandardizedText('• Local parsing keeps all data on your device', style: StandardizedTextStyle.bodyMedium),
+              StandardizedText('• No internet connection required', style: StandardizedTextStyle.bodyMedium),
+              StandardizedText('• Complete privacy and offline functionality', style: StandardizedTextStyle.bodyMedium),
               SizedBox(height: 16),
-              Text('Cloud AI Services:'),
-              Text('• Task text is sent to AI providers for processing'),
-              Text('• Data is not stored by AI providers after processing'),
-              Text('• Encrypted transmission for security'),
-              Text('• You can disable cloud AI anytime'),
+              StandardizedText('Cloud AI Services:', style: StandardizedTextStyle.titleSmall),
+              StandardizedText('• Task text is sent to AI providers for processing', style: StandardizedTextStyle.bodyMedium),
+              StandardizedText('• Data is not stored by AI providers after processing', style: StandardizedTextStyle.bodyMedium),
+              StandardizedText('• Encrypted transmission for security', style: StandardizedTextStyle.bodyMedium),
+              StandardizedText('• You can disable cloud AI anytime', style: StandardizedTextStyle.bodyMedium),
               SizedBox(height: 16),
-              Text('Data Control:'),
-              Text('• You choose which AI service to use'),
-              Text('• Switch to local-only processing anytime'),
-              Text('• Clear usage statistics and data'),
-              Text('• Full control over your information'),
+              StandardizedText('Data Control:', style: StandardizedTextStyle.titleSmall),
+              StandardizedText('• You choose which AI service to use', style: StandardizedTextStyle.bodyMedium),
+              StandardizedText('• Switch to local-only processing anytime', style: StandardizedTextStyle.bodyMedium),
+              StandardizedText('• Clear usage statistics and data', style: StandardizedTextStyle.bodyMedium),
+              StandardizedText('• Full control over your information', style: StandardizedTextStyle.bodyMedium),
               SizedBox(height: 16),
               StandardizedText(
                 'We recommend using local processing for sensitive tasks.',
@@ -303,7 +304,7 @@ Examples:
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Understood'),
+            child: const StandardizedText('Understood', style: StandardizedTextStyle.buttonText),
           ),
         ],
       ),

@@ -22,6 +22,8 @@ import 'standardized_spacing.dart';
 import 'status_badge_widget.dart';
 import 'subtask_progress_indicator.dart';
 import 'task_dependency_status.dart';
+import 'tag_chip.dart';
+import '../providers/tag_providers.dart';
 
 /// Advanced task card widget with comprehensive features and animations
 ///
@@ -346,6 +348,11 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with Ticker
           StandardizedGaps.vertical(SpacingSize.xs),
           _buildDescription(theme),
         ],
+        // Display tags in main content area for better visibility
+        if (widget.task.tagIds.isNotEmpty && widget.style != TaskCardStyle.compact) ...[
+          StandardizedGaps.vertical(SpacingSize.sm),
+          _buildTagsPreview(theme),
+        ],
         if (widget.customContent != null) ...[
           StandardizedGaps.vertical(SpacingSize.sm),
           widget.customContent!,
@@ -371,18 +378,21 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with Ticker
   Widget _buildCompactContent(ThemeData theme) {
     return Row(
       children: [
+        // Priority indicator first
+        if (widget.task.priority.isHighPriority) ...[
+          _buildPriorityIndicator(theme, size: 20),
+          StandardizedGaps.horizontal(SpacingSize.xs),
+        ],
         // Category icon container
-        if (widget.task.tags.isNotEmpty) ...[
+        if (widget.task.tagIds.isNotEmpty) ...[
           CategoryUtils.buildCategoryIconContainer(
-            category: widget.task.tags.first,
+            category: widget.task.tagIds.first,
             size: 24,
             theme: theme,
             iconSizeRatio: 0.5,
           ),
           StandardizedGaps.horizontal(SpacingSize.xs),
         ],
-        _buildPriorityIndicator(theme, size: 16),
-        StandardizedGaps.horizontal(SpacingSize.sm),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -458,8 +468,6 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with Ticker
           ),
           StandardizedGaps.horizontal(SpacingSize.xs),
         ],
-        _buildPriorityIndicator(theme),
-        StandardizedGaps.horizontal(SpacingSize.sm),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -734,7 +742,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with Ticker
           ),
         ] else
           const Spacer(),
-        if (widget.task.tags.isNotEmpty) ...[
+        if (widget.task.tagIds.isNotEmpty) ...[
           StandardizedGaps.horizontal(SpacingSize.xs),
           _buildTagsPreview(theme),
         ],
@@ -751,53 +759,26 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with Ticker
   }
 
   Widget _buildTagsPreview(ThemeData theme) {
-    final tags = widget.task.tags;
-    const maxTags = 3; // Show more icons since they're more compact
-
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        ...tags.take(maxTags).map((tag) => Padding(
-              padding: StandardizedSpacing.paddingOnly(right: SpacingSize.xs),
-              child: Container(
-                width: 28,
-                height: 28,
-                decoration: BoxDecoration(
-                  color: CategoryUtils.getCategoryColor(tag, theme: theme).withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: CategoryUtils.getCategoryColor(tag, theme: theme).withValues(alpha: 0.3),
-                    width: 0.5,
-                  ),
-                ),
-                child: Icon(
-                  CategoryUtils.getCategoryIcon(tag),
-                  size: 14,
-                  color: CategoryUtils.getCategoryColor(tag, theme: theme),
-                ),
-              ),
-            )),
-        if (tags.length > maxTags)
-          Container(
-            width: 28,
-            height: 28,
-            decoration: BoxDecoration(
-              color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: theme.colorScheme.outline.withValues(alpha: 0.3),
-                width: 0.5,
-              ),
-            ),
-            child: Center(
-              child: StandardizedText(
-                '+${tags.length - maxTags}',
-                style: StandardizedTextStyle.labelMedium,
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ),
-      ],
+    final tagIds = widget.task.tagIds;
+    if (tagIds.isEmpty) return const SizedBox.shrink();
+    
+    // Use the proper tag provider to get real tag entities
+    final tagsProvider = ref.watch(tagsByIdsProvider(tagIds));
+    
+    return tagsProvider.when(
+      data: (tags) => TagChipList(
+        tags: tags,
+        chipSize: TagChipSize.small,
+        maxChips: 3,
+        spacing: 3.0, // 3px spacing as requested
+        onTagTap: widget.onTap != null ? (_) => widget.onTap!() : null,
+      ),
+      loading: () => const SizedBox(
+        height: 20,
+        width: 60,
+        child: Center(child: CircularProgressIndicator(strokeWidth: 1)),
+      ),
+      error: (_, __) => const SizedBox.shrink(), // Hide on error
     );
   }
 

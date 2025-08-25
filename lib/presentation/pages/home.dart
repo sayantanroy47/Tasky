@@ -7,14 +7,18 @@ import '../../core/design_system/design_tokens.dart';
 import '../../core/providers/core_providers.dart';
 import '../../core/routing/app_router.dart';
 import '../../core/theme/typography_constants.dart';
+import '../../core/utils/category_utils.dart';
+import '../../domain/entities/project.dart';
 import '../../domain/entities/task_audio_extensions.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
 import '../../services/ui/slidable_action_service.dart';
 import '../../services/ui/slidable_feedback_service.dart';
 import '../../services/ui/slidable_theme_service.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import '../../services/welcome_message_service.dart';
 import '../providers/profile_providers.dart';
+import '../providers/project_providers.dart';
 import '../providers/task_provider.dart';
 import '../providers/task_providers.dart';
 import '../widgets/audio_indicator_widget.dart';
@@ -27,7 +31,9 @@ import '../widgets/standardized_card.dart';
 import '../widgets/standardized_error_states.dart';
 import '../widgets/standardized_icons.dart' show StandardizedIcon, StandardizedIconSize, StandardizedIconStyle;
 import '../widgets/standardized_spacing.dart';
+import '../widgets/standardized_colors.dart';
 import '../widgets/standardized_text.dart';
+import 'analytics_page.dart';
 
 /// Futuristic Material 3 Home Page
 class HomePage extends ConsumerStatefulWidget {
@@ -37,7 +43,10 @@ class HomePage extends ConsumerStatefulWidget {
   ConsumerState<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends ConsumerState<HomePage> {
+class _HomePageState extends ConsumerState<HomePage> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  int _currentTabIndex = 0;
+
   late ScrollController _scrollController;
 
   // Cache welcome data to prevent rebuild storms
@@ -49,11 +58,20 @@ class _HomePageState extends ConsumerState<HomePage> {
   void initState() {
     super.initState();
     _scrollController = ScrollController();
+    _tabController = TabController(length: 3, vsync: this);
+    _tabController.addListener(() {
+      if (_tabController.indexIsChanging) {
+        setState(() {
+          _currentTabIndex = _tabController.index;
+        });
+      }
+    });
   }
 
   @override
   void dispose() {
     _scrollController.dispose();
+    _tabController.dispose();
     super.dispose();
   }
 
@@ -314,23 +332,52 @@ class _HomePageState extends ConsumerState<HomePage> {
     showDialog(
       context: context,
       builder: (context) => Dialog(
-        backgroundColor: Colors.transparent, // TODO: Use context.colors.backgroundTransparent
+        backgroundColor: Colors.transparent,
         child: GlassmorphismContainer(
           level: GlassLevel.floating,
-          borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge), // 16.0 - Fixed border radius hierarchy
+          borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
           padding: StandardizedSpacing.padding(SpacingSize.lg),
           child: ConstrainedBox(
             constraints: const BoxConstraints(
               maxWidth: double.maxFinite,
-              maxHeight: 400,
+              maxHeight: 500, // Increased height for more content
             ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const StandardizedText(
-                  'Task Insights',
-                  style: StandardizedTextStyle.headlineSmall,
+                // Header with title and X button
+                Row(
+                  children: [
+                    const Flexible(
+                      child: StandardizedText(
+                        'Insights',
+                        style: StandardizedTextStyle.headlineSmall,
+                      ),
+                    ),
+                    const Spacer(),
+                    // X button in top right
+                    Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () => Navigator.of(context).pop(),
+                        borderRadius: BorderRadius.circular(20),
+                        child: Container(
+                          width: 32,
+                          height: 32,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Icon(
+                            PhosphorIcons.x(),
+                            size: 18,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 StandardizedGaps.md,
                 Expanded(
@@ -352,6 +399,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
+                                // Task Statistics Section
                                 _buildInsightRow('Total Tasks', '${tasks.length}', PhosphorIcons.list()),
                                 _buildInsightRow('Completed', '$completedTasks', PhosphorIcons.checkCircle(),
                                     color: Theme.of(context).colorScheme.primary),
@@ -361,6 +409,60 @@ class _HomePageState extends ConsumerState<HomePage> {
                                     color: Theme.of(context).colorScheme.error),
                                 _buildInsightRow('Overdue', '$overdueTasks', PhosphorIcons.warning(),
                                     color: Theme.of(context).colorScheme.error),
+                                
+                                StandardizedGaps.lg,
+                                
+                                // Quick Actions Section
+                                Row(
+                                  children: [
+                                    // View All Tasks Button
+                                    Expanded(
+                                      child: EnhancedGlassButton(
+                                        height: 48, // Standardized button height
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                          AppRouter.navigateToRoute(context, AppRouter.allTasks);
+                                        },
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(PhosphorIcons.list(), size: 16),
+                                            const SizedBox(width: 8),
+                                            const Flexible(
+                                              child: StandardizedText('View All Tasks', style: StandardizedTextStyle.buttonText),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    // Analytics Button
+                                    Expanded(
+                                      child: EnhancedGlassButton.secondary(
+                                        height: 48, // Standardized button height
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                          // Navigate to analytics page
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                              builder: (_) => const AnalyticsPage(),
+                                            ),
+                                          );
+                                        },
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(PhosphorIcons.chartBar(), size: 16),
+                                            const SizedBox(width: 8),
+                                            const Flexible(
+                                              child: StandardizedText('Analytics', style: StandardizedTextStyle.buttonText),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ],
                             ),
                           );
@@ -370,14 +472,6 @@ class _HomePageState extends ConsumerState<HomePage> {
                             Center(child: StandardizedText('Error: $error', style: StandardizedTextStyle.bodyMedium)),
                       );
                     },
-                  ),
-                ),
-                StandardizedGaps.md,
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: EnhancedGlassButton.secondary(
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: const StandardizedText('Close', style: StandardizedTextStyle.buttonText),
                   ),
                 ),
               ],
@@ -572,7 +666,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                     icon: PhosphorIcons.checkCircle(),
                     label: 'Done',
                     count: completedToday,
-                    color: Colors.green, // TODO: Replace with context.colors.success
+                    color: context.successColor,
                   ),
                 ],
               ),
@@ -748,10 +842,10 @@ class _HomePageState extends ConsumerState<HomePage> {
                       }
                     },
                     glassTint: Theme.of(context).colorScheme.error,
-                    child: const StandardizedText(
+                    child: StandardizedText(
                       'Delete',
                       style: StandardizedTextStyle.buttonText,
-                      color: Colors.white, // TODO: Use semantic on-color
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                 ],
@@ -783,18 +877,31 @@ Shared from Tasky - Task Management App
     );
   }
 
+  /// Build current tab view efficiently (only renders active tab)
+  Widget _buildCurrentTabView(BuildContext context, ThemeData theme) {
+    switch (_currentTabIndex) {
+      case 0:
+        return _buildTodayTasksList(context, theme);
+      case 1:
+        return _buildProjectsList(context, theme);
+      case 2:
+        return _buildPlannedTasksList(context, theme);
+      default:
+        return _buildTodayTasksList(context, theme);
+    }
+  }
+
   /// Sophisticated task tabs with text-only elegance and positive psychology
   Widget _buildTaskTabsSection(BuildContext context, ThemeData theme) {
-    return DefaultTabController(
-      length: 3,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Sophisticated tab bar with elegant styling
-          Container(
-            height: 56, // Increased for touch accessibility
-            padding: StandardizedSpacing.padding(SpacingSize.xs),
-            child: TabBar(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Sophisticated tab bar with elegant styling
+        Container(
+          height: 56, // Increased for touch accessibility
+          padding: StandardizedSpacing.padding(SpacingSize.xs),
+          child: TabBar(
+              controller: _tabController,
               // Sophisticated gradient indicator for premium feel
               indicator: BoxDecoration(
                 borderRadius:
@@ -838,10 +945,10 @@ Shared from Tasky - Task Management App
                   child: const Tab(text: 'Today'),
                 ),
                 Semantics(
-                  label: 'Focus tasks tab', // Positive psychology
-                  hint: 'View tasks requiring focus',
+                  label: 'Projects tab',
+                  hint: 'View active projects',
                   button: true,
-                  child: const Tab(text: 'Focus'), // Renamed from 'Overdue' for positive psychology
+                  child: const Tab(text: 'Projects'),
                 ),
                 Semantics(
                   label: 'Planned tasks tab',
@@ -849,27 +956,20 @@ Shared from Tasky - Task Management App
                   button: true,
                   child: const Tab(text: 'Planned'), // Renamed from 'Future' for clarity
                 ),
-              ],
-            ),
+            ],
           ),
-          StandardizedGaps.vertical(SpacingSize.md),
+        ),
+        StandardizedGaps.vertical(SpacingSize.md),
 
-          // Task content prioritized - increased from 65% to 75% of screen height
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.75, // More space for tasks
-            child: TabBarView(
-              children: [
-                _buildTodayTasksList(context, theme),
-                _buildFocusTasksList(context, theme), // Renamed for positive psychology
-                _buildPlannedTasksList(context, theme), // Renamed for clarity
-              ],
-            ),
-          ),
+        // Task content prioritized - increased from 65% to 75% of screen height
+        SizedBox(
+          height: MediaQuery.of(context).size.height * 0.75, // More space for tasks
+          child: _buildCurrentTabView(context, theme),
+        ),
 
-          // Enhanced bottom padding to prevent FAB overlap with larger FAB
-          const SizedBox(height: 120),
-        ],
-      ),
+        // Enhanced bottom padding to prevent FAB overlap with larger FAB
+        const SizedBox(height: 120),
+      ],
     );
   }
 
@@ -906,38 +1006,34 @@ Shared from Tasky - Task Management App
     );
   }
 
-  /// Build focus tasks list (renamed for positive psychology)
-  Widget _buildFocusTasksList(BuildContext context, ThemeData theme) {
-    final overdueTasks = ref.watch(overdueTasksProvider);
+  /// Build projects list with compact project cards
+  Widget _buildProjectsList(BuildContext context, ThemeData theme) {
+    final activeProjects = ref.watch(activeProjectsProvider);
 
-    return overdueTasks.when(
-      data: (tasks) {
-        if (tasks.isEmpty) {
-          return _buildEmptyTasksList(theme, 'No overdue tasks', PhosphorIcons.checkCircle());
+    return activeProjects.when(
+      data: (projects) {
+        if (projects.isEmpty) {
+          return _buildEmptyProjectsList(theme);
         }
 
-        // Sort by priority and how overdue they are
-        tasks.sort((a, b) {
-          final priorityCompare = b.priority.index.compareTo(a.priority.index);
-          if (priorityCompare != 0) return priorityCompare;
-
-          if (a.dueDate == null && b.dueDate == null) return 0;
-          if (a.dueDate == null) return 1;
-          if (b.dueDate == null) return -1;
-          return a.dueDate!.compareTo(b.dueDate!); // Most overdue first
+        // Sort by creation date (newest first) and task count
+        projects.sort((a, b) {
+          final taskCountCompare = b.taskCount.compareTo(a.taskCount);
+          if (taskCountCompare != 0) return taskCountCompare;
+          return b.createdAt.compareTo(a.createdAt);
         });
 
         return ListView.builder(
           padding: const EdgeInsets.only(bottom: 80), // TODO: Use SpacingTokens for FAB clearance
-          itemCount: tasks.length,
+          itemCount: projects.length,
           itemBuilder: (context, index) {
-            final task = tasks[index];
-            return _buildCompactTaskCard(task, theme, isOverdue: true);
+            final project = projects[index];
+            return _buildCompactProjectCard(project, theme);
           },
         );
       },
-      loading: () => _buildTasksLoadingState(theme),
-      error: (error, _) => _buildTasksErrorState(theme, error.toString()),
+      loading: () => _buildProjectsLoadingState(theme),
+      error: (error, _) => _buildProjectsErrorState(theme, error.toString()),
     );
   }
 
@@ -1026,6 +1122,25 @@ Shared from Tasky - Task Management App
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
+                // Category icon container
+                if (task.tags.isNotEmpty) ...[
+                  Builder(builder: (context) {
+                    debugPrint('🎨 Showing category icon for task "${task.title}" with tags: ${task.tags}');
+                    return const SizedBox.shrink();
+                  }),
+                  CategoryUtils.buildCategoryIconContainer(
+                    category: task.tags.first,
+                    size: 32,
+                    theme: theme,
+                    iconSizeRatio: 0.5,
+                  ),
+                  const SizedBox(width: SpacingTokens.phi1), // Golden ratio spacing
+                ] else ...[
+                  Builder(builder: (context) {
+                    debugPrint('❌ No category icon for task "${task.title}" - tags: ${task.tags}');
+                    return const SizedBox.shrink();
+                  }),
+                ],
                 // Elegant vertical accent bar - priority indicator
                 Container(
                   width: 4,
@@ -1037,95 +1152,38 @@ Shared from Tasky - Task Management App
                   ),
                 ),
                 const SizedBox(width: SpacingTokens.phi1), // Golden ratio spacing
-                // Sophisticated priority icon
-                Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                    color: task.priority.color.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(
-                        TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
-                    border: Border.all(
-                      color: task.priority.color.withValues(alpha: 0.2),
-                      width: 0.5,
-                    ),
-                  ),
-                  child: Icon(
-                    task.priority == TaskPriority.urgent
-                        ? PhosphorIcons.arrowUp()
-                        : task.priority == TaskPriority.high
-                            ? PhosphorIcons.caretUp()
-                            : task.priority == TaskPriority.medium
-                                ? PhosphorIcons.equals()
-                                : PhosphorIcons.caretDown(),
-                    size: 16,
-                    color: task.priority.color,
-                  ),
-                ),
-                const SizedBox(width: SpacingTokens.phi1), // Golden ratio spacing
               ],
             ),
 
             // Title and description in the middle (takes up most space)
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Task title with audio indicator
-                  Row(
-                    children: [
-                      Expanded(
-                        child: StandardizedText(
-                          task.title,
-                          style: StandardizedTextStyle.titleMedium,
-                          color: theme.colorScheme.onSurface,
-                          decoration: task.status == TaskStatus.completed ? TextDecoration.lineThrough : null,
-                          lineHeight: 1.2,
-                          letterSpacing: 0.1,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: StandardizedText(
+                        task.title,
+                        style: StandardizedTextStyle.titleMedium,
+                        color: theme.colorScheme.onSurface,
+                        decoration: task.status == TaskStatus.completed ? TextDecoration.lineThrough : null,
+                        lineHeight: 1.2,
+                        letterSpacing: 0.1,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      // Sophisticated audio indicator for voice tasks
-                      if (task.hasVoiceMetadata) ...[
-                        StandardizedGaps.hXs,
-                        AudioIndicatorWidget(
-                          task: task,
-                          size: 20,
-                          mode: AudioIndicatorMode.playButton,
-                        ),
-                      ],
-                    ],
-                  ),
-
-                  const SizedBox(height: 2),
-
-                  // Elegant task metadata - priority only for sophisticated simplicity
-                  if (task.priority != TaskPriority.medium) ...[
-                    Row(
-                      children: [
-                        Icon(
-                          task.priority == TaskPriority.urgent ? PhosphorIcons.arrowUp() : PhosphorIcons.caretUp(),
-                          size: 10,
-                          color: task.priority == TaskPriority.urgent
-                              ? theme.colorScheme.error
-                              : theme.colorScheme.secondary,
-                        ),
-                        const SizedBox(width: 3), // Custom 3px for icon alignment
-                        StandardizedText(
-                          task.priority.name.toUpperCase(),
-                          style: StandardizedTextStyle.labelSmall,
-                          color: task.priority == TaskPriority.urgent
-                              ? theme.colorScheme.error
-                              : theme.colorScheme.secondary,
-                          letterSpacing: 0.3,
-                        ),
-                      ],
                     ),
+                    // Sophisticated audio indicator for voice tasks
+                    if (task.hasVoiceMetadata) ...[
+                      StandardizedGaps.hXs,
+                      AudioIndicatorWidget(
+                        task: task,
+                        size: 20,
+                        mode: AudioIndicatorMode.playButton,
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
             ),
 
@@ -1136,17 +1194,17 @@ Shared from Tasky - Task Management App
                 width: 20,
                 height: 20,
                 decoration: BoxDecoration(
-                  color: Colors.green.withValues(alpha: 0.1),
+                  color: context.colors.withSemanticOpacity(context.successColor, SemanticOpacity.subtle),
                   borderRadius: StandardizedBorderRadius.sm,
                   border: Border.all(
-                    color: Colors.green.withValues(alpha: 0.3),
+                    color: context.colors.withSemanticOpacity(context.successColor, SemanticOpacity.light),
                     width: 0.5,
                   ),
                 ),
                 child: Icon(
                   PhosphorIcons.check(),
                   size: 12,
-                  color: Colors.green, // TODO: Replace with context.colors.success
+                  color: context.successColor,
                 ),
               ),
             ],
@@ -1197,6 +1255,229 @@ Shared from Tasky - Task Management App
   void _confirmDeleteTask(TaskModel task) {
     SlidableFeedbackService.provideFeedback(SlidableActionType.destructive);
     _deleteTask(task);
+  }
+
+  /// Sophisticated project card with taller height and category-focused layout
+  Widget _buildCompactProjectCard(Project project, ThemeData theme) {
+    final projectStatsAsync = ref.watch(projectStatsProvider(project.id));
+
+    // Project card content with increased height
+    final cardContent = SizedBox(
+      height: SpacingTokens.taskCardHeight * 1.4, // 40% taller than task cards
+      child: StandardizedCard(
+        style: StandardizedCardStyle.tertiaryContainer,
+        onTap: () => _navigateToProjectDetail(project),
+        onLongPress: () => _showProjectContextMenu(context, project),
+        margin: EdgeInsets.zero, // No margin - handled by parent
+        padding: const EdgeInsets.all(SpacingTokens.taskCardPadding),
+        child: Row(
+          children: [
+            // Category icon on the left with color indicator
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Project color indicator
+                Container(
+                  width: 4,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Color(int.parse(project.color.replaceFirst('#', '0xFF'))),
+                    borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall),
+                  ),
+                ),
+                const SizedBox(width: SpacingTokens.phi1),
+                // Category icon container
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Color(int.parse(project.color.replaceFirst('#', '0xFF'))).withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                    border: Border.all(
+                      color: Color(int.parse(project.color.replaceFirst('#', '0xFF'))).withValues(alpha: 0.3),
+                      width: 0.5,
+                    ),
+                  ),
+                  child: Icon(
+                    PhosphorIcons.folder(), // Default project icon
+                    size: 20,
+                    color: Color(int.parse(project.color.replaceFirst('#', '0xFF'))),
+                  ),
+                ),
+                const SizedBox(width: SpacingTokens.phi1),
+              ],
+            ),
+
+            // Project name and details in the middle (expanded layout)
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Project name
+                  StandardizedText(
+                    project.name,
+                    style: StandardizedTextStyle.titleMedium,
+                    color: theme.colorScheme.onSurface,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  // Task count and progress
+                  Row(
+                    children: [
+                      projectStatsAsync.when(
+                        data: (stats) => Expanded(
+                          child: StandardizedText(
+                            '${stats.completedTasks}/${stats.totalTasks} tasks',
+                            style: StandardizedTextStyle.bodySmall,
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                        loading: () => Expanded(
+                          child: StandardizedText(
+                            'Loading...',
+                            style: StandardizedTextStyle.bodySmall,
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                        error: (_, __) => Expanded(
+                          child: StandardizedText(
+                            'Error loading stats',
+                            style: StandardizedTextStyle.bodySmall,
+                            color: theme.colorScheme.error,
+                          ),
+                        ),
+                      ),
+                      // Progress percentage badge on the right side of task info
+                      projectStatsAsync.when(
+                        data: (stats) {
+                          final progressPercentage = stats.totalTasks > 0 
+                              ? (stats.completedTasks / stats.totalTasks) 
+                              : 0.0;
+                          return Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: Color(int.parse(project.color.replaceFirst('#', '0xFF'))).withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall),
+                            ),
+                            child: StandardizedText(
+                              '${(progressPercentage * 100).round()}%',
+                              style: StandardizedTextStyle.labelSmall,
+                              color: Color(int.parse(project.color.replaceFirst('#', '0xFF'))),
+                            ),
+                          );
+                        },
+                        loading: () => Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+                            borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall),
+                          ),
+                          child: StandardizedText(
+                            '...',
+                            style: StandardizedTextStyle.labelSmall,
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                        error: (_, __) => Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.errorContainer.withValues(alpha: 0.3),
+                            borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall),
+                          ),
+                          child: Icon(
+                            PhosphorIcons.warning(),
+                            size: 12,
+                            color: theme.colorScheme.error,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  // Progress bar below text
+                  projectStatsAsync.when(
+                    data: (stats) {
+                      final progressPercentage = stats.totalTasks > 0 
+                          ? (stats.completedTasks / stats.totalTasks) 
+                          : 0.0;
+                      return LinearProgressIndicator(
+                        value: progressPercentage,
+                        backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Color(int.parse(project.color.replaceFirst('#', '0xFF'))),
+                        ),
+                        minHeight: 3,
+                      );
+                    },
+                    loading: () => LinearProgressIndicator(
+                      backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        theme.colorScheme.primary.withValues(alpha: 0.3),
+                      ),
+                      minHeight: 3,
+                    ),
+                    error: (_, __) => Container(
+                      height: 3,
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.errorContainer,
+                        borderRadius: BorderRadius.circular(1.5),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Navigation arrow on the right
+            Container(
+              width: 24,
+              height: 24,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
+                borderRadius: StandardizedBorderRadius.sm,
+              ),
+              child: Icon(
+                PhosphorIcons.arrowRight(),
+                size: 14,
+                color: theme.colorScheme.primary,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    // Wrap with slidable for project actions
+    return Container(
+      margin: const EdgeInsets.only(bottom: SpacingTokens.taskCardMargin),
+      child: SlidableThemeService.createBalancedCompactCardSlidable(
+        key: ValueKey('compact-project-${project.id}'),
+        groupTag: 'home-compact-projects',
+        startActions: [
+          SlidableAction(
+            onPressed: (context) => _quickEditProject(project),
+            backgroundColor: theme.colorScheme.primary,
+            foregroundColor: theme.colorScheme.onPrimary,
+            icon: PhosphorIcons.pencil(),
+            label: 'Edit',
+          ),
+        ],
+        endActions: [
+          SlidableAction(
+            onPressed: (context) => _openProjectKanban(project),
+            backgroundColor: theme.colorScheme.tertiary,
+            foregroundColor: theme.colorScheme.onTertiary,
+            icon: PhosphorIcons.kanban(),
+            label: 'Kanban',
+          ),
+        ],
+        enableFastSwipe: false, // Disable fast swipe for projects
+        context: context,
+        child: cardContent,
+      ),
+    );
   }
 
   /// Build progress indicator for task cards
@@ -1252,6 +1533,146 @@ Shared from Tasky - Task Management App
           const SizedBox(height: 12),
           StandardizedText(
             'Error loading tasks',
+            style: StandardizedTextStyle.bodyLarge,
+            color: theme.colorScheme.error,
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Project helper methods
+
+  void _navigateToProjectDetail(Project project) {
+    AppRouter.navigateToProjectDetail(context, project.id);
+  }
+
+  void _openProjectKanban(Project project) {
+    SlidableFeedbackService.provideFeedback(SlidableActionType.neutral);
+    // Navigate to project detail with Kanban view mode
+    AppRouter.navigateToProjectDetail(context, project.id);
+    // TODO: Add query parameter or navigation argument to open Kanban view specifically
+  }
+
+  void _quickEditProject(Project project) {
+    SlidableFeedbackService.provideFeedback(SlidableActionType.edit);
+    AppRouter.navigateToProjectDetail(context, project.id);
+  }
+
+  void _showProjectContextMenu(BuildContext context, Project project) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) => Container(
+        padding: const EdgeInsets.symmetric(vertical: SpacingTokens.md),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            GlassmorphismContainer(
+              level: GlassLevel.interactive,
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall),
+              child: const SizedBox(width: 40, height: 4),
+            ),
+            StandardizedGaps.md,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: SpacingTokens.md),
+              child: StandardizedText(
+                project.name,
+                style: StandardizedTextStyle.titleMedium,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            StandardizedGaps.md,
+            ListTile(
+              leading: Icon(PhosphorIcons.folder()),
+              title: const StandardizedText('View Project', style: StandardizedTextStyle.bodyMedium),
+              onTap: () {
+                Navigator.of(context).pop();
+                _navigateToProjectDetail(project);
+              },
+            ),
+            ListTile(
+              leading: Icon(PhosphorIcons.kanban()),
+              title: const StandardizedText('Kanban Board', style: StandardizedTextStyle.bodyMedium),
+              onTap: () {
+                Navigator.of(context).pop();
+                _openProjectKanban(project);
+              },
+            ),
+            ListTile(
+              leading: Icon(PhosphorIcons.pencil()),
+              title: const StandardizedText('Edit Project', style: StandardizedTextStyle.bodyMedium),
+              onTap: () {
+                Navigator.of(context).pop();
+                _quickEditProject(project);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Build empty projects list state
+  Widget _buildEmptyProjectsList(ThemeData theme) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          StandardizedIcon(
+            PhosphorIcons.folder(),
+            size: StandardizedIconSize.xxxl,
+            color: theme.colorScheme.outline,
+          ),
+          const SizedBox(height: 12),
+          StandardizedText(
+            'No active projects',
+            style: StandardizedTextStyle.bodyLarge,
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+          const SizedBox(height: 8),
+          StandardizedText(
+            'Create a project to organize your tasks',
+            style: StandardizedTextStyle.bodySmall,
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Build projects loading state
+  Widget _buildProjectsLoadingState(ThemeData theme) {
+    return ListView.builder(
+      itemCount: 3,
+      itemBuilder: (context, index) => GlassmorphismContainer(
+        level: GlassLevel.background,
+        height: 80,
+        margin: const EdgeInsets.only(bottom: 8),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+        glassTint: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+        child: Container(),
+      ),
+    );
+  }
+
+  /// Build projects error state
+  Widget _buildProjectsErrorState(ThemeData theme, String error) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            PhosphorIcons.warningCircle(),
+            size: 48,
+            color: theme.colorScheme.error,
+          ),
+          const SizedBox(height: 12),
+          StandardizedText(
+            'Error loading projects',
             style: StandardizedTextStyle.bodyLarge,
             color: theme.colorScheme.error,
           ),

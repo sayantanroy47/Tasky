@@ -6,7 +6,7 @@ import 'package:task_tracker_app/services/database/database.dart';
 import 'package:task_tracker_app/services/database/daos/task_dao.dart';
 import 'package:task_tracker_app/domain/entities/task_model.dart';
 import 'package:task_tracker_app/domain/entities/task_enums.dart';
-import 'package:task_tracker_app/domain/entities/subtask.dart';
+import 'package:task_tracker_app/domain/entities/subtask.dart' as domain_subtask;
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -53,8 +53,8 @@ void main() {
           tags: const ['complex', 'priority', 'urgent'],
           metadata: const {'complexity': 'high', 'estimatedHours': 8},
         ).copyWith(subTasks: [
-          SubTask.create(title: 'Subtask 1', taskId: ''),
-          SubTask.create(title: 'Subtask 2', taskId: ''),
+          domain_subtask.SubTask.create(title: 'Subtask 1', taskId: ''),
+          domain_subtask.SubTask.create(title: 'Subtask 2', taskId: ''),
         ]);
 
         await taskDao.createTask(complexTask);
@@ -140,7 +140,7 @@ void main() {
 
       test('should get tasks by status', () async {
         final pendingTasks = await taskDao.getTasksByStatus(TaskStatus.pending);
-        expect(todoTasks, hasLength(1));
+        expect(pendingTasks, hasLength(1));
         
         final completedTasks = await taskDao.getTasksByStatus(TaskStatus.completed);
         expect(completedTasks, hasLength(1));
@@ -212,6 +212,7 @@ void main() {
       });
 
       test('should update task status via updateTask', () async {
+        final updatedTask = testTask.copyWith(status: TaskStatus.completed);
         await taskDao.updateTask(updatedTask);
         
         final retrieved = await taskDao.getTaskById(testTask.id);
@@ -331,21 +332,18 @@ void main() {
         await taskDao.createTask(TaskModel.create(
           title: 'Urgent Task',
           priority: TaskPriority.urgent,
-          createdAt: now.subtract(const Duration(days: 3)),
           dueDate: now.add(const Duration(hours: 2)),
         ));
         
         await taskDao.createTask(TaskModel.create(
           title: 'Low Priority Task',
           priority: TaskPriority.low,
-          createdAt: now.subtract(const Duration(days: 1)),
           dueDate: now.add(const Duration(days: 5)),
         ));
         
         await taskDao.createTask(TaskModel.create(
           title: 'Medium Priority Task',
           priority: TaskPriority.medium,
-          createdAt: now.subtract(const Duration(days: 2)),
           dueDate: now.add(const Duration(days: 2)),
         ));
       });

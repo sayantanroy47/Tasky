@@ -93,6 +93,11 @@ enum TaskStatus {
     return this == TaskStatus.completed || this == TaskStatus.cancelled;
   }
 
+  /// Check if task is in progress
+  bool get isInProgress {
+    return this == TaskStatus.inProgress;
+  }
+
   /// Check if task is completed
   bool get isCompleted {
     return this == TaskStatus.completed;
@@ -101,11 +106,6 @@ enum TaskStatus {
   /// Check if task is pending
   bool get isPending {
     return this == TaskStatus.pending;
-  }
-
-  /// Check if task is in progress
-  bool get isInProgress {
-    return this == TaskStatus.inProgress;
   }
 
   /// Check if task is cancelled

@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/task_model.dart';
+import '../../domain/entities/tag.dart';
 import '../../domain/entities/recurrence_pattern.dart';
 import '../../domain/models/enums.dart';
 import '../providers/task_provider.dart' show taskOperationsProvider;
 import '../providers/project_providers.dart';
+import '../../core/providers/core_providers.dart';
 import '../../core/theme/typography_constants.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'glassmorphism_container.dart';
 import '../../core/design_system/design_tokens.dart';
 import 'standardized_text.dart';
-import 'standardized_colors.dart';
 import 'standardized_spacing.dart';
 import 'standardized_form_widgets.dart';
 import 'standardized_navigation.dart';
-import '../../core/validation/form_validators.dart';
+import '../providers/tag_providers.dart';
+import 'tag_selection_widget.dart';
 
 /// Category option for task categorization
 class CategoryOption {
@@ -79,7 +81,8 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
   RecurrencePattern? _recurrencePattern;
   String? _audioFilePath;
   String? _creationMode;
-  List<String> _tags = [];
+  List<Tag> _selectedTags = [];
+  List<String> _tags = []; // Keep category-style tags separate
   String _notes = '';
   bool _isLoading = false;
   Set<String> _selectedCategories = {};
@@ -106,6 +109,10 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
         _selectedCategories = _tags.where((tag) => 
           _predefinedCategories.any((cat) => cat.id == tag.toLowerCase())
         ).map((tag) => tag.toLowerCase()).toSet();
+      }
+      // Load existing tags asynchronously for editing
+      if (task.tagIds.isNotEmpty) {
+        _loadExistingTags(task.tagIds);
       }
     } else if (widget.prePopulatedData != null) {
       final data = widget.prePopulatedData!;
@@ -147,29 +154,103 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
     _notesController.dispose();
     super.dispose();
   }
+
+  /// Load existing tags when editing a task
+  Future<void> _loadExistingTags(List<String> tagIds) async {
+    if (!mounted) return;
+    
+    try {
+      final tagRepository = ref.read(tagRepositoryProvider);
+      final List<Tag> existingTags = [];
+      
+      for (final tagId in tagIds) {
+        final tag = await tagRepository.getTagById(tagId);
+        if (tag != null) {
+          existingTags.add(tag);
+        }
+      }
+      
+      if (mounted) {
+        setState(() {
+          _selectedTags = existingTags;
+        });
+      }
+    } catch (e) {
+      // Handle error silently - tags will just remain empty
+      print('Error loading existing tags: $e');
+    }
+  }
   
   @override
   Widget build(BuildContext context) {
-    return ThemeAwareTaskDialog(
-      title: _getDialogTitle(),
-      subtitle: widget.editingTask != null ? 'Update task details' : 'Add a new task to your list',
-      icon: widget.editingTask != null ? PhosphorIcons.pencil() : PhosphorIcons.plus(),
-      onBack: () => context.popRoute(),
-      actions: [
-        ThemeAwareButton(
-          label: 'Cancel',
-          onPressed: () => context.popRoute(),
-          icon: PhosphorIcons.x(),
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      child: Container(
+        padding: const EdgeInsets.all(24),
+        margin: const EdgeInsets.symmetric(horizontal: 16),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(16),
         ),
-        ThemeAwareButton(
-          label: widget.editingTask != null ? 'Update Task' : 'Save Task',
-          onPressed: _isLoading ? null : _saveTask,
-          icon: widget.editingTask != null ? PhosphorIcons.floppyDisk() : PhosphorIcons.plus(),
-          isPrimary: true,
-          isLoading: _isLoading,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header
+            Row(
+              children: [
+                Icon(
+                  widget.editingTask != null ? PhosphorIcons.pencil() : PhosphorIcons.plus(),
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _getDialogTitle(),
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      Text(
+                        widget.editingTask != null ? 'Update task details' : 'Add a new task to your list',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            // Form
+            Flexible(child: _buildTaskForm(context)),
+            const SizedBox(height: 24),
+            // Actions
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Cancel'),
+                ),
+                const SizedBox(width: 8),
+                ElevatedButton(
+                  onPressed: _isLoading ? null : _saveTask,
+                  child: _isLoading 
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : Text(widget.editingTask != null ? 'Update Task' : 'Save Task'),
+                ),
+              ],
+            ),
+          ],
         ),
-      ],
-      child: _buildTaskForm(context),
+      ),
     );
   }
 
@@ -179,86 +260,89 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Audio attachment section (if present)
-                if (_audioFilePath != null) ...[
-                  _buildAudioSection(theme),
-                  StandardizedGaps.md,
-                ],
-                
-                // Creation mode indicator
-                if (_creationMode != null) ...[
-                  _buildCreationModeIndicator(theme),
-                  StandardizedGaps.md,
-                ],
-                
-                // Title field with validation
-                StandardizedFormField(
-                  label: 'Task Title',
-                  hint: 'Enter a clear, actionable task title...',
-                  helperText: 'Required field',
-                  controller: _titleController,
-                  isRequired: true,
-                  autofocus: _titleController.text.isEmpty,
-                  textCapitalization: TextCapitalization.sentences,
-                  prefixIcon: Icon(PhosphorIcons.checkSquare()),
-                  validator: FieldValidator.compose([
-                    FieldValidator.required('Please enter a task title'),
-                    FieldValidator.minLength(3, 'Title must be at least 3 characters'),
-                  ]),
-                ),
-                StandardizedGaps.vertical(SpacingSize.phi2),
-                
-                // Description field
-                StandardizedFormField(
-                  label: 'Description',
-                  hint: 'Add details, context, or notes about this task...',
-                  controller: _descriptionController,
-                  isMultiline: true,
-                  maxLines: 4,
-                  textCapitalization: TextCapitalization.sentences,
-                  prefixIcon: Icon(PhosphorIcons.fileText()),
-                ),
-                StandardizedGaps.vertical(SpacingSize.phi2),
-                
-                // Priority selector with visual indicators
-                _buildEnhancedPrioritySelector(theme),
-                StandardizedGaps.vertical(SpacingSize.phi2),
-                
-                // Project selector
-                _buildProjectSelector(theme),
-                StandardizedGaps.vertical(SpacingSize.phi2),
-                
-                // Due date and time picker
-                _buildEnhancedDateTimePicker(context, theme),
-                StandardizedGaps.vertical(SpacingSize.phi2),
-                
-                // Tags section
-                _buildTagsSection(theme),
-                StandardizedGaps.vertical(SpacingSize.phi2),
-                
-                // Recurring task section
-                _buildRecurrenceSection(theme),
-                StandardizedGaps.vertical(SpacingSize.phi2),
-                
-                // Additional notes
-                StandardizedFormField(
-                  label: 'Additional Notes',
-                  hint: 'Any extra information or reminders...',
-                  controller: _notesController,
-                  isMultiline: true,
-                  maxLines: 3,
-                  textCapitalization: TextCapitalization.sentences,
-                  prefixIcon: Icon(PhosphorIcons.note()),
-                  onChanged: (value) => _notes = value,
-                ),
-                StandardizedGaps.xl,
-              ],
+          children: [
+            // Audio attachment section (if present)
+            if (_audioFilePath != null) ...[
+              _buildAudioSection(Theme.of(context)),
+              StandardizedGaps.md,
+            ],
+            
+            // Creation mode indicator
+            if (_creationMode != null) ...[
+              _buildCreationModeIndicator(Theme.of(context)),
+              StandardizedGaps.md,
+            ],
+            
+            // Title field with validation
+            StandardizedFormField(
+              label: 'Task Title',
+              hint: 'Enter a clear, actionable task title...',
+              helperText: 'Required field',
+              controller: _titleController,
+              isRequired: true,
+              autofocus: _titleController.text.isEmpty,
+              textCapitalization: TextCapitalization.sentences,
+              prefixIcon: Icon(PhosphorIcons.checkSquare()),
             ),
-          ),
+            StandardizedGaps.vertical(SpacingSize.phi2),
+            
+            // Description field
+            StandardizedFormField(
+              label: 'Description',
+              hint: 'Add details, context, or notes about this task...',
+              controller: _descriptionController,
+              isMultiline: true,
+              maxLines: 4,
+              textCapitalization: TextCapitalization.sentences,
+              prefixIcon: Icon(PhosphorIcons.fileText()),
+            ),
+            StandardizedGaps.vertical(SpacingSize.phi2),
+            
+            // Priority selector with visual indicators
+            _buildEnhancedPrioritySelector(Theme.of(context)),
+            StandardizedGaps.vertical(SpacingSize.phi2),
+            
+            // Project selector
+            _buildProjectSelector(Theme.of(context)),
+            StandardizedGaps.vertical(SpacingSize.phi2),
+            
+            // Due date and time picker
+            _buildEnhancedDateTimePicker(context, Theme.of(context)),
+            StandardizedGaps.vertical(SpacingSize.phi2),
+            
+            // Categories section (predefined options)
+            _buildCategoriesSection(Theme.of(context)),
+            StandardizedGaps.vertical(SpacingSize.phi2),
+            
+            // Tags section (user-created tags with colors)
+            TagSelectionWidget(
+              selectedTags: _selectedTags,
+              onTagsChanged: (tags) => setState(() => _selectedTags = tags),
+              maxTags: 5,
+              allowCreate: true,
+            ),
+            StandardizedGaps.vertical(SpacingSize.phi2),
+            
+            // Recurring task section
+            _buildRecurrenceSection(Theme.of(context)),
+            StandardizedGaps.vertical(SpacingSize.phi2),
+            
+            // Additional notes
+            StandardizedFormField(
+              label: 'Additional Notes',
+              hint: 'Any extra information or reminders...',
+              controller: _notesController,
+              isMultiline: true,
+              maxLines: 3,
+              textCapitalization: TextCapitalization.sentences,
+              prefixIcon: Icon(PhosphorIcons.note()),
+              onChanged: (value) => _notes = value,
+            ),
+            StandardizedGaps.xl,
+          ],
         ),
       ),
-    )
+    );
   }
   
   String _getDialogTitle() {
@@ -331,13 +415,9 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const StandardizedText(
           'Project',
-          style: TypographyConstants.getStyle(
-            fontSize: TypographyConstants.titleMedium,
-            fontWeight: TypographyConstants.medium,
-            color: theme.colorScheme.onSurface,
-          ),
+          style: StandardizedTextStyle.titleMedium,
         ),
         const SizedBox(height: 8),
         Consumer(
@@ -549,14 +629,18 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
     );
   }
   
-  Widget _buildTagsSection(ThemeData theme) {
+
+
+
+  
+  Widget _buildCategoriesSection(ThemeData theme) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
             const StandardizedText(
-              'Categories',
+              'Quick Categories',
               style: StandardizedTextStyle.titleMedium,
             ),
             const Spacer(),
@@ -588,7 +672,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
         if (_tags.where((tag) => !_predefinedCategories.any((cat) => cat.id == tag.toLowerCase())).isNotEmpty) ...[
           StandardizedGaps.md,
           StandardizedText(
-            'Custom Tags',
+            'Custom Quick Tags',
             style: StandardizedTextStyle.titleSmall,
             color: theme.colorScheme.onSurfaceVariant,
           ),
@@ -680,15 +764,15 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const StandardizedText(
-                'Add Custom Tag',
+                'Add Custom Category',
                 style: StandardizedTextStyle.headlineSmall,
               ),
               StandardizedGaps.md,
               TextField(
                 controller: controller,
                 decoration: const InputDecoration(
-                  labelText: 'Tag name',
-                  hintText: 'Enter custom tag name',
+                  labelText: 'Category name',
+                  hintText: 'Enter custom category name',
                   border: OutlineInputBorder(),
                 ),
                 autofocus: true,
@@ -699,7 +783,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   TextButton(
-                    onPressed: () => context.popRoute(),
+                    onPressed: () => Navigator.of(context).pop(),
                     child: const StandardizedText(
                       'Cancel',
                       style: StandardizedTextStyle.buttonText,
@@ -709,7 +793,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
                   FilledButton(
                     onPressed: () {
                       if (controller.text.trim().isNotEmpty) {
-                        context.popRoute(controller.text.trim().toLowerCase());
+                        Navigator.of(context).pop(controller.text.trim().toLowerCase());
                       }
                     },
                     child: const StandardizedText(
@@ -732,7 +816,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
     }
     controller.dispose();
   }
-  
+
   Widget _buildRecurrenceSection(ThemeData theme) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -982,7 +1066,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
         };
       }
       
-      // Store tags and notes in metadata
+      // Store category tags and notes in metadata, real tags in tagIds
       if (_tags.isNotEmpty) {
         metadata['tags'] = _tags;
       }
@@ -1035,6 +1119,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
             projectId: _selectedProjectId,
             dueDate: finalDueDate,
             recurrence: _recurrencePattern,
+            tagIds: _selectedTags.map((tag) => tag.id).toList(), // Use real tag IDs
             metadata: metadata.isNotEmpty ? metadata : const {},
           );
       
@@ -1063,7 +1148,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
         
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(successMessage),
+            content: StandardizedText(successMessage, style: StandardizedTextStyle.bodyMedium),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -1072,7 +1157,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error saving task: ${e.toString()}'),
+            content: StandardizedText('Error saving task: ${e.toString()}', style: StandardizedTextStyle.bodyMedium),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );

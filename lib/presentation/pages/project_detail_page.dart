@@ -10,8 +10,10 @@ import '../providers/project_providers.dart';
 import '../providers/task_providers.dart';
 import '../widgets/advanced_task_card.dart';
 import '../widgets/project_form_dialog.dart';
+import '../widgets/enhanced_task_creation_dialog.dart';
 import '../widgets/standardized_app_bar.dart';
 import '../widgets/standardized_text.dart';
+import '../widgets/standardized_colors.dart';
 import '../widgets/theme_background_widget.dart';
 
 /// Detailed view of a single project
@@ -59,7 +61,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
 
         return ThemeBackgroundWidget(
           child: Scaffold(
-            backgroundColor: Colors.transparent,
+            backgroundColor: context.colors.backgroundTransparent,
             extendBodyBehindAppBar: true,
             appBar: StandardizedAppBar(
               title: project.name,
@@ -380,6 +382,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
 
   Widget _buildStatCard(String label, String value, IconData icon, Color color) {
     return Container(
+      height: 80, // Fixed height for consistent appearance
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
@@ -387,6 +390,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
         border: Border.all(color: color.withValues(alpha: 0.1)),
       ),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(icon, color: color, size: 20),
           const SizedBox(height: 4),
@@ -458,7 +462,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
             const SizedBox(width: 8),
             StandardizedText(
               '$title (${tasks.length})',
-              style: StandardizedTextStyle.titleMedium,
+              style: StandardizedTextStyle.titleSmall,
               color: color,
             ),
           ],
@@ -552,7 +556,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
                 const SizedBox(width: 8),
                 StandardizedText(
                   '$title (${tasks.length})',
-                  style: StandardizedTextStyle.titleSmall,
+                  style: StandardizedTextStyle.labelLarge,
                   color: color,
                 ),
               ],
@@ -577,13 +581,13 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
                         children: [
                           StandardizedText(
                             task.title,
-                            style: StandardizedTextStyle.bodyMedium,
+                            style: StandardizedTextStyle.bodySmall,
                           ),
                           if (task.description != null && task.description!.isNotEmpty) ...[
                             const SizedBox(height: 4),
                             Text(
                               task.description!,
-                              style: StandardizedTextStyle.bodySmall.toTextStyle(context),
+                              style: StandardizedTextStyle.labelSmall.toTextStyle(context),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -843,10 +847,23 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
   }
 
   void _createTaskForProject(Project project) {
-    // This would open the task creation dialog with the project pre-selected
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Task creation with project assignment coming soon'),
+    showDialog(
+      context: context,
+      builder: (context) => EnhancedTaskCreationDialog(
+        prePopulatedData: {
+          'projectId': project.id,
+        },
+        onTaskCreated: (task) {
+          // Refresh the tasks for this project
+          ref.invalidate(tasksForProjectProvider(project.id));
+          
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Task "${task.title}" created for ${project.name}'),
+              backgroundColor: Theme.of(context).colorScheme.primary,
+            ),
+          );
+        },
       ),
     );
   }

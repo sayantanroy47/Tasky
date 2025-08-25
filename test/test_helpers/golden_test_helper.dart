@@ -11,10 +11,11 @@ class GoldenTestHelper {
   }
 
   /// Configure golden test environment
-  static void configureGoldenTests() {
-    // Configure golden toolkit for consistent rendering
-    GoldenToolkit.configure(
-      GoldenToolkitConfiguration(
+  static Future<void> configureGoldenTests(Future<void> Function() testMain) async {
+    // Configure golden toolkit for consistent rendering using modern API
+    return GoldenToolkit.runWithConfiguration(
+      testMain,
+      config: GoldenToolkitConfiguration(
         enableRealShadows: true,
         skipGoldenAssertion: () => false,
       ),

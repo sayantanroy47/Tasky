@@ -73,6 +73,23 @@ class TaskTags extends Table {
   ];
 }
 
+/// ProjectTags table definition
+/// 
+/// Junction table for many-to-many relationship between projects and tags
+class ProjectTags extends Table {
+  TextColumn get projectId => text()();
+  TextColumn get tagId => text()();
+
+  @override
+  Set<Column> get primaryKey => {projectId, tagId};
+
+  @override
+  List<String> get customConstraints => [
+    'FOREIGN KEY (project_id) REFERENCES projects (id) ON DELETE CASCADE',
+    'FOREIGN KEY (tag_id) REFERENCES tags (id) ON DELETE CASCADE',
+  ];
+}
+
 /// Projects table definition
 /// 
 /// Stores project information for organizing tasks

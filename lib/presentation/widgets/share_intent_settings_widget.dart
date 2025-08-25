@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-import '../../core/theme/typography_constants.dart';
 import '../../services/share_intent_service.dart';
+import 'standardized_spacing.dart';
+import 'standardized_text.dart';
 
 /// Comprehensive settings widget for ShareIntent functionality
 class ShareIntentSettingsWidget extends ConsumerStatefulWidget {
@@ -38,7 +39,7 @@ class _ShareIntentSettingsWidgetState extends ConsumerState<ShareIntentSettingsW
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: StandardizedSpacing.padding(SpacingSize.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -46,12 +47,9 @@ class _ShareIntentSettingsWidgetState extends ConsumerState<ShareIntentSettingsW
               children: [
                 Icon(PhosphorIcons.share(), color: Theme.of(context).primaryColor),
                 const SizedBox(width: 8),
-                const Text(
+                const StandardizedText(
                   'Share Intent Settings',
-                  style: TextStyle(
-                    fontSize: TypographyConstants.bodyLarge, // 16.0 - Fixed hardcoded font size (was 18px)
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: StandardizedTextStyle.titleMedium,
                 ),
               ],
             ),
@@ -59,8 +57,8 @@ class _ShareIntentSettingsWidgetState extends ConsumerState<ShareIntentSettingsW
 
             // Auto Task Creation Toggle
             SwitchListTile(
-              title: const Text('Auto Task Creation'),
-              subtitle: const Text('Automatically create tasks from shared content'),
+              title: const StandardizedText('Auto Task Creation', style: StandardizedTextStyle.bodyMedium),
+              subtitle: const StandardizedText('Automatically create tasks from shared content', style: StandardizedTextStyle.bodySmall),
               value: _autoTaskCreation,
               onChanged: (value) {
                 setState(() {
@@ -72,8 +70,8 @@ class _ShareIntentSettingsWidgetState extends ConsumerState<ShareIntentSettingsW
 
             // Confirmation Dialog Toggle
             SwitchListTile(
-              title: const Text('Show Confirmation Dialog'),
-              subtitle: const Text('Show dialog before creating tasks from shared content'),
+              title: const StandardizedText('Show Confirmation Dialog', style: StandardizedTextStyle.bodyMedium),
+              subtitle: const StandardizedText('Show dialog before creating tasks from shared content', style: StandardizedTextStyle.bodySmall),
               value: _showConfirmationDialog,
               onChanged: (value) {
                 setState(() {
@@ -85,8 +83,8 @@ class _ShareIntentSettingsWidgetState extends ConsumerState<ShareIntentSettingsW
 
             // Message Filtering Toggle
             SwitchListTile(
-              title: const Text('Enable Message Filtering'),
-              subtitle: const Text('Only process messages from trusted contacts'),
+              title: const StandardizedText('Enable Message Filtering', style: StandardizedTextStyle.bodyMedium),
+              subtitle: const StandardizedText('Only process messages from trusted contacts', style: StandardizedTextStyle.bodySmall),
               value: _enableMessageFiltering,
               onChanged: (value) {
                 setState(() {
@@ -99,17 +97,15 @@ class _ShareIntentSettingsWidgetState extends ConsumerState<ShareIntentSettingsW
             const Divider(),
 
             // Trusted Contacts Section
-            const Text(
+            const StandardizedText(
               'Trusted Contacts',
-              style: TextStyle(
-                fontSize: TypographyConstants.bodyMedium, // 14.0 - Fixed hardcoded font size (was 16px)
-                fontWeight: FontWeight.w500,
-              ),
+              style: StandardizedTextStyle.titleSmall,
             ),
             const SizedBox(height: 8),
-            const Text(
+            const StandardizedText(
               'Messages from these contacts will be processed for task creation:',
-              style: TextStyle(color: Colors.grey),
+              style: StandardizedTextStyle.bodySmall,
+              color: Colors.grey,
             ),
             const SizedBox(height: 12),
 
@@ -129,7 +125,7 @@ class _ShareIntentSettingsWidgetState extends ConsumerState<ShareIntentSettingsW
                 const SizedBox(width: 8),
                 ElevatedButton(
                   onPressed: _addTrustedContact,
-                  child: const Text('Add'),
+                  child: const StandardizedText('Add', style: StandardizedTextStyle.buttonText),
                 ),
               ],
             ),
@@ -137,16 +133,16 @@ class _ShareIntentSettingsWidgetState extends ConsumerState<ShareIntentSettingsW
 
             // Trusted Contacts List
             if (_trustedContacts.isNotEmpty) ...[
-              const Text(
+              const StandardizedText(
                 'Current trusted contacts:',
-                style: TextStyle(fontWeight: FontWeight.w500),
+                style: StandardizedTextStyle.titleSmall,
               ),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,
                 children: _trustedContacts
                     .map((contact) => Chip(
-                          label: Text(contact),
+                          label: StandardizedText(contact, style: StandardizedTextStyle.bodyMedium),
                           deleteIcon: Icon(PhosphorIcons.x(), size: 18),
                           onDeleted: () => _removeTrustedContact(contact),
                         ))
@@ -157,12 +153,9 @@ class _ShareIntentSettingsWidgetState extends ConsumerState<ShareIntentSettingsW
             const Divider(),
 
             // Test Section
-            const Text(
+            const StandardizedText(
               'Test Share Intent',
-              style: TextStyle(
-                fontSize: TypographyConstants.bodyMedium, // 14.0 - Fixed hardcoded font size (was 16px)
-                fontWeight: FontWeight.w500,
-              ),
+              style: StandardizedTextStyle.titleSmall,
             ),
             const SizedBox(height: 8),
             Row(
@@ -170,13 +163,13 @@ class _ShareIntentSettingsWidgetState extends ConsumerState<ShareIntentSettingsW
                 ElevatedButton.icon(
                   onPressed: _testShareIntent,
                   icon: Icon(PhosphorIcons.share()),
-                  label: const Text('Test Share'),
+                  label: const StandardizedText('Test Share', style: StandardizedTextStyle.buttonText),
                 ),
                 const SizedBox(width: 8),
                 OutlinedButton.icon(
                   onPressed: _runSampleMessages,
                   icon: Icon(PhosphorIcons.chatCircle()),
-                  label: const Text('Test Messages'),
+                  label: const StandardizedText('Test Messages', style: StandardizedTextStyle.buttonText),
                 ),
               ],
             ),
@@ -235,7 +228,7 @@ class _ShareIntentSettingsWidgetState extends ConsumerState<ShareIntentSettingsW
   void _showSnackBar(String message, {bool isError = false}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: StandardizedText(message, style: StandardizedTextStyle.bodyMedium),
         backgroundColor: isError ? Colors.red : Colors.green,
         duration: const Duration(seconds: 2),
       ),

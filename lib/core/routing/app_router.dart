@@ -9,7 +9,7 @@ import '../../presentation/pages/analytics_page.dart';
 import '../../presentation/pages/projects_page.dart';
 import '../../presentation/pages/task_detail_page.dart';
 import '../../presentation/pages/project_detail_page.dart';
-import '../../presentation/pages/voice_demo_page.dart';
+import '../../presentation/pages/voice_recording_page.dart';
 // import '../../presentation/pages/data_export_page.dart';
 import '../../presentation/pages/help_page.dart';
 import '../../presentation/pages/task_dependencies_page.dart';
@@ -27,6 +27,8 @@ class AppRouter {
   static const String home = '/';
   static const String tasks = '/tasks';
   static const String settings = '/settings';
+  static const String profile = '/profile';
+  static const String onboarding = '/onboarding';
 
   /// Current navigation index
   final int _currentIndex = 0;
@@ -87,6 +89,9 @@ class AppRouter {
   /// Add task route getter
   static String get addTask => '/add-task';
   
+  /// All tasks route getter
+  static String get allTasks => '/all-tasks';
+  
   /// Navigate to task detail
   static void navigateToTaskDetail(BuildContext context, String taskId) {
     Navigator.pushNamed(context, taskDetail, arguments: taskId);
@@ -108,8 +113,8 @@ class AppRouter {
       label: 'Calendar',
     ),
     NavigationDestination(
-      icon: Icon(PhosphorIcons.chartBar()),
-      label: 'Analytics',
+      icon: Icon(PhosphorIcons.folder()),
+      label: 'Projects',
     ),
     NavigationDestination(
       icon: Icon(PhosphorIcons.gear()),
@@ -186,7 +191,7 @@ class AppRouter {
         }
       case '/voice-demo':
         return MaterialPageRoute(
-          builder: (_) => const ThemeBackgroundWidget(child: VoiceDemoPage()),
+          builder: (_) => const ThemeBackgroundWidget(child: VoiceRecordingPage()),
           settings: settings,
         );
       case '/data-export':
@@ -212,6 +217,11 @@ class AppRouter {
       case '/add-task':
         return MaterialPageRoute(
           builder: (_) => const ThemeBackgroundWidget(child: TasksPage()), // Will show add task form
+          settings: settings,
+        );
+      case '/all-tasks':
+        return MaterialPageRoute(
+          builder: (_) => const ThemeBackgroundWidget(child: TasksPage()),
           settings: settings,
         );
       case '/setup-pin':

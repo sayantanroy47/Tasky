@@ -87,7 +87,7 @@ class ErrorWidget extends StatelessWidget {
     
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: StandardizedSpacing.padding(SpacingSize.lg),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -96,30 +96,28 @@ class ErrorWidget extends StatelessWidget {
               size: 64,
               color: theme.colorScheme.error,
             ),
-            const SizedBox(height: 16),
-            Text(
+            StandardizedGaps.md,
+            StandardizedText(
               message,
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: theme.colorScheme.error,
-              ),
+              style: StandardizedTextStyle.titleMedium,
+              color: theme.colorScheme.error,
               textAlign: TextAlign.center,
             ),
             if (details != null) ...[
-              const SizedBox(height: 8),
-              Text(
+              StandardizedGaps.sm,
+              StandardizedText(
                 details!,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
+                style: StandardizedTextStyle.bodyMedium,
+                color: theme.colorScheme.onSurfaceVariant,
                 textAlign: TextAlign.center,
               ),
             ],
             if (onRetry != null) ...[
-              const SizedBox(height: 24),
+              StandardizedGaps.lg,
               FilledButton.icon(
                 onPressed: onRetry,
                 icon: Icon(PhosphorIcons.arrowClockwise()),
-                label: const Text('Retry'),
+                label: const StandardizedText('Retry', style: StandardizedTextStyle.buttonText),
               ),
             ],
           ],
@@ -151,7 +149,7 @@ class EmptyStateWidget extends StatelessWidget {
     
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: StandardizedSpacing.padding(SpacingSize.lg),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -160,29 +158,27 @@ class EmptyStateWidget extends StatelessWidget {
               size: 80,
               color: theme.colorScheme.onSurfaceVariant,
             ),
-            const SizedBox(height: 16),
-            Text(
+            StandardizedGaps.md,
+            StandardizedText(
               title,
-              style: theme.textTheme.titleLarge?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+              style: StandardizedTextStyle.titleLarge,
+              color: theme.colorScheme.onSurfaceVariant,
               textAlign: TextAlign.center,
             ),
             if (subtitle != null) ...[
-              const SizedBox(height: 8),
-              Text(
+              StandardizedGaps.sm,
+              StandardizedText(
                 subtitle!,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
+                style: StandardizedTextStyle.bodyMedium,
+                color: theme.colorScheme.onSurfaceVariant,
                 textAlign: TextAlign.center,
               ),
             ],
             if (actionText != null && onAction != null) ...[
-              const SizedBox(height: 24),
+              StandardizedGaps.lg,
               FilledButton(
                 onPressed: onAction,
-                child: Text(actionText!),
+                child: StandardizedText(actionText!, style: StandardizedTextStyle.buttonText),
               ),
             ],
           ],
@@ -200,7 +196,7 @@ class ShimmerListItem extends StatefulWidget {
   const ShimmerListItem({
     super.key,
     this.height = 80,
-    this.margin = const EdgeInsets.only(bottom: 8),
+    this.margin = const EdgeInsets.all(8.0),
   });
   @override
   State<ShimmerListItem> createState() => _ShimmerListItemState();
@@ -238,7 +234,7 @@ class _ShimmerListItemState extends State<ShimmerListItem>
           margin: widget.margin,
           child: Container(
             height: widget.height,
-            padding: const EdgeInsets.all(16),
+            padding: StandardizedSpacing.padding(SpacingSize.md),
             child: Row(
               children: [
                 // Checkbox placeholder

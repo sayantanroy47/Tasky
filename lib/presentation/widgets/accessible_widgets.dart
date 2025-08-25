@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../services/accessibility_service.dart';
 import 'standardized_spacing.dart';
+import 'standardized_fab.dart';
+import 'standardized_colors.dart';
 
 /// Accessible button with proper semantics and haptic feedback
 class AccessibleButton extends ConsumerWidget {
@@ -182,7 +184,7 @@ class AccessibleListTile extends ConsumerWidget {
         focusNode: focusNode,
         // Ensure good contrast for selected state
         selectedTileColor: settings.highContrastMode 
-            ? Colors.grey[300] 
+            ? context.colors.highContrastBackground.withValues(alpha: 0.3)
             : Theme.of(context).colorScheme.primaryContainer,
         // Larger touch target for accessibility
         contentPadding: StandardizedSpacing.paddingSymmetric(horizontal: SpacingSize.md, vertical: SpacingSize.xs),
@@ -236,7 +238,7 @@ class AccessibleSwitch extends ConsumerWidget {
             ? Colors.white 
             : null,
         inactiveTrackColor: settings.highContrastMode 
-            ? Colors.grey[400] 
+            ? context.colors.highContrastBackground.withValues(alpha: 0.4)
             : null,
       ),
     );
@@ -376,17 +378,15 @@ class AccessibleFAB extends ConsumerWidget {
       label: semanticLabel ?? tooltip,
       button: true,
       enabled: onPressed != null,
-      child: FloatingActionButton(
+      child: StandardizedFAB(
         heroTag: heroTag,
         onPressed: onPressed == null ? null : () async {
           await accessibilityService.provideHapticFeedback(HapticFeedbackType.medium);
           onPressed!();
         },
         tooltip: tooltip,
-        backgroundColor: backgroundColor,
-        foregroundColor: foregroundColor,
-        mini: mini,
-        child: child,
+        isLarge: !mini,
+        icon: child is Icon ? (child as Icon).icon : null,
       ),
     );
   }

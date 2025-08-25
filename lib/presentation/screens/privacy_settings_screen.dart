@@ -11,6 +11,7 @@ import '../../services/privacy_service.dart';
 import '../widgets/enhanced_ux_widgets.dart';
 import '../widgets/glassmorphism_container.dart';
 import '../widgets/standardized_app_bar.dart';
+import '../widgets/standardized_spacing.dart';
 
 /// Screen for managing privacy settings and data compliance
 class PrivacySettingsScreen extends ConsumerWidget {
@@ -426,7 +427,7 @@ class PrivacySettingsScreen extends ConsumerWidget {
 
   Widget _buildSectionHeader(BuildContext context, String title) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12.0),
+      padding: StandardizedSpacing.paddingOnly(bottom: SpacingSize.md),
       child: Text(
         title,
         style: Theme.of(context).textTheme.titleMedium?.copyWith(

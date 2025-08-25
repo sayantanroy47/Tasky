@@ -5,6 +5,7 @@ import '../../core/theme/typography_constants.dart';
 import '../../services/help_service.dart';
 import '../widgets/glassmorphism_container.dart';
 import '../widgets/standardized_app_bar.dart';
+import '../widgets/standardized_spacing.dart';
 import '../widgets/standardized_text.dart';
 import '../widgets/theme_background_widget.dart';
 
@@ -54,20 +55,20 @@ class _HelpPageState extends State<HelpPage> with SingleTickerProviderStateMixin
           ],
         ),
         body: Padding(
-          padding: const EdgeInsets.only(
-            top: kToolbarHeight + 8,
-            left: 16,
-            right: 16,
-            bottom: 16,
+          padding: StandardizedSpacing.paddingOnly(
+            top: SpacingSize.lg,
+            left: SpacingSize.md,
+            right: SpacingSize.md,
+            bottom: SpacingSize.md,
           ),
           child: Column(
             children: [
               // Welcome Card
               Container(
-                margin: const EdgeInsets.only(bottom: 16.0),
+                margin: StandardizedSpacing.marginOnly(bottom: SpacingSize.md),
                 child: GlassmorphismContainer(
                   borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                  padding: const EdgeInsets.all(20.0),
+                  padding: StandardizedSpacing.padding(SpacingSize.lg),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -78,7 +79,7 @@ class _HelpPageState extends State<HelpPage> with SingleTickerProviderStateMixin
                             size: 32,
                             color: Theme.of(context).colorScheme.primary,
                           ),
-                          const SizedBox(width: 12),
+                          StandardizedGaps.hMd,
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -87,19 +88,17 @@ class _HelpPageState extends State<HelpPage> with SingleTickerProviderStateMixin
                                   'Welcome to Tasky Help',
                                   style: StandardizedTextStyle.titleLarge,
                                 ),
-                                const SizedBox(height: 4),
-                                Text(
+                                StandardizedGaps.xs,
+                                const StandardizedText(
                                   'Find answers to common questions and learn how to get the most out of Tasky.',
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                      ),
+                                  style: StandardizedTextStyle.bodyMedium,
                                 ),
                               ],
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 16),
+                      StandardizedGaps.md,
                       Row(
                         children: [
                           Expanded(
@@ -108,17 +107,17 @@ class _HelpPageState extends State<HelpPage> with SingleTickerProviderStateMixin
                                 _helpService.showHelpTopic(context, 'getting_started');
                               },
                               icon: Icon(PhosphorIcons.play()),
-                              label: const Text('Quick Start'),
+                              label: const StandardizedText('Quick Start', style: StandardizedTextStyle.buttonText),
                             ),
                           ),
-                          const SizedBox(width: 12),
+                          StandardizedGaps.hMd,
                           Expanded(
                             child: FilledButton.icon(
                               onPressed: () {
                                 _showFeedbackDialog(context);
                               },
                               icon: Icon(PhosphorIcons.chatCircle()),
-                              label: const Text('Feedback'),
+                              label: const StandardizedText('Feedback', style: StandardizedTextStyle.buttonText),
                             ),
                           ),
                         ],
@@ -159,26 +158,25 @@ class _HelpPageState extends State<HelpPage> with SingleTickerProviderStateMixin
     final topics = _helpService.getTopicsByCategory(category);
 
     return ListView.builder(
-      padding: const EdgeInsets.all(16.0),
+      padding: StandardizedSpacing.padding(SpacingSize.md),
       itemCount: topics.length,
       itemBuilder: (context, index) {
         final topic = topics[index];
         return GlassmorphismContainer(
           borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-          margin: const EdgeInsets.only(bottom: 12.0),
+          margin: StandardizedSpacing.marginOnly(bottom: SpacingSize.md),
           child: ListTile(
-            contentPadding: const EdgeInsets.all(16.0),
+            contentPadding: StandardizedSpacing.padding(SpacingSize.md),
             title: StandardizedText(
               topic.title,
               style: StandardizedTextStyle.titleMedium,
             ),
-            subtitle: Text(
+            subtitle: StandardizedText(
               _getTopicPreview(topic.content),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
+              style: StandardizedTextStyle.bodySmall,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
             trailing: Icon(PhosphorIcons.caretRight(), size: 16),
             onTap: () {
@@ -206,28 +204,28 @@ class _HelpPageState extends State<HelpPage> with SingleTickerProviderStateMixin
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Send Feedback'),
+        title: const StandardizedText('Send Feedback', style: StandardizedTextStyle.titleMedium),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('We\'d love to hear from you!'),
-            const SizedBox(height: 16),
-            const Text('You can send feedback through:'),
-            const SizedBox(height: 12),
+            const StandardizedText('We\'d love to hear from you!', style: StandardizedTextStyle.bodyMedium),
+            StandardizedGaps.md,
+            const StandardizedText('You can send feedback through:', style: StandardizedTextStyle.bodyMedium),
+            StandardizedGaps.md,
             Row(
               children: [
                 Icon(PhosphorIcons.envelope(), size: 16),
-                const SizedBox(width: 8),
-                const Text('Settings → Send Feedback'),
+                StandardizedGaps.hSm,
+                const StandardizedText('Settings → Send Feedback', style: StandardizedTextStyle.bodyMedium),
               ],
             ),
-            const SizedBox(height: 8),
+            StandardizedGaps.sm,
             Row(
               children: [
                 Icon(PhosphorIcons.bug(), size: 16),
-                const SizedBox(width: 8),
-                const Text('Report bugs or suggest features'),
+                StandardizedGaps.hSm,
+                const StandardizedText('Report bugs or suggest features', style: StandardizedTextStyle.bodyMedium),
               ],
             ),
           ],
@@ -235,14 +233,14 @@ class _HelpPageState extends State<HelpPage> with SingleTickerProviderStateMixin
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: const StandardizedText('Close', style: StandardizedTextStyle.buttonText),
           ),
           FilledButton(
             onPressed: () {
               Navigator.pop(context);
               Navigator.pushNamed(context, '/settings');
             },
-            child: const Text('Go to Settings'),
+            child: const StandardizedText('Go to Settings', style: StandardizedTextStyle.buttonText),
           ),
         ],
       ),

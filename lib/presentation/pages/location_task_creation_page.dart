@@ -10,6 +10,7 @@ import '../providers/location_providers.dart';
 import '../providers/task_provider.dart' show taskOperationsProvider;
 import '../widgets/glassmorphism_container.dart';
 import '../widgets/theme_background_widget.dart';
+import '../widgets/standardized_spacing.dart';
 import '../widgets/standardized_text.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../core/design_system/design_tokens.dart';
@@ -209,7 +210,7 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
   void _preloadPermissions() async {
     // Preload location permissions to avoid delays later
     try {
-      ref.read(locationPermissionProvider);
+      await ref.read(locationPermissionProvider.future);
     } catch (e) {
       // Ignore errors - user will see them when they try to use location
       debugPrint('Failed to preload location permissions: $e');
@@ -247,7 +248,7 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
         // Show subtle feedback about geocoding failure
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Could not load address name, using coordinates'),
+            content: const StandardizedText('Could not load address name, using coordinates', style: StandardizedTextStyle.bodyMedium),
             backgroundColor: Colors.orange,
             behavior: SnackBarBehavior.floating,
             duration: const Duration(seconds: 2),
@@ -266,57 +267,34 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     
+    // Debug print to verify the build method is being called
+    debugPrint('LocationTaskCreationPage build() called');
+    
     return ThemeBackgroundWidget(
       child: Scaffold(
         backgroundColor: Colors.transparent,
         extendBodyBehindAppBar: true,
-        body: Stack(
-          children: [
-            // Main content - full screen
-            SingleChildScrollView(
-              padding: EdgeInsets.only(
-                top: MediaQuery.of(context).padding.top + 60, // Account for status bar + floating button
-                left: 16,
-                right: 16,
-                bottom: 16,
-              ),
-              child: FadeTransition(
-                opacity: _fadeAnimation,
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 20),
-                      
-                      // Task Details Section
-                      _buildTaskDetailsSection(context, theme),
-                      
-                      const SizedBox(height: 20),
-                      
-                      // Location Setup Section
-                      _buildLocationSection(context, theme),
-                      
-                      const SizedBox(height: 20),
-                      
-                      // Location Trigger Configuration Section
-                      _buildTriggerConfigSection(context, theme),
-                      
-                      const SizedBox(height: 20),
-                      
-                      // Quick Locations Section
-                      _buildQuickLocationsSection(context, theme),
-                      
-                      const SizedBox(height: 32),
-                      
-                      // Create Button
-                      _buildCreateButton(context, theme),
-                      
-                      const SizedBox(height: 100), // Bottom padding
-                    ],
+        body: LayoutBuilder(
+          builder: (context, constraints) {
+            return Stack(
+              children: [
+                // Main content - full screen with bounded constraints
+                SizedBox(
+                  width: constraints.maxWidth,
+                  height: constraints.maxHeight,
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.only(
+                      top: MediaQuery.of(context).padding.top + 60, // Account for status bar + floating button
+                      left: 16,
+                      right: 16,
+                      bottom: 16,
+                    ),
+                    child: FadeTransition(
+                      opacity: _fadeAnimation,
+                      child: _buildMainContent(context, theme),
+                    ),
                   ),
                 ),
-              ),
-            ),
             
             // Floating navigation buttons
             Positioned(
@@ -387,10 +365,80 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
                   ),
                 ),
               ) : const SizedBox.shrink(),
-          ],
+              ],
+            );
+          },
         ),
       ),
     );
+  }
+
+  Widget _buildMainContent(BuildContext context, ThemeData theme) {
+    try {
+      return Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            const SizedBox(height: 20),
+            
+            // Task Details Section
+            _buildTaskDetailsSection(context, theme),
+            
+            const SizedBox(height: 20),
+            
+            // Location Setup Section
+            _buildLocationSection(context, theme),
+            
+            const SizedBox(height: 20),
+            
+            // Location Trigger Configuration Section
+            _buildTriggerConfigSection(context, theme),
+            
+            const SizedBox(height: 20),
+            
+            // Quick Locations Section
+            _buildQuickLocationsSection(context, theme),
+            
+            const SizedBox(height: 32),
+            
+            // Create Button
+            _buildCreateButton(context, theme),
+            
+            const SizedBox(height: 100), // Bottom padding
+          ],
+        ),
+      );
+    } catch (e) {
+      debugPrint('Error building location page content: $e');
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              PhosphorIcons.warningCircle(),
+              size: 48,
+              color: theme.colorScheme.error,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Error loading location task creation',
+              style: theme.textTheme.titleMedium,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              e.toString(),
+              style: theme.textTheme.bodySmall,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Go Back'),
+            ),
+          ],
+        ),
+      );
+    }
   }
   
   Widget _buildTaskDetailsSection(BuildContext context, ThemeData theme) {
@@ -491,9 +539,9 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
               labelText: 'Search Location',
               hintText: 'Enter address, place name, or coordinates...',
               prefixIcon: _isSearchingLocation 
-                  ? const Padding(
-                      padding: EdgeInsets.all(14.0),
-                      child: SizedBox(
+                  ? Padding(
+                      padding: StandardizedSpacing.padding(SpacingSize.md),
+                      child: const SizedBox(
                         width: 20,
                         height: 20,
                         child: CircularProgressIndicator(strokeWidth: 2),
@@ -528,7 +576,6 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
                       status != LocationPermissionStatus.whileInUse && 
                       status != LocationPermissionStatus.always) {
                     return Container(
-                      width: double.infinity,
                       margin: const EdgeInsets.only(top: 12),
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
@@ -549,11 +596,9 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
                               ),
                             ),
                             const SizedBox(width: 8),
-                            Flexible(
-                              child: TextButton(
-                                onPressed: _requestLocationPermission,
-                                child: const Text('Enable Location'),
-                              ),
+                            TextButton(
+                              onPressed: _requestLocationPermission,
+                              child: const StandardizedText('Enable Location', style: StandardizedTextStyle.buttonText),
                             ),
                           ],
                         ),
@@ -572,7 +617,6 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
           if (_selectedLocation != null) ...[
             const SizedBox(height: 12),
             Container(
-              width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
@@ -659,10 +703,11 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
                         children: [
                           Icon(_getTriggerTypeIcon(type), size: 16),
                           const SizedBox(width: 8),
-                          Flexible(
-                            child: Text(
+                          Expanded(
+                            child: StandardizedText(
                               _getTriggerTypeDisplay(type),
                               overflow: TextOverflow.ellipsis,
+                              style: StandardizedTextStyle.bodyMedium,
                             ),
                           ),
                         ],
@@ -694,7 +739,7 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
                           Icon(_getPriorityIcon(priority), size: 16),
                           const SizedBox(width: 8),
                           Expanded(
-                            child: Text(priority.name.toUpperCase()),
+                            child: StandardizedText(priority.name.toUpperCase(), style: StandardizedTextStyle.bodyMedium),
                           ),
                         ],
                       ),
@@ -729,9 +774,9 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
                     }
                   },
                   icon: Icon(PhosphorIcons.calendar()),
-                  label: Text(_dueDate != null 
+                  label: StandardizedText(_dueDate != null 
                       ? '${_dueDate!.day}/${_dueDate!.month}/${_dueDate!.year}'
-                      : 'Set Date'),
+                      : 'Set Date', style: StandardizedTextStyle.buttonText),
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
@@ -750,9 +795,9 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
                     }
                   },
                   icon: Icon(PhosphorIcons.clock()),
-                  label: Text(_dueTime != null 
+                  label: StandardizedText(_dueTime != null 
                       ? _dueTime!.format(context)
-                      : 'Set Time'),
+                      : 'Set Time', style: StandardizedTextStyle.buttonText),
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
@@ -800,7 +845,6 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
             ),
           ),
           Container(
-            width: double.infinity,
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
@@ -843,21 +887,18 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
             ],
           ),
           const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            child: Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: _suggestedLocations.take(8).map((location) {
-                return ActionChip(
-                  label: Text(location),
-                  onPressed: () => _selectSuggestedLocation(location),
-                  avatar: Icon(PhosphorIcons.mapPin(), size: 16),
-                  backgroundColor: theme.colorScheme.surfaceContainerLow,
-                  side: BorderSide(color: theme.colorScheme.outline.withValues(alpha: 0.3)),
-                );
-              }).toList(),
-            ),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: _suggestedLocations.take(8).map((location) {
+              return ActionChip(
+                label: StandardizedText(location, style: StandardizedTextStyle.buttonText),
+                onPressed: () => _selectSuggestedLocation(location),
+                avatar: Icon(PhosphorIcons.mapPin(), size: 16),
+                backgroundColor: theme.colorScheme.surfaceContainerLow,
+                side: BorderSide(color: theme.colorScheme.outline.withValues(alpha: 0.3)),
+              );
+            }).toList(),
           ),
         ],
       ),
@@ -878,13 +919,13 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
                 ),
               )
             : Icon(PhosphorIcons.mapPin()),
-        label: Text(_isCreatingTask 
+        label: StandardizedText(_isCreatingTask 
             ? 'Creating...'
             : _isLoadingAddress
                 ? 'Loading address...'
                 : widget.taskToEdit != null 
                     ? 'Update Location Task'
-                    : 'Create Location Task'),
+                    : 'Create Location Task', style: StandardizedTextStyle.buttonText),
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
@@ -1016,7 +1057,7 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
                 child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
               ),
               SizedBox(width: 12),
-              Text('Getting your location...'),
+              StandardizedText('Getting your location...', style: StandardizedTextStyle.bodyMedium),
             ],
           ),
           duration: Duration(milliseconds: 1500),
@@ -1044,7 +1085,7 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('[EMOJI] Current location selected'),
+              content: StandardizedText('Current location selected', style: StandardizedTextStyle.bodyMedium),
               backgroundColor: Colors.green,
               duration: Duration(seconds: 1),
             ),
@@ -1136,7 +1177,7 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
         
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(message),
+            content: StandardizedText(message, style: StandardizedTextStyle.bodyMedium),
             backgroundColor: color,
             behavior: SnackBarBehavior.floating,
           ),
@@ -1156,7 +1197,7 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
           children: [
             Icon(PhosphorIcons.mapPin(), color: Colors.blue, size: 24),
             const SizedBox(width: 8),
-            const Text('Location Permission'),
+            const StandardizedText('Location Permission', style: StandardizedTextStyle.titleMedium),
           ],
         ),
         content: Column(
@@ -1178,19 +1219,17 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  StandardizedText(
                     'What this enables:',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue.shade700,
-                    ),
+                    style: StandardizedTextStyle.titleSmall,
+                    color: Colors.blue.shade700,
                   ),
                   const SizedBox(height: 8),
                   Row(
                     children: [
                       Icon(PhosphorIcons.bellRinging(), size: 16, color: Colors.blue),
                       const SizedBox(width: 8),
-                      const Expanded(child: Text('Get notified when you arrive/leave places')),
+                      const Expanded(child: StandardizedText('Get notified when you arrive/leave places', style: StandardizedTextStyle.bodySmall)),
                     ],
                   ),
                   const SizedBox(height: 4),
@@ -1198,7 +1237,7 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
                     children: [
                       Icon(PhosphorIcons.target(), size: 16, color: Colors.blue),
                       const SizedBox(width: 8),
-                      const Expanded(child: Text('Set custom geofence radius for tasks')),
+                      const Expanded(child: StandardizedText('Set custom geofence radius for tasks', style: StandardizedTextStyle.bodySmall)),
                     ],
                   ),
                   const SizedBox(height: 4),
@@ -1206,7 +1245,7 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
                     children: [
                       Icon(PhosphorIcons.shieldCheck(), size: 16, color: Colors.blue),
                       const SizedBox(width: 8),
-                      const Expanded(child: Text('Location data stays on your device')),
+                      const Expanded(child: StandardizedText('Location data stays on your device', style: StandardizedTextStyle.bodySmall)),
                     ],
                   ),
                 ],
@@ -1217,12 +1256,12 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: const StandardizedText('Cancel', style: StandardizedTextStyle.buttonText),
           ),
           ElevatedButton.icon(
             onPressed: () => Navigator.of(context).pop(true),
             icon: Icon(PhosphorIcons.check(), size: 18),
-            label: const Text('Enable Location'),
+            label: const StandardizedText('Enable Location', style: StandardizedTextStyle.buttonText),
           ),
         ],
       ),
@@ -1353,10 +1392,11 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
+            content: StandardizedText(
               widget.taskToEdit != null 
                 ? 'Location task updated successfully'
                 : 'Location task created successfully',
+              style: StandardizedTextStyle.bodyMedium,
             ),
             behavior: SnackBarBehavior.floating,
           ),
@@ -1461,7 +1501,7 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(message),
+          content: StandardizedText(message, style: StandardizedTextStyle.bodyMedium),
           backgroundColor: Theme.of(context).colorScheme.error,
           behavior: SnackBarBehavior.floating,
           duration: const Duration(seconds: 4),
@@ -1519,14 +1559,14 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
             children: [
               Icon(PhosphorIcons.mapPin(), color: Colors.orange, size: 24),
               const SizedBox(width: 8),
-              const Text('Address Not Found'),
+              const StandardizedText('Address Not Found', style: StandardizedTextStyle.titleMedium),
             ],
           ),
-          content: Text(message),
+          content: StandardizedText(message, style: StandardizedTextStyle.bodyMedium),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('OK'),
+              child: const StandardizedText('OK', style: StandardizedTextStyle.buttonText),
             ),
           ],
         ),

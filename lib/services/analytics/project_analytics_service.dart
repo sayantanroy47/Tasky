@@ -765,13 +765,8 @@ enum BottleneckType { stuckInProgress, dependencies, overdue, resources }
 
 enum BottleneckSeverity { low, medium, high }
 
-// Extension methods
-extension TaskStatusExtensions on TaskStatus {
-  bool get isPending => this == TaskStatus.pending;
-  bool get isInProgress => this == TaskStatus.inProgress;
-  bool get isCompleted => this == TaskStatus.completed;
-  bool get isCancelled => this == TaskStatus.cancelled;
-}
+// Note: TaskStatus extension methods are already defined in domain/models/enums.dart
+// Removed duplicate extension to fix compilation error
 
 extension TaskModelExtensions on TaskModel {
   bool get isOverdue {

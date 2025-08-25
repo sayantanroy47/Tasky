@@ -16,11 +16,11 @@ import '../widgets/standardized_fab.dart';
 import '../widgets/standardized_text.dart';
 import '../widgets/theme_background_widget.dart';
 import '../widgets/standardized_spacing.dart';
-import 'analytics_page.dart';
 import 'calendar_page.dart';
-import 'home_page_m3.dart';
+import 'home.dart';
 import 'location_task_creation_page.dart';
 import 'manual_task_creation_page.dart';
+import 'projects_page.dart';
 import 'settings_page.dart';
 import 'voice_only_creation_page.dart';
 import 'voice_recording_page.dart';
@@ -37,7 +37,7 @@ class MainScaffold extends ConsumerWidget {
     final pages = [
       const HomePage(),
       const CalendarPage(),
-      const AnalyticsPage(),
+      const ProjectsPage(),
       const SettingsPage(),
     ];
 
@@ -56,10 +56,10 @@ class MainScaffold extends ConsumerWidget {
         tooltip: 'Go to calendar view',
       ),
       AdaptiveNavigationItem(
-        icon: PhosphorIcons.chartBar(),
-        selectedIcon: PhosphorIcons.chartBar(),
+        icon: PhosphorIcons.folder(),
+        selectedIcon: PhosphorIcons.folder(),
         label: '',
-        tooltip: 'Go to analytics and insights',
+        tooltip: 'View all projects',
       ),
       AdaptiveNavigationItem(
         icon: PhosphorIcons.gear(),
@@ -479,7 +479,7 @@ class MainScaffold extends ConsumerWidget {
                       child: Icon(
                         isSelected ? item.selectedIcon : item.icon,
                         size: 24,
-                        color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
+                        color: isSelected ? theme.colorScheme.onPrimary : theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ),

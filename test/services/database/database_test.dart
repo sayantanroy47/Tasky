@@ -60,6 +60,7 @@ void main() {
             title: 'Transaction Test',
             description: const Value('Test description'),
             priority: TaskPriority.medium.index,
+            status: TaskStatus.pending.index,
             createdAt: DateTime.now(),
             metadata: '{}',
           ));
@@ -78,6 +79,7 @@ void main() {
               title: 'Should Rollback',
               description: const Value('Test description'),
               priority: TaskPriority.medium.index,
+              status: TaskStatus.pending.index,
               createdAt: DateTime.now(),
               metadata: '{}',
             ));
@@ -105,6 +107,7 @@ void main() {
               title: 'Batch Task $i',
               description: Value('Description $i'),
               priority: TaskPriority.medium.index,
+              status: TaskStatus.pending.index,
               createdAt: DateTime.now(),
               metadata: '{}',
             ));
@@ -127,6 +130,7 @@ void main() {
               title: 'Large Query Task $i',
               description: Value('Description $i'),
               priority: TaskPriority.values[i % TaskPriority.values.length].index,
+              status: TaskStatus.pending.index,
               createdAt: DateTime.now(),
               metadata: '{}',
             ));
@@ -149,6 +153,7 @@ void main() {
           title: 'Unique Test 1',
           description: const Value('First task'),
           priority: TaskPriority.medium.index,
+          status: TaskStatus.pending.index,
           createdAt: DateTime.now(),
           metadata: '{}',
         ));
@@ -161,6 +166,7 @@ void main() {
             description: const Value('Duplicate ID'),
             metadata: '{}',
             priority: TaskPriority.medium.index,
+            status: TaskStatus.pending.index,
             createdAt: DateTime.now(),
           )),
           throwsA(isA<SqliteException>()),
@@ -176,8 +182,9 @@ void main() {
             description: const Value('Missing required fields'),
             metadata: '{}',
             priority: TaskPriority.medium.index,
+            status: TaskStatus.pending.index,
             createdAt: DateTime.now(),
-            updatedAt: DateTime.now(),
+            updatedAt: Value(DateTime.now()),
           )),
           returnsNormally, // Database constraint checking might be at app level
         );
@@ -194,8 +201,9 @@ void main() {
             description: const Value('High priority task'),
             metadata: '{}',
             priority: TaskPriority.high.index,
+            status: TaskStatus.pending.index,
             createdAt: DateTime.now().subtract(const Duration(days: 1)),
-            updatedAt: DateTime.now(),
+            updatedAt: Value(DateTime.now()),
           ));
 
           batch.insert(database.tasks, TasksCompanion.insert(
@@ -204,8 +212,9 @@ void main() {
             description: const Value('Low priority task'),
             metadata: '{}',
             priority: TaskPriority.low.index,
+            status: TaskStatus.pending.index,
             createdAt: DateTime.now().subtract(const Duration(days: 2)),
-            updatedAt: DateTime.now(),
+            updatedAt: Value(DateTime.now()),
           ));
 
           batch.insert(database.tasks, TasksCompanion.insert(
@@ -214,8 +223,9 @@ void main() {
             description: const Value('Medium priority task'),
             metadata: '{}',
             priority: TaskPriority.medium.index,
+            status: TaskStatus.pending.index,
             createdAt: DateTime.now(),
-            updatedAt: DateTime.now(),
+            updatedAt: Value(DateTime.now()),
           ));
         });
       });

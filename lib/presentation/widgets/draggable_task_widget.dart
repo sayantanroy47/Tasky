@@ -7,6 +7,7 @@ import '../../domain/models/enums.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../core/theme/material3/motion_system.dart';
 import 'advanced_task_card.dart';
+import 'standardized_spacing.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Advanced draggable task widget with comprehensive drag-and-drop functionality
@@ -253,7 +254,7 @@ class _DraggableTaskWidgetState extends ConsumerState<DraggableTaskWidget>
         }
 
         return Container(
-          margin: widget.margin ?? const EdgeInsets.symmetric(vertical: 4),
+          margin: widget.margin ?? StandardizedSpacing.marginSymmetric(vertical: SpacingSize.xs),
           child: animatedChild,
         );
       },

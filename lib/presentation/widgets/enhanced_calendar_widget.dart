@@ -76,13 +76,6 @@ class EnhancedCalendarWidget extends ConsumerWidget {
           ),
         ),
 
-        const SizedBox(height: 8),
-
-        // Selected date details with design system spacing
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: SpacingTokens.xs, vertical: SpacingTokens.xs / 2),
-          child: _buildSelectedDateDetails(context, ref, calendarState),
-        ),
       ],
     );
   }
@@ -135,41 +128,45 @@ class EnhancedCalendarWidget extends ConsumerWidget {
     EnhancedCalendarState state,
     EnhancedCalendarNotifier notifier,
   ) {
-    return GlassmorphismContainer(
-      level: GlassLevel.interactive,
-      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: CalendarViewMode.values.map((mode) {
-          final isSelected = state.viewMode == mode;
-          return GestureDetector(
-            onTap: () {
-              // Prevent rapid view mode switches that could cause duplicate key errors
-              if (state.viewMode != mode) {
-                notifier.changeViewMode(mode);
-              }
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: SpacingTokens.elementPadding, vertical: SpacingTokens.md / 1.3),
-              margin: const EdgeInsets.symmetric(horizontal: SpacingTokens.xs / 2),
-              decoration: BoxDecoration(
-                color: isSelected ? Theme.of(context).colorScheme.primary : null,
-                borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
-              ),
-              child: Text(
-                _getViewModeLabel(mode),
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontSize: TypographyConstants.labelLarge,
-                      color: isSelected
-                          ? Theme.of(context).colorScheme.onPrimary
-                          : Theme.of(context).colorScheme.onSurfaceVariant,
-                      fontWeight: isSelected ? TypographyConstants.medium : TypographyConstants.regular,
-                    ),
-              ),
-            ),
-          );
-        }).toList(),
+    return Center(
+      child: GlassmorphismContainer(
+        level: GlassLevel.interactive,
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+        child: IntrinsicWidth(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: CalendarViewMode.values.map((mode) {
+              final isSelected = state.viewMode == mode;
+              return GestureDetector(
+                onTap: () {
+                  // Prevent rapid view mode switches that could cause duplicate key errors
+                  if (state.viewMode != mode) {
+                    notifier.changeViewMode(mode);
+                  }
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: SpacingTokens.elementPadding, vertical: SpacingTokens.md / 1.3),
+                  margin: const EdgeInsets.symmetric(horizontal: SpacingTokens.xs / 2),
+                  decoration: BoxDecoration(
+                    color: isSelected ? Theme.of(context).colorScheme.primary : null,
+                    borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
+                  ),
+                  child: Text(
+                    _getViewModeLabel(mode),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontSize: TypographyConstants.labelLarge,
+                          color: isSelected
+                              ? Theme.of(context).colorScheme.onPrimary
+                              : Theme.of(context).colorScheme.onSurfaceVariant,
+                          fontWeight: isSelected ? TypographyConstants.medium : TypographyConstants.regular,
+                        ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
       ),
     );
   }
@@ -348,6 +345,10 @@ class EnhancedCalendarWidget extends ConsumerWidget {
             ),
             headerHeight: 55, // Slightly increased header height
             cellBorderColor: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+            // Remove selection decoration - only use today highlight
+            selectionDecoration: const BoxDecoration(
+              color: Colors.transparent,
+            ),
             // Today highlight - bright tertiary accent for enhanced visibility
             todayHighlightColor: context.tertiaryColor,
             onTap: (CalendarTapDetails details) {
@@ -358,6 +359,8 @@ class EnhancedCalendarWidget extends ConsumerWidget {
                   if (context.mounted) {
                     try {
                       notifier.selectDate(details.date!);
+                      // Switch to day view when a date is tapped
+                      notifier.changeViewMode(CalendarViewMode.day);
                       // Only update focused date if it's significantly different
                       if (state.focusedDate.month != details.date!.month ||
                           state.focusedDate.year != details.date!.year) {

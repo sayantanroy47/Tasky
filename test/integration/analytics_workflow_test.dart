@@ -753,7 +753,7 @@ void main() {
                                   width: 40,
                                   height: 40,
                                   decoration: const BoxDecoration(
-                                    color: Colors.gold,
+                                    color: Colors.amber,
                                     shape: BoxShape.circle,
                                   ),
                                   child: const Icon(Icons.stars, color: Colors.white),

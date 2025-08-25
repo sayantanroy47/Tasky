@@ -1,5 +1,6 @@
 import '../../domain/entities/tag.dart';
 import '../../domain/repositories/task_repository.dart';
+import '../../domain/repositories/project_repository.dart';
 
 
 /// Result of tag validation
@@ -81,16 +82,18 @@ class TagCleanupResult {
 /// Comprehensive tag management service with validation and operations
 class TagManagementService {
   final TaskRepository _taskRepository;
+  final ProjectRepository _projectRepository;
   
   // Configuration constants
   static const int maxTagLength = 30;
   static const int maxTagsPerTask = 15;
+  static const int maxTagsPerProject = 10;
   static const String tagPattern = r'^[a-zA-Z0-9\-_\s]+$';
   static const List<String> reservedTags = [
     'system', 'internal', 'temp', 'deleted', 'archived'
   ];
   
-  TagManagementService(this._taskRepository);
+  TagManagementService(this._taskRepository, this._projectRepository);
   
   /// Validates a single tag
   TagValidationResult validateTag(String tag) {
@@ -217,5 +220,184 @@ class TagManagementService {
       renamedTags: renamedTags,
       messages: messages,
     );
+  }
+
+  // ============================================================================
+  // PROJECT-RELATED TAG OPERATIONS
+  // ============================================================================
+
+  /// Validates tag assignment to a project
+  TagValidationResult validateProjectTagAssignment(String projectId, String tagId) {
+    final tagValidation = validateTag(tagId);
+    if (!tagValidation.isValid) {
+      return tagValidation;
+    }
+    
+    return TagValidationResult.valid();
+  }
+
+  /// Gets all unique tags across both tasks and projects with usage statistics
+  Future<List<TagUsageStatistics>> getAllTagsWithUsageIncludingProjects() async {
+    final allTasks = await _taskRepository.getAllTasks();
+    final allProjects = await _projectRepository.getAllProjects();
+    final tagCounts = <String, TagUsageStatistics>{};
+    
+    // Process task tags
+    for (final task in allTasks) {
+      for (final tagId in task.tagIds) {
+        final normalizedTag = normalizeTag(tagId);
+        final tag = Tag(id: normalizedTag, name: normalizedTag, color: '#2196F3', createdAt: DateTime.now());
+        
+        _updateTagStatistics(tagCounts, normalizedTag, tag, task.createdAt);
+      }
+    }
+    
+    // Process project tags
+    for (final project in allProjects) {
+      for (final tagId in project.tagIds) {
+        final normalizedTag = normalizeTag(tagId);
+        final tag = Tag(id: normalizedTag, name: normalizedTag, color: '#2196F3', createdAt: DateTime.now());
+        
+        _updateTagStatistics(tagCounts, normalizedTag, tag, project.createdAt);
+      }
+    }
+    
+    return tagCounts.values.toList()..sort((a, b) => b.totalUsage.compareTo(a.totalUsage));
+  }
+
+  /// Helper method to update tag statistics
+  void _updateTagStatistics(Map<String, TagUsageStatistics> tagCounts, String normalizedTag, Tag tag, DateTime usageDate) {
+    if (tagCounts.containsKey(normalizedTag)) {
+      final existing = tagCounts[normalizedTag]!;
+      tagCounts[normalizedTag] = TagUsageStatistics(
+        tag: tag,
+        totalUsage: existing.totalUsage + 1,
+        recentUsage: existing.recentUsage + 1,
+        lastUsed: usageDate.isAfter(existing.lastUsed) ? usageDate : existing.lastUsed,
+        score: existing.score + 1,
+      );
+    } else {
+      tagCounts[normalizedTag] = TagUsageStatistics(
+        tag: tag,
+        totalUsage: 1,
+        recentUsage: 1,
+        lastUsed: usageDate,
+        score: 1,
+      );
+    }
+  }
+
+  /// Cleans up tags for both tasks and projects
+  Future<TagCleanupResult> cleanupAllTags({
+    bool removeUnused = false,
+    bool normalizeCase = true,
+    bool removeEmptyTags = true,
+  }) async {
+    final taskCleanup = await cleanupTags(
+      removeUnused: removeUnused,
+      normalizeCase: normalizeCase,
+      removeEmptyTags: removeEmptyTags,
+    );
+    
+    final projectCleanup = await _cleanupProjectTags(
+      removeUnused: removeUnused,
+      normalizeCase: normalizeCase,
+      removeEmptyTags: removeEmptyTags,
+    );
+
+    return TagCleanupResult(
+      removedTags: [...taskCleanup.removedTags, ...projectCleanup.removedTags],
+      mergedTags: {...taskCleanup.mergedTags, ...projectCleanup.mergedTags},
+      renamedTags: {...taskCleanup.renamedTags, ...projectCleanup.renamedTags},
+      messages: [...taskCleanup.messages, ...projectCleanup.messages],
+    );
+  }
+
+  /// Cleans up tags specifically for projects
+  Future<TagCleanupResult> _cleanupProjectTags({
+    bool removeUnused = false,
+    bool normalizeCase = true,
+    bool removeEmptyTags = true,
+  }) async {
+    final allProjects = await _projectRepository.getAllProjects();
+    final removedTags = <String>[];
+    final mergedTags = <String, String>{};
+    final renamedTags = <String, String>{};
+    final messages = <String>[];
+    
+    for (final project in allProjects) {
+      try {
+        bool projectModified = false;
+        final cleanedTags = <String>[];
+        
+        for (final tagId in project.tagIds) {
+          final trimmedTag = tagId.trim();
+          
+          if (removeEmptyTags && trimmedTag.isEmpty) {
+            projectModified = true;
+            removedTags.add(tagId);
+            continue;
+          }
+          
+          String processedTag = trimmedTag;
+          if (normalizeCase) {
+            final normalized = normalizeTag(trimmedTag);
+            if (normalized != trimmedTag) {
+              processedTag = normalized;
+              projectModified = true;
+              renamedTags[trimmedTag] = normalized;
+            }
+          }
+          
+          cleanedTags.add(processedTag);
+        }
+        
+        final uniqueTags = cleanedTags.toSet().toList();
+        if (uniqueTags.length != cleanedTags.length) {
+          projectModified = true;
+          final duplicateCount = cleanedTags.length - uniqueTags.length;
+          mergedTags['duplicates_${project.id}'] = '$duplicateCount duplicates merged';
+        }
+        
+        if (projectModified) {
+          final updatedProject = project.copyWith(tagIds: uniqueTags);
+          await _projectRepository.updateProject(updatedProject);
+        }
+      } catch (e) {
+        messages.add('Error processing project ${project.id}: $e');
+      }
+    }
+    
+    return TagCleanupResult(
+      removedTags: removedTags,
+      mergedTags: mergedTags,
+      renamedTags: renamedTags,
+      messages: messages,
+    );
+  }
+
+  /// Gets tag usage statistics specifically for projects
+  Future<List<TagUsageStatistics>> getProjectTagsWithUsage() async {
+    final allProjects = await _projectRepository.getAllProjects();
+    final tagCounts = <String, TagUsageStatistics>{};
+    
+    for (final project in allProjects) {
+      for (final tagId in project.tagIds) {
+        final normalizedTag = normalizeTag(tagId);
+        final tag = Tag(id: normalizedTag, name: normalizedTag, color: '#2196F3', createdAt: DateTime.now());
+        
+        _updateTagStatistics(tagCounts, normalizedTag, tag, project.createdAt);
+      }
+    }
+    
+    return tagCounts.values.toList()..sort((a, b) => b.totalUsage.compareTo(a.totalUsage));
+  }
+
+  /// Validates project tag count limit
+  TagValidationResult validateProjectTagCount(List<String> tagIds) {
+    if (tagIds.length > maxTagsPerProject) {
+      return TagValidationResult.invalid('Project cannot have more than $maxTagsPerProject tags');
+    }
+    return TagValidationResult.valid();
   }
 }

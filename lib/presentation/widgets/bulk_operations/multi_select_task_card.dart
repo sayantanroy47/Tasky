@@ -9,7 +9,7 @@ import '../../../domain/entities/task_model.dart';
 import '../../../domain/models/enums.dart';
 import '../../../services/bulk_operations/task_selection_manager.dart';
 import '../glassmorphism_container.dart';
-import '../advanced_task_card.dart';
+import '../standardized_card.dart';
 
 /// Enhanced task card with multi-select capabilities
 /// 
@@ -133,8 +133,15 @@ class _MultiSelectTaskCardState extends ConsumerState<MultiSelectTaskCard>
                     ),
                     child: widget.child ?? Padding(
                       padding: widget.padding ?? EdgeInsets.zero,
-                      child: AdvancedTaskCard(
-                        task: widget.task,
+                      child: StandardizedCardVariants.task(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(widget.task.title),
+                            if (widget.task.description?.isNotEmpty == true)
+                              Text(widget.task.description!),
+                          ],
+                        ),
                         onTap: null, // Handled by parent
                       ),
                     ),

@@ -274,11 +274,6 @@ void main() {
           categoryId: template.projectCategoryId,
         );
 
-        final expectedTask = TaskModel.create(
-          title: 'Setup Task for My Project',
-          projectId: expectedProject.id,
-        );
-
         when(mockProjectRepo.createProject(any)).thenAnswer((_) async {});
 
         when(mockTaskRepo.createTask(any)).thenAnswer((_) async {});

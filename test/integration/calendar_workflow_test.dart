@@ -76,17 +76,14 @@ void main() {
                           AdvancedTaskCard(
                             key: Key('task_${taskToday.id}'),
                             task: taskToday,
-                            showDueDate: true,
                           ),
                           AdvancedTaskCard(
                             key: Key('task_${taskTomorrow.id}'),
                             task: taskTomorrow,
-                            showDueDate: true,
                           ),
                           AdvancedTaskCard(
                             key: Key('task_${taskNextWeek.id}'),
                             task: taskNextWeek,
-                            showDueDate: true,
                           ),
                         ],
                       ),

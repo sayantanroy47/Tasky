@@ -5,6 +5,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../domain/models/enums.dart';
 import '../../services/cloud_sync_service.dart';
 import '../widgets/standardized_app_bar.dart';
+import '../widgets/standardized_text.dart';
 
 /// Screen for managing cloud synchronization settings
 class CloudSyncScreen extends ConsumerStatefulWidget {
@@ -47,11 +48,11 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
             children: [
               Icon(PhosphorIcons.warningCircle(), size: 64, color: Colors.red),
               const SizedBox(height: 16),
-              Text('Error: $error'),
+              StandardizedText('Error: $error', style: StandardizedTextStyle.bodyMedium),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () => ref.refresh(cloudSyncStatsProvider),
-                child: const Text('Retry'),
+                child: const StandardizedText('Retry', style: StandardizedTextStyle.buttonText),
               ),
             ],
           ),
@@ -102,15 +103,15 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
             color: Colors.grey,
           ),
           const SizedBox(height: 24),
-          Text(
+          const StandardizedText(
             'Cloud Sync Not Connected',
-            style: Theme.of(context).textTheme.headlineSmall,
+            style: StandardizedTextStyle.headlineSmall,
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
-          Text(
+          const StandardizedText(
             'Sign in to sync your tasks and events across devices',
-            style: Theme.of(context).textTheme.bodyLarge,
+            style: StandardizedTextStyle.bodyLarge,
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 32),
@@ -121,7 +122,7 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
             child: ElevatedButton.icon(
               onPressed: () => _showSignInDialog(),
               icon: Icon(PhosphorIcons.signIn()),
-              label: const Text('Sign In'),
+              label: const StandardizedText('Sign In', style: StandardizedTextStyle.buttonText),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.all(16),
               ),
@@ -135,7 +136,7 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
             child: OutlinedButton.icon(
               onPressed: () => _showSignUpDialog(),
               icon: Icon(PhosphorIcons.userPlus()),
-              label: const Text('Create Account'),
+              label: const StandardizedText('Create Account', style: StandardizedTextStyle.buttonText),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.all(16),
               ),
@@ -158,9 +159,9 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const StandardizedText(
               'Benefits of Cloud Sync',
-              style: Theme.of(context).textTheme.titleMedium,
+              style: StandardizedTextStyle.titleMedium,
             ),
             const SizedBox(height: 12),
             _buildBenefitItem(
@@ -192,7 +193,7 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
         children: [
           Icon(icon, size: 20, color: Theme.of(context).primaryColor),
           const SizedBox(width: 12),
-          Expanded(child: Text(text)),
+          Expanded(child: StandardizedText(text, style: StandardizedTextStyle.bodyMedium)),
         ],
       ),
     );
@@ -209,24 +210,23 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
               children: [
                 Icon(PhosphorIcons.userCircle(), color: Colors.green),
                 const SizedBox(width: 8),
-                Text(
+                const StandardizedText(
                   'Account Connected',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: Colors.green,
-                        fontWeight: FontWeight.w500,
-                      ),
+                  style: StandardizedTextStyle.titleMedium,
+                  color: Colors.green,
+                  fontWeight: FontWeight.w500,
                 ),
                 const Spacer(),
                 TextButton(
                   onPressed: _showSignOutDialog,
-                  child: const Text('Sign Out'),
+                  child: const StandardizedText('Sign Out', style: StandardizedTextStyle.buttonText),
                 ),
               ],
             ),
             const SizedBox(height: 8),
-            Text(
+            const StandardizedText(
               'Your data is being synced to the cloud',
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: StandardizedTextStyle.bodyMedium,
             ),
           ],
         ),
@@ -241,9 +241,9 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const StandardizedText(
               'Sync Statistics',
-              style: Theme.of(context).textTheme.titleMedium,
+              style: StandardizedTextStyle.titleMedium,
             ),
             const SizedBox(height: 16),
             Row(
@@ -270,9 +270,9 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
                 children: [
                   Icon(PhosphorIcons.clock(), size: 16),
                   const SizedBox(width: 8),
-                  Text(
+                  StandardizedText(
                     'Last sync: ${_formatDateTime(stats.lastSyncTime!)}',
-                    style: Theme.of(context).textTheme.bodySmall,
+                    style: StandardizedTextStyle.bodySmall,
                   ),
                 ],
               ),
@@ -281,11 +281,10 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
                 children: [
                   Icon(PhosphorIcons.info(), size: 16, color: Colors.orange),
                   const SizedBox(width: 8),
-                  Text(
+                  const StandardizedText(
                     'Never synced',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.orange,
-                        ),
+                    style: StandardizedTextStyle.bodySmall,
+                    color: Colors.orange,
                   ),
                 ],
               ),
@@ -301,15 +300,14 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
       children: [
         Icon(icon, size: 32, color: Theme.of(context).primaryColor),
         const SizedBox(height: 8),
-        Text(
+        StandardizedText(
           value,
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
+          style: StandardizedTextStyle.headlineSmall,
+          fontWeight: FontWeight.w500,
         ),
-        Text(
+        StandardizedText(
           label,
-          style: Theme.of(context).textTheme.bodySmall,
+          style: StandardizedTextStyle.bodySmall,
           textAlign: TextAlign.center,
         ),
       ],
@@ -323,30 +321,30 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const StandardizedText(
               'Sync Settings',
-              style: Theme.of(context).textTheme.titleMedium,
+              style: StandardizedTextStyle.titleMedium,
             ),
             const SizedBox(height: 8),
             SwitchListTile(
-              title: const Text('Auto Sync'),
-              subtitle: const Text('Automatically sync changes'),
+              title: const StandardizedText('Auto Sync', style: StandardizedTextStyle.bodyLarge),
+              subtitle: const StandardizedText('Automatically sync changes', style: StandardizedTextStyle.bodyMedium),
               value: true, // This would come from settings
               onChanged: (value) {
                 // Implement auto sync toggle
               },
             ),
             SwitchListTile(
-              title: const Text('Real-time Sync'),
-              subtitle: const Text('Sync changes immediately'),
+              title: const StandardizedText('Real-time Sync', style: StandardizedTextStyle.bodyLarge),
+              subtitle: const StandardizedText('Sync changes immediately', style: StandardizedTextStyle.bodyMedium),
               value: false, // This would come from settings
               onChanged: (value) {
                 // Implement real-time sync toggle
               },
             ),
             SwitchListTile(
-              title: const Text('Sync on WiFi Only'),
-              subtitle: const Text('Avoid mobile data usage'),
+              title: const StandardizedText('Sync on WiFi Only', style: StandardizedTextStyle.bodyLarge),
+              subtitle: const StandardizedText('Avoid mobile data usage', style: StandardizedTextStyle.bodyMedium),
               value: true, // This would come from settings
               onChanged: (value) {
                 // Implement WiFi-only sync toggle
@@ -365,34 +363,34 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const StandardizedText(
               'Sync Actions',
-              style: Theme.of(context).textTheme.titleMedium,
+              style: StandardizedTextStyle.titleMedium,
             ),
             const SizedBox(height: 8),
             ListTile(
               leading: Icon(PhosphorIcons.cloudArrowUp()),
-              title: const Text('Full Sync'),
-              subtitle: const Text('Sync all data to and from cloud'),
+              title: const StandardizedText('Full Sync', style: StandardizedTextStyle.bodyLarge),
+              subtitle: const StandardizedText('Sync all data to and from cloud', style: StandardizedTextStyle.bodyMedium),
               onTap: _performFullSync,
             ),
             ListTile(
               leading: Icon(PhosphorIcons.cloudArrowUp()),
-              title: const Text('Upload All'),
-              subtitle: const Text('Upload all local data to cloud'),
+              title: const StandardizedText('Upload All', style: StandardizedTextStyle.bodyLarge),
+              subtitle: const StandardizedText('Upload all local data to cloud', style: StandardizedTextStyle.bodyMedium),
               onTap: _uploadAllData,
             ),
             ListTile(
               leading: Icon(PhosphorIcons.cloudArrowDown()),
-              title: const Text('Download All'),
-              subtitle: const Text('Download all data from cloud'),
+              title: const StandardizedText('Download All', style: StandardizedTextStyle.bodyLarge),
+              subtitle: const StandardizedText('Download all data from cloud', style: StandardizedTextStyle.bodyMedium),
               onTap: _downloadAllData,
             ),
             const Divider(),
             ListTile(
               leading: Icon(PhosphorIcons.arrowClockwise(), color: Colors.orange),
-              title: const Text('Reset Sync'),
-              subtitle: const Text('Clear sync data and start fresh'),
+              title: const StandardizedText('Reset Sync', style: StandardizedTextStyle.bodyLarge),
+              subtitle: const StandardizedText('Clear sync data and start fresh', style: StandardizedTextStyle.bodyMedium),
               onTap: _resetSync,
             ),
           ],
@@ -408,29 +406,29 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const StandardizedText(
               'Advanced Settings',
-              style: Theme.of(context).textTheme.titleMedium,
+              style: StandardizedTextStyle.titleMedium,
             ),
             const SizedBox(height: 8),
             ListTile(
               leading: Icon(PhosphorIcons.gitMerge()),
-              title: const Text('Conflict Resolution'),
-              subtitle: const Text('How to handle sync conflicts'),
+              title: const StandardizedText('Conflict Resolution', style: StandardizedTextStyle.bodyLarge),
+              subtitle: const StandardizedText('How to handle sync conflicts', style: StandardizedTextStyle.bodyMedium),
               trailing: Icon(PhosphorIcons.caretRight()),
               onTap: _showConflictResolutionSettings,
             ),
             ListTile(
               leading: Icon(PhosphorIcons.database()),
-              title: const Text('Data Management'),
-              subtitle: const Text('Manage cloud storage usage'),
+              title: const StandardizedText('Data Management', style: StandardizedTextStyle.bodyLarge),
+              subtitle: const StandardizedText('Manage cloud storage usage', style: StandardizedTextStyle.bodyMedium),
               trailing: Icon(PhosphorIcons.caretRight()),
               onTap: _showDataManagementSettings,
             ),
             ListTile(
               leading: Icon(PhosphorIcons.clockCounterClockwise()),
-              title: const Text('Sync History'),
-              subtitle: const Text('View sync activity log'),
+              title: const StandardizedText('Sync History', style: StandardizedTextStyle.bodyLarge),
+              subtitle: const StandardizedText('View sync activity log', style: StandardizedTextStyle.bodyMedium),
               trailing: Icon(PhosphorIcons.caretRight()),
               onTap: _showSyncHistory,
             ),

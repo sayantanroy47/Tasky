@@ -156,26 +156,26 @@ class ProjectCategoryDao extends DatabaseAccessor<AppDatabase> with _$ProjectCat
   }
 
   /// Gets categories with usage count (how many projects use each category)
-  Future<List<domain.CategoryWithUsageCount>> getCategoriesWithUsage() async {
+  Future<List<CategoryWithUsageCount>> getCategoriesWithUsage() async {
     final query = select(projectCategories).join([
       leftOuterJoin(projects, projects.categoryId.equalsExp(projectCategories.id))
     ]);
 
     final results = await query.get();
-    final categoryMap = <String, domain.CategoryWithUsageCount>{};
+    final categoryMap = <String, CategoryWithUsageCount>{};
 
     for (final row in results) {
       final category = row.readTable(projectCategories);
       final project = row.readTableOrNull(projects);
 
       if (!categoryMap.containsKey(category.id)) {
-        categoryMap[category.id] = domain.CategoryWithUsageCount(
+        categoryMap[category.id] = CategoryWithUsageCount(
           category: _categoryRowToModel(category),
           usageCount: project != null ? 1 : 0,
         );
       } else if (project != null) {
         final existing = categoryMap[category.id]!;
-        categoryMap[category.id] = domain.CategoryWithUsageCount(
+        categoryMap[category.id] = CategoryWithUsageCount(
           category: existing.category,
           usageCount: existing.usageCount + 1,
         );
@@ -268,7 +268,7 @@ class ProjectCategoryDao extends DatabaseAccessor<AppDatabase> with _$ProjectCat
   }
 
   /// Watches categories with usage counts (returns a stream)
-  Stream<List<domain.CategoryWithUsageCount>> watchCategoriesWithUsage() {
+  Stream<List<CategoryWithUsageCount>> watchCategoriesWithUsage() {
     return Stream.periodic(const Duration(seconds: 1))
         .asyncMap((_) => getCategoriesWithUsage())
         .distinct();

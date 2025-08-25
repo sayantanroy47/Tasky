@@ -40,30 +40,30 @@ void main() {
         KanbanColumnConfig(
           id: 'todo',
           title: 'To Do',
+          status: TaskStatus.pending,
           color: Colors.blue,
           maxTasks: 10,
-          isCollapsed: false,
         ),
         KanbanColumnConfig(
           id: 'in_progress',
           title: 'In Progress',
+          status: TaskStatus.inProgress,
           color: Colors.orange,
           maxTasks: 5,
-          isCollapsed: false,
         ),
         KanbanColumnConfig(
           id: 'review',
           title: 'Review',
+          status: TaskStatus.inProgress,
           color: Colors.purple,
           maxTasks: 3,
-          isCollapsed: false,
         ),
         KanbanColumnConfig(
           id: 'done',
           title: 'Done',
+          status: TaskStatus.completed,
           color: Colors.green,
-          maxTasks: null,
-          isCollapsed: false,
+          maxTasks: 100,
         ),
       ];
 
@@ -1262,7 +1262,7 @@ class _KanbanTaskPriorityShowcase extends StatelessWidget {
                       ),
                       const Spacer(),
                       Text(
-                        '${task.estimatedDuration?.inHours}h',
+                        '${task.estimatedDuration != null ? (task.estimatedDuration! / 60).round() : 0}h',
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ],

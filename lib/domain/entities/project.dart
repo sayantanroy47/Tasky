@@ -38,6 +38,9 @@ class Project extends Equatable {
   /// List of task IDs that belong to this project
   final List<String> taskIds;
   
+  /// List of tag IDs associated with this project
+  final List<String> tagIds;
+  
   /// Whether this project is archived
   final bool isArchived;
   
@@ -54,6 +57,7 @@ class Project extends Equatable {
     required this.createdAt,
     this.updatedAt,
     this.taskIds = const [],
+    this.tagIds = const [],
     this.isArchived = false,
     this.deadline,
   });
@@ -65,6 +69,7 @@ class Project extends Equatable {
     String color = '#2196F3', // Default blue color
     String? categoryId,
     String? category, // @deprecated - for backward compatibility
+    List<String> tagIds = const [],
     DateTime? deadline,
   }) {
     return Project(
@@ -74,6 +79,7 @@ class Project extends Equatable {
       color: color,
       categoryId: categoryId,
       category: category,
+      tagIds: tagIds,
       createdAt: DateTime.now(),
       deadline: deadline,
     );
@@ -96,6 +102,7 @@ class Project extends Equatable {
     DateTime? createdAt,
     DateTime? updatedAt,
     List<String>? taskIds,
+    List<String>? tagIds,
     bool? isArchived,
     DateTime? deadline,
   }) {
@@ -109,6 +116,7 @@ class Project extends Equatable {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       taskIds: taskIds ?? this.taskIds,
+      tagIds: tagIds ?? this.tagIds,
       isArchived: isArchived ?? this.isArchived,
       deadline: deadline ?? this.deadline,
     );
@@ -131,6 +139,27 @@ class Project extends Equatable {
     final newTaskIds = List<String>.from(taskIds)..remove(taskId);
     return copyWith(
       taskIds: newTaskIds,
+      updatedAt: DateTime.now(),
+    );
+  }
+
+  /// Adds a tag ID to this project
+  Project addTag(String tagId) {
+    if (tagIds.contains(tagId)) return this;
+    
+    return copyWith(
+      tagIds: [...tagIds, tagId],
+      updatedAt: DateTime.now(),
+    );
+  }
+
+  /// Removes a tag ID from this project
+  Project removeTag(String tagId) {
+    if (!tagIds.contains(tagId)) return this;
+    
+    final newTagIds = List<String>.from(tagIds)..remove(tagId);
+    return copyWith(
+      tagIds: newTagIds,
       updatedAt: DateTime.now(),
     );
   }
@@ -158,6 +187,7 @@ class Project extends Equatable {
     String? color,
     String? categoryId,
     String? category, // @deprecated - for backward compatibility
+    List<String>? tagIds,
     DateTime? deadline,
   }) {
     return copyWith(
@@ -166,6 +196,7 @@ class Project extends Equatable {
       color: color ?? this.color,
       categoryId: categoryId ?? this.categoryId,
       category: category ?? this.category,
+      tagIds: tagIds ?? this.tagIds,
       deadline: deadline ?? this.deadline,
       updatedAt: DateTime.now(),
     );
@@ -199,8 +230,14 @@ class Project extends Equatable {
   /// Returns the number of tasks in this project
   int get taskCount => taskIds.length;
   
+  /// Returns the number of tags in this project
+  int get tagCount => tagIds.length;
+  
   /// Returns true if the project is empty (no tasks)
   bool get isEmpty => taskIds.isEmpty;
+  
+  /// Returns true if the project has tags
+  bool get hasTags => tagIds.isNotEmpty;
   
   /// Returns true if the project is active (not archived)
   bool get isActive => !isArchived;
@@ -254,6 +291,7 @@ class Project extends Equatable {
         createdAt,
         updatedAt,
         taskIds,
+        tagIds,
         isArchived,
         deadline,
       ];
@@ -261,7 +299,7 @@ class Project extends Equatable {
   @override
   String toString() {
     return 'Project(id: $id, name: $name, taskCount: ${taskIds.length}, '
-           'categoryId: $categoryId, category: $category, '
+           'tagCount: ${tagIds.length}, categoryId: $categoryId, category: $category, '
            'isArchived: $isArchived, deadline: $deadline)';
   }
 }

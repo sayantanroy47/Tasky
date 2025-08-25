@@ -29,7 +29,7 @@ class EmailIntegrationService {
 
   EmailIntegrationService({
     required TaskRepository taskRepository,
-  }) : _taskRepository = taskRepository,
+  }) : _taskRepository = taskRepository;
 
   /// Stream of email events
   Stream<EmailEvent> get emailEvents => _emailEventController.stream;

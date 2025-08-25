@@ -456,7 +456,7 @@ extension StandardizedNavigationExtension on BuildContext {
     Map<String, dynamic>? arguments,
     NavigationTransition transition = NavigationTransition.slideFromRight,
   }) {
-    return StandardizedNavigation.pushReplacement<T>(
+    return StandardizedNavigation.pushReplacement<T, Object?>(
       this,
       routeName: routeName,
       arguments: arguments,

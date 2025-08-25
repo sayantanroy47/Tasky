@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/typography_constants.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'standardized_icons.dart';
+import 'standardized_spacing.dart';
 
 
 /// Widget displaying AI usage statistics and insights
@@ -15,7 +16,7 @@ class AIUsageStatistics extends ConsumerWidget {
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: StandardizedSpacing.padding(SpacingSize.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

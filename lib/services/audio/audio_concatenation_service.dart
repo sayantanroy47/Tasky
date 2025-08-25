@@ -64,6 +64,14 @@ class AudioConcatenationService {
       // Generate output file path
       final fileName = outputFileName ?? 'concatenated_${DateTime.now().millisecondsSinceEpoch}.aac';
       final outputPath = path.join(audioDir.path, fileName);
+      
+      // Ensure output directory exists (handles subdirectories in fileName)
+      final outputFile = File(outputPath);
+      final outputFileDir = outputFile.parent;
+      if (!await outputFileDir.exists()) {
+        await outputFileDir.create(recursive: true);
+        debugPrint('[AUDIO] Created output directory: ${outputFileDir.path}');
+      }
 
       // Filter valid audio files
       final validFiles = <String>[];

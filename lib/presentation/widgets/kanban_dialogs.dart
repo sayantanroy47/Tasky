@@ -9,6 +9,8 @@ import '../../presentation/providers/task_providers.dart';
 import '../../presentation/providers/kanban_providers.dart';
 import 'glassmorphism_container.dart';
 import 'kanban_board_view.dart';
+import 'standardized_text.dart';
+import 'standardized_colors.dart';
 
 /// Dialog for filtering tasks in Kanban board
 class KanbanFilterDialog extends ConsumerStatefulWidget {
@@ -48,7 +50,7 @@ class _KanbanFilterDialogState extends ConsumerState<KanbanFilterDialog> {
         children: [
           Icon(PhosphorIcons.funnel(), color: theme.colorScheme.primary),
           const SizedBox(width: SpacingTokens.sm),
-          const Text('Filter Tasks'),
+          const StandardizedText('Filter Tasks', style: StandardizedTextStyle.titleMedium),
         ],
       ),
       content: SizedBox(
@@ -58,11 +60,9 @@ class _KanbanFilterDialogState extends ConsumerState<KanbanFilterDialog> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Priority filter
-            Text(
+            const StandardizedText(
               'Priority',
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: TypographyConstants.medium,
-              ),
+              style: StandardizedTextStyle.titleSmall,
             ),
             const SizedBox(height: SpacingTokens.sm),
             
@@ -71,7 +71,7 @@ class _KanbanFilterDialogState extends ConsumerState<KanbanFilterDialog> {
               children: [
                 // Clear priority chip
                 FilterChip(
-                  label: const Text('Any'),
+                  label: const StandardizedText('Any', style: StandardizedTextStyle.bodyMedium),
                   selected: _selectedPriority == null,
                   onSelected: (selected) {
                     setState(() {
@@ -91,7 +91,7 @@ class _KanbanFilterDialogState extends ConsumerState<KanbanFilterDialog> {
                         color: priority.color,
                       ),
                       const SizedBox(width: 4),
-                      Text(priority.displayName),
+                      StandardizedText(priority.displayName, style: StandardizedTextStyle.bodyMedium),
                     ],
                   ),
                   selected: _selectedPriority == priority,
@@ -107,22 +107,19 @@ class _KanbanFilterDialogState extends ConsumerState<KanbanFilterDialog> {
             const SizedBox(height: SpacingTokens.lg),
             
             // Tags filter
-            Text(
+            const StandardizedText(
               'Tags',
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: TypographyConstants.medium,
-              ),
+              style: StandardizedTextStyle.titleSmall,
             ),
             const SizedBox(height: SpacingTokens.sm),
             
             availableTagsAsync.when(
               data: (availableTags) {
                 if (availableTags.isEmpty) {
-                  return Text(
+                  return StandardizedText(
                     'No tags available',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
+                    style: StandardizedTextStyle.bodyMedium,
+                    color: theme.colorScheme.onSurfaceVariant,
                   );
                 }
                 
@@ -130,7 +127,7 @@ class _KanbanFilterDialogState extends ConsumerState<KanbanFilterDialog> {
                   spacing: SpacingTokens.sm,
                   runSpacing: SpacingTokens.xs,
                   children: availableTags.map((tag) => FilterChip(
-                    label: Text(tag),
+                    label: StandardizedText(tag, style: StandardizedTextStyle.bodyMedium),
                     selected: _selectedTags.contains(tag),
                     onSelected: (selected) {
                       setState(() {
@@ -145,16 +142,16 @@ class _KanbanFilterDialogState extends ConsumerState<KanbanFilterDialog> {
                 );
               },
               loading: () => const CircularProgressIndicator(),
-              error: (error, _) => Text('Error loading tags: $error'),
+              error: (error, _) => StandardizedText('Error loading tags: $error', style: StandardizedTextStyle.bodyMedium, color: context.errorColor),
             ),
             
             if (_selectedTags.isNotEmpty) ...[
               const SizedBox(height: SpacingTokens.sm),
               Row(
                 children: [
-                  Text(
+                  StandardizedText(
                     '${_selectedTags.length} tag${_selectedTags.length != 1 ? 's' : ''} selected',
-                    style: theme.textTheme.bodySmall,
+                    style: StandardizedTextStyle.bodySmall,
                   ),
                   const Spacer(),
                   TextButton(
@@ -163,7 +160,7 @@ class _KanbanFilterDialogState extends ConsumerState<KanbanFilterDialog> {
                         _selectedTags.clear();
                       });
                     },
-                    child: const Text('Clear all'),
+                    child: const StandardizedText('Clear all', style: StandardizedTextStyle.buttonText),
                   ),
                 ],
               ),
@@ -174,18 +171,18 @@ class _KanbanFilterDialogState extends ConsumerState<KanbanFilterDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: const StandardizedText('Cancel', style: StandardizedTextStyle.buttonText),
         ),
         TextButton(
           onPressed: _clearFilters,
-          child: const Text('Clear'),
+          child: const StandardizedText('Clear', style: StandardizedTextStyle.buttonText),
         ),
         FilledButton(
           onPressed: () {
             widget.onFiltersChanged(_selectedPriority, _selectedTags);
             Navigator.of(context).pop();
           },
-          child: const Text('Apply'),
+          child: const StandardizedText('Apply', style: StandardizedTextStyle.buttonText),
         ),
       ],
     );
@@ -255,11 +252,9 @@ class _KanbanViewOptionsSheetState extends ConsumerState<KanbanViewOptionsSheet>
             children: [
               Icon(PhosphorIcons.gear(), color: theme.colorScheme.primary),
               const SizedBox(width: SpacingTokens.sm),
-              Text(
+              const StandardizedText(
                 'View Options',
-                style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: TypographyConstants.medium,
-                ),
+                style: StandardizedTextStyle.headlineSmall,
               ),
               const Spacer(),
               IconButton(
@@ -276,20 +271,20 @@ class _KanbanViewOptionsSheetState extends ConsumerState<KanbanViewOptionsSheet>
             'Display Options',
             [
               SwitchListTile(
-                title: const Text('Show task counts'),
-                subtitle: const Text('Display number of tasks in each column header'),
+                title: const StandardizedText('Show task counts', style: StandardizedTextStyle.bodyMedium),
+                subtitle: const StandardizedText('Display number of tasks in each column header', style: StandardizedTextStyle.bodySmall),
                 value: config.showTaskCounts,
                 onChanged: (_) => configNotifier.toggleTaskCounts(),
               ),
               SwitchListTile(
-                title: const Text('Enable drag & drop'),
-                subtitle: const Text('Allow moving tasks between columns'),
+                title: const StandardizedText('Enable drag & drop', style: StandardizedTextStyle.bodyMedium),
+                subtitle: const StandardizedText('Allow moving tasks between columns', style: StandardizedTextStyle.bodySmall),
                 value: config.enableDragAndDrop,
                 onChanged: (_) => configNotifier.toggleDragAndDrop(),
               ),
               SwitchListTile(
-                title: const Text('Batch operations'),
-                subtitle: const Text('Enable selecting multiple tasks'),
+                title: const StandardizedText('Batch operations', style: StandardizedTextStyle.bodyMedium),
+                subtitle: const StandardizedText('Enable selecting multiple tasks', style: StandardizedTextStyle.bodySmall),
                 value: config.enableBatchOperations,
                 onChanged: (_) => configNotifier.toggleBatchOperations(),
               ),
@@ -303,18 +298,16 @@ class _KanbanViewOptionsSheetState extends ConsumerState<KanbanViewOptionsSheet>
             'Column Configuration',
             [
               // Column presets
-              Text(
+              const StandardizedText(
                 'Quick Presets',
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: TypographyConstants.medium,
-                ),
+                style: StandardizedTextStyle.titleSmall,
               ),
               const SizedBox(height: SpacingTokens.sm),
               
               Wrap(
                 spacing: SpacingTokens.sm,
                 children: presets.entries.map((entry) => ActionChip(
-                  label: Text(_getPresetDisplayName(entry.key)),
+                  label: StandardizedText(_getPresetDisplayName(entry.key), style: StandardizedTextStyle.bodyMedium),
                   onPressed: () => _applyPreset(entry.value),
                 )).toList(),
               ),
@@ -322,11 +315,9 @@ class _KanbanViewOptionsSheetState extends ConsumerState<KanbanViewOptionsSheet>
               const SizedBox(height: SpacingTokens.md),
 
               // Column list
-              Text(
+              StandardizedText(
                 'Columns (${_workingColumns.length})',
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: TypographyConstants.medium,
-                ),
+                style: StandardizedTextStyle.titleSmall,
               ),
               const SizedBox(height: SpacingTokens.sm),
               
@@ -346,17 +337,17 @@ class _KanbanViewOptionsSheetState extends ConsumerState<KanbanViewOptionsSheet>
             children: [
               TextButton(
                 onPressed: _resetToDefaults,
-                child: const Text('Reset to Default'),
+                child: const StandardizedText('Reset to Default', style: StandardizedTextStyle.buttonText),
               ),
               const Spacer(),
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Cancel'),
+                child: const StandardizedText('Cancel', style: StandardizedTextStyle.buttonText),
               ),
               const SizedBox(width: SpacingTokens.sm),
               FilledButton(
                 onPressed: _applyChanges,
-                child: const Text('Apply'),
+                child: const StandardizedText('Apply', style: StandardizedTextStyle.buttonText),
               ),
             ],
           ),
@@ -371,12 +362,10 @@ class _KanbanViewOptionsSheetState extends ConsumerState<KanbanViewOptionsSheet>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        StandardizedText(
           title,
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: TypographyConstants.medium,
-            color: theme.colorScheme.primary,
-          ),
+          style: StandardizedTextStyle.titleMedium,
+          color: theme.colorScheme.primary,
         ),
         const SizedBox(height: SpacingTokens.md),
         ...children,
@@ -401,8 +390,8 @@ class _KanbanViewOptionsSheetState extends ConsumerState<KanbanViewOptionsSheet>
             color: column.color,
           ),
         ),
-        title: Text(column.title),
-        subtitle: Text(column.status.displayName),
+        title: StandardizedText(column.title, style: StandardizedTextStyle.bodyMedium),
+        subtitle: StandardizedText(column.status.displayName, style: StandardizedTextStyle.bodySmall),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -514,7 +503,7 @@ class _TaskCreationDialogState extends ConsumerState<TaskCreationDialog> {
         children: [
           Icon(PhosphorIcons.plus(), color: theme.colorScheme.primary),
           const SizedBox(width: SpacingTokens.sm),
-          Text('Create Task - ${widget.initialStatus.displayName}'),
+          StandardizedText('Create Task - ${widget.initialStatus.displayName}', style: StandardizedTextStyle.titleMedium),
         ],
       ),
       content: SizedBox(
@@ -559,9 +548,9 @@ class _TaskCreationDialogState extends ConsumerState<TaskCreationDialog> {
               // Priority selection
               Row(
                 children: [
-                  Text(
+                  const StandardizedText(
                     'Priority:',
-                    style: theme.textTheme.titleSmall,
+                    style: StandardizedTextStyle.titleSmall,
                   ),
                   const SizedBox(width: SpacingTokens.sm),
                   Expanded(
@@ -577,7 +566,7 @@ class _TaskCreationDialogState extends ConsumerState<TaskCreationDialog> {
                               color: priority.color,
                             ),
                             const SizedBox(width: 4),
-                            Text(priority.displayName),
+                            StandardizedText(priority.displayName, style: StandardizedTextStyle.bodyMedium),
                           ],
                         ),
                         selected: _priority == priority,
@@ -599,18 +588,18 @@ class _TaskCreationDialogState extends ConsumerState<TaskCreationDialog> {
               // Due date selection
               Row(
                 children: [
-                  Text(
+                  const StandardizedText(
                     'Due Date:',
-                    style: theme.textTheme.titleSmall,
+                    style: StandardizedTextStyle.titleSmall,
                   ),
                   const SizedBox(width: SpacingTokens.sm),
                   Expanded(
                     child: Row(
                       children: [
                         if (_dueDate != null) ...[
-                          Text(
+                          StandardizedText(
                             '${_dueDate!.day}/${_dueDate!.month}/${_dueDate!.year}',
-                            style: theme.textTheme.bodyMedium,
+                            style: StandardizedTextStyle.bodyMedium,
                           ),
                           const SizedBox(width: SpacingTokens.sm),
                           IconButton(
@@ -619,16 +608,15 @@ class _TaskCreationDialogState extends ConsumerState<TaskCreationDialog> {
                             tooltip: 'Clear date',
                           ),
                         ] else
-                          Text(
+                          StandardizedText(
                             'No due date',
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
+                            style: StandardizedTextStyle.bodyMedium,
+                            color: theme.colorScheme.onSurfaceVariant,
                           ),
                         const Spacer(),
                         FilledButton.tonal(
                           onPressed: _selectDueDate,
-                          child: const Text('Set Date'),
+                          child: const StandardizedText('Set Date', style: StandardizedTextStyle.buttonText),
                         ),
                       ],
                     ),
@@ -644,9 +632,9 @@ class _TaskCreationDialogState extends ConsumerState<TaskCreationDialog> {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const StandardizedText(
                         'Tags:',
-                        style: theme.textTheme.titleSmall,
+                        style: StandardizedTextStyle.titleSmall,
                       ),
                       const SizedBox(height: SpacingTokens.sm),
                       
@@ -655,7 +643,7 @@ class _TaskCreationDialogState extends ConsumerState<TaskCreationDialog> {
                           spacing: SpacingTokens.xs,
                           runSpacing: SpacingTokens.xs,
                           children: availableTags.take(10).map((tag) => FilterChip(
-                            label: Text(tag),
+                            label: StandardizedText(tag, style: StandardizedTextStyle.bodyMedium),
                             selected: _selectedTags.contains(tag),
                             onSelected: (selected) {
                               setState(() {
@@ -671,9 +659,9 @@ class _TaskCreationDialogState extends ConsumerState<TaskCreationDialog> {
                       
                       if (_selectedTags.isNotEmpty) ...[
                         const SizedBox(height: SpacingTokens.sm),
-                        Text(
+                        StandardizedText(
                           '${_selectedTags.length} tag${_selectedTags.length != 1 ? 's' : ''} selected',
-                          style: theme.textTheme.bodySmall,
+                          style: StandardizedTextStyle.bodySmall,
                         ),
                       ],
                     ],
@@ -689,7 +677,7 @@ class _TaskCreationDialogState extends ConsumerState<TaskCreationDialog> {
       actions: [
         TextButton(
           onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: const StandardizedText('Cancel', style: StandardizedTextStyle.buttonText),
         ),
         FilledButton(
           onPressed: _isLoading ? null : _createTask,
@@ -699,7 +687,7 @@ class _TaskCreationDialogState extends ConsumerState<TaskCreationDialog> {
                   height: 16,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : const Text('Create'),
+              : const StandardizedText('Create', style: StandardizedTextStyle.buttonText),
         ),
       ],
     );
@@ -758,9 +746,9 @@ class _TaskCreationDialogState extends ConsumerState<TaskCreationDialog> {
       if (mounted) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Task created successfully'),
-            backgroundColor: Colors.green,
+          SnackBar(
+            content: const StandardizedText('Task created successfully', style: StandardizedTextStyle.bodyMedium),
+            backgroundColor: Theme.of(context).colorScheme.primary,
           ),
         );
       }
@@ -768,8 +756,8 @@ class _TaskCreationDialogState extends ConsumerState<TaskCreationDialog> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to create task: $e'),
-            backgroundColor: Colors.red,
+            content: StandardizedText('Failed to create task: $e', style: StandardizedTextStyle.bodyMedium),
+            backgroundColor: context.errorColor,
           ),
         );
       }
@@ -801,7 +789,7 @@ class PrioritySelectionDialog extends StatelessWidget {
         children: [
           Icon(PhosphorIcons.star(), color: theme.colorScheme.primary),
           const SizedBox(width: SpacingTokens.sm),
-          const Text('Select Priority'),
+          const StandardizedText('Select Priority', style: StandardizedTextStyle.titleMedium),
         ],
       ),
       content: Column(
@@ -811,7 +799,7 @@ class PrioritySelectionDialog extends StatelessWidget {
             _getPriorityIcon(priority),
             color: priority.color,
           ),
-          title: Text(priority.displayName),
+          title: StandardizedText(priority.displayName, style: StandardizedTextStyle.bodyMedium),
           onTap: () {
             onPrioritySelected(priority);
             Navigator.of(context).pop();
@@ -821,7 +809,7 @@ class PrioritySelectionDialog extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: const StandardizedText('Cancel', style: StandardizedTextStyle.buttonText),
         ),
       ],
     );
@@ -874,7 +862,7 @@ class _TagSelectionDialogState extends ConsumerState<TagSelectionDialog> {
         children: [
           Icon(PhosphorIcons.tag(), color: theme.colorScheme.primary),
           const SizedBox(width: SpacingTokens.sm),
-          const Text('Add Tags'),
+          const StandardizedText('Add Tags', style: StandardizedTextStyle.titleMedium),
         ],
       ),
       content: SizedBox(
@@ -897,7 +885,7 @@ class _TagSelectionDialogState extends ConsumerState<TagSelectionDialog> {
                 const SizedBox(width: SpacingTokens.sm),
                 FilledButton(
                   onPressed: _addNewTag,
-                  child: const Text('Add'),
+                  child: const StandardizedText('Add', style: StandardizedTextStyle.buttonText),
                 ),
               ],
             ),
@@ -908,22 +896,19 @@ class _TagSelectionDialogState extends ConsumerState<TagSelectionDialog> {
             availableTagsAsync.when(
               data: (availableTags) {
                 if (availableTags.isEmpty) {
-                  return Text(
+                  return StandardizedText(
                     'No existing tags. Create a new tag above.',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
+                    style: StandardizedTextStyle.bodyMedium,
+                    color: theme.colorScheme.onSurfaceVariant,
                   );
                 }
 
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const StandardizedText(
                       'Available Tags',
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: TypographyConstants.medium,
-                      ),
+                      style: StandardizedTextStyle.titleSmall,
                     ),
                     const SizedBox(height: SpacingTokens.sm),
                     
@@ -931,7 +916,7 @@ class _TagSelectionDialogState extends ConsumerState<TagSelectionDialog> {
                       spacing: SpacingTokens.sm,
                       runSpacing: SpacingTokens.xs,
                       children: availableTags.map((tag) => FilterChip(
-                        label: Text(tag),
+                        label: StandardizedText(tag, style: StandardizedTextStyle.bodyMedium),
                         selected: _selectedTags.contains(tag),
                         onSelected: (selected) {
                           setState(() {
@@ -948,16 +933,16 @@ class _TagSelectionDialogState extends ConsumerState<TagSelectionDialog> {
                 );
               },
               loading: () => const CircularProgressIndicator(),
-              error: (error, _) => Text('Error loading tags: $error'),
+              error: (error, _) => StandardizedText('Error loading tags: $error', style: StandardizedTextStyle.bodyMedium, color: context.errorColor),
             ),
 
             if (_selectedTags.isNotEmpty) ...[
               const SizedBox(height: SpacingTokens.md),
               Row(
                 children: [
-                  Text(
+                  StandardizedText(
                     '${_selectedTags.length} tag${_selectedTags.length != 1 ? 's' : ''} selected',
-                    style: theme.textTheme.bodySmall,
+                    style: StandardizedTextStyle.bodySmall,
                   ),
                   const Spacer(),
                   TextButton(
@@ -966,7 +951,7 @@ class _TagSelectionDialogState extends ConsumerState<TagSelectionDialog> {
                         _selectedTags.clear();
                       });
                     },
-                    child: const Text('Clear all'),
+                    child: const StandardizedText('Clear all', style: StandardizedTextStyle.buttonText),
                   ),
                 ],
               ),
@@ -977,14 +962,14 @@ class _TagSelectionDialogState extends ConsumerState<TagSelectionDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: const StandardizedText('Cancel', style: StandardizedTextStyle.buttonText),
         ),
         FilledButton(
           onPressed: _selectedTags.isNotEmpty ? () {
             widget.onTagsSelected(_selectedTags);
             Navigator.of(context).pop();
           } : null,
-          child: const Text('Add Tags'),
+          child: const StandardizedText('Add Tags', style: StandardizedTextStyle.buttonText),
         ),
       ],
     );

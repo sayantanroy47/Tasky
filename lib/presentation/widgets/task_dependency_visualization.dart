@@ -7,6 +7,9 @@ import '../../domain/models/enums.dart';
 import '../providers/task_dependency_providers.dart';
 import '../providers/task_providers.dart';
 import 'glassmorphism_container.dart';
+import 'standardized_text.dart';
+import 'standardized_spacing.dart';
+import 'standardized_colors.dart';
 
 /// Widget for visualizing and managing task dependencies
 class TaskDependencyVisualization extends ConsumerWidget {
@@ -34,7 +37,7 @@ class TaskDependencyVisualization extends ConsumerWidget {
           error: (error, _) => _buildErrorWidget(context, 'Failed to load dependency statistics'),
         ),
 
-        const SizedBox(height: 16),
+        StandardizedGaps.md,
 
         // Dependency Graph Section
         Expanded(
@@ -53,17 +56,15 @@ class TaskDependencyVisualization extends ConsumerWidget {
       blur: 15.0,
       opacity: 0.1,
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: StandardizedSpacing.padding(SpacingSize.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const StandardizedText(
               'Dependency Overview',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
+              style: StandardizedTextStyle.titleLarge,
             ),
-            const SizedBox(height: 12),
+            StandardizedGaps.vertical(SpacingSize.sm),
             Row(
               children: [
                 Expanded(
@@ -75,27 +76,27 @@ class TaskDependencyVisualization extends ConsumerWidget {
                     Theme.of(context).colorScheme.primary,
                   ),
                 ),
-                const SizedBox(width: 8),
+                StandardizedGaps.hSm,
                 Expanded(
                   child: _buildStatCard(
                     context,
                     'Ready',
                     stats.readyTasks.toString(),
                     PhosphorIcons.playCircle(),
-                    Colors.green,
+                    context.successColor,
                   ),
                 ),
-                const SizedBox(width: 8),
+                StandardizedGaps.hSm,
                 Expanded(
                   child: _buildStatCard(
                     context,
                     'Blocked',
                     stats.blockedTasks.toString(),
                     PhosphorIcons.prohibit(),
-                    Colors.orange,
+                    context.warningColor,
                   ),
                 ),
-                const SizedBox(width: 8),
+                StandardizedGaps.hSm,
                 Expanded(
                   child: _buildStatCard(
                     context,
@@ -115,7 +116,7 @@ class TaskDependencyVisualization extends ConsumerWidget {
 
   Widget _buildStatCard(BuildContext context, String title, String value, IconData icon, Color color) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: StandardizedSpacing.padding(SpacingSize.md),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
@@ -124,19 +125,16 @@ class TaskDependencyVisualization extends ConsumerWidget {
       child: Column(
         children: [
           Icon(icon, color: color, size: 20),
-          const SizedBox(height: 4),
-          Text(
+          StandardizedGaps.xs,
+          StandardizedText(
             value,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                  color: color,
-                ),
+            style: StandardizedTextStyle.titleMedium,
+            color: color,
           ),
-          Text(
+          StandardizedText(
             title,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+            style: StandardizedTextStyle.bodySmall,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
             textAlign: TextAlign.center,
           ),
         ],
@@ -155,7 +153,7 @@ class TaskDependencyVisualization extends ConsumerWidget {
         // Tab Bar for different views
         _buildTabBar(context),
 
-        const SizedBox(height: 16),
+        StandardizedGaps.md,
 
         // Task Lists
         Expanded(
@@ -163,8 +161,8 @@ class TaskDependencyVisualization extends ConsumerWidget {
             length: 3,
             child: TabBarView(
               children: [
-                _buildTaskList(context, ref, 'Ready Tasks', graphData.readyTasks, Colors.green),
-                _buildTaskList(context, ref, 'Blocked Tasks', graphData.blockedTasks, Colors.orange),
+                _buildTaskList(context, ref, 'Ready Tasks', graphData.readyTasks, context.successColor),
+                _buildTaskList(context, ref, 'Blocked Tasks', graphData.blockedTasks, context.warningColor),
                 _buildDependencyView(context, ref, graphData),
               ],
             ),
@@ -185,9 +183,9 @@ class TaskDependencyVisualization extends ConsumerWidget {
         labelColor: Theme.of(context).colorScheme.primary,
         unselectedLabelColor: Theme.of(context).colorScheme.onSurfaceVariant,
         tabs: const [
-          Tab(text: 'Ready'),
-          Tab(text: 'Blocked'),
-          Tab(text: 'Dependencies'),
+          Tab(child: StandardizedText('Ready', style: StandardizedTextStyle.labelMedium)),
+          Tab(child: StandardizedText('Blocked', style: StandardizedTextStyle.labelMedium)),
+          Tab(child: StandardizedText('Dependencies', style: StandardizedTextStyle.labelMedium)),
         ],
       ),
     );
@@ -204,12 +202,11 @@ class TaskDependencyVisualization extends ConsumerWidget {
               size: 64,
               color: color.withValues(alpha: 0.5),
             ),
-            const SizedBox(height: 16),
-            Text(
+            StandardizedGaps.md,
+            StandardizedText(
               'No ${title.toLowerCase()}',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
+              style: StandardizedTextStyle.titleMedium,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ],
         ),
@@ -230,7 +227,7 @@ class TaskDependencyVisualization extends ConsumerWidget {
     final dependentTasksAsync = ref.watch(dependentTasksProvider(task.id));
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 8),
+      margin: StandardizedSpacing.marginOnly(bottom: SpacingSize.sm),
       child: ExpansionTile(
         leading: Container(
           width: 8,
@@ -240,27 +237,27 @@ class TaskDependencyVisualization extends ConsumerWidget {
             shape: BoxShape.circle,
           ),
         ),
-        title: Text(
+        title: StandardizedText(
           task.title,
-          style: Theme.of(context).textTheme.titleMedium,
+          style: StandardizedTextStyle.titleMedium,
         ),
-        subtitle: Text(
+        subtitle: StandardizedText(
           'Dependencies: ${task.dependencies.length}',
-          style: Theme.of(context).textTheme.bodySmall,
+          style: StandardizedTextStyle.bodySmall,
         ),
         children: [
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: StandardizedSpacing.padding(SpacingSize.md),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Task description
                 if (task.description?.isNotEmpty == true) ...[
-                  Text(
+                  StandardizedText(
                     task.description!,
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    style: StandardizedTextStyle.bodyMedium,
                   ),
-                  const SizedBox(height: 12),
+                  StandardizedGaps.vertical(SpacingSize.sm),
                 ],
 
                 // Prerequisites
@@ -270,7 +267,7 @@ class TaskDependencyVisualization extends ConsumerWidget {
                   error: (_, __) => const SizedBox(),
                 ),
 
-                const SizedBox(height: 12),
+                StandardizedGaps.vertical(SpacingSize.sm),
 
                 // Dependent tasks
                 dependentTasksAsync.when(
@@ -279,7 +276,7 @@ class TaskDependencyVisualization extends ConsumerWidget {
                   error: (_, __) => const SizedBox(),
                 ),
 
-                const SizedBox(height: 12),
+                StandardizedGaps.vertical(SpacingSize.sm),
 
                 // Actions
                 Row(
@@ -288,13 +285,13 @@ class TaskDependencyVisualization extends ConsumerWidget {
                     TextButton.icon(
                       onPressed: () => _showManageDependenciesDialog(context, ref, task),
                       icon: Icon(PhosphorIcons.pencil()),
-                      label: const Text('Manage'),
+                      label: const StandardizedText('Manage', style: StandardizedTextStyle.buttonText),
                     ),
-                    const SizedBox(width: 8),
+                    StandardizedGaps.hSm,
                     if (task.status == TaskStatus.pending)
                       ElevatedButton(
                         onPressed: () => _validateAndStartTask(context, ref, task),
-                        child: const Text('Start Task'),
+                        child: const StandardizedText('Start Task', style: StandardizedTextStyle.buttonText),
                       ),
                   ],
                 ),
@@ -314,29 +311,26 @@ class TaskDependencyVisualization extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const StandardizedText(
           'Prerequisites:',
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
+          style: StandardizedTextStyle.titleSmall,
         ),
-        const SizedBox(height: 4),
+        StandardizedGaps.xs,
         ...prerequisites.map((prereq) => Padding(
-              padding: const EdgeInsets.only(left: 8, bottom: 2),
+              padding: StandardizedSpacing.paddingOnly(left: SpacingSize.sm, bottom: SpacingSize.xs),
               child: Row(
                 children: [
                   Icon(
                     prereq.status == TaskStatus.completed ? PhosphorIcons.checkCircle() : PhosphorIcons.circle(),
                     size: 16,
-                    color: prereq.status == TaskStatus.completed ? Colors.green : Colors.grey,
+                    color: prereq.status == TaskStatus.completed ? context.successColor : Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
-                  const SizedBox(width: 8),
+                  StandardizedGaps.hSm,
                   Expanded(
-                    child: Text(
+                    child: StandardizedText(
                       prereq.title,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            decoration: prereq.status == TaskStatus.completed ? TextDecoration.lineThrough : null,
-                          ),
+                      style: StandardizedTextStyle.bodySmall,
+                      decoration: prereq.status == TaskStatus.completed ? TextDecoration.lineThrough : null,
                     ),
                   ),
                 ],
@@ -354,27 +348,25 @@ class TaskDependencyVisualization extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const StandardizedText(
           'Blocks:',
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
+          style: StandardizedTextStyle.titleSmall,
         ),
-        const SizedBox(height: 4),
+        StandardizedGaps.xs,
         ...dependents.map((dependent) => Padding(
-              padding: const EdgeInsets.only(left: 8, bottom: 2),
+              padding: StandardizedSpacing.paddingOnly(left: SpacingSize.sm, bottom: SpacingSize.xs),
               child: Row(
                 children: [
                   Icon(
                     PhosphorIcons.prohibit(),
                     size: 16,
-                    color: Colors.orange,
+                    color: context.warningColor,
                   ),
-                  const SizedBox(width: 8),
+                  StandardizedGaps.hSm,
                   Expanded(
-                    child: Text(
+                    child: StandardizedText(
                       dependent.title,
-                      style: Theme.of(context).textTheme.bodySmall,
+                      style: StandardizedTextStyle.bodySmall,
                     ),
                   ),
                 ],
@@ -400,11 +392,11 @@ class TaskDependencyVisualization extends ConsumerWidget {
 
         // Add dependency button
         Padding(
-          padding: const EdgeInsets.all(16),
+          padding: StandardizedSpacing.padding(SpacingSize.md),
           child: ElevatedButton.icon(
             onPressed: () => _showAddDependencyDialog(context, ref, graphData.allTasks),
             icon: Icon(PhosphorIcons.plus()),
-            label: const Text('Add Dependency'),
+            label: const StandardizedText('Add Dependency', style: StandardizedTextStyle.buttonText),
           ),
         ),
       ],
@@ -413,37 +405,36 @@ class TaskDependencyVisualization extends ConsumerWidget {
 
   Widget _buildDependencyRelationship(BuildContext context, DependencyRelationship dependency) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 8),
+      margin: StandardizedSpacing.marginOnly(bottom: SpacingSize.sm),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: StandardizedSpacing.padding(SpacingSize.md),
         child: Row(
           children: [
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  StandardizedText(
                     dependency.dependent.title,
-                    style: Theme.of(context).textTheme.titleSmall,
+                    style: StandardizedTextStyle.titleSmall,
                   ),
-                  Text(
+                  StandardizedText(
                     'Depends on',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
+                    style: StandardizedTextStyle.bodySmall,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ],
               ),
             ),
-            Icon(PhosphorIcons.arrowRight(), color: Colors.grey),
-            const SizedBox(width: 8),
+            Icon(PhosphorIcons.arrowRight(), color: Theme.of(context).colorScheme.onSurfaceVariant),
+            StandardizedGaps.hSm,
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  StandardizedText(
                     dependency.prerequisite.title,
-                    style: Theme.of(context).textTheme.titleSmall,
+                    style: StandardizedTextStyle.titleSmall,
                   ),
                   Row(
                     children: [
@@ -452,12 +443,12 @@ class TaskDependencyVisualization extends ConsumerWidget {
                             ? PhosphorIcons.checkCircle()
                             : PhosphorIcons.circle(),
                         size: 16,
-                        color: dependency.prerequisite.status == TaskStatus.completed ? Colors.green : Colors.orange,
+                        color: dependency.prerequisite.status == TaskStatus.completed ? context.successColor : context.warningColor,
                       ),
-                      const SizedBox(width: 4),
-                      Text(
+                      StandardizedGaps.hXs,
+                      StandardizedText(
                         dependency.prerequisite.status.name,
-                        style: Theme.of(context).textTheme.bodySmall,
+                        style: StandardizedTextStyle.bodySmall,
                       ),
                     ],
                   ),
@@ -480,19 +471,17 @@ class TaskDependencyVisualization extends ConsumerWidget {
             size: 64,
             color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
           ),
-          const SizedBox(height: 16),
-          Text(
+          StandardizedGaps.md,
+          StandardizedText(
             'No Active Tasks',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+            style: StandardizedTextStyle.titleMedium,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
-          const SizedBox(height: 8),
-          Text(
+          StandardizedGaps.sm,
+          StandardizedText(
             'Create some tasks to see dependency relationships',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+            style: StandardizedTextStyle.bodyMedium,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
             textAlign: TextAlign.center,
           ),
         ],
@@ -510,12 +499,11 @@ class TaskDependencyVisualization extends ConsumerWidget {
             size: 48,
             color: Theme.of(context).colorScheme.error,
           ),
-          const SizedBox(height: 16),
-          Text(
+          StandardizedGaps.md,
+          StandardizedText(
             message,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.error,
-                ),
+            style: StandardizedTextStyle.bodyMedium,
+            color: Theme.of(context).colorScheme.error,
             textAlign: TextAlign.center,
           ),
         ],
@@ -548,8 +536,8 @@ class TaskDependencyVisualization extends ConsumerWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Started task: ${task.title}'),
-            backgroundColor: Colors.green,
+            content: StandardizedText('Started task: ${task.title}', style: StandardizedTextStyle.bodyMedium),
+            backgroundColor: context.successColor,
           ),
         );
       }
@@ -557,7 +545,7 @@ class TaskDependencyVisualization extends ConsumerWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(validation.errorMessage ?? 'Cannot start task due to incomplete dependencies'),
+            content: StandardizedText(validation.errorMessage ?? 'Cannot start task due to incomplete dependencies', style: StandardizedTextStyle.bodyMedium),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -580,20 +568,18 @@ class TaskDependencyManagementDialog extends ConsumerWidget {
     final dependencyChainAsync = ref.watch(taskDependencyChainProvider(task));
 
     return AlertDialog(
-      title: Text('Manage Dependencies: ${task.title}'),
+      title: StandardizedText('Manage Dependencies: ${task.title}', style: StandardizedTextStyle.titleMedium),
       content: SizedBox(
         width: double.maxFinite,
         height: 400,
         child: Column(
           children: [
             // Current dependencies
-            Text(
+            const StandardizedText(
               'Current Dependencies:',
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
+              style: StandardizedTextStyle.titleSmall,
             ),
-            const SizedBox(height: 8),
+            StandardizedGaps.sm,
             Expanded(
               child: dependencyChainAsync.when(
                 data: (dependencies) => ListView.builder(
@@ -601,30 +587,28 @@ class TaskDependencyManagementDialog extends ConsumerWidget {
                   itemBuilder: (context, index) {
                     final dependency = dependencies[index];
                     return ListTile(
-                      title: Text(dependency.title),
-                      subtitle: Text(dependency.status.name),
+                      title: StandardizedText(dependency.title, style: StandardizedTextStyle.bodyMedium),
+                      subtitle: StandardizedText(dependency.status.name, style: StandardizedTextStyle.bodySmall),
                       trailing: IconButton(
-                        icon: Icon(PhosphorIcons.minusCircle(), color: Colors.red),
+                        icon: Icon(PhosphorIcons.minusCircle(), color: context.errorColor),
                         onPressed: () => _removeDependency(context, ref, task.id, dependency.id),
                       ),
                     );
                   },
                 ),
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error: (_, __) => const Text('Failed to load dependencies'),
+                error: (_, __) => const StandardizedText('Failed to load dependencies', style: StandardizedTextStyle.bodyMedium),
               ),
             ),
 
             const Divider(),
 
             // Add new dependency
-            Text(
+            const StandardizedText(
               'Add Dependency:',
-              style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
+              style: StandardizedTextStyle.titleSmall,
             ),
-            const SizedBox(height: 8),
+            StandardizedGaps.sm,
             Expanded(
               child: ref.watch(tasksProvider).when(
                     data: (allTasks) {
@@ -636,8 +620,8 @@ class TaskDependencyManagementDialog extends ConsumerWidget {
                         itemBuilder: (context, index) {
                           final availableTask = availableTasks[index];
                           return ListTile(
-                            title: Text(availableTask.title),
-                            subtitle: Text(availableTask.status.name),
+                            title: StandardizedText(availableTask.title, style: StandardizedTextStyle.bodyMedium),
+                            subtitle: StandardizedText(availableTask.status.name, style: StandardizedTextStyle.bodySmall),
                             trailing: IconButton(
                               icon: Icon(PhosphorIcons.plusCircle(), color: Colors.green),
                               onPressed: () => _addDependency(context, ref, task.id, availableTask.id),
@@ -647,7 +631,7 @@ class TaskDependencyManagementDialog extends ConsumerWidget {
                       );
                     },
                     loading: () => const Center(child: CircularProgressIndicator()),
-                    error: (_, __) => const Text('Failed to load available tasks'),
+                    error: (_, __) => const StandardizedText('Failed to load available tasks', style: StandardizedTextStyle.bodyMedium),
                   ),
             ),
           ],
@@ -656,7 +640,7 @@ class TaskDependencyManagementDialog extends ConsumerWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Close'),
+          child: const StandardizedText('Close', style: StandardizedTextStyle.buttonText),
         ),
       ],
     );
@@ -669,7 +653,7 @@ class TaskDependencyManagementDialog extends ConsumerWidget {
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(result.isSuccess ? 'Dependency added' : result.errorMessage ?? 'Failed to add dependency'),
+          content: StandardizedText(result.isSuccess ? 'Dependency added' : result.errorMessage ?? 'Failed to add dependency', style: StandardizedTextStyle.bodyMedium),
           backgroundColor: result.isSuccess ? Colors.green : Theme.of(context).colorScheme.error,
         ),
       );
@@ -683,7 +667,7 @@ class TaskDependencyManagementDialog extends ConsumerWidget {
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(result.isSuccess ? 'Dependency removed' : result.errorMessage ?? 'Failed to remove dependency'),
+          content: StandardizedText(result.isSuccess ? 'Dependency removed' : result.errorMessage ?? 'Failed to remove dependency', style: StandardizedTextStyle.bodyMedium),
           backgroundColor: result.isSuccess ? Colors.green : Theme.of(context).colorScheme.error,
         ),
       );
@@ -711,7 +695,7 @@ class _AddDependencyDialogState extends ConsumerState<AddDependencyDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Add Dependency'),
+      title: const StandardizedText('Add Dependency', style: StandardizedTextStyle.titleMedium),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -722,13 +706,13 @@ class _AddDependencyDialogState extends ConsumerState<AddDependencyDialog> {
             items: widget.availableTasks
                 .map((task) => DropdownMenuItem(
                       value: task,
-                      child: Text(task.title),
+                      child: StandardizedText(task.title, style: StandardizedTextStyle.bodyMedium),
                     ))
                 .toList(),
             onChanged: (task) => setState(() => selectedDependent = task),
           ),
 
-          const SizedBox(height: 16),
+          StandardizedGaps.md,
 
           // Select prerequisite task
           DropdownButtonFormField<TaskModel>(
@@ -738,7 +722,7 @@ class _AddDependencyDialogState extends ConsumerState<AddDependencyDialog> {
                 .where((task) => task != selectedDependent)
                 .map((task) => DropdownMenuItem(
                       value: task,
-                      child: Text(task.title),
+                      child: StandardizedText(task.title, style: StandardizedTextStyle.bodyMedium),
                     ))
                 .toList(),
             onChanged: (task) => setState(() => selectedPrerequisite = task),
@@ -748,11 +732,11 @@ class _AddDependencyDialogState extends ConsumerState<AddDependencyDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: const StandardizedText('Cancel', style: StandardizedTextStyle.buttonText),
         ),
         ElevatedButton(
           onPressed: _canAddDependency() ? _addDependency : null,
-          child: const Text('Add'),
+          child: const StandardizedText('Add', style: StandardizedTextStyle.buttonText),
         ),
       ],
     );
@@ -775,7 +759,7 @@ class _AddDependencyDialogState extends ConsumerState<AddDependencyDialog> {
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(result.isSuccess ? 'Dependency added' : result.errorMessage ?? 'Failed to add dependency'),
+          content: StandardizedText(result.isSuccess ? 'Dependency added' : result.errorMessage ?? 'Failed to add dependency', style: StandardizedTextStyle.bodyMedium),
           backgroundColor: result.isSuccess ? Colors.green : Theme.of(context).colorScheme.error,
         ),
       );

@@ -7,6 +7,7 @@ import '../providers/smart_features_providers.dart';
 import 'glassmorphism_container.dart';
 import 'standardized_text.dart';
 import 'standardized_spacing.dart';
+import 'standardized_colors.dart';
 
 /// Smart features dashboard widget that displays AI insights and health metrics
 class SmartFeaturesDashboard extends ConsumerWidget {
@@ -74,7 +75,7 @@ class SmartFeaturesDashboard extends ConsumerWidget {
                 'Projects Need Attention',
                 data['projects_needing_attention']?.toString() ?? '0',
                 PhosphorIcons.warning(),
-                Colors.orange,
+                context.warningColor,
               ),
             ),
             StandardizedGaps.horizontal(SpacingSize.sm),
@@ -84,7 +85,7 @@ class SmartFeaturesDashboard extends ConsumerWidget {
                 'Urgent Suggestions',
                 data['urgent_suggestions']?.toString() ?? '0',
                 PhosphorIcons.lightbulb(),
-                Colors.blue,
+                context.primaryColor,
               ),
             ),
           ],
@@ -98,7 +99,7 @@ class SmartFeaturesDashboard extends ConsumerWidget {
                 'High Risk Projects',
                 data['high_risk_projects']?.toString() ?? '0',
                 PhosphorIcons.shieldWarning(),
-                Colors.red,
+                context.errorColor,
               ),
             ),
             StandardizedGaps.horizontal(SpacingSize.sm),
@@ -108,7 +109,7 @@ class SmartFeaturesDashboard extends ConsumerWidget {
                 'AI Records',
                 data['prediction_records']?.toString() ?? '0',
                 PhosphorIcons.chartLine(),
-                Colors.green,
+                context.successColor,
               ),
             ),
           ],
@@ -189,11 +190,9 @@ class SmartFeaturesDashboard extends ConsumerWidget {
                     color: Theme.of(context).colorScheme.primary,
                   ),
                   StandardizedGaps.horizontal(SpacingSize.xs),
-                  Text(
+                  const StandardizedText(
                     'Urgent AI Suggestions',
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: StandardizedTextStyle.titleSmall,
                   ),
                   const Spacer(),
                   TextButton(
@@ -235,14 +234,12 @@ class SmartFeaturesDashboard extends ConsumerWidget {
                   Icon(
                     PhosphorIcons.warningCircle(),
                     size: 16,
-                    color: Colors.orange,
+                    color: context.warningColor,
                   ),
                   StandardizedGaps.horizontal(SpacingSize.xs),
-                  Text(
+                  const StandardizedText(
                     'Projects Need Attention',
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: StandardizedTextStyle.titleSmall,
                   ),
                   const Spacer(),
                   TextButton(
@@ -289,20 +286,16 @@ class SmartFeaturesDashboard extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                StandardizedText(
                   suggestion.title,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: StandardizedTextStyle.bodyMedium,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 2),
-                Text(
+                StandardizedText(
                   suggestion.description,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                  ),
+                  style: StandardizedTextStyle.bodySmall,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -315,11 +308,10 @@ class SmartFeaturesDashboard extends ConsumerWidget {
                       color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
                     ),
                     StandardizedGaps.horizontal(SpacingSize.xs),
-                    Text(
+                    StandardizedText(
                       '${suggestion.confidence.round()}% confidence',
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: Theme.of(context).colorScheme.primary.withOpacity(0.8),
-                      ),
+                      style: StandardizedTextStyle.labelSmall,
+                      color: Theme.of(context).colorScheme.primary.withOpacity(0.8),
                     ),
                   ],
                 ),
@@ -367,28 +359,22 @@ class SmartFeaturesDashboard extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    StandardizedText(
                       'Project ${projectId.substring(0, 8)}...',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w500,
-                      ),
+                      style: StandardizedTextStyle.bodyMedium,
                     ),
                     const SizedBox(height: 2),
-                    Text(
+                    StandardizedText(
                       '${health.criticalIssues.length} critical issues',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                      ),
+                      style: StandardizedTextStyle.bodySmall,
                     ),
                   ],
                 ),
               ),
-              Text(
+              StandardizedText(
                 '${health.healthScore.round()}/100',
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  color: _getHealthLevelColor(health.level),
-                  fontWeight: FontWeight.bold,
-                ),
+                style: StandardizedTextStyle.labelMedium,
+                color: _getHealthLevelColor(health.level),
               ),
             ],
           ),
@@ -411,9 +397,9 @@ class SmartFeaturesDashboard extends ConsumerWidget {
             child: CircularProgressIndicator(strokeWidth: 2),
           ),
           StandardizedGaps.horizontal(SpacingSize.sm),
-          Text(
+          StandardizedText(
             message,
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: StandardizedTextStyle.bodyMedium,
           ),
         ],
       ),
@@ -432,11 +418,10 @@ class SmartFeaturesDashboard extends ConsumerWidget {
             color: Theme.of(context).colorScheme.error,
           ),
           const SizedBox(width: 8),
-          Text(
+          StandardizedText(
             message,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.error,
-            ),
+            style: StandardizedTextStyle.bodyMedium,
+            color: Theme.of(context).colorScheme.error,
           ),
         ],
       ),
@@ -497,11 +482,10 @@ class SmartFeaturesDashboard extends ConsumerWidget {
             color: Theme.of(context).colorScheme.error,
           ),
           StandardizedGaps.horizontal(SpacingSize.sm),
-          Text(
+          StandardizedText(
             'Error loading project health',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Theme.of(context).colorScheme.error,
-            ),
+            style: StandardizedTextStyle.bodySmall,
+            color: Theme.of(context).colorScheme.error,
           ),
         ],
       ),
@@ -520,18 +504,16 @@ class SmartFeaturesDashboard extends ConsumerWidget {
             color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
           ),
           const SizedBox(height: 12),
-          Text(
+          StandardizedText(
             'Smart Features Disabled',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-            ),
+            style: StandardizedTextStyle.titleMedium,
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
           ),
           const SizedBox(height: 8),
-          Text(
+          StandardizedText(
             'Enable AI-powered insights in settings to see project health monitoring, suggestions, and predictions.',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
-            ),
+            style: StandardizedTextStyle.bodyMedium,
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
             textAlign: TextAlign.center,
           ),
         ],
@@ -561,18 +543,16 @@ class SmartFeaturesDashboard extends ConsumerWidget {
             color: Theme.of(context).colorScheme.error,
           ),
           const SizedBox(height: 12),
-          Text(
+          StandardizedText(
             'Smart Features Error',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: Theme.of(context).colorScheme.error,
-            ),
+            style: StandardizedTextStyle.titleMedium,
+            color: Theme.of(context).colorScheme.error,
           ),
           const SizedBox(height: 8),
-          Text(
+          StandardizedText(
             error,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-            ),
+            style: StandardizedTextStyle.bodySmall,
+            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
             textAlign: TextAlign.center,
           ),
         ],
@@ -611,11 +591,10 @@ class SmartFeaturesDashboard extends ConsumerWidget {
         ),
         borderRadius: BorderRadius.circular(8),
       ),
-      child: Text(
+      child: StandardizedText(
         'Error: $error',
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-          color: Theme.of(context).colorScheme.error,
-        ),
+        style: StandardizedTextStyle.bodyMedium,
+        color: Theme.of(context).colorScheme.error,
       ),
     );
   }
@@ -625,26 +604,26 @@ class SmartFeaturesDashboard extends ConsumerWidget {
   Color _getSuggestionPriorityColor(SuggestionPriority priority) {
     switch (priority) {
       case SuggestionPriority.urgent:
-        return Colors.red;
+        return context.errorColor;
       case SuggestionPriority.high:
-        return Colors.orange;
+        return context.warningColor;
       case SuggestionPriority.medium:
-        return Colors.blue;
+        return context.primaryColor;
       case SuggestionPriority.low:
-        return Colors.green;
+        return context.successColor;
     }
   }
 
   Color _getHealthLevelColor(ProjectHealthLevel level) {
     switch (level) {
       case ProjectHealthLevel.excellent:
-        return Colors.green;
+        return context.successColor;
       case ProjectHealthLevel.good:
-        return Colors.lightGreen;
+        return context.successColor;
       case ProjectHealthLevel.warning:
-        return Colors.orange;
+        return context.warningColor;
       case ProjectHealthLevel.critical:
-        return Colors.red;
+        return context.errorColor;
     }
   }
 
@@ -717,33 +696,29 @@ class _SuggestionDetailsDialog extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return AlertDialog(
-      title: Text(suggestion.title),
+      title: StandardizedText(suggestion.title, style: StandardizedTextStyle.titleMedium),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          StandardizedText(
             suggestion.description,
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: StandardizedTextStyle.bodyMedium,
           ),
           StandardizedGaps.vertical(SpacingSize.md),
-          Text(
+          const StandardizedText(
             'Expected Impact:',
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+            style: StandardizedTextStyle.labelMedium,
           ),
           StandardizedGaps.vertical(SpacingSize.xs),
-          Text(
+          StandardizedText(
             suggestion.expectedImpact,
-            style: Theme.of(context).textTheme.bodySmall,
+            style: StandardizedTextStyle.bodySmall,
           ),
           const SizedBox(height: 12),
-          Text(
+          const StandardizedText(
             'Recommendations:',
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+            style: StandardizedTextStyle.labelMedium,
           ),
           StandardizedGaps.vertical(SpacingSize.xs),
           ...suggestion.recommendations.map((rec) => Padding(
@@ -751,11 +726,11 @@ class _SuggestionDetailsDialog extends ConsumerWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('• ', style: Theme.of(context).textTheme.bodySmall),
+                const StandardizedText('• ', style: StandardizedTextStyle.bodySmall),
                 Expanded(
-                  child: Text(
+                  child: StandardizedText(
                     rec,
-                    style: Theme.of(context).textTheme.bodySmall,
+                    style: StandardizedTextStyle.bodySmall,
                   ),
                 ),
               ],

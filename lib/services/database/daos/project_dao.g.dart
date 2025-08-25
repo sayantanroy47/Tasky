@@ -6,4 +6,6 @@ part of 'project_dao.dart';
 mixin _$ProjectDaoMixin on DatabaseAccessor<AppDatabase> {
   $ProjectsTable get projects => attachedDatabase.projects;
   $TasksTable get tasks => attachedDatabase.tasks;
+  $TagsTable get tags => attachedDatabase.tags;
+  $ProjectTagsTable get projectTags => attachedDatabase.projectTags;
 }

@@ -525,6 +525,9 @@ class ProjectHealthMonitoringService {
   ) async {
     final issues = <ProjectHealthIssue>[];
     
+    // Skip communication checks for empty projects
+    if (tasks.isEmpty) return issues;
+    
     // Check for tasks without descriptions
     final tasksWithoutDescription = tasks.where((t) => 
         t.description == null || t.description!.trim().isEmpty).toList();
@@ -609,6 +612,11 @@ class ProjectHealthMonitoringService {
   ProjectHealthLevel _determineHealthLevel(double score, List<ProjectHealthIssue> issues) {
     final criticalIssues = issues.where((i) => i.severity >= 8).length;
     final highSeverityIssues = issues.where((i) => i.severity >= 6).length;
+
+    // Special case: if no issues, consider it good even with neutral score
+    if (issues.isEmpty) {
+      return ProjectHealthLevel.good;
+    }
 
     if (criticalIssues > 0 || score < 30) {
       return ProjectHealthLevel.critical;

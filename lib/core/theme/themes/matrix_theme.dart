@@ -70,19 +70,19 @@ class MatrixTheme {
       return const ThemeColors(
         // Primary colors - Dark neon green on light background
         primary: darkNeonGreen,
-        onPrimary: Color(0xFFFFFFFF), // White text on colored primary buttons
+        onPrimary: Color(0xFF000000), // Black text on neon green for better contrast
         primaryContainer: paleGreen,
         onPrimaryContainer: Color(0xFF003300), // Very dark green text on light containers
 
         // Secondary colors - Dark green variations
         secondary: darkGreen,
-        onSecondary: Color(0xFFFFFFFF), // White text on colored secondary buttons
+        onSecondary: Color(0xFFFFFFFF), // Keep white on dark green (good contrast)
         secondaryContainer: paleGreen,
         onSecondaryContainer: Color(0xFF003300), // Very dark green text on light containers
 
         // Tertiary colors - Bright green highlights
         tertiary: darkBrightGreen,
-        onTertiary: Color(0xFFFFFFFF), // White text on colored tertiary buttons
+        onTertiary: Color(0xFF000000), // Black text on bright green for better contrast
         tertiaryContainer: paleGreen,
         onTertiaryContainer: Color(0xFF003300), // Very dark green text on light containers
 

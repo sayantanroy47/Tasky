@@ -277,17 +277,6 @@ void main() {
       });
 
       test('should not throw exceptions for any operation', () async {
-        const operations = [
-          'initialize',
-          'requestPermissions',
-          'showImmediateNotification',
-          'scheduleTaskReminder',
-          'cancelNotification',
-          'cancelAllNotifications',
-          'getSettings',
-          'updateSettings',
-        ];
-        
         // All operations should complete without throwing
         expect(await service.initialize(), isFalse);
         expect(await service.requestPermissions(), isFalse);

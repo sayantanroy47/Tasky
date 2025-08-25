@@ -9,7 +9,7 @@ part 'project_dao.g.dart';
 /// Data Access Object for Project operations
 /// 
 /// Provides CRUD operations and queries for projects in the database.
-@DriftAccessor(tables: [Projects, Tasks])
+@DriftAccessor(tables: [Projects, Tasks, ProjectTags, Tags])
 class ProjectDao extends DatabaseAccessor<AppDatabase> with _$ProjectDaoMixin {
   ProjectDao(super.db);
 
@@ -110,6 +110,16 @@ class ProjectDao extends DatabaseAccessor<AppDatabase> with _$ProjectDaoMixin {
           taskIds.add(task.id);
         }
 
+        // Get tag IDs for this project (with error handling for missing table)
+        List<String> tagIds = [];
+        try {
+          final projectTagRows = await (select(projectTags)..where((pt) => pt.projectId.equals(project.id))).get();
+          tagIds = projectTagRows.map((pt) => pt.tagId).toList();
+        } catch (e) {
+          // Handle case where project_tags table doesn't exist yet
+          print('Warning: project_tags table not found, using empty tag list: $e');
+        }
+
         projectMap[project.id] = ProjectWithTaskCount(
           project: domain.Project(
             id: project.id,
@@ -119,6 +129,7 @@ class ProjectDao extends DatabaseAccessor<AppDatabase> with _$ProjectDaoMixin {
             createdAt: project.createdAt,
             updatedAt: project.updatedAt,
             taskIds: taskIds,
+            tagIds: tagIds,
             isArchived: project.isArchived,
             deadline: project.deadline,
           ),
@@ -152,6 +163,69 @@ class ProjectDao extends DatabaseAccessor<AppDatabase> with _$ProjectDaoMixin {
     return projectModels;
   }
 
+  // ============================================================================
+  // PROJECT-TAG RELATIONSHIP METHODS
+  // ============================================================================
+
+  /// Adds a tag to a project
+  Future<void> addTagToProject(String projectId, String tagId) async {
+    try {
+      await into(projectTags).insertOnConflictUpdate(ProjectTagsCompanion.insert(
+        projectId: projectId,
+        tagId: tagId,
+      ));
+    } catch (e) {
+      print('Warning: Could not add tag to project - project_tags table may not exist: $e');
+    }
+  }
+
+  /// Removes a tag from a project
+  Future<void> removeTagFromProject(String projectId, String tagId) async {
+    try {
+      await (delete(projectTags)
+        ..where((pt) => pt.projectId.equals(projectId) & pt.tagId.equals(tagId))
+      ).go();
+    } catch (e) {
+      print('Warning: Could not remove tag from project - project_tags table may not exist: $e');
+    }
+  }
+
+  /// Gets all tags for a specific project
+  Future<List<String>> getTagsForProject(String projectId) async {
+    try {
+      final projectTagRows = await (select(projectTags)
+        ..where((pt) => pt.projectId.equals(projectId))
+      ).get();
+      return projectTagRows.map((pt) => pt.tagId).toList();
+    } catch (e) {
+      print('Warning: Could not get tags for project - project_tags table may not exist: $e');
+      return [];
+    }
+  }
+
+  /// Gets all projects that have a specific tag
+  Future<List<domain.Project>> getProjectsWithTag(String tagId) async {
+    try {
+      final query = select(projects).join([
+        innerJoin(projectTags, projectTags.projectId.equalsExp(projects.id))
+      ])..where(projectTags.tagId.equals(tagId));
+
+      final results = await query.get();
+      final projectModels = <domain.Project>[];
+      
+      for (final row in results) {
+        final project = row.readTable(projects);
+        final projectModel = await _projectRowToModel(project);
+        projectModels.add(projectModel);
+      }
+
+      return projectModels;
+    } catch (e) {
+      print('Warning: Could not get projects with tag - project_tags table may not exist: $e');
+      return [];
+    }
+  }
+
   /// Watches all projects (returns a stream)
   Stream<List<domain.Project>> watchAllProjects() {
     return select(projects).watch().asyncMap((projectRows) async {
@@ -183,6 +257,16 @@ class ProjectDao extends DatabaseAccessor<AppDatabase> with _$ProjectDaoMixin {
     final taskRows = await (select(tasks)..where((t) => t.projectId.equals(projectRow.id))).get();
     final taskIds = taskRows.map((task) => task.id).toList();
 
+    // Get tag IDs for this project (with error handling for missing table)
+    List<String> tagIds = [];
+    try {
+      final projectTagRows = await (select(projectTags)..where((pt) => pt.projectId.equals(projectRow.id))).get();
+      tagIds = projectTagRows.map((pt) => pt.tagId).toList();
+    } catch (e) {
+      // Handle case where project_tags table doesn't exist yet
+      print('Warning: project_tags table not found, using empty tag list: $e');
+    }
+
     return domain.Project(
       id: projectRow.id,
       name: projectRow.name,
@@ -191,6 +275,7 @@ class ProjectDao extends DatabaseAccessor<AppDatabase> with _$ProjectDaoMixin {
       createdAt: projectRow.createdAt,
       updatedAt: projectRow.updatedAt,
       taskIds: taskIds,
+      tagIds: tagIds,
       isArchived: projectRow.isArchived,
       deadline: projectRow.deadline,
     );

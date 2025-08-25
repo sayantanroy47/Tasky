@@ -24,9 +24,9 @@ TaskModel _$TaskModelFromJson(Map<String, dynamic> json) => TaskModel(
           TaskPriority.medium,
       status: $enumDecodeNullable(_$TaskStatusEnumMap, json['status']) ??
           TaskStatus.pending,
-      tags:
-          (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList() ??
-              const [],
+      tagIds:
+          (json['tagIds'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      tags: (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList(),
       subTasks: (json['subTasks'] as List<dynamic>?)
               ?.map((e) => SubTask.fromJson(e as Map<String, dynamic>))
               .toList() ??
@@ -57,7 +57,7 @@ Map<String, dynamic> _$TaskModelToJson(TaskModel instance) => <String, dynamic>{
       'completedAt': instance.completedAt?.toIso8601String(),
       'priority': _$TaskPriorityEnumMap[instance.priority]!,
       'status': _$TaskStatusEnumMap[instance.status]!,
-      'tags': instance.tags,
+      'tagIds': instance.tagIds,
       'subTasks': instance.subTasks,
       'locationTrigger': instance.locationTrigger,
       'recurrence': instance.recurrence,
@@ -67,6 +67,7 @@ Map<String, dynamic> _$TaskModelToJson(TaskModel instance) => <String, dynamic>{
       'isPinned': instance.isPinned,
       'estimatedDuration': instance.estimatedDuration,
       'actualDuration': instance.actualDuration,
+      'tags': instance.tags,
     };
 
 const _$TaskPriorityEnumMap = {

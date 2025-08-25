@@ -9,6 +9,8 @@ import '../widgets/theme_background_widget.dart';
 import '../../core/theme/app_theme_data.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../core/design_system/design_tokens.dart';
+import '../widgets/standardized_spacing.dart';
+import '../widgets/standardized_colors.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Ultra-modern theme gallery with glassmorphism design and immersive previews
@@ -102,11 +104,11 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
 
     return ThemeBackgroundWidget(
       child: Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: context.colors.backgroundTransparent,
         extendBodyBehindAppBar: true,
       appBar: StandardizedAppBar(
         title: 'Theme Gallery',
-        backgroundColor: Colors.transparent,
+        backgroundColor: context.colors.backgroundTransparent,
         elevation: 0,
         actions: [
           // Search toggle
@@ -115,7 +117,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
             width: 40,
             height: 40,
             borderRadius: BorderRadius.circular(TypographyConstants.radiusXLarge), // 20.0 - Fixed border radius hierarchy
-            margin: const EdgeInsets.only(right: 4),
+            margin: StandardizedSpacing.marginOnly(right: SpacingSize.xs),
             child: IconButton(
               icon: Icon(PhosphorIcons.magnifyingGlass(), size: 18),
               onPressed: () => _showSearchDialog(context),
@@ -129,7 +131,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
             width: 40,
             height: 40,
             borderRadius: BorderRadius.circular(TypographyConstants.radiusXLarge), // 20.0 - Fixed border radius hierarchy
-            margin: const EdgeInsets.only(right: 12),
+            margin: StandardizedSpacing.marginOnly(right: SpacingSize.sm),
             child: IconButton(
               icon: Icon(_isGridView ? PhosphorIcons.list() : PhosphorIcons.gridNine(), size: 18),
               onPressed: () {
@@ -175,16 +177,16 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
                 : _buildThemesList(filteredThemes, themeState),
               
               // Bottom spacing
-              const SliverToBoxAdapter(
-                child: SizedBox(height: 100),
+              SliverToBoxAdapter(
+                child: StandardizedGaps.vertical(SpacingSize.xxxl),
               ),
             ],
           ),
           
           // Floating action button
           Positioned(
-            bottom: 24,
-            right: 24,
+            bottom: SpacingTokens.lg,
+            right: SpacingTokens.lg,
             child: SlideTransition(
               position: _floatingAnimation,
               child: _buildFloatingActions(theme),
@@ -202,11 +204,16 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
 
   Widget _buildHeader(ThemeData theme, EnhancedThemeState themeState) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 100, 20, 16),
+      padding: StandardizedSpacing.paddingOnly(
+        left: SpacingSize.lg,
+        top: SpacingSize.xxxl,
+        right: SpacingSize.lg,
+        bottom: SpacingSize.md,
+      ),
       child: GlassmorphismContainer(
         level: GlassLevel.floating,
         borderRadius: BorderRadius.circular(TypographyConstants.radiusXXLarge), // 24.0 - Fixed border radius hierarchy
-        padding: const EdgeInsets.all(24),
+        padding: StandardizedSpacing.padding(SpacingSize.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -225,7 +232,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
                     size: 28,
                   ),
                 ),
-                const SizedBox(width: 20),
+                StandardizedGaps.horizontal(SpacingSize.lg),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -236,7 +243,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
                         color: theme.colorScheme.onSurface,
                         letterSpacing: TypographyConstants.tightLetterSpacing,
                       ),
-                      const SizedBox(height: 4),
+                      StandardizedGaps.xs,
                       StandardizedText(
                         'Express your style',
                         style: StandardizedTextStyle.bodyLarge,
@@ -248,13 +255,13 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
               ],
             ),
             
-            const SizedBox(height: 24),
+            StandardizedGaps.lg,
             
             // Current theme showcase
             GlassmorphismContainer(
               level: GlassLevel.content,
               borderRadius: BorderRadius.circular(16),
-              padding: const EdgeInsets.all(20),
+              padding: StandardizedSpacing.padding(SpacingSize.lg),
               // Let glassmorphism container auto-determine tint based on theme
               child: Row(
                 children: [
@@ -424,7 +431,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
           : Border.all(color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2)),
       ),
       child: Material(
-        color: Colors.transparent,
+        color: context.colors.backgroundTransparent,
         child: InkWell(
           onTap: () => _selectTheme(theme),
           borderRadius: BorderRadius.circular(12),
@@ -583,7 +590,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
         ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.3)
         : null,
       child: Material(
-        color: Colors.transparent,
+        color: context.colors.backgroundTransparent,
         child: InkWell(
           onTap: () => _selectTheme(theme),
           onLongPress: () => _showThemePreview(theme),
@@ -684,7 +691,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
           child: FloatingActionButton(
             heroTag: 'random',
             onPressed: () => _applyRandomTheme(),
-            backgroundColor: Colors.transparent,
+            backgroundColor: context.colors.backgroundTransparent,
             elevation: 0,
             child: Icon(
               PhosphorIcons.shuffle(),
@@ -703,7 +710,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
           child: FloatingActionButton(
             heroTag: 'favorite',
             onPressed: () => _showFavoriteThemes(),
-            backgroundColor: Colors.transparent,
+            backgroundColor: context.colors.backgroundTransparent,
             elevation: 0,
             child: Icon(
               PhosphorIcons.heart(),
@@ -769,7 +776,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
                       const Expanded(
                         child: OutlinedButton(
                           onPressed: null,
-                          child:  Text('Cancel'),
+                          child: StandardizedText('Cancel', style: StandardizedTextStyle.buttonText),
                         ),
                       ),
                       
@@ -781,7 +788,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
                             _selectTheme(_previewTheme!);
                             setState(() => _previewTheme = null);
                           },
-                          child: const Text('Apply'),
+                          child: const StandardizedText('Apply', style: StandardizedTextStyle.buttonText),
                         ),
                       ),
                     ],
@@ -835,7 +842,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
               size: 20,
             ),
             const SizedBox(width: 12),
-            Text('${theme.metadata.name} applied!'),
+            StandardizedText('${theme.metadata.name} applied!', style: StandardizedTextStyle.bodyMedium),
           ],
         ),
         backgroundColor: theme.colors.primary,
@@ -868,7 +875,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
                 size: 20,
               ),
               const SizedBox(width: 12),
-              const Text('Random theme applied!'),
+              const StandardizedText('Random theme applied!', style: StandardizedTextStyle.bodyMedium),
             ],
           ),
           backgroundColor: Theme.of(context).colorScheme.primary,
@@ -886,7 +893,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Search Themes'),
+        title: const StandardizedText('Search Themes', style: StandardizedTextStyle.titleLarge),
         content: TextField(
           decoration: InputDecoration(
             hintText: 'Enter theme name or description...',
@@ -900,7 +907,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: const StandardizedText('Cancel', style: StandardizedTextStyle.buttonText),
           ),
         ],
       ),
@@ -912,13 +919,13 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Favorite Themes'),
+        title: const StandardizedText('Favorite Themes', style: StandardizedTextStyle.titleLarge),
         content: SizedBox(
           width: double.maxFinite,
           height: 400,
           child: Column(
             children: [
-              const Text('Your favorite themes will appear here.'),
+              const StandardizedText('Your favorite themes will appear here.', style: StandardizedTextStyle.bodyMedium),
               const SizedBox(height: 16),
               Expanded(
                 child: Center(
@@ -931,14 +938,14 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
                         color: Theme.of(context).colorScheme.primary,
                       ),
                       const SizedBox(height: 16),
-                      Text(
+                      const StandardizedText(
                         'No favorite themes yet',
-                        style: Theme.of(context).textTheme.titleMedium,
+                        style: StandardizedTextStyle.titleMedium,
                       ),
                       const SizedBox(height: 8),
-                      Text(
+                      const StandardizedText(
                         'Tap the heart icon on any theme to add it to favorites',
-                        style: Theme.of(context).textTheme.bodyMedium,
+                        style: StandardizedTextStyle.bodyMedium,
                         textAlign: TextAlign.center,
                       ),
                     ],
@@ -951,7 +958,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
+            child: const StandardizedText('Close', style: StandardizedTextStyle.buttonText),
           ),
         ],
       ),

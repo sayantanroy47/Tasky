@@ -8,6 +8,8 @@ import '../providers/calendar_provider.dart' as calendar;
 import '../providers/task_providers.dart';
 import '../../core/theme/typography_constants.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'standardized_spacing.dart';
+import 'standardized_text.dart';
 
 /// Main calendar widget with month/week/day views
 class CalendarWidget extends ConsumerWidget {
@@ -23,7 +25,7 @@ class CalendarWidget extends ConsumerWidget {
         children: [
           // Calendar view mode selector
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            padding: StandardizedSpacing.paddingSymmetric(horizontal: SpacingSize.md),
             child: _CalendarViewModeSelector(),
           ),
           const SizedBox(height: 12),
@@ -31,7 +33,7 @@ class CalendarWidget extends ConsumerWidget {
           // Calendar widget
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: StandardizedSpacing.paddingSymmetric(horizontal: SpacingSize.md),
               child: _buildCalendarView(context, calendarState, calendarNotifier),
             ),
           ),
@@ -73,7 +75,7 @@ class _CalendarViewModeSelector extends ConsumerWidget {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             minimumSize: const Size(60, 32),
           ),
-          child: Text('Today', style: Theme.of(context).textTheme.bodySmall),
+          child: const StandardizedText('Today', style: StandardizedTextStyle.buttonText),
         ),
         
         const SizedBox(width: 8),
@@ -83,18 +85,18 @@ class _CalendarViewModeSelector extends ConsumerWidget {
           child: SizedBox(
             height: 32, // Reduced height
             child: SegmentedButton<calendar.CalendarViewMode>(
-              segments: [
+              segments: const [
                 ButtonSegment(
                   value: calendar.CalendarViewMode.month,
-                  label: Text('Month', style: Theme.of(context).textTheme.labelSmall), // Tab label
+                  label: StandardizedText('Month', style: StandardizedTextStyle.labelMedium), // Tab label
                 ),
                 ButtonSegment(
                   value: calendar.CalendarViewMode.week,
-                  label: Text('Week', style: Theme.of(context).textTheme.labelSmall), // Tab label
+                  label: StandardizedText('Week', style: StandardizedTextStyle.labelMedium), // Tab label
                 ),
                 ButtonSegment(
                   value: calendar.CalendarViewMode.day,
-                  label: Text('Day', style: Theme.of(context).textTheme.labelSmall), // Tab label
+                  label: StandardizedText('Day', style: StandardizedTextStyle.labelMedium), // Tab label
                 ),
               ],
               selected: {calendarState.viewMode},
@@ -321,9 +323,9 @@ class _DayCalendarView extends StatelessWidget {
                 },
                 icon: Icon(PhosphorIcons.caretLeft()),
               ),
-              Text(
+              StandardizedText(
                 _formatDayHeader(state.selectedDate),
-                style: Theme.of(context).textTheme.headlineSmall,
+                style: StandardizedTextStyle.headlineSmall,
               ),
               IconButton(
                 onPressed: () {
@@ -399,11 +401,10 @@ class _DayEventsView extends ConsumerWidget {
               color: Theme.of(context).colorScheme.outline,
             ),
             const SizedBox(height: 16),
-            Text(
+            StandardizedText(
               'No tasks or events today',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
+              style: StandardizedTextStyle.titleMedium,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ],
         ),
@@ -475,16 +476,14 @@ class EventCard extends ConsumerWidget {
               Row(
                 children: [
                   Expanded(
-                    child: Text(
+                    child: StandardizedText(
                       event.title,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w500,
-                      ),
+                      style: StandardizedTextStyle.titleMedium,
                     ),
                   ),
                   if (event.isAllDay)
                     Chip(
-                      label: const Text('All Day'),
+                      label: const StandardizedText('All Day', style: StandardizedTextStyle.bodyMedium),
                       backgroundColor: Theme.of(context).primaryColor.withValues(alpha: 0.1),
                     ),
                 ],
@@ -500,9 +499,9 @@ class EventCard extends ConsumerWidget {
                       color: Theme.of(context).textTheme.bodySmall?.color,
                     ),
                     const SizedBox(width: 4),
-                    Text(
+                    StandardizedText(
                       '${_formatTime(event.startTime)} - ${_formatTime(event.endTime)}',
-                      style: Theme.of(context).textTheme.bodySmall,
+                      style: StandardizedTextStyle.bodySmall,
                     ),
                   ],
                 ),
@@ -510,9 +509,9 @@ class EventCard extends ConsumerWidget {
               
               if (event.description != null && event.description!.isNotEmpty) ...[
                 const SizedBox(height: 4),
-                Text(
+                StandardizedText(
                   event.description!,
-                  style: Theme.of(context).textTheme.bodySmall,
+                  style: StandardizedTextStyle.bodySmall,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -529,9 +528,9 @@ class EventCard extends ConsumerWidget {
                     ),
                     const SizedBox(width: 4),
                     Expanded(
-                      child: Text(
+                      child: StandardizedText(
                         event.location!,
-                        style: Theme.of(context).textTheme.bodySmall,
+                        style: StandardizedTextStyle.bodySmall,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -567,51 +566,52 @@ class EventDetailsDialog extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return AlertDialog(
-      title: Text(event.title),
+      title: StandardizedText(event.title, style: StandardizedTextStyle.titleMedium),
       content: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
             if (event.description != null && event.description!.isNotEmpty) ...[
-              Text(
+              const StandardizedText(
                 'Description',
-                style: Theme.of(context).textTheme.titleSmall,
+                style: StandardizedTextStyle.titleSmall,
               ),
               const SizedBox(height: 4),
-              Text(event.description!),
+              StandardizedText(event.description!, style: StandardizedTextStyle.bodyMedium),
               const SizedBox(height: 16),
             ],
             
-            Text(
+            const StandardizedText(
               'Time',
-              style: Theme.of(context).textTheme.titleSmall,
+              style: StandardizedTextStyle.titleSmall,
             ),
             const SizedBox(height: 4),
-            Text(
+            StandardizedText(
               event.isAllDay
                   ? 'All Day'
                   : '${_formatDateTime(event.startTime)} - ${_formatDateTime(event.endTime)}',
+              style: StandardizedTextStyle.bodyMedium,
             ),
             
             if (event.location != null && event.location!.isNotEmpty) ...[
               const SizedBox(height: 16),
-              Text(
+              const StandardizedText(
                 'Location',
-                style: Theme.of(context).textTheme.titleSmall,
+                style: StandardizedTextStyle.titleSmall,
               ),
               const SizedBox(height: 4),
-              Text(event.location!),
+              StandardizedText(event.location!, style: StandardizedTextStyle.bodyMedium),
             ],
             
             if (event.attendees.isNotEmpty) ...[
               const SizedBox(height: 16),
-              Text(
+              const StandardizedText(
                 'Attendees',
-                style: Theme.of(context).textTheme.titleSmall,
+                style: StandardizedTextStyle.titleSmall,
               ),
               const SizedBox(height: 4),
-              ...event.attendees.map((attendee) => Text('• $attendee')),
+              ...event.attendees.map((attendee) => StandardizedText('• $attendee', style: StandardizedTextStyle.bodyMedium)),
             ],
           ],
         ),
@@ -619,7 +619,7 @@ class EventDetailsDialog extends ConsumerWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Close'),
+          child: const StandardizedText('Close', style: StandardizedTextStyle.buttonText),
         ),
         if (event.taskId != null)
           TextButton(
@@ -628,7 +628,7 @@ class EventDetailsDialog extends ConsumerWidget {
               // Navigate to task details
               _navigateToTask(context, ref, event.taskId!);
             },
-            child: const Text('View Task'),
+            child: const StandardizedText('View Task', style: StandardizedTextStyle.buttonText),
           ),
       ],
     );
@@ -670,7 +670,7 @@ class _TaskSchedulingWidgetState extends ConsumerState<TaskSchedulingWidget> {
     final calendarNotifier = ref.read(calendar.calendarProvider.notifier);
 
     return AlertDialog(
-      title: Text('Schedule: ${widget.task.title}'),
+      title: StandardizedText('Schedule: ${widget.task.title}', style: StandardizedTextStyle.titleMedium),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -678,8 +678,8 @@ class _TaskSchedulingWidgetState extends ConsumerState<TaskSchedulingWidget> {
             // Date picker
             ListTile(
               leading: Icon(PhosphorIcons.calendar()),
-              title: const Text('Date'),
-              subtitle: Text('${selectedDate.day}/${selectedDate.month}/${selectedDate.year}'),
+              title: const StandardizedText('Date', style: StandardizedTextStyle.bodyMedium),
+              subtitle: StandardizedText('${selectedDate.day}/${selectedDate.month}/${selectedDate.year}', style: StandardizedTextStyle.bodySmall),
               onTap: () async {
                 final date = await showDatePicker(
                   context: context,
@@ -695,7 +695,7 @@ class _TaskSchedulingWidgetState extends ConsumerState<TaskSchedulingWidget> {
             
             // All day toggle
             SwitchListTile(
-              title: const Text('All Day'),
+              title: const StandardizedText('All Day', style: StandardizedTextStyle.bodyMedium),
               value: isAllDay,
               onChanged: (value) => setState(() => isAllDay = value),
             ),
@@ -704,8 +704,8 @@ class _TaskSchedulingWidgetState extends ConsumerState<TaskSchedulingWidget> {
               // Start time picker
               ListTile(
                 leading: Icon(PhosphorIcons.clock()),
-                title: const Text('Start Time'),
-                subtitle: Text(startTime.format(context)),
+                title: const StandardizedText('Start Time', style: StandardizedTextStyle.bodyMedium),
+                subtitle: StandardizedText(startTime.format(context), style: StandardizedTextStyle.bodySmall),
                 onTap: () async {
                   final time = await showTimePicker(
                     context: context,
@@ -720,8 +720,8 @@ class _TaskSchedulingWidgetState extends ConsumerState<TaskSchedulingWidget> {
               // End time picker
               ListTile(
                 leading: Icon(PhosphorIcons.clock()),
-                title: const Text('End Time'),
-                subtitle: Text(endTime.format(context)),
+                title: const StandardizedText('End Time', style: StandardizedTextStyle.bodyMedium),
+                subtitle: StandardizedText(endTime.format(context), style: StandardizedTextStyle.bodySmall),
                 onTap: () async {
                   final time = await showTimePicker(
                     context: context,
@@ -739,7 +739,7 @@ class _TaskSchedulingWidgetState extends ConsumerState<TaskSchedulingWidget> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: const StandardizedText('Cancel', style: StandardizedTextStyle.buttonText),
         ),
         ElevatedButton(
           onPressed: () async {
@@ -750,7 +750,7 @@ class _TaskSchedulingWidgetState extends ConsumerState<TaskSchedulingWidget> {
               widget.onScheduled?.call();
             }
           },
-          child: const Text('Schedule'),
+          child: const StandardizedText('Schedule', style: StandardizedTextStyle.buttonText),
         ),
       ],
     );
@@ -883,14 +883,12 @@ class TaskEventCard extends ConsumerWidget {
                   ),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: Text(
+                    child: StandardizedText(
                       task.title,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w500,
-                        decoration: task.status == TaskStatus.completed 
-                          ? TextDecoration.lineThrough 
-                          : null,
-                      ),
+                      style: StandardizedTextStyle.titleMedium,
+                      decoration: task.status == TaskStatus.completed 
+                        ? TextDecoration.lineThrough 
+                        : null,
                     ),
                   ),
                   // Priority badge
@@ -904,13 +902,10 @@ class TaskEventCard extends ConsumerWidget {
                         width: 1,
                       ),
                     ),
-                    child: Text(
+                    child: StandardizedText(
                       task.priority.name.toUpperCase(),
-                      style: TextStyle(
-                        fontSize: TypographyConstants.labelSmall, // 11.0 - Fixed critical WCAG violation (was 10px)
-                        fontWeight: FontWeight.w500,
-                        color: _getPriorityColor(task.priority),
-                      ),
+                      style: StandardizedTextStyle.labelSmall,
+                      color: _getPriorityColor(task.priority),
                     ),
                   ),
                 ],
@@ -926,9 +921,9 @@ class TaskEventCard extends ConsumerWidget {
                       color: Theme.of(context).textTheme.bodySmall?.color,
                     ),
                     const SizedBox(width: 4),
-                    Text(
+                    StandardizedText(
                       'Due: ${_formatTime(task.dueDate!)}',
-                      style: Theme.of(context).textTheme.bodySmall,
+                      style: StandardizedTextStyle.bodySmall,
                     ),
                   ],
                 ),
@@ -936,9 +931,9 @@ class TaskEventCard extends ConsumerWidget {
 
               if (task.description != null && task.description!.isNotEmpty) ...[
                 const SizedBox(height: 4),
-                Text(
+                StandardizedText(
                   task.description!,
-                  style: Theme.of(context).textTheme.bodySmall,
+                  style: StandardizedTextStyle.bodySmall,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -955,12 +950,10 @@ class TaskEventCard extends ConsumerWidget {
                       color: Theme.of(context).colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                     ),
-                    child: Text(
+                    child: StandardizedText(
                       '#$tag',
-                      style: TextStyle(
-                        fontSize: TypographyConstants.labelSmall, // 11.0 - Fixed critical WCAG violation (was 10px)
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
+                      style: StandardizedTextStyle.labelSmall,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   )).toList(),
                 ),
@@ -1021,50 +1014,50 @@ class TaskDetailsDialog extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return AlertDialog(
-      title: Text(task.title),
+      title: StandardizedText(task.title, style: StandardizedTextStyle.titleMedium),
       content: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
             if (task.description != null && task.description!.isNotEmpty) ...[
-              Text(
+              const StandardizedText(
                 'Description',
-                style: Theme.of(context).textTheme.titleSmall,
+                style: StandardizedTextStyle.titleSmall,
               ),
               const SizedBox(height: 4),
-              Text(task.description!),
+              StandardizedText(task.description!, style: StandardizedTextStyle.bodyMedium),
               const SizedBox(height: 16),
             ],
 
-            Text(
+            const StandardizedText(
               'Priority',
-              style: Theme.of(context).textTheme.titleSmall,
+              style: StandardizedTextStyle.titleSmall,
             ),
             const SizedBox(height: 4),
-            Text(task.priority.name.toUpperCase()),
+            StandardizedText(task.priority.name.toUpperCase(), style: StandardizedTextStyle.bodyMedium),
 
             if (task.dueDate != null) ...[
               const SizedBox(height: 16),
-              Text(
+              const StandardizedText(
                 'Due Date',
-                style: Theme.of(context).textTheme.titleSmall,
+                style: StandardizedTextStyle.titleSmall,
               ),
               const SizedBox(height: 4),
-              Text(_formatDateTime(task.dueDate!)),
+              StandardizedText(_formatDateTime(task.dueDate!), style: StandardizedTextStyle.bodyMedium),
             ],
 
             if (task.tags.isNotEmpty) ...[
               const SizedBox(height: 16),
-              Text(
+              const StandardizedText(
                 'Tags',
-                style: Theme.of(context).textTheme.titleSmall,
+                style: StandardizedTextStyle.titleSmall,
               ),
               const SizedBox(height: 4),
               Wrap(
                 spacing: 8,
                 children: task.tags.map((tag) => Chip(
-                  label: Text('#$tag'),
+                  label: StandardizedText('#$tag', style: StandardizedTextStyle.bodyMedium),
                   backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                 )).toList(),
               ),
@@ -1075,7 +1068,7 @@ class TaskDetailsDialog extends ConsumerWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Close'),
+          child: const StandardizedText('Close', style: StandardizedTextStyle.buttonText),
         ),
       ],
     );

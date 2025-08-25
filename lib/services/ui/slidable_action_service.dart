@@ -120,7 +120,7 @@ class SlidableActionService {
           actionType: SlidableActionType.neutral,
           actionName: 'More',
           backgroundColor: colorScheme.surfaceContainerHigh,
-          foregroundColor: Colors.white,
+          foregroundColor: colorScheme.onSurface,
           icon: PhosphorIcons.dotsThreeOutline(),
           iconSize: 24, // Slightly smaller to balance with text
           label: 'More',
@@ -163,7 +163,7 @@ class SlidableActionService {
         actionType: SlidableActionType.neutral,
         actionName: 'More',
         backgroundColor: colorScheme.surfaceContainerHigh,
-        foregroundColor: Colors.white,
+        foregroundColor: colorScheme.onSurface,
         icon: PhosphorIcons.dotsThreeOutline(),
         label: 'More',
       ),
@@ -206,7 +206,7 @@ class SlidableActionService {
         actionType: SlidableActionType.neutral,
         actionName: 'ProjectShare',
         backgroundColor: colorScheme.primaryContainer,
-        foregroundColor: Colors.white,
+        foregroundColor: colorScheme.onPrimaryContainer,
         icon: PhosphorIcons.share(),
         label: 'Share',
       ),
@@ -215,7 +215,7 @@ class SlidableActionService {
           await _safeExecuteCallback(onArchive, SlidableActionType.archive, 'ProjectArchive');
         },
         backgroundColor: colorScheme.secondaryContainer,
-        foregroundColor: Colors.white,
+        foregroundColor: colorScheme.onSecondaryContainer,
         icon: PhosphorIcons.archive(),
         // label: 'Archive', // Removed text
       ),
@@ -296,7 +296,7 @@ class SlidableActionService {
           await _safeExecuteCallback(onComplete, SlidableActionType.complete, 'TaskComplete');
         },
         backgroundColor: colorScheme.secondaryContainer,
-        foregroundColor: Colors.white,
+        foregroundColor: colorScheme.onSecondaryContainer,
         icon: PhosphorIcons.arrowCounterClockwise(),
         // label: 'Uncomplete', // Removed text
       ),
@@ -345,7 +345,7 @@ class SlidableActionService {
           onReschedule?.call();
         },
         backgroundColor: colorScheme.secondaryContainer,
-        foregroundColor: Colors.white,
+        foregroundColor: colorScheme.onSecondaryContainer,
         icon: PhosphorIcons.calendar(),
         // label: 'Reschedule', // Removed text
       ),

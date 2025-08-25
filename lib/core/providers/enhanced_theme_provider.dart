@@ -9,6 +9,18 @@ import '../theme/themes/matrix_theme.dart';
 import '../theme/themes/dracula_ide_theme.dart';
 import '../theme/themes/goku_ultra_instinct_theme.dart';
 import '../theme/themes/expressive_theme.dart';
+import '../theme/themes/koi_mystic_theme.dart';
+import '../theme/themes/demon_slayer_flame_theme.dart';
+import '../theme/themes/artist_palette_theme.dart';
+import '../theme/themes/autumn_forest_theme.dart';
+import '../theme/themes/executive_platinum_theme.dart';
+import '../theme/themes/unicorn_dream_theme.dart';
+import '../theme/themes/cyberpunk_2077_theme.dart';
+import '../theme/themes/starfield_cosmic_theme.dart';
+import '../theme/themes/vampire_gothic_theme.dart';
+import '../theme/themes/midnight_ghost_theme.dart';
+import '../theme/themes/citrus_fresh_theme.dart';
+import '../theme/themes/hollow_knight_shadow_theme.dart';
 
 /// Enhanced theme state with more detailed information
 class EnhancedThemeState {
@@ -113,12 +125,38 @@ class EnhancedThemeNotifier extends StateNotifier<EnhancedThemeState> {
       GokuUltraInstinctTheme.createLight(),
       MatrixTheme.createLight(),
       DraculaIDETheme.createLight(),
+      KoiMysticTheme.createLight(),
       
       // Dark variants
       VegetaBlueTheme.createDark(),
       GokuUltraInstinctTheme.createDark(),
       MatrixTheme.createDark(),
       DraculaIDETheme.createDark(),
+      KoiMysticTheme.createDark(),
+      
+      // BEAST THEMES - All themes enabled
+      DemonSlayerFlameTheme.createLight(),
+      DemonSlayerFlameTheme.createDark(),
+      ArtistPaletteTheme.createLight(),
+      ArtistPaletteTheme.createDark(),
+      AutumnForestTheme.createLight(),
+      AutumnForestTheme.createDark(),
+      ExecutivePlatinumTheme.createLight(),
+      ExecutivePlatinumTheme.createDark(),
+      UnicornDreamTheme.createLight(),
+      UnicornDreamTheme.createDark(),
+      Cyberpunk2077Theme.createLight(),
+      Cyberpunk2077Theme.createDark(),
+      StarfieldCosmicTheme.createLight(),
+      StarfieldCosmicTheme.createDark(),
+      VampireGothicTheme.createLight(),
+      VampireGothicTheme.createDark(),
+      MidnightGhostTheme.createLight(),
+      MidnightGhostTheme.createDark(),
+      CitrusFreshTheme.createLight(),
+      CitrusFreshTheme.createDark(),
+      HollowKnightShadowTheme.createLight(),
+      HollowKnightShadowTheme.createDark(),
     ];
     
     

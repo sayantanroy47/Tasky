@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../core/theme/typography_constants.dart';
 import '../providers/audio_providers.dart';
+import '../../services/audio/audio_player_service.dart';
 
 enum AudioControlsMode {
   minimal,    // Just play button (28x28px)
@@ -57,7 +58,16 @@ class _TaskAudioControlsState extends ConsumerState<TaskAudioControls> {
 
     final theme = Theme.of(context);
     final audioControls = ref.read(audioControlsProvider);
-    final isPlaying = _isCurrentTaskPlaying();
+    
+    // Watch the audio playback state to get real-time updates
+    final audioState = ref.watch(audioPlaybackStateProvider);
+    final currentTaskId = ref.watch(currentPlayingTaskProvider);
+    
+    final isPlaying = audioState.when(
+      data: (state) => currentTaskId == widget.taskId && state.isPlaying,
+      loading: () => false,
+      error: (_, __) => false,
+    );
 
     switch (widget.mode) {
       case AudioControlsMode.minimal:
@@ -155,83 +165,147 @@ class _TaskAudioControlsState extends ConsumerState<TaskAudioControls> {
   }
 
   Widget _buildExpandedControls(ThemeData theme, AudioControls audioControls, bool isPlaying) {
+    final audioState = ref.watch(audioPlaybackStateProvider);
+    final currentTaskId = ref.watch(currentPlayingTaskProvider);
+    final isCurrentTask = currentTaskId == widget.taskId;
+    
     return Container(
-      width: widget.width ?? 200.0,
-      height: 48,
+      width: widget.width ?? 260.0, // Increased width for more controls
+      height: 64,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(32),
         color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.7),
         border: Border.all(
           color: theme.colorScheme.outline.withValues(alpha: 0.2),
           width: 1,
         ),
       ),
-      child: Row(
+      child: Column(
         children: [
-          // Skip backward
-          GestureDetector(
-            onTap: () => _skipBackward(audioControls),
-            child: Icon(
-              PhosphorIcons.skipBack(),
-              size: 20,
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-          
-          const SizedBox(width: 8),
-          
-          // Play/pause button
-          GestureDetector(
-            onTap: () => _togglePlayback(audioControls, isPlaying),
-            child: Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: theme.colorScheme.primary,
-                boxShadow: [
-                  BoxShadow(
-                    color: theme.colorScheme.primary.withValues(alpha: 0.3),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
+          // Main controls row
+          Row(
+            children: [
+              // Skip backward
+              GestureDetector(
+                onTap: () => _skipBackward(audioControls),
+                child: Icon(
+                  PhosphorIcons.skipBack(),
+                  size: 20,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+              
+              const SizedBox(width: 8),
+              
+              // Play/pause button
+              GestureDetector(
+                onTap: () => _togglePlayback(audioControls, isPlaying),
+                child: Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: theme.colorScheme.primary,
+                    boxShadow: [
+                      BoxShadow(
+                        color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
-                ],
+                  child: Icon(
+                    isPlaying ? PhosphorIcons.pause() : PhosphorIcons.play(),
+                    size: 16,
+                    color: theme.colorScheme.onPrimary,
+                  ),
+                ),
               ),
-              child: Icon(
-                isPlaying ? PhosphorIcons.pause() : PhosphorIcons.play(),
-                size: 16,
-                color: theme.colorScheme.onPrimary,
+              
+              const SizedBox(width: 8),
+              
+              // Skip forward  
+              GestureDetector(
+                onTap: () => _skipForward(audioControls),
+                child: Icon(
+                  PhosphorIcons.skipForward(),
+                  size: 20,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
               ),
-            ),
+              
+              const SizedBox(width: 12),
+              
+              // Speed control
+              GestureDetector(
+                onTap: () => _showSpeedMenu(context, theme),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
+                  ),
+                  child: Text(
+                    audioState.when(
+                      data: (state) => isCurrentTask ? state.speed.label : '1x',
+                      loading: () => '1x',
+                      error: (_, __) => '1x',
+                    ),
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+              
+              const Spacer(),
+              
+              // Duration display
+              Text(
+                audioState.when(
+                  data: (state) => isCurrentTask ? 
+                    '${_formatDuration(state.position)} / ${_formatDuration(state.duration)}' :
+                    _formatDuration(widget.duration ?? Duration.zero),
+                  loading: () => _formatDuration(widget.duration ?? Duration.zero),
+                  error: (_, __) => _formatDuration(widget.duration ?? Duration.zero),
+                ),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  fontSize: TypographyConstants.labelSmall, // 11.0 - Fixed accessibility violation (was 10px)
+                  fontWeight: FontWeight.w500,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
           ),
           
-          const SizedBox(width: 8),
-          
-          // Skip forward  
-          GestureDetector(
-            onTap: () => _skipForward(audioControls),
-            child: Icon(
-              PhosphorIcons.skipForward(),
-              size: 20,
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-          
-          const SizedBox(width: 8),
-          
-          // Duration display
-          Expanded(
-            child: Text(
-              _formatDuration(widget.duration ?? Duration.zero),
-              style: theme.textTheme.bodySmall?.copyWith(
-                fontSize: TypographyConstants.labelSmall, // 11.0 - Fixed accessibility violation (was 10px)
-                fontWeight: FontWeight.w500,
-                color: theme.colorScheme.onSurfaceVariant,
+          // Progress bar
+          const SizedBox(height: 4),
+          if (isCurrentTask)
+            audioState.when(
+              data: (state) => LinearProgressIndicator(
+                value: state.progress,
+                backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
+                minHeight: 3,
               ),
-              textAlign: TextAlign.end,
+              loading: () => LinearProgressIndicator(
+                value: null,
+                backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
+                minHeight: 3,
+              ),
+              error: (_, __) => const SizedBox.shrink(),
+            )
+          else
+            Container(
+              height: 3,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(1.5),
+              ),
             ),
-          ),
         ],
       ),
     );
@@ -297,6 +371,48 @@ class _TaskAudioControlsState extends ConsumerState<TaskAudioControls> {
     final minutes = duration.inMinutes;
     final seconds = duration.inSeconds.remainder(60);
     return '$minutes:${seconds.toString().padLeft(2, '0')}';
+  }
+
+  void _showSpeedMenu(BuildContext context, ThemeData theme) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        margin: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surface,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Playback Speed',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 16),
+            ...PlaybackSpeed.values.map((speed) => ListTile(
+              title: Text(speed.label),
+              onTap: () async {
+                Navigator.pop(context);
+                try {
+                  final audioControls = ref.read(audioControlsProvider);
+                  final notifier = ref.read(audioPlayerProvider.notifier);
+                  await notifier.setSpeed(speed);
+                } catch (e) {
+                  debugPrint('Error setting playback speed: $e');
+                }
+              },
+              contentPadding: EdgeInsets.zero,
+            )),
+          ],
+        ),
+      ),
+    );
   }
 }
 

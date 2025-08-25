@@ -4,6 +4,7 @@ import '../../core/accessibility/accessibility_constants.dart';
 import '../../core/design_system/design_tokens.dart';
 import '../../core/theme/typography_constants.dart';
 import 'glassmorphism_container.dart';
+import 'standardized_animations.dart';
 
 /// Accessible button with glassmorphism design and WCAG AA compliance
 class AccessibleButton extends StatefulWidget {
@@ -134,7 +135,7 @@ class _AccessibleButtonState extends State<AccessibleButton>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(milliseconds: 100), // Keep ultra-fast for accessibility feedback
+      duration: StandardizedAnimations.quick, // 100ms - Keep ultra-fast for accessibility feedback
       vsync: this,
     );
     
@@ -295,7 +296,7 @@ class _AccessibleButtonState extends State<AccessibleButton>
       );
       
       if (widget.label.isNotEmpty) {
-        children.add(const SizedBox(width: 8));
+        children.add(StandardizedGaps.horizontal(SpacingSize.sm));
       }
     }
 

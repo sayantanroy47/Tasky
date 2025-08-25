@@ -47,10 +47,10 @@ class TypographyConstants {
   static const double taskDescription = bodyMedium;   // 13.0  
   static const double taskMeta = bodySmall;           // 11.0
 
-  // Font weight constants - NO BOLD fonts per REQ 20 (maximum w500)
-  static const FontWeight light = FontWeight.w300;
-  static const FontWeight regular = FontWeight.w400;
-  static const FontWeight medium = FontWeight.w500;
+  // Font weight constants - Proper hierarchy for visual distinction
+  static const FontWeight light = FontWeight.w300;   // Actually light weight
+  static const FontWeight regular = FontWeight.w400; // Standard weight  
+  static const FontWeight medium = FontWeight.w500;  // Medium weight
   static const FontWeight semiBold = FontWeight.w500; // Alias for medium to maintain compatibility
   // semiBold and bold removed - maximum weight is medium (w500)
 

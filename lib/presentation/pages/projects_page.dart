@@ -54,10 +54,12 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage> with SingleTickerPr
           title: 'Projects',
           bottom: TabBar(
             controller: _tabController,
+            labelStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+            unselectedLabelStyle: const TextStyle(fontSize: 11, fontWeight: FontWeight.w400),
             tabs: [
-              Tab(text: 'Active', icon: Icon(PhosphorIcons.folder())),
-              Tab(text: 'Archived', icon: Icon(PhosphorIcons.archive())),
-              Tab(text: 'At Risk', icon: Icon(PhosphorIcons.warning())),
+              Tab(text: 'Active', icon: Icon(PhosphorIcons.folder(), size: 18)),
+              Tab(text: 'Archived', icon: Icon(PhosphorIcons.archive(), size: 18)),
+              Tab(text: 'At Risk', icon: Icon(PhosphorIcons.warning(), size: 18)),
             ],
           ),
           actions: [

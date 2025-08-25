@@ -16,7 +16,7 @@ part 'task_dao.g.dart';
 /// Data Access Object for Task operations
 /// 
 /// Provides CRUD operations and queries for tasks in the database.
-@DriftAccessor(tables: [Tasks, SubTasks, TaskTags, TaskDependencies])
+@DriftAccessor(tables: [Tasks, SubTasks, Tags, TaskTags, TaskDependencies])
 class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
   TaskDao(super.db);
 
@@ -65,18 +65,22 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
         }
 
         // Insert task-tag relationships
-        for (final tag in task.tags) {
-          if (tag.isEmpty) {
+        for (final tagId in task.tagIds) {
+          if (tagId.isEmpty) {
             developer.log('Warning: Skipping empty tag ID for task ${task.id}', name: 'TaskDao', level: 900);
             continue;
           }
           try {
+            // First, ensure the tag exists in the Tags table
+            await _ensureTagExists(tagId);
+            
+            // Then create the task-tag relationship
             await into(taskTags).insert(TaskTagsCompanion.insert(
               taskId: task.id,
-              tagId: tag,
+              tagId: tagId,
             ));
           } catch (e) {
-            developer.log('Warning: Failed to insert task-tag relationship (task: ${task.id}, tag: $tag): $e', name: 'TaskDao', level: 900);
+            developer.log('Warning: Failed to insert task-tag relationship (task: ${task.id}, tag: $tagId): $e', name: 'TaskDao', level: 900);
             // Continue with other tags
           }
         }
@@ -167,18 +171,22 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
 
         // Delete and recreate task-tag relationships
         await (delete(taskTags)..where((tt) => tt.taskId.equals(task.id))).go();
-        for (final tag in updatedTask.tags) {
-          if (tag.isEmpty) {
+        for (final tagId in updatedTask.tagIds) {
+          if (tagId.isEmpty) {
             developer.log('Warning: Skipping empty tag ID for task ${task.id}', name: 'TaskDao', level: 900);
             continue;
           }
           try {
+            // First, ensure the tag exists in the Tags table
+            await _ensureTagExists(tagId);
+            
+            // Then create the task-tag relationship
             await into(taskTags).insert(TaskTagsCompanion.insert(
               taskId: task.id,
-              tagId: tag,
+              tagId: tagId,
             ));
           } catch (e) {
-            developer.log('Warning: Failed to update task-tag relationship (task: ${task.id}, tag: $tag): $e', name: 'TaskDao', level: 900);
+            developer.log('Warning: Failed to update task-tag relationship (task: ${task.id}, tag: $tagId): $e', name: 'TaskDao', level: 900);
             // Continue with other tags
           }
         }
@@ -500,7 +508,7 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
       completedAt: taskRow.completedAt,
       priority: _intToTaskPriority(taskRow.priority),
       status: _intToTaskStatus(taskRow.status),
-      tags: tagIds,
+      tagIds: tagIds,
       subTasks: subTaskModels,
       locationTrigger: taskRow.locationTrigger,
       recurrence: recurrence,
@@ -1208,5 +1216,73 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
 
     final result = await query.getSingle();
     return result.read(tasks.id.count()) ?? 0;
+  }
+
+  /// Ensures a tag exists in the Tags table, creating it if necessary
+  Future<void> _ensureTagExists(String tagName) async {
+    if (tagName.isEmpty) return;
+
+    try {
+      // Check if tag already exists (using tagName as ID since we store category names directly)
+      final existingTag = await (select(tags)..where((t) => t.id.equals(tagName))).getSingleOrNull();
+      
+      if (existingTag == null) {
+        // Create the tag using tagName as both ID and name (for backward compatibility with category system)
+        await into(tags).insert(TagsCompanion.insert(
+          id: tagName, // Use category name as ID to match TaskTags.tagId
+          name: tagName,
+          color: const Value(null), // No specific color for category tags
+          createdAt: DateTime.now(),
+        ));
+        developer.log('Created new tag: $tagName (ID: $tagName)', name: 'TaskDao', level: 800);
+      }
+    } catch (e) {
+      developer.log('Warning: Failed to ensure tag exists ($tagName): $e', name: 'TaskDao', level: 900);
+      rethrow;
+    }
+  }
+
+  /// Migration method to fix existing tasks that have TaskTags entries but no corresponding Tags entries
+  /// This should be called once to migrate legacy data
+  Future<void> migrateExistingTaskTags() async {
+    try {
+      // Get all unique tag IDs from TaskTags that don't exist in Tags table
+      final orphanedTagIds = await customSelect('''
+        SELECT DISTINCT tt.tag_id 
+        FROM task_tags tt 
+        LEFT JOIN tags t ON tt.tag_id = t.id 
+        WHERE t.id IS NULL
+      ''').get();
+
+      if (orphanedTagIds.isNotEmpty) {
+        developer.log('Found ${orphanedTagIds.length} orphaned tag IDs to migrate', name: 'TaskDao', level: 800);
+        
+        await db.transaction(() async {
+          for (final row in orphanedTagIds) {
+            final tagId = row.data['tag_id'] as String;
+            if (tagId.isNotEmpty) {
+              try {
+                await into(tags).insert(TagsCompanion.insert(
+                  id: tagId,
+                  name: tagId, // Use the same value for both ID and name
+                  color: const Value(null),
+                  createdAt: DateTime.now(),
+                ));
+                developer.log('Migrated tag: $tagId', name: 'TaskDao', level: 800);
+              } catch (e) {
+                developer.log('Failed to migrate tag $tagId: $e', name: 'TaskDao', level: 900);
+              }
+            }
+          }
+        });
+        
+        developer.log('Successfully migrated ${orphanedTagIds.length} orphaned tags', name: 'TaskDao', level: 800);
+      } else {
+        developer.log('No orphaned tags found - migration not needed', name: 'TaskDao', level: 800);
+      }
+    } catch (e) {
+      developer.log('Error during tag migration: $e', name: 'TaskDao', level: 1000);
+      rethrow;
+    }
   }
 }

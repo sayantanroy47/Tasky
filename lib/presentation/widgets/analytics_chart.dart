@@ -5,6 +5,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'charts/line_chart_widget.dart';
 import 'charts/bar_chart_widget.dart';
 import 'charts/pie_chart_widget.dart';
+import 'charts/base_chart_widget.dart';
 import 'standardized_text.dart';
 import 'standardized_colors.dart';
 import 'standardized_spacing.dart';
@@ -70,37 +71,37 @@ class AnalyticsChart extends ConsumerWidget {
         return LineChartWidget(
           title: title ?? 'Line Chart',
           icon: PhosphorIcons.trendUp(),
-          data: data ?? [],
+          data: (data ?? []).cast<TimeSeriesDataPoint>(),
         );
       case ChartType.bar:
         return BarChartWidget(
           title: title ?? 'Bar Chart',
           icon: PhosphorIcons.chartBar(),
-          data: data ?? [],
+          data: (data ?? []).cast<ChartDataPoint>(),
         );
       case ChartType.pie:
         return PieChartWidget(
           title: title ?? 'Pie Chart',
           icon: PhosphorIcons.chartPie(),
-          data: data ?? [],
+          data: (data ?? []).cast<ChartDataPoint>(),
         );
       case ChartType.donut:
         return PieChartWidget(
           title: title ?? 'Donut Chart',
           icon: PhosphorIcons.chartDonut(),
-          data: data ?? [],
+          data: (data ?? []).cast<ChartDataPoint>(),
         );
       case ChartType.area:
         return LineChartWidget(
           title: title ?? 'Area Chart',
           icon: PhosphorIcons.chartLine(),
-          data: data ?? [],
+          data: (data ?? []).cast<TimeSeriesDataPoint>(),
         );
       case ChartType.doughnut:
         return PieChartWidget(
           title: title ?? 'Doughnut Chart',
           icon: PhosphorIcons.chartDonut(),
-          data: data ?? [],
+          data: (data ?? []).cast<ChartDataPoint>(),
         );
     }
   }

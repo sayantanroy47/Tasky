@@ -194,18 +194,15 @@ class _BulkOperationProgressDialogState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              StandardizedText(
                 widget.title,
-                style: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+                style: StandardizedTextStyle.titleMedium,
               ),
               const SizedBox(height: SpacingTokens.xs),
-              Text(
+              StandardizedText(
                 widget.description,
-                style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
-                ),
+                style: StandardizedTextStyle.bodySmall,
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             ],
           ),
@@ -306,22 +303,18 @@ class _BulkOperationProgressDialogState
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
+            StandardizedText(
               progress != null
                   ? '${progress.processedTasks}/${progress.totalTasks} tasks'
                   : 'Preparing...',
-              style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
-                fontWeight: FontWeight.w500,
-              ),
+              style: StandardizedTextStyle.bodyMedium,
             ),
-            Text(
+            StandardizedText(
               progress != null && progress.totalTasks > 0
                   ? '${(progress.progressPercentage * 100).toInt()}%'
                   : '0%',
-              style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
-                color: theme.colorScheme.primary,
-                fontWeight: FontWeight.w600,
-              ),
+              style: StandardizedTextStyle.bodyMedium,
+              color: theme.colorScheme.primary,
             ),
           ],
         ),
@@ -429,18 +422,15 @@ class _BulkOperationProgressDialogState
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            StandardizedText(
               value,
-              style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
-                fontWeight: FontWeight.w600,
-                color: color,
-              ),
+              style: StandardizedTextStyle.bodyMedium,
+              color: color,
             ),
-            Text(
+            StandardizedText(
               label,
-              style: StandardizedTextStyle.labelSmall.toTextStyle(context).copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-              ),
+              style: StandardizedTextStyle.labelSmall,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
             ),
           ],
         ),
@@ -472,11 +462,10 @@ class _BulkOperationProgressDialogState
               color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
             ),
             const SizedBox(width: 4),
-            Text(
+            StandardizedText(
               timeText,
-              style: StandardizedTextStyle.labelSmall.toTextStyle(context).copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-              ),
+              style: StandardizedTextStyle.labelSmall,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
             ),
           ],
         ),
@@ -506,12 +495,10 @@ class _BulkOperationProgressDialogState
                 color: theme.colorScheme.error,
               ),
               const SizedBox(width: SpacingTokens.xs),
-              Text(
+              StandardizedText(
                 'Errors (${progress.errors.length})',
-                style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
-                  color: theme.colorScheme.error,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: StandardizedTextStyle.bodySmall,
+                color: theme.colorScheme.error,
               ),
             ],
           ),
@@ -519,21 +506,18 @@ class _BulkOperationProgressDialogState
           ...progress.errors.entries.take(3).map(
             (entry) => Padding(
               padding: const EdgeInsets.only(bottom: 4),
-              child: Text(
+              child: StandardizedText(
                 '• ${entry.value}',
-                style: StandardizedTextStyle.labelSmall.toTextStyle(context).copyWith(
-                  color: theme.colorScheme.error.withValues(alpha: 0.8),
-                ),
+                style: StandardizedTextStyle.labelSmall,
+                color: theme.colorScheme.error.withValues(alpha: 0.8),
               ),
             ),
           ),
           if (progress.errors.length > 3)
-            Text(
+            StandardizedText(
               '... and ${progress.errors.length - 3} more',
-              style: StandardizedTextStyle.labelSmall.toTextStyle(context).copyWith(
-                color: theme.colorScheme.error.withValues(alpha: 0.6),
-                fontStyle: FontStyle.italic,
-              ),
+              style: StandardizedTextStyle.labelSmall,
+              color: theme.colorScheme.error.withValues(alpha: 0.6),
             ),
         ],
       ),
@@ -556,12 +540,10 @@ class _BulkOperationProgressDialogState
               color: theme.colorScheme.error,
             ),
             const SizedBox(width: SpacingTokens.xs),
-            Text(
+            StandardizedText(
               'Cancel Operation',
-              style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
-                color: theme.colorScheme.error,
-                fontWeight: FontWeight.w600,
-              ),
+              style: StandardizedTextStyle.bodyMedium,
+              color: theme.colorScheme.error,
             ),
           ],
         ),
@@ -629,18 +611,15 @@ class BulkDeleteConfirmationDialog extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      StandardizedText(
                         'Delete $taskCount Tasks',
-                        style: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: StandardizedTextStyle.titleMedium,
                       ),
                       const SizedBox(height: SpacingTokens.xs),
-                      Text(
+                      StandardizedText(
                         'This action cannot be undone permanently.',
-                        style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
-                        ),
+                        style: StandardizedTextStyle.bodySmall,
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                       ),
                     ],
                   ),
@@ -665,11 +644,9 @@ class BulkDeleteConfirmationDialog extends StatelessWidget {
                   child: GlassButton(
                     onPressed: () => Navigator.of(context).pop(false),
                     type: ButtonType.secondary,
-                    child: Text(
+                    child: const StandardizedText(
                       'Cancel',
-                      style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: StandardizedTextStyle.bodyMedium,
                     ),
                   ),
                 ),
@@ -682,12 +659,10 @@ class BulkDeleteConfirmationDialog extends StatelessWidget {
                     },
                     type: ButtonType.primary,
                     color: theme.colorScheme.error,
-                    child: Text(
+                    child: StandardizedText(
                       'Delete',
-                      style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: StandardizedTextStyle.bodyMedium,
+                      color: theme.colorScheme.onPrimary,
                     ),
                   ),
                 ),
@@ -747,17 +722,14 @@ class BulkDeleteConfirmationDialog extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
+              const StandardizedText(
                 'Task Breakdown',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+                style: StandardizedTextStyle.bodyMedium,
               ),
-              Text(
+              StandardizedText(
                 '$taskCount total',
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
-                ),
+                style: StandardizedTextStyle.bodySmall,
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             ],
           ),
@@ -768,17 +740,14 @@ class BulkDeleteConfirmationDialog extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
+                  StandardizedText(
                     entry.key.name.toUpperCase(),
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                    ),
+                    style: StandardizedTextStyle.bodySmall,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                   ),
-                  Text(
+                  StandardizedText(
                     '${entry.value}',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: StandardizedTextStyle.bodySmall,
                   ),
                 ],
               ),
@@ -822,20 +791,17 @@ class _BulkStatusUpdateDialogState extends State<BulkStatusUpdateDialog> {
           mainAxisSize: MainAxisSize.min,
           children: [
             // Header
-            Text(
+            const StandardizedText(
               'Update Status',
-              style: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+              style: StandardizedTextStyle.titleMedium,
             ),
             
             const SizedBox(height: SpacingTokens.md),
             
-            Text(
+            StandardizedText(
               'Choose new status for ${widget.selectedTasks.length} tasks',
-              style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
-              ),
+              style: StandardizedTextStyle.bodySmall,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
             ),
             
             const SizedBox(height: SpacingTokens.lg),
@@ -857,17 +823,14 @@ class _BulkStatusUpdateDialogState extends State<BulkStatusUpdateDialog> {
                         HapticFeedback.selectionClick();
                       },
                     ),
-                    title: Text(
+                    title: StandardizedText(
                       status.name.toUpperCase(),
-                      style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: StandardizedTextStyle.bodyMedium,
                     ),
-                    subtitle: Text(
+                    subtitle: StandardizedText(
                       '${widget.currentStatistics.statusBreakdown[status] ?? 0} currently',
-                      style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
-                        color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                      ),
+                      style: StandardizedTextStyle.bodySmall,
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
                     onTap: () {
                       setState(() {
@@ -889,11 +852,9 @@ class _BulkStatusUpdateDialogState extends State<BulkStatusUpdateDialog> {
                   child: GlassButton(
                     onPressed: () => Navigator.of(context).pop(),
                     type: ButtonType.secondary,
-                    child: Text(
+                    child: const StandardizedText(
                       'Cancel',
-                      style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: StandardizedTextStyle.bodyMedium,
                     ),
                   ),
                 ),
@@ -904,12 +865,10 @@ class _BulkStatusUpdateDialogState extends State<BulkStatusUpdateDialog> {
                         ? () => Navigator.of(context).pop(_selectedStatus)
                         : null,
                     type: ButtonType.primary,
-                    child: Text(
+                    child: StandardizedText(
                       'Update',
-                      style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: StandardizedTextStyle.bodyMedium,
+                      color: theme.colorScheme.onPrimary,
                     ),
                   ),
                 ),
@@ -954,20 +913,17 @@ class _BulkPriorityUpdateDialogState extends State<BulkPriorityUpdateDialog> {
           mainAxisSize: MainAxisSize.min,
           children: [
             // Header
-            Text(
+            const StandardizedText(
               'Update Priority',
-              style: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+              style: StandardizedTextStyle.titleMedium,
             ),
             
             const SizedBox(height: SpacingTokens.md),
             
-            Text(
+            StandardizedText(
               'Choose new priority for ${widget.selectedTasks.length} tasks',
-              style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
-              ),
+              style: StandardizedTextStyle.bodySmall,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
             ),
             
             const SizedBox(height: SpacingTokens.lg),
@@ -998,20 +954,17 @@ class _BulkPriorityUpdateDialogState extends State<BulkPriorityUpdateDialog> {
                           color: color,
                         ),
                         const SizedBox(width: SpacingTokens.xs),
-                        Text(
+                        StandardizedText(
                           priority.name.toUpperCase(),
-                          style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
-                            fontWeight: FontWeight.w600,
-                            color: color,
-                          ),
+                          style: StandardizedTextStyle.bodyMedium,
+                          color: color,
                         ),
                       ],
                     ),
-                    subtitle: Text(
+                    subtitle: StandardizedText(
                       '${widget.currentStatistics.priorityBreakdown[priority] ?? 0} currently',
-                      style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
-                        color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                      ),
+                      style: StandardizedTextStyle.bodySmall,
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
                     onTap: () {
                       setState(() {
@@ -1033,11 +986,9 @@ class _BulkPriorityUpdateDialogState extends State<BulkPriorityUpdateDialog> {
                   child: GlassButton(
                     onPressed: () => Navigator.of(context).pop(),
                     type: ButtonType.secondary,
-                    child: Text(
+                    child: const StandardizedText(
                       'Cancel',
-                      style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: StandardizedTextStyle.bodyMedium,
                     ),
                   ),
                 ),
@@ -1048,12 +999,10 @@ class _BulkPriorityUpdateDialogState extends State<BulkPriorityUpdateDialog> {
                         ? () => Navigator.of(context).pop(_selectedPriority)
                         : null,
                     type: ButtonType.primary,
-                    child: Text(
+                    child: StandardizedText(
                       'Update',
-                      style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: StandardizedTextStyle.bodyMedium,
+                      color: theme.colorScheme.onPrimary,
                     ),
                   ),
                 ),
@@ -1113,20 +1062,17 @@ class _BulkProjectMoveDialogState extends State<BulkProjectMoveDialog> {
           mainAxisSize: MainAxisSize.min,
           children: [
             // Header
-            Text(
+            const StandardizedText(
               'Move to Project',
-              style: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+              style: StandardizedTextStyle.titleMedium,
             ),
             
             const SizedBox(height: SpacingTokens.md),
             
-            Text(
+            StandardizedText(
               'Choose project for ${widget.selectedTasks.length} tasks',
-              style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
-              ),
+              style: StandardizedTextStyle.bodySmall,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
             ),
             
             const SizedBox(height: SpacingTokens.lg),
@@ -1147,11 +1093,9 @@ class _BulkProjectMoveDialogState extends State<BulkProjectMoveDialog> {
                       HapticFeedback.selectionClick();
                     },
                   ),
-                  title: Text(
+                  title: const StandardizedText(
                     'No Project',
-                    style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: StandardizedTextStyle.bodyMedium,
                   ),
                   onTap: () {
                     setState(() {
@@ -1180,17 +1124,14 @@ class _BulkProjectMoveDialogState extends State<BulkProjectMoveDialog> {
                         HapticFeedback.selectionClick();
                       },
                     ),
-                    title: Text(
+                    title: StandardizedText(
                       project.name,
-                      style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: StandardizedTextStyle.bodyMedium,
                     ),
-                    subtitle: Text(
+                    subtitle: StandardizedText(
                       '${project.taskCount} tasks',
-                      style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
-                        color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                      ),
+                      style: StandardizedTextStyle.bodySmall,
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
                     trailing: Container(
                       width: 20,
@@ -1224,11 +1165,9 @@ class _BulkProjectMoveDialogState extends State<BulkProjectMoveDialog> {
                   child: GlassButton(
                     onPressed: () => Navigator.of(context).pop(),
                     type: ButtonType.secondary,
-                    child: Text(
+                    child: const StandardizedText(
                       'Cancel',
-                      style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: StandardizedTextStyle.bodyMedium,
                     ),
                   ),
                 ),
@@ -1237,12 +1176,10 @@ class _BulkProjectMoveDialogState extends State<BulkProjectMoveDialog> {
                   child: GlassButton(
                     onPressed: () => Navigator.of(context).pop(_selectedProjectId),
                     type: ButtonType.primary,
-                    child: Text(
+                    child: StandardizedText(
                       'Move',
-                      style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: StandardizedTextStyle.bodyMedium,
+                      color: theme.colorScheme.onPrimary,
                     ),
                   ),
                 ),
@@ -1297,20 +1234,17 @@ class _BulkTagsDialogState extends State<BulkTagsDialog> {
           mainAxisSize: MainAxisSize.min,
           children: [
             // Header
-            Text(
+            const StandardizedText(
               'Manage Tags',
-              style: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+              style: StandardizedTextStyle.titleMedium,
             ),
             
             const SizedBox(height: SpacingTokens.md),
             
-            Text(
+            StandardizedText(
               'Add or remove tags for ${widget.selectedTasks.length} tasks',
-              style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
-              ),
+              style: StandardizedTextStyle.bodySmall,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
             ),
             
             const SizedBox(height: SpacingTokens.lg),
@@ -1327,7 +1261,7 @@ class _BulkTagsDialogState extends State<BulkTagsDialog> {
                       });
                     },
                     type: _isAddMode ? ButtonType.primary : ButtonType.secondary,
-                    child: const Text('Add Tags'),
+                    child: const StandardizedText('Add Tags', style: StandardizedTextStyle.bodyMedium),
                   ),
                 ),
                 const SizedBox(width: SpacingTokens.sm),
@@ -1340,7 +1274,7 @@ class _BulkTagsDialogState extends State<BulkTagsDialog> {
                       });
                     },
                     type: !_isAddMode ? ButtonType.primary : ButtonType.secondary,
-                    child: const Text('Remove Tags'),
+                    child: const StandardizedText('Remove Tags', style: StandardizedTextStyle.bodyMedium),
                   ),
                 ),
               ],
@@ -1410,14 +1344,12 @@ class _BulkTagsDialogState extends State<BulkTagsDialog> {
                               width: 1,
                             ),
                           ),
-                          child: Text(
+                          child: StandardizedText(
                             tag,
-                            style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
-                              color: isSelected
-                                  ? theme.colorScheme.primary
-                                  : theme.colorScheme.onSurface,
-                              fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                            ),
+                            style: StandardizedTextStyle.bodySmall,
+                            color: isSelected
+                                ? theme.colorScheme.primary
+                                : theme.colorScheme.onSurface,
                           ),
                         ),
                       );
@@ -1435,11 +1367,9 @@ class _BulkTagsDialogState extends State<BulkTagsDialog> {
                   child: GlassButton(
                     onPressed: () => Navigator.of(context).pop(),
                     type: ButtonType.secondary,
-                    child: Text(
+                    child: const StandardizedText(
                       'Cancel',
-                      style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: StandardizedTextStyle.bodyMedium,
                     ),
                   ),
                 ),
@@ -1453,12 +1383,10 @@ class _BulkTagsDialogState extends State<BulkTagsDialog> {
                             ))
                         : null,
                     type: ButtonType.primary,
-                    child: Text(
+                    child: StandardizedText(
                       'Apply',
-                      style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: StandardizedTextStyle.bodyMedium,
+                      color: theme.colorScheme.onPrimary,
                     ),
                   ),
                 ),
@@ -1517,11 +1445,9 @@ class BulkMoreActionsDialog extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             // Header
-            Text(
+            const StandardizedText(
               'More Actions',
-              style: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+              style: StandardizedTextStyle.titleMedium,
             ),
             
             const SizedBox(height: SpacingTokens.lg),
@@ -1571,11 +1497,9 @@ class BulkMoreActionsDialog extends StatelessWidget {
               child: GlassButton(
                 onPressed: () => Navigator.of(context).pop(),
                 type: ButtonType.secondary,
-                child: Text(
+                child: const StandardizedText(
                   'Close',
-                  style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: StandardizedTextStyle.bodyMedium,
                 ),
               ),
             ),
@@ -1602,17 +1526,14 @@ class BulkMoreActionsDialog extends StatelessWidget {
             icon,
             color: theme.colorScheme.primary,
           ),
-          title: Text(
+          title: StandardizedText(
             title,
-            style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+            style: StandardizedTextStyle.bodyMedium,
           ),
-          subtitle: Text(
+          subtitle: StandardizedText(
             subtitle,
-            style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-            ),
+            style: StandardizedTextStyle.bodySmall,
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
           ),
           onTap: () {
             Navigator.of(context).pop();

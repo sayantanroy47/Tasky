@@ -868,7 +868,7 @@ class _GlassmorphismShowcase extends StatelessWidget {
                     padding: const EdgeInsets.all(16),
                     child: Column(
                       children: [
-                        Icon(PhosphorIcons.chart()),
+                        const Icon(Icons.bar_chart),
                         const SizedBox(height: 8),
                         Text('Stats', style: Theme.of(context).textTheme.bodyMedium),
                       ],

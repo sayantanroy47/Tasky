@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../core/theme/typography_constants.dart';
+import 'standardized_spacing.dart';
 
 /// Widget that provides voice recording UI with visual feedback
 class VoiceRecordingWidget extends StatefulWidget {
@@ -107,7 +108,7 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget>
     final colorScheme = theme.colorScheme;
 
     return Container(
-      padding: const EdgeInsets.all(24.0),
+      padding: StandardizedSpacing.padding(SpacingSize.lg),
       decoration: BoxDecoration(
         color: colorScheme.surface,
         borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
@@ -124,22 +125,22 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget>
         children: [
           // Status text
           _buildStatusText(theme),
-          const SizedBox(height: 24.0),
+          StandardizedGaps.verticalLg,
           
           // Visual feedback area
           _buildVisualFeedback(colorScheme),
-          const SizedBox(height: 24.0),
+          StandardizedGaps.verticalLg,
           
           // Transcription display
           if (widget.transcriptionText != null) ...[
             _buildTranscriptionDisplay(theme),
-            const SizedBox(height: 16.0),
+            StandardizedGaps.verticalMd,
           ],
           
           // Error display
           if (widget.errorMessage != null) ...[
             _buildErrorDisplay(theme),
-            const SizedBox(height: 16.0),
+            StandardizedGaps.verticalMd,
           ],
           
           // Control buttons
@@ -200,7 +201,7 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget>
   Widget _buildTranscriptionDisplay(ThemeData theme) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16.0),
+      padding: StandardizedSpacing.padding(SpacingSize.md),
       decoration: BoxDecoration(
         color: theme.colorScheme.primaryContainer.withValues(alpha:  0.1),
         borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
@@ -218,7 +219,7 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget>
               fontWeight: FontWeight.w500,
             ),
           ),
-          const SizedBox(height: 8.0),
+          StandardizedGaps.verticalSm,
           Text(
             widget.transcriptionText!,
             style: theme.textTheme.bodyMedium?.copyWith(
@@ -233,7 +234,7 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget>
   Widget _buildErrorDisplay(ThemeData theme) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16.0),
+      padding: StandardizedSpacing.padding(SpacingSize.md),
       decoration: BoxDecoration(
         color: theme.colorScheme.errorContainer.withValues(alpha:  0.1),
         borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
@@ -248,7 +249,7 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget>
             color: theme.colorScheme.error,
             size: 20.0,
           ),
-          const SizedBox(width: 12.0),
+          StandardizedGaps.horizontalMd,
           Expanded(
             child: Text(
               widget.errorMessage!,
@@ -282,7 +283,7 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget>
             style: IconButton.styleFrom(
               backgroundColor: colorScheme.errorContainer,
               foregroundColor: colorScheme.error,
-              padding: const EdgeInsets.all(16.0),
+              padding: StandardizedSpacing.padding(SpacingSize.md),
             ),
           ),
           
@@ -297,7 +298,7 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget>
             style: IconButton.styleFrom(
               backgroundColor: colorScheme.primary,
               foregroundColor: colorScheme.onPrimary,
-              padding: const EdgeInsets.all(16.0),
+              padding: StandardizedSpacing.padding(SpacingSize.md),
             ),
           ),
         ],
@@ -315,7 +316,7 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget>
       style: IconButton.styleFrom(
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,
-        padding: const EdgeInsets.all(20.0),
+        padding: StandardizedSpacing.padding(SpacingSize.lg),
       ),
     );
   }

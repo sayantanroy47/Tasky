@@ -26,6 +26,7 @@ import 'profile_settings_page.dart';
 import 'projects_page.dart';
 import 'tasks_page.dart';
 import 'themes_page.dart';
+import 'analytics_page.dart';
 
 /// Settings page for app configuration and preferences
 class SettingsPage extends ConsumerWidget {
@@ -108,6 +109,47 @@ class SettingsPage extends ConsumerWidget {
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => const ProjectsPage(),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 16),
+
+            // Analytics section
+            GlassmorphismContainer(
+              padding: const EdgeInsets.all(SpacingTokens.md),
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  StandardizedTextVariants.sectionHeader('Analytics & Insights'),
+                  const SizedBox(height: 16),
+                  _buildListTile(
+                    context: context,
+                    leadingIcon: PhosphorIcons.chartBar(),
+                    title: 'Task Analytics',
+                    subtitle: 'View productivity metrics and insights',
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const AnalyticsPage(),
+                        ),
+                      );
+                    },
+                  ),
+                  _buildListTile(
+                    context: context,
+                    leadingIcon: PhosphorIcons.trendUp(),
+                    title: 'Productivity Patterns',
+                    subtitle: 'Analyze your task completion trends',
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const AnalyticsPage(),
                         ),
                       );
                     },
@@ -349,15 +391,15 @@ class SettingsPage extends ConsumerWidget {
                   ),
                   ListTile(
                     leading: Icon(PhosphorIcons.arrowsClockwise()),
-                    title: const Text('Auto Sync'),
-                    subtitle: const Text('Sync tasks across devices'),
+                    title: const StandardizedText('Auto Sync', style: StandardizedTextStyle.titleMedium),
+                    subtitle: const StandardizedText('Sync tasks across devices', style: StandardizedTextStyle.bodyMedium),
                     trailing: Switch(
                       value: false,
                       onChanged: (value) {
                         // Handle sync settings toggle
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text(value ? 'Auto sync enabled' : 'Auto sync disabled'),
+                            content: StandardizedText(value ? 'Auto sync enabled' : 'Auto sync disabled', style: StandardizedTextStyle.bodyMedium),
                             behavior: SnackBarBehavior.floating,
                           ),
                         );
@@ -514,15 +556,16 @@ class SettingsPage extends ConsumerWidget {
                   size: 20,
                 ),
                 const SizedBox(width: 8),
-                const StandardizedText(
-                  'Background Services',
-                  style: StandardizedTextStyle.titleSmall,
+                const Expanded(
+                  child: StandardizedText(
+                    'Background Services',
+                    style: StandardizedTextStyle.titleSmall,
+                  ),
                 ),
-                const Spacer(),
                 GlassmorphismContainer(
                   level: GlassLevel.interactive,
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  borderRadius: BorderRadius.circular(12),
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  borderRadius: BorderRadius.circular(8),
                   glassTint:
                       isRunning && isEnabled ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.2) : Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.2),
                   child: StandardizedText(
@@ -546,10 +589,13 @@ class SettingsPage extends ConsumerWidget {
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                   const SizedBox(width: 8),
-                  StandardizedText(
-                    'Last cleanup: ${_formatTimestamp(lastCleanup)}',
-                    style: StandardizedTextStyle.bodySmall,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  Expanded(
+                    child: StandardizedText(
+                      'Last cleanup: ${_formatTimestamp(lastCleanup)}',
+                      style: StandardizedTextStyle.bodySmall,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ],
               ),
@@ -565,10 +611,13 @@ class SettingsPage extends ConsumerWidget {
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                   const SizedBox(width: 8),
-                  StandardizedText(
-                    'Last reminder check: ${_formatTimestamp(lastReminderCheck)}',
-                    style: StandardizedTextStyle.bodySmall,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  Expanded(
+                    child: StandardizedText(
+                      'Last reminder check: ${_formatTimestamp(lastReminderCheck)}',
+                      style: StandardizedTextStyle.bodySmall,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ],
               ),
@@ -592,8 +641,9 @@ class SettingsPage extends ConsumerWidget {
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text(
+                            content: StandardizedText(
                               value ? 'Background services enabled' : 'Background services disabled',
+                              style: StandardizedTextStyle.bodyMedium,
                             ),
                             behavior: SnackBarBehavior.floating,
                           ),
@@ -603,7 +653,7 @@ class SettingsPage extends ConsumerWidget {
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('Failed to update services: $e'),
+                            content: StandardizedText('Failed to update services: $e', style: StandardizedTextStyle.bodyMedium),
                             backgroundColor: Theme.of(context).colorScheme.error,
                             behavior: SnackBarBehavior.floating,
                           ),
@@ -657,7 +707,7 @@ class SettingsPage extends ConsumerWidget {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          title: const Text('Platform Capabilities'),
+          title: const StandardizedText('Platform Capabilities', style: StandardizedTextStyle.titleLarge),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -702,21 +752,21 @@ class SettingsPage extends ConsumerWidget {
                     children: [
                       StandardizedTextVariants.cardTitle('Platform Details'),
                       const SizedBox(height: 8),
-                      Text(
+                      StandardizedText(
                         'Speech Recognition: ${capabilities.speechRecognition.isSupported ? "Supported" : "Not Available"}',
-                        style: StandardizedTextStyle.bodySmall.toTextStyle(context),
+                        style: StandardizedTextStyle.bodySmall,
                       ),
-                      Text(
+                      StandardizedText(
                         'Audio Recording: ${capabilities.audioRecording.isSupported ? "Supported" : "Not Available"}',
-                        style: StandardizedTextStyle.bodySmall.toTextStyle(context),
+                        style: StandardizedTextStyle.bodySmall,
                       ),
-                      Text(
+                      StandardizedText(
                         'Background Processing: ${capabilities.backgroundProcessing.isSupported ? "Supported" : "Not Available"}',
-                        style: StandardizedTextStyle.bodySmall.toTextStyle(context),
+                        style: StandardizedTextStyle.bodySmall,
                       ),
-                      Text(
+                      StandardizedText(
                         'Notifications: ${capabilities.notifications.isSupported ? "Supported" : "Not Available"}',
-                        style: StandardizedTextStyle.bodySmall.toTextStyle(context),
+                        style: StandardizedTextStyle.bodySmall,
                       ),
                     ],
                   ),
@@ -727,7 +777,7 @@ class SettingsPage extends ConsumerWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Close'),
+              child: const StandardizedText('Close', style: StandardizedTextStyle.buttonText),
             ),
           ],
         ),
@@ -736,7 +786,7 @@ class SettingsPage extends ConsumerWidget {
       debugPrint('Error showing platform capabilities: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Unable to load platform capabilities: $e'),
+          content: StandardizedText('Unable to load platform capabilities: $e', style: StandardizedTextStyle.bodyMedium),
           backgroundColor: Theme.of(context).colorScheme.error,
           behavior: SnackBarBehavior.floating,
         ),

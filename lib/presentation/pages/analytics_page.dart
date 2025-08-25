@@ -10,9 +10,11 @@ import '../widgets/analytics_widgets.dart';
 import '../widgets/glassmorphism_container.dart';
 import '../widgets/standardized_app_bar.dart';
 import '../widgets/standardized_text.dart';
+import '../widgets/standardized_colors.dart';
 import '../widgets/standardized_spacing.dart';
 import '../widgets/standardized_error_states.dart';
 import '../widgets/task_heatmap_widget.dart';
+import '../widgets/theme_background_widget.dart';
 import 'detailed_heatmap_page.dart';
 
 /// Analytics page for viewing productivity metrics and insights
@@ -20,7 +22,8 @@ class AnalyticsPage extends ConsumerWidget {
   const AnalyticsPage({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
+    return ThemeBackgroundWidget(
+      child: Scaffold(
       backgroundColor: Colors.transparent, // TODO: Use context.colors.backgroundTransparent
       extendBodyBehindAppBar: true, // Show phone status bar
       appBar: StandardizedAppBar.withTertiaryAccent(
@@ -64,7 +67,7 @@ class AnalyticsPage extends ConsumerWidget {
           child: AnalyticsPageBody(),
         ),
       ),
-    );
+    ));
   }
 }
 
@@ -80,17 +83,11 @@ class AnalyticsPageBody extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Time period selector - same width as metric cards
-          Row(
-            children: [
-              Expanded(
-                child: TimePeriodSelector(
-                  selectedPeriod: selectedPeriod,
-                  onPeriodChanged: (period) {
-                    ref.read(analyticsTimePeriodProvider.notifier).state = period;
-                  },
-                ),
-              ),
-            ],
+          TimePeriodSelector(
+            selectedPeriod: selectedPeriod,
+            onPeriodChanged: (period) {
+              ref.read(analyticsTimePeriodProvider.notifier).state = period;
+            },
           ),
 
           StandardizedGaps.md,
@@ -161,7 +158,7 @@ class AnalyticsPageBody extends ConsumerWidget {
                               value: '${summary.completedTasks}',
                               subtitle: 'tasks ${selectedPeriod.displayName.toLowerCase()}',
                               icon: PhosphorIcons.checkCircle(),
-                              color: Colors.green, // TODO: Replace with context.colors.success
+                              color: context.successColor,
                             ),
                           ),
                           StandardizedGaps.horizontal(SpacingSize.sm),
@@ -171,7 +168,7 @@ class AnalyticsPageBody extends ConsumerWidget {
                               value: '${(summary.completionRate * 100).round()}%',
                               subtitle: 'of all tasks',
                               icon: PhosphorIcons.trendUp(),
-                              color: Colors.blue, // TODO: Replace with context.colors.info
+                              color: Theme.of(context).colorScheme.primary,
                             ),
                           ),
                         ],
@@ -185,7 +182,7 @@ class AnalyticsPageBody extends ConsumerWidget {
                               value: '${summary.currentStreak}',
                               subtitle: 'days active',
                               icon: PhosphorIcons.fire(),
-                              color: Colors.orange, // TODO: Replace with context.colors.warning
+                              color: context.warningColor,
                             ),
                           ),
                           StandardizedGaps.horizontal(SpacingSize.sm),
@@ -195,7 +192,7 @@ class AnalyticsPageBody extends ConsumerWidget {
                               value: _formatDuration(summary.averageTaskDuration),
                               subtitle: 'per task',
                               icon: PhosphorIcons.clock(),
-                              color: Colors.purple, // TODO: Replace with semantic color
+                              color: Theme.of(context).colorScheme.tertiary,
                             ),
                           ),
                         ],
@@ -438,7 +435,7 @@ class AnalyticsPageBody extends ConsumerWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: StandardizedText('Analytics exported as ${format.displayName} successfully!', style: StandardizedTextStyle.bodyMedium),
-            backgroundColor: Colors.green, // TODO: Replace with context.colors.success
+            backgroundColor: context.successColor,
           ),
         );
       }

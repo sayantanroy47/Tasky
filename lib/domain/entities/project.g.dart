@@ -21,6 +21,10 @@ Project _$ProjectFromJson(Map<String, dynamic> json) => Project(
               ?.map((e) => e as String)
               .toList() ??
           const [],
+      tagIds: (json['tagIds'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const [],
       isArchived: json['isArchived'] as bool? ?? false,
       deadline: json['deadline'] == null
           ? null
@@ -37,6 +41,7 @@ Map<String, dynamic> _$ProjectToJson(Project instance) => <String, dynamic>{
       'createdAt': instance.createdAt.toIso8601String(),
       'updatedAt': instance.updatedAt?.toIso8601String(),
       'taskIds': instance.taskIds,
+      'tagIds': instance.tagIds,
       'isArchived': instance.isArchived,
       'deadline': instance.deadline?.toIso8601String(),
     };

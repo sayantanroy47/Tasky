@@ -49,8 +49,8 @@ class TasksPage extends ConsumerWidget {
           child: Padding(
             padding: EdgeInsets.only(
               top: kToolbarHeight + SpacingTokens.sm,
-              left: SpacingTokens.md,
-              right: SpacingTokens.md,
+              left: SpacingTokens.xs,
+              right: SpacingTokens.xs,
               bottom: SpacingTokens.md,
             ),
             child: TasksPageBody(),
@@ -613,7 +613,7 @@ class _TaskList extends ConsumerWidget {
                 showProgress: true,
                 showSubtasks: task.subTasks.isNotEmpty,
                 style: TaskCardStyle.elevated,
-                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
               ))
           .toList(),
     );

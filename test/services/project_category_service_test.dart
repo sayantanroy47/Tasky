@@ -2,8 +2,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:task_tracker_app/domain/entities/project_category.dart';
+import 'package:task_tracker_app/domain/entities/category_with_usage_count.dart';
 import 'package:task_tracker_app/domain/repositories/project_category_repository.dart';
-import 'package:task_tracker_app/services/database/daos/project_category_dao.dart';
 import 'package:task_tracker_app/services/project_category_service.dart';
 
 // Generate mocks

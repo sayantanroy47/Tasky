@@ -4,8 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../services/collaboration_service.dart';
-import '../../core/theme/typography_constants.dart';
 import '../widgets/standardized_app_bar.dart';
+import '../widgets/standardized_spacing.dart';
+import '../widgets/standardized_text.dart';
 
 class CollaborationManagementScreen extends ConsumerStatefulWidget {
   final SharedTaskList sharedList;
@@ -83,7 +84,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
 
   Widget _buildCollaboratorsTab() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
+      padding: StandardizedSpacing.padding(SpacingSize.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -98,7 +99,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
   Widget _buildAddCollaboratorSection() {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: StandardizedSpacing.padding(SpacingSize.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -106,12 +107,9 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
               children: [
                 Icon(PhosphorIcons.userPlus(), color: Theme.of(context).primaryColor),
                 const SizedBox(width: 8),
-                const Text(
+                const StandardizedText(
                   'Add Collaborator',
-                  style: TextStyle(
-                    fontSize: TypographyConstants.bodyLarge, // 16.0 - Fixed hardcoded font size (was 18px)
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: StandardizedTextStyle.titleMedium,
                 ),
               ],
             ),
@@ -140,7 +138,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
                   child: ElevatedButton.icon(
                     onPressed: () => _addCollaborator(CollaborationPermission.view),
                     icon: Icon(PhosphorIcons.eye()),
-                    label: const Text('Add as Viewer'),
+                    label: const StandardizedText('Add as Viewer', style: StandardizedTextStyle.buttonText),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -148,7 +146,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
                   child: ElevatedButton.icon(
                     onPressed: () => _addCollaborator(CollaborationPermission.edit),
                     icon: Icon(PhosphorIcons.pencil()),
-                    label: const Text('Add as Editor'),
+                    label: const StandardizedText('Add as Editor', style: StandardizedTextStyle.buttonText),
                   ),
                 ),
               ],
@@ -162,7 +160,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
   Widget _buildCollaboratorsList() {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: StandardizedSpacing.padding(SpacingSize.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -170,12 +168,9 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
               children: [
                 Icon(PhosphorIcons.users(), color: Theme.of(context).primaryColor),
                 const SizedBox(width: 8),
-                const Text(
+                const StandardizedText(
                   'Current Collaborators',
-                  style: TextStyle(
-                    fontSize: TypographyConstants.bodyLarge, // 16.0 - Fixed hardcoded font size (was 18px)
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: StandardizedTextStyle.titleMedium,
                 ),
               ],
             ),
@@ -209,13 +204,11 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
           color: _getPermissionColor(permission),
         ),
       ),
-      title: Text(
+      title: StandardizedText(
         isOwner ? '$userId (Owner)' : userId,
-        style: TextStyle(
-          fontWeight: isOwner ? FontWeight.w500 : FontWeight.normal,
-        ),
+        style: isOwner ? StandardizedTextStyle.titleSmall : StandardizedTextStyle.bodyMedium,
       ),
-      subtitle: Text(permission.name.toUpperCase()),
+      subtitle: StandardizedText(permission.name.toUpperCase(), style: StandardizedTextStyle.bodySmall),
       trailing: isOwner
           ? null
           : PopupMenuButton<String>(
@@ -225,7 +218,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
                   value: 'change_to_view',
                   child: ListTile(
                     leading: Icon(PhosphorIcons.eye()),
-                    title: const Text('Change to Viewer'),
+                    title: const StandardizedText('Change to Viewer', style: StandardizedTextStyle.bodyMedium),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
@@ -233,7 +226,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
                   value: 'change_to_edit',
                   child: ListTile(
                     leading: Icon(PhosphorIcons.pencil()),
-                    title: const Text('Change to Editor'),
+                    title: const StandardizedText('Change to Editor', style: StandardizedTextStyle.bodyMedium),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
@@ -241,7 +234,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
                   value: 'change_to_admin',
                   child: ListTile(
                     leading: Icon(PhosphorIcons.shieldCheck()),
-                    title: const Text('Change to Admin'),
+                    title: const StandardizedText('Change to Admin', style: StandardizedTextStyle.bodyMedium),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
@@ -249,7 +242,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
                   value: 'remove',
                   child: ListTile(
                     leading: Icon(PhosphorIcons.minusCircle(), color: Colors.red),
-                    title: const Text('Remove', style: TextStyle(color: Colors.red)),
+                    title: const StandardizedText('Remove', style: StandardizedTextStyle.bodyMedium, color: Colors.red),
                     contentPadding: EdgeInsets.zero,
                   ),
                 ),
@@ -260,7 +253,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
 
   Widget _buildSettingsTab() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
+      padding: StandardizedSpacing.padding(SpacingSize.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -277,7 +270,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
   Widget _buildListSettingsSection() {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: StandardizedSpacing.padding(SpacingSize.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -285,35 +278,33 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
               children: [
                 Icon(PhosphorIcons.gear(), color: Theme.of(context).primaryColor),
                 const SizedBox(width: 8),
-                const Text(
+                const StandardizedText(
                   'List Settings',
-                  style: TextStyle(
-                    fontSize: TypographyConstants.bodyLarge, // 16.0 - Fixed hardcoded font size (was 18px)
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: StandardizedTextStyle.titleMedium,
                 ),
               ],
             ),
             const SizedBox(height: 16),
             ListTile(
-              title: const Text('List Name'),
-              subtitle: Text(widget.sharedList.name),
+              title: const StandardizedText('List Name', style: StandardizedTextStyle.bodyMedium),
+              subtitle: StandardizedText(widget.sharedList.name, style: StandardizedTextStyle.bodySmall),
               trailing: Icon(PhosphorIcons.pencil()),
               onTap: () => _editListName(),
               contentPadding: EdgeInsets.zero,
             ),
             ListTile(
-              title: const Text('Description'),
-              subtitle: Text(
+              title: const StandardizedText('Description', style: StandardizedTextStyle.bodyMedium),
+              subtitle: StandardizedText(
                 widget.sharedList.description.isEmpty ? 'No description' : widget.sharedList.description,
+                style: StandardizedTextStyle.bodySmall,
               ),
               trailing: Icon(PhosphorIcons.pencil()),
               onTap: () => _editListDescription(),
               contentPadding: EdgeInsets.zero,
             ),
             ListTile(
-              title: const Text('Tasks'),
-              subtitle: Text('${widget.sharedList.taskIds.length} tasks in this list'),
+              title: const StandardizedText('Tasks', style: StandardizedTextStyle.bodyMedium),
+              subtitle: StandardizedText('${widget.sharedList.taskIds.length} tasks in this list', style: StandardizedTextStyle.bodySmall),
               trailing: Icon(PhosphorIcons.caretRight()),
               onTap: () => _manageListTasks(),
               contentPadding: EdgeInsets.zero,
@@ -327,7 +318,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
   Widget _buildSharingSettingsSection() {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: StandardizedSpacing.padding(SpacingSize.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -335,27 +326,24 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
               children: [
                 Icon(PhosphorIcons.share(), color: Theme.of(context).primaryColor),
                 const SizedBox(width: 8),
-                const Text(
+                const StandardizedText(
                   'Sharing Settings',
-                  style: TextStyle(
-                    fontSize: TypographyConstants.bodyLarge, // 16.0 - Fixed hardcoded font size (was 18px)
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: StandardizedTextStyle.titleMedium,
                 ),
               ],
             ),
             const SizedBox(height: 16),
             SwitchListTile(
-              title: const Text('Public List'),
-              subtitle: const Text('Allow others to join with a share code'),
+              title: const StandardizedText('Public List', style: StandardizedTextStyle.bodyMedium),
+              subtitle: const StandardizedText('Allow others to join with a share code', style: StandardizedTextStyle.bodySmall),
               value: widget.sharedList.isPublic,
               onChanged: (value) => _togglePublicAccess(value),
               contentPadding: EdgeInsets.zero,
             ),
             if (widget.sharedList.isPublic && widget.sharedList.shareCode != null) ...[
               ListTile(
-                title: const Text('Share Code'),
-                subtitle: Text(widget.sharedList.shareCode!),
+                title: const StandardizedText('Share Code', style: StandardizedTextStyle.bodyMedium),
+                subtitle: StandardizedText(widget.sharedList.shareCode!, style: StandardizedTextStyle.bodySmall),
                 trailing: IconButton(
                   icon: Icon(PhosphorIcons.copy()),
                   onPressed: () => _copyShareCode(),
@@ -363,8 +351,8 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
                 contentPadding: EdgeInsets.zero,
               ),
               ListTile(
-                title: const Text('Share Link'),
-                subtitle: const Text('Generate shareable link'),
+                title: const StandardizedText('Share Link', style: StandardizedTextStyle.bodyMedium),
+                subtitle: const StandardizedText('Generate shareable link', style: StandardizedTextStyle.bodySmall),
                 trailing: Icon(PhosphorIcons.link()),
                 onTap: () => _generateShareLink(),
                 contentPadding: EdgeInsets.zero,
@@ -380,7 +368,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
     return Card(
       color: Colors.red.withValues(alpha: 0.05),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: StandardizedSpacing.padding(SpacingSize.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -388,20 +376,17 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
               children: [
                 Icon(PhosphorIcons.warning(), color: Colors.red),
                 const SizedBox(width: 8),
-                const Text(
+                const StandardizedText(
                   'Danger Zone',
-                  style: TextStyle(
-                    fontSize: TypographyConstants.bodyLarge, // 16.0 - Fixed hardcoded font size (was 18px)
-                    fontWeight: FontWeight.w500,
-                    color: Colors.red,
-                  ),
+                  style: StandardizedTextStyle.titleMedium,
+                  color: Colors.red,
                 ),
               ],
             ),
             const SizedBox(height: 16),
             ListTile(
-              title: const Text('Delete Shared List'),
-              subtitle: const Text('Permanently delete this shared list and remove all collaborators'),
+              title: const StandardizedText('Delete Shared List', style: StandardizedTextStyle.bodyMedium),
+              subtitle: const StandardizedText('Permanently delete this shared list and remove all collaborators', style: StandardizedTextStyle.bodySmall),
               trailing: Icon(PhosphorIcons.trash(), color: Colors.red),
               onTap: () => _deleteSharedList(),
               contentPadding: EdgeInsets.zero,
@@ -422,15 +407,16 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
                   children: [
                     Icon(PhosphorIcons.clockCounterClockwise(), size: 64, color: Colors.grey),
                     const SizedBox(height: 16),
-                    const Text(
+                    const StandardizedText(
                       'No activity yet',
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
+                      style: StandardizedTextStyle.titleMedium,
+                      color: Colors.grey,
                     ),
                   ],
                 ),
               )
             : ListView.separated(
-                padding: const EdgeInsets.all(16.0),
+                padding: StandardizedSpacing.padding(SpacingSize.md),
                 itemCount: _changeHistory.length,
                 separatorBuilder: (context, index) => const Divider(),
                 itemBuilder: (context, index) {
@@ -449,9 +435,10 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
           color: _getChangeTypeColor(change.changeType),
         ),
       ),
-      title: Text(_getChangeDescription(change)),
-      subtitle: Text(
+      title: StandardizedText(_getChangeDescription(change), style: StandardizedTextStyle.bodyMedium),
+      subtitle: StandardizedText(
         '${change.userName} • ${_formatDateTime(change.timestamp)}',
+        style: StandardizedTextStyle.bodySmall,
       ),
       onTap: () => _showChangeDetails(change),
     );
@@ -610,12 +597,12 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Remove Collaborator'),
-        content: const Text('Are you sure you want to remove this collaborator?'),
+        title: const StandardizedText('Remove Collaborator', style: StandardizedTextStyle.titleMedium),
+        content: const StandardizedText('Are you sure you want to remove this collaborator?', style: StandardizedTextStyle.bodyMedium),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            child: const StandardizedText('Cancel', style: StandardizedTextStyle.buttonText),
           ),
           TextButton(
             onPressed: () async {
@@ -638,7 +625,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
                 }
               }
             },
-            child: const Text('Remove', style: TextStyle(color: Colors.red)),
+            child: const StandardizedText('Remove', style: StandardizedTextStyle.buttonText, color: Colors.red),
           ),
         ],
       ),
@@ -745,15 +732,16 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Shared List'),
-        content: const Text(
+        title: const StandardizedText('Delete Shared List', style: StandardizedTextStyle.titleMedium),
+        content: const StandardizedText(
           'Are you sure you want to delete this shared list? '
           'This action cannot be undone and will remove all collaborators.',
+          style: StandardizedTextStyle.bodyMedium,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            child: const StandardizedText('Cancel', style: StandardizedTextStyle.buttonText),
           ),
           TextButton(
             onPressed: () async {
@@ -772,7 +760,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
                 }
               }
             },
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+            child: const StandardizedText('Delete', style: StandardizedTextStyle.buttonText, color: Colors.red),
           ),
         ],
       ),
@@ -783,18 +771,18 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(_getChangeDescription(change)),
+        title: StandardizedText(_getChangeDescription(change), style: StandardizedTextStyle.bodyMedium),
         content: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('User: ${change.userName}'),
-            Text('Time: ${change.timestamp}'),
+            StandardizedText('User: ${change.userName}', style: StandardizedTextStyle.bodyMedium),
+            StandardizedText('Time: ${change.timestamp}', style: StandardizedTextStyle.bodyMedium),
             if (change.changeData.isNotEmpty) ...[
               const SizedBox(height: 8),
-              const Text('Details:'),
+              const StandardizedText('Details:', style: StandardizedTextStyle.titleSmall),
               ...change.changeData.entries.map(
-                (entry) => Text('${entry.key}: ${entry.value}'),
+                (entry) => StandardizedText('${entry.key}: ${entry.value}', style: StandardizedTextStyle.bodySmall),
               ),
             ],
           ],
@@ -802,7 +790,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
+            child: const StandardizedText('Close', style: StandardizedTextStyle.buttonText),
           ),
         ],
       ),
@@ -812,7 +800,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
   void _showSuccessSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: StandardizedText(message, style: StandardizedTextStyle.bodyMedium),
         backgroundColor: Colors.green,
       ),
     );
@@ -821,7 +809,7 @@ class _CollaborationManagementScreenState extends ConsumerState<CollaborationMan
   void _showErrorSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: StandardizedText(message, style: StandardizedTextStyle.bodyMedium),
         backgroundColor: Colors.red,
       ),
     );
@@ -861,7 +849,7 @@ class _EditListNameDialogState extends State<_EditListNameDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Edit List Name'),
+      title: const StandardizedText('Edit List Name', style: StandardizedTextStyle.titleMedium),
       content: Form(
         key: _formKey,
         child: TextFormField(
@@ -881,7 +869,7 @@ class _EditListNameDialogState extends State<_EditListNameDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: const StandardizedText('Cancel', style: StandardizedTextStyle.buttonText),
         ),
         ElevatedButton(
           onPressed: () {
@@ -889,7 +877,7 @@ class _EditListNameDialogState extends State<_EditListNameDialog> {
               widget.onSave(_controller.text.trim());
             }
           },
-          child: const Text('Save'),
+          child: const StandardizedText('Save', style: StandardizedTextStyle.buttonText),
         ),
       ],
     );
@@ -928,7 +916,7 @@ class _EditListDescriptionDialogState extends State<_EditListDescriptionDialog> 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Edit List Description'),
+      title: const StandardizedText('Edit List Description', style: StandardizedTextStyle.titleMedium),
       content: TextField(
         controller: _controller,
         decoration: const InputDecoration(
@@ -940,13 +928,13 @@ class _EditListDescriptionDialogState extends State<_EditListDescriptionDialog> 
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: const StandardizedText('Cancel', style: StandardizedTextStyle.buttonText),
         ),
         ElevatedButton(
           onPressed: () {
             widget.onSave(_controller.text.trim());
           },
-          child: const Text('Save'),
+          child: const StandardizedText('Save', style: StandardizedTextStyle.buttonText),
         ),
       ],
     );
@@ -967,7 +955,7 @@ class _SharedTaskListTasksScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Tasks in ${sharedList.name}'),
+        title: StandardizedText('Tasks in ${sharedList.name}', style: StandardizedTextStyle.titleLarge),
       ),
       body: ListView.builder(
         padding: const EdgeInsets.all(16),
@@ -976,8 +964,8 @@ class _SharedTaskListTasksScreen extends StatelessWidget {
           final taskId = sharedList.taskIds[index];
           return Card(
             child: ListTile(
-              title: Text('Task $taskId'),
-              subtitle: const Text('Task details would be loaded from task service'),
+              title: StandardizedText('Task $taskId', style: StandardizedTextStyle.bodyMedium),
+              subtitle: const StandardizedText('Task details would be loaded from task service', style: StandardizedTextStyle.bodySmall),
               trailing: PopupMenuButton<String>(
                 onSelected: (value) {
                   if (value == 'remove') {
@@ -989,7 +977,7 @@ class _SharedTaskListTasksScreen extends StatelessWidget {
                     value: 'remove',
                     child: ListTile(
                       leading: Icon(PhosphorIcons.minusCircle(), color: Colors.red),
-                      title: const Text('Remove from list'),
+                      title: const StandardizedText('Remove from list', style: StandardizedTextStyle.bodyMedium),
                       contentPadding: EdgeInsets.zero,
                     ),
                   ),
@@ -1012,7 +1000,7 @@ class _SharedTaskListTasksScreen extends StatelessWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Task removed from shared list'),
+            content: StandardizedText('Task removed from shared list', style: StandardizedTextStyle.bodyMedium),
             backgroundColor: Colors.green,
           ),
         );
@@ -1021,7 +1009,7 @@ class _SharedTaskListTasksScreen extends StatelessWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to remove task: $e'),
+            content: StandardizedText('Failed to remove task: $e', style: StandardizedTextStyle.bodyMedium),
             backgroundColor: Colors.red,
           ),
         );

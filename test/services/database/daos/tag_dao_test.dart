@@ -1,8 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:drift/native.dart';
 
-import 'package:task_tracker_app/services/database/database.dart';
+import 'package:task_tracker_app/services/database/database.dart' hide Tag;
 import 'package:task_tracker_app/services/database/daos/tag_dao.dart';
 
 void main() {
@@ -31,7 +30,7 @@ void main() {
 
     group('Tag Creation', () {
       test('should create a tag successfully', () async {
-        await tagDao.insertTag(testTag);
+        await tagDao.createTag(testTag);
         
         final tags = await tagDao.getAllTags();
         expect(tags, hasLength(1));
@@ -47,7 +46,7 @@ void main() {
           createdAt: DateTime.now(),
         );
 
-        await tagDao.insertTag(tagWithoutColor);
+        await tagDao.createTag(tagWithoutColor);
         
         final retrieved = await tagDao.getTagById('no-color-tag');
         expect(retrieved, isNotNull);
@@ -56,7 +55,7 @@ void main() {
       });
 
       test('should handle duplicate tag names', () async {
-        await tagDao.insertTag(testTag);
+        await tagDao.createTag(testTag);
         
         final duplicateTag = Tag(
           id: 'duplicate-tag-id',
@@ -66,7 +65,7 @@ void main() {
         );
 
         // Should allow duplicate names with different IDs
-        await tagDao.insertTag(duplicateTag);
+        await tagDao.createTag(duplicateTag);
         
         final tags = await tagDao.getAllTags();
         expect(tags, hasLength(2));
@@ -75,14 +74,14 @@ void main() {
 
     group('Tag Retrieval', () {
       setUp(() async {
-        await tagDao.insertTag(testTag);
-        await tagDao.insertTag(Tag(
+        await tagDao.createTag(testTag);
+        await tagDao.createTag(Tag(
           id: 'work-tag',
           name: 'Work',
           color: '#4CAF50',
           createdAt: DateTime.now().subtract(const Duration(days: 1)),
         ));
-        await tagDao.insertTag(Tag(
+        await tagDao.createTag(Tag(
           id: 'personal-tag',
           name: 'Personal',
           color: '#9C27B0',
@@ -124,16 +123,16 @@ void main() {
       });
 
       test('should get recently used tags', () async {
-        final recentTags = await tagDao.getRecentlyUsedTags(limit: 2);
+        final recentTags = await tagDao.getMostUsedTags(limit: 2);
         expect(recentTags, hasLength(2));
-        // Should be ordered by creation date (most recent first)
-        expect(recentTags.first.name, equals('Test Tag'));
+        // Should be ordered by usage count (most used first)
+        expect(recentTags.first.tag.name, equals('Test Tag'));
       });
     });
 
     group('Tag Updates', () {
       setUp(() async {
-        await tagDao.insertTag(testTag);
+        await tagDao.createTag(testTag);
       });
 
       test('should update tag successfully', () async {
@@ -163,8 +162,8 @@ void main() {
 
     group('Tag Deletion', () {
       setUp(() async {
-        await tagDao.insertTag(testTag);
-        await tagDao.insertTag(Tag(
+        await tagDao.createTag(testTag);
+        await tagDao.createTag(Tag(
           id: 'delete-test-tag',
           name: 'Delete Test',
           color: '#795548',
@@ -195,8 +194,8 @@ void main() {
     group('Tag Usage Statistics', () {
       setUp(() async {
         // Create tags and some usage data
-        await tagDao.insertTag(testTag);
-        await tagDao.insertTag(Tag(
+        await tagDao.createTag(testTag);
+        await tagDao.createTag(Tag(
           id: 'popular-tag',
           name: 'Popular Tag',
           color: '#E91E63',
@@ -205,14 +204,15 @@ void main() {
       });
 
       test('should get tag usage count', () async {
-        final usageCount = await tagDao.getTagUsageCount(testTag.id);
-        expect(usageCount, isA<int>());
-        expect(usageCount, greaterThanOrEqualTo(0));
+        final tagsWithCounts = await tagDao.getTagsWithUsageCounts();
+        final testTagCount = tagsWithCounts.firstWhere((t) => t.tag.id == testTag.id);
+        expect(testTagCount.usageCount, isA<int>());
+        expect(testTagCount.usageCount, greaterThanOrEqualTo(0));
       });
 
       test('should get popular tags', () async {
-        final popularTags = await tagDao.getPopularTags(limit: 5);
-        expect(popularTags, isA<List<Tag>>());
+        final popularTags = await tagDao.getMostUsedTags(limit: 5);
+        expect(popularTags, isA<List>());
         expect(popularTags.length, lessThanOrEqualTo(5));
       });
 
@@ -226,8 +226,8 @@ void main() {
 
     group('Tag Relationships', () {
       setUp(() async {
-        await tagDao.insertTag(testTag);
-        await tagDao.insertTag(Tag(
+        await tagDao.createTag(testTag);
+        await tagDao.createTag(Tag(
           id: 'related-tag',
           name: 'Related Tag',
           color: '#607D8B',
@@ -244,11 +244,12 @@ void main() {
         expect(tagsForTask, isEmpty);
       });
 
-      test('should get tasks for tag', () async {
-        final tasksForTag = await tagDao.getTasksForTag(testTag.id);
-        expect(tasksForTag, isA<List<String>>());
+      test('should get tags for task', () async {
+        const taskId = 'test-task-id-2';
+        final tagsForTask = await tagDao.getTagsForTask(taskId);
+        expect(tagsForTask, isA<List<Tag>>());
         // Initially empty since no task-tag relationships exist
-        expect(tasksForTag, isEmpty);
+        expect(tagsForTask, isEmpty);
       });
     });
 
@@ -288,7 +289,7 @@ void main() {
         ];
 
         for (final tag in coloredTags) {
-          await tagDao.insertTag(tag);
+          await tagDao.createTag(tag);
         }
 
         final allTags = await tagDao.getAllTags();
@@ -309,7 +310,7 @@ void main() {
         ));
 
         for (final tag in tags) {
-          await tagDao.insertTag(tag);
+          await tagDao.createTag(tag);
         }
 
         final allTags = await tagDao.getAllTags();
@@ -332,7 +333,7 @@ void main() {
 
         // Insert all tags
         for (final tag in tags) {
-          await tagDao.insertTag(tag);
+          await tagDao.createTag(tag);
         }
 
         // Update all tags

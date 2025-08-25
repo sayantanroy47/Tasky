@@ -272,18 +272,19 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> with Tick
               StandardizedTextVariants.sectionHeader('Project Color'),
             ],
           ),
-          const SizedBox(height: 16),
-          SizedBox(
-            height: 80,
-            child: GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: (MediaQuery.of(context).size.width / 60).floor().clamp(4, 8),
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-              ),
+          const SizedBox(height: 12),
+          // Compact horizontal scrollable color picker
+          Container(
+            height: 40,
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
               itemCount: _colorOptions.length,
+              separatorBuilder: (context, index) => const SizedBox(width: 8),
               itemBuilder: (context, index) {
                 final color = _colorOptions[index];
                 final isSelected = color == _selectedColor;
@@ -291,28 +292,40 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> with Tick
                   color: Colors.transparent,
                   child: InkWell(
                     onTap: () => setState(() => _selectedColor = color),
-                    borderRadius: BorderRadius.circular(30),
-                    child: Container(
+                    borderRadius: BorderRadius.circular(14),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      width: 28,
+                      height: 28,
                       decoration: BoxDecoration(
                         color: _parseColor(color),
                         shape: BoxShape.circle,
                         border: isSelected
                             ? Border.all(
                                 color: theme.colorScheme.onSurface,
-                                width: 3,
+                                width: 2.5,
                               )
                             : Border.all(
-                                color: theme.colorScheme.outline.withValues(alpha: 0.3),
+                                color: Colors.white.withValues(alpha: 0.3),
                                 width: 1,
                               ),
+                        boxShadow: isSelected
+                            ? [
+                                BoxShadow(
+                                  color: _parseColor(color).withValues(alpha: 0.3),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ]
+                            : null,
                       ),
                       child: isSelected
                           ? Icon(
                               PhosphorIcons.check(),
                               color: _parseColor(color).computeLuminance() > 0.5
-                                  ? Colors.black
+                                  ? Colors.black87
                                   : Colors.white,
-                              size: 16,
+                              size: 14,
                             )
                           : null,
                     ),
@@ -320,6 +333,30 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> with Tick
                 );
               },
             ),
+          ),
+          const SizedBox(height: 8),
+          // Selected color indicator with name
+          Row(
+            children: [
+              Container(
+                width: 16,
+                height: 16,
+                decoration: BoxDecoration(
+                  color: _parseColor(_selectedColor),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: theme.colorScheme.outline.withValues(alpha: 0.3),
+                    width: 1,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              StandardizedText(
+                _getColorName(_selectedColor),
+                style: StandardizedTextStyle.bodySmall,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ],
           ),
         ],
       ),
@@ -524,6 +561,22 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> with Tick
     } catch (e) {
       return Colors.blue;
     }
+  }
+  
+  String _getColorName(String colorCode) {
+    final colorNames = {
+      '#2196F3': 'Ocean Blue',
+      '#4CAF50': 'Forest Green',
+      '#FF9800': 'Sunset Orange',
+      '#F44336': 'Ruby Red',
+      '#9C27B0': 'Royal Purple',
+      '#607D8B': 'Steel Blue',
+      '#795548': 'Earth Brown',
+      '#E91E63': 'Rose Pink',
+      '#00BCD4': 'Aqua Cyan',
+      '#8BC34A': 'Spring Green',
+    };
+    return colorNames[colorCode] ?? 'Custom Color';
   }
   
   String _formatDate(DateTime date) {

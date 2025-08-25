@@ -11,6 +11,8 @@ import '../../services/ui/slidable_theme_service.dart';
 import '../providers/project_providers.dart';
 import 'standardized_card.dart';
 import 'standardized_error_states.dart';
+import 'tag_chip.dart';
+import '../../domain/entities/tag.dart';
 
 /// A card widget that displays project information
 ///
@@ -140,6 +142,12 @@ class ProjectCard extends ConsumerWidget {
                 ),
             ],
           ),
+
+          // Project tags
+          if (project.tagIds.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            _buildProjectTags(),
+          ],
 
           const SizedBox(height: 16),
 
@@ -422,5 +430,35 @@ class ProjectCard extends ConsumerWidget {
     } else {
       return 'Due ${deadline.day}/${deadline.month}';
     }
+  }
+
+  /// Builds the project tags display using TagChipList
+  Widget _buildProjectTags() {
+    if (project.tagIds.isEmpty) return const SizedBox.shrink();
+
+    // Convert tag IDs to Tag entities
+    // TODO: In production, this should be handled by providers/state management
+    final tags = project.tagIds.map((tagId) => _createTagFromId(tagId)).toList();
+
+    return TagChipList(
+      tags: tags,
+      chipSize: TagChipSize.small,
+      maxChips: 4, // Show more chips for projects since they typically have fewer tags
+      spacing: 3.0, // 3px spacing as requested
+      onTagTap: onTap != null ? (_) => onTap!() : null,
+    );
+  }
+
+  /// Creates a temporary Tag entity from tag ID
+  /// TODO: In production, this should fetch actual Tag entities from a provider
+  Tag _createTagFromId(String tagId) {
+    // For now, create a basic Tag with the ID as name and project color
+    // In real implementation, this would fetch from tag repository/provider
+    return Tag(
+      id: tagId,
+      name: tagId,
+      color: project.color, // Use project color as fallback
+      createdAt: DateTime.now(),
+    );
   }
 }

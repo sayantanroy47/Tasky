@@ -367,11 +367,10 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> with Tick
             color: isPrerequisite ? context.colors.warning : context.colors.info,
           ),
         ),
-        title: Text(
+        title: StandardizedText(
           task.title,
-          style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
-            decoration: task.isCompleted ? TextDecoration.lineThrough : null,
-          ),
+          style: StandardizedTextStyle.bodyMedium,
+          decoration: task.isCompleted ? TextDecoration.lineThrough : null,
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -576,9 +575,9 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> with Tick
                         size: 14,
                       ),
                       StandardizedGaps.horizontal(SpacingSize.xs),
-                      Text(
+                      StandardizedText(
                         task.priority.name.toUpperCase(),
-                        style: StandardizedTextStyle.labelSmall.toTextStyle(context),
+                        style: StandardizedTextStyle.labelSmall,
                       ),
                     ],
                   ),
@@ -799,13 +798,13 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> with Tick
     // Consider passing context or using a different approach
     switch (priority) {
       case TaskPriority.low:
-        return Colors.green; // TODO: Replace with context.colors.success
+        return context.successColor;
       case TaskPriority.medium:
-        return Colors.orange; // TODO: Replace with context.colors.warning
+        return context.warningColor;
       case TaskPriority.high:
-        return Colors.red; // TODO: Replace with context.colors.error
+        return context.errorColor;
       case TaskPriority.urgent:
-        return Colors.purple; // TODO: Replace with semantic color
+        return context.urgentColor;
     }
   }
 

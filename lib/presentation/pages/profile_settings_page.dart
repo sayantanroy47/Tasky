@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/standardized_app_bar.dart';
+import '../widgets/standardized_spacing.dart';
 import '../widgets/standardized_text.dart';
 import '../widgets/universal_profile_picture.dart';
 import '../providers/profile_providers.dart';
@@ -64,7 +65,7 @@ class _ProfileSettingsPageState extends ConsumerState<ProfileSettingsPage> {
   Widget _buildErrorState(ThemeData theme) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: StandardizedSpacing.padding(SpacingSize.lg),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,

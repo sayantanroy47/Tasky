@@ -828,7 +828,9 @@ class _EnhancedLocationTaskDialogState extends ConsumerState<EnhancedLocationTas
           ),
         );
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      debugPrint('❌ Location task creation error: $e');
+      debugPrint('❌ Stack trace: $stackTrace');
       _showError('Failed to create location task: $e');
     } finally {
       if (mounted) {

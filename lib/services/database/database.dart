@@ -27,6 +27,7 @@ part 'database.g.dart';
   Tags,
   TaskTags,
   Projects,
+  ProjectTags,
   ProjectCategories,
   TaskDependencies,
   TaskTemplates,
@@ -87,6 +88,9 @@ class AppDatabase extends _$AppDatabase {
         try {
           await m.createAll();
           developer.log('Database created successfully with schema version $schemaVersion', name: 'AppDatabase');
+          
+          // Add starter tags for both tasks and projects
+          // await _createStarterTags(); // Temporarily disabled due to Tag class conflicts
         } catch (e) {
           developer.log('Error creating database: $e', name: 'AppDatabase', level: 1000);
           rethrow;
@@ -132,6 +136,9 @@ class AppDatabase extends _$AppDatabase {
           await customStatement('PRAGMA synchronous = NORMAL');
           await customStatement('PRAGMA cache_size = 10000');
           await customStatement('PRAGMA temp_store = MEMORY');
+          
+          // Run tag migration to fix existing tasks with categories
+          await _runTagMigration();
           
           developer.log('Database opened successfully with optimized settings', name: 'AppDatabase');
         } catch (e) {
@@ -181,6 +188,17 @@ class AppDatabase extends _$AppDatabase {
     }
   }
 
+  /// Migrates existing task tags to ensure proper Tag entries exist
+  /// This fixes legacy data where TaskTags entries exist without corresponding Tags
+  Future<void> _runTagMigration() async {
+    try {
+      await taskDao.migrateExistingTaskTags();
+    } catch (e) {
+      developer.log('Error during tag migration: $e', name: 'AppDatabase', level: 1000);
+      // Don't rethrow - migration failures shouldn't prevent database opening
+    }
+  }
+
   /// Closes the database connection  @override
   Future<void> close() async {
     await super.close();
@@ -210,6 +228,37 @@ class AppDatabase extends _$AppDatabase {
       'projects': projectCount,
       'tags': tagCount,
     };
+  }
+
+  /// Creates starter tags for both tasks and projects
+  Future<void> _createStarterTags() async {
+    // Temporarily disabled due to Tag class conflicts
+    /*
+    try {
+      final starterTags = [
+        Tag(id: DateTime.now().millisecondsSinceEpoch.toString(), name: 'Important', color: '#F44336', createdAt: DateTime.now()), // Red
+        Tag(id: (DateTime.now().millisecondsSinceEpoch + 1).toString(), name: 'Work', color: '#2196F3', createdAt: DateTime.now()),      // Blue
+        Tag(id: (DateTime.now().millisecondsSinceEpoch + 2).toString(), name: 'Personal', color: '#4CAF50', createdAt: DateTime.now()),  // Green
+        Tag(id: (DateTime.now().millisecondsSinceEpoch + 3).toString(), name: 'Urgent', color: '#FF9800', createdAt: DateTime.now()),    // Orange
+        Tag(id: (DateTime.now().millisecondsSinceEpoch + 4).toString(), name: 'Learning', color: '#9C27B0', createdAt: DateTime.now()),  // Purple
+        Tag(id: (DateTime.now().millisecondsSinceEpoch + 5).toString(), name: 'Health', color: '#E91E63', createdAt: DateTime.now()),    // Pink
+        Tag(id: (DateTime.now().millisecondsSinceEpoch + 6).toString(), name: 'Finance', color: '#00BCD4', createdAt: DateTime.now()),   // Cyan
+        Tag(id: (DateTime.now().millisecondsSinceEpoch + 7).toString(), name: 'Ideas', color: '#FFEB3B', createdAt: DateTime.now()),     // Yellow
+        Tag(id: (DateTime.now().millisecondsSinceEpoch + 8).toString(), name: 'Meeting', color: '#795548', createdAt: DateTime.now()),   // Brown
+        Tag(id: (DateTime.now().millisecondsSinceEpoch + 9).toString(), name: 'Review', color: '#607D8B', createdAt: DateTime.now()),    // Blue Grey
+      ];
+
+      // Insert starter tags
+      for (final tag in starterTags) {
+        await tagDao.createTag(tag);
+      }
+
+      developer.log('Starter tags created successfully', name: 'AppDatabase');
+    } catch (e) {
+      developer.log('Error creating starter tags: $e', name: 'AppDatabase', level: 1000);
+      // Don't rethrow - starter tags are optional
+    }
+    */
   }
 }
 

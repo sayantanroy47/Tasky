@@ -30,7 +30,7 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
       backgroundColor: Colors.transparent,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text('Advanced Theme Settings'),
+        title: const StandardizedText('Advanced Theme Settings', style: StandardizedTextStyle.titleLarge),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -92,7 +92,7 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
             if (themeState.usageStats.containsKey(themeState.currentThemeId))
               _buildUsageInfo(themeState.usageStats[themeState.currentThemeId]!),
           ] else
-            const Text('No theme loaded'),
+            const StandardizedText('No theme loaded', style: StandardizedTextStyle.bodyMedium),
         ],
       ),
     );
@@ -114,8 +114,8 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
           ),
           const SizedBox(height: 16),
           SwitchListTile(
-            title: const Text('Follow System Theme'),
-            subtitle: const Text('Automatically switch between light and dark themes'),
+            title: const StandardizedText('Follow System Theme', style: StandardizedTextStyle.titleMedium),
+            subtitle: const StandardizedText('Automatically switch between light and dark themes', style: StandardizedTextStyle.bodyMedium),
             value: preferences.followSystemTheme,
             onChanged: (value) {
               final updatedPreferences = preferences.copyWith(followSystemTheme: value);
@@ -123,8 +123,8 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
             },
           ),
           SwitchListTile(
-            title: const Text('Auto Theme Switching'),
-            subtitle: const Text('Automatically switch themes at scheduled times'),
+            title: const StandardizedText('Auto Theme Switching', style: StandardizedTextStyle.titleMedium),
+            subtitle: const StandardizedText('Automatically switch themes at scheduled times', style: StandardizedTextStyle.bodyMedium),
             value: preferences.autoSwitchEnabled,
             onChanged: (value) {
               final updatedPreferences = preferences.copyWith(autoSwitchEnabled: value);
@@ -132,8 +132,8 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
             },
           ),
           SwitchListTile(
-            title: const Text('Theme Animations'),
-            subtitle: const Text('Enable smooth theme transition animations'),
+            title: const StandardizedText('Theme Animations', style: StandardizedTextStyle.titleMedium),
+            subtitle: const StandardizedText('Enable smooth theme transition animations', style: StandardizedTextStyle.bodyMedium),
             value: preferences.animationsEnabled,
             onChanged: (value) {
               final updatedPreferences = preferences.copyWith(animationsEnabled: value);
@@ -217,8 +217,8 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
                     color: Theme.of(context).colorScheme.onPrimaryContainer,
                   ),
                 ),
-                title: Text(theme.metadata.name),
-                subtitle: Text(theme.metadata.category),
+                title: StandardizedText(theme.metadata.name, style: StandardizedTextStyle.titleMedium),
+                subtitle: StandardizedText(theme.metadata.category, style: StandardizedTextStyle.bodyMedium),
                 trailing: IconButton(
                   icon: Icon(PhosphorIcons.heart()),
                   color: Colors.red,
@@ -233,7 +233,7 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
                 onPressed: () {
                   // Navigate to full favorites list
                 },
-                child: Text('View all ${favoriteThemes.length} favorites'),
+                child: StandardizedText('View all ${favoriteThemes.length} favorites', style: StandardizedTextStyle.buttonText),
               ),
             ),
         ],
@@ -346,7 +346,7 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
                       : Icon(PhosphorIcons.download()),
-                  label: Text(_exportInProgress ? 'Exporting...' : 'Export Data'),
+                  label: StandardizedText(_exportInProgress ? 'Exporting...' : 'Export Data', style: StandardizedTextStyle.buttonText),
                 ),
               ),
               const SizedBox(width: 16),
@@ -360,7 +360,7 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
                           child: CircularProgressIndicator(strokeWidth: 2),
                         )
                       : Icon(PhosphorIcons.upload()),
-                  label: Text(_importInProgress ? 'Importing...' : 'Import Data'),
+                  label: StandardizedText(_importInProgress ? 'Importing...' : 'Import Data', style: StandardizedTextStyle.buttonText),
                 ),
               ),
             ],
@@ -393,23 +393,24 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
           const SizedBox(height: 16),
           ListTile(
             leading: Icon(PhosphorIcons.shuffle()),
-            title: const Text('Random Theme'),
-            subtitle: const Text('Apply a random theme'),
+            title: const StandardizedText('Random Theme', style: StandardizedTextStyle.titleMedium),
+            subtitle: const StandardizedText('Apply a random theme', style: StandardizedTextStyle.bodyMedium),
             onTap: () => notifier.applyRandomTheme(),
           ),
           ListTile(
             leading: Icon(PhosphorIcons.arrowClockwise()),
-            title: const Text('Reset to Default'),
-            subtitle: const Text('Reset to the default theme'),
+            title: const StandardizedText('Reset to Default', style: StandardizedTextStyle.titleMedium),
+            subtitle: const StandardizedText('Reset to the default theme', style: StandardizedTextStyle.bodyMedium),
             onTap: () => notifier.resetToDefault(),
           ),
           ListTile(
             leading: Icon(PhosphorIcons.trash(), color: Theme.of(context).colorScheme.error),
-            title: Text(
+            title: StandardizedText(
               'Clear All Data',
-              style: TextStyle(color: Theme.of(context).colorScheme.error),
+              style: StandardizedTextStyle.titleMedium,
+              color: Theme.of(context).colorScheme.error,
             ),
-            subtitle: const Text('Remove all theme data and preferences'),
+            subtitle: const StandardizedText('Remove all theme data and preferences', style: StandardizedTextStyle.bodyMedium),
             onTap: () => _showClearDataDialog(notifier),
           ),
         ],
@@ -496,7 +497,7 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Theme data exported successfully (${data.keys.length} items)'),
+              content: StandardizedText('Theme data exported successfully (${data.keys.length} items)', style: StandardizedTextStyle.bodyMedium),
               backgroundColor: Colors.green,
             ),
           );
@@ -505,7 +506,7 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Failed to export theme data'),
+              content: StandardizedText('Failed to export theme data', style: StandardizedTextStyle.bodyMedium),
               backgroundColor: Colors.red,
             ),
           );
@@ -531,7 +532,7 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Import feature would open file picker in real app'),
+            content: StandardizedText('Import feature would open file picker in real app', style: StandardizedTextStyle.bodyMedium),
             backgroundColor: Colors.blue,
           ),
         );
@@ -549,14 +550,15 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Clear All Theme Data'),
-        content: const Text(
+        title: const StandardizedText('Clear All Theme Data', style: StandardizedTextStyle.titleLarge),
+        content: const StandardizedText(
           'This will remove all theme preferences, custom themes, usage statistics, and favorites. This action cannot be undone.',
+          style: StandardizedTextStyle.bodyMedium,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            child: const StandardizedText('Cancel', style: StandardizedTextStyle.buttonText),
           ),
           TextButton(
             onPressed: () async {
@@ -567,9 +569,9 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
               if (mounted) {
                 messenger.showSnackBar(
                   SnackBar(
-                    content: Text(success 
+                    content: StandardizedText(success 
                         ? 'All theme data cleared successfully'
-                        : 'Failed to clear theme data'),
+                        : 'Failed to clear theme data', style: StandardizedTextStyle.bodyMedium),
                     backgroundColor: success ? Colors.green : Colors.red,
                   ),
                 );
@@ -578,7 +580,7 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
             style: TextButton.styleFrom(
               foregroundColor: Theme.of(context).colorScheme.error,
             ),
-            child: const Text('Clear All'),
+            child: const StandardizedText('Clear All', style: StandardizedTextStyle.buttonText),
           ),
         ],
       ),

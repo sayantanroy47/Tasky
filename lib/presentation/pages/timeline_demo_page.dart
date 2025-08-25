@@ -10,6 +10,9 @@ import '../../domain/entities/timeline_milestone.dart';
 import '../../domain/entities/timeline_settings.dart';
 import '../widgets/glassmorphism_container.dart';
 import '../widgets/standardized_error_states.dart';
+import '../widgets/standardized_fab.dart';
+import '../widgets/standardized_text.dart';
+import '../widgets/standardized_colors.dart';
 import '../widgets/timeline/timeline_gantt_view.dart';
 import '../providers/timeline_providers.dart';
 
@@ -57,7 +60,7 @@ class _TimelineDemoPageState extends ConsumerState<TimelineDemoPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to load sample data: $e'),
+            content: StandardizedText('Failed to load sample data: $e', style: StandardizedTextStyle.bodyMedium),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -76,11 +79,9 @@ class _TimelineDemoPageState extends ConsumerState<TimelineDemoPage> {
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
-      title: Text(
+      title: const StandardizedText(
         'Timeline / Gantt Chart Demo',
-        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-          fontWeight: TypographyConstants.medium,
-        ),
+        style: StandardizedTextStyle.titleLarge,
       ),
       actions: [
         // Sample data toggle
@@ -118,7 +119,7 @@ class _TimelineDemoPageState extends ConsumerState<TimelineDemoPage> {
                 children: [
                   Icon(PhosphorIcons.image(), size: 16),
                   const SizedBox(width: 8),
-                  const Text('Export as PNG'),
+                  const StandardizedText('Export as PNG', style: StandardizedTextStyle.bodyMedium),
                 ],
               ),
             ),
@@ -128,7 +129,7 @@ class _TimelineDemoPageState extends ConsumerState<TimelineDemoPage> {
                 children: [
                   Icon(PhosphorIcons.filePdf(), size: 16),
                   const SizedBox(width: 8),
-                  const Text('Export as PDF'),
+                  const StandardizedText('Export as PDF', style: StandardizedTextStyle.bodyMedium),
                 ],
               ),
             ),
@@ -138,7 +139,7 @@ class _TimelineDemoPageState extends ConsumerState<TimelineDemoPage> {
                 children: [
                   Icon(PhosphorIcons.table(), size: 16),
                   const SizedBox(width: 8),
-                  const Text('Export as CSV'),
+                  const StandardizedText('Export as CSV', style: StandardizedTextStyle.bodyMedium),
                 ],
               ),
             ),
@@ -189,20 +190,18 @@ class _TimelineDemoPageState extends ConsumerState<TimelineDemoPage> {
                 color: Theme.of(context).colorScheme.primary,
               ),
               const SizedBox(width: 8),
-              Text(
+              StandardizedText(
                 'Timeline/Gantt Chart Demo',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: TypographyConstants.medium,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
+                style: StandardizedTextStyle.titleMedium,
+                color: Theme.of(context).colorScheme.primary,
               ),
             ],
           ),
           const SizedBox(height: TypographyConstants.spacingSmall),
           
-          Text(
+          const StandardizedText(
             'This comprehensive timeline view demonstrates advanced project management features:',
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: StandardizedTextStyle.bodyMedium,
           ),
           const SizedBox(height: TypographyConstants.spacingSmall),
           
@@ -213,32 +212,32 @@ class _TimelineDemoPageState extends ConsumerState<TimelineDemoPage> {
               _buildFeatureChip(
                 icon: PhosphorIcons.calendarBlank(),
                 label: 'Multi-zoom timeline',
-                color: Colors.blue,
+                color: context.primaryColor,
               ),
               _buildFeatureChip(
                 icon: PhosphorIcons.arrowsOutCardinal(),
                 label: 'Drag & drop scheduling',
-                color: Colors.green,
+                color: context.successColor,
               ),
               _buildFeatureChip(
                 icon: PhosphorIcons.arrowRight(),
                 label: 'Task dependencies',
-                color: Colors.orange,
+                color: context.warningColor,
               ),
               _buildFeatureChip(
                 icon: PhosphorIcons.flagBanner(),
                 label: 'Project milestones',
-                color: Colors.purple,
+                color: context.urgentColor,
               ),
               _buildFeatureChip(
                 icon: PhosphorIcons.path(),
                 label: 'Critical path analysis',
-                color: Colors.red,
+                color: context.errorColor,
               ),
               _buildFeatureChip(
                 icon: PhosphorIcons.chartBar(),
                 label: 'Progress tracking',
-                color: Colors.teal,
+                color: context.accentColor,
               ),
             ],
           ),
@@ -258,11 +257,10 @@ class _TimelineDemoPageState extends ConsumerState<TimelineDemoPage> {
         size: 14,
         color: color,
       ),
-      label: Text(
+      label: StandardizedText(
         label,
-        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-          color: color.withValues(alpha: 0.8),
-        ),
+        style: StandardizedTextStyle.labelSmall,
+        color: color.withValues(alpha: 0.8),
       ),
       backgroundColor: color.withValues(alpha: 0.1),
       side: BorderSide(color: color.withValues(alpha: 0.3), width: 1),
@@ -339,7 +337,7 @@ class _TimelineDemoPageState extends ConsumerState<TimelineDemoPage> {
             icon: PhosphorIcons.clockCountdown(),
             label: 'Overdue',
             value: '${stats.overdueTasks}',
-            color: stats.overdueTasks > 0 ? Colors.red : Colors.grey,
+            color: stats.overdueTasks > 0 ? context.errorColor : context.surfaceVariant,
           ),
           
           const Spacer(),
@@ -360,11 +358,10 @@ class _TimelineDemoPageState extends ConsumerState<TimelineDemoPage> {
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
                 const SizedBox(width: 4),
-                Text(
+                StandardizedText(
                   settings.zoomLevel.displayName,
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
+                  style: StandardizedTextStyle.labelSmall,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ],
             ),
@@ -385,18 +382,15 @@ class _TimelineDemoPageState extends ConsumerState<TimelineDemoPage> {
       children: [
         Icon(icon, size: 14, color: color),
         const SizedBox(width: 4),
-        Text(
+        StandardizedText(
           '$label: ',
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-          ),
+          style: StandardizedTextStyle.labelSmall,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
         ),
-        Text(
+        StandardizedText(
           value,
-          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            fontWeight: TypographyConstants.medium,
-            color: color,
-          ),
+          style: StandardizedTextStyle.labelSmall,
+          color: color,
         ),
       ],
     );
@@ -440,11 +434,11 @@ class _TimelineDemoPageState extends ConsumerState<TimelineDemoPage> {
         const SizedBox(height: 8),
         
         // Add task FAB
-        FloatingActionButton(
+        StandardizedFAB(
           heroTag: 'add_task',
           onPressed: _showAddTaskDialog,
           tooltip: 'Add Task',
-          child: Icon(PhosphorIcons.plus()),
+          icon: PhosphorIcons.plus(),
         ),
       ],
     );
@@ -460,12 +454,12 @@ class _TimelineDemoPageState extends ConsumerState<TimelineDemoPage> {
           children: [
             Icon(
               PhosphorIcons.checkSquare(),
-              color: Colors.white,
+              color: context.onSurface,
               size: 16,
             ),
             const SizedBox(width: 8),
             Expanded(
-              child: Text('Selected task: ${task.title}'),
+              child: StandardizedText('Selected task: ${task.title}', style: StandardizedTextStyle.bodyMedium),
             ),
           ],
         ),
@@ -486,12 +480,12 @@ class _TimelineDemoPageState extends ConsumerState<TimelineDemoPage> {
           children: [
             Icon(
               PhosphorIcons.flagBanner(),
-              color: Colors.white,
+              color: context.onSurface,
               size: 16,
             ),
             const SizedBox(width: 8),
             Expanded(
-              child: Text('Selected milestone: ${milestone.title}'),
+              child: StandardizedText('Selected milestone: ${milestone.title}', style: StandardizedTextStyle.bodyMedium),
             ),
           ],
         ),
@@ -523,11 +517,11 @@ class _TimelineDemoPageState extends ConsumerState<TimelineDemoPage> {
           children: [
             Icon(
               PhosphorIcons.calendarCheck(),
-              color: Colors.white,
+              color: context.onSurface,
               size: 16,
             ),
             const SizedBox(width: 8),
-            Text('Rescheduled: ${task.title}'),
+            StandardizedText('Rescheduled: ${task.title}', style: StandardizedTextStyle.bodyMedium),
           ],
         ),
         backgroundColor: Colors.green,
@@ -543,7 +537,7 @@ class _TimelineDemoPageState extends ConsumerState<TimelineDemoPage> {
           children: [
             Icon(PhosphorIcons.chartBar()),
             const SizedBox(width: 8),
-            const Text('Timeline Statistics'),
+            const StandardizedText('Timeline Statistics', style: StandardizedTextStyle.titleMedium),
           ],
         ),
         content: Consumer(
@@ -552,14 +546,14 @@ class _TimelineDemoPageState extends ConsumerState<TimelineDemoPage> {
             return stats.when(
               data: (data) => _buildStatisticsContent(data),
               loading: () => const CircularProgressIndicator(),
-              error: (error, stack) => Text('Error: $error'),
+              error: (error, stack) => StandardizedText('Error: $error', style: StandardizedTextStyle.bodyMedium),
             );
           },
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
+            child: const StandardizedText('Close', style: StandardizedTextStyle.buttonText),
           ),
         ],
       ),
@@ -592,12 +586,10 @@ class _TimelineDemoPageState extends ConsumerState<TimelineDemoPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label),
-          Text(
+          StandardizedText(label, style: StandardizedTextStyle.bodyMedium),
+          StandardizedText(
             value,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: TypographyConstants.medium,
-            ),
+            style: StandardizedTextStyle.bodyMedium,
           ),
         ],
       ),
@@ -607,7 +599,7 @@ class _TimelineDemoPageState extends ConsumerState<TimelineDemoPage> {
   void _handleExport(String format) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Export to ${format.toUpperCase()} - Feature coming soon!'),
+        content: StandardizedText('Export to ${format.toUpperCase()} - Feature coming soon!', style: StandardizedTextStyle.bodyMedium),
       ),
     );
   }
@@ -615,35 +607,35 @@ class _TimelineDemoPageState extends ConsumerState<TimelineDemoPage> {
   void _showAddTaskDialog() {
     // TODO: Implement add task dialog
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Add Task dialog - Coming soon!')),
+      const SnackBar(content: StandardizedText('Add Task dialog - Coming soon!', style: StandardizedTextStyle.bodyMedium)),
     );
   }
 
   void _showAddMilestoneDialog() {
     // TODO: Implement add milestone dialog
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Add Milestone dialog - Coming soon!')),
+      const SnackBar(content: StandardizedText('Add Milestone dialog - Coming soon!', style: StandardizedTextStyle.bodyMedium)),
     );
   }
 
   void _showAddDependencyDialog() {
     // TODO: Implement add dependency dialog
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Add Dependency dialog - Coming soon!')),
+      const SnackBar(content: StandardizedText('Add Dependency dialog - Coming soon!', style: StandardizedTextStyle.bodyMedium)),
     );
   }
 
   void _showEditTaskDialog(TaskModel task) {
     // TODO: Implement edit task dialog
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Edit Task: ${task.title} - Coming soon!')),
+      SnackBar(content: StandardizedText('Edit Task: ${task.title} - Coming soon!', style: StandardizedTextStyle.bodyMedium)),
     );
   }
 
   void _showEditMilestoneDialog(TimelineMilestone milestone) {
     // TODO: Implement edit milestone dialog
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Edit Milestone: ${milestone.title} - Coming soon!')),
+      SnackBar(content: StandardizedText('Edit Milestone: ${milestone.title} - Coming soon!', style: StandardizedTextStyle.bodyMedium)),
     );
   }
 }

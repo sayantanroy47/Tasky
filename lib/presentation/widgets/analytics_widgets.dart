@@ -130,7 +130,7 @@ class SimpleBarChart extends StatelessWidget {
     return GlassmorphismContainer(
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: StandardizedSpacing.padding(SpacingSize.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -150,7 +150,7 @@ class SimpleBarChart extends StatelessWidget {
 
                   return Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                      padding: StandardizedSpacing.paddingSymmetric(horizontal: SpacingSize.xs),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
@@ -200,7 +200,7 @@ class CategoryBreakdownWidget extends StatelessWidget {
     return GlassmorphismContainer(
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: StandardizedSpacing.padding(SpacingSize.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -211,7 +211,7 @@ class CategoryBreakdownWidget extends StatelessWidget {
             StandardizedGaps.md,
             ...categories.take(5).map((category) {
               final percentage = totalTasks > 0 ? (category.totalTasks / totalTasks * 100).round() : 0;
-              final color = _getCategoryColor(category.categoryName);
+              final color = _getCategoryColor(category.categoryName, context);
 
               return Padding(
                 padding: const EdgeInsets.only(bottom: SpacingTokens.sm),
@@ -230,18 +230,18 @@ class CategoryBreakdownWidget extends StatelessWidget {
     );
   }
 
-  Color _getCategoryColor(String categoryName) {
+  Color _getCategoryColor(String categoryName, BuildContext context) {
     // Note: This method should ideally use context.colors for semantic colors
     // For now, keeping hardcoded colors for consistent category representation
     final colors = [
-      Colors.blue, // TODO: Replace with context.colors.info
-      Colors.green, // TODO: Replace with context.colors.success
-      Colors.orange, // TODO: Replace with context.colors.warning
-      Colors.purple,
-      Colors.red, // TODO: Replace with context.colors.error
-      Colors.teal,
-      Colors.indigo,
-      Colors.pink,
+      Theme.of(context).colorScheme.primary,
+      Theme.of(context).colorScheme.tertiary,
+      Theme.of(context).colorScheme.onTertiaryContainer,
+      Theme.of(context).colorScheme.secondary,
+      Theme.of(context).colorScheme.error,
+      Theme.of(context).colorScheme.inversePrimary,
+      Theme.of(context).colorScheme.primary,
+      Theme.of(context).colorScheme.secondary,
     ];
     return colors[categoryName.hashCode % colors.length];
   }
@@ -324,18 +324,18 @@ class ProductivityInsightsWidget extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) {
-    final insights = _generateInsights();
+    final insights = _generateInsights(context);
 
     return GlassmorphismContainer(
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: StandardizedSpacing.padding(SpacingSize.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const StandardizedText(
               'Productivity Insights',
-              style: Theme.of(context).textTheme.titleMedium,
+              style: StandardizedTextStyle.titleMedium,
             ),
             StandardizedGaps.md,
             ...insights.map((insight) => Padding(
@@ -353,7 +353,7 @@ class ProductivityInsightsWidget extends StatelessWidget {
     );
   }
 
-  List<ProductivityInsight> _generateInsights() {
+  List<ProductivityInsight> _generateInsights(BuildContext context) {
     final insights = <ProductivityInsight>[];
 
     // Peak productivity hour
@@ -363,7 +363,7 @@ class ProductivityInsightsWidget extends StatelessWidget {
       icon: PhosphorIcons.clock(),
       title: 'Peak Productivity',
       description: 'You\'re most productive at $peakHourFormatted',
-      color: Colors.amber, // TODO: Replace with context.colors.warning
+      color: Theme.of(context).colorScheme.onTertiaryContainer,
     ));
 
     // Streak information
@@ -372,7 +372,7 @@ class ProductivityInsightsWidget extends StatelessWidget {
         icon: PhosphorIcons.fire(),
         title: 'Current Streak',
         description: '${metrics.currentStreak} days of consistent task completion',
-        color: Colors.orange, // TODO: Replace with context.colors.warning
+        color: Theme.of(context).colorScheme.onTertiaryContainer,
       ));
     }
 
@@ -394,7 +394,7 @@ class ProductivityInsightsWidget extends StatelessWidget {
         icon: PhosphorIcons.lightbulb(),
         title: 'High Activity',
         description: 'You complete ${metrics.averageTasksPerDay.toStringAsFixed(1)} tasks per day on average',
-        color: Colors.blue, // TODO: Replace with context.colors.info
+        color: Theme.of(context).colorScheme.primary,
       ));
     }
 
@@ -485,7 +485,7 @@ class StreakWidget extends StatelessWidget {
     return GlassmorphismContainer(
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: StandardizedSpacing.padding(SpacingSize.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -618,13 +618,13 @@ class TimePeriodSelector extends StatelessWidget {
     return GlassmorphismContainer(
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: StandardizedSpacing.padding(SpacingSize.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const StandardizedText(
               'Time Period',
-              style: Theme.of(context).textTheme.titleMedium,
+              style: StandardizedTextStyle.titleMedium,
             ),
             StandardizedGaps.vertical(SpacingSize.sm),
             Wrap(
@@ -688,13 +688,13 @@ class ProductivityPatternsWidget extends StatelessWidget {
     return GlassmorphismContainer(
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: StandardizedSpacing.padding(SpacingSize.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const StandardizedText(
               'Productivity Patterns',
-              style: Theme.of(context).textTheme.titleMedium,
+              style: StandardizedTextStyle.titleMedium,
             ),
             StandardizedGaps.md,
 
@@ -713,9 +713,9 @@ class ProductivityPatternsWidget extends StatelessWidget {
 
             // Peak hours
             if (patterns.peaks.isNotEmpty) ...[
-              Text(
+              const StandardizedText(
                 'Peak Productivity Hours',
-                style: Theme.of(context).textTheme.titleSmall,
+                style: StandardizedTextStyle.titleSmall,
               ),
               StandardizedGaps.vertical(SpacingSize.xs),
               ...patterns.peaks.take(3).map((peak) => Padding(
@@ -736,9 +736,9 @@ class ProductivityPatternsWidget extends StatelessWidget {
 
             // Category efficiency
             if (patterns.categoryEfficiency.isNotEmpty) ...[
-              Text(
+              const StandardizedText(
                 'Category Performance',
-                style: Theme.of(context).textTheme.titleSmall,
+                style: StandardizedTextStyle.titleSmall,
               ),
               StandardizedGaps.vertical(SpacingSize.xs),
               ...(patterns.categoryEfficiency.entries.toList()..sort((a, b) => b.value.compareTo(a.value)))
@@ -751,22 +751,20 @@ class ProductivityPatternsWidget extends StatelessWidget {
                               width: 12,
                               height: 12,
                               decoration: BoxDecoration(
-                                color: _getCategoryColor(entry.key),
+                                color: _getCategoryColor(entry.key, context),
                                 shape: BoxShape.circle,
                               ),
                             ),
                             StandardizedGaps.horizontal(SpacingSize.xs),
                             Expanded(
-                              child: Text(
+                              child: StandardizedText(
                                 entry.key,
-                                style: Theme.of(context).textTheme.bodySmall,
+                                style: StandardizedTextStyle.bodySmall,
                               ),
                             ),
-                            Text(
+                            StandardizedText(
                               '${(entry.value * 100).round()}%',
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    fontWeight: FontWeight.w500,
-                                  ),
+                              style: StandardizedTextStyle.bodySmall,
                             ),
                           ],
                         ),
@@ -785,18 +783,18 @@ class ProductivityPatternsWidget extends StatelessWidget {
     return '${hour - 12} PM';
   }
 
-  Color _getCategoryColor(String categoryName) {
+  Color _getCategoryColor(String categoryName, BuildContext context) {
     // Note: This method should ideally use context.colors for semantic colors
     // For now, keeping hardcoded colors for consistent category representation
     final colors = [
-      Colors.blue, // TODO: Replace with context.colors.info
-      Colors.green, // TODO: Replace with context.colors.success
-      Colors.orange, // TODO: Replace with context.colors.warning
-      Colors.purple,
-      Colors.red, // TODO: Replace with context.colors.error
-      Colors.teal,
-      Colors.indigo,
-      Colors.pink,
+      Theme.of(context).colorScheme.primary,
+      Theme.of(context).colorScheme.tertiary,
+      Theme.of(context).colorScheme.onTertiaryContainer,
+      Theme.of(context).colorScheme.secondary,
+      Theme.of(context).colorScheme.error,
+      Theme.of(context).colorScheme.inversePrimary,
+      Theme.of(context).colorScheme.primary,
+      Theme.of(context).colorScheme.secondary,
     ];
     return colors[categoryName.hashCode % colors.length];
   }
@@ -815,13 +813,13 @@ class PeakHoursAnalysisWidget extends StatelessWidget {
     return GlassmorphismContainer(
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: StandardizedSpacing.padding(SpacingSize.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const StandardizedText(
               'Peak Hours Analysis',
-              style: Theme.of(context).textTheme.titleMedium,
+              style: StandardizedTextStyle.titleMedium,
             ),
             StandardizedGaps.md,
 
@@ -843,7 +841,7 @@ class PeakHoursAnalysisWidget extends StatelessWidget {
                     value:
                         '${_formatHour(analysis.recommendedWorkingWindow.startHour)}-${_formatHour(analysis.recommendedWorkingWindow.endHour)}',
                     icon: PhosphorIcons.clock(),
-                    color: Colors.blue, // TODO: Replace with context.colors.info // TODO: Replace with context.colors.info
+                    color: Theme.of(context).colorScheme.primary, // TODO: Replace with context.colors.info
                   ),
                 ),
               ],
@@ -858,7 +856,7 @@ class PeakHoursAnalysisWidget extends StatelessWidget {
                     title: 'Peak Score',
                     value: '${(analysis.peakProductivityScore * 100).round()}%',
                     icon: PhosphorIcons.trendUp(),
-                    color: Colors.orange, // TODO: Replace with context.colors.warning // TODO: Replace with context.colors.warning
+                    color: Theme.of(context).colorScheme.onTertiaryContainer, // TODO: Replace with context.colors.warning
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -876,13 +874,13 @@ class PeakHoursAnalysisWidget extends StatelessWidget {
 
             // Optimization suggestions
             if (analysis.suggestions.isNotEmpty) ...[
-              Text(
+              const StandardizedText(
                 'Optimization Suggestions',
-                style: Theme.of(context).textTheme.titleSmall,
+                style: StandardizedTextStyle.titleSmall,
               ),
               StandardizedGaps.vertical(SpacingSize.xs),
               ...analysis.suggestions.take(2).map((suggestion) => Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
+                    padding: StandardizedSpacing.paddingOnly(bottom: SpacingSize.sm),
                     child: Container(
                       padding: const EdgeInsets.all(SpacingTokens.sm), // 12.0 - Fixed spacing hierarchy
                       decoration: BoxDecoration(
@@ -892,16 +890,15 @@ class PeakHoursAnalysisWidget extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          StandardizedText(
                             suggestion.title,
-                            style: Theme.of(context).textTheme.titleSmall,
+                            style: StandardizedTextStyle.titleSmall,
                           ),
                           StandardizedGaps.vertical(SpacingSize.xs),
-                          Text(
+                          StandardizedText(
                             suggestion.description,
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                ),
+                            style: StandardizedTextStyle.bodySmall,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                         ],
                       ),
@@ -935,21 +932,21 @@ class AdvancedCategoryAnalyticsWidget extends StatelessWidget {
     return GlassmorphismContainer(
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: StandardizedSpacing.padding(SpacingSize.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const StandardizedText(
               'Advanced Category Analytics',
-              style: Theme.of(context).textTheme.titleMedium,
+              style: StandardizedTextStyle.titleMedium,
             ),
             StandardizedGaps.md,
 
             // Performance ranking
             if (analytics.ranking.topPerformingCategories.isNotEmpty) ...[
-              Text(
+              const StandardizedText(
                 'Top Performing Categories',
-                style: Theme.of(context).textTheme.titleSmall,
+                style: StandardizedTextStyle.titleSmall,
               ),
               StandardizedGaps.vertical(SpacingSize.xs),
               ...analytics.ranking.topPerformingCategories.take(3).map((categoryId) {
@@ -961,16 +958,14 @@ class AdvancedCategoryAnalyticsWidget extends StatelessWidget {
                       Icon(PhosphorIcons.star(), color: Colors.amber /* TODO: context.colors.warning */, size: 16),
                       StandardizedGaps.horizontal(SpacingSize.xs),
                       Expanded(
-                        child: Text(
+                        child: StandardizedText(
                           categoryId,
-                          style: Theme.of(context).textTheme.bodySmall,
+                          style: StandardizedTextStyle.bodySmall,
                         ),
                       ),
-                      Text(
+                      StandardizedText(
                         '${(score * 100).round()}%',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              fontWeight: FontWeight.w500,
-                            ),
+                        style: StandardizedTextStyle.bodySmall,
                       ),
                     ],
                   ),
@@ -981,13 +976,13 @@ class AdvancedCategoryAnalyticsWidget extends StatelessWidget {
 
             // Category insights
             if (analytics.insights.isNotEmpty) ...[
-              Text(
+              const StandardizedText(
                 'Category Insights',
-                style: Theme.of(context).textTheme.titleSmall,
+                style: StandardizedTextStyle.titleSmall,
               ),
               StandardizedGaps.vertical(SpacingSize.xs),
               ...analytics.insights.take(3).map((insight) => Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
+                    padding: StandardizedSpacing.paddingOnly(bottom: SpacingSize.sm),
                     child: Container(
                       padding: const EdgeInsets.all(SpacingTokens.sm), // 12.0 - Fixed spacing hierarchy
                       decoration: BoxDecoration(
@@ -997,16 +992,15 @@ class AdvancedCategoryAnalyticsWidget extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          StandardizedText(
                             insight.title,
-                            style: Theme.of(context).textTheme.titleSmall,
+                            style: StandardizedTextStyle.titleSmall,
                           ),
                           StandardizedGaps.vertical(SpacingSize.xs),
-                          Text(
+                          StandardizedText(
                             insight.description,
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                ),
+                            style: StandardizedTextStyle.bodySmall,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                         ],
                       ),
@@ -1033,13 +1027,13 @@ class AdvancedProductivityInsightsWidget extends StatelessWidget {
     return GlassmorphismContainer(
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: StandardizedSpacing.padding(SpacingSize.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const StandardizedText(
               'Productivity Insights & Recommendations',
-              style: Theme.of(context).textTheme.titleMedium,
+              style: StandardizedTextStyle.titleMedium,
             ),
             StandardizedGaps.md,
 
@@ -1069,15 +1063,13 @@ class AdvancedProductivityInsightsWidget extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const StandardizedText(
                           'Overall Productivity Score',
-                          style: Theme.of(context).textTheme.titleSmall,
+                          style: StandardizedTextStyle.titleSmall,
                         ),
-                        Text(
+                        StandardizedText(
                           '${insights.overallScore.overall.round()}/100',
-                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                fontWeight: FontWeight.w500,
-                              ),
+                          style: StandardizedTextStyle.headlineSmall,
                         ),
                       ],
                     ),
@@ -1129,13 +1121,13 @@ class AdvancedProductivityInsightsWidget extends StatelessWidget {
 
             // Top suggestions
             if (insights.suggestions.isNotEmpty) ...[
-              Text(
+              const StandardizedText(
                 'Top Recommendations',
-                style: Theme.of(context).textTheme.titleSmall,
+                style: StandardizedTextStyle.titleSmall,
               ),
               StandardizedGaps.vertical(SpacingSize.xs),
               ...insights.suggestions.take(3).map((suggestion) => Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
+                    padding: StandardizedSpacing.paddingOnly(bottom: SpacingSize.sm),
                     child: Container(
                       padding: const EdgeInsets.all(SpacingTokens.sm), // 12.0 - Fixed spacing hierarchy
                       decoration: BoxDecoration(
@@ -1161,15 +1153,14 @@ class AdvancedProductivityInsightsWidget extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
+                                StandardizedText(
                                   suggestion.title,
-                                  style: Theme.of(context).textTheme.titleSmall,
+                                  style: StandardizedTextStyle.titleSmall,
                                 ),
-                                Text(
+                                StandardizedText(
                                   suggestion.description,
-                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                      ),
+                                  style: StandardizedTextStyle.bodySmall,
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                                 ),
                               ],
                             ),
@@ -1310,13 +1301,13 @@ class AnalyticsExportWidget extends StatelessWidget {
     return GlassmorphismContainer(
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: StandardizedSpacing.padding(SpacingSize.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const StandardizedText(
               'Export Analytics',
-              style: Theme.of(context).textTheme.titleMedium,
+              style: StandardizedTextStyle.titleMedium,
             ),
             StandardizedGaps.md,
             Row(

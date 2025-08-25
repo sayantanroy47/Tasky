@@ -133,7 +133,6 @@ void main() {
         const projectId = 'test-project-id';
         final project = Project.create(name: 'Test Project');
         final now = DateTime.now();
-        final nextWeek = now.add(const Duration(days: 7));
         
         // Create 6 tasks due in the next 7 days (heavy workload)
         final tasks = List.generate(6, (index) => 

@@ -194,6 +194,12 @@ enum SearchSortBy {
 /// Provider for enhanced search configuration
 final enhancedSearchConfigProvider = StateProvider<EnhancedSearchConfig>((ref) => const EnhancedSearchConfig());
 
+/// Provider for tasks by project ID
+final tasksForProjectProvider = FutureProvider.family<List<TaskModel>, String>((ref, projectId) async {
+  final repository = ref.read(taskRepositoryProvider);
+  return await repository.getTasksByProject(projectId);
+});
+
 /// Provider for search history (recent searches)
 final searchHistoryProvider = StateNotifierProvider<SearchHistoryNotifier, List<String>>((ref) {
   return SearchHistoryNotifier();

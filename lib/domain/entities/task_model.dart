@@ -41,8 +41,8 @@ class TaskModel extends Equatable {
   /// Current status of the task
   final TaskStatus status;
   
-  /// List of tags associated with this task
-  final List<String> tags;
+  /// List of tag IDs associated with this task
+  final List<String> tagIds;
   
   /// List of subtasks/checklist items
   final List<SubTask> subTasks;
@@ -81,7 +81,8 @@ class TaskModel extends Equatable {
     this.completedAt,
     this.priority = TaskPriority.medium,
     this.status = TaskStatus.pending,
-    this.tags = const [],
+    List<String>? tagIds,
+    List<String>? tags, // Backward compatibility parameter
     this.subTasks = const [],
     this.locationTrigger,
     this.recurrence,
@@ -91,7 +92,7 @@ class TaskModel extends Equatable {
     this.isPinned = false,
     this.estimatedDuration,
     this.actualDuration,
-  });
+  }) : tagIds = tags ?? tagIds ?? const [];
 
   /// Creates a new task with generated ID and current timestamp
   factory TaskModel.create({
@@ -99,7 +100,8 @@ class TaskModel extends Equatable {
     String? description,
     DateTime? dueDate,
     TaskPriority priority = TaskPriority.medium,
-    List<String> tags = const [],
+    List<String>? tagIds,
+    List<String>? tags, // Backward compatibility parameter
     String? locationTrigger,
     RecurrencePattern? recurrence,
     String? projectId,
@@ -115,7 +117,7 @@ class TaskModel extends Equatable {
       createdAt: DateTime.now(),
       dueDate: dueDate,
       priority: priority,
-      tags: tags,
+      tagIds: tags ?? tagIds ?? const [],
       locationTrigger: locationTrigger,
       recurrence: recurrence,
       projectId: projectId,
@@ -143,7 +145,8 @@ class TaskModel extends Equatable {
     DateTime? completedAt,
     TaskPriority? priority,
     TaskStatus? status,
-    List<String>? tags,
+    List<String>? tagIds,
+    List<String>? tags, // Backward compatibility parameter
     List<SubTask>? subTasks,
     String? locationTrigger,
     RecurrencePattern? recurrence,
@@ -164,7 +167,7 @@ class TaskModel extends Equatable {
       completedAt: completedAt ?? this.completedAt,
       priority: priority ?? this.priority,
       status: status ?? this.status,
-      tags: tags ?? this.tags,
+      tagIds: tags ?? tagIds ?? this.tagIds,
       subTasks: subTasks ?? this.subTasks,
       locationTrigger: locationTrigger ?? this.locationTrigger,
       recurrence: recurrence ?? this.recurrence,
@@ -214,7 +217,7 @@ class TaskModel extends Equatable {
       completedAt: null,
       priority: priority,
       status: TaskStatus.pending,
-      tags: tags,
+      tagIds: tagIds,
       subTasks: subTasks,
       locationTrigger: locationTrigger,
       recurrence: recurrence,
@@ -228,22 +231,22 @@ class TaskModel extends Equatable {
   }
 
   /// Adds a tag to this task
-  TaskModel addTag(String tag) {
-    if (tags.contains(tag)) return this;
+  TaskModel addTag(String tagId) {
+    if (tagIds.contains(tagId)) return this;
     
     return copyWith(
-      tags: [...tags, tag],
+      tagIds: [...tagIds, tagId],
       updatedAt: DateTime.now(),
     );
   }
 
   /// Removes a tag from this task
-  TaskModel removeTag(String tag) {
-    if (!tags.contains(tag)) return this;
+  TaskModel removeTag(String tagId) {
+    if (!tagIds.contains(tagId)) return this;
     
-    final newTags = List<String>.from(tags)..remove(tag);
+    final newTagIds = List<String>.from(tagIds)..remove(tagId);
     return copyWith(
-      tags: newTags,
+      tagIds: newTagIds,
       updatedAt: DateTime.now(),
     );
   }
@@ -411,6 +414,12 @@ class TaskModel extends Equatable {
   /// Returns true if this task has a location trigger
   bool get hasLocationTrigger => locationTrigger != null && locationTrigger!.isNotEmpty;
 
+  /// Returns true if this task has tags
+  bool get hasTags => tagIds.isNotEmpty;
+
+  /// Returns the number of tags associated with this task
+  int get tagCount => tagIds.length;
+
   /// Returns the number of days until the due date (negative if overdue)
   int? get daysUntilDue {
     if (dueDate == null) return null;
@@ -442,7 +451,7 @@ class TaskModel extends Equatable {
       description: description,
       dueDate: nextDueDate,
       priority: priority,
-      tags: tags,
+      tagIds: tagIds,
       locationTrigger: locationTrigger,
       recurrence: recurrence,
       projectId: projectId,
@@ -471,6 +480,10 @@ class TaskModel extends Equatable {
   /// Checks if this is the original recurring task (not an instance)
   bool get isOriginalRecurringTask => 
     isRecurring && !metadata.containsKey('original_task_id');
+
+  /// Backward compatibility getter for tags (alias for tagIds)
+  List<String> get tags => tagIds;
+  
   @override
   List<Object?> get props => [
         id,
@@ -482,7 +495,7 @@ class TaskModel extends Equatable {
         completedAt,
         priority,
         status,
-        tags,
+        tagIds,
         subTasks,
         locationTrigger,
         recurrence,
@@ -497,6 +510,6 @@ class TaskModel extends Equatable {
   String toString() {
     return 'TaskModel(id: $id, title: $title, status: $status, '
            'priority: $priority, dueDate: $dueDate, '
-           'subTasks: ${subTasks.length}, tags: ${tags.length})';
+           'subTasks: ${subTasks.length}, tagIds: ${tagIds.length})';
   }
 }
