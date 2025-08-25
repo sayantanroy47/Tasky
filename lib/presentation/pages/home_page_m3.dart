@@ -22,13 +22,12 @@ import '../widgets/enhanced_glass_button.dart';
 import '../widgets/glassmorphism_container.dart';
 import '../widgets/simple_theme_toggle.dart';
 import '../widgets/standardized_app_bar.dart';
-import '../widgets/standardized_card.dart';
-import '../widgets/standardized_colors.dart';
-import '../widgets/standardized_icons.dart' show StandardizedIcon, StandardizedIconSize, StandardizedIconStyle;
-import '../widgets/standardized_text.dart';
 import '../widgets/standardized_border_radius.dart';
-import '../widgets/standardized_spacing.dart';
+import '../widgets/standardized_card.dart';
 import '../widgets/standardized_error_states.dart';
+import '../widgets/standardized_icons.dart' show StandardizedIcon, StandardizedIconSize, StandardizedIconStyle;
+import '../widgets/standardized_spacing.dart';
+import '../widgets/standardized_text.dart';
 
 /// Futuristic Material 3 Home Page
 class HomePage extends ConsumerStatefulWidget {
@@ -162,7 +161,8 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
             // Enhanced bottom padding to prevent FAB overlap and ensure last task visibility
             const SliverToBoxAdapter(
-              child: SizedBox(height: 140), // Increased from 120 to accommodate larger FAB - custom size for FAB clearance
+              child:
+                  SizedBox(height: 140), // Increased from 120 to accommodate larger FAB - custom size for FAB clearance
             ),
           ],
         ),
@@ -235,7 +235,8 @@ class _HomePageState extends ConsumerState<HomePage> {
 
                         if (filteredTasks.isEmpty) {
                           return Center(
-                            child: StandardizedText('No tasks found for "$searchQuery"', style: StandardizedTextStyle.bodyMedium),
+                            child: StandardizedText('No tasks found for "$searchQuery"',
+                                style: StandardizedTextStyle.bodyMedium),
                           );
                         }
 
@@ -245,7 +246,9 @@ class _HomePageState extends ConsumerState<HomePage> {
                             final task = filteredTasks[index];
                             return ListTile(
                               title: StandardizedText(task.title, style: StandardizedTextStyle.bodyMedium),
-                              subtitle: task.description?.isNotEmpty == true ? StandardizedText(task.description!, style: StandardizedTextStyle.bodySmall) : null,
+                              subtitle: task.description?.isNotEmpty == true
+                                  ? StandardizedText(task.description!, style: StandardizedTextStyle.bodySmall)
+                                  : null,
                               onTap: () {
                                 Navigator.of(context).pop();
                                 AppRouter.navigateToTaskDetail(context, task.id);
@@ -294,7 +297,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                         );
                       },
                       loading: () => Center(child: StandardizedErrorStates.loading()),
-                      error: (error, _) => Center(child: StandardizedText('Error: $error', style: StandardizedTextStyle.bodyMedium)),
+                      error: (error, _) =>
+                          Center(child: StandardizedText('Error: $error', style: StandardizedTextStyle.bodyMedium)),
                     );
                   },
                 ),
@@ -353,7 +357,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                                     color: Theme.of(context).colorScheme.primary),
                                 _buildInsightRow('Pending', '$pendingTasks', PhosphorIcons.clock(),
                                     color: Theme.of(context).colorScheme.secondary),
-                                _buildInsightRow('Urgent', '$urgentTasks', PhosphorIcons.arrowUp(), color: Theme.of(context).colorScheme.error),
+                                _buildInsightRow('Urgent', '$urgentTasks', PhosphorIcons.arrowUp(),
+                                    color: Theme.of(context).colorScheme.error),
                                 _buildInsightRow('Overdue', '$overdueTasks', PhosphorIcons.warning(),
                                     color: Theme.of(context).colorScheme.error),
                               ],
@@ -361,7 +366,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                           );
                         },
                         loading: () => Center(child: StandardizedErrorStates.loading()),
-                        error: (error, _) => Center(child: StandardizedText('Error: $error', style: StandardizedTextStyle.bodyMedium)),
+                        error: (error, _) =>
+                            Center(child: StandardizedText('Error: $error', style: StandardizedTextStyle.bodyMedium)),
                       );
                     },
                   ),
@@ -409,7 +415,8 @@ class _HomePageState extends ConsumerState<HomePage> {
           children: [
             GlassmorphismContainer(
               level: GlassLevel.interactive,
-              borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall), // 2.0 - Fixed border radius hierarchy
+              borderRadius:
+                  BorderRadius.circular(TypographyConstants.radiusXSmall), // 2.0 - Fixed border radius hierarchy
               child: const SizedBox(
                 width: 40,
                 height: 4,
@@ -733,7 +740,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                         Navigator.of(context).pop();
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: StandardizedText('Task "${task.title}" deleted', style: StandardizedTextStyle.bodyMedium),
+                            content: StandardizedText('Task "${task.title}" deleted',
+                                style: StandardizedTextStyle.bodyMedium),
                             behavior: SnackBarBehavior.floating,
                           ),
                         );
@@ -789,7 +797,8 @@ Shared from Tasky - Task Management App
             child: TabBar(
               // Sophisticated gradient indicator for premium feel
               indicator: BoxDecoration(
-                borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
+                borderRadius:
+                    BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                 gradient: LinearGradient(
                   colors: [
                     theme.colorScheme.primary.withValues(alpha: 0.1),
@@ -810,15 +819,15 @@ Shared from Tasky - Task Management App
 
               // Elegant text styling
               labelStyle: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
-                // Using standardized titleMedium (16) for clarity
-                fontWeight: TypographyConstants.regular, // Regular weight for sophistication
-                letterSpacing: 0.1, // Subtle letter spacing
-              ),
+                    // Using standardized titleMedium (16) for clarity
+                    fontWeight: TypographyConstants.regular, // Regular weight for sophistication
+                    letterSpacing: 0.1, // Subtle letter spacing
+                  ),
               unselectedLabelStyle: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
-                // Using standardized titleMedium (16) for consistency
-                fontWeight: TypographyConstants.light, // Light weight for unselected
-                letterSpacing: 0.1,
-              ),
+                    // Using standardized titleMedium (16) for consistency
+                    fontWeight: TypographyConstants.light, // Light weight for unselected
+                    letterSpacing: 0.1,
+                  ),
 
               tabs: [
                 // Text-only tabs for sophisticated elegance
@@ -1012,137 +1021,139 @@ Shared from Tasky - Task Management App
         margin: EdgeInsets.zero, // No margin - handled by parent
         padding: const EdgeInsets.all(SpacingTokens.taskCardPadding),
         child: Row(
+          children: [
+            // Sophisticated category indicator with icon and accent bar
+            Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                // Sophisticated category indicator with icon and accent bar
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Elegant vertical accent bar - priority indicator
-                    Container(
-                      width: 4,
-                      height: 32,
-                      decoration: BoxDecoration(
-                        color: task.priority.color,
-                        borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall), // 2.0 - Fixed border radius hierarchy
-                      ),
+                // Elegant vertical accent bar - priority indicator
+                Container(
+                  width: 4,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: task.priority.color,
+                    borderRadius:
+                        BorderRadius.circular(TypographyConstants.radiusXSmall), // 2.0 - Fixed border radius hierarchy
+                  ),
+                ),
+                const SizedBox(width: SpacingTokens.phi1), // Golden ratio spacing
+                // Sophisticated priority icon
+                Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: task.priority.color.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(
+                        TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
+                    border: Border.all(
+                      color: task.priority.color.withValues(alpha: 0.2),
+                      width: 0.5,
                     ),
-                    const SizedBox(width: SpacingTokens.phi1), // Golden ratio spacing
-                    // Sophisticated priority icon
-                    Container(
-                      width: 32,
-                      height: 32,
-                      decoration: BoxDecoration(
-                        color: task.priority.color.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
-                        border: Border.all(
-                          color: task.priority.color.withValues(alpha: 0.2),
-                          width: 0.5,
+                  ),
+                  child: Icon(
+                    task.priority == TaskPriority.urgent
+                        ? PhosphorIcons.arrowUp()
+                        : task.priority == TaskPriority.high
+                            ? PhosphorIcons.caretUp()
+                            : task.priority == TaskPriority.medium
+                                ? PhosphorIcons.equals()
+                                : PhosphorIcons.caretDown(),
+                    size: 16,
+                    color: task.priority.color,
+                  ),
+                ),
+                const SizedBox(width: SpacingTokens.phi1), // Golden ratio spacing
+              ],
+            ),
+
+            // Title and description in the middle (takes up most space)
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Task title with audio indicator
+                  Row(
+                    children: [
+                      Expanded(
+                        child: StandardizedText(
+                          task.title,
+                          style: StandardizedTextStyle.titleMedium,
+                          color: theme.colorScheme.onSurface,
+                          decoration: task.status == TaskStatus.completed ? TextDecoration.lineThrough : null,
+                          lineHeight: 1.2,
+                          letterSpacing: 0.1,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      child: Icon(
-                        task.priority == TaskPriority.urgent
-                            ? PhosphorIcons.arrowUp()
-                            : task.priority == TaskPriority.high
-                                ? PhosphorIcons.caretUp()
-                                : task.priority == TaskPriority.medium
-                                    ? PhosphorIcons.equals()
-                                    : PhosphorIcons.caretDown(),
-                        size: 16,
-                        color: task.priority.color,
-                      ),
-                    ),
-                    const SizedBox(width: SpacingTokens.phi1), // Golden ratio spacing
-                  ],
-                ),
-
-                // Title and description in the middle (takes up most space)
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Task title with audio indicator
-                      Row(
-                        children: [
-                          Expanded(
-                            child: StandardizedText(
-                              task.title,
-                              style: StandardizedTextStyle.titleMedium,
-                              color: theme.colorScheme.onSurface,
-                              decoration: task.status == TaskStatus.completed ? TextDecoration.lineThrough : null,
-                              lineHeight: 1.2,
-                              letterSpacing: 0.1,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          // Sophisticated audio indicator for voice tasks
-                          if (task.hasVoiceMetadata) ...[
-                            StandardizedGaps.hXs,
-                            AudioIndicatorWidget(
-                              task: task,
-                              size: 20,
-                              mode: AudioIndicatorMode.playButton,
-                            ),
-                          ],
-                        ],
-                      ),
-
-                      const SizedBox(height: 2),
-
-                      // Elegant task metadata - priority only for sophisticated simplicity
-                      if (task.priority != TaskPriority.medium) ...[
-                        Row(
-                          children: [
-                            Icon(
-                              task.priority == TaskPriority.urgent ? PhosphorIcons.arrowUp() : PhosphorIcons.caretUp(),
-                              size: 10,
-                              color: task.priority == TaskPriority.urgent
-                                  ? theme.colorScheme.error
-                                  : theme.colorScheme.secondary,
-                            ),
-                            const SizedBox(width: 3), // Custom 3px for icon alignment
-                            StandardizedText(
-                              task.priority.name.toUpperCase(),
-                              style: StandardizedTextStyle.labelSmall,
-                              color: task.priority == TaskPriority.urgent
-                                  ? theme.colorScheme.error
-                                  : theme.colorScheme.secondary,
-                              letterSpacing: 0.3,
-                            ),
-                          ],
+                      // Sophisticated audio indicator for voice tasks
+                      if (task.hasVoiceMetadata) ...[
+                        StandardizedGaps.hXs,
+                        AudioIndicatorWidget(
+                          task: task,
+                          size: 20,
+                          mode: AudioIndicatorMode.playButton,
                         ),
                       ],
                     ],
                   ),
-                ),
 
-                // Sophisticated completion indicator on the right
-                if (task.status == TaskStatus.completed) ...[
-                  const SizedBox(width: 16), // 16px spacing
-                  Container(
-                    width: 20,
-                    height: 20,
-                    decoration: BoxDecoration(
-                      color: Colors.green.withValues(alpha: 0.1),
-                      borderRadius: StandardizedBorderRadius.sm,
-                      border: Border.all(
-                        color: Colors.green.withValues(alpha: 0.3),
-                        width: 0.5,
-                      ),
+                  const SizedBox(height: 2),
+
+                  // Elegant task metadata - priority only for sophisticated simplicity
+                  if (task.priority != TaskPriority.medium) ...[
+                    Row(
+                      children: [
+                        Icon(
+                          task.priority == TaskPriority.urgent ? PhosphorIcons.arrowUp() : PhosphorIcons.caretUp(),
+                          size: 10,
+                          color: task.priority == TaskPriority.urgent
+                              ? theme.colorScheme.error
+                              : theme.colorScheme.secondary,
+                        ),
+                        const SizedBox(width: 3), // Custom 3px for icon alignment
+                        StandardizedText(
+                          task.priority.name.toUpperCase(),
+                          style: StandardizedTextStyle.labelSmall,
+                          color: task.priority == TaskPriority.urgent
+                              ? theme.colorScheme.error
+                              : theme.colorScheme.secondary,
+                          letterSpacing: 0.3,
+                        ),
+                      ],
                     ),
-                    child: Icon(
-                      PhosphorIcons.check(),
-                      size: 12,
-                      color: Colors.green, // TODO: Replace with context.colors.success
-                    ),
-                  ),
+                  ],
                 ],
-              ],
+              ),
             ),
-          ),
-        );
+
+            // Sophisticated completion indicator on the right
+            if (task.status == TaskStatus.completed) ...[
+              const SizedBox(width: 16), // 16px spacing
+              Container(
+                width: 20,
+                height: 20,
+                decoration: BoxDecoration(
+                  color: Colors.green.withValues(alpha: 0.1),
+                  borderRadius: StandardizedBorderRadius.sm,
+                  border: Border.all(
+                    color: Colors.green.withValues(alpha: 0.3),
+                    width: 0.5,
+                  ),
+                ),
+                child: Icon(
+                  PhosphorIcons.check(),
+                  size: 12,
+                  color: Colors.green, // TODO: Replace with context.colors.success
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
 
     return Container(
       margin: const EdgeInsets.only(bottom: SpacingTokens.taskCardMargin),
