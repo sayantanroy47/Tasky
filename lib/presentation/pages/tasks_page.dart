@@ -21,6 +21,8 @@ import '../widgets/standardized_fab.dart';
 import '../widgets/standardized_text.dart';
 import '../widgets/task_form_dialog.dart';
 import '../widgets/theme_background_widget.dart';
+import '../widgets/standardized_colors.dart';
+import '../widgets/standardized_spacing.dart';
 import 'voice_recording_page.dart';
 
 class TasksPage extends ConsumerWidget {
@@ -29,7 +31,7 @@ class TasksPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return ThemeBackgroundWidget(
       child: Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: context.colors.backgroundTransparent,
         extendBodyBehindAppBar: true,
         appBar: StandardizedAppBar(
           title: 'Tasks',
@@ -46,10 +48,10 @@ class TasksPage extends ConsumerWidget {
         body: const SafeArea(
           child: Padding(
             padding: EdgeInsets.only(
-              top: kToolbarHeight + 8,
-              left: 16,
-              right: 16,
-              bottom: 16,
+              top: kToolbarHeight + SpacingTokens.sm,
+              left: SpacingTokens.md,
+              right: SpacingTokens.md,
+              bottom: SpacingTokens.md,
             ),
             child: TasksPageBody(),
           ),
@@ -77,7 +79,7 @@ class TasksPage extends ConsumerWidget {
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.transparent,
+      backgroundColor: context.colors.backgroundTransparent,
       isScrollControlled: true,
       builder: (context) => GlassmorphismContainer(
         level: GlassLevel.floating,
@@ -85,21 +87,26 @@ class TasksPage extends ConsumerWidget {
         margin: EdgeInsets.zero,
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(24),
+            padding: StandardizedSpacing.padding(SpacingSize.lg),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Header
-                StandardizedTextVariants.sectionHeader(
+                const StandardizedText(
                   'Create New Task',
+                  style: StandardizedTextStyle.headlineSmall,
                 ),
-                const SizedBox(height: 8),
-                StandardizedTextVariants.body(
+                StandardizedGaps.vertical(SpacingSize.sm),
+                StandardizedText(
                   'Choose how you\'d like to create your task',
-                  color: theme.colorScheme.onSurfaceVariant,
+                  style: StandardizedTextStyle.bodyMedium,
+                  color: context.colors.withSemanticOpacity(
+                    Theme.of(context).colorScheme.onSurface,
+                    SemanticOpacity.strong,
+                  ),
                 ),
-                const SizedBox(height: 24),
+                StandardizedGaps.lg,
 
                 // Task Creation Options
                 _buildTaskCreationOption(
@@ -119,12 +126,12 @@ class TasksPage extends ConsumerWidget {
                   },
                 ),
 
-                const SizedBox(height: 12),
+                StandardizedGaps.md,
 
                 _buildTaskCreationOption(
                   context: context,
                   icon: PhosphorIcons.pencil(),
-                  iconColor: Colors.green,
+                  iconColor: context.colors.success,
                   title: 'Manual Entry',
                   subtitle: 'Type your task details manually',
                   onTap: () {
@@ -138,7 +145,7 @@ class TasksPage extends ConsumerWidget {
                   },
                 ),
 
-                const SizedBox(height: 16),
+                StandardizedGaps.md,
               ],
             ),
           ),
@@ -163,7 +170,7 @@ class TasksPage extends ConsumerWidget {
       borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge), // 16.0 - Fixed border radius hierarchy
       child: GlassmorphismContainer(
         level: GlassLevel.interactive,
-        padding: const EdgeInsets.all(16),
+        padding: StandardizedSpacing.padding(SpacingSize.md),
         borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge), // 16.0 - Fixed border radius hierarchy
         child: Row(
           children: [
@@ -179,19 +186,23 @@ class TasksPage extends ConsumerWidget {
                 size: 24,
               ),
             ),
-            const SizedBox(width: 16),
+            StandardizedGaps.md,
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  StandardizedTextVariants.cardTitle(
+                  StandardizedText(
                     title,
+                    style: StandardizedTextStyle.titleMedium,
                   ),
-                  const SizedBox(height: 4),
+                  StandardizedGaps.vertical(SpacingSize.xs),
                   StandardizedText(
                     subtitle,
                     style: StandardizedTextStyle.bodySmall,
-                    color: theme.colorScheme.onSurfaceVariant,
+                    color: context.colors.withSemanticOpacity(
+                      Theme.of(context).colorScheme.onSurface,
+                      SemanticOpacity.strong,
+                    ),
                   ),
                 ],
               ),
@@ -199,7 +210,10 @@ class TasksPage extends ConsumerWidget {
             Icon(
               PhosphorIcons.caretRight(),
               size: 16,
-              color: theme.colorScheme.onSurfaceVariant,
+              color: context.colors.withSemanticOpacity(
+                Theme.of(context).colorScheme.onSurface,
+                SemanticOpacity.strong,
+              ),
             ),
           ],
         ),
@@ -216,21 +230,21 @@ class TasksPageBody extends ConsumerWidget {
     final filter = ref.watch(taskFilterProvider);
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
+      padding: StandardizedSpacing.padding(SpacingSize.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _SearchBar(),
-          const SizedBox(height: 16),
+          StandardizedGaps.vertical(SpacingSize.md),
           _SmartFilters(),
-          const SizedBox(height: 16),
+          StandardizedGaps.vertical(SpacingSize.md),
           if (filter.hasFilters || searchQuery.isNotEmpty) ...[
             _ActiveFiltersIndicator(
               filter: filter,
               searchQuery: searchQuery,
               onClearFilters: () => _clearFilters(ref),
             ),
-            const SizedBox(height: 16),
+            StandardizedGaps.vertical(SpacingSize.md),
           ],
           _TaskList(),
         ],
@@ -324,7 +338,7 @@ class _SmartFilters extends ConsumerWidget {
         StandardizedTextVariants.cardTitle(
           'Quick Filters',
         ),
-        const SizedBox(height: 8),
+        StandardizedGaps.vertical(SpacingSize.xs),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
@@ -334,25 +348,25 @@ class _SmartFilters extends ConsumerWidget {
                 isSelected: _isTodayFilterActive(filter),
                 onTap: () => _applyTodayFilter(ref),
               ),
-              const SizedBox(width: 8),
+              StandardizedGaps.horizontal(SpacingSize.xs),
               _SmartFilterChip(
                 label: 'This Week',
                 isSelected: _isThisWeekFilterActive(filter),
                 onTap: () => _applyThisWeekFilter(ref),
               ),
-              const SizedBox(width: 8),
+              StandardizedGaps.horizontal(SpacingSize.xs),
               _SmartFilterChip(
                 label: 'Overdue',
                 isSelected: filter.isOverdue == true,
                 onTap: () => _applyOverdueFilter(ref),
               ),
-              const SizedBox(width: 8),
+              StandardizedGaps.horizontal(SpacingSize.xs),
               _SmartFilterChip(
                 label: 'High Priority',
                 isSelected: filter.priority == TaskPriority.high || filter.priority == TaskPriority.urgent,
                 onTap: () => _applyHighPriorityFilter(ref),
               ),
-              const SizedBox(width: 8),
+              StandardizedGaps.horizontal(SpacingSize.xs),
               _SmartFilterChip(
                 label: 'Completed',
                 isSelected: filter.status == TaskStatus.completed,
@@ -450,7 +464,7 @@ class _SmartFilterChip extends StatelessWidget {
           onTap: onTap,
           borderRadius: BorderRadius.circular(TypographyConstants.radiusXLarge), // 20.0 - Fixed border radius hierarchy
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: StandardizedSpacing.paddingSymmetric(horizontal: SpacingSize.md, vertical: SpacingSize.xs),
             decoration: BoxDecoration(
               gradient: isSelected
                   ? LinearGradient(
@@ -505,7 +519,7 @@ class _ActiveFiltersIndicator extends StatelessWidget {
     return GlassmorphismContainer(
       level: GlassLevel.content,
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-      padding: const EdgeInsets.all(12),
+      padding: StandardizedSpacing.padding(SpacingSize.sm),
       child: Row(
         children: [
           Icon(
@@ -657,12 +671,12 @@ class _EmptyTaskList extends StatelessWidget {
             size: 64,
             color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
-          const SizedBox(height: 16),
-          StandardizedText(
+          StandardizedGaps.vertical(SpacingSize.md),
+          const StandardizedText(
             'No tasks found',
             style: StandardizedTextStyle.titleLarge,
           ),
-          const SizedBox(height: 8),
+          StandardizedGaps.vertical(SpacingSize.xs),
           StandardizedText(
             'Create your first task to get started!',
             style: StandardizedTextStyle.bodyMedium,
@@ -708,7 +722,7 @@ class _FilterDialogState extends ConsumerState<_FilterDialog> {
               StandardizedTextVariants.cardTitle(
                 'Status',
               ),
-              const SizedBox(height: 8),
+              StandardizedGaps.vertical(SpacingSize.xs),
               Wrap(
                 spacing: 8,
                 children: [
@@ -730,11 +744,11 @@ class _FilterDialogState extends ConsumerState<_FilterDialog> {
                       )),
                 ],
               ),
-              const SizedBox(height: 16),
+              StandardizedGaps.vertical(SpacingSize.md),
               StandardizedTextVariants.cardTitle(
                 'Priority',
               ),
-              const SizedBox(height: 8),
+              StandardizedGaps.vertical(SpacingSize.xs),
               Wrap(
                 spacing: 8,
                 children: [
@@ -769,7 +783,7 @@ class _FilterDialogState extends ConsumerState<_FilterDialog> {
                         onTap: () => Navigator.of(context).pop(),
                         borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          padding: StandardizedSpacing.paddingSymmetric(horizontal: SpacingSize.md, vertical: SpacingSize.xs),
                           child: StandardizedText(
                             'Cancel',
                             style: StandardizedTextStyle.labelLarge,
@@ -779,7 +793,7 @@ class _FilterDialogState extends ConsumerState<_FilterDialog> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  StandardizedGaps.horizontal(SpacingSize.xs),
                   GlassmorphismContainer(
                     level: GlassLevel.interactive,
                     borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
@@ -789,7 +803,7 @@ class _FilterDialogState extends ConsumerState<_FilterDialog> {
                         onTap: _clearFilters,
                         borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          padding: StandardizedSpacing.paddingSymmetric(horizontal: SpacingSize.md, vertical: SpacingSize.xs),
                           child: StandardizedText(
                             'Clear',
                             style: StandardizedTextStyle.labelLarge,
@@ -799,7 +813,7 @@ class _FilterDialogState extends ConsumerState<_FilterDialog> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  StandardizedGaps.horizontal(SpacingSize.xs),
                   GlassmorphismContainer(
                     level: GlassLevel.interactive,
                     borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
@@ -809,7 +823,7 @@ class _FilterDialogState extends ConsumerState<_FilterDialog> {
                         onTap: _applyFilters,
                         borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          padding: StandardizedSpacing.paddingSymmetric(horizontal: SpacingSize.md, vertical: SpacingSize.xs),
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               colors: [
@@ -821,7 +835,7 @@ class _FilterDialogState extends ConsumerState<_FilterDialog> {
                             ),
                             borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                           ),
-                          child: StandardizedText(
+                          child: const StandardizedText(
                             'Apply',
                             style: StandardizedTextStyle.labelLarge,
                             color: Colors.white,

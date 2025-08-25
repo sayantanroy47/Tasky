@@ -7,7 +7,8 @@ import '../theme/theme_persistence_service.dart';
 import '../theme/themes/vegeta_blue_theme.dart';
 import '../theme/themes/matrix_theme.dart';
 import '../theme/themes/dracula_ide_theme.dart';
-import '../theme/material3/expressive_theme.dart';
+import '../theme/themes/goku_ultra_instinct_theme.dart';
+import '../theme/themes/expressive_theme.dart';
 
 /// Enhanced theme state with more detailed information
 class EnhancedThemeState {
@@ -109,11 +110,13 @@ class EnhancedThemeNotifier extends StateNotifier<EnhancedThemeState> {
       
       // Light variants
       VegetaBlueTheme.createLight(),
+      GokuUltraInstinctTheme.createLight(),
       MatrixTheme.createLight(),
       DraculaIDETheme.createLight(),
       
       // Dark variants
       VegetaBlueTheme.createDark(),
+      GokuUltraInstinctTheme.createDark(),
       MatrixTheme.createDark(),
       DraculaIDETheme.createDark(),
     ];

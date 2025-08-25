@@ -9,6 +9,7 @@ import '../../../domain/models/enums.dart';
 import '../../../services/analytics/project_analytics_service.dart';
 import '../../providers/project_analytics_providers.dart';
 import '../glassmorphism_container.dart';
+import '../standardized_text.dart';
 import '../charts/base_chart_widget.dart';
 import '../charts/line_chart_widget.dart';
 import '../charts/pie_chart_widget.dart';
@@ -110,7 +111,7 @@ class _ProjectAnalyticsDashboardState extends ConsumerState<ProjectAnalyticsDash
                   children: [
                     Text(
                       'Project Analytics',
-                      style: theme.textTheme.headlineMedium?.copyWith(
+                      style: StandardizedTextStyle.headlineMedium.toTextStyle(context).copyWith(
                         fontSize: TypographyConstants.headlineMedium,
                         fontWeight: TypographyConstants.medium,
                       ),
@@ -118,7 +119,7 @@ class _ProjectAnalyticsDashboardState extends ConsumerState<ProjectAnalyticsDash
                     const SizedBox(height: 4),
                     Text(
                       '${_selectedPeriod.displayName} • Updated ${_formatLastUpdated(DateTime.now())}',
-                      style: theme.textTheme.bodyMedium?.copyWith(
+                      style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
@@ -169,7 +170,7 @@ class _ProjectAnalyticsDashboardState extends ConsumerState<ProjectAnalyticsDash
       children: [
         Text(
           'Key Metrics',
-          style: theme.textTheme.titleLarge?.copyWith(
+          style: StandardizedTextStyle.titleLarge.toTextStyle(context).copyWith(
             fontSize: TypographyConstants.titleLarge,
             fontWeight: TypographyConstants.medium,
           ),
@@ -255,7 +256,7 @@ class _ProjectAnalyticsDashboardState extends ConsumerState<ProjectAnalyticsDash
               const SizedBox(width: TypographyConstants.spacingSmall),
               Text(
                 'Health Score',
-                style: theme.textTheme.labelLarge?.copyWith(
+                style: StandardizedTextStyle.labelLarge.toTextStyle(context).copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
@@ -264,14 +265,14 @@ class _ProjectAnalyticsDashboardState extends ConsumerState<ProjectAnalyticsDash
           const SizedBox(height: TypographyConstants.spacingSmall),
           Text(
             '${(healthScore * 100).round()}%',
-            style: theme.textTheme.headlineMedium?.copyWith(
+            style: StandardizedTextStyle.headlineMedium.toTextStyle(context).copyWith(
               color: healthColor,
               fontWeight: TypographyConstants.medium,
             ),
           ),
           Text(
             healthStatus,
-            style: theme.textTheme.bodySmall?.copyWith(
+            style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
               color: healthColor,
             ),
           ),
@@ -303,7 +304,7 @@ class _ProjectAnalyticsDashboardState extends ConsumerState<ProjectAnalyticsDash
               const SizedBox(width: TypographyConstants.spacingSmall),
               Text(
                 'Velocity',
-                style: theme.textTheme.labelLarge?.copyWith(
+                style: StandardizedTextStyle.labelLarge.toTextStyle(context).copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
@@ -312,7 +313,7 @@ class _ProjectAnalyticsDashboardState extends ConsumerState<ProjectAnalyticsDash
           const SizedBox(height: TypographyConstants.spacingSmall),
           Text(
             '${velocity.toStringAsFixed(1)} tasks/day',
-            style: theme.textTheme.titleLarge?.copyWith(
+            style: StandardizedTextStyle.titleLarge.toTextStyle(context).copyWith(
               fontWeight: TypographyConstants.medium,
             ),
           ),
@@ -322,7 +323,7 @@ class _ProjectAnalyticsDashboardState extends ConsumerState<ProjectAnalyticsDash
               const SizedBox(width: 4),
               Text(
                 trend.name.toUpperCase(),
-                style: theme.textTheme.bodySmall?.copyWith(
+                style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
                   color: trendColor,
                 ),
               ),
@@ -354,7 +355,7 @@ class _ProjectAnalyticsDashboardState extends ConsumerState<ProjectAnalyticsDash
               const SizedBox(width: TypographyConstants.spacingSmall),
               Text(
                 'On-Time Rate',
-                style: theme.textTheme.labelLarge?.copyWith(
+                style: StandardizedTextStyle.labelLarge.toTextStyle(context).copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
@@ -363,14 +364,14 @@ class _ProjectAnalyticsDashboardState extends ConsumerState<ProjectAnalyticsDash
           const SizedBox(height: TypographyConstants.spacingSmall),
           Text(
             '${(completionRate * 100).round()}%',
-            style: theme.textTheme.titleLarge?.copyWith(
+            style: StandardizedTextStyle.titleLarge.toTextStyle(context).copyWith(
               fontWeight: TypographyConstants.medium,
             ),
           ),
           if (predictedDate != null)
             Text(
               'ETC: ${_formatDate(predictedDate)}',
-              style: theme.textTheme.bodySmall?.copyWith(
+              style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
@@ -402,7 +403,7 @@ class _ProjectAnalyticsDashboardState extends ConsumerState<ProjectAnalyticsDash
               const SizedBox(width: TypographyConstants.spacingSmall),
               Text(
                 'Risk Level',
-                style: theme.textTheme.labelLarge?.copyWith(
+                style: StandardizedTextStyle.labelLarge.toTextStyle(context).copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
@@ -411,7 +412,7 @@ class _ProjectAnalyticsDashboardState extends ConsumerState<ProjectAnalyticsDash
           const SizedBox(height: TypographyConstants.spacingSmall),
           Text(
             riskStatus,
-            style: theme.textTheme.titleLarge?.copyWith(
+            style: StandardizedTextStyle.titleLarge.toTextStyle(context).copyWith(
               color: riskColor,
               fontWeight: TypographyConstants.medium,
             ),
@@ -419,7 +420,7 @@ class _ProjectAnalyticsDashboardState extends ConsumerState<ProjectAnalyticsDash
           if (overdueTasks > 0)
             Text(
               '${(overdueTasks * 100).round()}% overdue',
-              style: theme.textTheme.bodySmall?.copyWith(
+              style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
                 color: riskColor,
               ),
             ),
@@ -434,7 +435,7 @@ class _ProjectAnalyticsDashboardState extends ConsumerState<ProjectAnalyticsDash
       children: [
         Text(
           'Progress Tracking',
-          style: theme.textTheme.titleLarge?.copyWith(
+          style: StandardizedTextStyle.titleLarge.toTextStyle(context).copyWith(
             fontSize: TypographyConstants.titleLarge,
             fontWeight: TypographyConstants.medium,
           ),
@@ -529,13 +530,13 @@ class _ProjectAnalyticsDashboardState extends ConsumerState<ProjectAnalyticsDash
         children: [
           Text(
             '${analytics.basicStats.totalTasks}',
-            style: theme.textTheme.headlineMedium?.copyWith(
+            style: StandardizedTextStyle.headlineMedium.toTextStyle(context).copyWith(
               fontWeight: TypographyConstants.medium,
             ),
           ),
           Text(
             'Total Tasks',
-            style: theme.textTheme.bodySmall?.copyWith(
+            style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
@@ -551,7 +552,7 @@ class _ProjectAnalyticsDashboardState extends ConsumerState<ProjectAnalyticsDash
       children: [
         Text(
           'Performance Insights',
-          style: theme.textTheme.titleLarge?.copyWith(
+          style: StandardizedTextStyle.titleLarge.toTextStyle(context).copyWith(
             fontSize: TypographyConstants.titleLarge,
             fontWeight: TypographyConstants.medium,
           ),
@@ -588,7 +589,7 @@ class _ProjectAnalyticsDashboardState extends ConsumerState<ProjectAnalyticsDash
                     const SizedBox(width: 6),
                     Text(
                       'Avg Completion Time',
-                      style: theme.textTheme.labelMedium?.copyWith(
+                      style: StandardizedTextStyle.labelMedium.toTextStyle(context).copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
@@ -597,7 +598,7 @@ class _ProjectAnalyticsDashboardState extends ConsumerState<ProjectAnalyticsDash
                 const SizedBox(height: 4),
                 Text(
                   _formatDuration(performance.averageCompletionTime),
-                  style: theme.textTheme.titleMedium?.copyWith(
+                  style: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
                     fontWeight: TypographyConstants.medium,
                   ),
                 ),
@@ -619,7 +620,7 @@ class _ProjectAnalyticsDashboardState extends ConsumerState<ProjectAnalyticsDash
                     const SizedBox(width: 6),
                     Text(
                       'Estimation Accuracy',
-                      style: theme.textTheme.labelMedium?.copyWith(
+                      style: StandardizedTextStyle.labelMedium.toTextStyle(context).copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
@@ -628,7 +629,7 @@ class _ProjectAnalyticsDashboardState extends ConsumerState<ProjectAnalyticsDash
                 const SizedBox(height: 4),
                 Text(
                   '${(performance.estimationAccuracy * 100).round()}%',
-                  style: theme.textTheme.titleMedium?.copyWith(
+                  style: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
                     fontWeight: TypographyConstants.medium,
                   ),
                 ),
@@ -659,7 +660,7 @@ class _ProjectAnalyticsDashboardState extends ConsumerState<ProjectAnalyticsDash
               const SizedBox(width: TypographyConstants.spacingSmall),
               Text(
                 'Identified Bottlenecks',
-                style: theme.textTheme.titleMedium?.copyWith(
+                style: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
                   fontWeight: TypographyConstants.medium,
                 ),
               ),
@@ -682,12 +683,12 @@ class _ProjectAnalyticsDashboardState extends ConsumerState<ProjectAnalyticsDash
                 Expanded(
                   child: Text(
                     bottleneck.description,
-                    style: theme.textTheme.bodyMedium,
+                    style: StandardizedTextStyle.bodyMedium.toTextStyle(context),
                   ),
                 ),
                 Text(
                   bottleneck.severity.name.toUpperCase(),
-                  style: theme.textTheme.labelSmall?.copyWith(
+                  style: StandardizedTextStyle.labelSmall.toTextStyle(context).copyWith(
                     color: _getBottleneckColor(bottleneck.severity),
                     fontWeight: TypographyConstants.medium,
                   ),
@@ -706,7 +707,7 @@ class _ProjectAnalyticsDashboardState extends ConsumerState<ProjectAnalyticsDash
       children: [
         Text(
           'Milestones & Risk',
-          style: theme.textTheme.titleLarge?.copyWith(
+          style: StandardizedTextStyle.titleLarge.toTextStyle(context).copyWith(
             fontSize: TypographyConstants.titleLarge,
             fontWeight: TypographyConstants.medium,
           ),
@@ -747,7 +748,7 @@ class _ProjectAnalyticsDashboardState extends ConsumerState<ProjectAnalyticsDash
               const SizedBox(width: TypographyConstants.spacingSmall),
               Text(
                 'Milestones',
-                style: theme.textTheme.titleMedium?.copyWith(
+                style: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
                   fontWeight: TypographyConstants.medium,
                 ),
               ),
@@ -782,13 +783,13 @@ class _ProjectAnalyticsDashboardState extends ConsumerState<ProjectAnalyticsDash
         children: [
           Text(
             label,
-            style: theme.textTheme.bodyMedium?.copyWith(
+            style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
           Text(
             value,
-            style: theme.textTheme.bodyMedium?.copyWith(
+            style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
               fontWeight: TypographyConstants.medium,
             ),
           ),
@@ -816,7 +817,7 @@ class _ProjectAnalyticsDashboardState extends ConsumerState<ProjectAnalyticsDash
               const SizedBox(width: TypographyConstants.spacingSmall),
               Text(
                 'Risk Indicators',
-                style: theme.textTheme.titleMedium?.copyWith(
+                style: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
                   fontWeight: TypographyConstants.medium,
                 ),
               ),
@@ -849,7 +850,7 @@ class _ProjectAnalyticsDashboardState extends ConsumerState<ProjectAnalyticsDash
             _buildRiskIndicator(
               'Blocked Tasks',
               '${(risk.blockageRisk * 100).round()}%',
-              Colors.amber,
+              theme.colorScheme.tertiaryContainer,
             ),
         ],
       ),
@@ -875,14 +876,14 @@ class _ProjectAnalyticsDashboardState extends ConsumerState<ProjectAnalyticsDash
           Expanded(
             child: Text(
               label,
-              style: theme.textTheme.bodyMedium?.copyWith(
+              style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
           ),
           Text(
             value,
-            style: theme.textTheme.bodyMedium?.copyWith(
+            style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
               color: color,
               fontWeight: TypographyConstants.medium,
             ),
@@ -904,14 +905,14 @@ class _ProjectAnalyticsDashboardState extends ConsumerState<ProjectAnalyticsDash
           const SizedBox(height: TypographyConstants.spacingLarge),
           Text(
             'Loading Analytics...',
-            style: theme.textTheme.titleMedium?.copyWith(
+            style: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: TypographyConstants.spacingSmall),
           Text(
             'Calculating project insights and metrics',
-            style: theme.textTheme.bodyMedium?.copyWith(
+            style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
             textAlign: TextAlign.center,
@@ -935,14 +936,14 @@ class _ProjectAnalyticsDashboardState extends ConsumerState<ProjectAnalyticsDash
           const SizedBox(height: TypographyConstants.spacingLarge),
           Text(
             'Analytics Unavailable',
-            style: theme.textTheme.titleLarge?.copyWith(
+            style: StandardizedTextStyle.titleLarge.toTextStyle(context).copyWith(
               color: theme.colorScheme.error,
             ),
           ),
           const SizedBox(height: TypographyConstants.spacingSmall),
           Text(
             error,
-            style: theme.textTheme.bodyMedium?.copyWith(
+            style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
             textAlign: TextAlign.center,
@@ -1032,13 +1033,14 @@ class _ProjectAnalyticsDashboardState extends ConsumerState<ProjectAnalyticsDash
   }
 
   Color _getTrendColor(VelocityTrend trend) {
+    final theme = Theme.of(context);
     switch (trend) {
       case VelocityTrend.increasing:
-        return Colors.green;
+        return theme.colorScheme.tertiary; // Success/positive trend
       case VelocityTrend.stable:
-        return Colors.blue;
+        return theme.colorScheme.primary;
       case VelocityTrend.decreasing:
-        return Colors.red;
+        return theme.colorScheme.error;
     }
   }
 
@@ -1054,9 +1056,10 @@ class _ProjectAnalyticsDashboardState extends ConsumerState<ProjectAnalyticsDash
   }
 
   Color _getRiskColor(double riskLevel) {
-    if (riskLevel >= 0.7) return Colors.red;
-    if (riskLevel >= 0.4) return Colors.orange;
-    return Colors.green;
+    final theme = Theme.of(context);
+    if (riskLevel >= 0.7) return theme.colorScheme.error;
+    if (riskLevel >= 0.4) return theme.colorScheme.onTertiaryContainer; // Warning state
+    return theme.colorScheme.tertiary; // Low risk/success state
   }
 
   String _getRiskStatus(double riskLevel) {
@@ -1066,26 +1069,28 @@ class _ProjectAnalyticsDashboardState extends ConsumerState<ProjectAnalyticsDash
   }
 
   Color _getStatusColor(TaskStatus status) {
+    final theme = Theme.of(context);
     switch (status) {
       case TaskStatus.pending:
-        return Colors.orange;
+        return theme.colorScheme.onTertiaryContainer; // Warning/pending state
       case TaskStatus.inProgress:
-        return Colors.blue;
+        return theme.colorScheme.primary;
       case TaskStatus.completed:
-        return Colors.green;
+        return theme.colorScheme.tertiary; // Success/completion state
       case TaskStatus.cancelled:
-        return Colors.grey;
+        return theme.colorScheme.outline;
     }
   }
 
   Color _getBottleneckColor(BottleneckSeverity severity) {
+    final theme = Theme.of(context);
     switch (severity) {
       case BottleneckSeverity.low:
-        return Colors.yellow;
+        return theme.colorScheme.tertiary; // Low severity - success-like state
       case BottleneckSeverity.medium:
-        return Colors.orange;
+        return theme.colorScheme.onTertiaryContainer; // Medium severity - warning state
       case BottleneckSeverity.high:
-        return Colors.red;
+        return theme.colorScheme.error; // High severity - error state
     }
   }
 
@@ -1155,7 +1160,7 @@ class _ExportOptionsSheet extends ConsumerWidget {
             
             Text(
               'Export Analytics',
-              style: theme.textTheme.headlineSmall?.copyWith(
+              style: StandardizedTextStyle.headlineSmall.toTextStyle(context).copyWith(
                 fontWeight: TypographyConstants.medium,
               ),
             ),
@@ -1238,7 +1243,7 @@ class _ExportOptionsSheet extends ConsumerWidget {
                     children: [
                       Text(
                         title,
-                        style: theme.textTheme.titleMedium?.copyWith(
+                        style: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
                           fontWeight: TypographyConstants.medium,
                         ),
                       ),
@@ -1296,9 +1301,9 @@ class _ExportOptionsSheet extends ConsumerWidget {
         );
         
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Analytics exported successfully!'),
-            backgroundColor: Colors.green,
+          SnackBar(
+            content: const Text('Analytics exported successfully!'),
+            backgroundColor: Theme.of(context).colorScheme.tertiary, // Success state
           ),
         );
       } else {

@@ -13,6 +13,9 @@ import '../widgets/standardized_app_bar.dart';
 import '../widgets/standardized_fab.dart';
 import '../widgets/standardized_text.dart';
 import '../widgets/theme_background_widget.dart';
+import '../widgets/standardized_colors.dart';
+import '../widgets/standardized_spacing.dart';
+import '../widgets/standardized_error_states.dart';
 
 /// Page for managing projects
 ///
@@ -45,7 +48,7 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage> with SingleTickerPr
 
     return ThemeBackgroundWidget(
       child: Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: context.colors.backgroundTransparent,
         extendBodyBehindAppBar: true,
         appBar: StandardizedAppBar(
           title: 'Projects',
@@ -75,29 +78,32 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage> with SingleTickerPr
           heroTag: 'projectsFAB',
         ),
         body: Padding(
-          padding: const EdgeInsets.only(top: kToolbarHeight + 48), // Account for TabBar
+          padding: const EdgeInsets.only(top: kToolbarHeight + SpacingTokens.xl), // Account for TabBar
           child: Column(
             children: [
               // Search bar (if searching)
               if (_searchQuery.isNotEmpty)
                 Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: StandardizedSpacing.padding(SpacingSize.md),
                   child: GlassmorphismContainer(
                     level: GlassLevel.content,
                     borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                    padding: const EdgeInsets.all(16),
+                    padding: StandardizedSpacing.padding(SpacingSize.md),
                     child: Row(
                       children: [
                         Icon(
                           PhosphorIcons.magnifyingGlass(),
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
-                        const SizedBox(width: 8),
+                        StandardizedGaps.horizontal(SpacingSize.sm),
                         Expanded(
                           child: StandardizedText(
                             'Searching for: "$_searchQuery"',
                             style: StandardizedTextStyle.bodyMedium,
-                            color: theme.colorScheme.onSurfaceVariant,
+                            color: context.colors.withSemanticOpacity(
+                              Theme.of(context).colorScheme.onSurface,
+                              SemanticOpacity.strong,
+                            ),
                           ),
                         ),
                         GlassmorphismContainer(
@@ -113,7 +119,7 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage> with SingleTickerPr
                               },
                               borderRadius: BorderRadius.circular(20),
                               child: Padding(
-                                padding: const EdgeInsets.all(8),
+                                padding: StandardizedSpacing.padding(SpacingSize.sm),
                                 child: Icon(PhosphorIcons.x(), size: 20),
                               ),
                             ),
@@ -164,7 +170,7 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage> with SingleTickerPr
         return RefreshIndicator(
           onRefresh: _refreshProjects,
           child: ListView.builder(
-            padding: const EdgeInsets.only(bottom: 80), // Account for FAB
+            padding: const EdgeInsets.only(bottom: SpacingTokens.xxl + SpacingTokens.md), // Account for FAB
             itemCount: activeProjects.length,
             itemBuilder: (context, index) {
               final project = activeProjects[index];
@@ -178,7 +184,7 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage> with SingleTickerPr
           ),
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => StandardizedErrorStates.loading(),
       error: (error, stackTrace) => _buildErrorState(error.toString()),
     );
   }
@@ -202,7 +208,7 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage> with SingleTickerPr
         return RefreshIndicator(
           onRefresh: _refreshProjects,
           child: ListView.builder(
-            padding: const EdgeInsets.only(bottom: 80),
+            padding: const EdgeInsets.only(bottom: SpacingTokens.xxl + SpacingTokens.md),
             itemCount: archivedProjects.length,
             itemBuilder: (context, index) {
               final project = archivedProjects[index];
@@ -216,7 +222,7 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage> with SingleTickerPr
           ),
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => StandardizedErrorStates.loading(),
       error: (error, stackTrace) => _buildErrorState(error.toString()),
     );
   }
@@ -242,25 +248,25 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage> with SingleTickerPr
             children: [
               // Warning header
               Padding(
-                padding: const EdgeInsets.all(16),
+                padding: StandardizedSpacing.padding(SpacingSize.md),
                 child: GlassmorphismContainer(
                   level: GlassLevel.interactive,
                   borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                  glassTint: Colors.orange.withValues(alpha: 0.1),
-                  borderColor: Colors.orange.withValues(alpha: 0.3),
-                  padding: const EdgeInsets.all(16),
+                  glassTint: context.colors.withSemanticOpacity(context.colors.warning, SemanticOpacity.subtle),
+                  borderColor: context.colors.withSemanticOpacity(context.colors.warning, SemanticOpacity.light),
+                  padding: StandardizedSpacing.padding(SpacingSize.md),
                   child: Row(
                     children: [
                       Icon(
                         PhosphorIcons.warning(),
-                        color: Colors.orange,
+                        color: context.colors.warning,
                       ),
-                      const SizedBox(width: 8),
+                      StandardizedGaps.horizontal(SpacingSize.sm),
                       Expanded(
                         child: StandardizedText(
                           'These projects need attention due to overdue tasks, approaching deadlines, or low completion rates.',
                           style: StandardizedTextStyle.bodyMedium,
-                          color: Colors.orange.shade700,
+                          color: context.colors.warning,
                         ),
                       ),
                     ],
@@ -271,7 +277,7 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage> with SingleTickerPr
               // Projects list
               Expanded(
                 child: ListView.builder(
-                  padding: const EdgeInsets.only(bottom: 80),
+                  padding: const EdgeInsets.only(bottom: SpacingTokens.xxl + SpacingTokens.md),
                   itemCount: filteredProjects.length,
                   itemBuilder: (context, index) {
                     final project = filteredProjects[index];
@@ -288,7 +294,7 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage> with SingleTickerPr
           ),
         );
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => StandardizedErrorStates.loading(),
       error: (error, stackTrace) => _buildErrorState(error.toString()),
     );
   }
@@ -370,30 +376,33 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage> with SingleTickerPr
 
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: StandardizedSpacing.padding(SpacingSize.xl),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
               PhosphorIcons.warningCircle(),
               size: 64,
-              color: theme.colorScheme.error,
+              color: context.colors.error,
             ),
-            const SizedBox(height: 16),
+            StandardizedGaps.md,
             StandardizedText(
               'Error Loading Projects',
               style: StandardizedTextStyle.headlineSmall,
-              color: theme.colorScheme.error,
+              color: context.colors.error,
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 8),
+            StandardizedGaps.vertical(SpacingSize.sm),
             StandardizedText(
               error,
               style: StandardizedTextStyle.bodyMedium,
-              color: theme.colorScheme.onSurfaceVariant,
+              color: context.colors.withSemanticOpacity(
+                Theme.of(context).colorScheme.onSurface,
+                SemanticOpacity.strong,
+              ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 24),
+            StandardizedGaps.lg,
             GlassmorphismContainer(
               level: GlassLevel.interactive,
               borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
@@ -403,7 +412,10 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage> with SingleTickerPr
                   onTap: _refreshProjects,
                   borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    padding: StandardizedSpacing.paddingSymmetric(
+                      horizontal: SpacingSize.lg,
+                      vertical: SpacingSize.md,
+                    ),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
@@ -415,8 +427,9 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage> with SingleTickerPr
                       ),
                       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                     ),
-                    child: StandardizedTextVariants.button(
+                    child: const StandardizedText(
                       'Retry',
+                      style: StandardizedTextStyle.buttonText,
                       color: Colors.white,
                     ),
                   ),
@@ -441,20 +454,20 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage> with SingleTickerPr
     showDialog(
       context: context,
       builder: (context) => Dialog(
-        backgroundColor: Colors.transparent,
+        backgroundColor: context.colors.backgroundTransparent,
         child: GlassmorphismContainer(
           level: GlassLevel.floating,
           borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
-          padding: const EdgeInsets.all(24),
+          padding: StandardizedSpacing.padding(SpacingSize.lg),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              StandardizedText(
+              const StandardizedText(
                 'Search Projects',
                 style: StandardizedTextStyle.headlineSmall,
               ),
-              const SizedBox(height: 16),
+              StandardizedGaps.md,
               GlassmorphismContainer(
                 level: GlassLevel.interactive,
                 borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
@@ -490,7 +503,7 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage> with SingleTickerPr
                   },
                 ),
               ),
-              const SizedBox(height: 16),
+              StandardizedGaps.md,
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -503,7 +516,10 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage> with SingleTickerPr
                         onTap: () => Navigator.of(context).pop(),
                         borderRadius: BorderRadius.circular(8),
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          padding: StandardizedSpacing.paddingSymmetric(
+                            horizontal: SpacingSize.md,
+                            vertical: SpacingSize.sm,
+                          ),
                           child: StandardizedText(
                             'Cancel',
                             style: StandardizedTextStyle.labelLarge,
@@ -513,7 +529,7 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage> with SingleTickerPr
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  StandardizedGaps.horizontal(SpacingSize.sm),
                   GlassmorphismContainer(
                     level: GlassLevel.interactive,
                     borderRadius: BorderRadius.circular(8),
@@ -528,7 +544,10 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage> with SingleTickerPr
                         },
                         borderRadius: BorderRadius.circular(8),
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          padding: StandardizedSpacing.paddingSymmetric(
+                            horizontal: SpacingSize.md,
+                            vertical: SpacingSize.sm,
+                          ),
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               colors: [
@@ -540,8 +559,9 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage> with SingleTickerPr
                             ),
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: StandardizedTextVariants.button(
+                          child: const StandardizedText(
                             'Search',
+                            style: StandardizedTextStyle.buttonText,
                             color: Colors.white,
                           ),
                         ),
@@ -568,7 +588,6 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage> with SingleTickerPr
         builder: (context) => ProjectFormDialog(
           onSuccess: _refreshProjects,
         ),
-        fullscreenDialog: true,
       ),
     );
   }
@@ -580,7 +599,6 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage> with SingleTickerPr
           project: project,
           onSuccess: _refreshProjects,
         ),
-        fullscreenDialog: true,
       ),
     );
   }

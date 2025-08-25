@@ -4,7 +4,6 @@ import 'package:mockito/annotations.dart';
 import 'package:task_tracker_app/domain/entities/project.dart';
 import 'package:task_tracker_app/domain/entities/task_model.dart';
 import 'package:task_tracker_app/domain/entities/project_health.dart';
-import 'package:task_tracker_app/domain/models/enums.dart';
 import 'package:task_tracker_app/domain/repositories/task_repository.dart';
 import 'package:task_tracker_app/domain/repositories/project_repository.dart';
 import 'package:task_tracker_app/services/analytics/analytics_service.dart';

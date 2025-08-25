@@ -7,6 +7,7 @@ import '../providers/task_providers.dart';
 import '../widgets/glassmorphism_container.dart';
 import '../../core/design_system/design_tokens.dart';
 import '../../core/theme/typography_constants.dart';
+import 'standardized_text.dart';
 
 /// Preferences for week preview display
 class WeekPreviewPreferences {
@@ -81,7 +82,7 @@ class WeekPreviewWidget extends ConsumerWidget {
         const SizedBox(width: 8),
         Text(
           'Week Preview',
-          style: theme.textTheme.titleMedium?.copyWith(
+          style: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
             fontWeight: FontWeight.w500,
             color: theme.colorScheme.onSurface,
           ),
@@ -144,7 +145,7 @@ class WeekPreviewWidget extends ConsumerWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [Text(
                       _getDayName(date).substring(0, 1),
-                      style: theme.textTheme.bodySmall?.copyWith(
+                      style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
                         fontWeight: isToday ? FontWeight.w500 : FontWeight.w500,
                         color: isToday ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
                       ),
@@ -152,7 +153,7 @@ class WeekPreviewWidget extends ConsumerWidget {
                     const SizedBox(height: 4),
                     Text(
                       '${date.day}',
-                      style: theme.textTheme.bodyMedium?.copyWith(
+                      style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
                         fontWeight: isToday ? FontWeight.w500 : FontWeight.normal,
                         color: isToday ? theme.colorScheme.primary : theme.colorScheme.onSurface,
                       ),
@@ -167,7 +168,7 @@ class WeekPreviewWidget extends ConsumerWidget {
                         ),
                         child: Text(
                           '${dayTasks.length}',
-                          style: theme.textTheme.bodySmall?.copyWith(
+                          style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
                             color: Colors.white,
                             fontSize: TypographyConstants.labelSmall,
                             fontWeight: FontWeight.w500,
@@ -213,14 +214,14 @@ class WeekPreviewWidget extends ConsumerWidget {
                   children: [
                     Text(
                       _getDayName(date),
-                      style: theme.textTheme.bodyMedium?.copyWith(
+                      style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
                         fontWeight: isToday ? FontWeight.w500 : FontWeight.w500,
                         color: isToday ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
                     Text(
                       '${date.day}',
-                      style: theme.textTheme.headlineSmall?.copyWith(
+                      style: StandardizedTextStyle.headlineSmall.toTextStyle(context).copyWith(
                         fontWeight: FontWeight.w500,
                         color: isToday ? theme.colorScheme.primary : theme.colorScheme.onSurface,
                       ),
@@ -244,7 +245,7 @@ class WeekPreviewWidget extends ConsumerWidget {
                           const SizedBox(width: 4),
                           Text(
                             '${dayTasks.length} ${dayTasks.length == 1 ? 'task' : 'tasks'}',
-                            style: theme.textTheme.bodySmall?.copyWith(
+                            style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
                               color: theme.colorScheme.onSurfaceVariant,
                             ),
                           )]),
@@ -446,7 +447,7 @@ class WeekPreviewWidget extends ConsumerWidget {
                                     padding: const EdgeInsets.only(top: 4),
                                     child: Text(
                                       task.description!,
-                                      style: theme.textTheme.bodySmall?.copyWith(
+                                      style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
                                         color: isCompleted 
                                             ? theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7)
                                             : theme.colorScheme.onSurfaceVariant,

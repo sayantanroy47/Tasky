@@ -4,8 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drift/native.dart';
 
 import 'package:task_tracker_app/services/database/database.dart';
-import 'package:task_tracker_app/domain/entities/task_model.dart';
-import 'package:task_tracker_app/domain/entities/task_enums.dart';
 import 'package:task_tracker_app/presentation/widgets/analytics_chart.dart';
 import 'package:task_tracker_app/presentation/widgets/productivity_metrics.dart';
 
@@ -52,11 +50,11 @@ void main() {
                     ),
                   ],
                 ),
-                body: SingleChildScrollView(
+                body: const SingleChildScrollView(
                   child: Column(
                     children: [
                       // Key metrics cards
-                      const Row(
+                      Row(
                         children: [
                           Expanded(
                             child: Card(
@@ -88,7 +86,7 @@ void main() {
                           ),
                         ],
                       ),
-                      const Row(
+                      Row(
                         children: [
                           Expanded(
                             child: Card(
@@ -121,7 +119,7 @@ void main() {
                         ],
                       ),
                       // Charts section
-                      const Card(
+                      Card(
                         child: Padding(
                           padding: EdgeInsets.all(16),
                           child: Column(
@@ -140,7 +138,7 @@ void main() {
                           ),
                         ),
                       ),
-                      const Card(
+                      Card(
                         child: Padding(
                           padding: EdgeInsets.all(16),
                           child: Column(

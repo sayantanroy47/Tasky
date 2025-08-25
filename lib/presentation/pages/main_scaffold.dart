@@ -15,6 +15,7 @@ import '../widgets/glassmorphism_container.dart';
 import '../widgets/standardized_fab.dart';
 import '../widgets/standardized_text.dart';
 import '../widgets/theme_background_widget.dart';
+import '../widgets/standardized_spacing.dart';
 import 'analytics_page.dart';
 import 'calendar_page.dart';
 import 'home_page_m3.dart';
@@ -94,11 +95,23 @@ class MainScaffold extends ConsumerWidget {
         children: pages,
       ),
       bottomNavigationBar: _buildBottomNavigation(context, ref, selectedIndex, navigationItems),
-      floatingActionButton: StandardizedFABVariants.create(
-        onPressed: () => _showTaskCreationMenu(context),
-        heroTag: 'mainFAB',
-        isLarge: true,
-      ),
+      floatingActionButton: selectedIndex == 2 // Analytics page
+        ? StandardizedFABVariants.analytics(
+            onPressed: () => _showAnalyticsMenu(context),
+            heroTag: 'analyticsFAB',
+            isLarge: true,
+          )
+        : selectedIndex == 0 // Home page - success-focused
+        ? StandardizedFABVariants.create(
+            onPressed: () => _showTaskCreationMenu(context),
+            heroTag: 'mainFAB',
+            isLarge: true,
+          )
+        : StandardizedFABVariants.create(
+            onPressed: () => _showTaskCreationMenu(context),
+            heroTag: 'defaultFAB',
+            isLarge: true,
+          ),
       floatingActionButtonLocation: const CenterDockedFloatingActionButtonLocation(),
     );
   }
@@ -120,18 +133,18 @@ class MainScaffold extends ConsumerWidget {
           // Navigation rail
           Container(
             width: ResponsiveConstants.navRailWidth,
-            padding: const EdgeInsets.all(16),
+            padding: StandardizedSpacing.padding(SpacingSize.md),
             child: GlassmorphismContainer(
               level: GlassLevel.background,
               borderRadius: BorderRadius.circular(ResponsiveConstants.tabletCardRadius),
-              padding: const EdgeInsets.symmetric(vertical: 16),
+              padding: StandardizedSpacing.paddingSymmetric(vertical: SpacingSize.md),
               child: Column(
                 children: [
                   // App logo
                   Container(
                     width: 40,
                     height: 40,
-                    margin: const EdgeInsets.only(bottom: 24),
+                    margin: StandardizedSpacing.marginOnly(bottom: SpacingSize.lg),
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.primary,
                       borderRadius: BorderRadius.circular(12),
@@ -152,7 +165,7 @@ class MainScaffold extends ConsumerWidget {
                         final isSelected = selectedIndex == index;
 
                         return Container(
-                          margin: const EdgeInsets.only(bottom: 8),
+                          margin: StandardizedSpacing.marginOnly(bottom: SpacingSize.xs),
                           child: Semantics(
                             label: '${item.label} navigation',
                             hint: item.tooltip,
@@ -223,17 +236,17 @@ class MainScaffold extends ConsumerWidget {
           // Navigation drawer
           Container(
             width: ResponsiveConstants.navDrawerWidth,
-            padding: const EdgeInsets.all(24),
+            padding: StandardizedSpacing.padding(SpacingSize.xl),
             child: GlassmorphismContainer(
               level: GlassLevel.background,
               borderRadius: BorderRadius.circular(ResponsiveConstants.desktopCardRadius),
-              padding: const EdgeInsets.all(16),
+              padding: StandardizedSpacing.padding(SpacingSize.md),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // App header
                   Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: StandardizedSpacing.padding(SpacingSize.md),
                     child: Row(
                       children: [
                         Container(
@@ -249,18 +262,16 @@ class MainScaffold extends ConsumerWidget {
                             size: 28,
                           ),
                         ),
-                        const SizedBox(width: 16),
-                        Text(
+                        StandardizedGaps.horizontal(SpacingSize.md),
+                        const StandardizedText(
                           'Task Tracker',
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.w500,
-                              ),
+                          style: StandardizedTextStyle.titleLarge,
                         ),
                       ],
                     ),
                   ),
 
-                  const SizedBox(height: 16),
+                  StandardizedGaps.vertical(SpacingSize.md),
 
                   // Navigation items
                   Expanded(
@@ -271,7 +282,7 @@ class MainScaffold extends ConsumerWidget {
                         final isSelected = selectedIndex == index;
 
                         return Container(
-                          margin: const EdgeInsets.only(bottom: 8),
+                          margin: StandardizedSpacing.marginOnly(bottom: SpacingSize.xs),
                           child: Semantics(
                             label: '${item.label} navigation',
                             hint: item.tooltip,
@@ -285,14 +296,14 @@ class MainScaffold extends ConsumerWidget {
                                     : Theme.of(context).colorScheme.onSurfaceVariant,
                                 size: 28,
                               ),
-                              title: Text(
+                              title: StandardizedText(
                                 item.label,
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                      color: isSelected
-                                          ? Theme.of(context).colorScheme.primary
-                                          : Theme.of(context).colorScheme.onSurfaceVariant,
-                                      fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
-                                    ),
+                                style: isSelected 
+                                    ? StandardizedTextStyle.titleMedium
+                                    : StandardizedTextStyle.bodyMedium,
+                                color: isSelected
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Theme.of(context).colorScheme.onSurfaceVariant,
                               ),
                               selected: isSelected,
                               selectedTileColor: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.3),
@@ -309,7 +320,7 @@ class MainScaffold extends ConsumerWidget {
 
                   // Bottom section with FAB
                   const Divider(),
-                  const SizedBox(height: 16),
+                  StandardizedGaps.vertical(SpacingSize.md),
                   SizedBox(
                     width: double.infinity,
                     child: StandardizedFABVariants.create(
@@ -375,7 +386,7 @@ class MainScaffold extends ConsumerWidget {
           filter: ImageFilter.blur(sigmaX: 12.0, sigmaY: 12.0),
           child: BottomAppBar(
             height: 80,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: StandardizedSpacing.paddingSymmetric(horizontal: SpacingSize.md),
             notchMargin: 3, // 3px notch around FAB as requested
             shape: const CircularNotchedRectangle(),
             color: Colors.transparent, // Make transparent to show glassmorphism
@@ -393,7 +404,7 @@ class MainScaffold extends ConsumerWidget {
                   ),
 
                 // Enhanced spacer for FAB with proper sizing
-                const SizedBox(width: 88), // Increased width for better spacing
+                StandardizedGaps.horizontal(SpacingSize.xxl), // Increased width for better spacing
 
                 // Last two navigation items
                 for (int i = 2; i < navigationItems.length; i++)
@@ -433,7 +444,7 @@ class MainScaffold extends ConsumerWidget {
           onTap: onTap,
           borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium),
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 2),
+            padding: StandardizedSpacing.paddingSymmetric(vertical: SpacingSize.xs, horizontal: SpacingSize.xs),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -496,7 +507,7 @@ class MainScaffold extends ConsumerWidget {
           margin: EdgeInsets.zero,
           child: SafeArea(
             child: Padding(
-              padding: const EdgeInsets.all(24),
+              padding: StandardizedSpacing.padding(SpacingSize.xl),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -505,12 +516,12 @@ class MainScaffold extends ConsumerWidget {
                   StandardizedTextVariants.sectionHeader(
                     'Create New Task',
                   ),
-                  const SizedBox(height: 8),
+                  StandardizedGaps.vertical(SpacingSize.xs),
                   StandardizedTextVariants.body(
                     'Choose how you\'d like to create your task',
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
-                  const SizedBox(height: 24),
+                  StandardizedGaps.vertical(SpacingSize.lg),
 
                   // Task Creation Options in order: AI, Voice-Only, Location, Manual
                   _buildTaskCreationOption(
@@ -531,7 +542,7 @@ class MainScaffold extends ConsumerWidget {
                     },
                   ),
 
-                  const SizedBox(height: 12),
+                  StandardizedGaps.vertical(SpacingSize.sm),
 
                   _buildTaskCreationOption(
                     context: context,
@@ -551,7 +562,7 @@ class MainScaffold extends ConsumerWidget {
                     },
                   ),
 
-                  const SizedBox(height: 12),
+                  StandardizedGaps.vertical(SpacingSize.sm),
 
                   _buildTaskCreationOption(
                     context: context,
@@ -571,7 +582,7 @@ class MainScaffold extends ConsumerWidget {
                     },
                   ),
 
-                  const SizedBox(height: 12),
+                  StandardizedGaps.vertical(SpacingSize.sm),
 
                   _buildTaskCreationOption(
                     context: context,
@@ -594,7 +605,76 @@ class MainScaffold extends ConsumerWidget {
                     },
                   ),
 
-                  const SizedBox(height: 16),
+                  StandardizedGaps.vertical(SpacingSize.md),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Show analytics menu with tertiary styling
+  void _showAnalyticsMenu(BuildContext context) {
+    final theme = Theme.of(context);
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => ThemeBackgroundWidget(
+        child: GlassmorphismContainer(
+          level: GlassLevel.floating,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          margin: EdgeInsets.zero,
+          child: SafeArea(
+            child: Padding(
+              padding: StandardizedSpacing.padding(SpacingSize.xl),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header with tertiary accent
+                  StandardizedTextVariants.sectionHeader(
+                    'Analytics & Insights',
+                    color: theme.colorScheme.tertiary,
+                  ),
+                  StandardizedGaps.vertical(SpacingSize.xs),
+                  StandardizedText(
+                    'View your productivity data and trends',
+                    style: StandardizedTextStyle.bodySmall,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                  ),
+                  StandardizedGaps.vertical(SpacingSize.md),
+
+                  _buildTaskCreationOption(
+                    context: context,
+                    icon: PhosphorIcons.trendUp(),
+                    iconColor: theme.colorScheme.tertiary,
+                    title: 'Progress Overview',
+                    subtitle: 'View completion trends and statistics',
+                    onTap: () {
+                      Navigator.pop(context);
+                      // Navigate to detailed analytics
+                    },
+                  ),
+
+                  StandardizedGaps.vertical(SpacingSize.sm),
+
+                  _buildTaskCreationOption(
+                    context: context,
+                    icon: PhosphorIcons.chartBar(),
+                    iconColor: theme.colorScheme.tertiary,
+                    title: 'Data Visualization',
+                    subtitle: 'Charts and graphs of your productivity',
+                    onTap: () {
+                      Navigator.pop(context);
+                      // Show data visualization
+                    },
+                  ),
+
+                  StandardizedGaps.vertical(SpacingSize.md),
                 ],
               ),
             ),
@@ -620,7 +700,7 @@ class MainScaffold extends ConsumerWidget {
       borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge), // 16.0 - Fixed border radius hierarchy
       child: GlassmorphismContainer(
         level: GlassLevel.interactive,
-        padding: const EdgeInsets.all(16),
+        padding: StandardizedSpacing.padding(SpacingSize.md),
         borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge), // 16.0 - Fixed border radius hierarchy
         child: Row(
           children: [
@@ -637,7 +717,7 @@ class MainScaffold extends ConsumerWidget {
                 size: 24,
               ),
             ),
-            const SizedBox(width: 16),
+            StandardizedGaps.horizontal(SpacingSize.md),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -645,7 +725,7 @@ class MainScaffold extends ConsumerWidget {
                   StandardizedTextVariants.cardTitle(
                     title,
                   ),
-                  const SizedBox(height: 2),
+                  StandardizedGaps.vertical(SpacingSize.xs),
                   StandardizedText(
                     subtitle,
                     style: StandardizedTextStyle.bodySmall,

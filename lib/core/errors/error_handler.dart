@@ -268,7 +268,7 @@ class AppErrorHandler {
             Expanded(child: Text(error.message)),
           ],
         ),
-        backgroundColor: Colors.orange,
+        backgroundColor: Theme.of(context).colorScheme.onTertiaryContainer, // Warning color
         duration: const Duration(seconds: 4),
         behavior: SnackBarBehavior.floating,
         action: error.type == ErrorType.network
@@ -331,7 +331,7 @@ class AppErrorHandler {
             Expanded(child: Text(message)),
           ],
         ),
-        backgroundColor: Colors.green,
+        backgroundColor: Theme.of(context).colorScheme.tertiary, // Success color
         duration: const Duration(seconds: 3),
         behavior: SnackBarBehavior.floating,
       ),

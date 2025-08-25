@@ -4,11 +4,11 @@ import 'package:integration_test/integration_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-import 'package:tasky/domain/entities/task_model.dart';
-import 'package:tasky/domain/models/enums.dart';
-import 'package:tasky/presentation/widgets/kanban_board_view.dart';
-import 'package:tasky/presentation/widgets/kanban_dialogs.dart';
-import 'package:tasky/presentation/providers/kanban_providers.dart';
+import 'package:task_tracker_app/domain/entities/task_model.dart';
+import 'package:task_tracker_app/domain/models/enums.dart';
+import 'package:task_tracker_app/presentation/widgets/kanban_board_view.dart';
+import 'package:task_tracker_app/presentation/widgets/kanban_dialogs.dart';
+import 'package:task_tracker_app/presentation/providers/kanban_providers.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();

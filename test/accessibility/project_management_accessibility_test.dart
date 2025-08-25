@@ -6,7 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import 'package:task_tracker_app/core/accessibility/color_contrast_validator.dart';
-import 'package:task_tracker_app/core/accessibility/touch_target_validator.dart';
 import 'package:task_tracker_app/domain/entities/project.dart';
 import 'package:task_tracker_app/domain/entities/task_model.dart';
 import 'package:task_tracker_app/domain/models/enums.dart';
@@ -17,7 +16,6 @@ import 'package:task_tracker_app/presentation/widgets/timeline/timeline_gantt_vi
 import 'package:task_tracker_app/presentation/widgets/analytics/project_analytics_dashboard.dart';
 import 'package:task_tracker_app/presentation/widgets/bulk_operations/bulk_action_toolbar.dart';
 import 'package:task_tracker_app/presentation/widgets/bulk_operations/multi_select_task_card.dart';
-import 'package:task_tracker_app/services/bulk_operations/bulk_operation_service.dart';
 import 'package:task_tracker_app/presentation/widgets/charts/bar_chart_widget.dart';
 import 'package:task_tracker_app/presentation/widgets/charts/line_chart_widget.dart';
 import 'package:task_tracker_app/presentation/widgets/charts/pie_chart_widget.dart';
@@ -623,7 +621,7 @@ void main() {
 
       testWidgets('multi-select task cards should have proper selection semantics', (tester) async {
         final task = testTasks.first;
-        bool isSelected = false;
+        const bool isSelected = false;
 
         await tester.pumpWidget(
           ProviderScope(

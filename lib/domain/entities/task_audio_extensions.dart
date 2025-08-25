@@ -21,17 +21,40 @@ extension TaskAudioExtensions on TaskModel {
            creationMode == 'voiceOnly';
   }
   
-  /// Get the audio file path from metadata
+  /// Get the audio file path from metadata (supports both new and legacy formats)
   String? get audioFilePath {
+    // Try new format first: metadata['audio']['filePath']
     final audioData = metadata['audio'] as Map<String, dynamic>?;
-    return audioData?['filePath'] as String?;
+    final newFormatPath = audioData?['filePath'] as String?;
+    if (newFormatPath != null && newFormatPath.isNotEmpty) {
+      return newFormatPath;
+    }
+    
+    // Fall back to legacy format: metadata['audio_file_path']
+    final legacyPath = metadata['audio_file_path'] as String?;
+    if (legacyPath != null && legacyPath.isNotEmpty) {
+      return legacyPath;
+    }
+    
+    return null;
   }
   
-  /// Get the audio duration from metadata
+  /// Get the audio duration from metadata (supports both new and legacy formats)
   Duration? get audioDuration {
+    // Try new format first: metadata['audio']['duration'] (in seconds)
     final audioData = metadata['audio'] as Map<String, dynamic>?;
     final durationSeconds = audioData?['duration'] as int?;
-    return durationSeconds != null ? Duration(seconds: durationSeconds) : null;
+    if (durationSeconds != null) {
+      return Duration(seconds: durationSeconds);
+    }
+    
+    // Fall back to legacy format: metadata['audio_duration_ms'] (in milliseconds)
+    final legacyDurationMs = metadata['audio_duration_ms'] as int?;
+    if (legacyDurationMs != null) {
+      return Duration(milliseconds: legacyDurationMs);
+    }
+    
+    return null;
   }
   
   /// Get formatted audio duration string

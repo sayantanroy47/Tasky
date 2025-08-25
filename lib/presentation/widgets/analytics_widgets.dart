@@ -5,6 +5,8 @@ import '../../core/design_system/design_tokens.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../services/analytics/analytics_models.dart';
 import 'glassmorphism_container.dart';
+import 'standardized_text.dart';
+import 'standardized_spacing.dart';
 
 /// Collection of reusable widgets for analytics display
 
@@ -38,40 +40,36 @@ class AnalyticsMetricCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: StandardizedSpacing.padding(SpacingSize.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
                   Icon(icon, color: color, size: 20),
-                  const SizedBox(width: 8),
+                  StandardizedGaps.horizontal(SpacingSize.xs),
                   Expanded(
-                    child: Text(
+                    child: StandardizedText(
                       title,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
+                      style: StandardizedTextStyle.bodySmall,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
-              Text(
+              StandardizedGaps.vertical(SpacingSize.xs),
+              StandardizedText(
                 value,
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: color,
-                      fontWeight: FontWeight.w500,
-                    ),
+                style: StandardizedTextStyle.headlineMedium,
+                color: color,
               ),
-              Text(
+              StandardizedText(
                 subtitle,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
+                style: StandardizedTextStyle.bodySmall,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
               if (trend != null) ...[
-                const SizedBox(height: 4),
+                StandardizedGaps.vertical(SpacingSize.xs),
                 Row(
                   children: [
                     Icon(
@@ -87,17 +85,15 @@ class AnalyticsMetricCard extends StatelessWidget {
                               ? Theme.of(context).colorScheme.error // Error/negative trend color
                               : Theme.of(context).colorScheme.onSurfaceVariant, // Neutral trend color
                     ),
-                    const SizedBox(width: 4),
-                    Text(
+                    StandardizedGaps.horizontal(SpacingSize.xs),
+                    StandardizedText(
                       trend!,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: isPositiveTrend == true
-                                ? Theme.of(context).colorScheme.tertiary // Success/positive trend color
-                                : isPositiveTrend == false
-                                    ? Theme.of(context).colorScheme.error // Error/negative trend color
-                                    : Theme.of(context).colorScheme.onSurfaceVariant, // Neutral trend color
-                            fontWeight: FontWeight.w500,
-                          ),
+                      style: StandardizedTextStyle.bodySmall,
+                      color: isPositiveTrend == true
+                          ? Theme.of(context).colorScheme.tertiary
+                          : isPositiveTrend == false
+                              ? Theme.of(context).colorScheme.error
+                              : Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ],
                 ),
@@ -138,11 +134,11 @@ class SimpleBarChart extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            StandardizedText(
               title,
-              style: Theme.of(context).textTheme.titleMedium,
+              style: StandardizedTextStyle.titleMedium,
             ),
-            const SizedBox(height: 16),
+            StandardizedGaps.md,
             SizedBox(
               height: height,
               child: Row(
@@ -167,10 +163,10 @@ class SimpleBarChart extends StatelessWidget {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 8),
-                          Text(
+                          StandardizedGaps.vertical(SpacingSize.xs),
+                          StandardizedText(
                             label,
-                            style: Theme.of(context).textTheme.bodySmall,
+                            style: StandardizedTextStyle.bodySmall,
                             textAlign: TextAlign.center,
                           ),
                         ],
@@ -208,17 +204,17 @@ class CategoryBreakdownWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            StandardizedText(
               title,
-              style: Theme.of(context).textTheme.titleMedium,
+              style: StandardizedTextStyle.titleMedium,
             ),
-            const SizedBox(height: 16),
+            StandardizedGaps.md,
             ...categories.take(5).map((category) {
               final percentage = totalTasks > 0 ? (category.totalTasks / totalTasks * 100).round() : 0;
               final color = _getCategoryColor(category.categoryName);
 
               return Padding(
-                padding: const EdgeInsets.only(bottom: 12.0),
+                padding: const EdgeInsets.only(bottom: SpacingTokens.sm),
                 child: CategoryItem(
                   name: category.categoryName,
                   percentage: percentage,
@@ -235,12 +231,14 @@ class CategoryBreakdownWidget extends StatelessWidget {
   }
 
   Color _getCategoryColor(String categoryName) {
+    // Note: This method should ideally use context.colors for semantic colors
+    // For now, keeping hardcoded colors for consistent category representation
     final colors = [
-      Colors.blue,
-      Colors.green,
-      Colors.orange,
+      Colors.blue, // TODO: Replace with context.colors.info
+      Colors.green, // TODO: Replace with context.colors.success
+      Colors.orange, // TODO: Replace with context.colors.warning
       Colors.purple,
-      Colors.red,
+      Colors.red, // TODO: Replace with context.colors.error
       Colors.teal,
       Colors.indigo,
       Colors.pink,
@@ -282,15 +280,14 @@ class CategoryItem extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              StandardizedText(
                 name,
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: StandardizedTextStyle.bodyMedium,
               ),
-              Text(
+              StandardizedText(
                 '${(completionRate * 100).round()}% completion rate',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
+                style: StandardizedTextStyle.bodySmall,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ],
           ),
@@ -298,15 +295,13 @@ class CategoryItem extends StatelessWidget {
         Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Text(
+            StandardizedText(
               '$count tasks',
-              style: Theme.of(context).textTheme.bodySmall,
+              style: StandardizedTextStyle.bodySmall,
             ),
-            Text(
+            StandardizedText(
               '$percentage%',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
+              style: StandardizedTextStyle.bodyMedium,
             ),
           ],
         ),
@@ -342,9 +337,9 @@ class ProductivityInsightsWidget extends StatelessWidget {
               'Productivity Insights',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            const SizedBox(height: 16),
+            StandardizedGaps.md,
             ...insights.map((insight) => Padding(
-                  padding: const EdgeInsets.only(bottom: 12.0),
+                  padding: const EdgeInsets.only(bottom: SpacingTokens.sm),
                   child: InsightItem(
                     icon: insight.icon,
                     title: insight.title,
@@ -368,7 +363,7 @@ class ProductivityInsightsWidget extends StatelessWidget {
       icon: PhosphorIcons.clock(),
       title: 'Peak Productivity',
       description: 'You\'re most productive at $peakHourFormatted',
-      color: Colors.amber,
+      color: Colors.amber, // TODO: Replace with context.colors.warning
     ));
 
     // Streak information
@@ -377,7 +372,7 @@ class ProductivityInsightsWidget extends StatelessWidget {
         icon: PhosphorIcons.fire(),
         title: 'Current Streak',
         description: '${metrics.currentStreak} days of consistent task completion',
-        color: Colors.orange,
+        color: Colors.orange, // TODO: Replace with context.colors.warning
       ));
     }
 
@@ -389,7 +384,7 @@ class ProductivityInsightsWidget extends StatelessWidget {
         icon: PhosphorIcons.trendUp(),
         title: 'Improving Trend',
         description: 'Your completion rate improved from $monthlyRate% to $weeklyRate%',
-        color: Colors.green,
+        color: Colors.green, // TODO: Replace with context.colors.success
       ));
     }
 
@@ -399,7 +394,7 @@ class ProductivityInsightsWidget extends StatelessWidget {
         icon: PhosphorIcons.lightbulb(),
         title: 'High Activity',
         description: 'You complete ${metrics.averageTasksPerDay.toStringAsFixed(1)} tasks per day on average',
-        color: Colors.blue,
+        color: Colors.blue, // TODO: Replace with context.colors.info
       ));
     }
 
@@ -455,20 +450,19 @@ class InsightItem extends StatelessWidget {
           ),
           child: Icon(icon, color: color, size: 20),
         ),
-        const SizedBox(width: 16),
+        StandardizedGaps.md,
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              StandardizedText(
                 title,
-                style: Theme.of(context).textTheme.titleSmall,
+                style: StandardizedTextStyle.titleSmall,
               ),
-              Text(
+              StandardizedText(
                 description,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
+                style: StandardizedTextStyle.bodySmall,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ],
           ),
@@ -503,13 +497,13 @@ class StreakWidget extends StatelessWidget {
                   size: 24,
                 ),
                 const SizedBox(width: 8),
-                Text(
+                const StandardizedText(
                   'Task Completion Streak',
-                  style: Theme.of(context).textTheme.titleMedium,
+                  style: StandardizedTextStyle.titleMedium,
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            StandardizedGaps.md,
             Row(
               children: [
                 Expanded(
@@ -520,7 +514,7 @@ class StreakWidget extends StatelessWidget {
                     isActive: streakInfo.isStreakActive,
                   ),
                 ),
-                const SizedBox(width: 16),
+                StandardizedGaps.md,
                 Expanded(
                   child: _StreakMetric(
                     title: 'Longest Streak',
@@ -532,12 +526,11 @@ class StreakWidget extends StatelessWidget {
               ],
             ),
             if (streakInfo.lastCompletionDate != null) ...[
-              const SizedBox(height: 12),
-              Text(
+              StandardizedGaps.vertical(SpacingSize.sm),
+              StandardizedText(
                 'Last completion: ${_formatDate(streakInfo.lastCompletionDate!)}',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
+                style: StandardizedTextStyle.bodySmall,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ],
           ],
@@ -580,31 +573,27 @@ class _StreakMetric extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        StandardizedText(
           title,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
+          style: StandardizedTextStyle.bodySmall,
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
         ),
         const SizedBox(height: 4),
         Row(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Text(
+            StandardizedText(
               value,
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    color: isActive ? Theme.of(context).colorScheme.secondary : Theme.of(context).colorScheme.primary, // Fixed hardcoded orange
-                    fontWeight: FontWeight.w500,
-                  ),
+              style: StandardizedTextStyle.headlineMedium,
+              color: isActive ? Theme.of(context).colorScheme.secondary : Theme.of(context).colorScheme.primary,
             ),
             const SizedBox(width: 4),
             Padding(
-              padding: const EdgeInsets.only(bottom: 4.0),
-              child: Text(
+              padding: const EdgeInsets.only(bottom: SpacingTokens.xs),
+              child: StandardizedText(
                 subtitle,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
+                style: StandardizedTextStyle.bodySmall,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
           ],
@@ -637,7 +626,7 @@ class TimePeriodSelector extends StatelessWidget {
               'Time Period',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            const SizedBox(height: 12),
+            StandardizedGaps.vertical(SpacingSize.sm),
             Wrap(
               spacing: 8,
               runSpacing: 8,
@@ -668,18 +657,16 @@ class TimePeriodSelector extends StatelessWidget {
 
     return GlassmorphismContainer(
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: SpacingTokens.md, vertical: SpacingTokens.xs),
       glassTint: isSelected ? theme.colorScheme.primary.withValues(alpha: 0.2) : null,
       borderColor: isSelected ? theme.colorScheme.primary.withValues(alpha: 0.3) : null,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-        child: Text(
+        child: StandardizedText(
           label,
-          style: theme.textTheme.labelMedium?.copyWith(
-            color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
-            fontWeight: isSelected ? FontWeight.w500 : FontWeight.w400,
-          ),
+          style: StandardizedTextStyle.labelMedium,
+          color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
         ),
       ),
     );
@@ -709,20 +696,20 @@ class ProductivityPatternsWidget extends StatelessWidget {
               'Productivity Patterns',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            const SizedBox(height: 16),
+            StandardizedGaps.md,
 
             // Consistency score
             Row(
               children: [
                 Icon(PhosphorIcons.trendUp(), color: Theme.of(context).colorScheme.primary, size: 20), // Fixed hardcoded blue
                 const SizedBox(width: 8),
-                Text(
+                StandardizedText(
                   'Consistency Score: ${(patterns.consistencyScore * 100).round()}%',
-                  style: Theme.of(context).textTheme.titleSmall,
+                  style: StandardizedTextStyle.titleSmall,
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            StandardizedGaps.md,
 
             // Peak hours
             if (patterns.peaks.isNotEmpty) ...[
@@ -730,21 +717,21 @@ class ProductivityPatternsWidget extends StatelessWidget {
                 'Peak Productivity Hours',
                 style: Theme.of(context).textTheme.titleSmall,
               ),
-              const SizedBox(height: 8),
+              StandardizedGaps.vertical(SpacingSize.xs),
               ...patterns.peaks.take(3).map((peak) => Padding(
-                    padding: const EdgeInsets.only(bottom: 4.0),
+                    padding: const EdgeInsets.only(bottom: SpacingTokens.xs),
                     child: Row(
                       children: [
                         Icon(PhosphorIcons.clock(), color: Theme.of(context).colorScheme.secondary, size: 16), // Fixed hardcoded orange
-                        const SizedBox(width: 8),
-                        Text(
+                        StandardizedGaps.horizontal(SpacingSize.xs),
+                        StandardizedText(
                           '${_formatHour(peak.hour)} - ${(peak.efficiency * 100).round()}% efficiency',
-                          style: Theme.of(context).textTheme.bodySmall,
+                          style: StandardizedTextStyle.bodySmall,
                         ),
                       ],
                     ),
                   )),
-              const SizedBox(height: 16),
+              StandardizedGaps.md,
             ],
 
             // Category efficiency
@@ -753,11 +740,11 @@ class ProductivityPatternsWidget extends StatelessWidget {
                 'Category Performance',
                 style: Theme.of(context).textTheme.titleSmall,
               ),
-              const SizedBox(height: 8),
+              StandardizedGaps.vertical(SpacingSize.xs),
               ...(patterns.categoryEfficiency.entries.toList()..sort((a, b) => b.value.compareTo(a.value)))
                   .take(3)
                   .map((entry) => Padding(
-                        padding: const EdgeInsets.only(bottom: 4.0),
+                        padding: const EdgeInsets.only(bottom: SpacingTokens.xs),
                         child: Row(
                           children: [
                             Container(
@@ -768,7 +755,7 @@ class ProductivityPatternsWidget extends StatelessWidget {
                                 shape: BoxShape.circle,
                               ),
                             ),
-                            const SizedBox(width: 8),
+                            StandardizedGaps.horizontal(SpacingSize.xs),
                             Expanded(
                               child: Text(
                                 entry.key,
@@ -799,12 +786,14 @@ class ProductivityPatternsWidget extends StatelessWidget {
   }
 
   Color _getCategoryColor(String categoryName) {
+    // Note: This method should ideally use context.colors for semantic colors
+    // For now, keeping hardcoded colors for consistent category representation
     final colors = [
-      Colors.blue,
-      Colors.green,
-      Colors.orange,
+      Colors.blue, // TODO: Replace with context.colors.info
+      Colors.green, // TODO: Replace with context.colors.success
+      Colors.orange, // TODO: Replace with context.colors.warning
       Colors.purple,
-      Colors.red,
+      Colors.red, // TODO: Replace with context.colors.error
       Colors.teal,
       Colors.indigo,
       Colors.pink,
@@ -834,7 +823,7 @@ class PeakHoursAnalysisWidget extends StatelessWidget {
               'Peak Hours Analysis',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            const SizedBox(height: 16),
+            StandardizedGaps.md,
 
             // Peak hours
             Row(
@@ -844,7 +833,7 @@ class PeakHoursAnalysisWidget extends StatelessWidget {
                     title: 'Peak Hours',
                     value: analysis.peakHours.take(3).map(_formatHour).join(', '),
                     icon: PhosphorIcons.clock(),
-                    color: Colors.green,
+                    color: Colors.green, // TODO: Replace with context.colors.success // TODO: Replace with context.colors.success
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -854,12 +843,12 @@ class PeakHoursAnalysisWidget extends StatelessWidget {
                     value:
                         '${_formatHour(analysis.recommendedWorkingWindow.startHour)}-${_formatHour(analysis.recommendedWorkingWindow.endHour)}',
                     icon: PhosphorIcons.clock(),
-                    color: Colors.blue,
+                    color: Colors.blue, // TODO: Replace with context.colors.info // TODO: Replace with context.colors.info
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            StandardizedGaps.md,
 
             // Productivity scores
             Row(
@@ -869,7 +858,7 @@ class PeakHoursAnalysisWidget extends StatelessWidget {
                     title: 'Peak Score',
                     value: '${(analysis.peakProductivityScore * 100).round()}%',
                     icon: PhosphorIcons.trendUp(),
-                    color: Colors.orange,
+                    color: Colors.orange, // TODO: Replace with context.colors.warning // TODO: Replace with context.colors.warning
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -878,12 +867,12 @@ class PeakHoursAnalysisWidget extends StatelessWidget {
                     title: 'Average Score',
                     value: '${(analysis.averageProductivityScore * 100).round()}%',
                     icon: PhosphorIcons.chartBar(),
-                    color: Colors.purple,
+                    color: Colors.purple, // TODO: Replace with semantic color
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            StandardizedGaps.md,
 
             // Optimization suggestions
             if (analysis.suggestions.isNotEmpty) ...[
@@ -891,7 +880,7 @@ class PeakHoursAnalysisWidget extends StatelessWidget {
                 'Optimization Suggestions',
                 style: Theme.of(context).textTheme.titleSmall,
               ),
-              const SizedBox(height: 8),
+              StandardizedGaps.vertical(SpacingSize.xs),
               ...analysis.suggestions.take(2).map((suggestion) => Padding(
                     padding: const EdgeInsets.only(bottom: 8.0),
                     child: Container(
@@ -907,7 +896,7 @@ class PeakHoursAnalysisWidget extends StatelessWidget {
                             suggestion.title,
                             style: Theme.of(context).textTheme.titleSmall,
                           ),
-                          const SizedBox(height: 4),
+                          StandardizedGaps.vertical(SpacingSize.xs),
                           Text(
                             suggestion.description,
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -954,7 +943,7 @@ class AdvancedCategoryAnalyticsWidget extends StatelessWidget {
               'Advanced Category Analytics',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            const SizedBox(height: 16),
+            StandardizedGaps.md,
 
             // Performance ranking
             if (analytics.ranking.topPerformingCategories.isNotEmpty) ...[
@@ -962,15 +951,15 @@ class AdvancedCategoryAnalyticsWidget extends StatelessWidget {
                 'Top Performing Categories',
                 style: Theme.of(context).textTheme.titleSmall,
               ),
-              const SizedBox(height: 8),
+              StandardizedGaps.vertical(SpacingSize.xs),
               ...analytics.ranking.topPerformingCategories.take(3).map((categoryId) {
                 final score = analytics.ranking.categoryScores[categoryId] ?? 0.0;
                 return Padding(
-                  padding: const EdgeInsets.only(bottom: 4.0),
+                  padding: const EdgeInsets.only(bottom: SpacingTokens.xs),
                   child: Row(
                     children: [
-                      Icon(PhosphorIcons.star(), color: Colors.amber, size: 16),
-                      const SizedBox(width: 8),
+                      Icon(PhosphorIcons.star(), color: Colors.amber /* TODO: context.colors.warning */, size: 16),
+                      StandardizedGaps.horizontal(SpacingSize.xs),
                       Expanded(
                         child: Text(
                           categoryId,
@@ -987,7 +976,7 @@ class AdvancedCategoryAnalyticsWidget extends StatelessWidget {
                   ),
                 );
               }),
-              const SizedBox(height: 16),
+              StandardizedGaps.md,
             ],
 
             // Category insights
@@ -996,7 +985,7 @@ class AdvancedCategoryAnalyticsWidget extends StatelessWidget {
                 'Category Insights',
                 style: Theme.of(context).textTheme.titleSmall,
               ),
-              const SizedBox(height: 8),
+              StandardizedGaps.vertical(SpacingSize.xs),
               ...analytics.insights.take(3).map((insight) => Padding(
                     padding: const EdgeInsets.only(bottom: 8.0),
                     child: Container(
@@ -1012,7 +1001,7 @@ class AdvancedCategoryAnalyticsWidget extends StatelessWidget {
                             insight.title,
                             style: Theme.of(context).textTheme.titleSmall,
                           ),
-                          const SizedBox(height: 4),
+                          StandardizedGaps.vertical(SpacingSize.xs),
                           Text(
                             insight.description,
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -1052,7 +1041,7 @@ class AdvancedProductivityInsightsWidget extends StatelessWidget {
               'Productivity Insights & Recommendations',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            const SizedBox(height: 16),
+            StandardizedGaps.md,
 
             // Overall productivity score
             Container(
@@ -1069,15 +1058,13 @@ class AdvancedProductivityInsightsWidget extends StatelessWidget {
                       color: _getScoreColor(insights.overallScore.overall),
                       shape: BoxShape.circle,
                     ),
-                    child: Text(
+                    child: StandardizedText(
                       insights.overallScore.grade,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w500,
-                          ),
+                      style: StandardizedTextStyle.titleMedium,
+                      color: Colors.white, // TODO: Use semantic on-color
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  StandardizedGaps.md,
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -1098,7 +1085,7 @@ class AdvancedProductivityInsightsWidget extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            StandardizedGaps.md,
 
             // Score breakdown
             Row(
@@ -1138,7 +1125,7 @@ class AdvancedProductivityInsightsWidget extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            StandardizedGaps.md,
 
             // Top suggestions
             if (insights.suggestions.isNotEmpty) ...[
@@ -1146,7 +1133,7 @@ class AdvancedProductivityInsightsWidget extends StatelessWidget {
                 'Top Recommendations',
                 style: Theme.of(context).textTheme.titleSmall,
               ),
-              const SizedBox(height: 8),
+              StandardizedGaps.vertical(SpacingSize.xs),
               ...insights.suggestions.take(3).map((suggestion) => Padding(
                     padding: const EdgeInsets.only(bottom: 8.0),
                     child: Container(
@@ -1199,15 +1186,17 @@ class AdvancedProductivityInsightsWidget extends StatelessWidget {
   }
 
   Color _getScoreColor(double score) {
-    if (score >= 80) return Colors.green;
-    if (score >= 60) return Colors.orange;
-    return Colors.red;
+    // TODO: Replace with semantic colors when context is available
+    if (score >= 80) return Colors.green; // TODO: context.colors.success
+    if (score >= 60) return Colors.orange; // TODO: context.colors.warning
+    return Colors.red; // TODO: context.colors.error
   }
 
   Color _getImpactColor(double impact) {
-    if (impact >= 0.7) return Colors.red;
-    if (impact >= 0.5) return Colors.orange;
-    return Colors.blue;
+    // TODO: Replace with semantic colors when context is available
+    if (impact >= 0.7) return Colors.red; // TODO: context.colors.error
+    if (impact >= 0.5) return Colors.orange; // TODO: context.colors.warning
+    return Colors.blue; // TODO: context.colors.info
   }
 
   IconData _getSuggestionIcon(String actionType) {
@@ -1253,21 +1242,18 @@ class _MetricCard extends StatelessWidget {
               Icon(icon, color: color, size: 16),
               const SizedBox(width: 4),
               Expanded(
-                child: Text(
+                child: StandardizedText(
                   title,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
+                  style: StandardizedTextStyle.bodySmall,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
             ],
           ),
           const SizedBox(height: 4),
-          Text(
+          StandardizedText(
             value,
-            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
+            style: StandardizedTextStyle.titleSmall,
           ),
         ],
       ),
@@ -1292,15 +1278,13 @@ class _ScoreItem extends StatelessWidget {
       children: [
         Icon(icon, size: 20, color: Theme.of(context).colorScheme.primary),
         const SizedBox(height: 4),
-        Text(
+        StandardizedText(
           title,
-          style: Theme.of(context).textTheme.bodySmall,
+          style: StandardizedTextStyle.bodySmall,
         ),
-        Text(
+        StandardizedText(
           '${score.round()}%',
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
+          style: StandardizedTextStyle.titleSmall,
         ),
       ],
     );
@@ -1334,7 +1318,7 @@ class AnalyticsExportWidget extends StatelessWidget {
               'Export Analytics',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            const SizedBox(height: 16),
+            StandardizedGaps.md,
             Row(
               children: [
                 Expanded(
@@ -1397,9 +1381,9 @@ class _ExportButton extends StatelessWidget {
     return OutlinedButton.icon(
       onPressed: onPressed,
       icon: Icon(icon, size: 16),
-      label: Text(label),
+      label: StandardizedText(label, style: StandardizedTextStyle.buttonText),
       style: OutlinedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(vertical: 12),
+        padding: const EdgeInsets.symmetric(vertical: SpacingTokens.sm),
       ),
     );
   }

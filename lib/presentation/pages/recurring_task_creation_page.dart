@@ -7,6 +7,7 @@ import '../widgets/recurrence_pattern_picker.dart';
 import '../widgets/project_selector.dart';
 import '../../core/theme/typography_constants.dart';
 import '../providers/recurring_task_providers.dart';
+import '../widgets/standardized_text.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Full page for creating recurring tasks
@@ -133,7 +134,7 @@ class _RecurringTaskCreationPageState extends ConsumerState<RecurringTaskCreatio
         children: [
           Text(
             'Task Details',
-            style: theme.textTheme.titleLarge?.copyWith(
+            style: StandardizedTextStyle.titleLarge.toTextStyle(context).copyWith(
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -181,7 +182,7 @@ class _RecurringTaskCreationPageState extends ConsumerState<RecurringTaskCreatio
         children: [
           Text(
             'Recurrence Pattern',
-            style: theme.textTheme.titleLarge?.copyWith(
+            style: StandardizedTextStyle.titleLarge.toTextStyle(context).copyWith(
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -212,7 +213,7 @@ class _RecurringTaskCreationPageState extends ConsumerState<RecurringTaskCreatio
         children: [
           Text(
             'First Due Date',
-            style: theme.textTheme.titleLarge?.copyWith(
+            style: StandardizedTextStyle.titleLarge.toTextStyle(context).copyWith(
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -255,7 +256,7 @@ class _RecurringTaskCreationPageState extends ConsumerState<RecurringTaskCreatio
         children: [
           Text(
             'Project Assignment',
-            style: theme.textTheme.titleLarge?.copyWith(
+            style: StandardizedTextStyle.titleLarge.toTextStyle(context).copyWith(
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -283,7 +284,7 @@ class _RecurringTaskCreationPageState extends ConsumerState<RecurringTaskCreatio
         children: [
           Text(
             'Priority Level',
-            style: theme.textTheme.titleLarge?.copyWith(
+            style: StandardizedTextStyle.titleLarge.toTextStyle(context).copyWith(
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -306,7 +307,7 @@ class _RecurringTaskCreationPageState extends ConsumerState<RecurringTaskCreatio
                 backgroundColor: color.withValues(alpha: 0.1),
                 selectedColor: color.withValues(alpha: 0.2),
                 checkmarkColor: color,
-                labelStyle: TextStyle(
+                labelStyle: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
                   color: isSelected ? color : theme.colorScheme.onSurface,
                   fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
                 ),

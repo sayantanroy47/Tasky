@@ -7,7 +7,7 @@ import 'package:task_tracker_app/domain/entities/task_model.dart';
 import 'package:task_tracker_app/domain/entities/project.dart';
 import 'package:task_tracker_app/domain/models/enums.dart';
 import 'package:task_tracker_app/services/database/database.dart';
-import 'package:task_tracker_app/services/analytics_service.dart';
+import 'package:task_tracker_app/services/analytics/analytics_service.dart';
 
 import '../mocks/test_mocks.mocks.dart';
 

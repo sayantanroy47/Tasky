@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
 import '../../domain/repositories/task_repository.dart';
+import '../project_service.dart';
 import 'recurring_task_service.dart';
 import '../dependency_service.dart';
 import '../notification/notification_service.dart';
@@ -14,6 +15,7 @@ class EnhancedTaskOperations {
   final RecurringTaskService _recurringService;
   final DependencyService _dependencyService;
   final NotificationService? _notificationService;
+  final ProjectService? _projectService;
   final List<TaskOperation> _operationHistory = [];
   static const int _maxHistorySize = 50;
 
@@ -22,6 +24,7 @@ class EnhancedTaskOperations {
     this._recurringService,
     this._dependencyService, [
     this._notificationService,
+    this._projectService,
   ]);
 
   /// Creates a new task with comprehensive validation and feedback
@@ -43,6 +46,17 @@ class EnhancedTaskOperations {
 
       // Create task
       await _repository.createTask(task);
+
+      // Add task to project if projectId is specified
+      if (task.projectId != null && _projectService != null) {
+        try {
+          await _projectService.addTaskToProject(task.id, task.projectId!);
+        } catch (e) {
+          // If adding to project fails, we should still keep the task but log the error
+          // This prevents the entire operation from failing
+          debugPrint('Warning: Failed to add task to project ${task.projectId}: $e');
+        }
+      }
 
       // Add to history for undo
       _addToHistory(TaskOperation(
@@ -117,6 +131,30 @@ class EnhancedTaskOperations {
 
       // Update task
       await _repository.updateTask(updatedTask);
+
+      // Handle project changes if projectService is available
+      if (_projectService != null && original != null) {
+        final oldProjectId = original.projectId;
+        final newProjectId = updatedTask.projectId;
+        
+        // If project changed
+        if (oldProjectId != newProjectId) {
+          try {
+            // Remove from old project if it existed
+            if (oldProjectId != null) {
+              await _projectService.removeTaskFromProject(updatedTask.id);
+            }
+            
+            // Add to new project if it exists
+            if (newProjectId != null) {
+              await _projectService.addTaskToProject(updatedTask.id, newProjectId);
+            }
+          } catch (e) {
+            // Log warning but don't fail the entire operation
+            debugPrint('Warning: Failed to update project associations for task ${updatedTask.id}: $e');
+          }
+        }
+      }
 
       // Add to history for undo
       if (original != null) {
@@ -300,6 +338,16 @@ class EnhancedTaskOperations {
           error: 'Cannot delete task: ${dependentTasks.length} other tasks depend on it',
           originalTask: task,
         );
+      }
+
+      // Remove task from project if it belongs to one
+      if (task.projectId != null && _projectService != null) {
+        try {
+          await _projectService.removeTaskFromProject(task.id);
+        } catch (e) {
+          // Log warning but continue with deletion
+          debugPrint('Warning: Failed to remove task from project ${task.projectId}: $e');
+        }
       }
 
       // Delete task

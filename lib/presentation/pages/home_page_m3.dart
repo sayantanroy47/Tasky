@@ -22,8 +22,13 @@ import '../widgets/enhanced_glass_button.dart';
 import '../widgets/glassmorphism_container.dart';
 import '../widgets/simple_theme_toggle.dart';
 import '../widgets/standardized_app_bar.dart';
+import '../widgets/standardized_card.dart';
+import '../widgets/standardized_colors.dart';
 import '../widgets/standardized_icons.dart' show StandardizedIcon, StandardizedIconSize, StandardizedIconStyle;
 import '../widgets/standardized_text.dart';
+import '../widgets/standardized_border_radius.dart';
+import '../widgets/standardized_spacing.dart';
+import '../widgets/standardized_error_states.dart';
 
 /// Futuristic Material 3 Home Page
 class HomePage extends ConsumerStatefulWidget {
@@ -140,7 +145,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           slivers: [
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.all(SpacingTokens.md),
+                padding: StandardizedSpacing.padding(SpacingSize.md),
                 child: Column(
                   children: [
                     // Sophisticated welcome - condensed for task focus
@@ -157,7 +162,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
             // Enhanced bottom padding to prevent FAB overlap and ensure last task visibility
             const SliverToBoxAdapter(
-              child: SizedBox(height: 140), // Increased from 120 to accommodate larger FAB
+              child: SizedBox(height: 140), // Increased from 120 to accommodate larger FAB - custom size for FAB clearance
             ),
           ],
         ),
@@ -181,12 +186,12 @@ class _HomePageState extends ConsumerState<HomePage> {
       child: GlassmorphismContainer(
         level: GlassLevel.floating,
         borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
-        padding: const EdgeInsets.all(SpacingTokens.lg),
+        padding: StandardizedSpacing.padding(SpacingSize.lg),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             StandardizedTextVariants.pageHeader('Search Tasks'),
-            const SizedBox(height: 16),
+            StandardizedGaps.md,
             GlassmorphismContainer(
               level: GlassLevel.interactive,
               borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
@@ -200,12 +205,12 @@ class _HomePageState extends ConsumerState<HomePage> {
                     borderSide: BorderSide.none,
                   ),
                   filled: true,
-                  fillColor: Colors.transparent,
+                  fillColor: Colors.transparent, // TODO: Use context.colors.backgroundTransparent
                 ),
                 onChanged: (value) => searchQuery = value,
               ),
             ),
-            const SizedBox(height: 16),
+            StandardizedGaps.md,
             ConstrainedBox(
               constraints: const BoxConstraints(
                 minHeight: 150,
@@ -230,7 +235,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
                         if (filteredTasks.isEmpty) {
                           return Center(
-                            child: Text('No tasks found for "$searchQuery"'),
+                            child: StandardizedText('No tasks found for "$searchQuery"', style: StandardizedTextStyle.bodyMedium),
                           );
                         }
 
@@ -239,8 +244,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                           itemBuilder: (context, index) {
                             final task = filteredTasks[index];
                             return ListTile(
-                              title: Text(task.title),
-                              subtitle: task.description?.isNotEmpty == true ? Text(task.description!) : null,
+                              title: StandardizedText(task.title, style: StandardizedTextStyle.bodyMedium),
+                              subtitle: task.description?.isNotEmpty == true ? StandardizedText(task.description!, style: StandardizedTextStyle.bodySmall) : null,
                               onTap: () {
                                 Navigator.of(context).pop();
                                 AppRouter.navigateToTaskDetail(context, task.id);
@@ -265,21 +270,21 @@ class _HomePageState extends ConsumerState<HomePage> {
                                     value: 'edit',
                                     child: ListTile(
                                       leading: Icon(PhosphorIcons.pencil()),
-                                      title: const Text('Edit'),
+                                      title: const StandardizedText('Edit', style: StandardizedTextStyle.bodyMedium),
                                     ),
                                   ),
                                   PopupMenuItem(
                                     value: 'share',
                                     child: ListTile(
                                       leading: Icon(PhosphorIcons.share()),
-                                      title: const Text('Share'),
+                                      title: const StandardizedText('Share', style: StandardizedTextStyle.bodyMedium),
                                     ),
                                   ),
                                   PopupMenuItem(
                                     value: 'delete',
                                     child: ListTile(
                                       leading: Icon(PhosphorIcons.trash()),
-                                      title: const Text('Delete'),
+                                      title: const StandardizedText('Delete', style: StandardizedTextStyle.bodyMedium),
                                     ),
                                   ),
                                 ],
@@ -288,8 +293,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                           },
                         );
                       },
-                      loading: () => const Center(child: CircularProgressIndicator()),
-                      error: (error, _) => Center(child: Text('Error: $error')),
+                      loading: () => Center(child: StandardizedErrorStates.loading()),
+                      error: (error, _) => Center(child: StandardizedText('Error: $error', style: StandardizedTextStyle.bodyMedium)),
                     );
                   },
                 ),
@@ -305,11 +310,11 @@ class _HomePageState extends ConsumerState<HomePage> {
     showDialog(
       context: context,
       builder: (context) => Dialog(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.transparent, // TODO: Use context.colors.backgroundTransparent
         child: GlassmorphismContainer(
           level: GlassLevel.floating,
           borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge), // 16.0 - Fixed border radius hierarchy
-          padding: const EdgeInsets.all(SpacingTokens.lg),
+          padding: StandardizedSpacing.padding(SpacingSize.lg),
           child: ConstrainedBox(
             constraints: const BoxConstraints(
               maxWidth: double.maxFinite,
@@ -319,13 +324,11 @@ class _HomePageState extends ConsumerState<HomePage> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const StandardizedText(
                   'Task Insights',
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        fontWeight: TypographyConstants.medium,
-                      ),
+                  style: StandardizedTextStyle.headlineSmall,
                 ),
-                const SizedBox(height: 16),
+                StandardizedGaps.md,
                 Expanded(
                   child: Consumer(
                     builder: (context, ref, child) {
@@ -357,18 +360,18 @@ class _HomePageState extends ConsumerState<HomePage> {
                             ),
                           );
                         },
-                        loading: () => const Center(child: CircularProgressIndicator()),
-                        error: (error, _) => Center(child: Text('Error: $error')),
+                        loading: () => Center(child: StandardizedErrorStates.loading()),
+                        error: (error, _) => Center(child: StandardizedText('Error: $error', style: StandardizedTextStyle.bodyMedium)),
                       );
                     },
                   ),
                 ),
-                const SizedBox(height: 16),
+                StandardizedGaps.md,
                 Align(
                   alignment: Alignment.centerRight,
                   child: EnhancedGlassButton.secondary(
                     onPressed: () => Navigator.of(context).pop(),
-                    child: const Text('Close'),
+                    child: const StandardizedText('Close', style: StandardizedTextStyle.buttonText),
                   ),
                 ),
               ],
@@ -381,13 +384,13 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   Widget _buildInsightRow(String label, String value, IconData icon, {Color? color}) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: SpacingTokens.xs),
       child: Row(
         children: [
           Icon(icon, color: color),
-          const SizedBox(width: 12),
-          Expanded(child: Text(label)),
-          Text(value, style: TextStyle(fontWeight: TypographyConstants.medium, color: color)),
+          StandardizedGaps.horizontal(SpacingSize.sm),
+          Expanded(child: StandardizedText(label, style: StandardizedTextStyle.bodyMedium)),
+          StandardizedText(value, style: StandardizedTextStyle.bodyMedium, color: color),
         ],
       ),
     );
@@ -400,7 +403,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
       ),
       builder: (context) => Container(
-        padding: const EdgeInsets.symmetric(vertical: 16),
+        padding: const EdgeInsets.symmetric(vertical: SpacingTokens.md),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -412,22 +415,20 @@ class _HomePageState extends ConsumerState<HomePage> {
                 height: 4,
               ),
             ),
-            const SizedBox(height: 16),
+            StandardizedGaps.md,
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
+              padding: const EdgeInsets.symmetric(horizontal: SpacingTokens.md),
+              child: StandardizedText(
                 task.title,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: TypographyConstants.medium,
-                    ),
+                style: StandardizedTextStyle.titleMedium,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            const SizedBox(height: 16),
+            StandardizedGaps.md,
             ListTile(
               leading: Icon(PhosphorIcons.pencil()),
-              title: const Text('Edit Task'),
+              title: const StandardizedText('Edit Task', style: StandardizedTextStyle.bodyMedium),
               onTap: () {
                 Navigator.of(context).pop();
                 _editTask(task);
@@ -435,7 +436,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             ),
             ListTile(
               leading: Icon(PhosphorIcons.share()),
-              title: const Text('Share Task'),
+              title: const StandardizedText('Share Task', style: StandardizedTextStyle.bodyMedium),
               onTap: () {
                 Navigator.of(context).pop();
                 _shareTask(task);
@@ -444,7 +445,11 @@ class _HomePageState extends ConsumerState<HomePage> {
             const Divider(),
             ListTile(
               leading: Icon(PhosphorIcons.trash(), color: Theme.of(context).colorScheme.error),
-              title: Text('Delete Task', style: TextStyle(color: Theme.of(context).colorScheme.error)),
+              title: StandardizedText(
+                'Delete Task',
+                style: StandardizedTextStyle.bodyMedium,
+                color: Theme.of(context).colorScheme.error,
+              ),
               onTap: () {
                 Navigator.of(context).pop();
                 _deleteTask(task);
@@ -458,43 +463,39 @@ class _HomePageState extends ConsumerState<HomePage> {
 
   /// Personalized welcome section with elegant minimal design
   Widget _buildWelcomeSection(BuildContext context, ThemeData theme) {
-    return GlassmorphismContainer(
-      level: GlassLevel.whisper, // Ultra-subtle background for elegance
-      borderRadius: BorderRadius.circular(BorderRadiusTokens.card),
-      padding: const EdgeInsets.all(SpacingTokens.elementPadding),
+    return Container(
+      padding: const EdgeInsets.all(16),
       child: Builder(builder: (context) {
         final welcomeData = _getWelcomeData();
         final welcomeMessage = welcomeData['welcomeMessage'] as WelcomeMessage;
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        return Row(
           children: [
-            // Personalized welcome greeting
-            Row(
-              children: [
-                if (welcomeMessage.icon != null) ...[
-                  Icon(
-                    welcomeMessage.icon!,
-                    size: 24,
-                    color: theme.colorScheme.primary,
-                  ),
-                  const SizedBox(width: 12),
-                ],
-                Expanded(
-                  child: StandardizedText(
-                    welcomeMessage.greeting,
-                    style: StandardizedTextStyle.headlineSmall,
-                    color: theme.colorScheme.onSurface,
-                  ),
-                ),
-              ],
+            // Clean icon without borders
+            if (welcomeMessage.icon != null) ...[
+              Icon(
+                welcomeMessage.icon!,
+                size: 28,
+                color: theme.colorScheme.primary,
+              ),
+              StandardizedGaps.horizontal(SpacingSize.md),
+            ],
+            Expanded(
+              child: StandardizedText(
+                welcomeMessage.greeting,
+                style: StandardizedTextStyle.headlineSmall,
+                color: theme.colorScheme.onSurface,
+              ),
             ),
-
-            // No secondary text as requested by user
           ],
         );
       }),
     );
+  }
+
+  /// Show welcome details
+  void _showWelcomeDetails(BuildContext context) {
+    // Welcome section interaction - currently no action needed
   }
 
   /// Builds the main task overview section with quick stats and insights
@@ -535,7 +536,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             GlassmorphismContainer(
               level: GlassLevel.content,
               borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-              padding: const EdgeInsets.all(SpacingTokens.md),
+              padding: StandardizedSpacing.padding(SpacingSize.md),
               child: Row(
                 children: [
                   _buildQuickStat(
@@ -564,12 +565,12 @@ class _HomePageState extends ConsumerState<HomePage> {
                     icon: PhosphorIcons.checkCircle(),
                     label: 'Done',
                     count: completedToday,
-                    color: Colors.green,
+                    color: Colors.green, // TODO: Replace with context.colors.success
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 12),
+            StandardizedGaps.vertical(SpacingSize.sm),
             // Task Insight
             _buildTaskInsight(theme, pendingCount, urgentCount, highCount),
           ],
@@ -584,8 +585,8 @@ class _HomePageState extends ConsumerState<HomePage> {
         children: [
           GlassmorphismContainer(
             level: GlassLevel.content,
-            borderRadius: BorderRadius.circular(100), // Make it circular
-            padding: const EdgeInsets.all(SpacingTokens.lg),
+            borderRadius: StandardizedBorderRadius.fab, // Make it circular
+            padding: StandardizedSpacing.padding(SpacingSize.lg),
             glassTint: theme.colorScheme.primaryContainer.withValues(alpha: 0.8),
             child: StandardizedIcon(
               PhosphorIcons.rocket(),
@@ -593,7 +594,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               color: theme.colorScheme.onPrimaryContainer,
             ),
           ),
-          const SizedBox(height: 16),
+          StandardizedGaps.md,
           const StandardizedText(
             'Ready to get started?',
             style: StandardizedTextStyle.titleMedium,
@@ -601,7 +602,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 8),
+          StandardizedGaps.vertical(SpacingSize.xs),
           StandardizedText(
             'Create your first task',
             style: StandardizedTextStyle.bodySmall,
@@ -622,7 +623,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         (index) => GlassmorphismContainer(
           level: GlassLevel.background,
           height: 120,
-          margin: const EdgeInsets.only(bottom: 8),
+          margin: const EdgeInsets.only(bottom: SpacingTokens.xs),
           borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
           glassTint: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
           child: AnimatedContainer(
@@ -631,9 +632,9 @@ class _HomePageState extends ConsumerState<HomePage> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  Colors.transparent,
+                  Colors.transparent, // TODO: Use context.colors.backgroundTransparent
                   theme.colorScheme.primary.withValues(alpha: 0.1),
-                  Colors.transparent,
+                  Colors.transparent, // TODO: Use context.colors.backgroundTransparent
                 ],
                 stops: const [0.0, 0.5, 1.0],
                 begin: Alignment.centerLeft,
@@ -656,7 +657,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             size: StandardizedIconSize.xxxl,
             style: StandardizedIconStyle.error,
           ),
-          const SizedBox(height: 16),
+          StandardizedGaps.md,
           StandardizedText(
             'Something went wrong',
             style: StandardizedTextStyle.titleSmall,
@@ -665,7 +666,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 8),
+          StandardizedGaps.vertical(SpacingSize.xs),
           StandardizedText(
             'Unable to load tasks',
             style: StandardizedTextStyle.bodySmall,
@@ -674,11 +675,11 @@ class _HomePageState extends ConsumerState<HomePage> {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 16),
+          StandardizedGaps.md,
           OutlinedButton.icon(
             onPressed: () => ref.refresh(tasksProvider),
             icon: Icon(PhosphorIcons.arrowClockwise()),
-            label: const Text('Retry'),
+            label: const StandardizedText('Retry', style: StandardizedTextStyle.buttonText),
           ),
         ],
       ),
@@ -695,37 +696,35 @@ class _HomePageState extends ConsumerState<HomePage> {
     showDialog(
       context: context,
       builder: (context) => Dialog(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.transparent, // TODO: Use context.colors.backgroundTransparent
         child: GlassmorphismContainer(
           level: GlassLevel.floating,
           borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge), // 16.0 - Fixed border radius hierarchy
-          padding: const EdgeInsets.all(SpacingTokens.lg),
+          padding: StandardizedSpacing.padding(SpacingSize.lg),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const StandardizedText(
                 'Delete Task',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: TypographyConstants.medium,
-                    ),
+                style: StandardizedTextStyle.headlineSmall,
               ),
-              const SizedBox(height: 16),
-              Text(
+              StandardizedGaps.md,
+              StandardizedText(
                 'Are you sure you want to delete "${task.title}"?',
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: StandardizedTextStyle.bodyMedium,
               ),
-              const SizedBox(height: 24),
+              StandardizedGaps.lg,
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   EnhancedGlassButton.secondary(
                     onPressed: () => Navigator.of(context).pop(),
-                    child: const Text('Cancel'),
+                    child: const StandardizedText('Cancel', style: StandardizedTextStyle.buttonText),
                   ),
-                  const SizedBox(width: 12),
+                  StandardizedGaps.horizontal(SpacingSize.sm),
                   EnhancedGlassButton(
                     onPressed: () async {
                       // Delete task through provider
@@ -734,19 +733,17 @@ class _HomePageState extends ConsumerState<HomePage> {
                         Navigator.of(context).pop();
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('Task "${task.title}" deleted'),
+                            content: StandardizedText('Task "${task.title}" deleted', style: StandardizedTextStyle.bodyMedium),
                             behavior: SnackBarBehavior.floating,
                           ),
                         );
                       }
                     },
                     glassTint: Theme.of(context).colorScheme.error,
-                    child: const Text(
+                    child: const StandardizedText(
                       'Delete',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: TypographyConstants.medium,
-                      ),
+                      style: StandardizedTextStyle.buttonText,
+                      color: Colors.white, // TODO: Use semantic on-color
                     ),
                   ),
                 ],
@@ -788,7 +785,7 @@ Shared from Tasky - Task Management App
           // Sophisticated tab bar with elegant styling
           Container(
             height: 56, // Increased for touch accessibility
-            padding: const EdgeInsets.all(SpacingTokens.xs), // 4px padding
+            padding: StandardizedSpacing.padding(SpacingSize.xs),
             child: TabBar(
               // Sophisticated gradient indicator for premium feel
               indicator: BoxDecoration(
@@ -808,17 +805,17 @@ Shared from Tasky - Task Management App
               // Sophisticated typography and colors
               labelColor: theme.colorScheme.primary,
               unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
-              dividerColor: Colors.transparent,
+              dividerColor: Colors.transparent, // TODO: Use context.colors.backgroundTransparent
               indicatorSize: TabBarIndicatorSize.tab,
 
               // Elegant text styling
-              labelStyle: theme.textTheme.titleMedium?.copyWith(
-                // Using theme titleMedium (16) for clarity
+              labelStyle: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
+                // Using standardized titleMedium (16) for clarity
                 fontWeight: TypographyConstants.regular, // Regular weight for sophistication
                 letterSpacing: 0.1, // Subtle letter spacing
               ),
-              unselectedLabelStyle: theme.textTheme.titleMedium?.copyWith(
-                // Using theme titleMedium (16) for consistency
+              unselectedLabelStyle: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
+                // Using standardized titleMedium (16) for consistency
                 fontWeight: TypographyConstants.light, // Light weight for unselected
                 letterSpacing: 0.1,
               ),
@@ -846,7 +843,7 @@ Shared from Tasky - Task Management App
               ],
             ),
           ),
-          const SizedBox(height: SpacingTokens.tabSpacing), // Golden ratio spacing
+          StandardizedGaps.vertical(SpacingSize.md),
 
           // Task content prioritized - increased from 65% to 75% of screen height
           SizedBox(
@@ -887,7 +884,7 @@ Shared from Tasky - Task Management App
         });
 
         return ListView.builder(
-          padding: const EdgeInsets.only(bottom: 80), // FAB clearance
+          padding: const EdgeInsets.only(bottom: 80), // TODO: Use SpacingTokens for FAB clearance
           itemCount: tasks.length,
           itemBuilder: (context, index) {
             final task = tasks[index];
@@ -922,7 +919,7 @@ Shared from Tasky - Task Management App
         });
 
         return ListView.builder(
-          padding: const EdgeInsets.only(bottom: 80), // FAB clearance
+          padding: const EdgeInsets.only(bottom: 80), // TODO: Use SpacingTokens for FAB clearance
           itemCount: tasks.length,
           itemBuilder: (context, index) {
             final task = tasks[index];
@@ -966,7 +963,7 @@ Shared from Tasky - Task Management App
         }
 
         return ListView.builder(
-          padding: const EdgeInsets.only(bottom: 80), // FAB clearance
+          padding: const EdgeInsets.only(bottom: 80), // TODO: Use SpacingTokens for FAB clearance
           itemCount: futureTasks.length,
           itemBuilder: (context, index) {
             final task = futureTasks[index];
@@ -977,6 +974,19 @@ Shared from Tasky - Task Management App
       loading: () => _buildTasksLoadingState(theme),
       error: (error, _) => _buildTasksErrorState(theme, error.toString()),
     );
+  }
+
+  /// Get appropriate tertiary card style based on task state
+  StandardizedCardStyle _getTaskCardStyle(TaskModel task, bool isOverdue) {
+    if (task.isCompleted) {
+      return StandardizedCardStyle.tertiarySuccess; // Completed tasks get success styling
+    } else if (isOverdue) {
+      return StandardizedCardStyle.tertiaryAccent; // Overdue tasks get attention-grabbing accent
+    } else if (task.priority == TaskPriority.urgent) {
+      return StandardizedCardStyle.tertiaryAccent; // High priority tasks get accent
+    } else {
+      return StandardizedCardStyle.tertiaryContainer; // Regular tasks get subtle container
+    }
   }
 
   /// Sophisticated task card with golden ratio proportions and premium aesthetics
@@ -990,19 +1000,18 @@ Shared from Tasky - Task Management App
       onMore: () => _showMoreActions(task),
     );
 
+    // Choose card style based on task state for enhanced visual hierarchy
+    final cardStyle = _getTaskCardStyle(task, isOverdue);
+
     final cardContent = SizedBox(
       height: SpacingTokens.taskCardHeight, // Golden ratio optimized height
-      child: GlassmorphismContainer(
-        level: GlassLevel.whisper, // Ultra-subtle for sophisticated task focus
-        borderRadius: BorderRadius.circular(SpacingTokens.taskCardRadius), // Sophisticated corner radius
-        padding: EdgeInsets.zero,
-        child: InkWell(
-          onTap: () => AppRouter.navigateToTaskDetail(context, task.id),
-          onLongPress: () => _showTaskContextMenu(context, task),
-          borderRadius: BorderRadius.circular(SpacingTokens.taskCardRadius),
-          child: Padding(
-            padding: const EdgeInsets.all(SpacingTokens.taskCardPadding), // Golden ratio padding
-            child: Row(
+      child: StandardizedCard(
+        style: cardStyle,
+        onTap: () => AppRouter.navigateToTaskDetail(context, task.id),
+        onLongPress: () => _showTaskContextMenu(context, task),
+        margin: EdgeInsets.zero, // No margin - handled by parent
+        padding: const EdgeInsets.all(SpacingTokens.taskCardPadding),
+        child: Row(
               children: [
                 // Sophisticated category indicator with icon and accent bar
                 Row(
@@ -1057,22 +1066,20 @@ Shared from Tasky - Task Management App
                       Row(
                         children: [
                           Expanded(
-                            child: Text(
+                            child: StandardizedText(
                               task.title,
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: TypographyConstants.medium,
-                                color: theme.colorScheme.onSurface,
-                                decoration: task.status == TaskStatus.completed ? TextDecoration.lineThrough : null,
-                                height: 1.2,
-                                letterSpacing: 0.1,
-                              ),
+                              style: StandardizedTextStyle.titleMedium,
+                              color: theme.colorScheme.onSurface,
+                              decoration: task.status == TaskStatus.completed ? TextDecoration.lineThrough : null,
+                              lineHeight: 1.2,
+                              letterSpacing: 0.1,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
                           // Sophisticated audio indicator for voice tasks
                           if (task.hasVoiceMetadata) ...[
-                            const SizedBox(width: 4),
+                            StandardizedGaps.hXs,
                             AudioIndicatorWidget(
                               task: task,
                               size: 20,
@@ -1095,17 +1102,14 @@ Shared from Tasky - Task Management App
                                   ? theme.colorScheme.error
                                   : theme.colorScheme.secondary,
                             ),
-                            const SizedBox(width: 3),
-                            Text(
+                            const SizedBox(width: 3), // Custom 3px for icon alignment
+                            StandardizedText(
                               task.priority.name.toUpperCase(),
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                // Using theme labelSmall size
-                                fontWeight: TypographyConstants.medium,
-                                color: task.priority == TaskPriority.urgent
-                                    ? theme.colorScheme.error
-                                    : theme.colorScheme.secondary,
-                                letterSpacing: 0.3,
-                              ),
+                              style: StandardizedTextStyle.labelSmall,
+                              color: task.priority == TaskPriority.urgent
+                                  ? theme.colorScheme.error
+                                  : theme.colorScheme.secondary,
+                              letterSpacing: 0.3,
                             ),
                           ],
                         ),
@@ -1122,7 +1126,7 @@ Shared from Tasky - Task Management App
                     height: 20,
                     decoration: BoxDecoration(
                       color: Colors.green.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: StandardizedBorderRadius.sm,
                       border: Border.all(
                         color: Colors.green.withValues(alpha: 0.3),
                         width: 0.5,
@@ -1131,26 +1135,24 @@ Shared from Tasky - Task Management App
                     child: Icon(
                       PhosphorIcons.check(),
                       size: 12,
-                      color: Colors.green,
+                      color: Colors.green, // TODO: Replace with context.colors.success
                     ),
                   ),
                 ],
               ],
             ),
           ),
-        ),
-      ),
-    );
+        );
 
     return Container(
       margin: const EdgeInsets.only(bottom: SpacingTokens.taskCardMargin),
       child: SlidableThemeService.createBalancedCompactCardSlidable(
         key: ValueKey('compact-task-${task.id}'),
         groupTag: 'home-compact-cards',
-        startActions: balancedActions['startActions'] ?? [], // Left side: Complete + Edit
-        endActions: balancedActions['endActions'] ?? [], // Right side: More
-        enableFastSwipe: true, // Optimize for ListView performance
-        context: context, // Enable responsive sizing
+        startActions: balancedActions['startActions'] ?? [],
+        endActions: balancedActions['endActions'] ?? [],
+        enableFastSwipe: true,
+        context: context,
         child: cardContent,
       ),
     );
@@ -1165,7 +1167,7 @@ Shared from Tasky - Task Management App
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error updating task: $e')),
+          SnackBar(content: StandardizedText('Error updating task: $e', style: StandardizedTextStyle.bodyMedium)),
         );
       }
     }
@@ -1200,11 +1202,10 @@ Shared from Tasky - Task Management App
             color: theme.colorScheme.outline,
           ),
           const SizedBox(height: 12),
-          Text(
+          StandardizedText(
             message,
-            style: theme.textTheme.bodyLarge?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
+            style: StandardizedTextStyle.bodyLarge,
+            color: theme.colorScheme.onSurfaceVariant,
           ),
         ],
       ),
@@ -1238,11 +1239,10 @@ Shared from Tasky - Task Management App
             color: theme.colorScheme.error,
           ),
           const SizedBox(height: 12),
-          Text(
+          StandardizedText(
             'Error loading tasks',
-            style: theme.textTheme.bodyLarge?.copyWith(
-              color: theme.colorScheme.error,
-            ),
+            style: StandardizedTextStyle.bodyLarge,
+            color: theme.colorScheme.error,
           ),
         ],
       ),
@@ -1275,20 +1275,15 @@ Shared from Tasky - Task Management App
             ),
           ),
           const SizedBox(height: 4),
-          Text(
+          StandardizedText(
             count.toString(),
-            style: TextStyle(
-              fontSize: TypographyConstants.textLG,
-              fontWeight: TypographyConstants.medium,
-              color: theme.colorScheme.onSurface,
-            ),
+            style: StandardizedTextStyle.titleLarge,
+            color: theme.colorScheme.onSurface,
           ),
-          Text(
+          StandardizedText(
             label,
-            style: TextStyle(
-              fontSize: TypographyConstants.textXS,
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
+            style: StandardizedTextStyle.bodySmall,
+            color: theme.colorScheme.onSurfaceVariant,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -1337,13 +1332,10 @@ Shared from Tasky - Task Management App
           ),
           const SizedBox(width: 8),
           Expanded(
-            child: Text(
+            child: StandardizedText(
               insight,
-              style: TextStyle(
-                fontSize: TypographyConstants.textSM,
-                color: insightColor,
-                fontWeight: TypographyConstants.medium,
-              ),
+              style: StandardizedTextStyle.bodyMedium,
+              color: insightColor,
             ),
           ),
         ],
@@ -1381,7 +1373,7 @@ class _SearchDialogState extends ConsumerState<SearchDialog> {
         glassTint: theme.colorScheme.surface,
         borderColor: theme.colorScheme.outline.withValues(alpha: 0.2),
         borderWidth: 1.0,
-        padding: const EdgeInsets.all(SpacingTokens.lg),
+        padding: StandardizedSpacing.padding(SpacingSize.lg),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -1403,12 +1395,11 @@ class _SearchDialogState extends ConsumerState<SearchDialog> {
                 AppRouter.navigateToRoute(context, AppRouter.tasks);
               },
             ),
-            const SizedBox(height: 16),
-            Text(
+            StandardizedGaps.md,
+            StandardizedText(
               'Press Enter to search',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+              style: StandardizedTextStyle.bodySmall,
+              color: theme.colorScheme.onSurfaceVariant,
             ),
           ],
         ),

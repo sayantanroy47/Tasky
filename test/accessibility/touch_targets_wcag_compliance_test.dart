@@ -5,7 +5,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-import 'package:task_tracker_app/core/accessibility/touch_target_validator.dart';
 import 'package:task_tracker_app/domain/entities/project.dart';
 import 'package:task_tracker_app/domain/entities/task_model.dart';
 import 'package:task_tracker_app/domain/models/enums.dart';
@@ -15,7 +14,6 @@ import 'package:task_tracker_app/presentation/widgets/advanced_task_card.dart';
 import 'package:task_tracker_app/presentation/widgets/bulk_operations/bulk_action_toolbar.dart';
 import 'package:task_tracker_app/presentation/widgets/bulk_operations/multi_select_task_card.dart';
 import 'package:task_tracker_app/presentation/widgets/timeline/timeline_gantt_view.dart';
-import 'package:task_tracker_app/presentation/widgets/analytics/project_analytics_dashboard.dart';
 
 void main() {
   group('Touch Target Sizes and WCAG 2.1 AA Compliance Tests', () {
@@ -495,11 +493,11 @@ void main() {
                       // H2 level heading
                       Semantics(
                         header: true,
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
+                        child: const Padding(
+                          padding: EdgeInsets.all(16),
                           child: Text(
                             'Active Projects',
-                            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                           ),
                         ),
                       ),
@@ -509,11 +507,11 @@ void main() {
                       // H2 level heading
                       Semantics(
                         header: true,
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
+                        child: const Padding(
+                          padding: EdgeInsets.all(16),
                           child: Text(
                             'Recent Tasks',
-                            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                           ),
                         ),
                       ),
@@ -521,11 +519,11 @@ void main() {
                       // H3 level subheading
                       Semantics(
                         header: true,
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                        child: const Padding(
+                          padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
                           child: Text(
                             'High Priority Tasks',
-                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                           ),
                         ),
                       ),
@@ -1108,11 +1106,11 @@ void main() {
                           children: [
                             Semantics(
                               header: true,
-                              child: Padding(
-                                padding: const EdgeInsets.all(16),
+                              child: const Padding(
+                                padding: EdgeInsets.all(16),
                                 child: Text(
                                   'Active Projects',
-                                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                                 ),
                               ),
                             ),
@@ -1129,11 +1127,11 @@ void main() {
                             
                             Semantics(
                               header: true,
-                              child: Padding(
-                                padding: const EdgeInsets.all(16),
+                              child: const Padding(
+                                padding: EdgeInsets.all(16),
                                 child: Text(
                                   'Recent Tasks',
-                                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                                 ),
                               ),
                             ),

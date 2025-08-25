@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../../core/design_system/design_tokens.dart';
+import '../../core/theme/material3/motion_system.dart';
+import '../../core/theme/typography_constants.dart';
 import '../../domain/entities/project.dart';
 import '../providers/project_providers.dart';
-import '../../core/theme/typography_constants.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'theme_aware_dialog_components.dart';
+import 'glassmorphism_container.dart';
+import 'standardized_app_bar.dart';
+import 'standardized_text.dart';
+import 'theme_background_widget.dart';
 
-/// Dialog for creating and editing projects
+/// Full-screen page for creating and editing projects
 /// 
-/// Provides a form for entering project details including name,
-/// description, color, and deadline.
+/// Provides a modern, consistent form for entering project details including name,
+/// description, color, and deadline following the app's design system.
 class ProjectFormDialog extends ConsumerStatefulWidget {
   final Project? project; // null for creating new project
   final VoidCallback? onSuccess;
@@ -25,11 +30,17 @@ class ProjectFormDialog extends ConsumerStatefulWidget {
   ConsumerState<ProjectFormDialog> createState() => _ProjectFormDialogState();
 }
 
-class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> {
+class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> with TickerProviderStateMixin {
+  // Animation controllers
+  late AnimationController _fadeController;
+  late Animation<double> _fadeAnimation;
+
+  // Form controllers
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
   
+  // Project properties
   String _selectedColor = '#2196F3'; // Default blue color
   DateTime? _selectedDeadline;
   bool _isLoading = false;
@@ -53,16 +64,31 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> {
   @override
   void initState() {
     super.initState();
+
+    // Initialize animations
+    _fadeController = AnimationController(
+      duration: ExpressiveMotionSystem.durationMedium2,
+      vsync: this,
+    );
+
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _fadeController, curve: Curves.easeOut),
+    );
+
+    // Pre-populate if editing
     if (widget.project != null) {
       _nameController.text = widget.project!.name;
       _descriptionController.text = widget.project!.description ?? '';
       _selectedColor = widget.project!.color;
       _selectedDeadline = widget.project!.deadline;
     }
+
+    _fadeController.forward();
   }
   
   @override
   void dispose() {
+    _fadeController.dispose();
     _nameController.dispose();
     _descriptionController.dispose();
     super.dispose();
@@ -70,229 +96,338 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> {
   
   @override
   Widget build(BuildContext context) {
-    return ThemeAwareTaskDialog(
-      title: isEditing ? 'Edit Project' : 'Create Project',
-      subtitle: isEditing ? 'Update project details' : 'Add a new project to organize your tasks',
-      icon: isEditing ? PhosphorIcons.pencil() : PhosphorIcons.folder(),
-      onBack: () => Navigator.of(context).pop(),
-      actions: [
-        ThemeAwareButton(
-          label: 'Cancel',
-          onPressed: () => Navigator.of(context).pop(),
-          icon: PhosphorIcons.x(),
+    final theme = Theme.of(context);
+
+    return ThemeBackgroundWidget(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        extendBodyBehindAppBar: true,
+        appBar: StandardizedAppBar(
+          title: isEditing ? 'Edit Project' : 'Create Project',
+          actions: [
+            SizedBox(
+              width: 100,
+              child: TextButton(
+                onPressed: _isLoading ? null : _saveProject,
+                child: _isLoading
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : Text(isEditing ? 'Update' : 'Create'),
+              ),
+            ),
+          ],
         ),
-        ThemeAwareButton(
-          label: isEditing ? 'Update Project' : 'Create Project',
-          onPressed: _isLoading ? null : _saveProject,
-          icon: isEditing ? PhosphorIcons.floppyDisk() : PhosphorIcons.plus(),
-          isPrimary: true,
-          isLoading: _isLoading,
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: FadeTransition(
+              opacity: _fadeAnimation,
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    const SizedBox(height: 20),
+
+                    // Project Name Section
+                    _buildNameSection(context, theme),
+
+                    const SizedBox(height: 20),
+
+                    // Description Section
+                    _buildDescriptionSection(context, theme),
+
+                    const SizedBox(height: 20),
+
+                    // Color Selection Section
+                    _buildColorSection(context, theme),
+
+                    const SizedBox(height: 20),
+
+                    // Deadline Section
+                    _buildDeadlineSection(context, theme),
+
+                    const SizedBox(height: 32),
+
+                    // Action Button
+                    _buildActionButton(context, theme),
+
+                    const SizedBox(height: 100), // Bottom padding
+                  ],
+                ),
+              ),
+            ),
+          ),
         ),
-      ],
-      child: _buildProjectForm(context),
+      ),
     );
   }
 
-  Widget _buildProjectForm(BuildContext context) {
-    final theme = Theme.of(context);
-    
-    return Form(
-      key: _formKey,
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-                
-                // Project name field
-                TextFormField(
-                  controller: _nameController,
-                  decoration: InputDecoration(
-                    labelText: 'Project Name *',
-                    hintText: 'Enter project name',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium),
-                    ),
-                    prefixIcon: Icon(PhosphorIcons.folder()),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Project name is required';
-                    }
-                    if (value.trim().length < 2) {
-                      return 'Project name must be at least 2 characters';
-                    }
-                    return null;
-                  },
-                  textCapitalization: TextCapitalization.words,
-                ),
-                
-                const SizedBox(height: TypographyConstants.paddingMedium),
-                
-                // Project description field
-                TextFormField(
-                  controller: _descriptionController,
-                  decoration: InputDecoration(
-                    labelText: 'Description',
-                    hintText: 'Enter project description (optional)',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium),
-                    ),
-                    prefixIcon: Icon(PhosphorIcons.fileText()),
-                  ),
-                  maxLines: 3,
-                  textCapitalization: TextCapitalization.sentences,
-                ),
-                
-                const SizedBox(height: TypographyConstants.paddingMedium),
-                
-                // Color selection
-                Text(
-                  'Project Color',
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    fontWeight: TypographyConstants.medium,
-                  ),
-                ),
-                const SizedBox(height: TypographyConstants.spacingSmall),
-                SizedBox(
-                  height: 100,
-                  child: GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: (MediaQuery.of(context).size.width / 60).floor().clamp(3, 6),
-                      crossAxisSpacing: TypographyConstants.spacingSmall,
-                      mainAxisSpacing: TypographyConstants.spacingSmall,
-                    ),
-                    itemCount: _colorOptions.length,
-                    itemBuilder: (context, index) {
-                      final color = _colorOptions[index];
-                      final isSelected = color == _selectedColor;
-                      return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _selectedColor = color;
-                          });
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: _parseColor(color),
-                            shape: BoxShape.circle,
-                            border: isSelected
-                                ? Border.all(
-                                    color: theme.colorScheme.onSurface,
-                                    width: 3,
-                                  )
-                                : Border.all(
-                                    color: theme.colorScheme.outline.withValues(alpha: 0.3),
-                                    width: 1,
-                                  ),
-                          ),
-                          child: isSelected
-                              ? Icon(
-                                  PhosphorIcons.check(),
-                                  color: _parseColor(color).computeLuminance() > 0.5
-                                      ? Colors.black
-                                      : Colors.white,
-                                  size: 16,
-                                )
-                              : null,
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                
-                const SizedBox(height: TypographyConstants.paddingMedium),
-                
-                // Deadline selection
-                InkWell(
-                  onTap: _selectDeadline,
-                  borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium),
-                  child: Container(
-                    padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: theme.colorScheme.outline.withValues(alpha: 0.5),
-                      ),
-                      borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          PhosphorIcons.calendar(),
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                        const SizedBox(width: TypographyConstants.spacingMedium),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Deadline',
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
+  Widget _buildNameSection(BuildContext context, ThemeData theme) {
+    return GlassmorphismContainer(
+      level: GlassLevel.content,
+      padding: const EdgeInsets.all(20),
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                PhosphorIcons.folder(),
+                size: 24,
+                color: theme.colorScheme.primary,
+              ),
+              const SizedBox(width: 8),
+              StandardizedTextVariants.sectionHeader('Project Name'),
+            ],
+          ),
+          const SizedBox(height: 12),
+          TextFormField(
+            controller: _nameController,
+            decoration: InputDecoration(
+              hintText: 'Enter a clear, descriptive project name...',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+              ),
+            ),
+            validator: (value) {
+              if (value == null || value.trim().isEmpty) {
+                return 'Project name is required';
+              }
+              if (value.trim().length < 2) {
+                return 'Project name must be at least 2 characters';
+              }
+              return null;
+            },
+            textCapitalization: TextCapitalization.words,
+            textInputAction: TextInputAction.next,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDescriptionSection(BuildContext context, ThemeData theme) {
+    return GlassmorphismContainer(
+      level: GlassLevel.content,
+      padding: const EdgeInsets.all(20),
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                PhosphorIcons.fileText(),
+                size: 20,
+                color: theme.colorScheme.primary,
+              ),
+              const SizedBox(width: 8),
+              StandardizedTextVariants.sectionHeader('Description'),
+              const SizedBox(width: 8),
+              StandardizedText(
+                '(Optional)',
+                style: StandardizedTextStyle.taskMeta,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          TextFormField(
+            controller: _descriptionController,
+            decoration: InputDecoration(
+              hintText: 'Add project details, goals, or context...',
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+              ),
+            ),
+            maxLines: 3,
+            textCapitalization: TextCapitalization.sentences,
+            textInputAction: TextInputAction.newline,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildColorSection(BuildContext context, ThemeData theme) {
+    return GlassmorphismContainer(
+      level: GlassLevel.content,
+      padding: const EdgeInsets.all(20),
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                PhosphorIcons.palette(),
+                size: 20,
+                color: theme.colorScheme.primary,
+              ),
+              const SizedBox(width: 8),
+              StandardizedTextVariants.sectionHeader('Project Color'),
+            ],
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            height: 80,
+            child: GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: (MediaQuery.of(context).size.width / 60).floor().clamp(4, 8),
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+              ),
+              itemCount: _colorOptions.length,
+              itemBuilder: (context, index) {
+                final color = _colorOptions[index];
+                final isSelected = color == _selectedColor;
+                return Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () => setState(() => _selectedColor = color),
+                    borderRadius: BorderRadius.circular(30),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: _parseColor(color),
+                        shape: BoxShape.circle,
+                        border: isSelected
+                            ? Border.all(
+                                color: theme.colorScheme.onSurface,
+                                width: 3,
+                              )
+                            : Border.all(
+                                color: theme.colorScheme.outline.withValues(alpha: 0.3),
+                                width: 1,
                               ),
-                              const SizedBox(height: 2),
-                              Text(
-                                _selectedDeadline == null
-                                    ? 'No deadline set'
-                                    : _formatDate(_selectedDeadline!),
-                                style: theme.textTheme.bodyLarge,
-                              ),
-                            ],
-                          ),
-                        ),
-                        if (_selectedDeadline != null)
-                          IconButton(
-                            onPressed: () {
-                              setState(() {
-                                _selectedDeadline = null;
-                              });
-                            },
-                            icon: Icon(PhosphorIcons.x()),
-                            tooltip: 'Remove deadline',
-                          ),
-                      ],
-                    ),
-                  ),
-                ),
-                
-                const SizedBox(height: TypographyConstants.paddingLarge),
-                
-                // Action buttons
-                OverflowBar(
-                  alignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(
-                      onPressed: _isLoading ? null : () => Navigator.of(context).pop(),
-                      child: const Text('Cancel'),
-                    ),
-                    ElevatedButton(
-                      onPressed: _isLoading ? null : _saveProject,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: _parseColor(_selectedColor),
-                        foregroundColor: _parseColor(_selectedColor).computeLuminance() > 0.5
-                            ? Colors.black
-                            : Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium),
-                        ),
                       ),
-                      child: _isLoading
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
+                      child: isSelected
+                          ? Icon(
+                              PhosphorIcons.check(),
+                              color: _parseColor(color).computeLuminance() > 0.5
+                                  ? Colors.black
+                                  : Colors.white,
+                              size: 16,
                             )
-                          : Text(isEditing ? 'Update' : 'Create'),
+                          : null,
                     ),
-                  ],
-                ),
-              ],
+                  ),
+                );
+              },
             ),
           ),
-        );
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDeadlineSection(BuildContext context, ThemeData theme) {
+    return GlassmorphismContainer(
+      level: GlassLevel.content,
+      padding: const EdgeInsets.all(20),
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                PhosphorIcons.calendar(),
+                size: 20,
+                color: theme.colorScheme.primary,
+              ),
+              const SizedBox(width: 8),
+              StandardizedTextVariants.sectionHeader('Deadline'),
+              const SizedBox(width: 8),
+              StandardizedText(
+                '(Optional)',
+                style: StandardizedTextStyle.taskMeta,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: _selectDeadline,
+                  icon: Icon(PhosphorIcons.calendar()),
+                  label: Text(
+                    _selectedDeadline == null
+                        ? 'Select Deadline'
+                        : _formatDate(_selectedDeadline!),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                  ),
+                ),
+              ),
+              if (_selectedDeadline != null) ...[
+                const SizedBox(width: 8),
+                IconButton(
+                  onPressed: () => setState(() => _selectedDeadline = null),
+                  icon: Icon(PhosphorIcons.x()),
+                  tooltip: 'Remove deadline',
+                ),
+              ],
+            ],
+          ),
+          if (_selectedDeadline != null) ...[
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: _parseColor(_selectedColor).withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: StandardizedText(
+                'Deadline: ${_formatDate(_selectedDeadline!)}',
+                style: StandardizedTextStyle.labelMedium,
+                color: _parseColor(_selectedColor),
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionButton(BuildContext context, ThemeData theme) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        onPressed: _isLoading ? null : _saveProject,
+        icon: _isLoading
+            ? const SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              )
+            : Icon(isEditing ? PhosphorIcons.floppyDisk() : PhosphorIcons.plus()),
+        label: Text(_isLoading 
+            ? (isEditing ? 'Updating...' : 'Creating...') 
+            : (isEditing ? 'Update Project' : 'Create Project')),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: _parseColor(_selectedColor),
+          foregroundColor: _parseColor(_selectedColor).computeLuminance() > 0.5
+              ? Colors.black
+              : Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
+          ),
+        ),
+      ),
+    );
   }
   
   Future<void> _selectDeadline() async {

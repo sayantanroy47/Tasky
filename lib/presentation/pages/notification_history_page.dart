@@ -2,10 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/standardized_app_bar.dart';
 import '../widgets/theme_background_widget.dart';
+import '../widgets/standardized_text.dart';
+import '../widgets/standardized_colors.dart';
+import '../widgets/standardized_spacing.dart';
+import '../../core/design_system/design_tokens.dart';
+import '../widgets/standardized_error_states.dart';
+import '../widgets/standardized_card.dart';
 
 import '../providers/notification_providers.dart';
 import '../../services/notification/notification_models.dart';
-import '../../core/theme/typography_constants.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Page for viewing notification history and statistics
@@ -17,7 +22,7 @@ class NotificationHistoryPage extends ConsumerWidget {
 
     return ThemeBackgroundWidget(
       child: Scaffold(
-        backgroundColor: Colors.transparent,
+        backgroundColor: context.colors.backgroundTransparent,
         extendBodyBehindAppBar: true,
         appBar: StandardizedAppBar(
           title: 'Notification History',
@@ -29,18 +34,28 @@ class NotificationHistoryPage extends ConsumerWidget {
           ],
         ),
         body: scheduledNotificationsAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => StandardizedErrorStates.loading(),
         error: (error, stack) => Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(PhosphorIcons.warningCircle(), size: 64, color: Colors.red),
-              const SizedBox(height: 16),
-              Text('Error loading notifications: $error'),
-              const SizedBox(height: 16),
+              Icon(
+                PhosphorIcons.warningCircle(),
+                size: 64,
+                color: context.colors.error,
+              ),
+              StandardizedGaps.md,
+              StandardizedText(
+                'Error loading notifications: $error',
+                style: StandardizedTextStyle.bodyMedium,
+              ),
+              StandardizedGaps.md,
               ElevatedButton(
                 onPressed: () => ref.refresh(scheduledNotificationsProvider),
-                child: const Text('Retry'),
+                child: const StandardizedText(
+                  'Retry',
+                  style: StandardizedTextStyle.buttonText,
+                ),
               ),
             ],
           ),
@@ -59,19 +74,19 @@ class NotificationHistoryPage extends ConsumerWidget {
     return ListView(
       padding: const EdgeInsets.only(
         top: kToolbarHeight + 8,
-        left: 16,
-        right: 16,
-        bottom: 16,
+        left: SpacingTokens.md,
+        right: SpacingTokens.md,
+        bottom: SpacingTokens.md,
       ),
       children: [
-        _buildStatsCard(notifications),
-        const SizedBox(height: 16),
-        _buildNotificationsList(notifications),
+        _buildStatsCard(context, notifications),
+        StandardizedGaps.md,
+        _buildNotificationsList(context, notifications),
       ],
     );
   }
 
-  Widget _buildStatsCard(List<ScheduledNotification> notifications) {
+  Widget _buildStatsCard(BuildContext context, List<ScheduledNotification> notifications) {
     final now = DateTime.now();
     final todayNotifications = notifications.where((n) => 
       n.scheduledTime.year == now.year &&
@@ -94,16 +109,17 @@ class NotificationHistoryPage extends ConsumerWidget {
         .reduce((a, b) => a.value > b.value ? a : b)
         .key;
 
-    return Card(
+    return StandardizedCard(
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: StandardizedSpacing.padding(SpacingSize.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Notification Statistics',
-              style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.w500),
+            const StandardizedText(
+              'Notification Statistics',
+              style: StandardizedTextStyle.titleLarge,
             ),
-            const SizedBox(height: 16),
+            StandardizedGaps.md,
             Row(
               children: [
                 Expanded(
@@ -111,7 +127,7 @@ class NotificationHistoryPage extends ConsumerWidget {
                     'Total',
                     notifications.length.toString(),
                     PhosphorIcons.bell(),
-                    Colors.blue,
+                    context.colors.info,
                   ),
                 ),
                 Expanded(
@@ -119,12 +135,12 @@ class NotificationHistoryPage extends ConsumerWidget {
                     'Today',
                     todayNotifications.toString(),
                     PhosphorIcons.calendar(),
-                    Colors.green,
+                    context.colors.success,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            StandardizedGaps.vertical(SpacingSize.sm),
             Row(
               children: [
                 Expanded(
@@ -132,7 +148,7 @@ class NotificationHistoryPage extends ConsumerWidget {
                     'Pending',
                     pendingNotifications.toString(),
                     PhosphorIcons.clock(),
-                    Colors.orange,
+                    context.colors.warning,
                   ),
                 ),
                 Expanded(
@@ -140,28 +156,32 @@ class NotificationHistoryPage extends ConsumerWidget {
                     'Sent',
                     sentNotifications.toString(),
                     PhosphorIcons.checkCircle(),
-                    Colors.green,
+                    context.colors.success,
                   ),
                 ),
               ],
             ),
             if (notifications.isNotEmpty) ...[
-              const SizedBox(height: 16),
+              StandardizedGaps.md,
               const Divider(),
-              const SizedBox(height: 8),
+              StandardizedGaps.vertical(SpacingSize.sm),
               Row(
                 children: [
                   Icon(
                     _getNotificationTypeIcon(mostCommonType),
                     size: 20,
-                    color: Colors.grey[600],
+                    color: context.colors.withSemanticOpacity(
+                      Theme.of(context).colorScheme.onSurface,
+                      SemanticOpacity.strong,
+                    ),
                   ),
-                  const SizedBox(width: 8),
-                  Text(
+                  StandardizedGaps.horizontal(SpacingSize.sm),
+                  StandardizedText(
                     'Most common: ${mostCommonType.displayName}',
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: TypographyConstants.bodyMedium,
+                    style: StandardizedTextStyle.bodySmall,
+                    color: context.colors.withSemanticOpacity(
+                      Theme.of(context).colorScheme.onSurface,
+                      SemanticOpacity.strong,
                     ),
                   ),
                 ],
@@ -174,50 +194,52 @@ class NotificationHistoryPage extends ConsumerWidget {
   }
 
   Widget _buildStatItem(String label, String value, IconData icon, Color color) {
-    return Column(
-      children: [
-        Icon(icon, color: color, size: 32),
-        const SizedBox(height: 8),
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: TypographyConstants.displaySmall,
-            fontWeight: FontWeight.w500,
+    return Builder(
+      builder: (context) => Column(
+        children: [
+          Icon(icon, color: color, size: 32),
+          StandardizedGaps.vertical(SpacingSize.sm),
+          StandardizedText(
+            value,
+            style: StandardizedTextStyle.displaySmall,
           ),
-        ),
-        Text(
-          label,
-          style: TextStyle(
-            color: Colors.grey[600],
-            fontSize: TypographyConstants.bodySmall,
+          StandardizedText(
+            label,
+            style: StandardizedTextStyle.bodySmall,
+            color: context.colors.withSemanticOpacity(
+              Theme.of(context).colorScheme.onSurface,
+              SemanticOpacity.strong,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
-  Widget _buildNotificationsList(List<ScheduledNotification> notifications) {
+  Widget _buildNotificationsList(BuildContext context, List<ScheduledNotification> notifications) {
     if (notifications.isEmpty) {
-      return Card(
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: Column(
-            children: [
-              Icon(
-                PhosphorIcons.bellSlash(),
-                size: 64,
-                color: Colors.grey[400],
+      return StandardizedCard(
+        padding: StandardizedSpacing.padding(SpacingSize.xl),
+        child: Column(
+          children: [
+            Icon(
+              PhosphorIcons.bellSlash(),
+              size: 64,
+              color: context.colors.withSemanticOpacity(
+                Theme.of(context).colorScheme.onSurface,
+                SemanticOpacity.light,
               ),
-              const SizedBox(height: 16),
-              Text(
-                'No notifications scheduled',
-                style: TextStyle(
-                  fontSize: TypographyConstants.bodyLarge,
-                  color: Colors.grey[600],
-                ),
+            ),
+            StandardizedGaps.md,
+            StandardizedText(
+              'No notifications scheduled',
+              style: StandardizedTextStyle.bodyLarge,
+              color: context.colors.withSemanticOpacity(
+                Theme.of(context).colorScheme.onSurface,
+                SemanticOpacity.strong,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       );
     }
@@ -226,15 +248,15 @@ class NotificationHistoryPage extends ConsumerWidget {
     final sortedNotifications = List<ScheduledNotification>.from(notifications)
       ..sort((a, b) => b.scheduledTime.compareTo(a.scheduledTime));
 
-    return Card(
+    return StandardizedCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.all(16),
-            child: Text(
+          Padding(
+            padding: StandardizedSpacing.padding(SpacingSize.md),
+            child: const StandardizedText(
               'Scheduled Notifications',
-              style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.w500),
+              style: StandardizedTextStyle.titleMedium,
             ),
           ),
           ListView.separated(
@@ -244,7 +266,7 @@ class NotificationHistoryPage extends ConsumerWidget {
             separatorBuilder: (context, index) => const Divider(height: 1),
             itemBuilder: (context, index) {
               final notification = sortedNotifications[index];
-              return _buildNotificationTile(notification);
+              return _buildNotificationTile(context, notification);
             },
           ),
         ],
@@ -252,7 +274,7 @@ class NotificationHistoryPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildNotificationTile(ScheduledNotification notification) {
+  Widget _buildNotificationTile(BuildContext context, ScheduledNotification notification) {
     final now = DateTime.now();
     final isPast = notification.scheduledTime.isBefore(now);
     final isToday = notification.scheduledTime.year == now.year &&
@@ -262,83 +284,91 @@ class NotificationHistoryPage extends ConsumerWidget {
     return ListTile(
       leading: CircleAvatar(
         backgroundColor: notification.sent 
-            ? Colors.green.withValues(alpha: 0.2)
+            ? context.colors.withSemanticOpacity(context.colors.success, SemanticOpacity.subtle)
             : isPast 
-                ? Colors.red.withValues(alpha: 0.2)
-                : Colors.blue.withValues(alpha: 0.2),
+                ? context.colors.withSemanticOpacity(context.colors.error, SemanticOpacity.subtle)
+                : context.colors.withSemanticOpacity(context.colors.info, SemanticOpacity.subtle),
         child: Icon(
           _getNotificationTypeIcon(notification.type),
           color: notification.sent 
-              ? Colors.green
+              ? context.colors.success
               : isPast 
-                  ? Colors.red
-                  : Colors.blue,
+                  ? context.colors.error
+                  : context.colors.info,
           size: 20,
         ),
       ),
-      title: Text(
+      title: StandardizedText(
         notification.title,
-        style: TextStyle(
-          fontWeight: FontWeight.w500,
-          color: notification.sent ? Colors.grey[600] : null,
-        ),
+        style: StandardizedTextStyle.bodyLarge,
+        color: notification.sent ? context.colors.withSemanticOpacity(
+          Theme.of(context).colorScheme.onSurface,
+          SemanticOpacity.strong,
+        ) : null,
       ),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          StandardizedText(
             notification.body,
+            style: StandardizedTextStyle.bodyMedium,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              color: notification.sent ? Colors.grey[500] : Colors.grey[700],
-            ),
+            color: notification.sent 
+              ? context.colors.withSemanticOpacity(
+                  Theme.of(context).colorScheme.onSurface,
+                  SemanticOpacity.light,
+                )
+              : context.colors.withSemanticOpacity(
+                  Theme.of(context).colorScheme.onSurface,
+                  SemanticOpacity.strong,
+                ),
           ),
-          const SizedBox(height: 4),
+          StandardizedGaps.vertical(SpacingSize.xs),
           Row(
             children: [
               Icon(
                 PhosphorIcons.clock(),
                 size: 14,
-                color: Colors.grey[500],
+                color: context.colors.withSemanticOpacity(
+                  Theme.of(context).colorScheme.onSurface,
+                  SemanticOpacity.light,
+                ),
               ),
-              const SizedBox(width: 4),
-              Text(
+              StandardizedGaps.horizontal(SpacingSize.xs),
+              StandardizedText(
                 _formatDateTime(notification.scheduledTime, isToday),
-                style: TextStyle(
-                  fontSize: TypographyConstants.bodySmall,
-                  color: Colors.grey[500],
+                style: StandardizedTextStyle.bodySmall,
+                color: context.colors.withSemanticOpacity(
+                  Theme.of(context).colorScheme.onSurface,
+                  SemanticOpacity.strong,
                 ),
               ),
               if (notification.sent) ...[
-                const SizedBox(width: 8),
+                StandardizedGaps.horizontal(SpacingSize.sm),
                 Icon(
                   PhosphorIcons.checkCircle(),
                   size: 14,
-                  color: Colors.green[600],
+                  color: context.colors.success,
                 ),
-                const SizedBox(width: 2),
-                Text(
+                StandardizedGaps.horizontal(SpacingSize.xs),
+                StandardizedText(
                   'Sent',
-                  style: TextStyle(
-                    fontSize: TypographyConstants.bodySmall,
-                    color: Colors.green[600],
-                  ),
+                  style: StandardizedTextStyle.bodySmall,
+                  color: context.colors.success,
                 ),
               ] else if (isPast) ...[
-                const SizedBox(width: 8),
+                StandardizedGaps.horizontal(SpacingSize.sm),
                 Icon(
                   PhosphorIcons.warningCircle(),
                   size: 14,
-                  color: Colors.red[600],
+                  color: context.colors.error,
                 ),
-                const SizedBox(width: 2),
-                Text(
+                StandardizedGaps.horizontal(SpacingSize.xs),
+                StandardizedText(
                   'Missed',
-                  style: TextStyle(
-                    fontSize: TypographyConstants.bodySmall,
-                    color: Colors.red[600],
-                  ),
+                  style: StandardizedTextStyle.bodySmall,
+                  color: context.colors.error,
                 ),
               ],
             ],
@@ -365,8 +395,8 @@ class NotificationHistoryPage extends ConsumerWidget {
                   child: Row(
                     children: [
                       Icon(PhosphorIcons.xCircle(), size: 18),
-                      const SizedBox(width: 8),
-                      const Text('Cancel'),
+                      StandardizedGaps.horizontal(SpacingSize.sm),
+                      const StandardizedText('Cancel', style: StandardizedTextStyle.bodyMedium),
                     ],
                   ),
                 ),
@@ -375,8 +405,8 @@ class NotificationHistoryPage extends ConsumerWidget {
                   child: Row(
                     children: [
                       Icon(PhosphorIcons.clock(), size: 18),
-                      const SizedBox(width: 8),
-                      const Text('Reschedule'),
+                      StandardizedGaps.horizontal(SpacingSize.sm),
+                      const StandardizedText('Reschedule', style: StandardizedTextStyle.bodyMedium),
                     ],
                   ),
                 ),

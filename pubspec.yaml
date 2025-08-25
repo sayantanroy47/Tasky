@@ -179,3 +179,9 @@ flutter:
     - family: JetBrainsMono
       fonts:
         - asset: assets/fonts/JetBrainsMono[wght].ttf
+    - family: Saira
+      fonts:
+        - asset: assets/fonts/Saira-VariableFont_wdth,wght.ttf
+    - family: Sansation
+      fonts:
+        - asset: assets/fonts/Sansation-Regular.ttf    

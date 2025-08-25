@@ -10,6 +10,7 @@ import '../../domain/models/enums.dart';
 import '../providers/task_provider.dart' show taskOperationsProvider;
 import 'glassmorphism_container.dart';
 import 'project_selector.dart';
+import 'standardized_text.dart';
 import 'theme_aware_dialog_components.dart';
 
 /// Category option for task categorization
@@ -239,12 +240,10 @@ class _TaskFormDialogState extends ConsumerState<TaskFormDialog> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          StandardizedText(
             'Due Date',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w500,
-              color: theme.colorScheme.onSurface,
-            ),
+            style: StandardizedTextStyle.bodyMedium,
+            color: theme.colorScheme.onSurface,
           ),
           const SizedBox(height: 12),
           Row(
@@ -300,15 +299,14 @@ class _TaskFormDialogState extends ConsumerState<TaskFormDialog> {
               color: theme.colorScheme.primary,
             ),
             const SizedBox(width: 8),
-            Text(
+            StandardizedText(
               _dueDate != null
                   ? '${_dueDate!.day}/${_dueDate!.month}/${_dueDate!.year}'
                   : 'Select date',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: _dueDate != null
-                    ? theme.colorScheme.onSurface
-                    : theme.colorScheme.onSurfaceVariant,
-              ),
+              style: StandardizedTextStyle.bodyMedium,
+              color: _dueDate != null
+                  ? theme.colorScheme.onSurface
+                  : theme.colorScheme.onSurfaceVariant,
             ),
           ],
         ),
@@ -338,17 +336,16 @@ class _TaskFormDialogState extends ConsumerState<TaskFormDialog> {
                   : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
             ),
             const SizedBox(width: 8),
-            Text(
+            StandardizedText(
               _dueTime != null
                   ? '${_dueTime!.hour.toString().padLeft(2, '0')}:${_dueTime!.minute.toString().padLeft(2, '0')}'
                   : 'Select time',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: _dueTime != null
-                    ? theme.colorScheme.onSurface
-                    : theme.colorScheme.onSurfaceVariant.withValues(alpha: 
-                        _dueDate != null ? 1.0 : 0.5,
-                      ),
-              ),
+              style: StandardizedTextStyle.bodyMedium,
+              color: _dueTime != null
+                  ? theme.colorScheme.onSurface
+                  : theme.colorScheme.onSurfaceVariant.withValues(alpha: 
+                      _dueDate != null ? 1.0 : 0.5,
+                    ),
             ),
           ],
         ),
@@ -410,12 +407,10 @@ class _TaskFormDialogState extends ConsumerState<TaskFormDialog> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          StandardizedText(
             'Categories',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w500,
-              color: theme.colorScheme.onSurface,
-            ),
+            style: StandardizedTextStyle.bodyMedium,
+            color: theme.colorScheme.onSurface,
           ),
           const SizedBox(height: 12),
           
@@ -437,11 +432,10 @@ class _TaskFormDialogState extends ConsumerState<TaskFormDialog> {
           // Selected tags display
           if (_selectedTags.isNotEmpty) ...[
             const SizedBox(height: 12),
-            Text(
+            StandardizedText(
               'Selected: ${_selectedTags.join(', ')}',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+              style: StandardizedTextStyle.bodySmall,
+              color: theme.colorScheme.onSurfaceVariant,
             ),
           ],
           
@@ -497,14 +491,12 @@ class _TaskFormDialogState extends ConsumerState<TaskFormDialog> {
                   : theme.colorScheme.onSurfaceVariant,
             ),
             const SizedBox(width: 6),
-            Text(
+            StandardizedText(
               category.label,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: isSelected
-                    ? theme.colorScheme.primary
-                    : theme.colorScheme.onSurfaceVariant,
-                fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
-              ),
+              style: StandardizedTextStyle.bodySmall,
+              color: isSelected
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.onSurfaceVariant,
             ),
           ],
         ),

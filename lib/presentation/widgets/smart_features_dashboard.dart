@@ -5,6 +5,8 @@ import '../../core/theme/typography_constants.dart';
 import '../../domain/entities/ai_suggestion.dart';
 import '../providers/smart_features_providers.dart';
 import 'glassmorphism_container.dart';
+import 'standardized_text.dart';
+import 'standardized_spacing.dart';
 
 /// Smart features dashboard widget that displays AI insights and health metrics
 class SmartFeaturesDashboard extends ConsumerWidget {
@@ -38,16 +40,14 @@ class SmartFeaturesDashboard extends ConsumerWidget {
               size: 20,
               color: Theme.of(context).colorScheme.primary,
             ),
-            const SizedBox(width: 8),
-            Text(
+            StandardizedGaps.horizontal(SpacingSize.xs),
+            const StandardizedText(
               'Smart Insights',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+              style: StandardizedTextStyle.titleMedium,
             ),
           ],
         ),
-        const SizedBox(height: 16),
+        StandardizedGaps.vertical(SpacingSize.md),
         
         dashboardAsync.when(
           data: (data) => _buildDashboardContent(context, ref, data),
@@ -77,7 +77,7 @@ class SmartFeaturesDashboard extends ConsumerWidget {
                 Colors.orange,
               ),
             ),
-            const SizedBox(width: 12),
+            StandardizedGaps.horizontal(SpacingSize.sm),
             Expanded(
               child: _buildStatCard(
                 context,
@@ -89,7 +89,7 @@ class SmartFeaturesDashboard extends ConsumerWidget {
             ),
           ],
         ),
-        const SizedBox(width: 12),
+        StandardizedGaps.horizontal(SpacingSize.sm),
         Row(
           children: [
             Expanded(
@@ -101,7 +101,7 @@ class SmartFeaturesDashboard extends ConsumerWidget {
                 Colors.red,
               ),
             ),
-            const SizedBox(width: 12),
+            StandardizedGaps.horizontal(SpacingSize.sm),
             Expanded(
               child: _buildStatCard(
                 context,
@@ -113,12 +113,12 @@ class SmartFeaturesDashboard extends ConsumerWidget {
             ),
           ],
         ),
-        const SizedBox(height: 16),
+        StandardizedGaps.vertical(SpacingSize.md),
         
         // Urgent suggestions section
         _buildUrgentSuggestionsSection(context, ref),
         
-        const SizedBox(height: 16),
+        StandardizedGaps.vertical(SpacingSize.md),
         
         // Projects needing attention section
         _buildProjectsNeedingAttentionSection(context, ref),
@@ -135,7 +135,7 @@ class SmartFeaturesDashboard extends ConsumerWidget {
   ) {
     return GlassmorphismContainer(
       borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
-      padding: const EdgeInsets.all(12),
+      padding: StandardizedSpacing.padding(SpacingSize.sm),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -146,26 +146,22 @@ class SmartFeaturesDashboard extends ConsumerWidget {
                 size: 16,
                 color: color,
               ),
-              const SizedBox(width: 4),
+              StandardizedGaps.horizontal(SpacingSize.xs),
               Expanded(
-                child: Text(
+                child: StandardizedText(
                   title,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                  ),
+                  style: StandardizedTextStyle.bodySmall,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 4),
-          Text(
+          StandardizedGaps.vertical(SpacingSize.xs),
+          StandardizedText(
             value,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              color: color,
-              fontWeight: FontWeight.bold,
-            ),
+            style: StandardizedTextStyle.titleLarge,
+            color: color,
           ),
         ],
       ),
@@ -181,7 +177,7 @@ class SmartFeaturesDashboard extends ConsumerWidget {
         
         return GlassmorphismContainer(
           borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-          padding: const EdgeInsets.all(16),
+          padding: StandardizedSpacing.padding(SpacingSize.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -192,7 +188,7 @@ class SmartFeaturesDashboard extends ConsumerWidget {
                     size: 16,
                     color: Theme.of(context).colorScheme.primary,
                   ),
-                  const SizedBox(width: 8),
+                  StandardizedGaps.horizontal(SpacingSize.xs),
                   Text(
                     'Urgent AI Suggestions',
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
@@ -202,7 +198,7 @@ class SmartFeaturesDashboard extends ConsumerWidget {
                   const Spacer(),
                   TextButton(
                     onPressed: () => _viewAllSuggestions(context, ref),
-                    child: const Text('View All'),
+                    child: const StandardizedText('View All', style: StandardizedTextStyle.buttonText),
                   ),
                 ],
               ),
@@ -230,7 +226,7 @@ class SmartFeaturesDashboard extends ConsumerWidget {
         
         return GlassmorphismContainer(
           borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-          padding: const EdgeInsets.all(16),
+          padding: StandardizedSpacing.padding(SpacingSize.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -241,7 +237,7 @@ class SmartFeaturesDashboard extends ConsumerWidget {
                     size: 16,
                     color: Colors.orange,
                   ),
-                  const SizedBox(width: 8),
+                  StandardizedGaps.horizontal(SpacingSize.xs),
                   Text(
                     'Projects Need Attention',
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
@@ -251,7 +247,7 @@ class SmartFeaturesDashboard extends ConsumerWidget {
                   const Spacer(),
                   TextButton(
                     onPressed: () => _viewProjectHealth(context, ref),
-                    child: const Text('View Details'),
+                    child: const StandardizedText('View Details', style: StandardizedTextStyle.buttonText),
                   ),
                 ],
               ),
@@ -288,7 +284,7 @@ class SmartFeaturesDashboard extends ConsumerWidget {
               borderRadius: BorderRadius.circular(2),
             ),
           ),
-          const SizedBox(width: 12),
+          StandardizedGaps.horizontal(SpacingSize.sm),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -310,7 +306,7 @@ class SmartFeaturesDashboard extends ConsumerWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 4),
+                StandardizedGaps.vertical(SpacingSize.xs),
                 Row(
                   children: [
                     Icon(
@@ -318,7 +314,7 @@ class SmartFeaturesDashboard extends ConsumerWidget {
                       size: 12,
                       color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
                     ),
-                    const SizedBox(width: 4),
+                    StandardizedGaps.horizontal(SpacingSize.xs),
                     Text(
                       '${suggestion.confidence.round()}% confidence',
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
@@ -366,7 +362,7 @@ class SmartFeaturesDashboard extends ConsumerWidget {
                   shape: BoxShape.circle,
                 ),
               ),
-              const SizedBox(width: 12),
+              StandardizedGaps.horizontal(SpacingSize.sm),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -414,7 +410,7 @@ class SmartFeaturesDashboard extends ConsumerWidget {
             height: 16,
             child: CircularProgressIndicator(strokeWidth: 2),
           ),
-          const SizedBox(width: 12),
+          StandardizedGaps.horizontal(SpacingSize.sm),
           Text(
             message,
             style: Theme.of(context).textTheme.bodyMedium,
@@ -460,7 +456,7 @@ class SmartFeaturesDashboard extends ConsumerWidget {
               shape: BoxShape.circle,
             ),
           ),
-          const SizedBox(width: 12),
+          StandardizedGaps.horizontal(SpacingSize.sm),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -473,7 +469,7 @@ class SmartFeaturesDashboard extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
-                const SizedBox(height: 4),
+                StandardizedGaps.vertical(SpacingSize.xs),
                 Container(
                   height: 12,
                   width: 80,
@@ -500,7 +496,7 @@ class SmartFeaturesDashboard extends ConsumerWidget {
             size: 12,
             color: Theme.of(context).colorScheme.error,
           ),
-          const SizedBox(width: 12),
+          StandardizedGaps.horizontal(SpacingSize.sm),
           Text(
             'Error loading project health',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -685,7 +681,7 @@ class _StatCardSkeleton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GlassmorphismContainer(
       borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
-      padding: const EdgeInsets.all(12),
+      padding: StandardizedSpacing.padding(SpacingSize.sm),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -730,14 +726,14 @@ class _SuggestionDetailsDialog extends ConsumerWidget {
             suggestion.description,
             style: Theme.of(context).textTheme.bodyMedium,
           ),
-          const SizedBox(height: 16),
+          StandardizedGaps.vertical(SpacingSize.md),
           Text(
             'Expected Impact:',
             style: Theme.of(context).textTheme.labelMedium?.copyWith(
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: 4),
+          StandardizedGaps.vertical(SpacingSize.xs),
           Text(
             suggestion.expectedImpact,
             style: Theme.of(context).textTheme.bodySmall,
@@ -749,7 +745,7 @@ class _SuggestionDetailsDialog extends ConsumerWidget {
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: 4),
+          StandardizedGaps.vertical(SpacingSize.xs),
           ...suggestion.recommendations.map((rec) => Padding(
             padding: const EdgeInsets.only(bottom: 4),
             child: Row(
@@ -774,7 +770,7 @@ class _SuggestionDetailsDialog extends ConsumerWidget {
                 .updateSuggestionStatus(suggestion.id, false, true, 'Dismissed from dashboard');
             Navigator.of(context).pop();
           },
-          child: const Text('Dismiss'),
+          child: const StandardizedText('Dismiss', style: StandardizedTextStyle.buttonText),
         ),
         FilledButton(
           onPressed: () {
@@ -782,7 +778,7 @@ class _SuggestionDetailsDialog extends ConsumerWidget {
                 .updateSuggestionStatus(suggestion.id, true, false, null);
             Navigator.of(context).pop();
           },
-          child: const Text('Accept'),
+          child: const StandardizedText('Accept', style: StandardizedTextStyle.buttonText),
         ),
       ],
     );

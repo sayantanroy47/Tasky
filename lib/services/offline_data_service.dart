@@ -533,7 +533,17 @@ class OfflineStatus {
     return 'Online - Synced';
   }
 
+  /// Get semantic status color - UI components should apply theme colors
+  OfflineStatusColor get statusColorType {
+    if (isSyncing) return OfflineStatusColor.syncing;
+    if (!isOnline) return OfflineStatusColor.offline;
+    if (hasPendingChanges) return OfflineStatusColor.pending;
+    return OfflineStatusColor.online;
+  }
+  
+  @Deprecated('Use statusColorType instead and apply theme colors in UI')
   Color get statusColor {
+    // Kept for backward compatibility but should be replaced with theme-aware colors
     if (isSyncing) return Colors.blue;
     if (!isOnline) return Colors.red;
     if (hasPendingChanges) return Colors.orange;
@@ -558,3 +568,15 @@ final syncQueueStatusProvider = Provider<SyncQueueStatus>((ref) {
   final service = ref.read(offlineDataServiceProvider);
   return service.syncQueueStatus;
 });
+
+/// Semantic offline status colors for theme-aware UI implementation
+enum OfflineStatusColor {
+  /// Service is online and synced
+  online,
+  /// Service has pending changes to sync
+  pending, 
+  /// Service is currently syncing
+  syncing,
+  /// Service is offline
+  offline,
+}

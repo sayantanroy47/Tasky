@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../core/theme/typography_constants.dart';
+import '../../core/design_system/design_tokens.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/entities/project.dart';
 import '../../domain/models/enums.dart';
@@ -13,6 +14,11 @@ import '../providers/task_providers.dart';
 import '../providers/project_providers.dart';
 import 'enhanced_ux_widgets.dart';
 import 'glassmorphism_container.dart';
+import 'standardized_text.dart';
+import 'standardized_colors.dart';
+import 'standardized_border_radius.dart';
+import 'standardized_spacing.dart';
+import 'standardized_animations.dart';
 
 /// Mobile-optimized Kanban board with touch-friendly interactions
 class MobileKanbanBoard extends ConsumerStatefulWidget {
@@ -58,11 +64,11 @@ class _MobileKanbanBoardState extends ConsumerState<MobileKanbanBoard>
   void initState() {
     super.initState();
     _dragAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 200),
+      duration: StandardizedAnimations.fast,
       vsync: this,
     );
     _refreshAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
+      duration: StandardizedAnimations.normal,
       vsync: this,
     );
   }
@@ -104,13 +110,13 @@ class _MobileKanbanBoardState extends ConsumerState<MobileKanbanBoard>
         semanticLabel: 'Pull to refresh Kanban board',
         child: Container(
           key: _kanbanKey,
-          padding: const EdgeInsets.all(8.0),
+          padding: StandardizedSpacing.padding(SpacingSize.sm),
           child: Column(
             children: [
               // Kanban board header
               _buildKanbanHeader(theme),
               
-              const SizedBox(height: 16),
+              StandardizedGaps.md,
               
               // Kanban columns
               Expanded(
@@ -130,7 +136,7 @@ class _MobileKanbanBoardState extends ConsumerState<MobileKanbanBoard>
                         theme.colorScheme.tertiary,
                         tasks.where((t) => t.status.isPending).toList(),
                       ),
-                      const SizedBox(width: 12),
+                      StandardizedGaps.horizontal(SpacingSize.sm),
                       _buildKanbanColumn(
                         context,
                         theme,
@@ -141,7 +147,7 @@ class _MobileKanbanBoardState extends ConsumerState<MobileKanbanBoard>
                         theme.colorScheme.secondary,
                         tasks.where((t) => t.status.isInProgress).toList(),
                       ),
-                      const SizedBox(width: 12),
+                      StandardizedGaps.horizontal(SpacingSize.sm),
                       _buildKanbanColumn(
                         context,
                         theme,
@@ -166,7 +172,7 @@ class _MobileKanbanBoardState extends ConsumerState<MobileKanbanBoard>
   Widget _buildKanbanHeader(ThemeData theme) {
     return GlassmorphismContainer(
       level: GlassLevel.content,
-      padding: const EdgeInsets.all(16),
+      padding: StandardizedSpacing.padding(SpacingSize.md),
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       child: Row(
         children: [
@@ -175,23 +181,19 @@ class _MobileKanbanBoardState extends ConsumerState<MobileKanbanBoard>
             color: theme.colorScheme.primary,
             size: 24,
           ),
-          const SizedBox(width: 12),
+          StandardizedGaps.horizontal(SpacingSize.sm),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const StandardizedText(
                   'Project Board',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: theme.colorScheme.onSurface,
-                  ),
+                  style: StandardizedTextStyle.titleMedium,
                 ),
-                Text(
+                StandardizedText(
                   'Drag tasks between columns or swipe for quick actions',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
+                  style: StandardizedTextStyle.bodySmall,
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
               ],
             ),
@@ -230,7 +232,7 @@ class _MobileKanbanBoardState extends ConsumerState<MobileKanbanBoard>
           // Column header
           _buildColumnHeader(theme, title, icon, accentColor, tasks.length),
           
-          const SizedBox(height: 8),
+          StandardizedGaps.sm,
           
           // Column content
           Expanded(
@@ -242,7 +244,7 @@ class _MobileKanbanBoardState extends ConsumerState<MobileKanbanBoard>
               onAccept: (details) => _handleTaskDrop(details.data as String, status),
               semanticLabel: '$title column, ${tasks.length} tasks',
               child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
+                duration: StandardizedAnimations.fast,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                   border: isDragTarget
@@ -253,7 +255,10 @@ class _MobileKanbanBoardState extends ConsumerState<MobileKanbanBoard>
                   level: GlassLevel.content,
                   borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                   glassTint: isDragTarget
-                      ? accentColor.withValues(alpha: 0.1)
+                      ? context.colors.withSemanticOpacity(
+                          accentColor,
+                          SemanticOpacity.subtle,
+                        )
                       : null,
                   child: tasks.isEmpty
                       ? _buildEmptyColumn(theme, title, icon, accentColor)
@@ -276,10 +281,19 @@ class _MobileKanbanBoardState extends ConsumerState<MobileKanbanBoard>
   ) {
     return GlassmorphismContainer(
       level: GlassLevel.interactive,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: StandardizedSpacing.paddingSymmetric(
+        horizontal: SpacingSize.sm,
+        vertical: SpacingSize.sm,
+      ),
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-      glassTint: accentColor.withValues(alpha: 0.1),
-      borderColor: accentColor.withValues(alpha: 0.3),
+      glassTint: context.colors.withSemanticOpacity(
+        accentColor,
+        SemanticOpacity.subtle,
+      ),
+      borderColor: context.colors.withSemanticOpacity(
+        accentColor,
+        SemanticOpacity.light,
+      ),
       child: Row(
         children: [
           Icon(
@@ -287,30 +301,32 @@ class _MobileKanbanBoardState extends ConsumerState<MobileKanbanBoard>
             color: accentColor,
             size: 18,
           ),
-          const SizedBox(width: 8),
+          StandardizedGaps.horizontal(SpacingSize.sm),
           Expanded(
-            child: Text(
+            child: StandardizedText(
               title,
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w500,
-                color: accentColor,
-              ),
+              style: StandardizedTextStyle.titleSmall,
+              color: accentColor,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: accentColor.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(12),
+            padding: StandardizedSpacing.paddingSymmetric(
+              horizontal: SpacingSize.sm,
+              vertical: SpacingSize.xs,
             ),
-            child: Text(
-              taskCount.toString(),
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: accentColor,
-                fontWeight: FontWeight.w500,
+            decoration: BoxDecoration(
+              color: context.colors.withSemanticOpacity(
+                accentColor,
+                SemanticOpacity.light,
               ),
+              borderRadius: StandardizedBorderRadius.md,
+            ),
+            child: StandardizedText(
+              taskCount.toString(),
+              style: StandardizedTextStyle.bodySmall,
+              color: accentColor,
             ),
           ),
         ],
@@ -332,23 +348,26 @@ class _MobileKanbanBoardState extends ConsumerState<MobileKanbanBoard>
           children: [
             Icon(
               icon,
-              color: accentColor.withValues(alpha: 0.5),
+              color: context.colors.withSemanticOpacity(
+                accentColor,
+                SemanticOpacity.medium,
+              ),
               size: 32,
             ),
-            const SizedBox(height: 8),
-            Text(
+            StandardizedGaps.sm,
+            StandardizedText(
               'No tasks in $title',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+              style: StandardizedTextStyle.bodySmall,
+              color: theme.colorScheme.onSurfaceVariant,
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 4),
-            Text(
+            StandardizedGaps.xs,
+            StandardizedText(
               'Drag tasks here',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-                // Using theme bodySmall size
+              style: StandardizedTextStyle.bodySmall,
+              color: context.colors.withSemanticOpacity(
+                theme.colorScheme.onSurfaceVariant,
+                SemanticOpacity.strong,
               ),
               textAlign: TextAlign.center,
             ),
@@ -367,12 +386,12 @@ class _MobileKanbanBoardState extends ConsumerState<MobileKanbanBoard>
   ) {
     return ListView.builder(
       controller: _columnScrollControllers[status],
-      padding: const EdgeInsets.all(8),
+      padding: StandardizedSpacing.padding(SpacingSize.sm),
       itemCount: tasks.length,
       itemBuilder: (context, index) {
         final task = tasks[index];
         return Padding(
-          padding: const EdgeInsets.only(bottom: 8),
+          padding: StandardizedSpacing.paddingOnly(bottom: SpacingSize.sm),
           child: _buildMobileTaskCard(
             context,
             theme,
@@ -403,7 +422,7 @@ class _MobileKanbanBoardState extends ConsumerState<MobileKanbanBoard>
       semanticLabel: 'Task: ${task.title}',
       child: AnimatedOpacity(
         opacity: isDragging ? 0.7 : 1.0,
-        duration: const Duration(milliseconds: 200),
+        duration: StandardizedAnimations.fast,
         child: _buildTaskCardContent(context, theme, gestureService, task, currentStatus),
       ),
     );
@@ -428,10 +447,16 @@ class _MobileKanbanBoardState extends ConsumerState<MobileKanbanBoard>
         level: GlassLevel.interactive,
         height: widget.cardHeight,
         borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-        borderColor: _getTaskStatusColor(task.status).withValues(alpha: 0.3),
-        glassTint: _getTaskStatusColor(task.status).withValues(alpha: 0.05),
+        borderColor: context.colors.withSemanticOpacity(
+          _getTaskStatusColor(task.status),
+          SemanticOpacity.light,
+        ),
+        glassTint: context.colors.withSemanticOpacity(
+          _getTaskStatusColor(task.status),
+          SemanticOpacity.subtle,
+        ),
         child: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: StandardizedSpacing.padding(SpacingSize.md),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -443,14 +468,19 @@ class _MobileKanbanBoardState extends ConsumerState<MobileKanbanBoard>
                     height: 16,
                     decoration: BoxDecoration(
                       color: _getTaskPriorityColor(task.priority),
-                      borderRadius: BorderRadius.circular(2),
+                      borderRadius: StandardizedBorderRadius.xs,
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  StandardizedGaps.horizontal(SpacingSize.sm),
                   Expanded(
-                    child: Text(
+                    child: StandardizedText(
                       task.title,
-                      style: theme.textTheme.titleSmall?.copyWith(
+                      style: StandardizedTextStyle.titleSmall,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                      style: StandardizedTextStyle.titleSmall.toTextStyle(context).copyWith(
                         fontWeight: FontWeight.w500,
                       ),
                       maxLines: 2,
@@ -467,12 +497,11 @@ class _MobileKanbanBoardState extends ConsumerState<MobileKanbanBoard>
               ),
               
               if (task.description?.isNotEmpty ?? false) ...[
-                const SizedBox(height: 8),
-                Text(
+                StandardizedGaps.sm,
+                StandardizedText(
                   task.description!,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
+                  style: StandardizedTextStyle.bodySmall,
+                  color: theme.colorScheme.onSurfaceVariant,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -492,17 +521,15 @@ class _MobileKanbanBoardState extends ConsumerState<MobileKanbanBoard>
                           ? theme.colorScheme.error
                           : theme.colorScheme.onSurfaceVariant,
                     ),
-                    const SizedBox(width: 4),
-                    Text(
+                    StandardizedGaps.horizontal(SpacingSize.xs),
+                    StandardizedText(
                       _formatDueDate(task.dueDate!),
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: task.isOverdue
-                            ? theme.colorScheme.error
-                            : theme.colorScheme.onSurfaceVariant,
-                        // Using theme labelSmall size
-                      ),
+                      style: StandardizedTextStyle.bodySmall,
+                      color: task.isOverdue
+                          ? theme.colorScheme.error
+                          : theme.colorScheme.onSurfaceVariant,
                     ),
-                    const SizedBox(width: 8),
+                    StandardizedGaps.horizontal(SpacingSize.sm),
                   ],
                   
                   // Subtasks count
@@ -512,13 +539,11 @@ class _MobileKanbanBoardState extends ConsumerState<MobileKanbanBoard>
                       size: 12,
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
-                    const SizedBox(width: 4),
-                    Text(
+                    StandardizedGaps.horizontal(SpacingSize.xs),
+                    StandardizedText(
                       '${task.completedSubtaskCount}/${task.subtaskCount}',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                        // Using theme labelSmall size
-                      ),
+                      style: StandardizedTextStyle.bodySmall,
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ],
                   
@@ -529,7 +554,10 @@ class _MobileKanbanBoardState extends ConsumerState<MobileKanbanBoard>
                     Icon(
                       PhosphorIcons.dotsSixVertical(),
                       size: 16,
-                      color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                      color: context.colors.withSemanticOpacity(
+                        theme.colorScheme.onSurfaceVariant,
+                        SemanticOpacity.medium,
+                      ),
                     ),
                 ],
               ),
@@ -537,7 +565,7 @@ class _MobileKanbanBoardState extends ConsumerState<MobileKanbanBoard>
           ),
         ),
       ),
-    );
+    )
   }
 
   Widget _buildErrorState(String error) {
@@ -550,21 +578,24 @@ class _MobileKanbanBoardState extends ConsumerState<MobileKanbanBoard>
             size: 64,
             color: Theme.of(context).colorScheme.error,
           ),
-          const SizedBox(height: 16),
-          Text(
+          StandardizedGaps.md,
+          const StandardizedText(
             'Error loading Kanban board',
-            style: Theme.of(context).textTheme.headlineSmall,
+            style: StandardizedTextStyle.headlineSmall,
           ),
-          const SizedBox(height: 8),
-          Text(
+          StandardizedGaps.sm,
+          StandardizedText(
             error,
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: StandardizedTextStyle.bodyMedium,
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 24),
+          StandardizedGaps.vertical(SpacingSize.lg),
           EnhancedButton(
             onPressed: () => ref.invalidate(projectTasksProvider(widget.projectId)),
-            child: const Text('Retry'),
+            child: const StandardizedText(
+              'Retry',
+              style: StandardizedTextStyle.buttonText,
+            ),
           ),
         ],
       ),
@@ -660,17 +691,22 @@ class _MobileKanbanBoardState extends ConsumerState<MobileKanbanBoard>
         return Theme.of(context).colorScheme.secondary;
       case TaskStatus.completed:
         return Theme.of(context).colorScheme.primary;
+      case TaskStatus.cancelled:
+        return Theme.of(context).colorScheme.error;
     }
   }
 
   Color _getTaskPriorityColor(TaskPriority priority) {
+    final colors = StandardizedColors(Theme.of(context));
     switch (priority) {
       case TaskPriority.low:
-        return Colors.green;
+        return colors.priorityLow;
       case TaskPriority.medium:
-        return Colors.orange;
+        return colors.priorityMedium;
       case TaskPriority.high:
-        return Colors.red;
+        return colors.priorityHigh;
+      case TaskPriority.urgent:
+        return colors.priorityCritical;
     }
   }
 

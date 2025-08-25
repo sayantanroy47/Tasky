@@ -4,14 +4,14 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../services/ui/mobile_gesture_service.dart';
 import '../../services/ui/mobile_touch_targets_service.dart';
-import '../../services/ui/slidable_feedback_service.dart';
 import 'mobile_kanban_board.dart';
 import 'mobile_project_navigation.dart';
 import 'mobile_zoomable_timeline.dart';
 import 'mobile_project_form.dart';
-import 'enhanced_ux_widgets.dart';
 import 'glassmorphism_container.dart';
+import 'standardized_text.dart';
 import '../../core/theme/typography_constants.dart';
+import '../../core/design_system/design_tokens.dart';
 
 /// Integration widget that demonstrates all mobile gesture features
 /// This serves as both a showcase and integration point for mobile optimizations
@@ -133,10 +133,10 @@ class _MobileGestureIntegrationState extends ConsumerState<MobileGestureIntegrat
       bottom: false,
       child: GlassmorphismContainer(
         level: GlassLevel.floating,
-        margin: const EdgeInsets.all(16),
+        margin: const EdgeInsets.all(SpacingTokens.md),
         borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(SpacingTokens.lg - 4),
           child: Column(
             children: [
               // Header row
@@ -159,13 +159,13 @@ class _MobileGestureIntegrationState extends ConsumerState<MobileGestureIntegrat
                       children: [
                         Text(
                           'Mobile Gestures',
-                          style: theme.textTheme.titleLarge?.copyWith(
+                          style: StandardizedTextStyle.titleLarge.toTextStyle(context).copyWith(
                             fontWeight: FontWeight.w600,
                           ),
                         ),
                         Text(
                           'Touch-optimized project management',
-                          style: theme.textTheme.bodyMedium?.copyWith(
+                          style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
                             color: theme.colorScheme.onSurfaceVariant,
                           ),
                         ),
@@ -197,7 +197,7 @@ class _MobileGestureIntegrationState extends ConsumerState<MobileGestureIntegrat
               
               // Current view info
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(SpacingTokens.sm + 4),
                 decoration: BoxDecoration(
                   color: theme.colorScheme.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
@@ -216,14 +216,14 @@ class _MobileGestureIntegrationState extends ConsumerState<MobileGestureIntegrat
                         children: [
                           Text(
                             _views[_currentView].name,
-                            style: theme.textTheme.titleSmall?.copyWith(
+                            style: StandardizedTextStyle.titleSmall.toTextStyle(context).copyWith(
                               color: theme.colorScheme.primary,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
                           Text(
                             _views[_currentView].description,
-                            style: theme.textTheme.bodySmall?.copyWith(
+                            style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
                               color: theme.colorScheme.primary,
                             ),
                           ),
@@ -257,7 +257,7 @@ class _MobileGestureIntegrationState extends ConsumerState<MobileGestureIntegrat
   Widget _buildTabIndicator(ThemeData theme, MobileTouchTargetsService touchService) {
     return Container(
       height: 60,
-      margin: const EdgeInsets.symmetric(horizontal: 16),
+      margin: const EdgeInsets.symmetric(horizontal: SpacingTokens.md),
       child: Row(
         children: List.generate(_views.length, (index) {
           final view = _views[index];
@@ -286,7 +286,7 @@ class _MobileGestureIntegrationState extends ConsumerState<MobileGestureIntegrat
                   const SizedBox(height: 4),
                   Text(
                     view.name,
-                    style: theme.textTheme.bodySmall?.copyWith(
+                    style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
                       color: isActive
                           ? theme.colorScheme.primary
                           : theme.colorScheme.onSurfaceVariant,
@@ -320,7 +320,7 @@ class _MobileGestureIntegrationState extends ConsumerState<MobileGestureIntegrat
           animation: _mainTabController,
           builder: (context, child) {
             return Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(SpacingTokens.md),
               child: _buildViewContent(index, theme, gestureService, touchService),
             );
           },
@@ -409,7 +409,7 @@ class _MobileGestureIntegrationState extends ConsumerState<MobileGestureIntegrat
                 onTap: _showCurrentGestures,
                 size: TouchTargetSize.standard,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(horizontal: SpacingTokens.sm + 4, vertical: SpacingTokens.sm),
                   decoration: BoxDecoration(
                     color: theme.colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(16),
@@ -425,7 +425,7 @@ class _MobileGestureIntegrationState extends ConsumerState<MobileGestureIntegrat
                       const SizedBox(width: 4),
                       Text(
                         '${_views[_currentView].gestures.length} gestures',
-                        style: theme.textTheme.bodySmall?.copyWith(
+                        style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
                       ),
@@ -467,10 +467,10 @@ class _MobileGestureIntegrationState extends ConsumerState<MobileGestureIntegrat
               scale: _tutorialAnimationController.value,
               child: GlassmorphismContainer(
                 level: GlassLevel.floating,
-                margin: const EdgeInsets.all(32),
+                margin: const EdgeInsets.all(SpacingTokens.xl),
                 borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
                 child: Padding(
-                  padding: const EdgeInsets.all(24),
+                  padding: const EdgeInsets.all(SpacingTokens.lg),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -486,7 +486,7 @@ class _MobileGestureIntegrationState extends ConsumerState<MobileGestureIntegrat
                           Expanded(
                             child: Text(
                               'Mobile Gestures Tutorial',
-                              style: theme.textTheme.titleLarge?.copyWith(
+                              style: StandardizedTextStyle.titleLarge.toTextStyle(context).copyWith(
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -519,7 +519,7 @@ class _MobileGestureIntegrationState extends ConsumerState<MobileGestureIntegrat
                               Expanded(
                                 child: Text(
                                   gesture,
-                                  style: theme.textTheme.bodyMedium,
+                                  style: StandardizedTextStyle.bodyMedium.toTextStyle(context),
                                 ),
                               ),
                             ],
@@ -609,7 +609,7 @@ class _MobileGestureIntegrationState extends ConsumerState<MobileGestureIntegrat
       level: GlassLevel.floating,
       borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(SpacingTokens.lg),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -622,7 +622,7 @@ class _MobileGestureIntegrationState extends ConsumerState<MobileGestureIntegrat
                 Expanded(
                   child: Text(
                     '${currentView.name} Gestures',
-                    style: theme.textTheme.titleLarge?.copyWith(
+                    style: StandardizedTextStyle.titleLarge.toTextStyle(context).copyWith(
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -634,7 +634,7 @@ class _MobileGestureIntegrationState extends ConsumerState<MobileGestureIntegrat
             
             // Gestures list
             ...currentView.gestures.map((gesture) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  padding: const EdgeInsets.symmetric(vertical: SpacingTokens.sm),
                   child: Row(
                     children: [
                       Icon(
@@ -646,7 +646,7 @@ class _MobileGestureIntegrationState extends ConsumerState<MobileGestureIntegrat
                       Expanded(
                         child: Text(
                           gesture,
-                          style: theme.textTheme.bodyMedium,
+                          style: StandardizedTextStyle.bodyMedium.toTextStyle(context),
                         ),
                       ),
                     ],

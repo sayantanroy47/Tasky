@@ -276,7 +276,7 @@ void main() {
         final timelineService = InteractiveTimelineService();
         
         when(mockTaskRepository.updateTask(any)).thenAnswer((_) async {
-          return null;
+          return;
         });
         
         final stopwatch = Stopwatch()..start();

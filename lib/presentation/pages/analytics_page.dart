@@ -3,11 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../core/theme/typography_constants.dart';
+import '../../core/design_system/design_tokens.dart';
 import '../../services/analytics/analytics_models.dart';
 import '../providers/analytics_providers.dart';
 import '../widgets/analytics_widgets.dart';
 import '../widgets/glassmorphism_container.dart';
 import '../widgets/standardized_app_bar.dart';
+import '../widgets/standardized_text.dart';
+import '../widgets/standardized_spacing.dart';
+import '../widgets/standardized_error_states.dart';
 import '../widgets/task_heatmap_widget.dart';
 import 'detailed_heatmap_page.dart';
 
@@ -17,9 +21,9 @@ class AnalyticsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: Colors.transparent, // TODO: Use context.colors.backgroundTransparent
       extendBodyBehindAppBar: true, // Show phone status bar
-      appBar: StandardizedAppBar(
+      appBar: StandardizedAppBar.withTertiaryAccent(
         title: 'Analytics',
         forceBackButton: false, // Analytics is main tab - no back button
         actions: [
@@ -28,7 +32,7 @@ class AnalyticsPage extends ConsumerWidget {
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Date range selector coming soon!'),
+                  content: StandardizedText('Date range selector coming soon!', style: StandardizedTextStyle.bodyMedium),
                   behavior: SnackBarBehavior.floating,
                 ),
               );
@@ -40,7 +44,7 @@ class AnalyticsPage extends ConsumerWidget {
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Export analytics coming soon!'),
+                  content: StandardizedText('Export analytics coming soon!', style: StandardizedTextStyle.bodyMedium),
                   behavior: SnackBarBehavior.floating,
                 ),
               );
@@ -52,10 +56,10 @@ class AnalyticsPage extends ConsumerWidget {
       body: const SafeArea(
         child: Padding(
           padding: EdgeInsets.only(
-            top: kToolbarHeight + 8, // App bar height + spacing
-            left: 16,
-            right: 16,
-            bottom: 16,
+            top: kToolbarHeight + SpacingTokens.xs, // App bar height + spacing
+            left: SpacingTokens.md,
+            right: SpacingTokens.md,
+            bottom: SpacingTokens.md,
           ),
           child: AnalyticsPageBody(),
         ),
@@ -89,7 +93,7 @@ class AnalyticsPageBody extends ConsumerWidget {
             ],
           ),
 
-          const SizedBox(height: 16),
+          StandardizedGaps.md,
 
           // Task Activity Heatmap - First card showing daily completion patterns
           Consumer(
@@ -109,7 +113,7 @@ class AnalyticsPageBody extends ConsumerWidget {
                 ),
                 loading: () => GlassmorphismContainer(
                   borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                  padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
+                  padding: StandardizedSpacing.padding(SpacingSize.md),
                   child: Column(
                     children: [
                       Row(
@@ -119,18 +123,16 @@ class AnalyticsPageBody extends ConsumerWidget {
                             size: 20,
                             color: Theme.of(context).colorScheme.primary,
                           ),
-                          const SizedBox(width: 8),
-                          Text(
+                          StandardizedGaps.horizontal(SpacingSize.xs),
+                          const StandardizedText(
                             'Task Activity Heatmap',
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.w500,
-                                ),
+                            style: StandardizedTextStyle.titleMedium,
                           ),
                         ],
                       ),
-                      const SizedBox(height: 24),
-                      const Center(child: CircularProgressIndicator()),
-                      const SizedBox(height: 24),
+                      StandardizedGaps.lg,
+                      Center(child: StandardizedErrorStates.loading()),
+                      StandardizedGaps.lg,
                     ],
                   ),
                 ),
@@ -139,7 +141,7 @@ class AnalyticsPageBody extends ConsumerWidget {
             },
           ),
 
-          const SizedBox(height: 24),
+          StandardizedGaps.lg,
 
           // Key metrics
           Consumer(
@@ -159,22 +161,22 @@ class AnalyticsPageBody extends ConsumerWidget {
                               value: '${summary.completedTasks}',
                               subtitle: 'tasks ${selectedPeriod.displayName.toLowerCase()}',
                               icon: PhosphorIcons.checkCircle(),
-                              color: Colors.green,
+                              color: Colors.green, // TODO: Replace with context.colors.success
                             ),
                           ),
-                          const SizedBox(width: 12),
+                          StandardizedGaps.horizontal(SpacingSize.sm),
                           Expanded(
                             child: AnalyticsMetricCard(
                               title: 'Completion Rate',
                               value: '${(summary.completionRate * 100).round()}%',
                               subtitle: 'of all tasks',
                               icon: PhosphorIcons.trendUp(),
-                              color: Colors.blue,
+                              color: Colors.blue, // TODO: Replace with context.colors.info
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 12),
+                      StandardizedGaps.vertical(SpacingSize.sm),
                       Row(
                         children: [
                           Expanded(
@@ -183,17 +185,17 @@ class AnalyticsPageBody extends ConsumerWidget {
                               value: '${summary.currentStreak}',
                               subtitle: 'days active',
                               icon: PhosphorIcons.fire(),
-                              color: Colors.orange,
+                              color: Colors.orange, // TODO: Replace with context.colors.warning
                             ),
                           ),
-                          const SizedBox(width: 12),
+                          StandardizedGaps.horizontal(SpacingSize.sm),
                           Expanded(
                             child: AnalyticsMetricCard(
                               title: 'Avg Duration',
                               value: _formatDuration(summary.averageTaskDuration),
                               subtitle: 'per task',
                               icon: PhosphorIcons.clock(),
-                              color: Colors.purple,
+                              color: Colors.purple, // TODO: Replace with semantic color
                             ),
                           ),
                         ],
@@ -209,7 +211,7 @@ class AnalyticsPageBody extends ConsumerWidget {
             },
           ),
 
-          const SizedBox(height: 24),
+          StandardizedGaps.lg,
 
           // Streak widget
           Consumer(
@@ -219,15 +221,15 @@ class AnalyticsPageBody extends ConsumerWidget {
                 data: (streak) => StreakWidget(streakInfo: streak),
                 loading: () => GlassmorphismContainer(
                   borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                  padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
-                  child: const Center(child: CircularProgressIndicator()),
+                  padding: StandardizedSpacing.padding(SpacingSize.md),
+                  child: Center(child: StandardizedErrorStates.loading()),
                 ),
                 error: (error, stack) => _ErrorWidget(error: error.toString()),
               );
             },
           ),
 
-          const SizedBox(height: 16),
+          StandardizedGaps.md,
 
           // Daily completion chart
           Consumer(
@@ -246,15 +248,15 @@ class AnalyticsPageBody extends ConsumerWidget {
                 },
                 loading: () => GlassmorphismContainer(
                   borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                  padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
-                  child: const Center(child: CircularProgressIndicator()),
+                  padding: StandardizedSpacing.padding(SpacingSize.md),
+                  child: Center(child: StandardizedErrorStates.loading()),
                 ),
                 error: (error, stack) => _ErrorWidget(error: error.toString()),
               );
             },
           ),
 
-          const SizedBox(height: 16),
+          StandardizedGaps.md,
 
           // Category breakdown
           Consumer(
@@ -267,15 +269,15 @@ class AnalyticsPageBody extends ConsumerWidget {
                 ),
                 loading: () => GlassmorphismContainer(
                   borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                  padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
-                  child: const Center(child: CircularProgressIndicator()),
+                  padding: StandardizedSpacing.padding(SpacingSize.md),
+                  child: Center(child: StandardizedErrorStates.loading()),
                 ),
                 error: (error, stack) => _ErrorWidget(error: error.toString()),
               );
             },
           ),
 
-          const SizedBox(height: 16),
+          StandardizedGaps.md,
 
           // Productivity insights
           Consumer(
@@ -292,33 +294,31 @@ class AnalyticsPageBody extends ConsumerWidget {
                       hourlyProductivity: hourly,
                       weekdayProductivity: weekday,
                     ),
-                    loading: () => const Card(
-                      child: Padding(
-                        padding: EdgeInsets.all(16.0),
-                        child: Center(child: CircularProgressIndicator()),
-                      ),
+                    loading: () => GlassmorphismContainer(
+                      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                      padding: StandardizedSpacing.padding(SpacingSize.md),
+                      child: Center(child: StandardizedErrorStates.loading()),
                     ),
                     error: (error, stack) => _ErrorWidget(error: error.toString()),
                   ),
-                  loading: () => const Card(
-                    child: Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Center(child: CircularProgressIndicator()),
-                    ),
+                  loading: () => GlassmorphismContainer(
+                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                    padding: StandardizedSpacing.padding(SpacingSize.md),
+                    child: Center(child: StandardizedErrorStates.loading()),
                   ),
                   error: (error, stack) => _ErrorWidget(error: error.toString()),
                 ),
                 loading: () => GlassmorphismContainer(
                   borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                  padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
-                  child: const Center(child: CircularProgressIndicator()),
+                  padding: StandardizedSpacing.padding(SpacingSize.md),
+                  child: Center(child: StandardizedErrorStates.loading()),
                 ),
                 error: (error, stack) => _ErrorWidget(error: error.toString()),
               );
             },
           ),
 
-          const SizedBox(height: 16),
+          StandardizedGaps.md,
 
           // Advanced analytics sections
 
@@ -330,15 +330,15 @@ class AnalyticsPageBody extends ConsumerWidget {
                 data: (patterns) => ProductivityPatternsWidget(patterns: patterns),
                 loading: () => GlassmorphismContainer(
                   borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                  padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
-                  child: const Center(child: CircularProgressIndicator()),
+                  padding: StandardizedSpacing.padding(SpacingSize.md),
+                  child: Center(child: StandardizedErrorStates.loading()),
                 ),
                 error: (error, stack) => _ErrorWidget(error: error.toString()),
               );
             },
           ),
 
-          const SizedBox(height: 16),
+          StandardizedGaps.md,
 
           // Peak hours analysis
           Consumer(
@@ -348,15 +348,15 @@ class AnalyticsPageBody extends ConsumerWidget {
                 data: (analysis) => PeakHoursAnalysisWidget(analysis: analysis),
                 loading: () => GlassmorphismContainer(
                   borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                  padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
-                  child: const Center(child: CircularProgressIndicator()),
+                  padding: StandardizedSpacing.padding(SpacingSize.md),
+                  child: Center(child: StandardizedErrorStates.loading()),
                 ),
                 error: (error, stack) => _ErrorWidget(error: error.toString()),
               );
             },
           ),
 
-          const SizedBox(height: 16),
+          StandardizedGaps.md,
 
           // Advanced category analytics
           Consumer(
@@ -366,15 +366,15 @@ class AnalyticsPageBody extends ConsumerWidget {
                 data: (analytics) => AdvancedCategoryAnalyticsWidget(analytics: analytics),
                 loading: () => GlassmorphismContainer(
                   borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                  padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
-                  child: const Center(child: CircularProgressIndicator()),
+                  padding: StandardizedSpacing.padding(SpacingSize.md),
+                  child: Center(child: StandardizedErrorStates.loading()),
                 ),
                 error: (error, stack) => _ErrorWidget(error: error.toString()),
               );
             },
           ),
 
-          const SizedBox(height: 16),
+          StandardizedGaps.md,
 
           // Advanced productivity insights
           Consumer(
@@ -384,15 +384,15 @@ class AnalyticsPageBody extends ConsumerWidget {
                 data: (insights) => AdvancedProductivityInsightsWidget(insights: insights),
                 loading: () => GlassmorphismContainer(
                   borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-                  padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
-                  child: const Center(child: CircularProgressIndicator()),
+                  padding: StandardizedSpacing.padding(SpacingSize.md),
+                  child: Center(child: StandardizedErrorStates.loading()),
                 ),
                 error: (error, stack) => _ErrorWidget(error: error.toString()),
               );
             },
           ),
 
-          const SizedBox(height: 16),
+          StandardizedGaps.md,
 
           // Analytics export
           AnalyticsExportWidget(
@@ -425,7 +425,7 @@ class AnalyticsPageBody extends ConsumerWidget {
       // Show loading indicator
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Exporting analytics as ${format.displayName}...'),
+          content: StandardizedText('Exporting analytics as ${format.displayName}...', style: StandardizedTextStyle.bodyMedium),
           duration: const Duration(seconds: 2),
         ),
       );
@@ -437,8 +437,8 @@ class AnalyticsPageBody extends ConsumerWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Analytics exported as ${format.displayName} successfully!'),
-            backgroundColor: Colors.green,
+            content: StandardizedText('Analytics exported as ${format.displayName} successfully!', style: StandardizedTextStyle.bodyMedium),
+            backgroundColor: Colors.green, // TODO: Replace with context.colors.success
           ),
         );
       }
@@ -446,8 +446,8 @@ class AnalyticsPageBody extends ConsumerWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Export failed: ${e.toString()}'),
-            backgroundColor: Colors.red,
+            content: StandardizedText('Export failed: ${e.toString()}', style: StandardizedTextStyle.bodyMedium),
+            backgroundColor: Colors.red, // TODO: Replace with context.colors.error
           ),
         );
       }
@@ -468,39 +468,39 @@ class _LoadingMetrics extends StatelessWidget {
               child: GlassmorphismContainer(
                 borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                 height: 120,
-                padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
-                child: const Center(child: CircularProgressIndicator()),
+                padding: StandardizedSpacing.padding(SpacingSize.md),
+                child: Center(child: StandardizedErrorStates.loading()),
               ),
             ),
-            const SizedBox(width: 12),
+            StandardizedGaps.horizontal(SpacingSize.sm),
             Expanded(
               child: GlassmorphismContainer(
                 borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                 height: 120,
-                padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
-                child: const Center(child: CircularProgressIndicator()),
+                padding: StandardizedSpacing.padding(SpacingSize.md),
+                child: Center(child: StandardizedErrorStates.loading()),
               ),
             ),
           ],
         ),
-        const SizedBox(height: 12),
+        StandardizedGaps.vertical(SpacingSize.sm),
         Row(
           children: [
             Expanded(
               child: GlassmorphismContainer(
                 borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                 height: 120,
-                padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
-                child: const Center(child: CircularProgressIndicator()),
+                padding: StandardizedSpacing.padding(SpacingSize.md),
+                child: Center(child: StandardizedErrorStates.loading()),
               ),
             ),
-            const SizedBox(width: 12),
+            StandardizedGaps.horizontal(SpacingSize.sm),
             Expanded(
               child: GlassmorphismContainer(
                 borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                 height: 120,
-                padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
-                child: const Center(child: CircularProgressIndicator()),
+                padding: StandardizedSpacing.padding(SpacingSize.md),
+                child: Center(child: StandardizedErrorStates.loading()),
               ),
             ),
           ],
@@ -519,7 +519,7 @@ class _ErrorWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GlassmorphismContainer(
       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-      padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
+      padding: StandardizedSpacing.padding(SpacingSize.md),
       child: Column(
         children: [
           Icon(
@@ -527,15 +527,15 @@ class _ErrorWidget extends StatelessWidget {
             color: Theme.of(context).colorScheme.error,
             size: 48,
           ),
-          const SizedBox(height: 8),
-          Text(
+          StandardizedGaps.vertical(SpacingSize.xs),
+          const StandardizedText(
             'Error loading analytics',
-            style: Theme.of(context).textTheme.titleMedium,
+            style: StandardizedTextStyle.titleMedium,
           ),
-          const SizedBox(height: 4),
-          Text(
+          StandardizedGaps.vertical(SpacingSize.xs),
+          StandardizedText(
             error,
-            style: Theme.of(context).textTheme.bodySmall,
+            style: StandardizedTextStyle.bodySmall,
             textAlign: TextAlign.center,
           ),
         ],

@@ -29,7 +29,7 @@ class VegetaBlueTheme {
         category: 'gaming',
         previewIcon: PhosphorIcons.lightning(),
         primaryPreviewColor: const Color(0xFF1E3A8A), // SSGSS battle suit
-        secondaryPreviewColor: const Color(0xFF1F8FFF), // Azure aura core
+        secondaryPreviewColor: const Color(0xFF009DFF), // Azure blue base
         createdAt: now,
         isPremium: false,
         popularityScore: 8.5,
@@ -54,92 +54,92 @@ class VegetaBlueTheme {
   /// Create Vegeta SSGSS-inspired color palette with maximum accuracy
   static ThemeColors _createVegetaColors({bool isDark = false}) {
     if (isDark) {
-      // SSGSS Dark Variant: Cosmic void with brilliant azure energy
-      const deepSpaceBlue = Color(0xFF0A0F1C);       // Cosmic void background
+      // SSGSS Dark Variant: Deep cosmic void with azure energy
+      const deepestVoid = Color(0xFF000000);         // Pure black void background
       const royalNavy = Color(0xFF1E3A8A);           // Vegeta's battle suit
-      const brilliantBlue = Color(0xFF1F8FFF);       // SSJ Blue hair & aura core
-      const energyGlow = Color(0xFF60A5FA);          // Aura edges, glow effects
-      const silverWhite = Color(0xFFE5E9F0);         // Armor shine
+      const azureBlue = Color(0xFF009DFF);           // SSGSS Azure blue base
+      const skyBlue = Color(0xFF00BFFF);             // Saturated sky blue
+      const pureWhite = Color(0xFFFFFFFF);           // Pure white text
       const plasmaYellow = Color(0xFFFACC15);        // Gold armor accents and sparks
-      const spaceDark = Color(0xFF111827);           // Deep shadows
-      const auraCyan = Color(0xFF38BDF8);            // Extra highlight for glowing energy
-      const voidPurple = Color(0xFF1C1B29);          // Subtle cosmic depth
+      const deepShadow = Color(0xFF050505);          // Nearly black shadows
+      const lightAzure = Color(0xFF87CEEB);          // Light azure highlights
+      const darkPurple = Color(0xFF0A0A0F);          // Very dark cosmic depth
       
       return const ThemeColors(
-        // Primary colors - SSGSS Battle Suit
-        primary: royalNavy,
-        onPrimary: silverWhite,
-        primaryContainer: brilliantBlue,
-        onPrimaryContainer: silverWhite,
+        // Primary colors - SSGSS Azure
+        primary: azureBlue,
+        onPrimary: pureWhite,
+        primaryContainer: royalNavy,
+        onPrimaryContainer: pureWhite,
 
         // Secondary colors - Azure Aura Core
-        secondary: brilliantBlue,
-        onSecondary: deepSpaceBlue,
-        secondaryContainer: auraCyan,
-        onSecondaryContainer: deepSpaceBlue,
+        secondary: azureBlue,
+        onSecondary: deepestVoid,
+        secondaryContainer: lightAzure,
+        onSecondaryContainer: deepestVoid,
 
         // Tertiary colors - Golden Armor Accents
         tertiary: plasmaYellow,
-        onTertiary: deepSpaceBlue,
+        onTertiary: deepestVoid,
         tertiaryContainer: Color(0xFFD97706),
-        onTertiaryContainer: deepSpaceBlue,
+        onTertiaryContainer: deepestVoid,
 
-        // Surface colors - Cosmic Materials
-        surface: spaceDark,
-        onSurface: silverWhite,
-        surfaceVariant: voidPurple,
-        onSurfaceVariant: silverWhite,
-        inverseSurface: silverWhite,
-        onInverseSurface: deepSpaceBlue,
+        // Surface colors - Dark Materials
+        surface: deepShadow,
+        onSurface: pureWhite,
+        surfaceVariant: darkPurple,
+        onSurfaceVariant: skyBlue,
+        inverseSurface: pureWhite,
+        onInverseSurface: deepestVoid,
 
-        // Background colors - Deep Space Void
-        background: deepSpaceBlue,
-        onBackground: silverWhite,
+        // Background colors - Deepest Void
+        background: deepestVoid,
+        onBackground: pureWhite,
 
         // Error colors - Destructive Ki Energy
         error: Color(0xFFEF4444),
-        onError: deepSpaceBlue,
+        onError: deepestVoid,
         errorContainer: Color(0xFFDC2626),
-        onErrorContainer: silverWhite,
+        onErrorContainer: pureWhite,
 
         // Special colors - SSGSS Energy System
-        accent: energyGlow,
+        accent: skyBlue,
         highlight: plasmaYellow,
         shadow: Color(0xFF000000),
-        outline: auraCyan,
-        outlineVariant: voidPurple,
+        outline: lightAzure,
+        outlineVariant: darkPurple,
 
         // Task priority colors - Power Level System
         taskLowPriority: Color(0xFF10B981),      // Calm energy green
-        taskMediumPriority: brilliantBlue,       // SSGSS blue
+        taskMediumPriority: azureBlue,           // SSGSS azure blue
         taskHighPriority: plasmaYellow,          // Golden power
         taskUrgentPriority: Color(0xFFEF4444),   // Destructive red
 
         // Status colors - Energy States
         success: Color(0xFF10B981),
         warning: plasmaYellow,
-        info: energyGlow,
+        info: skyBlue,
 
         // Calendar dot colors - SSGSS Power System
-        calendarTodayDot: energyGlow,
+        calendarTodayDot: skyBlue,
         calendarOverdueDot: Color(0xFFEF4444),
-        calendarFutureDot: auraCyan,
+        calendarFutureDot: lightAzure,
         calendarCompletedDot: Color(0xFF10B981),
         calendarHighPriorityDot: plasmaYellow,
         
         // Status badge colors - Saiyan Power States
-        statusPendingBadge: energyGlow,
+        statusPendingBadge: skyBlue,
         statusInProgressBadge: plasmaYellow,
         statusCompletedBadge: Color(0xFF10B981),
-        statusCancelledBadge: voidPurple,
+        statusCancelledBadge: darkPurple,
         statusOverdueBadge: Color(0xFFEF4444),
-        statusOnHoldBadge: auraCyan,
+        statusOnHoldBadge: lightAzure,
 
         // Interactive colors - Energy Responses
-        hover: auraCyan,
+        hover: lightAzure,
         pressed: royalNavy,
         focus: plasmaYellow,
-        disabled: voidPurple,
+        disabled: darkPurple,
       );
     }
     
@@ -147,15 +147,15 @@ class VegetaBlueTheme {
     
     // Refined SSGSS colors for light variant
     const darkRoyalNavy = Color(0xFF1E3A8A);          // Strong suit accent
-    const darkBrilliantBlue = Color(0xFF1F8FFF);      // Aura highlight  
-    const darkEnergyGlow = Color(0xFF60A5FA);         // Aura edge glow
+    const darkAzureBlue = Color(0xFF009DFF);          // SSGSS Azure blue base
+    const darkAzureGlow = Color(0xFF66B3FF);          // Saturated sky blue
     const darkPlasmaYellow = Color(0xFFFACC15);       // Golden highlight
     
     // Light variant backgrounds and accents
     const pureWhite = Color(0xFFFFFFFF);              // Clean background
     const lightSilver = Color(0xFFF3F4F6);            // Soft armor gray
     const paleBlue = Color(0xFFDBEAFE);               // Gentle aura tint
-    const auraCyanLight = Color(0xFFBAE6FD);          // Glow highlight
+    const lightAzure = Color(0xFFB3D9FF);             // Light azure highlight
     
     return const ThemeColors(
       // Primary colors - SSGSS Battle Suit (Light)
@@ -165,9 +165,9 @@ class VegetaBlueTheme {
       onPrimaryContainer: darkRoyalNavy,
       
       // Secondary colors - Azure Aura (Light)
-      secondary: darkBrilliantBlue,
+      secondary: darkAzureBlue,
       onSecondary: pureWhite,
-      secondaryContainer: auraCyanLight,
+      secondaryContainer: lightAzure,
       onSecondaryContainer: darkRoyalNavy,
       
       // Tertiary colors - Golden Energy Accents (Light)
@@ -195,7 +195,7 @@ class VegetaBlueTheme {
       onErrorContainer: Color(0xFF991B1B), // Dark red text
       
       // Special colors - SSGSS Light Energy System
-      accent: darkEnergyGlow,
+      accent: darkAzureGlow,
       highlight: darkPlasmaYellow,
       shadow: Color(0xFF000000),
       outline: Color(0xFF64748B), // Slate outline
@@ -203,24 +203,24 @@ class VegetaBlueTheme {
       
       // Task priority colors - Light Power Level System
       taskLowPriority: Color(0xFF059669),      // Strong green
-      taskMediumPriority: darkBrilliantBlue,   // SSGSS blue
+      taskMediumPriority: darkAzureBlue,       // SSGSS azure blue
       taskHighPriority: darkPlasmaYellow,      // Golden power
       taskUrgentPriority: Color(0xFFDC2626),   // Strong red
       
       // Status colors - Light Energy States
       success: Color(0xFF059669), // Strong green
       warning: Color(0xFFD97706), // Strong amber
-      info: darkEnergyGlow,
+      info: darkAzureGlow,
       
       // Calendar dot colors - SSGSS Light Power System
-      calendarTodayDot: darkEnergyGlow,
+      calendarTodayDot: darkAzureGlow,
       calendarOverdueDot: Color(0xFFDC2626),
-      calendarFutureDot: auraCyanLight,
+      calendarFutureDot: lightAzure,
       calendarCompletedDot: Color(0xFF059669),
       calendarHighPriorityDot: darkPlasmaYellow,
       
       // Status badge colors - Light Saiyan Power States
-      statusPendingBadge: darkEnergyGlow,
+      statusPendingBadge: darkAzureGlow,
       statusInProgressBadge: darkPlasmaYellow,
       statusCompletedBadge: Color(0xFF059669),
       statusCancelledBadge: Color(0xFF64748B), // Neutral slate
@@ -228,17 +228,17 @@ class VegetaBlueTheme {
       statusOnHoldBadge: Color(0xFFD97706), // Amber
       
       // Interactive colors - Light Energy Responses
-      hover: auraCyanLight,
+      hover: lightAzure,
       pressed: darkRoyalNavy,
       focus: darkPlasmaYellow,
       disabled: Color(0xFF94A3B8), // Light slate
     );
   }
 
-  /// Create Vegeta-inspired typography using Orbitron (futuristic, angular font)
+  /// Create Vegeta-inspired typography using Sansation (clean, futuristic font)
   static ThemeTypography _createVegetaTypography({bool isDark = false}) {
     final colors = _VegetaColorsHelper(isDark: isDark);
-    const fontFamily = 'Orbitron';
+    const fontFamily = 'Sansation';
     
     return ThemeTypography(
       fontFamily: fontFamily,
@@ -246,7 +246,7 @@ class VegetaBlueTheme {
       monospaceFontFamily: fontFamily,
       baseSize: TypographyConstants.bodyLarge,
       scaleRatio: 1.0, // No scaling - use exact constants
-      baseFontWeight: TypographyConstants.medium, // Bold and powerful
+      baseFontWeight: TypographyConstants.medium, // Medium weight for Saira
       baseLetterSpacing: TypographyConstants.normalLetterSpacing, // Consistent spacing
       baseLineHeight: TypographyConstants.normalLineHeight, // Consistent line height
       
@@ -254,7 +254,7 @@ class VegetaBlueTheme {
       displayLarge: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.displayLarge,
-        fontWeight: TypographyConstants.light,
+        fontWeight: TypographyConstants.medium,
         letterSpacing: TypographyConstants.normalLetterSpacing,
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
@@ -262,7 +262,7 @@ class VegetaBlueTheme {
       displayMedium: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.displayMedium,
-        fontWeight: TypographyConstants.light,
+        fontWeight: TypographyConstants.medium,
         letterSpacing: TypographyConstants.normalLetterSpacing,
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
@@ -270,7 +270,7 @@ class VegetaBlueTheme {
       displaySmall: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.displaySmall,
-        fontWeight: TypographyConstants.regular,
+        fontWeight: TypographyConstants.medium,
         letterSpacing: TypographyConstants.normalLetterSpacing,
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
@@ -576,9 +576,9 @@ class _VegetaColorsHelper {
   final bool isDark;
   const _VegetaColorsHelper({this.isDark = false});
   
-  Color get onBackground => isDark ? const Color(0xFFf1f5f9) : const Color(0xFF1a1a1a); // Fixed: dark text for light theme
-  Color get primary => const Color(0xFF1e3a8a);  // Same in both variants
-  Color get secondary => isDark ? const Color(0xFF60a5fa) : const Color(0xFF3b82f6);
+  Color get onBackground => isDark ? const Color(0xFFFFFFFF) : const Color(0xFF1a1a1a); // White text for dark theme
+  Color get primary => const Color(0xFF009DFF);  // Updated azure base
+  Color get secondary => isDark ? const Color(0xFF87CEEB) : const Color(0xFF66B3FF);
 }
 
 

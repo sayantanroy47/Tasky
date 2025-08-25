@@ -13,6 +13,7 @@ import '../widgets/glassmorphism_container.dart';
 import '../widgets/recurring_task_scheduling_widget.dart';
 import '../widgets/simple_theme_toggle.dart';
 import '../widgets/standardized_app_bar.dart';
+import '../widgets/standardized_text.dart';
 import 'ai_settings_page.dart' as ai_settings;
 // import 'data_export_page.dart';
 import 'help_page.dart';
@@ -40,17 +41,14 @@ class SettingsPage extends ConsumerWidget {
   }) {
     return ListTile(
       leading: Icon(leadingIcon),
-      title: Text(
+      title: StandardizedText(
         title,
-        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w500,
-            ),
+        style: StandardizedTextStyle.titleMedium,
       ),
-      subtitle: Text(
+      subtitle: StandardizedText(
         subtitle,
-        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
+        style: StandardizedTextStyle.bodyMedium,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
       ),
       trailing: Icon(trailingIcon ?? PhosphorIcons.caretRight()),
       onTap: onTap,
@@ -86,12 +84,7 @@ class SettingsPage extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Navigation',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w500,
-                        ),
-                  ),
+                  StandardizedTextVariants.sectionHeader('Navigation'),
                   const SizedBox(height: 16),
                   _buildListTile(
                     context: context,
@@ -132,12 +125,7 @@ class SettingsPage extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Profile',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w500,
-                        ),
-                  ),
+                  StandardizedTextVariants.sectionHeader('Profile'),
                   const SizedBox(height: 16),
                   _buildListTile(
                     context: context,
@@ -165,12 +153,7 @@ class SettingsPage extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Appearance',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w500,
-                        ),
-                  ),
+                  StandardizedTextVariants.sectionHeader('Appearance'),
                   const SizedBox(height: 16),
                   _buildListTile(
                     context: context,
@@ -198,12 +181,7 @@ class SettingsPage extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'AI & Voice',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w500,
-                        ),
-                  ),
+                  StandardizedTextVariants.sectionHeader('AI & Voice'),
                   const SizedBox(height: 16),
                   _buildListTile(
                     context: context,
@@ -231,12 +209,7 @@ class SettingsPage extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Location',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w500,
-                        ),
-                  ),
+                  StandardizedTextVariants.sectionHeader('Location'),
                   const SizedBox(height: 16),
                   _buildListTile(
                     context: context,
@@ -277,12 +250,7 @@ class SettingsPage extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Tasks',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w500,
-                        ),
-                  ),
+                  StandardizedTextVariants.sectionHeader('Tasks'),
                   const SizedBox(height: 16),
                   _buildListTile(
                     context: context,
@@ -410,12 +378,7 @@ class SettingsPage extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Data',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w500,
-                        ),
-                  ),
+                  StandardizedTextVariants.sectionHeader('Data'),
                   const SizedBox(height: 16),
                   _buildListTile(
                     context: context,
@@ -456,12 +419,7 @@ class SettingsPage extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'System',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w500,
-                        ),
-                  ),
+                  StandardizedTextVariants.sectionHeader('System'),
                   const SizedBox(height: 16),
 
                   // Background Services Status
@@ -489,12 +447,7 @@ class SettingsPage extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'About',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w500,
-                        ),
-                  ),
+                  StandardizedTextVariants.sectionHeader('About'),
                   const SizedBox(height: 16),
                   _buildListTile(
                     context: context,
@@ -561,11 +514,9 @@ class SettingsPage extends ConsumerWidget {
                   size: 20,
                 ),
                 const SizedBox(width: 8),
-                Text(
+                const StandardizedText(
                   'Background Services',
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w500,
-                      ),
+                  style: StandardizedTextStyle.titleSmall,
                 ),
                 const Spacer(),
                 GlassmorphismContainer(
@@ -574,12 +525,10 @@ class SettingsPage extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(12),
                   glassTint:
                       isRunning && isEnabled ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.2) : Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.2),
-                  child: Text(
+                  child: StandardizedText(
                     isRunning && isEnabled ? 'Running' : 'Stopped',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          fontWeight: FontWeight.w500,
-                          color: isRunning && isEnabled ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
+                    style: StandardizedTextStyle.bodySmall,
+                    color: isRunning && isEnabled ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],
@@ -597,11 +546,10 @@ class SettingsPage extends ConsumerWidget {
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                   const SizedBox(width: 8),
-                  Text(
+                  StandardizedText(
                     'Last cleanup: ${_formatTimestamp(lastCleanup)}',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
+                    style: StandardizedTextStyle.bodySmall,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ],
               ),
@@ -617,11 +565,10 @@ class SettingsPage extends ConsumerWidget {
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                   const SizedBox(width: 8),
-                  Text(
+                  StandardizedText(
                     'Last reminder check: ${_formatTimestamp(lastReminderCheck)}',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
+                    style: StandardizedTextStyle.bodySmall,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ],
               ),
@@ -631,9 +578,9 @@ class SettingsPage extends ConsumerWidget {
             // Toggle switch
             Row(
               children: [
-                Text(
+                const StandardizedText(
                   'Enable background processing',
-                  style: Theme.of(context).textTheme.bodyMedium,
+                  style: StandardizedTextStyle.bodyMedium,
                 ),
                 const Spacer(),
                 Switch(
@@ -688,11 +635,10 @@ class SettingsPage extends ConsumerWidget {
             ),
             const SizedBox(width: 8),
             Expanded(
-              child: Text(
+              child: StandardizedText(
                 'Background services unavailable',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.error,
-                    ),
+                style: StandardizedTextStyle.bodyMedium,
+                color: Theme.of(context).colorScheme.error,
               ),
             ),
           ],
@@ -717,9 +663,9 @@ class SettingsPage extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const StandardizedText(
                   'This device supports the following features:',
-                  style: Theme.of(context).textTheme.bodyMedium,
+                  style: StandardizedTextStyle.bodyMedium,
                 ),
                 const SizedBox(height: 16),
 
@@ -734,9 +680,9 @@ class SettingsPage extends ConsumerWidget {
                           ),
                           const SizedBox(width: 12),
                           Expanded(
-                            child: Text(
+                            child: StandardizedText(
                               _formatCapabilityName(entry.key),
-                              style: Theme.of(context).textTheme.bodyMedium,
+                              style: StandardizedTextStyle.bodyMedium,
                             ),
                           ),
                         ],
@@ -754,28 +700,23 @@ class SettingsPage extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Platform Details',
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                              fontWeight: FontWeight.w500,
-                            ),
-                      ),
+                      StandardizedTextVariants.cardTitle('Platform Details'),
                       const SizedBox(height: 8),
                       Text(
                         'Speech Recognition: ${capabilities.speechRecognition.isSupported ? "Supported" : "Not Available"}',
-                        style: Theme.of(context).textTheme.bodySmall,
+                        style: StandardizedTextStyle.bodySmall.toTextStyle(context),
                       ),
                       Text(
                         'Audio Recording: ${capabilities.audioRecording.isSupported ? "Supported" : "Not Available"}',
-                        style: Theme.of(context).textTheme.bodySmall,
+                        style: StandardizedTextStyle.bodySmall.toTextStyle(context),
                       ),
                       Text(
                         'Background Processing: ${capabilities.backgroundProcessing.isSupported ? "Supported" : "Not Available"}',
-                        style: Theme.of(context).textTheme.bodySmall,
+                        style: StandardizedTextStyle.bodySmall.toTextStyle(context),
                       ),
                       Text(
                         'Notifications: ${capabilities.notifications.isSupported ? "Supported" : "Not Available"}',
-                        style: Theme.of(context).textTheme.bodySmall,
+                        style: StandardizedTextStyle.bodySmall.toTextStyle(context),
                       ),
                     ],
                   ),

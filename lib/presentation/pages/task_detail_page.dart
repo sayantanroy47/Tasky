@@ -1142,7 +1142,7 @@ class _TaskDependencies extends ConsumerWidget {
 
           // Dependencies list
           if (task.dependencies.isNotEmpty) ...[
-            StandardizedText(
+            const StandardizedText(
               'Depends on:',
               style: StandardizedTextStyle.titleMedium,
             ),

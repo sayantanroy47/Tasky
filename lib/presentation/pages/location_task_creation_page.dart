@@ -10,6 +10,7 @@ import '../providers/location_providers.dart';
 import '../providers/task_provider.dart' show taskOperationsProvider;
 import '../widgets/glassmorphism_container.dart';
 import '../widgets/theme_background_widget.dart';
+import '../widgets/standardized_text.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../core/design_system/design_tokens.dart';
 import '../../core/theme/material3/motion_system.dart';
@@ -408,11 +409,9 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
                 color: theme.colorScheme.primary,
               ),
               const SizedBox(width: 8),
-              Text(
+              const StandardizedText(
                 'Location Task Details',
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: TypographyConstants.medium,
-                ),
+                style: StandardizedTextStyle.titleLarge,
               ),
             ],
           ),
@@ -477,11 +476,9 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
                 color: theme.colorScheme.primary,
               ),
               const SizedBox(width: 8),
-              Text(
+              const StandardizedText(
                 'Location Setup',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: TypographyConstants.medium,
-                ),
+                style: StandardizedTextStyle.titleMedium,
               ),
             ],
           ),
@@ -545,11 +542,10 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
                             Icon(PhosphorIcons.warning(), color: Colors.orange, size: 20),
                             const SizedBox(width: 8),
                             Expanded(
-                              child: Text(
+                              child: StandardizedText(
                                 'Location permission required for location-based reminders',
-                                style: theme.textTheme.labelSmall?.copyWith(
-                                  color: Colors.orange.shade700,
-                                ),
+                                style: StandardizedTextStyle.labelSmall,
+                                color: Colors.orange.shade700,
                               ),
                             ),
                             const SizedBox(width: 8),
@@ -597,19 +593,15 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        StandardizedText(
                           'Selected Location',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.primary,
-                            fontWeight: TypographyConstants.medium,
-                          ),
+                          style: StandardizedTextStyle.bodySmall,
+                          color: theme.colorScheme.primary,
                         ),
                         const SizedBox(height: 2),
-                        Text(
+                        StandardizedText(
                           _getBestLocationDisplay(),
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            fontWeight: TypographyConstants.medium,
-                          ),
+                          style: StandardizedTextStyle.bodyMedium,
                         ),
                       ],
                     ),
@@ -639,11 +631,9 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
                 color: theme.colorScheme.primary,
               ),
               const SizedBox(width: 8),
-              Text(
+              const StandardizedText(
                 'Location Trigger',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: TypographyConstants.medium,
-                ),
+                style: StandardizedTextStyle.titleMedium,
               ),
             ],
           ),
@@ -665,11 +655,15 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
                     return DropdownMenuItem(
                       value: type,
                       child: Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(_getTriggerTypeIcon(type), size: 16),
                           const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(_getTriggerTypeDisplay(type)),
+                          Flexible(
+                            child: Text(
+                              _getTriggerTypeDisplay(type),
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                         ],
                       ),
@@ -779,11 +773,9 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
           const SizedBox(height: 16),
           
           // Geofence radius
-          Text(
+          StandardizedText(
             'Detection Radius: ${_geofenceRadius.toInt()}m',
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: TypographyConstants.medium,
-            ),
+            style: StandardizedTextStyle.titleMedium,
           ),
           const SizedBox(height: 8),
           SliderTheme(
@@ -814,11 +806,10 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
               color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(6),
             ),
-            child: Text(
+            child: StandardizedText(
               _getRadiusDescription(_geofenceRadius),
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+              style: StandardizedTextStyle.bodySmall,
+              color: theme.colorScheme.onSurfaceVariant,
               textAlign: TextAlign.center,
             ),
           ),
@@ -845,11 +836,9 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
                 color: theme.colorScheme.primary,
               ),
               const SizedBox(width: 8),
-              Text(
+              const StandardizedText(
                 'Quick Locations',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: TypographyConstants.medium,
-                ),
+                style: StandardizedTextStyle.titleMedium,
               ),
             ],
           ),
@@ -1174,9 +1163,9 @@ class _LocationTaskCreationPageState extends ConsumerState<LocationTaskCreationP
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            const StandardizedText(
               'To create location-based tasks with geofencing alerts, this app needs access to your device\'s location.',
-              style: TextStyle(fontSize: TypographyConstants.bodyMedium), // 14.0 - Fixed hardcoded font size (was 16px)
+              style: StandardizedTextStyle.bodyMedium,
             ),
             const SizedBox(height: 16),
             Container(

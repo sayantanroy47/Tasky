@@ -2,18 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drift/native.dart';
-import 'package:mockito/mockito.dart';
 
 import 'package:task_tracker_app/services/database/database.dart' hide Project, ProjectCategory;
 import 'package:task_tracker_app/domain/entities/project.dart';
 import 'package:task_tracker_app/domain/entities/project_category.dart';
 import 'package:task_tracker_app/domain/entities/task_model.dart';
 import 'package:task_tracker_app/domain/entities/task_enums.dart';
-import 'package:task_tracker_app/presentation/widgets/batch_task_operations_widget.dart';
-import 'package:task_tracker_app/presentation/widgets/bulk_operations/operation_history_widget.dart';
 import 'package:task_tracker_app/presentation/widgets/advanced_task_card.dart';
-import 'package:task_tracker_app/presentation/providers/bulk_operation_providers.dart';
-import 'package:task_tracker_app/presentation/providers/task_providers.dart';
 import 'package:task_tracker_app/core/providers/core_providers.dart';
 
 // Mock providers
@@ -21,7 +16,7 @@ final connectivityProvider = StateProvider<bool>((ref) => true);
 
 // Mock widgets for testing
 class BatchTaskOperationsWidget extends StatelessWidget {
-  const BatchTaskOperationsWidget({Key? key}) : super(key: key);
+  const BatchTaskOperationsWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +53,7 @@ class BatchTaskOperationsWidget extends StatelessWidget {
 }
 
 class OperationHistoryWidget extends StatelessWidget {
-  const OperationHistoryWidget({Key? key}) : super(key: key);
+  const OperationHistoryWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -100,11 +95,11 @@ class ProjectCard extends StatelessWidget {
   final int completedTaskCount;
 
   const ProjectCard({
-    Key? key,
+    super.key,
     required this.project,
     required this.taskCount,
     required this.completedTaskCount,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -118,7 +113,7 @@ class ProjectCard extends StatelessWidget {
 }
 
 class KanbanBoardView extends StatelessWidget {
-  const KanbanBoardView({Key? key}) : super(key: key);
+  const KanbanBoardView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -127,7 +122,7 @@ class KanbanBoardView extends StatelessWidget {
 }
 
 class CalendarView extends StatelessWidget {
-  const CalendarView({Key? key}) : super(key: key);
+  const CalendarView({super.key});
 
   @override
   Widget build(BuildContext context) {

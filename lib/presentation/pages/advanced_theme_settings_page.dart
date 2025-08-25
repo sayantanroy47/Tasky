@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/providers/enhanced_theme_provider.dart';
 import '../../core/theme/theme_persistence_service.dart';
 import '../widgets/glassmorphism_container.dart';
+import '../widgets/standardized_text.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Advanced theme settings page with persistence features
@@ -77,12 +78,7 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
             children: [
               Icon(PhosphorIcons.palette(), color: Theme.of(context).colorScheme.primary),
               const SizedBox(width: 8),
-              Text(
-                'Current Theme',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+              StandardizedTextVariants.sectionHeader('Current Theme'),
             ],
           ),
           const SizedBox(height: 16),
@@ -113,12 +109,7 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
             children: [
               Icon(PhosphorIcons.gear(), color: Theme.of(context).colorScheme.primary),
               const SizedBox(width: 8),
-              Text(
-                'Theme Preferences',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+              StandardizedTextVariants.sectionHeader('Theme Preferences'),
             ],
           ),
           const SizedBox(height: 16),
@@ -150,9 +141,9 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
             },
           ),
           const SizedBox(height: 16),
-          Text(
+          StandardizedText(
             'Animation Duration: ${preferences.animationDuration.inMilliseconds}ms',
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: StandardizedTextStyle.bodyMedium,
           ),
           Slider(
             value: preferences.animationDuration.inMilliseconds.toDouble(),
@@ -183,18 +174,12 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
             children: [
               Icon(PhosphorIcons.heart(), color: Theme.of(context).colorScheme.primary),
               const SizedBox(width: 8),
-              Text(
-                'Favorite Themes',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+              StandardizedTextVariants.sectionHeader('Favorite Themes'),
               const Spacer(),
-              Text(
+              StandardizedText(
                 '${favoriteThemes.length} themes',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+                style: StandardizedTextStyle.bodyMedium,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ],
           ),
@@ -211,11 +196,10 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
                       color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                     const SizedBox(height: 8),
-                    Text(
+                    StandardizedText(
                       'No favorite themes yet',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
+                      style: StandardizedTextStyle.bodyMedium,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ],
                 ),
@@ -227,12 +211,10 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
               child: ListTile(
                 leading: CircleAvatar(
                   backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                  child: Text(
+                  child: StandardizedText(
                     theme.metadata.name.substring(0, 1).toUpperCase(),
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onPrimaryContainer,
-                      fontWeight: FontWeight.w500,
-                    ),
+                    style: StandardizedTextStyle.bodyMedium,
+                    color: Theme.of(context).colorScheme.onPrimaryContainer,
                   ),
                 ),
                 title: Text(theme.metadata.name),
@@ -270,12 +252,7 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
             children: [
               Icon(PhosphorIcons.chartBar(), color: Theme.of(context).colorScheme.primary),
               const SizedBox(width: 8),
-              Text(
-                'Usage Statistics',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+              StandardizedTextVariants.sectionHeader('Usage Statistics'),
             ],
           ),
           const SizedBox(height: 16),
@@ -283,11 +260,10 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
             Center(
               child: Padding(
                 padding: const EdgeInsets.all(20),
-                child: Text(
+                child: StandardizedText(
                   'No usage data available yet',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
+                  style: StandardizedTextStyle.bodyMedium,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
             )
@@ -302,24 +278,20 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          StandardizedText(
                             theme.metadata.name,
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.w500,
-                            ),
+                            style: StandardizedTextStyle.titleMedium,
                           ),
                           if (stats != null) ...[
-                            Text(
+                            StandardizedText(
                               'Used ${stats.usageCount} times',
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                              ),
+                              style: StandardizedTextStyle.bodySmall,
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
                             ),
-                            Text(
+                            StandardizedText(
                               'Last used: ${_formatDate(stats.lastUsed)}',
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                              ),
+                              style: StandardizedTextStyle.bodySmall,
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
                             ),
                           ],
                         ],
@@ -332,13 +304,10 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
                           color: Theme.of(context).colorScheme.primaryContainer,
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: Text(
+                        child: StandardizedText(
                           '${stats.usageCount}',
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.onPrimaryContainer,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 12,
-                          ),
+                          style: StandardizedTextStyle.labelMedium,
+                          color: Theme.of(context).colorScheme.onPrimaryContainer,
                         ),
                       ),
                   ],
@@ -361,12 +330,7 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
             children: [
               Icon(PhosphorIcons.database(), color: Theme.of(context).colorScheme.primary),
               const SizedBox(width: 8),
-              Text(
-                'Data Management',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+              StandardizedTextVariants.sectionHeader('Data Management'),
             ],
           ),
           const SizedBox(height: 16),
@@ -402,11 +366,10 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
             ],
           ),
           const SizedBox(height: 12),
-          Text(
+          StandardizedText(
             'Export your theme preferences and custom themes for backup, or import data from another device.',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
+            style: StandardizedTextStyle.bodySmall,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ],
       ),
@@ -424,12 +387,7 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
             children: [
               Icon(PhosphorIcons.wrench(), color: Theme.of(context).colorScheme.primary),
               const SizedBox(width: 8),
-              Text(
-                'Advanced Actions',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+              StandardizedTextVariants.sectionHeader('Advanced Actions'),
             ],
           ),
           const SizedBox(height: 16),
@@ -467,18 +425,16 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
         children: [
           SizedBox(
             width: 80,
-            child: Text(
+            child: StandardizedText(
               '$label:',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.w500,
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
+              style: StandardizedTextStyle.titleSmall,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
           Expanded(
-            child: Text(
+            child: StandardizedText(
               value,
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: StandardizedTextStyle.bodyMedium,
             ),
           ),
         ],
@@ -496,32 +452,30 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const StandardizedText(
             'Usage Statistics',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w500,
-            ),
+            style: StandardizedTextStyle.titleMedium,
           ),
           const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Times used:', style: Theme.of(context).textTheme.bodySmall),
-              Text('${stats.usageCount}', style: Theme.of(context).textTheme.bodySmall),
+              const StandardizedText('Times used:', style: StandardizedTextStyle.bodySmall),
+              StandardizedText('${stats.usageCount}', style: StandardizedTextStyle.bodySmall),
             ],
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Last used:', style: Theme.of(context).textTheme.bodySmall),
-              Text(_formatDate(stats.lastUsed), style: Theme.of(context).textTheme.bodySmall),
+              const StandardizedText('Last used:', style: StandardizedTextStyle.bodySmall),
+              StandardizedText(_formatDate(stats.lastUsed), style: StandardizedTextStyle.bodySmall),
             ],
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('First used:', style: Theme.of(context).textTheme.bodySmall),
-              Text(_formatDate(stats.firstUsed), style: Theme.of(context).textTheme.bodySmall),
+              const StandardizedText('First used:', style: StandardizedTextStyle.bodySmall),
+              StandardizedText(_formatDate(stats.firstUsed), style: StandardizedTextStyle.bodySmall),
             ],
           ),
         ],

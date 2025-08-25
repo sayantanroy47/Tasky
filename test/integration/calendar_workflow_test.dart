@@ -5,9 +5,8 @@ import 'package:drift/native.dart';
 
 import 'package:task_tracker_app/services/database/database.dart';
 import 'package:task_tracker_app/domain/entities/task_model.dart';
-import 'package:task_tracker_app/domain/entities/task_enums.dart';
-import 'package:task_tracker_app/presentation/widgets/task_card.dart';
-import 'package:task_tracker_app/presentation/widgets/calendar_view.dart';
+import 'package:task_tracker_app/presentation/widgets/advanced_task_card.dart';
+import 'package:task_tracker_app/presentation/widgets/enhanced_calendar_widget.dart';
 
 void main() {
   group('Calendar and Scheduling Workflow Integration Tests', () {
@@ -65,26 +64,26 @@ void main() {
                 body: Column(
                   children: [
                     // Calendar widget
-                    SizedBox(
-                      key: const Key('calendar_widget'),
+                    const SizedBox(
+                      key: Key('calendar_widget'),
                       height: 300,
-                      child: const CalendarView(),
+                      child: EnhancedCalendarWidget(),
                     ),
                     // Task list for selected date
                     Expanded(
                       child: ListView(
                         children: [
-                          TaskCard(
+                          AdvancedTaskCard(
                             key: Key('task_${taskToday.id}'),
                             task: taskToday,
                             showDueDate: true,
                           ),
-                          TaskCard(
+                          AdvancedTaskCard(
                             key: Key('task_${taskTomorrow.id}'),
                             task: taskTomorrow,
                             showDueDate: true,
                           ),
-                          TaskCard(
+                          AdvancedTaskCard(
                             key: Key('task_${taskNextWeek.id}'),
                             task: taskNextWeek,
                             showDueDate: true,
@@ -307,7 +306,7 @@ void main() {
                     Expanded(
                       child: ListView(
                         children: [
-                          TaskCard(
+                          AdvancedTaskCard(
                             key: Key('overdue_task_${overdueTask1.id}'),
                             task: overdueTask1,
                             isOverdue: true,
@@ -315,7 +314,7 @@ void main() {
                               // Reschedule individual task
                             },
                           ),
-                          TaskCard(
+                          AdvancedTaskCard(
                             key: Key('overdue_task_${overdueTask2.id}'),
                             task: overdueTask2,
                             isOverdue: true,
@@ -363,7 +362,7 @@ void main() {
             container: container,
             child: MaterialApp(
               home: Scaffold(
-                body: TaskCard(
+                body: AdvancedTaskCard(
                   key: Key('tracked_task_${trackedTask.id}'),
                   task: trackedTask,
                   showTimeTracking: true,

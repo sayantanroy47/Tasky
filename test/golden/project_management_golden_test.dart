@@ -2,27 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:golden_toolkit/golden_toolkit.dart';
-import 'package:mockito/mockito.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import 'package:task_tracker_app/core/theme/app_theme_data.dart';
+import 'package:task_tracker_app/domain/models/enums.dart';
 import 'package:task_tracker_app/core/theme/themes/dracula_ide_theme.dart';
 import 'package:task_tracker_app/core/theme/themes/matrix_theme.dart';
 import 'package:task_tracker_app/core/theme/themes/vegeta_blue_theme.dart';
 import 'package:task_tracker_app/core/theme/theme_factory.dart';
 import 'package:task_tracker_app/domain/entities/project.dart';
 import 'package:task_tracker_app/domain/entities/task_model.dart';
-import 'package:task_tracker_app/domain/models/enums.dart';
 import 'package:task_tracker_app/presentation/widgets/project_card.dart';
-import 'package:task_tracker_app/presentation/widgets/project_form_dialog.dart';
-import 'package:task_tracker_app/presentation/widgets/analytics_widgets.dart';
-import 'package:task_tracker_app/presentation/widgets/kanban_board_view.dart';
 import 'package:task_tracker_app/presentation/widgets/glassmorphism_container.dart';
-import 'package:task_tracker_app/presentation/widgets/task_heatmap_widget.dart';
 
 import '../mocks/mock_providers.dart';
 import '../test_helpers/test_data_helper.dart';
-import '../test_helpers/golden_test_helper.dart';
 
 void main() {
   group('Project Management UI Golden Tests', () {
@@ -556,9 +550,9 @@ class _KanbanBoardShowcase extends StatelessWidget {
                     Row(
                       children: [
                         Icon(
-                          _getPriorityIcon(task.priority),
+                          _getTaskPriorityIcon(task.priority),
                           size: 16,
-                          color: _getPriorityColor(context, task.priority),
+                          color: _getTaskPriorityColor(context, task.priority),
                         ),
                         const Spacer(),
                         Icon(PhosphorIcons.clock(), size: 14),
@@ -579,7 +573,7 @@ class _KanbanBoardShowcase extends StatelessWidget {
     );
   }
 
-  IconData _getPriorityIcon(Priority priority) {
+  IconData _getTaskPriorityIcon(TaskPriority priority) {
     switch (priority) {
       case TaskPriority.low:
         return PhosphorIcons.arrowDown();
@@ -592,7 +586,7 @@ class _KanbanBoardShowcase extends StatelessWidget {
     }
   }
 
-  Color _getPriorityColor(BuildContext context, Priority priority) {
+  Color _getTaskPriorityColor(BuildContext context, TaskPriority priority) {
     switch (priority) {
       case TaskPriority.low:
         return Colors.green;

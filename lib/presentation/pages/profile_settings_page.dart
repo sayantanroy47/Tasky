@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/standardized_app_bar.dart';
+import '../widgets/standardized_text.dart';
 import '../widgets/universal_profile_picture.dart';
 import '../providers/profile_providers.dart';
 import '../../core/theme/typography_constants.dart';
@@ -76,14 +77,14 @@ class _ProfileSettingsPageState extends ConsumerState<ProfileSettingsPage> {
             const SizedBox(height: 16),
             Text(
               'Failed to load profile',
-              style: theme.textTheme.titleLarge?.copyWith(
+              style: StandardizedTextStyle.titleLarge.toTextStyle(context).copyWith(
                 color: theme.colorScheme.error,
               ),
             ),
             const SizedBox(height: 8),
             Text(
               'Please try again',
-              style: theme.textTheme.bodyMedium,
+              style: StandardizedTextStyle.bodyMedium.toTextStyle(context),
             ),
             const SizedBox(height: 16),
             ElevatedButton(
@@ -161,7 +162,7 @@ class _ProfileSettingsPageState extends ConsumerState<ProfileSettingsPage> {
             const SizedBox(height: 16),
             Text(
               'Profile Picture',
-              style: theme.textTheme.titleMedium?.copyWith(
+              style: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
                 fontWeight: TypographyConstants.medium,
               ),
             ),
@@ -217,7 +218,7 @@ class _ProfileSettingsPageState extends ConsumerState<ProfileSettingsPage> {
                 const SizedBox(width: 8),
                 Text(
                   'Personal Information',
-                  style: theme.textTheme.titleMedium?.copyWith(
+                  style: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
                     fontWeight: TypographyConstants.medium,
                   ),
                 ),
@@ -288,7 +289,7 @@ class _ProfileSettingsPageState extends ConsumerState<ProfileSettingsPage> {
                 const SizedBox(width: 8),
                 Text(
                   'Location',
-                  style: theme.textTheme.titleMedium?.copyWith(
+                  style: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
                     fontWeight: TypographyConstants.medium,
                   ),
                 ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/typography_constants.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'standardized_text.dart';
+import 'standardized_spacing.dart';
 
 /// Loading indicator widget with optional message
 class LoadingWidget extends StatelessWidget {
@@ -29,12 +31,10 @@ class LoadingWidget extends StatelessWidget {
             ),
           ),
           if (message != null) ...[
-            const SizedBox(height: 16),
-            Text(
+            StandardizedGaps.vertical(SpacingSize.md),
+            StandardizedText(
               message!,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
+              style: StandardizedTextStyle.bodyMedium,
               textAlign: TextAlign.center,
             ),
           ],
@@ -251,7 +251,7 @@ class _ShimmerListItemState extends State<ShimmerListItem>
                     borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                   ),
                 ),
-                const SizedBox(width: 16),
+                StandardizedGaps.horizontal(SpacingSize.md),
                 
                 // Content placeholder
                 Expanded(
@@ -268,7 +268,7 @@ class _ShimmerListItemState extends State<ShimmerListItem>
                           borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      StandardizedGaps.vertical(SpacingSize.xs),
                       
                       // Subtitle placeholder
                       Container(
@@ -354,8 +354,8 @@ class ErrorSnackBar {
               PhosphorIcons.warningCircle(),
               color: Theme.of(context).colorScheme.onError,
             ),
-            const SizedBox(width: 12),
-            Expanded(child: Text(message)),
+            StandardizedGaps.horizontal(SpacingSize.sm),
+            Expanded(child: StandardizedText(message, style: StandardizedTextStyle.bodyMedium)),
           ],
         ),
         backgroundColor: Theme.of(context).colorScheme.error,
@@ -383,11 +383,11 @@ class SuccessSnackBar {
               PhosphorIcons.checkCircle(),
               color: Theme.of(context).colorScheme.onPrimary,
             ),
-            const SizedBox(width: 12),
-            Expanded(child: Text(message)),
+            StandardizedGaps.horizontal(SpacingSize.sm),
+            Expanded(child: StandardizedText(message, style: StandardizedTextStyle.bodyMedium)),
           ],
         ),
-        backgroundColor: Colors.green,
+        backgroundColor: Theme.of(context).colorScheme.tertiary, // Success color
         behavior: SnackBarBehavior.floating,
       ),
     );

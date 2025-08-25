@@ -4,6 +4,8 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../core/design_system/design_tokens.dart';
 import '../../../core/theme/typography_constants.dart';
 import '../glassmorphism_container.dart';
+import '../standardized_text.dart';
+import '../standardized_colors.dart';
 
 /// Base widget for all chart components with consistent styling
 abstract class BaseChartWidget extends StatelessWidget {
@@ -44,7 +46,7 @@ abstract class BaseChartWidget extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: TypographyConstants.spacingMedium),
       borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium),
       child: Material(
-        color: Colors.transparent,
+        color: context.colors.backgroundTransparent,
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium),
@@ -73,7 +75,7 @@ abstract class BaseChartWidget extends StatelessWidget {
                       children: [
                         Text(
                           title,
-                          style: theme.textTheme.titleMedium?.copyWith(
+                          style: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
                             fontSize: TypographyConstants.titleMedium,
                             fontWeight: TypographyConstants.medium,
                           ),
@@ -82,7 +84,7 @@ abstract class BaseChartWidget extends StatelessWidget {
                           const SizedBox(height: 2),
                           Text(
                             subtitle!,
-                            style: theme.textTheme.bodySmall?.copyWith(
+                            style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
                               fontSize: TypographyConstants.bodySmall,
                               color: theme.colorScheme.onSurfaceVariant,
                             ),
@@ -135,14 +137,14 @@ abstract class BaseChartWidget extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               'Error loading chart',
-              style: theme.textTheme.titleSmall?.copyWith(
+              style: StandardizedTextStyle.titleSmall.toTextStyle(context).copyWith(
                 color: theme.colorScheme.error,
               ),
             ),
             const SizedBox(height: 4),
             Text(
               error!,
-              style: theme.textTheme.bodySmall?.copyWith(
+              style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
               textAlign: TextAlign.center,
@@ -164,7 +166,7 @@ abstract class BaseChartWidget extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               'Loading chart...',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),

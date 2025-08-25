@@ -6,11 +6,11 @@ import '../../core/design_system/design_tokens.dart';
 import '../../core/design_system/responsive_builder.dart';
 import '../../core/design_system/responsive_constants.dart';
 import '../../core/localization/app_localizations.dart';
-import '../../core/theme/typography_constants.dart';
 import '../../services/onboarding_service.dart';
 import '../widgets/glassmorphism_container.dart';
 import '../widgets/theme_background_widget.dart';
 import '../widgets/standardized_animations.dart';
+import '../widgets/standardized_text.dart';
 
 /// Comprehensive onboarding page for new users
 class OnboardingPage extends ConsumerStatefulWidget {
@@ -382,25 +382,19 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> with TickerProv
     return Column(
       children: [
         // Title
-        Text(
+        StandardizedText(
           step.title.startsWith('onboarding_') ? _getLocalizedString(l10n, step.title) : step.title,
-          style: theme.textTheme.headlineMedium?.copyWith(
-            fontWeight: FontWeight.w500,
-            // Removed hardcoded fontSize - using theme.textTheme.headlineMedium default (28.0)
-          ),
+          style: StandardizedTextStyle.headlineMedium,
           textAlign: TextAlign.center,
         ),
 
         const SizedBox(height: 16),
 
         // Subtitle
-        Text(
+        StandardizedText(
           step.subtitle.startsWith('onboarding_') ? _getLocalizedString(l10n, step.subtitle) : step.subtitle,
-          style: theme.textTheme.titleLarge?.copyWith(
-            color: theme.colorScheme.primary,
-            // Removed hardcoded fontSize - using theme.textTheme.titleLarge default (22.0)
-            fontWeight: FontWeight.w500,
-          ),
+          style: StandardizedTextStyle.titleLarge,
+          color: theme.colorScheme.primary,
           textAlign: TextAlign.center,
         ),
 
@@ -409,12 +403,9 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> with TickerProv
         // Description
         Padding(
           padding: EdgeInsets.symmetric(horizontal: config.isMobile ? 20 : 40),
-          child: Text(
+          child: StandardizedText(
             step.description,
-            style: theme.textTheme.bodyLarge?.copyWith(
-              // Removed hardcoded fontSize - using theme.textTheme.bodyLarge default (16.0)
-              height: 1.5,
-            ),
+            style: StandardizedTextStyle.bodyLarge,
             textAlign: TextAlign.center,
           ),
         ),
@@ -441,11 +432,9 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> with TickerProv
                       color: theme.colorScheme.primary,
                     ),
                     const SizedBox(width: 6),
-                    Text(
+                    StandardizedText(
                       feature,
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        fontWeight: FontWeight.w500,
-                      ),
+                      style: StandardizedTextStyle.labelMedium,
                     ),
                   ],
                 ),
@@ -517,12 +506,9 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> with TickerProv
                       size: config.isMobile ? 18 : 20,
                     ),
                     const SizedBox(width: 8),
-                    const Text(
+                    const StandardizedText(
                       'Back',
-                      style: TextStyle(
-                        fontSize: TypographyConstants.bodyMedium, // 14.0 - Fixed hardcoded font size
-                        fontWeight: FontWeight.w500,
-                      ),
+                      style: StandardizedTextStyle.bodyMedium,
                     ),
                   ],
                 ),
@@ -553,13 +539,10 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> with TickerProv
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
+                    StandardizedText(
                       _currentPage == _steps.length - 1 ? l10n.onboardingFinish : l10n.onboardingNext,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.onPrimary, // Fixed hardcoded color (was Colors.white)
-                        fontSize: TypographyConstants.bodyMedium, // 14.0 - Fixed hardcoded font size
-                        fontWeight: FontWeight.w500,
-                      ),
+                      style: StandardizedTextStyle.bodyMedium,
+                      color: Theme.of(context).colorScheme.onPrimary,
                     ),
                     const SizedBox(width: 8),
                     Icon(
@@ -594,12 +577,9 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> with TickerProv
             horizontal: config.isMobile ? 16 : 20,
             vertical: config.isMobile ? 8 : 10,
           ),
-          child: Text(
+          child: StandardizedText(
             l10n.onboardingSkip,
-            style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  fontWeight: FontWeight.w500,
-                  // Removed hardcoded fontSize - using theme.textTheme.labelLarge default (14.0)
-                ),
+            style: StandardizedTextStyle.labelLarge,
           ),
         ),
       ),

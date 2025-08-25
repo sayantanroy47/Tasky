@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../domain/models/enums.dart';
+import 'standardized_text.dart';
+import 'standardized_spacing.dart';
+import 'standardized_error_states.dart';
 
 // Stub providers for compilation
 final dataExportNotifierProvider = StateNotifierProvider<DataExportNotifier, Object>((ref) {
@@ -43,19 +46,19 @@ class TimePeriodSelector extends ConsumerWidget {
     
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: StandardizedSpacing.padding(SpacingSize.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const StandardizedText(
               'Time Period',
-              style: Theme.of(context).textTheme.titleMedium,
+              style: StandardizedTextStyle.titleMedium,
             ),
-            const SizedBox(height: 8),
+            StandardizedGaps.vertical(SpacingSize.xs),
             SegmentedButton<String>(
               segments: periods.map((period) => ButtonSegment<String>(
                 value: period,
-                label: Text(period),
+                label: StandardizedText(period, style: StandardizedTextStyle.bodyMedium),
               )).toList(),
               selected: {selectedPeriod},
               onSelectionChanged: (Set<String> selection) {
@@ -95,36 +98,33 @@ class AnalyticsMetricCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: StandardizedSpacing.padding(SpacingSize.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 Icon(icon, color: color ?? Theme.of(context).colorScheme.primary),
-                const SizedBox(width: 8),
-                Text(title, style: Theme.of(context).textTheme.titleSmall),
+                StandardizedGaps.horizontal(SpacingSize.xs),
+                StandardizedText(title, style: StandardizedTextStyle.titleSmall),
               ],
             ),
-            const SizedBox(height: 8),
-            Text(
+            StandardizedGaps.vertical(SpacingSize.xs),
+            StandardizedText(
               value,
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color: color ?? Theme.of(context).colorScheme.primary,
-                fontWeight: FontWeight.w500,
-              ),
+              style: StandardizedTextStyle.headlineSmall,
+              color: color ?? Theme.of(context).colorScheme.primary,
             ),
             if (subtitle != null) ...[
-              const SizedBox(height: 4),
-              Text(
+              StandardizedGaps.vertical(SpacingSize.xs),
+              StandardizedText(
                 subtitle!,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+                style: StandardizedTextStyle.bodySmall,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ],
             if (trend != null) ...[
-              const SizedBox(height: 4),
+              StandardizedGaps.vertical(SpacingSize.xs),
               Row(
                 children: [
                   Icon(
@@ -132,12 +132,11 @@ class AnalyticsMetricCard extends StatelessWidget {
                     size: 16,
                     color: isPositiveTrend == true ? Colors.green : Colors.red,
                   ),
-                  const SizedBox(width: 4),
-                  Text(
+                  StandardizedGaps.horizontal(SpacingSize.xs),
+                  StandardizedText(
                     trend!,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: isPositiveTrend == true ? Colors.green : Colors.red,
-                    ),
+                    style: StandardizedTextStyle.bodySmall,
+                    color: isPositiveTrend == true ? Colors.green /* TODO: context.colors.success */ : Colors.red, /* TODO: context.colors.error */
                   ),
                 ],
               ),
@@ -164,27 +163,24 @@ class StreakWidget extends StatelessWidget {
     
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: StandardizedSpacing.padding(SpacingSize.md),
         child: Column(
           children: [
-            Text(
+            const StandardizedText(
               'Current Streak',
-              style: Theme.of(context).textTheme.titleMedium,
+              style: StandardizedTextStyle.titleMedium,
             ),
-            const SizedBox(height: 8),
-            Text(
+            StandardizedGaps.vertical(SpacingSize.xs),
+            StandardizedText(
               '$streak days',
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                color: Theme.of(context).colorScheme.primary,
-                fontWeight: FontWeight.w500,
-              ),
+              style: StandardizedTextStyle.headlineMedium,
+              color: Theme.of(context).colorScheme.primary,
             ),
-            const SizedBox(height: 8),
-            Text(
+            StandardizedGaps.vertical(SpacingSize.xs),
+            StandardizedText(
               'Longest: $longestStreak days',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
+              style: StandardizedTextStyle.bodySmall,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ],
         ),
@@ -209,14 +205,14 @@ class SimpleBarChart extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: StandardizedSpacing.padding(SpacingSize.md),
         child: Column(
           children: [
-            Text(
+            StandardizedText(
               title,
-              style: Theme.of(context).textTheme.titleMedium,
+              style: StandardizedTextStyle.titleMedium,
             ),
-            const SizedBox(height: 16),
+            StandardizedGaps.vertical(SpacingSize.md),
             // Simple placeholder for chart
             Container(
               height: 100,
@@ -225,17 +221,17 @@ class SimpleBarChart extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Center(
-                child: Text(
+                child: StandardizedText(
                   'Chart: ${values.length} data points',
-                  style: Theme.of(context).textTheme.bodyMedium,
+                  style: StandardizedTextStyle.bodyMedium,
                 ),
               ),
             ),
-            const SizedBox(height: 8),
+            StandardizedGaps.vertical(SpacingSize.xs),
             if (labels.isNotEmpty)
-              Text(
+              StandardizedText(
                 'Labels: ${labels.join(', ')}',
-                style: Theme.of(context).textTheme.bodySmall,
+                style: StandardizedTextStyle.bodySmall,
                 textAlign: TextAlign.center,
               ),
           ],
@@ -252,15 +248,15 @@ class CategoryBreakdownWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: StandardizedSpacing.padding(SpacingSize.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const StandardizedText(
               'Category Breakdown',
-              style: Theme.of(context).textTheme.titleMedium,
+              style: StandardizedTextStyle.titleMedium,
             ),
-            const SizedBox(height: 16),
+            StandardizedGaps.vertical(SpacingSize.md),
             _buildCategoryItem(context, 'Work', 45, Colors.blue),
             _buildCategoryItem(context, 'Personal', 30, Colors.green),
             _buildCategoryItem(context, 'Health', 25, Colors.orange),
@@ -272,7 +268,7 @@ class CategoryBreakdownWidget extends StatelessWidget {
 
   Widget _buildCategoryItem(BuildContext context, String category, int percentage, Color color) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      padding: StandardizedSpacing.paddingSymmetric(vertical: SpacingSize.xs),
       child: Row(
         children: [
           Container(
@@ -284,9 +280,9 @@ class CategoryBreakdownWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          Text(category),
+          StandardizedText(category, style: StandardizedTextStyle.bodyMedium),
           const Spacer(),
-          Text('$percentage%'),
+          StandardizedText('$percentage%', style: StandardizedTextStyle.bodyMedium),
         ],
       ),
     );
@@ -300,28 +296,28 @@ class ProductivityInsightsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: StandardizedSpacing.padding(SpacingSize.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const StandardizedText(
               'Productivity Insights',
-              style: Theme.of(context).textTheme.titleMedium,
+              style: StandardizedTextStyle.titleMedium,
             ),
-            const SizedBox(height: 16),
-            Text(
+            StandardizedGaps.vertical(SpacingSize.md),
+            const StandardizedText(
               '• Your most productive time is 9-11 AM',
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: StandardizedTextStyle.bodyMedium,
             ),
-            const SizedBox(height: 8),
-            Text(
+            StandardizedGaps.vertical(SpacingSize.xs),
+            const StandardizedText(
               '• You complete 23% more tasks on Tuesdays',
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: StandardizedTextStyle.bodyMedium,
             ),
-            const SizedBox(height: 8),
-            Text(
+            StandardizedGaps.vertical(SpacingSize.xs),
+            const StandardizedText(
               '• Average task completion time: 45 minutes',
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: StandardizedTextStyle.bodyMedium,
             ),
           ],
         ),
@@ -337,25 +333,25 @@ class ProductivityPatternsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: StandardizedSpacing.padding(SpacingSize.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const StandardizedText(
               'Productivity Patterns',
-              style: Theme.of(context).textTheme.titleMedium,
+              style: StandardizedTextStyle.titleMedium,
             ),
-            const SizedBox(height: 16),
+            StandardizedGaps.vertical(SpacingSize.md),
             Container(
               height: 80,
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Center(
-                child: Text(
+              child: const Center(
+                child: StandardizedText(
                   'Pattern Analysis Placeholder',
-                  style: Theme.of(context).textTheme.bodyMedium,
+                  style: StandardizedTextStyle.bodyMedium,
                 ),
               ),
             ),
@@ -373,20 +369,20 @@ class PeakHoursAnalysisWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: StandardizedSpacing.padding(SpacingSize.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const StandardizedText(
               'Peak Hours Analysis',
-              style: Theme.of(context).textTheme.titleMedium,
+              style: StandardizedTextStyle.titleMedium,
             ),
-            const SizedBox(height: 16),
+            StandardizedGaps.vertical(SpacingSize.md),
             Row(
               children: [
                 Icon(PhosphorIcons.clock(), color: Theme.of(context).colorScheme.primary),
-                const SizedBox(width: 8),
-                const Text('Peak productivity: 9:00 AM - 11:00 AM'),
+                StandardizedGaps.horizontal(SpacingSize.xs),
+                const StandardizedText('Peak productivity: 9:00 AM - 11:00 AM', style: StandardizedTextStyle.bodyMedium),
               ],
             ),
           ],
@@ -408,24 +404,24 @@ class AdvancedCategoryAnalyticsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: StandardizedSpacing.padding(SpacingSize.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const StandardizedText(
               'Advanced Category Analytics',
-              style: Theme.of(context).textTheme.titleMedium,
+              style: StandardizedTextStyle.titleMedium,
             ),
-            const SizedBox(height: 16),
-            Text(
+            StandardizedGaps.vertical(SpacingSize.md),
+            const StandardizedText(
               'Detailed category performance analysis will be shown here.',
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: StandardizedTextStyle.bodyMedium,
             ),
             if (analytics != null) ...[
-              const SizedBox(height: 8),
-              Text(
+              StandardizedGaps.vertical(SpacingSize.xs),
+              StandardizedText(
                 'Analytics data: ${analytics!.keys.length} categories',
-                style: Theme.of(context).textTheme.bodySmall,
+                style: StandardizedTextStyle.bodySmall,
               ),
             ],
           ],
@@ -447,24 +443,24 @@ class AdvancedProductivityInsightsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: StandardizedSpacing.padding(SpacingSize.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const StandardizedText(
               'Advanced Productivity Insights',
-              style: Theme.of(context).textTheme.titleMedium,
+              style: StandardizedTextStyle.titleMedium,
             ),
-            const SizedBox(height: 16),
-            Text(
+            StandardizedGaps.vertical(SpacingSize.md),
+            const StandardizedText(
               'Advanced insights and recommendations will be shown here.',
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: StandardizedTextStyle.bodyMedium,
             ),
             if (insights != null) ...[
-              const SizedBox(height: 8),
-              Text(
+              StandardizedGaps.vertical(SpacingSize.xs),
+              StandardizedText(
                 'Insights available: ${insights!.keys.length} data points',
-                style: Theme.of(context).textTheme.bodySmall,
+                style: StandardizedTextStyle.bodySmall,
               ),
             ],
           ],
@@ -494,15 +490,15 @@ class AnalyticsExportWidget extends ConsumerWidget {
     final isExporting = ref.watch(isExportingProvider);
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: StandardizedSpacing.padding(SpacingSize.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            const StandardizedText(
               'Export Analytics',
-              style: Theme.of(context).textTheme.titleMedium,
+              style: StandardizedTextStyle.titleMedium,
             ),
-            const SizedBox(height: 16),
+            StandardizedGaps.vertical(SpacingSize.md),
             Wrap(
               spacing: 8,
               children: [
@@ -513,7 +509,7 @@ class AnalyticsExportWidget extends ConsumerWidget {
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('Analytics exported to CSV successfully'),
+                            content: StandardizedText('Analytics exported to CSV successfully', style: StandardizedTextStyle.bodyMedium),
                             backgroundColor: Colors.green,
                           ),
                         );
@@ -522,18 +518,18 @@ class AnalyticsExportWidget extends ConsumerWidget {
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('Export failed: $e'),
+                            content: StandardizedText('Export failed: $e', style: StandardizedTextStyle.bodyMedium),
                             backgroundColor: Colors.red,
                           ),
                         );
                       }
                     }
                   }),
-                  child: isExporting ? const SizedBox(
+                  child: isExporting ? SizedBox(
                     width: 16,
                     height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ) : const Text('Export CSV'),
+                    child: StandardizedErrorStates.loading(),
+                  ) : const StandardizedText('Export CSV', style: StandardizedTextStyle.buttonText),
                 ),
                 ElevatedButton(
                   onPressed: isExporting ? null : (onExportJson ?? () async {
@@ -542,7 +538,7 @@ class AnalyticsExportWidget extends ConsumerWidget {
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('Analytics exported to JSON successfully'),
+                            content: StandardizedText('Analytics exported to JSON successfully', style: StandardizedTextStyle.bodyMedium),
                             backgroundColor: Colors.green,
                           ),
                         );
@@ -551,14 +547,14 @@ class AnalyticsExportWidget extends ConsumerWidget {
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('Export failed: $e'),
+                            content: StandardizedText('Export failed: $e', style: StandardizedTextStyle.bodyMedium),
                             backgroundColor: Colors.red,
                           ),
                         );
                       }
                     }
                   }),
-                  child: const Text('Export JSON'),
+                  child: const StandardizedText('Export JSON', style: StandardizedTextStyle.buttonText),
                 ),
                 ElevatedButton(
                   onPressed: isExporting ? null : (onExportPdf ?? () async {
@@ -567,7 +563,7 @@ class AnalyticsExportWidget extends ConsumerWidget {
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('Analytics exported to PDF successfully'),
+                            content: StandardizedText('Analytics exported to PDF successfully', style: StandardizedTextStyle.bodyMedium),
                             backgroundColor: Colors.green,
                           ),
                         );
@@ -576,14 +572,14 @@ class AnalyticsExportWidget extends ConsumerWidget {
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('Export failed: $e'),
+                            content: StandardizedText('Export failed: $e', style: StandardizedTextStyle.bodyMedium),
                             backgroundColor: Colors.red,
                           ),
                         );
                       }
                     }
                   }),
-                  child: const Text('Export PDF'),
+                  child: const StandardizedText('Export PDF', style: StandardizedTextStyle.buttonText),
                 ),
                 ElevatedButton(
                   onPressed: isExporting ? null : (onExportExcel ?? () async {
@@ -592,7 +588,7 @@ class AnalyticsExportWidget extends ConsumerWidget {
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('Analytics shared as Excel successfully'),
+                            content: StandardizedText('Analytics shared as Excel successfully', style: StandardizedTextStyle.bodyMedium),
                             backgroundColor: Colors.green,
                           ),
                         );
@@ -608,7 +604,7 @@ class AnalyticsExportWidget extends ConsumerWidget {
                       }
                     }
                   }),
-                  child: const Text('Export Excel'),
+                  child: const StandardizedText('Export Excel', style: StandardizedTextStyle.buttonText),
                 ),
               ],
             ),

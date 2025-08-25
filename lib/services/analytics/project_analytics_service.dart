@@ -447,7 +447,7 @@ class ProjectAnalyticsService {
   VelocityTrend _calculateVelocityTrend(List<WeeklyVelocity> weeklyVelocities) {
     if (weeklyVelocities.length < 2) return VelocityTrend.stable;
     
-    final recent = weeklyVelocities.takeLast(3).map((w) => w.tasksCompleted).toList();
+    final recent = weeklyVelocities.skip(weeklyVelocities.length - 3).map((w) => w.tasksCompleted).toList();
     final earlier = weeklyVelocities.take(weeklyVelocities.length - 3).map((w) => w.tasksCompleted).toList();
     
     if (recent.isEmpty || earlier.isEmpty) return VelocityTrend.stable;

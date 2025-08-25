@@ -8,6 +8,7 @@ import '../../presentation/pages/calendar_page.dart';
 import '../../presentation/pages/analytics_page.dart';
 import '../../presentation/pages/projects_page.dart';
 import '../../presentation/pages/task_detail_page.dart';
+import '../../presentation/pages/project_detail_page.dart';
 import '../../presentation/pages/voice_demo_page.dart';
 // import '../../presentation/pages/data_export_page.dart';
 import '../../presentation/pages/help_page.dart';
@@ -79,6 +80,9 @@ class AppRouter {
 
   /// Task detail route getter
   static String get taskDetail => '/task-detail';
+
+  /// Project detail route getter
+  static String get projectDetail => '/project-detail';
   
   /// Add task route getter
   static String get addTask => '/add-task';
@@ -86,6 +90,11 @@ class AppRouter {
   /// Navigate to task detail
   static void navigateToTaskDetail(BuildContext context, String taskId) {
     Navigator.pushNamed(context, taskDetail, arguments: taskId);
+  }
+
+  /// Navigate to project detail
+  static void navigateToProjectDetail(BuildContext context, String projectId) {
+    Navigator.pushNamed(context, projectDetail, arguments: projectId);
   }
 
   /// Bottom navigation destinations
@@ -141,6 +150,23 @@ class AppRouter {
           builder: (_) => const ThemeBackgroundWidget(child: ProjectsPage()),
           settings: settings,
         );
+      case '/project-detail':
+        try {
+          final validationResult = RouteValidator.validateProjectId(settings.arguments);
+          if (!validationResult.isValid) {
+            return _createErrorRoute(validationResult.errorMessage!, settings);
+          }
+          
+          final projectId = validationResult.validatedParams!['projectId'] as String;
+          return MaterialPageRoute(
+            builder: (_) => ThemeBackgroundWidget(
+              child: ProjectDetailPage(projectId: projectId),
+            ),
+            settings: settings,
+          );
+        } catch (e) {
+          return _createErrorRoute('Invalid project detail parameters: $e', settings);
+        }
       case '/task-detail':
         try {
           final validationResult = RouteValidator.validateTaskId(settings.arguments);

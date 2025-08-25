@@ -8,6 +8,11 @@ import '../providers/analytics_providers.dart';
 import '../widgets/glassmorphism_container.dart';
 import '../widgets/standardized_app_bar.dart';
 import '../widgets/standardized_text.dart';
+import '../widgets/standardized_colors.dart';
+import '../widgets/standardized_spacing.dart';
+import '../widgets/standardized_error_states.dart';
+import '../widgets/theme_background_widget.dart';
+import '../../core/design_system/design_tokens.dart';
 
 /// Detailed heatmap page showing comprehensive productivity analytics
 /// 
@@ -31,11 +36,11 @@ class _DetailedHeatmapPageState extends ConsumerState<DetailedHeatmapPage> {
 
   @override
   Widget build(BuildContext context) {
-
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      extendBodyBehindAppBar: true,
-      appBar: StandardizedAppBar(
+    return ThemeBackgroundWidget(
+      child: Scaffold(
+        backgroundColor: context.colors.backgroundTransparent,
+        extendBodyBehindAppBar: true,
+        appBar: StandardizedAppBar(
         title: 'Productivity Heatmap',
         forceBackButton: true,
         actions: [
@@ -54,7 +59,7 @@ class _DetailedHeatmapPageState extends ConsumerState<DetailedHeatmapPage> {
                 child: Row(
                   children: [
                     Icon(PhosphorIcons.calendar(), size: 16),
-                    const SizedBox(width: 8),
+                    StandardizedGaps.horizontal(SpacingSize.sm),
                     const StandardizedText('Daily View', style: StandardizedTextStyle.bodyMedium),
                   ],
                 ),
@@ -64,7 +69,7 @@ class _DetailedHeatmapPageState extends ConsumerState<DetailedHeatmapPage> {
                 child: Row(
                   children: [
                     Icon(PhosphorIcons.calendarBlank(), size: 16),
-                    const SizedBox(width: 8),
+                    StandardizedGaps.horizontal(SpacingSize.sm),
                     const StandardizedText('Weekly View', style: StandardizedTextStyle.bodyMedium),
                   ],
                 ),
@@ -74,7 +79,7 @@ class _DetailedHeatmapPageState extends ConsumerState<DetailedHeatmapPage> {
                 child: Row(
                   children: [
                     Icon(PhosphorIcons.gridFour(), size: 16),
-                    const SizedBox(width: 8),
+                    StandardizedGaps.horizontal(SpacingSize.sm),
                     const StandardizedText('Monthly View', style: StandardizedTextStyle.bodyMedium),
                   ],
                 ),
@@ -86,17 +91,17 @@ class _DetailedHeatmapPageState extends ConsumerState<DetailedHeatmapPage> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.only(
-            top: kToolbarHeight + 8,
-            left: 16,
-            right: 16,
-            bottom: 16,
+            top: kToolbarHeight + SpacingTokens.sm,
+            left: SpacingTokens.md,
+            right: SpacingTokens.md,
+            bottom: SpacingTokens.md,
           ),
           child: Column(
             children: [
               // Header with year and view mode info
               _buildHeader(),
               
-              const SizedBox(height: 16),
+              StandardizedGaps.md,
               
               // Main heatmap view
               Expanded(
@@ -114,12 +119,15 @@ class _DetailedHeatmapPageState extends ConsumerState<DetailedHeatmapPage> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const CircularProgressIndicator(),
-                            const SizedBox(height: 16),
+                            StandardizedErrorStates.loading(),
+                            StandardizedGaps.md,
                             StandardizedText(
                               'Loading $_selectedYear productivity data...',
                               style: StandardizedTextStyle.bodyMedium,
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              color: context.colors.withSemanticOpacity(
+                                Theme.of(context).colorScheme.onSurface,
+                                SemanticOpacity.strong,
+                              ),
                             ),
                           ],
                         ),
@@ -132,14 +140,14 @@ class _DetailedHeatmapPageState extends ConsumerState<DetailedHeatmapPage> {
               
               // Selected date details panel
               if (_selectedDate != null) ...[
-                const SizedBox(height: 16),
+                StandardizedGaps.md,
                 _buildSelectedDatePanel(),
               ],
             ],
           ),
         ),
       ),
-    );
+    ));
   }
 
   Widget _buildHeader() {
@@ -147,30 +155,34 @@ class _DetailedHeatmapPageState extends ConsumerState<DetailedHeatmapPage> {
     
     return GlassmorphismContainer(
       borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
-      padding: const EdgeInsets.all(TypographyConstants.paddingLarge),
+      padding: StandardizedSpacing.padding(SpacingSize.lg),
       child: Row(
         children: [
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                StandardizedTextVariants.pageHeader(
+                StandardizedText(
                   '$_selectedYear Productivity Overview',
+                  style: StandardizedTextStyle.headlineMedium,
                   color: theme.colorScheme.onSurface,
                 ),
-                const SizedBox(height: 4),
+                StandardizedGaps.vertical(SpacingSize.xs),
                 StandardizedText(
                   '${_viewMode.displayName} view • Tap any cell to explore details',
                   style: StandardizedTextStyle.bodyMedium,
-                  color: theme.colorScheme.onSurfaceVariant,
+                  color: context.colors.withSemanticOpacity(
+                    Theme.of(context).colorScheme.onSurface,
+                    SemanticOpacity.strong,
+                  ),
                 ),
               ],
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: TypographyConstants.paddingMedium,
-              vertical: TypographyConstants.paddingSmall,
+            padding: StandardizedSpacing.paddingSymmetric(
+              horizontal: SpacingSize.md,
+              vertical: SpacingSize.sm,
             ),
             decoration: BoxDecoration(
               color: theme.colorScheme.primaryContainer,
@@ -184,7 +196,7 @@ class _DetailedHeatmapPageState extends ConsumerState<DetailedHeatmapPage> {
                   size: 16,
                   color: theme.colorScheme.onPrimaryContainer,
                 ),
-                const SizedBox(width: 6),
+                StandardizedGaps.horizontal(SpacingSize.xs),
                 StandardizedText(
                   _viewMode.displayName,
                   style: StandardizedTextStyle.labelMedium,
@@ -264,7 +276,7 @@ class _DetailedHeatmapPageState extends ConsumerState<DetailedHeatmapPage> {
     
     return GlassmorphismContainer(
       borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
-      padding: const EdgeInsets.all(TypographyConstants.paddingLarge),
+      padding: StandardizedSpacing.padding(SpacingSize.xl),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -272,7 +284,7 @@ class _DetailedHeatmapPageState extends ConsumerState<DetailedHeatmapPage> {
           Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const SizedBox(height: 32), // Space for month labels
+              StandardizedGaps.vertical(SpacingSize.xxl), // Space for month labels
               ...['S', 'M', 'T', 'W', 'T', 'F', 'S'].asMap().entries.map((entry) {
                 final index = entry.key;
                 final day = entry.value;
@@ -285,14 +297,13 @@ class _DetailedHeatmapPageState extends ConsumerState<DetailedHeatmapPage> {
                   alignment: Alignment.centerRight,
                   child: Text(
                     day,
-                    style: const TextStyle(
-                      fontSize: 11, // Custom size for weekday labels
+                    style: StandardizedTextStyle.labelMedium.toTextStyle(context).copyWith(
                       fontWeight: FontWeight.w500,
-                      color: null,
-                    ).copyWith(color: colorScheme.onSurfaceVariant),
+                      color: colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 );
-              }).toList(),
+              }),
             ],
           ),
           
@@ -320,11 +331,10 @@ class _DetailedHeatmapPageState extends ConsumerState<DetailedHeatmapPage> {
                           alignment: Alignment.centerLeft,
                           child: Text(
                             _getMonthName(month + 1),
-                            style: const TextStyle(
-                              fontSize: 10, // Slightly smaller to fit better for month labels
+                            style: StandardizedTextStyle.labelSmall.toTextStyle(context).copyWith(
                               fontWeight: FontWeight.w500,
-                              color: null,
-                            ).copyWith(color: colorScheme.onSurfaceVariant),
+                              color: colorScheme.onSurfaceVariant,
+                            ),
                           ),
                         );
                       }),
@@ -376,8 +386,7 @@ class _DetailedHeatmapPageState extends ConsumerState<DetailedHeatmapPage> {
                                       ? Center(
                                           child: Text(
                                             '$completedTasks',
-                                            style: TextStyle(
-                                              fontSize: TypographyConstants.labelSmall, // 11.0 - Fixed critical WCAG violation (was 10px)
+                                            style: StandardizedTextStyle.labelSmall.toTextStyle(context).copyWith(
                                               fontWeight: FontWeight.w700,
                                               color: _getTextColor(context, completedTasks, maxCompleted),
                                             ),
@@ -429,7 +438,7 @@ class _DetailedHeatmapPageState extends ConsumerState<DetailedHeatmapPage> {
             : null;
         return GlassmorphismContainer(
           borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
-          padding: const EdgeInsets.all(TypographyConstants.paddingLarge),
+          padding: StandardizedSpacing.padding(SpacingSize.xl),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -511,7 +520,7 @@ class _DetailedHeatmapPageState extends ConsumerState<DetailedHeatmapPage> {
                       color: colorScheme.onSurfaceVariant,
                       size: 16,
                     ),
-                    const SizedBox(width: 8),
+                    StandardizedGaps.horizontal(SpacingSize.sm),
                     StandardizedText(
                       'No activity recorded for this day',
                       style: StandardizedTextStyle.bodyMedium,

@@ -7,6 +7,10 @@ import '../providers/initialization_providers.dart';
 import '../providers/background_service_providers.dart';
 import '../../core/theme/typography_constants.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'standardized_text.dart';
+import 'standardized_colors.dart';
+import 'standardized_spacing.dart';
+import 'standardized_error_states.dart';
 
 /// Wrapper widget that handles app initialization with performance monitoring
 class AppInitializationWrapper extends ConsumerStatefulWidget {
@@ -61,26 +65,25 @@ class _AppInitializationWrapperState extends ConsumerState<AppInitializationWrap
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(width: 48,
+                SizedBox(
+                  width: 48,
                   height: 48,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 3,
-                  ),
+                  child: StandardizedErrorStates.loading(),
                 ),
-                const SizedBox(height: 24),
-                const Text(
+                StandardizedGaps.lg,
+                const StandardizedText(
                   'Initializing Task Tracker...',
-                  style: TextStyle(
-                    fontSize: TypographyConstants.bodyLarge,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: StandardizedTextStyle.headlineSmall,
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  'Setting up your workspace...',
-                  style: TextStyle(
-                    fontSize: TypographyConstants.bodyMedium,
-                    color: Colors.grey[600],
+                StandardizedGaps.vertical(SpacingSize.sm),
+                Builder(
+                  builder: (context) => StandardizedText(
+                    'Setting up your workspace...',
+                    style: StandardizedTextStyle.bodyMedium,
+                    color: context.colors.withSemanticOpacity(
+                      Theme.of(context).colorScheme.onSurface,
+                      SemanticOpacity.strong,
+                    ),
                   ),
                 ),
               ],
@@ -94,52 +97,54 @@ class _AppInitializationWrapperState extends ConsumerState<AppInitializationWrap
           home: Scaffold(
             body: Center(
               child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
+                padding: StandardizedSpacing.padding(SpacingSize.lg),
+                child: Builder(
+                  builder: (context) => Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
                     Icon(
                       PhosphorIcons.warningCircle(),
                       size: 64,
-                      color: Colors.red,
+                      color: context.colors.error,
                     ),
-                    const SizedBox(height: 24),
-                    const Text(
+                    StandardizedGaps.lg,
+                    const StandardizedText(
                       'Failed to initialize app',
-                      style: TextStyle(
-                        fontSize: TypographyConstants.headlineMedium,
-                        fontWeight: FontWeight.w500,
-                      ),
+                      style: StandardizedTextStyle.headlineMedium,
                     ),
-                    const SizedBox(height: 12),
-                    Text(
+                    StandardizedGaps.vertical(SpacingSize.sm),
+                    StandardizedText(
                       'The app encountered an error during startup. This might be due to corrupted data or insufficient device resources.',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: TypographyConstants.bodyLarge,
-                        color: Colors.grey[700],
+                      style: StandardizedTextStyle.bodyLarge,
+                      color: context.colors.withSemanticOpacity(
+                        Theme.of(context).colorScheme.onSurface,
+                        SemanticOpacity.strong,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    StandardizedGaps.vertical(SpacingSize.xs),
                     if (error.toString().isNotEmpty)
                       Container(
-                        padding: const EdgeInsets.all(12),
-                        margin: const EdgeInsets.symmetric(vertical: 8),
+                        padding: StandardizedSpacing.padding(SpacingSize.sm),
+                        margin: StandardizedSpacing.marginSymmetric(vertical: SpacingSize.xs),
                         decoration: BoxDecoration(
-                          color: Colors.grey[100],
+                          color: context.colors.withSemanticOpacity(
+                            Theme.of(context).colorScheme.surfaceContainerHighest,
+                            SemanticOpacity.subtle,
+                          ),
                           borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                         ),
-                        child: Text(
+                        child: StandardizedText(
                           error.toString(),
                           textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: TypographyConstants.bodySmall,
-                            color: Colors.grey[600],
-                            fontFamily: 'monospace',
+                          style: StandardizedTextStyle.bodySmall,
+                          color: context.colors.withSemanticOpacity(
+                            Theme.of(context).colorScheme.onSurface,
+                            SemanticOpacity.strong,
                           ),
                         ),
                       ),
-                    const SizedBox(height: 24),
+                    StandardizedGaps.lg,
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -149,20 +154,27 @@ class _AppInitializationWrapperState extends ConsumerState<AppInitializationWrap
                             ref.invalidate(appInitializationProvider);
                           },
                           icon: Icon(PhosphorIcons.arrowClockwise()),
-                          label: const Text('Retry'),
+                          label: const StandardizedText(
+                            'Retry',
+                            style: StandardizedTextStyle.buttonText,
+                          ),
                         ),
-                        const SizedBox(width: 16),
+                        StandardizedGaps.horizontal(SpacingSize.md),
                         OutlinedButton.icon(
                           onPressed: () {
                             // Clear app data and retry
                             _clearAppDataAndRetry();
                           },
                           icon: Icon(PhosphorIcons.trash()),
-                          label: const Text('Reset & Retry'),
+                          label: const StandardizedText(
+                            'Reset & Retry',
+                            style: StandardizedTextStyle.buttonText,
+                          ),
                         ),
                       ],
                     ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

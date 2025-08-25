@@ -3,6 +3,7 @@ import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../services/accessibility_service.dart';
+import 'standardized_spacing.dart';
 
 /// Accessible button with proper semantics and haptic feedback
 class AccessibleButton extends ConsumerWidget {
@@ -184,7 +185,7 @@ class AccessibleListTile extends ConsumerWidget {
             ? Colors.grey[300] 
             : Theme.of(context).colorScheme.primaryContainer,
         // Larger touch target for accessibility
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        contentPadding: StandardizedSpacing.paddingSymmetric(horizontal: SpacingSize.md, vertical: SpacingSize.xs),
       ),
     );
   }
@@ -286,7 +287,7 @@ class AccessibleCard extends ConsumerWidget {
           focusNode: focusNode,
           borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
           child: Padding(
-            padding: padding ?? const EdgeInsets.all(16),
+            padding: padding ?? StandardizedSpacing.padding(SpacingSize.md),
             child: child,
           ),
         ),

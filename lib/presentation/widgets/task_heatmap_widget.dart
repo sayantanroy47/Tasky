@@ -4,6 +4,8 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../services/analytics/analytics_models.dart';
 import 'glassmorphism_container.dart';
+import 'standardized_text.dart';
+import 'standardized_colors.dart';
 
 /// A beautiful heatmap widget showing daily task completion patterns
 /// 
@@ -45,7 +47,7 @@ class TaskHeatmapWidget extends StatelessWidget {
               Expanded(
                 child: Text(
                   title,
-                  style: theme.textTheme.titleMedium?.copyWith(
+                  style: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
                     fontWeight: FontWeight.w600,
                     color: colorScheme.onSurface,
                   ),
@@ -101,7 +103,7 @@ class TaskHeatmapWidget extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 'No activity data',
-                style: theme.textTheme.bodyMedium?.copyWith(
+                style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
                   color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                 ),
               ),
@@ -165,14 +167,14 @@ class TaskHeatmapWidget extends StatelessWidget {
                     alignment: Alignment.center,
                     child: Text(
                       day,
-                      style: theme.textTheme.labelSmall?.copyWith(
+                      style: StandardizedTextStyle.labelSmall.toTextStyle(context).copyWith(
                         fontSize: TypographyConstants.labelSmall, // 11.0 - Fixed critical WCAG violation (was 10px)
                         color: colorScheme.onSurfaceVariant,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
                   );
-                }).toList(),
+                }),
               ],
             ),
             
@@ -214,11 +216,11 @@ class TaskHeatmapWidget extends StatelessWidget {
                             monthText = _getMonthAbbrev(firstDay.month);
                           }
                           
-                          return Container(
+                          return SizedBox(
                             width: cellSize + cellSpacing,
                             child: monthText != null ? Text(
                               monthText,
-                              style: theme.textTheme.labelSmall?.copyWith(
+                              style: StandardizedTextStyle.labelSmall.toTextStyle(context).copyWith(
                                 fontSize: 9,
                                 color: colorScheme.onSurfaceVariant,
                                 fontWeight: FontWeight.w600,
@@ -273,7 +275,7 @@ class TaskHeatmapWidget extends StatelessWidget {
                                         child: completedTasks > 0 && completedTasks <= 9
                                             ? Text(
                                                 '$completedTasks',
-                                                style: theme.textTheme.labelSmall?.copyWith(
+                                                style: StandardizedTextStyle.labelSmall.toTextStyle(context).copyWith(
                                                   fontSize: TypographyConstants.labelSmall, // 11.0 - Fixed accessibility violation (was 9px)
                                                   fontWeight: FontWeight.w700,
                                                   color: _getTextColor(context, completedTasks, maxCompleted),
@@ -328,7 +330,7 @@ class TaskHeatmapWidget extends StatelessWidget {
           children: [
             Text(
               'Less',
-              style: theme.textTheme.labelSmall?.copyWith(
+              style: StandardizedTextStyle.labelSmall.toTextStyle(context).copyWith(
                 color: colorScheme.onSurfaceVariant,
                 fontSize: TypographyConstants.labelSmall, // 11.0 - Fixed critical WCAG violation (was 10px)
               ),
@@ -350,7 +352,7 @@ class TaskHeatmapWidget extends StatelessWidget {
             const SizedBox(width: 4),
             Text(
               'More',
-              style: theme.textTheme.labelSmall?.copyWith(
+              style: StandardizedTextStyle.labelSmall.toTextStyle(context).copyWith(
                 color: colorScheme.onSurfaceVariant,
                 fontSize: TypographyConstants.labelSmall, // 11.0 - Fixed critical WCAG violation (was 10px)
               ),
@@ -382,7 +384,7 @@ class TaskHeatmapWidget extends StatelessWidget {
           const SizedBox(width: 4),
           Text(
             value,
-            style: theme.textTheme.labelSmall?.copyWith(
+            style: StandardizedTextStyle.labelSmall.toTextStyle(context).copyWith(
               fontWeight: FontWeight.w700,
               color: colorScheme.onSurface,
               fontSize: 11,
@@ -391,7 +393,7 @@ class TaskHeatmapWidget extends StatelessWidget {
           const SizedBox(width: 2),
           Text(
             label,
-            style: theme.textTheme.labelSmall?.copyWith(
+            style: StandardizedTextStyle.labelSmall.toTextStyle(context).copyWith(
               color: colorScheme.onSurfaceVariant,
               fontSize: TypographyConstants.labelSmall, // 11.0 - Fixed critical WCAG violation (was 10px)
             ),
@@ -410,17 +412,17 @@ class TaskHeatmapWidget extends StatelessWidget {
     
     final intensity = maxCompleted > 0 ? (completedTasks / maxCompleted).clamp(0.0, 1.0) : 0.0;
     
-    // Beautiful gradient from light to dark primary color
+    // Beautiful gradient from light to dark tertiary color
     if (intensity <= 0.2) {
-      return colorScheme.primary.withValues(alpha: 0.3);
+      return context.tertiaryColor.withValues(alpha: 0.3);
     } else if (intensity <= 0.4) {
-      return colorScheme.primary.withValues(alpha: 0.5);
+      return context.tertiaryColor.withValues(alpha: 0.5);
     } else if (intensity <= 0.6) {
-      return colorScheme.primary.withValues(alpha: 0.7);
+      return context.tertiaryColor.withValues(alpha: 0.7);
     } else if (intensity <= 0.8) {
-      return colorScheme.primary.withValues(alpha: 0.85);
+      return context.tertiaryColor.withValues(alpha: 0.85);
     } else {
-      return colorScheme.primary;
+      return context.tertiaryColor;
     }
   }
 
@@ -454,7 +456,7 @@ class TaskHeatmapWidget extends StatelessWidget {
             const SizedBox(width: 8),
             Text(
               'Day Details',
-              style: theme.textTheme.titleMedium?.copyWith(
+              style: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -466,7 +468,7 @@ class TaskHeatmapWidget extends StatelessWidget {
           children: [
             Text(
               '${stat.date.day}/${stat.date.month}/${stat.date.year}',
-              style: theme.textTheme.titleSmall?.copyWith(
+              style: StandardizedTextStyle.titleSmall.toTextStyle(context).copyWith(
                 color: colorScheme.onSurfaceVariant,
               ),
             ),
@@ -505,12 +507,12 @@ class TaskHeatmapWidget extends StatelessWidget {
           Expanded(
             child: Text(
               label,
-              style: theme.textTheme.bodyMedium,
+              style: StandardizedTextStyle.bodyMedium.toTextStyle(context),
             ),
           ),
           Text(
             value,
-            style: theme.textTheme.bodyMedium?.copyWith(
+            style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
               fontWeight: FontWeight.w600,
               color: colorScheme.onSurface,
             ),

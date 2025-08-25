@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -8,6 +7,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../domain/entities/project.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
+import '../project_service.dart';
 import 'project_analytics_service.dart';
 
 /// Service for exporting analytics data in various formats
@@ -98,14 +98,14 @@ class AnalyticsExportService {
         success: true,
         fileName: fileName,
         filePath: file.path,
-        format: ExportFormat.text,
+        format: ExportFormat.txt,
         size: textContent.length,
       );
     } catch (e) {
       return ExportResult(
         success: false,
         error: e.toString(),
-        format: ExportFormat.text,
+        format: ExportFormat.txt,
       );
     }
   }

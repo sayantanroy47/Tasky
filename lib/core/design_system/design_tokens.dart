@@ -467,9 +467,9 @@ class DesignSystem {
     
     switch (type) {
       case SemanticColorType.success:
-        return Colors.green.withValues(alpha: actualOpacity);
+        return theme.colorScheme.tertiary.withValues(alpha: actualOpacity); // Success uses tertiary
       case SemanticColorType.warning:
-        return Colors.orange.withValues(alpha: actualOpacity);
+        return theme.colorScheme.onTertiaryContainer.withValues(alpha: actualOpacity); // Warning uses tertiary variant
       case SemanticColorType.error:
         return theme.colorScheme.error.withValues(alpha: actualOpacity);
       case SemanticColorType.info:

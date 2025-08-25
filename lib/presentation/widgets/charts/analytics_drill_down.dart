@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../../core/theme/typography_constants.dart';
-import '../../../core/design_system/design_tokens.dart';
+import '../../../core/design_system/design_tokens.dart' as design_tokens;
+import '../standardized_text.dart';
+import '../standardized_colors.dart';
 import '../../../domain/entities/task_model.dart';
 import '../../../domain/models/enums.dart';
 import '../glassmorphism_container.dart';
@@ -33,7 +35,7 @@ class AnalyticsDrillDownModal extends StatelessWidget {
     return SizedBox(
       height: mediaQuery.size.height * 0.8,
       child: GlassmorphismContainer(
-        level: GlassLevel.floating,
+        level: design_tokens.GlassLevel.floating,
         padding: EdgeInsets.zero,
         borderRadius: const BorderRadius.vertical(
           top: Radius.circular(TypographyConstants.radiusLarge),
@@ -75,7 +77,7 @@ class AnalyticsDrillDownModal extends StatelessWidget {
                           children: [
                             Text(
                               title,
-                              style: theme.textTheme.headlineSmall?.copyWith(
+                              style: StandardizedTextStyle.headlineSmall.toTextStyle(context).copyWith(
                                 fontSize: TypographyConstants.headlineSmall,
                                 fontWeight: TypographyConstants.medium,
                               ),
@@ -83,7 +85,7 @@ class AnalyticsDrillDownModal extends StatelessWidget {
                             const SizedBox(height: 4),
                             Text(
                               subtitle,
-                              style: theme.textTheme.bodyMedium?.copyWith(
+                              style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
                                 color: theme.colorScheme.onSurfaceVariant,
                               ),
                             ),
@@ -174,7 +176,7 @@ class AnalyticsDrillDownModal extends StatelessWidget {
             'Completed',
             tasks.where((t) => t.status.isCompleted).length.toString(),
             PhosphorIcons.checkCircle(),
-            Colors.green,
+            design_tokens.DesignSystem.getSemanticColor(context, design_tokens.SemanticColorType.success),
           ),
         ),
         const SizedBox(width: TypographyConstants.spacingSmall),
@@ -185,7 +187,7 @@ class AnalyticsDrillDownModal extends StatelessWidget {
             'In Progress',
             tasks.where((t) => t.status.isInProgress).length.toString(),
             PhosphorIcons.playCircle(),
-            Colors.blue,
+            design_tokens.DesignSystem.getSemanticColor(context, design_tokens.SemanticColorType.info),
           ),
         ),
         const SizedBox(width: TypographyConstants.spacingSmall),
@@ -196,7 +198,7 @@ class AnalyticsDrillDownModal extends StatelessWidget {
             'Overdue',
             tasks.where((t) => t.isOverdue).length.toString(),
             PhosphorIcons.warning(),
-            Colors.red,
+            design_tokens.DesignSystem.getSemanticColor(context, design_tokens.SemanticColorType.error),
           ),
         ),
       ],
@@ -324,7 +326,7 @@ class AnalyticsDrillDownModal extends StatelessWidget {
   }
 
   Widget _buildInsightsView(BuildContext context, ThemeData theme) {
-    final insights = _generateInsights();
+    final insights = _generateInsights(context);
     
     return ListView.separated(
       padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
@@ -345,7 +347,7 @@ class AnalyticsDrillDownModal extends StatelessWidget {
     Widget content,
   ) {
     return GlassmorphismContainer(
-      level: GlassLevel.whisper,
+      level: design_tokens.GlassLevel.whisper,
       padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -383,7 +385,7 @@ class AnalyticsDrillDownModal extends StatelessWidget {
       children: TaskPriority.values.map((priority) {
         final count = priorities[priority] ?? 0;
         final percentage = tasks.isNotEmpty ? (count / tasks.length) * 100 : 0.0;
-        final color = _getPriorityColor(priority);
+        final color = _getPriorityColor(context, priority);
 
         return Padding(
           padding: const EdgeInsets.only(bottom: TypographyConstants.spacingSmall),
@@ -427,7 +429,7 @@ class AnalyticsDrillDownModal extends StatelessWidget {
       children: TaskStatus.values.map((status) {
         final count = statuses[status] ?? 0;
         final percentage = tasks.isNotEmpty ? (count / tasks.length) * 100 : 0.0;
-        final color = _getStatusColor(status);
+        final color = _getStatusColor(context, status);
 
         return Padding(
           padding: const EdgeInsets.only(bottom: TypographyConstants.spacingSmall),
@@ -509,7 +511,7 @@ class AnalyticsDrillDownModal extends StatelessWidget {
 
   Widget _buildInsightCard(BuildContext context, ThemeData theme, DrillDownInsight insight) {
     return GlassmorphismContainer(
-      level: GlassLevel.whisper,
+      level: design_tokens.GlassLevel.whisper,
       padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -553,7 +555,7 @@ class AnalyticsDrillDownModal extends StatelessWidget {
     );
   }
 
-  List<DrillDownInsight> _generateInsights() {
+  List<DrillDownInsight> _generateInsights(BuildContext context) {
     final insights = <DrillDownInsight>[];
     final completedTasks = tasks.where((t) => t.status.isCompleted).toList();
     final overdueTasks = tasks.where((t) => t.isOverdue).toList();
@@ -566,7 +568,7 @@ class AnalyticsDrillDownModal extends StatelessWidget {
         title: 'Excellent Progress',
         description: 'This segment shows ${completionRate.toStringAsFixed(1)}% completion rate, which is excellent!',
         icon: PhosphorIcons.checkCircle(),
-        color: Colors.green,
+        color: design_tokens.DesignSystem.getSemanticColor(context, design_tokens.SemanticColorType.success),
         actionable: false,
       ));
     } else if (completionRate < 50) {
@@ -575,7 +577,7 @@ class AnalyticsDrillDownModal extends StatelessWidget {
         description: 'This segment has only ${completionRate.toStringAsFixed(1)}% completion rate.',
         recommendation: 'Consider reviewing task priorities and breaking down complex tasks.',
         icon: PhosphorIcons.warning(),
-        color: Colors.orange,
+        color: design_tokens.DesignSystem.getSemanticColor(context, design_tokens.SemanticColorType.warning),
         actionable: true,
       ));
     }
@@ -588,7 +590,7 @@ class AnalyticsDrillDownModal extends StatelessWidget {
         description: '${overdueTasks.length} tasks (${overduePercentage.toStringAsFixed(1)}%) are overdue.',
         recommendation: 'Focus on completing overdue tasks first or adjust their due dates.',
         icon: PhosphorIcons.clock(),
-        color: Colors.red,
+        color: design_tokens.DesignSystem.getSemanticColor(context, design_tokens.SemanticColorType.error),
         actionable: true,
       ));
     }
@@ -604,7 +606,7 @@ class AnalyticsDrillDownModal extends StatelessWidget {
           description: 'Only ${highPriorityRate.toStringAsFixed(1)}% of high priority tasks are completed.',
           recommendation: 'Prioritize high and urgent tasks to improve overall project health.',
           icon: PhosphorIcons.arrowUp(),
-          color: Colors.red,
+          color: design_tokens.DesignSystem.getSemanticColor(context, design_tokens.SemanticColorType.error),
           actionable: true,
         ));
       }
@@ -617,29 +619,31 @@ class AnalyticsDrillDownModal extends StatelessWidget {
     Navigator.of(context).pushNamed('/task-detail', arguments: task.id);
   }
 
-  Color _getPriorityColor(TaskPriority priority) {
+  Color _getPriorityColor(BuildContext context, TaskPriority priority) {
+    final colors = StandardizedColors(Theme.of(context));
     switch (priority) {
       case TaskPriority.urgent:
-        return Colors.red;
+        return colors.priorityCritical; // Error color for critical priority
       case TaskPriority.high:
-        return Colors.orange;
+        return colors.priorityHigh; // Warning color for high priority  
       case TaskPriority.medium:
-        return Colors.blue;
+        return colors.priorityMedium; // Primary color for medium priority
       case TaskPriority.low:
-        return Colors.green;
+        return colors.priorityLow; // Outline color for low priority
     }
   }
 
-  Color _getStatusColor(TaskStatus status) {
+  Color _getStatusColor(BuildContext context, TaskStatus status) {
+    final colors = StandardizedColors(Theme.of(context));
     switch (status) {
       case TaskStatus.pending:
-        return Colors.orange;
+        return colors.statusPending; // Warning color for pending
       case TaskStatus.inProgress:
-        return Colors.blue;
+        return colors.statusInProgress; // Primary color for in progress
       case TaskStatus.completed:
-        return Colors.green;
+        return colors.statusComplete; // Success color for completed
       case TaskStatus.cancelled:
-        return Colors.grey;
+        return colors.statusCancelled; // Error color for cancelled
     }
   }
 

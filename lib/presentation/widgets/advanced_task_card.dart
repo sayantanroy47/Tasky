@@ -18,6 +18,7 @@ import 'audio_indicator_widget.dart';
 import 'glassmorphism_container.dart';
 import 'standardized_card.dart';
 import 'standardized_text.dart';
+import 'standardized_spacing.dart';
 import 'status_badge_widget.dart';
 import 'subtask_progress_indicator.dart';
 import 'task_dependency_status.dart';
@@ -215,7 +216,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with Ticker
     }
 
     return Container(
-      margin: widget.margin ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: widget.margin ?? StandardizedSpacing.marginSymmetric(horizontal: SpacingSize.md, vertical: SpacingSize.xs),
       child: cardWidget,
     );
   }
@@ -342,15 +343,15 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with Ticker
       children: [
         _buildHeader(theme),
         if (widget.task.description?.isNotEmpty == true) ...[
-          const SizedBox(height: SpacingTokens.xs), // 8.0 - Fixed spacing hierarchy
+          StandardizedGaps.vertical(SpacingSize.xs),
           _buildDescription(theme),
         ],
         if (widget.customContent != null) ...[
-          const SizedBox(height: SpacingTokens.sm), // 12.0 - Fixed spacing hierarchy
+          StandardizedGaps.vertical(SpacingSize.sm),
           widget.customContent!,
         ],
         if (widget.showSubtasks) ...[
-          const SizedBox(height: SpacingTokens.sm), // 12.0 - Fixed spacing hierarchy
+          StandardizedGaps.vertical(SpacingSize.sm),
           SubtaskLinearProgressIndicator(
             taskId: widget.task.id,
             height: 4,
@@ -358,10 +359,10 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with Ticker
           ),
         ],
         if (widget.showProgress) ...[
-          const SizedBox(height: SpacingTokens.sm), // 12.0 - Fixed spacing hierarchy
+          StandardizedGaps.vertical(SpacingSize.sm),
           _buildProgress(theme),
         ],
-        const SizedBox(height: SpacingTokens.sm), // 12.0 - Fixed spacing hierarchy
+        StandardizedGaps.vertical(SpacingSize.sm),
         _buildFooter(theme),
       ],
     );
@@ -378,10 +379,10 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with Ticker
             theme: theme,
             iconSizeRatio: 0.5,
           ),
-          const SizedBox(width: SpacingTokens.xs), // 8.0 - Fixed spacing hierarchy
+          StandardizedGaps.horizontal(SpacingSize.xs),
         ],
         _buildPriorityIndicator(theme, size: 16),
-        const SizedBox(width: SpacingTokens.sm), // 12.0 - Fixed spacing hierarchy
+        StandardizedGaps.horizontal(SpacingSize.sm),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -392,17 +393,16 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with Ticker
                 maxLines: 1,
               ),
               if (widget.task.dueDate != null)
-                Text(
+                StandardizedText(
                   _formatDueDate(widget.task.dueDate!),
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: _getDueDateColor(theme),
-                  ),
+                  style: StandardizedTextStyle.taskMeta,
+                  color: _getDueDateColor(theme),
                 ),
             ],
           ),
         ),
         if (widget.showAudioIndicator && widget.task.hasVoiceMetadata) ...[
-          const SizedBox(width: SpacingTokens.xs), // 8.0 - Fixed spacing hierarchy
+          StandardizedGaps.horizontal(SpacingSize.xs),
           AudioIndicatorWidget(
             task: widget.task,
             size: 16,
@@ -410,14 +410,14 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with Ticker
           ),
         ],
         if (widget.showSubtasks) ...[
-          const SizedBox(width: SpacingTokens.xs), // 8.0 - Fixed spacing hierarchy
+          StandardizedGaps.horizontal(SpacingSize.xs),
           SubtaskProgressIndicator(
             taskId: widget.task.id,
             size: 16,
             showCount: true,
           ),
         ],
-        const SizedBox(width: SpacingTokens.xs), // 8.0 - Fixed spacing hierarchy
+        StandardizedGaps.horizontal(SpacingSize.xs),
         StatusBadgeWidget(
           status: widget.task.status,
           compact: true,
@@ -436,12 +436,11 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with Ticker
           ),
         ),
         if (widget.task.dueDate != null) ...[
-          const SizedBox(width: SpacingTokens.sm), // 12.0 - Fixed spacing hierarchy
-          Text(
+          StandardizedGaps.horizontal(SpacingSize.sm),
+          StandardizedText(
             _formatDueDate(widget.task.dueDate!),
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: _getDueDateColor(theme),
-            ),
+            style: StandardizedTextStyle.taskMeta,
+            color: _getDueDateColor(theme),
           ),
         ],
       ],
@@ -457,10 +456,10 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with Ticker
             color: theme.colorScheme.onSurfaceVariant,
             size: 20,
           ),
-          const SizedBox(width: SpacingTokens.xs), // 8.0 - Fixed spacing hierarchy
+          StandardizedGaps.horizontal(SpacingSize.xs),
         ],
         _buildPriorityIndicator(theme),
-        const SizedBox(width: SpacingTokens.sm), // 12.0 - Fixed spacing hierarchy
+        StandardizedGaps.horizontal(SpacingSize.sm),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -476,7 +475,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with Ticker
                     ),
                   ),
                   if (widget.task.isPinned) ...[
-                    const SizedBox(width: SpacingTokens.xs), // 8.0 - Fixed spacing hierarchy
+                    StandardizedGaps.horizontal(SpacingSize.xs),
                     Icon(
                       PhosphorIcons.pushPin(),
                       size: 16,
@@ -490,7 +489,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with Ticker
           ),
         ),
         if (widget.showAudioIndicator && widget.task.hasVoiceMetadata) ...[
-          const SizedBox(width: SpacingTokens.xs), // 8.0 - Fixed spacing hierarchy
+          StandardizedGaps.horizontal(SpacingSize.xs),
           AudioIndicatorWidget(
             task: widget.task,
             size: 20,
@@ -498,14 +497,14 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with Ticker
           ),
         ],
         if (widget.showDependencyStatus) ...[
-          const SizedBox(width: SpacingTokens.xs), // 8.0 - Fixed spacing hierarchy
+          StandardizedGaps.horizontal(SpacingSize.xs),
           TaskDependencyStatus(
             task: widget.task,
             showDetails: true,
             onTap: () => _showDependencyDetails(context),
           ),
         ],
-        const SizedBox(width: SpacingTokens.xs), // 8.0 - Fixed spacing hierarchy
+        StandardizedGaps.horizontal(SpacingSize.xs),
         StatusBadgeWidget(
           status: widget.task.status,
           compact: true,
@@ -543,7 +542,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with Ticker
     }
 
     return Padding(
-      padding: const EdgeInsets.only(top: 4),
+      padding: StandardizedSpacing.paddingOnly(top: SpacingSize.xs),
       child: Consumer(
         builder: (context, ref, child) {
           final projectAsync = ref.watch(projectProvider(widget.task.projectId!));
@@ -572,9 +571,9 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with Ticker
         level: GlassLevel.interactive,
         borderRadius: BorderRadius.circular(TypographyConstants.chipRadius),
         glassTint: projectColor.withValues(alpha: 0.1),
-        padding: const EdgeInsets.symmetric(
-          horizontal: TypographyConstants.spacingSmall / 2, // 4px
-          vertical: 2,
+        padding: StandardizedSpacing.paddingSymmetric(
+          horizontal: SpacingSize.xs,
+          vertical: SpacingSize.xs,
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -584,7 +583,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with Ticker
               size: 12,
               color: projectColor,
             ),
-            const SizedBox(width: TypographyConstants.spacingSmall / 2), // 4px
+            StandardizedGaps.horizontal(SpacingSize.xs),
             StandardizedText(
               project.name,
               style: StandardizedTextStyle.labelSmall,
@@ -601,9 +600,9 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with Ticker
       level: GlassLevel.interactive,
       borderRadius: BorderRadius.circular(TypographyConstants.chipRadius),
       glassTint: theme.colorScheme.primary.withValues(alpha: 0.1),
-      padding: const EdgeInsets.symmetric(
-        horizontal: TypographyConstants.spacingSmall / 2,
-        vertical: 2,
+      padding: StandardizedSpacing.paddingSymmetric(
+        horizontal: SpacingSize.xs,
+        vertical: SpacingSize.xs,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -618,7 +617,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with Ticker
               ),
             ),
           ),
-          const SizedBox(width: TypographyConstants.spacingSmall / 2),
+          StandardizedGaps.horizontal(SpacingSize.xs),
           StandardizedText(
             'Loading...',
             style: StandardizedTextStyle.labelSmall,
@@ -634,9 +633,9 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with Ticker
       level: GlassLevel.interactive,
       borderRadius: BorderRadius.circular(TypographyConstants.chipRadius),
       glassTint: theme.colorScheme.error.withValues(alpha: 0.1),
-      padding: const EdgeInsets.symmetric(
-        horizontal: TypographyConstants.spacingSmall / 2,
-        vertical: 2,
+      padding: StandardizedSpacing.paddingSymmetric(
+        horizontal: SpacingSize.xs,
+        vertical: SpacingSize.xs,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -646,7 +645,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with Ticker
             size: 12,
             color: theme.colorScheme.error,
           ),
-          const SizedBox(width: TypographyConstants.spacingSmall / 2),
+          StandardizedGaps.horizontal(SpacingSize.xs),
           StandardizedText(
             'Project Error',
             style: StandardizedTextStyle.labelSmall,
@@ -679,13 +678,10 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with Ticker
   }
 
   Widget _buildDescription(ThemeData theme) {
-    return Text(
+    return StandardizedTextVariants.taskDescription(
       widget.task.description!,
-      style: theme.textTheme.bodyMedium?.copyWith(
-        color: theme.colorScheme.onSurfaceVariant,
-      ),
+      color: theme.colorScheme.onSurfaceVariant,
       maxLines: 3,
-      overflow: TextOverflow.ellipsis,
     );
   }
 
@@ -696,11 +692,9 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with Ticker
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
+            const StandardizedText(
               'Progress',
-              style: theme.textTheme.labelMedium?.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
+              style: StandardizedTextStyle.labelMedium,
             ),
             SubtaskProgressIndicator(
               taskId: widget.task.id,
@@ -709,7 +703,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with Ticker
             ),
           ],
         ),
-        const SizedBox(height: SpacingTokens.xs), // 4.0 - Fixed spacing hierarchy
+        StandardizedGaps.vertical(SpacingSize.xs),
         SubtaskLinearProgressIndicator(
           taskId: widget.task.id,
           height: 6,
@@ -728,30 +722,28 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with Ticker
             size: 16,
             color: _getDueDateColor(theme),
           ),
-          const SizedBox(width: SpacingTokens.xs), // 4.0 - Fixed spacing hierarchy
+          StandardizedGaps.horizontal(SpacingSize.xs),
           Expanded(
-            child: Text(
+            child: StandardizedText(
               widget.showDetailedDate
                   ? _formatDetailedDate(widget.task.dueDate!)
                   : _formatDueDate(widget.task.dueDate!),
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: _getDueDateColor(theme),
-                fontWeight: _isOverdue() ? FontWeight.w500 : null,
-              ),
+              style: _isOverdue() ? StandardizedTextStyle.labelMedium : StandardizedTextStyle.taskMeta,
+              color: _getDueDateColor(theme),
             ),
           ),
         ] else
           const Spacer(),
         if (widget.task.tags.isNotEmpty) ...[
-          const SizedBox(width: SpacingTokens.xs), // 8.0 - Fixed spacing hierarchy
+          StandardizedGaps.horizontal(SpacingSize.xs),
           _buildTagsPreview(theme),
         ],
         if (widget.additionalActions?.isNotEmpty == true) ...[
-          const SizedBox(width: SpacingTokens.xs), // 8.0 - Fixed spacing hierarchy
+          StandardizedGaps.horizontal(SpacingSize.xs),
           ...widget.additionalActions!,
         ],
         if (widget.enableContextMenu) ...[
-          const SizedBox(width: SpacingTokens.xs), // 8.0 - Fixed spacing hierarchy
+          StandardizedGaps.horizontal(SpacingSize.xs),
           _buildActionsButton(theme),
         ],
       ],
@@ -766,7 +758,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with Ticker
       mainAxisSize: MainAxisSize.min,
       children: [
         ...tags.take(maxTags).map((tag) => Padding(
-              padding: const EdgeInsets.only(right: 6),
+              padding: StandardizedSpacing.paddingOnly(right: SpacingSize.xs),
               child: Container(
                 width: 28,
                 height: 28,
@@ -798,13 +790,10 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with Ticker
               ),
             ),
             child: Center(
-              child: Text(
+              child: StandardizedText(
                 '+${tags.length - maxTags}',
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                  // Using theme labelSmall size
-                  fontWeight: FontWeight.w500,
-                ),
+                style: StandardizedTextStyle.labelMedium,
+                color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
           ),
@@ -817,7 +806,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with Ticker
       onTap: _showContextMenu,
       borderRadius: BorderRadius.circular(16),
       child: Padding(
-        padding: const EdgeInsets.all(SpacingTokens.xs),
+        padding: StandardizedSpacing.padding(SpacingSize.xs),
         child: Icon(
           PhosphorIcons.dotsThreeVertical(),
           size: 18,
@@ -914,7 +903,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with Ticker
     final theme = Theme.of(context);
 
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      padding: StandardizedSpacing.paddingSymmetric(vertical: SpacingSize.md),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -926,19 +915,15 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with Ticker
               borderRadius: BorderRadius.circular(2),
             ),
           ),
-          const SizedBox(height: SpacingTokens.md), // 16.0 - Fixed spacing hierarchy
+          StandardizedGaps.vertical(SpacingSize.md),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
+            padding: StandardizedSpacing.paddingSymmetric(horizontal: SpacingSize.md),
+            child: StandardizedTextVariants.cardTitle(
               widget.task.title,
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
               maxLines: 2,
-              overflow: TextOverflow.ellipsis,
             ),
           ),
-          const SizedBox(height: SpacingTokens.md), // 16.0 - Fixed spacing hierarchy
+          StandardizedGaps.vertical(SpacingSize.md),
           _buildMenuTile(
             icon: widget.task.isCompleted ? PhosphorIcons.arrowClockwise() : PhosphorIcons.checkCircle(),
             title: widget.task.isCompleted ? 'Mark Incomplete' : 'Mark Complete',
@@ -1227,8 +1212,6 @@ class QuickTaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return StandardizedCardVariants.quickTask(
       onTap: onTap,
       accentColor: task.priority.color,
@@ -1240,11 +1223,9 @@ class QuickTaskCard extends StatelessWidget {
             color: task.isCompleted ? Theme.of(context).colorScheme.tertiary : null, // Fixed hardcoded green for completion
           ),
         ),
-        title: Text(
+        title: StandardizedTextVariants.taskTitle(
           task.title,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            decoration: task.isCompleted ? TextDecoration.lineThrough : null,
-          ),
+          isCompleted: task.isCompleted,
         ),
         subtitle: task.dueDate != null ? Text('Due ${_formatQuickDate(task.dueDate!)}') : null,
         trailing: Container(

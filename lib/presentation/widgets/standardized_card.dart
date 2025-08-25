@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../../core/design_system/design_tokens.dart';
 import '../../core/theme/typography_constants.dart';
 import 'glassmorphism_container.dart';
+import 'standardized_colors.dart';
+import 'standardized_spacing.dart';
 
 /// Unified card system that eliminates card implementation chaos
 /// 
@@ -66,11 +68,20 @@ class StandardizedCard extends StatelessWidget {
       case StandardizedCardStyle.compact:
         cardWidget = _buildCompactCard(theme);
         break;
+      case StandardizedCardStyle.tertiaryAccent:
+        cardWidget = _buildTertiaryAccentCard(context, theme);
+        break;
+      case StandardizedCardStyle.tertiarySuccess:
+        cardWidget = _buildTertiarySuccessCard(context, theme);
+        break;
+      case StandardizedCardStyle.tertiaryContainer:
+        cardWidget = _buildTertiaryContainerCard(context, theme);
+        break;
     }
 
     // Add consistent margin
     return Container(
-      margin: margin ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: margin ?? StandardizedSpacing.marginSymmetric(horizontal: SpacingSize.md, vertical: SpacingSize.xs),
       child: heroTag != null 
         ? Hero(tag: heroTag!, child: cardWidget)
         : cardWidget,
@@ -144,6 +155,48 @@ class StandardizedCard extends StatelessWidget {
     );
   }
 
+  /// Tertiary accent card - highlights special content with tertiary border only
+  Widget _buildTertiaryAccentCard(BuildContext context, ThemeData theme) {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: context.cardTertiaryAccentColor.withValues(alpha: 0.3),
+          width: 0.5,
+        ),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+      ),
+      child: _buildCardInner(theme),
+    );
+  }
+
+  /// Tertiary success card - for completion states with success border only
+  Widget _buildTertiarySuccessCard(BuildContext context, ThemeData theme) {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: context.successColor.withValues(alpha: 0.4),
+          width: 0.5,
+        ),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+      ),
+      child: _buildCardInner(theme),
+    );
+  }
+
+  /// Tertiary container card - subtle tertiary border for layering
+  Widget _buildTertiaryContainerCard(BuildContext context, ThemeData theme) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+        border: Border.all(
+          color: context.tertiaryColor.withValues(alpha: 0.2),
+          width: 0.5,
+        ),
+      ),
+      child: _buildCardInner(theme),
+    );
+  }
+
   Widget _buildCardInner(ThemeData theme, {bool compactPadding = false}) {
     final effectivePadding = padding ?? EdgeInsets.all(
       compactPadding ? SpacingTokens.md * 0.75 : SpacingTokens.md,
@@ -200,6 +253,15 @@ enum StandardizedCardStyle {
   
   /// Compact card with reduced padding - replaces AdvancedTaskCard.compact
   compact,
+
+  /// Tertiary accent card - for highlighting special content with tertiary colors
+  tertiaryAccent,
+  
+  /// Tertiary success card - for completion states and achievements
+  tertiarySuccess,
+  
+  /// Tertiary container card - subtle tertiary background for layering
+  tertiaryContainer,
 }
 
 /// Specialized standardized cards for common use cases
@@ -257,7 +319,7 @@ class StandardizedCardVariants {
       onTap: onTap,
       onLongPress: onLongPress,
       accentColor: accentColor,
-      margin: margin ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      margin: margin ?? StandardizedSpacing.marginSymmetric(horizontal: SpacingSize.md, vertical: SpacingSize.xs),
       child: child,
     );
   }
@@ -308,6 +370,75 @@ class StandardizedCardVariants {
       accentColor: accentColor,
       margin: margin,
       heroTag: heroTag,
+      showAccentBorder: true,
+      child: child,
+    );
+  }
+
+  // TERTIARY COLOR VARIANTS - Enhanced visual hierarchy with tertiary accents
+  
+  /// Featured/highlighted card with tertiary accent styling
+  static Widget featured({
+    required Widget child,
+    VoidCallback? onTap,
+    VoidCallback? onLongPress,
+    EdgeInsetsGeometry? margin,
+    String? heroTag,
+  }) {
+    return StandardizedCard(
+      style: StandardizedCardStyle.tertiaryAccent,
+      onTap: onTap,
+      onLongPress: onLongPress,
+      margin: margin,
+      heroTag: heroTag,
+      child: child,
+    );
+  }
+
+  /// Achievement/completion card with tertiary success styling
+  static Widget achievement({
+    required Widget child,
+    VoidCallback? onTap,
+    VoidCallback? onLongPress,
+    EdgeInsetsGeometry? margin,
+    String? heroTag,
+  }) {
+    return StandardizedCard(
+      style: StandardizedCardStyle.tertiarySuccess,
+      onTap: onTap,
+      onLongPress: onLongPress,
+      margin: margin,
+      heroTag: heroTag,
+      child: child,
+    );
+  }
+
+  /// Background/container card with subtle tertiary styling for layering
+  static Widget background({
+    required Widget child,
+    VoidCallback? onTap,
+    EdgeInsetsGeometry? margin,
+  }) {
+    return StandardizedCard(
+      style: StandardizedCardStyle.tertiaryContainer,
+      onTap: onTap,
+      margin: margin,
+      child: child,
+    );
+  }
+
+  /// Special content card with tertiary accent for important information
+  static Widget special({
+    required Widget child,
+    VoidCallback? onTap,
+    VoidCallback? onLongPress,
+    EdgeInsetsGeometry? margin,
+  }) {
+    return StandardizedCard(
+      style: StandardizedCardStyle.tertiaryAccent,
+      onTap: onTap,
+      onLongPress: onLongPress,
+      margin: margin,
       showAccentBorder: true,
       child: child,
     );

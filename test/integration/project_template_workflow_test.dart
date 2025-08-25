@@ -4,9 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drift/native.dart';
 import 'package:mockito/mockito.dart';
 
-import 'package:task_tracker_app/services/database/database.dart';
+import 'package:task_tracker_app/services/database/database.dart' as db;
 import 'package:task_tracker_app/domain/entities/project.dart';
-import 'package:task_tracker_app/domain/entities/project_template.dart';
+import 'package:task_tracker_app/domain/entities/project_template.dart' as domain;
 import 'package:task_tracker_app/domain/entities/task_template.dart';
 import 'package:task_tracker_app/domain/entities/project_category.dart';
 import 'package:task_tracker_app/presentation/widgets/project_template_wizard.dart';
@@ -19,8 +19,8 @@ void main() {
   group('Project Template Workflow Integration Tests', () {
     late ProviderContainer container;
     late AppDatabase testDatabase;
-    late List<ProjectTemplate> systemTemplates;
-    late List<ProjectTemplate> userTemplates;
+    late List<domain.ProjectTemplate> systemTemplates;
+    late List<domain.ProjectTemplate> userTemplates;
 
     setUp(() async {
       TestWidgetsFlutterBinding.ensureInitialized();
@@ -30,15 +30,13 @@ void main() {
       
       // Create system-defined templates
       systemTemplates = [
-        ProjectTemplate.createSystem(
-          id: 'agile-sprint',
+        domain.ProjectTemplate.create(
           name: 'Agile Sprint',
           description: 'Standard 2-week agile sprint template with backlog, sprint planning, and retrospective',
-          type: ProjectTemplateType.wizard,
-          category: 'Software Development',
-          iconName: 'rocket',
+          type: domain.ProjectTemplateType.wizard,
+          projectNameTemplate: 'Agile Sprint {{sprint_duration}} Week Sprint',
           color: '#2196F3',
-          tags: ['agile', 'scrum', 'sprint'],
+          tags: const ['agile', 'scrum', 'sprint'],
           variables: [
             const TemplateVariable(
               key: 'sprint_duration',

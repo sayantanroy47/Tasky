@@ -414,6 +414,18 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
     });
   }
 
+  /// Watches tasks for a specific project (returns a stream)
+  Stream<List<TaskModel>> watchTasksByProject(String projectId) {
+    return (select(tasks)..where((t) => t.projectId.equals(projectId))).watch().asyncMap((taskRows) async {
+      final taskModels = <TaskModel>[];
+      for (final taskRow in taskRows) {
+        final taskModel = await _taskRowToModel(taskRow);
+        taskModels.add(taskModel);
+      }
+      return taskModels;
+    });
+  }
+
   /// Converts a task database row to a TaskModel
   Future<TaskModel> _taskRowToModel(Task taskRow) async {
     // Get subtasks

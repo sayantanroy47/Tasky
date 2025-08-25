@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
-import '../../core/theme/typography_constants.dart';
 import 'universal_profile_picture.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'standardized_colors.dart';
+import 'standardized_text.dart';
 
 /// Standardized AppBar widget for consistent design across all screens
 class StandardizedAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -16,6 +17,7 @@ class StandardizedAppBar extends StatelessWidget implements PreferredSizeWidget 
   final Color? backgroundColor;
   final bool forceBackButton;
   final bool showProfilePicture;
+  final bool useTertiaryAccent; // NEW: Enable tertiary color accents
   
   const StandardizedAppBar({
     super.key,
@@ -29,7 +31,24 @@ class StandardizedAppBar extends StatelessWidget implements PreferredSizeWidget 
     this.backgroundColor,
     this.forceBackButton = true, // Always show back button by default
     this.showProfilePicture = true, // Show profile picture by default
+    this.useTertiaryAccent = false, // Enable tertiary accents for special screens
   });
+
+  /// Convenience constructor for app bars with tertiary accents
+  /// Use this for special screens like analytics, settings, or featured content
+  const StandardizedAppBar.withTertiaryAccent({
+    super.key,
+    required this.title,
+    this.actions,
+    this.leading,
+    this.automaticallyImplyLeading = true,
+    this.bottom,
+    this.elevation,
+    this.centerTitle = false,
+    this.backgroundColor,
+    this.forceBackButton = true,
+    this.showProfilePicture = true,
+  }) : useTertiaryAccent = true;
   
   /// Build the combined actions list with profile picture
   List<Widget> _buildActions() {
@@ -71,33 +90,36 @@ class StandardizedAppBar extends StatelessWidget implements PreferredSizeWidget 
           : null),
       automaticallyImplyLeading: automaticallyImplyLeading,
       
-      title: Text(
+      title: StandardizedText(
         title,
-        style: TextStyle(
-          fontSize: TypographyConstants.titleLarge,
-          fontWeight: FontWeight.w500,
-          letterSpacing: -0.5,
-          color: theme.colorScheme.onSurface,
-        ),
+        style: StandardizedTextStyle.titleLarge,
       ),
       actions: _buildActions(),
       bottom: bottom,
       
-      // Enhanced glassmorphism background effect for better transparency
+      // Enhanced glassmorphism background effect with optional tertiary accents
       flexibleSpace: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
+            colors: useTertiaryAccent ? [
+              // Tertiary-enhanced gradient for special screens
+              theme.colorScheme.surface.withValues(alpha: 0.65),
+              theme.colorScheme.surface.withValues(alpha: 0.45),
+              context.appBarTertiaryColor.withValues(alpha: 0.08), // Subtle tertiary tint
+            ] : [
               theme.colorScheme.surface.withValues(alpha: 0.6),
               theme.colorScheme.surface.withValues(alpha: 0.4),
             ],
+            stops: useTertiaryAccent ? [0.0, 0.7, 1.0] : [0.0, 1.0],
           ),
           border: Border(
             bottom: BorderSide(
-              color: theme.colorScheme.outline.withValues(alpha: 0.2),
-              width: 0.5,
+              color: useTertiaryAccent 
+                ? context.appBarTertiaryColor.withValues(alpha: 0.25) // Tertiary accent border
+                : theme.colorScheme.outline.withValues(alpha: 0.2),
+              width: useTertiaryAccent ? 1.0 : 0.5, // Slightly stronger border for tertiary
             ),
           ),
         ),
@@ -105,7 +127,9 @@ class StandardizedAppBar extends StatelessWidget implements PreferredSizeWidget 
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
             child: Container(
-              color: theme.colorScheme.surface.withValues(alpha: 0.05),
+              color: useTertiaryAccent 
+                ? context.appBarTertiaryColor.withValues(alpha: 0.03) // Very subtle tertiary tint
+                : theme.colorScheme.surface.withValues(alpha: 0.05),
             ),
           ),
         ),

@@ -9,6 +9,7 @@ import '../../core/providers/core_providers.dart';
 import 'task_providers.dart';
 import 'dependency_providers.dart';
 import 'notification_providers.dart';
+import 'project_providers.dart';
 
 // All basic task providers moved to task_providers.dart to avoid duplicates
 // This file now only contains specialized operations providers
@@ -29,7 +30,8 @@ final taskOperationsProvider = Provider<EnhancedTaskOperations>((ref) {
   final recurringService = ref.watch(recurringTaskServiceProvider);
   final dependencyService = ref.watch(dependencyServiceProvider);
   final notificationService = ref.watch(notificationServiceProvider);
-  return EnhancedTaskOperations(repository, recurringService, dependencyService, notificationService);
+  final projectService = ref.watch(projectServiceProvider);
+  return EnhancedTaskOperations(repository, recurringService, dependencyService, notificationService, projectService);
 });
 
 /// Legacy task operations provider for backward compatibility

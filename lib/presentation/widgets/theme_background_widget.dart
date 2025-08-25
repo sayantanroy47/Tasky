@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/providers/enhanced_theme_provider.dart';
+import 'standardized_colors.dart';
 
 /// Widget that applies theme-specific programmatic gradients
 class ThemeBackgroundWidget extends ConsumerWidget {
@@ -37,7 +38,7 @@ class ThemeBackgroundWidget extends ConsumerWidget {
         ),
         // App content with transparent background
         Container(
-          color: Colors.transparent,
+          color: context.colors.backgroundTransparent,
           child: child,
         ),
       ],
@@ -49,6 +50,8 @@ class ThemeBackgroundWidget extends ConsumerWidget {
       return _getMatrixGradient(isDarkTheme);
     } else if (themeId.contains('vegeta')) {
       return _getVegetaGradient(isDarkTheme);
+    } else if (themeId.contains('goku')) {
+      return _getGokuGradient(isDarkTheme);
     } else if (themeId.contains('dracula')) {
       return _getDraculaGradient(isDarkTheme);
     } else if (themeId.contains('expressive')) {
@@ -92,10 +95,10 @@ class ThemeBackgroundWidget extends ConsumerWidget {
         center: Alignment.center,
         radius: 1.3,
         colors: [
-          Color(0xFF0A0E3F), // Dark blue center
-          Color(0xFF1E3A8A), // Medium blue
-          Color(0xFF1E40AF), // Bright blue
-          Color(0xFF0F172A), // Very dark blue
+          Color(0xFF000000), // Pure black center
+          Color(0xFF000510), // Nearly black with blue hint
+          Color(0xFF001020), // Very dark blue
+          Color(0xFF000000), // Pure black edge
         ],
         stops: [0.0, 0.3, 0.6, 1.0],
       );
@@ -110,6 +113,34 @@ class ThemeBackgroundWidget extends ConsumerWidget {
           Color(0xFF0EA5E9), // Blue edge
         ],
         stops: [0.0, 0.3, 0.6, 1.0],
+      );
+    }
+  }
+
+  Gradient _getGokuGradient(bool isDarkTheme) {
+    if (isDarkTheme) {
+      return const RadialGradient(
+        center: Alignment.center,
+        radius: 1.4,
+        colors: [
+          Color(0xFF1A0D26), // Purple void center
+          Color(0xFF2D1B3D), // Purple shadow
+          Color(0xFF3D2A4F), // Dark purple
+          Color(0xFF1A0D26), // Purple void edge
+        ],
+        stops: [0.0, 0.3, 0.7, 1.0],
+      );
+    } else {
+      return const RadialGradient(
+        center: Alignment.center,
+        radius: 1.4,
+        colors: [
+          Color(0xFFFFFBFF), // Pure white center
+          Color(0xFFF5F5F5), // Light silver
+          Color(0xFFE6F3FF), // Soft ethereal glow
+          Color(0xFFFF6600), // Vibrant orange edge
+        ],
+        stops: [0.0, 0.4, 0.7, 1.0],
       );
     }
   }

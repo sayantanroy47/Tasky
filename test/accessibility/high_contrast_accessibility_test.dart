@@ -65,7 +65,10 @@ void main() {
                       onEdit: () {},
                       onDelete: () {},
                     ),
-                    ...testTasks.map((task) => AdvancedTaskCard(task: task)),
+                    ...testTasks.map((task) => AdvancedTaskCard(
+                      task: task,
+                      onTap: () {},
+                    )),
                   ],
                 ),
               ),
@@ -116,7 +119,10 @@ void main() {
                       project: testProject,
                       onTap: () {},
                     ),
-                    ...testTasks.map((task) => AdvancedTaskCard(task: task)),
+                    ...testTasks.map((task) => AdvancedTaskCard(
+                      task: task,
+                      onTap: () {},
+                    )),
                   ],
                 ),
               ),

@@ -3,6 +3,9 @@ import 'package:flutter/services.dart';
 
 import '../../core/theme/material3/motion_system.dart';
 import '../../core/theme/typography_constants.dart';
+import 'standardized_colors.dart';
+import 'standardized_text.dart';
+import 'standardized_spacing.dart';
 
 /// Expressive Material 3 Bottom Navigation with theme-aware styling and animations
 class ExpressiveBottomNavigation extends StatefulWidget {
@@ -128,7 +131,7 @@ class _ExpressiveBottomNavigationState extends State<ExpressiveBottomNavigation>
       child: SafeArea(
         child: Container(
           height: 80,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: StandardizedSpacing.paddingSymmetric(horizontal: SpacingSize.md, vertical: SpacingSize.xs),
           child: Stack(
             children: [
               // Background indicator
@@ -146,16 +149,16 @@ class _ExpressiveBottomNavigationState extends State<ExpressiveBottomNavigation>
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            theme.colorScheme.primary.withValues(alpha: 0.15),
-                            theme.colorScheme.secondary.withValues(alpha: 0.1),
+                            context.bottomNavTertiaryColor.withValues(alpha: 0.18), // Enhanced tertiary accent
+                            context.navigationTertiaryColor.withValues(alpha: 0.12), // Secondary tertiary gradient
                           ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
                         borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                         border: Border.all(
-                          color: theme.colorScheme.primary.withValues(alpha: 0.3),
-                          width: 1,
+                          color: context.navigationTertiaryColor.withValues(alpha: 0.35), // Tertiary border accent
+                          width: 1.5, // Slightly stronger border for tertiary emphasis
                         ),
                       ),
                     ),
@@ -195,8 +198,8 @@ class _ExpressiveBottomNavigationState extends State<ExpressiveBottomNavigation>
                         height: 48,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: theme.colorScheme.primary.withValues(
-                            alpha: 0.2 * (1 - _rippleAnimation.value),
+                          color: context.navigationTertiaryColor.withValues(
+                            alpha: 0.25 * (1 - _rippleAnimation.value), // Enhanced tertiary ripple effect
                           ),
                         ),
                       ),
@@ -254,13 +257,13 @@ class _ExpressiveBottomNavigationState extends State<ExpressiveBottomNavigation>
                     // Icon with theme-aware styling
                     AnimatedContainer(
                       duration: ExpressiveMotionSystem.durationShort3,
-                      padding: const EdgeInsets.all(4),
+                      padding: StandardizedSpacing.padding(SpacingSize.xs),
                       decoration: BoxDecoration(
                         gradient: isSelected
                             ? LinearGradient(
                                 colors: [
-                                  theme.colorScheme.primary.withValues(alpha: 0.2),
-                                  theme.colorScheme.secondary.withValues(alpha: 0.1),
+                                  context.navigationTertiaryColor.withValues(alpha: 0.22), // Primary tertiary accent
+                                  context.bottomNavTertiaryColor.withValues(alpha: 0.15), // Subtle tertiary blend
                                 ],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
@@ -275,12 +278,12 @@ class _ExpressiveBottomNavigationState extends State<ExpressiveBottomNavigation>
                         child: Icon(
                           isSelected ? destination.selectedIcon ?? destination.icon : destination.icon,
                           size: 20,
-                          color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
+                          color: isSelected ? context.navigationTertiaryColor : theme.colorScheme.onSurfaceVariant, // Tertiary icon accent
                         ),
                       ),
                     ),
 
-                    const SizedBox(height: 2),
+                    StandardizedGaps.vertical(SpacingSize.xs),
 
                     // Label with animation
                     AnimatedDefaultTextStyle(
@@ -288,10 +291,11 @@ class _ExpressiveBottomNavigationState extends State<ExpressiveBottomNavigation>
                       style: TextStyle(
                         fontSize: TypographyConstants.labelSmall, // 11.0 - Fixed accessibility violation (was 10px)
                         fontWeight: isSelected ? FontWeight.w500 : FontWeight.w400,
-                        color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
+                        color: isSelected ? context.navigationTertiaryColor : theme.colorScheme.onSurfaceVariant, // Tertiary text accent
                       ),
-                      child: Text(
+                      child: StandardizedText(
                         destination.label,
+                        style: StandardizedTextStyle.labelSmall,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),

@@ -8,6 +8,7 @@ import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
 import '../providers/task_providers.dart';
 import '../widgets/glassmorphism_container.dart';
+import 'standardized_text.dart';
 
 /// Day Preview Widget showing tasks for a specific day with hourly timeline
 class DayPreviewWidget extends ConsumerWidget {
@@ -61,7 +62,7 @@ class DayPreviewWidget extends ConsumerWidget {
       const SizedBox(width: 8),
       Text(
         isToday ? 'Today' : _getDayName(selectedDate),
-        style: theme.textTheme.titleMedium?.copyWith(
+        style: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
           fontWeight: FontWeight.w500,
           color: theme.colorScheme.onSurface,
         ),
@@ -69,7 +70,7 @@ class DayPreviewWidget extends ConsumerWidget {
       const Spacer(),
       Text(
         '${selectedDate.day}/${selectedDate.month}/${selectedDate.year}',
-        style: theme.textTheme.bodySmall?.copyWith(
+        style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
           color: theme.colorScheme.onSurfaceVariant,
           fontWeight: FontWeight.w500,
         ),
@@ -93,14 +94,14 @@ class DayPreviewWidget extends ConsumerWidget {
             const SizedBox(height: 12),
             Text(
               'No tasks scheduled',
-              style: theme.textTheme.titleMedium?.copyWith(
+              style: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: 4),
             Text(
               'Enjoy your free time!',
-              style: theme.textTheme.bodySmall?.copyWith(
+              style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
             )
@@ -141,7 +142,7 @@ class DayPreviewWidget extends ConsumerWidget {
             padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
             child: Text(
               timeString,
-              style: theme.textTheme.bodySmall?.copyWith(
+              style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
                 fontWeight: hasCurrentTime ? FontWeight.w500 : FontWeight.normal,
                 color: hasCurrentTime ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
                 // Removed fontSize override - respects theme typography
@@ -232,7 +233,7 @@ class DayPreviewWidget extends ConsumerWidget {
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(
                 task.title,
-                style: theme.textTheme.bodyMedium?.copyWith(
+                style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
                   fontWeight: FontWeight.w500,
                   color: isCompleted ? theme.colorScheme.onSurfaceVariant : theme.colorScheme.onSurface,
                   decoration: isCompleted ? TextDecoration.lineThrough : null,
@@ -243,7 +244,7 @@ class DayPreviewWidget extends ConsumerWidget {
               if (task.dueDate != null)
                 Text(
                   '${task.dueDate!.hour}:${task.dueDate!.minute.toString().padLeft(2, '0')}',
-                  style: theme.textTheme.bodySmall?.copyWith(
+                  style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
                 )
@@ -351,7 +352,7 @@ class DayPreviewWidget extends ConsumerWidget {
           if (task.description?.isNotEmpty == true) ...[
             Text(
               'Description:',
-              style: theme.textTheme.titleSmall?.copyWith(
+              style: StandardizedTextStyle.titleSmall.toTextStyle(context).copyWith(
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -367,7 +368,7 @@ class DayPreviewWidget extends ConsumerWidget {
           Row(children: [
             Text(
               'Priority: ',
-              style: theme.textTheme.titleSmall?.copyWith(
+              style: StandardizedTextStyle.titleSmall.toTextStyle(context).copyWith(
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -394,7 +395,7 @@ class DayPreviewWidget extends ConsumerWidget {
               const SizedBox(width: 4),
               Text(
                 'Due: ${task.dueDate!.day}/${task.dueDate!.month}/${task.dueDate!.year} at ${task.dueDate!.hour}:${task.dueDate!.minute.toString().padLeft(2, '0')}',
-                style: theme.textTheme.bodySmall,
+                style: StandardizedTextStyle.bodySmall.toTextStyle(context),
               )
             ]),
           ],

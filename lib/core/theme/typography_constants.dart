@@ -51,6 +51,7 @@ class TypographyConstants {
   static const FontWeight light = FontWeight.w300;
   static const FontWeight regular = FontWeight.w400;
   static const FontWeight medium = FontWeight.w500;
+  static const FontWeight semiBold = FontWeight.w500; // Alias for medium to maintain compatibility
   // semiBold and bold removed - maximum weight is medium (w500)
 
   // Line height constants

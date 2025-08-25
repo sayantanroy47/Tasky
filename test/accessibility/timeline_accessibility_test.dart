@@ -9,13 +9,8 @@ import 'package:task_tracker_app/domain/entities/project.dart';
 import 'package:task_tracker_app/domain/entities/task_model.dart';
 import 'package:task_tracker_app/domain/entities/timeline_milestone.dart';
 import 'package:task_tracker_app/domain/entities/timeline_dependency.dart';
-import 'package:task_tracker_app/domain/entities/timeline_settings.dart';
 import 'package:task_tracker_app/domain/models/enums.dart';
 import 'package:task_tracker_app/presentation/widgets/timeline/timeline_gantt_view.dart';
-import 'package:task_tracker_app/presentation/widgets/timeline/timeline_header.dart';
-import 'package:task_tracker_app/presentation/widgets/timeline/task_timeline_row.dart';
-import 'package:task_tracker_app/presentation/widgets/timeline/milestone_timeline_marker.dart';
-import 'package:task_tracker_app/presentation/widgets/timeline/timeline_controls.dart';
 
 void main() {
   group('Timeline/Gantt Chart Accessibility Tests', () {
@@ -601,9 +596,9 @@ void main() {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            const Text(
                               'Timeline Summary',
-                              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                             ),
                             Text('${testTasks.length} tasks • ${testMilestones.length} milestones'),
                             Text('${testTasks.where((t) => t.status == TaskStatus.completed).length}/${testTasks.length} completed'),

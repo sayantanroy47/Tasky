@@ -13,14 +13,11 @@ import '../../domain/entities/project.dart';
 import '../../domain/models/enums.dart' as enums;
 import '../../domain/repositories/task_repository.dart';
 
-import '../data_export/data_export_service.dart';
-import '../data_export/data_export_models.dart' as export_models;
 
 /// Service for email integration and task sharing
 class EmailIntegrationService {
   final TaskRepository _taskRepository;
   // final ProjectRepository _projectRepository;
-  final DataExportService _exportService;
   
   // Email configuration
   EmailConfiguration? _emailConfig;
@@ -32,9 +29,7 @@ class EmailIntegrationService {
 
   EmailIntegrationService({
     required TaskRepository taskRepository,
-    required DataExportService exportService,
   }) : _taskRepository = taskRepository,
-       _exportService = exportService;
 
   /// Stream of email events
   Stream<EmailEvent> get emailEvents => _emailEventController.stream;
@@ -853,63 +848,22 @@ class EmailIntegrationService {
 
   /// Add data export attachment
   Future<void> _addDataExportAttachment(Message message, List<TaskModel> tasks, EmailShareOptions options) async {
-    try {
-      final exportFormat = options.exportFormat ?? export_models.ExportFormat.csv;
-      final result = await _exportService.exportTasks(tasks, format: exportFormat);
-      
-      if (result.success && result.filePath != null) {
-        final file = File(result.filePath!);
-        if (await file.exists()) {
-          message.attachments.add(FileAttachment(
-            file,
-            fileName: 'tasks_export.${exportFormat.name}',
-          ));
-        }
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error adding data export attachment: $e');
-      }
+    // Data export functionality is disabled
+    if (kDebugMode) {
+      print('Data export attachment feature is currently disabled');
     }
   }
 
-  /// Add project export attachment
+  /// Add project export attachment  
   Future<void> _addProjectExportAttachment(
     Message message,
     Project project,
     List<TaskModel> tasks,
     EmailShareOptions options,
   ) async {
-    try {
-      final exportFormat = options.exportFormat ?? export_models.ExportFormat.json;
-      
-      // Export both project and its tasks
-      final taskResult = await _exportService.exportTasks(tasks, format: exportFormat);
-      final projectResult = await _exportService.exportProjects([project], format: exportFormat);
-      
-      if (taskResult.success && taskResult.filePath != null) {
-        final file = File(taskResult.filePath!);
-        if (await file.exists()) {
-          message.attachments.add(FileAttachment(
-            file,
-            fileName: 'project_tasks.${exportFormat.name}',
-          ));
-        }
-      }
-      
-      if (projectResult.success && projectResult.filePath != null) {
-        final file = File(projectResult.filePath!);
-        if (await file.exists()) {
-          message.attachments.add(FileAttachment(
-            file,
-            fileName: 'project_info.${exportFormat.name}',
-          ));
-        }
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error adding project export attachment: $e');
-      }
+    // Project export functionality is disabled
+    if (kDebugMode) {
+      print('Project export attachment feature is currently disabled');
     }
   }
 

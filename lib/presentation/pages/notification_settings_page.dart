@@ -9,6 +9,7 @@ import '../providers/notification_providers.dart';
 import '../widgets/glassmorphism_container.dart';
 import '../widgets/modern_radio_widgets.dart';
 import '../widgets/standardized_app_bar.dart';
+import '../widgets/standardized_text.dart';
 import '../widgets/theme_background_widget.dart';
 
 /// Page for configuring notification settings
@@ -120,10 +121,7 @@ class NotificationSettingsPage extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Permissions',
-            style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.w500),
-          ),
+          StandardizedTextVariants.sectionHeader('Permissions'),
           const SizedBox(height: 16),
           permissionsAsync.when(
             loading: () => const LinearProgressIndicator(),
@@ -193,10 +191,7 @@ class NotificationSettingsPage extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'General',
-            style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.w500),
-          ),
+          StandardizedTextVariants.sectionHeader('General'),
           const SizedBox(height: 16),
           SwitchListTile(
             title: const Text('Enable Notifications'),
@@ -237,10 +232,7 @@ class NotificationSettingsPage extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Task Reminders',
-            style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.w500),
-          ),
+          StandardizedTextVariants.sectionHeader('Task Reminders'),
           const SizedBox(height: 16),
           ListTile(
             title: const Text('Default Reminder Time'),
@@ -266,10 +258,7 @@ class NotificationSettingsPage extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Daily Summary',
-            style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.w500),
-          ),
+          StandardizedTextVariants.sectionHeader('Daily Summary'),
           const SizedBox(height: 16),
           SwitchListTile(
             title: const Text('Daily Summary'),
@@ -307,10 +296,7 @@ class NotificationSettingsPage extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Quiet Hours',
-            style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.w500),
-          ),
+          StandardizedTextVariants.sectionHeader('Quiet Hours'),
           const SizedBox(height: 16),
           if (hasQuietHours) ...[
             ListTile(
@@ -362,10 +348,7 @@ class NotificationSettingsPage extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Advanced',
-            style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.w500),
-          ),
+          StandardizedTextVariants.sectionHeader('Advanced'),
           const SizedBox(height: 16),
           SwitchListTile(
             title: const Text('Respect Do Not Disturb'),
@@ -391,10 +374,7 @@ class NotificationSettingsPage extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Test',
-            style: TextStyle(fontSize: TypographyConstants.headlineSmall, fontWeight: FontWeight.w500),
-          ),
+          StandardizedTextVariants.sectionHeader('Test'),
           const SizedBox(height: 16),
           GlassmorphismContainer(
             level: GlassLevel.interactive,

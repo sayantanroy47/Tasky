@@ -8,8 +8,6 @@ import 'package:task_tracker_app/domain/entities/project.dart';
 import 'package:task_tracker_app/domain/entities/task_model.dart';
 import 'package:task_tracker_app/domain/entities/task_enums.dart';
 import 'package:task_tracker_app/domain/models/enums.dart';
-import 'package:task_tracker_app/presentation/widgets/timeline_gantt_view.dart';
-import 'package:task_tracker_app/presentation/widgets/milestone_manager.dart';
 import 'package:task_tracker_app/core/providers/core_providers.dart';
 
 void main() {

@@ -11,7 +11,6 @@ import 'package:task_tracker_app/domain/entities/task_enums.dart';
 import 'package:task_tracker_app/presentation/widgets/analytics_widgets.dart';
 import 'package:task_tracker_app/presentation/pages/analytics_page.dart';
 import 'package:task_tracker_app/presentation/providers/analytics_providers.dart';
-import 'package:task_tracker_app/services/data_export/real_data_export_service.dart';
 import 'package:task_tracker_app/core/providers/core_providers.dart';
 
 void main() {

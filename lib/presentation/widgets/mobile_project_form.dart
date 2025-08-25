@@ -4,11 +4,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../core/theme/typography_constants.dart';
+import '../../core/design_system/design_tokens.dart';
+import 'standardized_animations.dart';
 import '../../domain/entities/project.dart';
 import '../../services/ui/mobile_gesture_service.dart';
 import '../providers/project_providers.dart';
 import 'enhanced_ux_widgets.dart';
 import 'glassmorphism_container.dart';
+import 'standardized_text.dart';
+import 'standardized_colors.dart';
+import 'standardized_spacing.dart';
+import 'standardized_form_widgets.dart';
+import '../../core/validation/form_validators.dart';
 
 /// Mobile-optimized project form with gesture support and enhanced UX
 class MobileProjectForm extends ConsumerStatefulWidget {
@@ -84,15 +91,15 @@ class _MobileProjectFormState extends ConsumerState<MobileProjectForm>
     super.initState();
     
     _slideAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 300),
+      duration: StandardizedAnimations.normal,
       vsync: this,
     );
     _colorAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 200),
+      duration: StandardizedAnimations.fast,
       vsync: this,
     );
     _loadingAnimationController = AnimationController(
-      duration: const Duration(milliseconds: 1000),
+      duration: StandardizedAnimations.slow,
       vsync: this,
     );
 
@@ -126,7 +133,7 @@ class _MobileProjectFormState extends ConsumerState<MobileProjectForm>
     final isEditing = widget.project != null;
 
     return Scaffold(
-      backgroundColor: widget.isFullScreen ? null : Colors.transparent,
+      backgroundColor: widget.isFullScreen ? null : context.colors.backgroundTransparent,
       resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: mobileGestureService.createTabNavigationGestureDetector(
@@ -181,10 +188,10 @@ class _MobileProjectFormState extends ConsumerState<MobileProjectForm>
     
     return GlassmorphismContainer(
       level: GlassLevel.floating,
-      margin: const EdgeInsets.all(16),
+      margin: StandardizedSpacing.margin(SpacingSize.md),
       borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: StandardizedSpacing.padding(SpacingSize.lg),
         child: Row(
           children: [
             // Back button
@@ -196,7 +203,10 @@ class _MobileProjectFormState extends ConsumerState<MobileProjectForm>
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.7),
+                  color: context.colors.withSemanticOpacity(
+                    theme.colorScheme.surfaceContainerHighest,
+                    SemanticOpacity.strong,
+                  ),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Icon(
@@ -207,25 +217,22 @@ class _MobileProjectFormState extends ConsumerState<MobileProjectForm>
               ),
             ),
             
-            const SizedBox(width: 16),
+            StandardizedGaps.md,
             
             // Step info
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  StandardizedText(
                     currentStep.title,
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: StandardizedTextStyle.titleLarge,
                   ),
-                  const SizedBox(height: 4),
-                  Text(
+                  StandardizedGaps.vertical(SpacingSize.xs),
+                  StandardizedText(
                     currentStep.subtitle,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
+                    style: StandardizedTextStyle.bodyMedium,
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
                 ],
               ),
@@ -233,17 +240,21 @@ class _MobileProjectFormState extends ConsumerState<MobileProjectForm>
             
             // Step counter
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              padding: StandardizedSpacing.paddingSymmetric(
+                horizontal: SpacingSize.sm,
+                vertical: SpacingSize.xs,
+              ),
               decoration: BoxDecoration(
-                color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                color: context.colors.withSemanticOpacity(
+                  theme.colorScheme.primary,
+                  SemanticOpacity.subtle,
+                ),
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: Text(
+              child: StandardizedText(
                 '${_currentStep + 1}/${_formSteps.length}',
-                style: theme.textTheme.labelMedium?.copyWith(
-                  color: theme.colorScheme.primary,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: StandardizedTextStyle.labelMedium,
+                color: theme.colorScheme.primary,
               ),
             ),
           ],
@@ -255,7 +266,7 @@ class _MobileProjectFormState extends ConsumerState<MobileProjectForm>
   Widget _buildStepIndicator(ThemeData theme) {
     return Container(
       height: 60,
-      margin: const EdgeInsets.symmetric(horizontal: 16),
+      margin: StandardizedSpacing.marginSymmetric(horizontal: SpacingSize.md),
       child: Row(
         children: List.generate(_formSteps.length, (index) {
           final step = _formSteps[index];
@@ -266,26 +277,38 @@ class _MobileProjectFormState extends ConsumerState<MobileProjectForm>
             child: GestureDetector(
               onTap: () => _navigateToStep(index),
               child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                margin: const EdgeInsets.symmetric(horizontal: 4),
+                duration: StandardizedAnimations.fast,
+                margin: StandardizedSpacing.marginSymmetric(horizontal: SpacingSize.xs),
                 decoration: BoxDecoration(
                   color: isActive
-                      ? theme.colorScheme.primary.withValues(alpha: 0.1)
+                      ? context.colors.withSemanticOpacity(
+                          theme.colorScheme.primary,
+                          SemanticOpacity.subtle,
+                        )
                       : isCompleted
-                          ? theme.colorScheme.primary.withValues(alpha: 0.05)
-                          : Colors.transparent,
+                          ? context.colors.withSemanticOpacity(
+                              theme.colorScheme.primary,
+                              SemanticOpacity.subtle,
+                            )
+                          : context.colors.backgroundTransparent,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                     color: isActive
                         ? theme.colorScheme.primary
                         : isCompleted
-                            ? theme.colorScheme.primary.withValues(alpha: 0.3)
-                            : theme.colorScheme.outline.withValues(alpha: 0.3),
+                            ? context.colors.withSemanticOpacity(
+                                theme.colorScheme.primary,
+                                SemanticOpacity.light,
+                              )
+                            : context.colors.withSemanticOpacity(
+                                theme.colorScheme.outline,
+                                SemanticOpacity.light,
+                              ),
                     width: isActive ? 2 : 1,
                   ),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(8),
+                  padding: StandardizedSpacing.padding(SpacingSize.sm),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -295,21 +318,24 @@ class _MobileProjectFormState extends ConsumerState<MobileProjectForm>
                         color: isActive
                             ? theme.colorScheme.primary
                             : isCompleted
-                                ? theme.colorScheme.primary.withValues(alpha: 0.7)
+                                ? context.colors.withSemanticOpacity(
+                                    theme.colorScheme.primary,
+                                    SemanticOpacity.strong,
+                                  )
                                 : theme.colorScheme.onSurfaceVariant,
                       ),
-                      const SizedBox(height: 2),
-                      Text(
+                      StandardizedGaps.vertical(SpacingSize.xs),
+                      StandardizedText(
                         step.title,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: isActive
-                              ? theme.colorScheme.primary
-                              : isCompleted
-                                  ? theme.colorScheme.primary.withValues(alpha: 0.7)
-                                  : theme.colorScheme.onSurfaceVariant,
-                          fontWeight: isActive ? FontWeight.w500 : null,
-                          // Using theme labelSmall size
-                        ),
+                        style: StandardizedTextStyle.bodySmall,
+                        color: isActive
+                            ? theme.colorScheme.primary
+                            : isCompleted
+                                ? context.colors.withSemanticOpacity(
+                                    theme.colorScheme.primary,
+                                    SemanticOpacity.strong,
+                                  )
+                                : theme.colorScheme.onSurfaceVariant,
                         textAlign: TextAlign.center,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -328,7 +354,7 @@ class _MobileProjectFormState extends ConsumerState<MobileProjectForm>
   Widget _buildFormBody(ThemeData theme, MobileGestureService gestureService) {
     return GlassmorphismContainer(
       level: GlassLevel.content,
-      margin: const EdgeInsets.all(16),
+      margin: StandardizedSpacing.margin(SpacingSize.md),
       borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
       child: Form(
         key: _formKey,
@@ -337,7 +363,7 @@ class _MobileProjectFormState extends ConsumerState<MobileProjectForm>
           itemCount: _formSteps.length,
           itemBuilder: (context, index) {
             return Padding(
-              padding: const EdgeInsets.all(24),
+              padding: StandardizedSpacing.padding(SpacingSize.lg),
               child: _buildStepContent(theme, gestureService, index),
             );
           },
@@ -365,35 +391,41 @@ class _MobileProjectFormState extends ConsumerState<MobileProjectForm>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Project name field
-          EnhancedTextField(
+          StandardizedFormField(
             controller: _nameController,
             focusNode: _nameFocusNode,
-            labelText: 'Project Name',
-            hintText: 'Enter project name',
+            label: 'Project Name',
+            hint: 'Enter project name',
             semanticLabel: 'Project name input field',
             prefixIcon: Icon(PhosphorIcons.folder()),
+            isRequired: true,
+            validator: FieldValidator.compose([
+              FieldValidator.required('Please enter a project name'),
+              FieldValidator.minLength(3, 'Name must be at least 3 characters'),
+            ]),
             onChanged: (value) {
               setState(() {}); // Trigger rebuild for validation
             },
           ),
           
-          const SizedBox(height: 20),
+          StandardizedGaps.vertical(SpacingSize.phi2),
           
           // Project description field
-          EnhancedTextField(
+          StandardizedFormField(
             controller: _descriptionController,
             focusNode: _descriptionFocusNode,
-            labelText: 'Description (Optional)',
-            hintText: 'Describe your project goals and scope',
+            label: 'Description (Optional)',
+            hint: 'Describe your project goals and scope',
             semanticLabel: 'Project description input field',
             prefixIcon: Icon(PhosphorIcons.textAa()),
+            isMultiline: true,
             maxLines: 3,
             onChanged: (value) {
               setState(() {}); // Trigger rebuild
             },
           ),
           
-          const SizedBox(height: 24),
+          StandardizedGaps.vertical(SpacingSize.lg),
           
           // Character count and tips
           if (_descriptionController.text.isNotEmpty) ...[
@@ -404,16 +436,15 @@ class _MobileProjectFormState extends ConsumerState<MobileProjectForm>
                   size: 16,
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
-                const SizedBox(width: 8),
-                Text(
+                StandardizedGaps.horizontal(SpacingSize.sm),
+                StandardizedText(
                   '${_descriptionController.text.length} characters',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
+                  style: StandardizedTextStyle.bodySmall,
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            StandardizedGaps.md,
           ],
           
           // Quick tips
@@ -435,7 +466,7 @@ class _MobileProjectFormState extends ConsumerState<MobileProjectForm>
           // Color picker section
           Text(
             'Project Color',
-            style: theme.textTheme.titleMedium?.copyWith(
+            style: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -444,7 +475,7 @@ class _MobileProjectFormState extends ConsumerState<MobileProjectForm>
           
           Text(
             'Choose a color to help identify your project',
-            style: theme.textTheme.bodyMedium?.copyWith(
+            style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
@@ -480,7 +511,7 @@ class _MobileProjectFormState extends ConsumerState<MobileProjectForm>
           // Deadline section
           Text(
             'Project Deadline',
-            style: theme.textTheme.titleMedium?.copyWith(
+            style: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -489,7 +520,7 @@ class _MobileProjectFormState extends ConsumerState<MobileProjectForm>
           
           Text(
             'Set an optional deadline to track project progress',
-            style: theme.textTheme.bodyMedium?.copyWith(
+            style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
@@ -500,7 +531,7 @@ class _MobileProjectFormState extends ConsumerState<MobileProjectForm>
           GestureDetector(
             onTap: () => _showDatePicker(context),
             child: Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(SpacingTokens.md),
               decoration: BoxDecoration(
                 color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
@@ -522,7 +553,7 @@ class _MobileProjectFormState extends ConsumerState<MobileProjectForm>
                       _selectedDeadline != null
                           ? _formatDate(_selectedDeadline!)
                           : 'Tap to set deadline',
-                      style: theme.textTheme.bodyLarge?.copyWith(
+                      style: StandardizedTextStyle.bodyLarge.toTextStyle(context).copyWith(
                         color: _selectedDeadline != null
                             ? theme.colorScheme.onSurface
                             : theme.colorScheme.onSurfaceVariant,
@@ -549,7 +580,7 @@ class _MobileProjectFormState extends ConsumerState<MobileProjectForm>
           if (_selectedDeadline != null) ...[
             const SizedBox(height: 16),
             Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(SpacingTokens.sm + 4),
               decoration: BoxDecoration(
                 color: theme.colorScheme.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
@@ -564,7 +595,7 @@ class _MobileProjectFormState extends ConsumerState<MobileProjectForm>
                   const SizedBox(width: 8),
                   Text(
                     _getDeadlineDescription(_selectedDeadline!),
-                    style: theme.textTheme.bodySmall?.copyWith(
+                    style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
                       color: theme.colorScheme.primary,
                     ),
                   ),
@@ -606,7 +637,7 @@ class _MobileProjectFormState extends ConsumerState<MobileProjectForm>
           onTap: () => _selectColor(colorOption.hex),
           semanticLabel: '${colorOption.name} color option',
           child: AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
+            duration: StandardizedAnimations.fast,
             decoration: BoxDecoration(
               color: _parseColor(colorOption.hex),
               borderRadius: BorderRadius.circular(12),
@@ -645,7 +676,7 @@ class _MobileProjectFormState extends ConsumerState<MobileProjectForm>
       children: [
         Text(
           'Preview',
-          style: theme.textTheme.titleSmall?.copyWith(
+          style: StandardizedTextStyle.titleSmall.toTextStyle(context).copyWith(
             fontWeight: FontWeight.w500,
           ),
         ),
@@ -678,7 +709,7 @@ class _MobileProjectFormState extends ConsumerState<MobileProjectForm>
                   children: [
                     Text(
                       _nameController.text.isEmpty ? 'Project Name' : _nameController.text,
-                      style: theme.textTheme.titleMedium?.copyWith(
+                      style: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -687,7 +718,7 @@ class _MobileProjectFormState extends ConsumerState<MobileProjectForm>
                         padding: const EdgeInsets.only(top: 4),
                         child: Text(
                           _descriptionController.text,
-                          style: theme.textTheme.bodySmall?.copyWith(
+                          style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
                             color: theme.colorScheme.onSurfaceVariant,
                           ),
                           maxLines: 2,
@@ -724,7 +755,7 @@ class _MobileProjectFormState extends ConsumerState<MobileProjectForm>
               const SizedBox(width: 8),
               Text(
                 'Tips',
-                style: theme.textTheme.labelMedium?.copyWith(
+                style: StandardizedTextStyle.labelMedium.toTextStyle(context).copyWith(
                   color: theme.colorScheme.primary,
                   fontWeight: FontWeight.w500,
                 ),
@@ -739,14 +770,14 @@ class _MobileProjectFormState extends ConsumerState<MobileProjectForm>
                   children: [
                     Text(
                       '• ',
-                      style: theme.textTheme.bodySmall?.copyWith(
+                      style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
                     Expanded(
                       child: Text(
                         tip,
-                        style: theme.textTheme.bodySmall?.copyWith(
+                        style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
                       ),

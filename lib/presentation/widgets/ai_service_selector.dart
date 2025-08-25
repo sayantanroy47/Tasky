@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/design_system/design_tokens.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../core/accessibility/touch_target_validator.dart';
 
@@ -8,6 +7,8 @@ import '../../services/ai/ai_task_parsing_service.dart';
 import '../../services/security/api_key_manager.dart';
 import '../../domain/models/ai_service_type.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'standardized_text.dart';
+import 'standardized_spacing.dart';
 
 /// Widget for selecting AI service provider
 class AIServiceSelector extends ConsumerWidget {
@@ -19,7 +20,7 @@ class AIServiceSelector extends ConsumerWidget {
 
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: StandardizedSpacing.padding(SpacingSize.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -29,24 +30,24 @@ class AIServiceSelector extends ConsumerWidget {
                   PhosphorIcons.cloud(),
                   color: Theme.of(context).colorScheme.primary,
                 ),
-                const SizedBox(width: SpacingTokens.xs), // 8.0 - Fixed spacing hierarchy
-                Text(
+                StandardizedGaps.horizontal(SpacingSize.xs),
+                const StandardizedText(
                   'AI Service Provider',
-                  style: Theme.of(context).textTheme.titleLarge,
+                  style: StandardizedTextStyle.titleLarge,
                 ),
               ],
             ),
-            const SizedBox(height: SpacingTokens.xs), // 8.0 - Fixed spacing hierarchy
-            Text(
+            StandardizedGaps.vertical(SpacingSize.xs),
+            const StandardizedText(
               'Choose which AI service to use for task parsing',
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: StandardizedTextStyle.bodyMedium,
             ),
-            const SizedBox(height: SpacingTokens.md), // 16.0 - Fixed spacing hierarchy
+            StandardizedGaps.vertical(SpacingSize.md),
             
             // Local Processing Option
             ListTile(
-              title: const Text('Local Processing'),
-              subtitle: const Text('Privacy-focused, works offline'),
+              title: const StandardizedText('Local Processing', style: StandardizedTextStyle.titleMedium),
+              subtitle: const StandardizedText('Privacy-focused, works offline', style: StandardizedTextStyle.bodyMedium),
               leading: AccessibleRadio<AIServiceType>(
                 value: AIServiceType.local,
                 groupValue: config.serviceType,
@@ -62,8 +63,8 @@ class AIServiceSelector extends ConsumerWidget {
             
             // OpenAI Option
             ListTile(
-              title: const Text('OpenAI GPT-4o'),
-              subtitle: const Text('Advanced AI parsing, requires API key'),
+              title: const StandardizedText('OpenAI GPT-4o', style: StandardizedTextStyle.titleMedium),
+              subtitle: const StandardizedText('Advanced AI parsing, requires API key', style: StandardizedTextStyle.bodyMedium),
               leading: AccessibleRadio<AIServiceType>(
                 value: AIServiceType.openai,
                 groupValue: config.serviceType,
@@ -79,8 +80,8 @@ class AIServiceSelector extends ConsumerWidget {
             
             // Claude Option
             ListTile(
-              title: const Text('Claude 3'),
-              subtitle: const Text('Anthropic\'s AI model, requires API key'),
+              title: const StandardizedText('Claude 3', style: StandardizedTextStyle.titleMedium),
+              subtitle: const StandardizedText('Anthropic\'s AI model, requires API key', style: StandardizedTextStyle.bodyMedium),
               leading: AccessibleRadio<AIServiceType>(
                 value: AIServiceType.claude,
                 groupValue: config.serviceType,
@@ -94,26 +95,26 @@ class AIServiceSelector extends ConsumerWidget {
               trailing: Icon(PhosphorIcons.robot()),
             ),
             
-            const SizedBox(height: SpacingTokens.md), // 16.0 - Fixed spacing hierarchy
+            StandardizedGaps.vertical(SpacingSize.md),
             
             // API Key Configuration
             if (config.serviceType != AIServiceType.local) ...[
               const Divider(),
-              const SizedBox(height: SpacingTokens.md), // 16.0 - Fixed spacing hierarchy
+              StandardizedGaps.vertical(SpacingSize.md),
               Row(
                 children: [
                   Icon(
                     PhosphorIcons.key(),
                     color: Theme.of(context).colorScheme.primary,
                   ),
-                  const SizedBox(width: SpacingTokens.xs), // 8.0 - Fixed spacing hierarchy
-                  Text(
+                  StandardizedGaps.horizontal(SpacingSize.xs),
+                  const StandardizedText(
                     'API Configuration',
-                    style: Theme.of(context).textTheme.titleMedium,
+                    style: StandardizedTextStyle.titleMedium,
                   ),
                 ],
               ),
-              const SizedBox(height: SpacingTokens.md), // 16.0 - Fixed spacing hierarchy
+              StandardizedGaps.vertical(SpacingSize.md),
               FutureBuilder<bool>(
                 future: _hasApiKey(config.serviceType),
                 builder: (context, snapshot) {
@@ -123,8 +124,8 @@ class AIServiceSelector extends ConsumerWidget {
                       hasKey ? PhosphorIcons.checkCircle() : PhosphorIcons.gear(),
                       color: hasKey ? Colors.green : null,
                     ),
-                    title: Text('Configure ${config.serviceType.displayName} API'),
-                    subtitle: Text(hasKey ? 'API key configured' : 'Set up API key and preferences'),
+                    title: StandardizedText('Configure ${config.serviceType.displayName} API', style: StandardizedTextStyle.titleMedium),
+                    subtitle: StandardizedText(hasKey ? 'API key configured' : 'Set up API key and preferences', style: StandardizedTextStyle.bodyMedium),
                     trailing: Icon(PhosphorIcons.caretRight()),
                     onTap: () => _showAPIConfigDialog(context, config.serviceType),
                   );
@@ -133,13 +134,13 @@ class AIServiceSelector extends ConsumerWidget {
             ],
             
             // Service Status
-            const SizedBox(height: SpacingTokens.md), // 16.0 - Fixed spacing hierarchy
+            StandardizedGaps.vertical(SpacingSize.md),
             FutureBuilder<bool>(
               future: _hasApiKey(config.serviceType),
               builder: (context, snapshot) {
                 final hasKey = snapshot.data ?? false;
                 return Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: StandardizedSpacing.padding(SpacingSize.sm),
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
@@ -151,20 +152,18 @@ class AIServiceSelector extends ConsumerWidget {
                         color: _getStatusColor(context, config.serviceType, hasKey),
                         size: 20,
                       ),
-                      const SizedBox(width: SpacingTokens.xs), // 8.0 - Fixed spacing hierarchy
+                      StandardizedGaps.horizontal(SpacingSize.xs),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            StandardizedText(
                               _getStatusTitle(config.serviceType, hasKey),
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                fontWeight: FontWeight.w500,
-                              ),
+                              style: StandardizedTextStyle.bodyMedium,
                             ),
-                            Text(
+                            StandardizedText(
                               _getStatusDescription(config.serviceType, hasKey),
-                              style: Theme.of(context).textTheme.bodySmall,
+                              style: StandardizedTextStyle.bodySmall,
                             ),
                           ],
                         ),
@@ -362,17 +361,17 @@ class _APIConfigDialogState extends State<APIConfigDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Configure ${widget.serviceType.displayName}'),
+      title: StandardizedText('Configure ${widget.serviceType.displayName}', style: StandardizedTextStyle.headlineSmall),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            StandardizedText(
               'Enter your API credentials to enable ${widget.serviceType.displayName} parsing.',
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: StandardizedTextStyle.bodyMedium,
             ),
-            const SizedBox(height: SpacingTokens.md), // 16.0 - Fixed spacing hierarchy
+            StandardizedGaps.vertical(SpacingSize.md),
             
             // API Key Field
             FutureBuilder<String?>(
@@ -413,11 +412,11 @@ class _APIConfigDialogState extends State<APIConfigDialog> {
                 );
               },
             ),
-            const SizedBox(height: SpacingTokens.md), // 16.0 - Fixed spacing hierarchy
+            StandardizedGaps.vertical(SpacingSize.md),
             
             // Base URL Field (Advanced)
             ExpansionTile(
-              title: const Text('Advanced Settings'),
+              title: const StandardizedText('Advanced Settings', style: StandardizedTextStyle.titleMedium),
               children: [
                 TextField(
                   controller: _baseUrlController,
@@ -431,7 +430,7 @@ class _APIConfigDialogState extends State<APIConfigDialog> {
               ],
             ),
             
-            const SizedBox(height: SpacingTokens.md), // 16.0 - Fixed spacing hierarchy
+            StandardizedGaps.vertical(SpacingSize.md),
             
             // Privacy Notice
             Container(
@@ -448,21 +447,19 @@ class _APIConfigDialogState extends State<APIConfigDialog> {
                     color: Theme.of(context).colorScheme.primary,
                     size: 20,
                   ),
-                  const SizedBox(width: SpacingTokens.xs), // 8.0 - Fixed spacing hierarchy
+                  StandardizedGaps.horizontal(SpacingSize.xs),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const StandardizedText(
                           'Privacy Notice',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w500,
-                          ),
+                          style: StandardizedTextStyle.bodyMedium,
                         ),
-                        const SizedBox(height: 4),
-                        Text(
+                        StandardizedGaps.vertical(SpacingSize.xs),
+                        StandardizedText(
                           'Your task text will be sent to ${widget.serviceType.displayName} for processing. Data is not stored after processing.',
-                          style: Theme.of(context).textTheme.bodySmall,
+                          style: StandardizedTextStyle.bodySmall,
                         ),
                       ],
                     ),
@@ -476,7 +473,7 @@ class _APIConfigDialogState extends State<APIConfigDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: const StandardizedText('Cancel', style: StandardizedTextStyle.buttonText),
         ),
         TextButton(
           onPressed: _isTestingConnection ? null : _testConnection,
@@ -486,11 +483,11 @@ class _APIConfigDialogState extends State<APIConfigDialog> {
                   height: 16,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : const Text('Test'),
+              : const StandardizedText('Test', style: StandardizedTextStyle.buttonText),
         ),
         FilledButton(
           onPressed: _saveSettings,
-          child: const Text('Save'),
+          child: const StandardizedText('Save', style: StandardizedTextStyle.buttonText),
         ),
       ],
     );
@@ -621,7 +618,7 @@ class _APIConfigDialogState extends State<APIConfigDialog> {
   void _showSnackBar(String message, {bool isError = true}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(message),
+        content: StandardizedText(message, style: StandardizedTextStyle.bodyMedium),
         backgroundColor: isError ? Colors.red : Colors.green,
       ),
     );

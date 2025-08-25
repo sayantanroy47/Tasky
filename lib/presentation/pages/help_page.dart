@@ -5,6 +5,7 @@ import '../../core/theme/typography_constants.dart';
 import '../../services/help_service.dart';
 import '../widgets/glassmorphism_container.dart';
 import '../widgets/standardized_app_bar.dart';
+import '../widgets/standardized_text.dart';
 import '../widgets/theme_background_widget.dart';
 
 /// Help and documentation page
@@ -82,11 +83,9 @@ class _HelpPageState extends State<HelpPage> with SingleTickerProviderStateMixin
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
+                                const StandardizedText(
                                   'Welcome to Tasky Help',
-                                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                        fontWeight: FontWeight.w500,
-                                      ),
+                                  style: StandardizedTextStyle.titleLarge,
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
@@ -169,9 +168,9 @@ class _HelpPageState extends State<HelpPage> with SingleTickerProviderStateMixin
           margin: const EdgeInsets.only(bottom: 12.0),
           child: ListTile(
             contentPadding: const EdgeInsets.all(16.0),
-            title: Text(
+            title: StandardizedText(
               topic.title,
-              style: const TextStyle(fontWeight: FontWeight.w500),
+              style: StandardizedTextStyle.titleMedium,
             ),
             subtitle: Text(
               _getTopicPreview(topic.content),

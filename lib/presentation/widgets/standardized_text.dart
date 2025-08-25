@@ -257,6 +257,206 @@ enum StandardizedTextStyle {
   buttonText,      // 14px, w500 - Button text
 }
 
+/// Extension to add utility methods to StandardizedTextStyle enum
+extension StandardizedTextStyleExt on StandardizedTextStyle {
+  /// Get the TextStyle for this StandardizedTextStyle
+  TextStyle toTextStyle(BuildContext context) {
+    final theme = Theme.of(context);
+    return _getTextStyleStatic(theme, this);
+  }
+
+  /// Create a copy of this style with modified properties
+  /// Usage: StandardizedTextStyle.bodySmall.copyWith(context, color: Colors.red)
+  TextStyle copyWith(
+    BuildContext context, {
+    Color? color,
+    FontWeight? fontWeight,
+    double? fontSize,
+    TextDecoration? decoration,
+    double? letterSpacing,
+    double? height,
+  }) {
+    final baseStyle = toTextStyle(context);
+    return baseStyle.copyWith(
+      color: color,
+      fontWeight: fontWeight,
+      fontSize: fontSize,
+      decoration: decoration,
+      letterSpacing: letterSpacing,
+      height: height,
+    );
+  }
+
+  /// Static method to get text style (for use in extensions)
+  static TextStyle _getTextStyleStatic(ThemeData theme, StandardizedTextStyle style) {
+    switch (style) {
+      // Display hierarchy - largest text
+      case StandardizedTextStyle.displayLarge:
+        return TextStyle(
+          fontSize: TypographyConstants.displayLarge,
+          fontWeight: TypographyConstants.medium,
+          letterSpacing: TypographyConstants.tightLetterSpacing,
+          height: TypographyConstants.tightLineHeight,
+          color: theme.colorScheme.onSurface,
+        );
+      case StandardizedTextStyle.displayMedium:
+        return TextStyle(
+          fontSize: TypographyConstants.displayMedium,
+          fontWeight: TypographyConstants.medium,
+          letterSpacing: TypographyConstants.tightLetterSpacing,
+          height: TypographyConstants.tightLineHeight,
+          color: theme.colorScheme.onSurface,
+        );
+      case StandardizedTextStyle.displaySmall:
+        return TextStyle(
+          fontSize: TypographyConstants.displaySmall,
+          fontWeight: TypographyConstants.medium,
+          letterSpacing: TypographyConstants.normalLetterSpacing,
+          height: TypographyConstants.tightLineHeight,
+          color: theme.colorScheme.onSurface,
+        );
+
+      // Headline hierarchy
+      case StandardizedTextStyle.headlineLarge:
+        return TextStyle(
+          fontSize: TypographyConstants.headlineLarge,
+          fontWeight: TypographyConstants.medium,
+          letterSpacing: TypographyConstants.normalLetterSpacing,
+          height: TypographyConstants.tightLineHeight,
+          color: theme.colorScheme.onSurface,
+        );
+      case StandardizedTextStyle.headlineMedium:
+        return TextStyle(
+          fontSize: TypographyConstants.headlineMedium,
+          fontWeight: TypographyConstants.medium,
+          letterSpacing: TypographyConstants.normalLetterSpacing,
+          height: TypographyConstants.normalLineHeight,
+          color: theme.colorScheme.onSurface,
+        );
+      case StandardizedTextStyle.headlineSmall:
+        return TextStyle(
+          fontSize: TypographyConstants.headlineSmall,
+          fontWeight: TypographyConstants.medium,
+          letterSpacing: TypographyConstants.normalLetterSpacing,
+          height: TypographyConstants.normalLineHeight,
+          color: theme.colorScheme.onSurface,
+        );
+
+      // Title hierarchy
+      case StandardizedTextStyle.titleLarge:
+        return TextStyle(
+          fontSize: TypographyConstants.titleLarge,
+          fontWeight: TypographyConstants.medium,
+          letterSpacing: TypographyConstants.normalLetterSpacing,
+          height: TypographyConstants.normalLineHeight,
+          color: theme.colorScheme.onSurface,
+        );
+      case StandardizedTextStyle.titleMedium:
+        return TextStyle(
+          fontSize: TypographyConstants.titleMedium,
+          fontWeight: TypographyConstants.medium,
+          letterSpacing: TypographyConstants.normalLetterSpacing,
+          height: TypographyConstants.normalLineHeight,
+          color: theme.colorScheme.onSurface,
+        );
+      case StandardizedTextStyle.titleSmall:
+        return TextStyle(
+          fontSize: TypographyConstants.titleSmall,
+          fontWeight: TypographyConstants.regular,
+          letterSpacing: TypographyConstants.normalLetterSpacing,
+          height: TypographyConstants.normalLineHeight,
+          color: theme.colorScheme.onSurface,
+        );
+
+      // Body hierarchy - most common
+      case StandardizedTextStyle.bodyLarge:
+        return TextStyle(
+          fontSize: TypographyConstants.bodyLarge,
+          fontWeight: TypographyConstants.regular,
+          letterSpacing: TypographyConstants.normalLetterSpacing,
+          height: TypographyConstants.normalLineHeight,
+          color: theme.colorScheme.onSurface,
+        );
+      case StandardizedTextStyle.bodyMedium:
+        return TextStyle(
+          fontSize: TypographyConstants.bodyMedium,
+          fontWeight: TypographyConstants.regular,
+          letterSpacing: TypographyConstants.normalLetterSpacing,
+          height: TypographyConstants.normalLineHeight,
+          color: theme.colorScheme.onSurface,
+        );
+      case StandardizedTextStyle.bodySmall:
+        return TextStyle(
+          fontSize: TypographyConstants.bodySmall,
+          fontWeight: TypographyConstants.regular,
+          letterSpacing: TypographyConstants.normalLetterSpacing,
+          height: TypographyConstants.relaxedLineHeight,
+          color: theme.colorScheme.onSurfaceVariant,
+        );
+
+      // Label hierarchy - UI elements
+      case StandardizedTextStyle.labelLarge:
+        return TextStyle(
+          fontSize: TypographyConstants.labelLarge,
+          fontWeight: TypographyConstants.medium,
+          letterSpacing: TypographyConstants.relaxedLetterSpacing,
+          height: TypographyConstants.normalLineHeight,
+          color: theme.colorScheme.onSurface,
+        );
+      case StandardizedTextStyle.labelMedium:
+        return TextStyle(
+          fontSize: TypographyConstants.labelMedium,
+          fontWeight: TypographyConstants.medium,
+          letterSpacing: TypographyConstants.relaxedLetterSpacing,
+          height: TypographyConstants.normalLineHeight,
+          color: theme.colorScheme.onSurfaceVariant,
+        );
+      case StandardizedTextStyle.labelSmall:
+        return TextStyle(
+          fontSize: TypographyConstants.labelSmall,
+          fontWeight: TypographyConstants.regular,
+          letterSpacing: TypographyConstants.relaxedLetterSpacing,
+          height: TypographyConstants.normalLineHeight,
+          color: theme.colorScheme.onSurfaceVariant,
+        );
+
+      // Specialized component styles
+      case StandardizedTextStyle.taskTitle:
+        return TextStyle(
+          fontSize: TypographyConstants.taskTitle,
+          fontWeight: TypographyConstants.medium,
+          letterSpacing: TypographyConstants.normalLetterSpacing,
+          height: TypographyConstants.normalLineHeight,
+          color: theme.colorScheme.onSurface,
+        );
+      case StandardizedTextStyle.taskDescription:
+        return TextStyle(
+          fontSize: TypographyConstants.taskDescription,
+          fontWeight: TypographyConstants.regular,
+          letterSpacing: TypographyConstants.normalLetterSpacing,
+          height: TypographyConstants.relaxedLineHeight,
+          color: theme.colorScheme.onSurfaceVariant,
+        );
+      case StandardizedTextStyle.taskMeta:
+        return TextStyle(
+          fontSize: TypographyConstants.taskMeta,
+          fontWeight: TypographyConstants.regular,
+          letterSpacing: TypographyConstants.normalLetterSpacing,
+          height: TypographyConstants.normalLineHeight,
+          color: theme.colorScheme.onSurfaceVariant,
+        );
+      case StandardizedTextStyle.buttonText:
+        return TextStyle(
+          fontSize: TypographyConstants.buttonText,
+          fontWeight: TypographyConstants.medium,
+          letterSpacing: TypographyConstants.relaxedLetterSpacing,
+          height: TypographyConstants.normalLineHeight,
+          color: theme.colorScheme.onSurface,
+        );
+    }
+  }
+}
+
 /// Convenience widgets for common text patterns
 class StandardizedTextVariants {
   /// Page header text

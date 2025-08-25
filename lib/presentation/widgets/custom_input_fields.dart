@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'standardized_text.dart';
+import 'standardized_spacing.dart';
 
 /// Custom text field with consistent styling
 class CustomTextField extends StatelessWidget {
@@ -336,11 +338,11 @@ class _TagInputFieldState extends State<TagInputField> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (widget.label != null) ...[
-          Text(
+          StandardizedText(
             widget.label!,
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: StandardizedTextStyle.bodyMedium,
           ),
-          const SizedBox(height: 8),
+          StandardizedGaps.vertical(SpacingSize.xs),
         ],
         
         // Tags display
@@ -349,12 +351,12 @@ class _TagInputFieldState extends State<TagInputField> {
             spacing: 8,
             runSpacing: 4,
             children: widget.tags.map((tag) => Chip(
-              label: Text(tag),
+              label: StandardizedText(tag, style: StandardizedTextStyle.bodyMedium),
               deleteIcon: Icon(PhosphorIcons.x(), size: 18),
               onDeleted: () => _removeTag(tag),
             )).toList(),
           ),
-          const SizedBox(height: 8),
+          StandardizedGaps.vertical(SpacingSize.xs),
         ],
         
         // Input field

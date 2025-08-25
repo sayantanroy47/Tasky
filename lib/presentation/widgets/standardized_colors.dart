@@ -26,6 +26,28 @@ class StandardizedColors {
   Color get interactivePressed => theme.colorScheme.primary.withValues(alpha: 0.6);
   Color get interactiveDisabled => theme.colorScheme.onSurface.withValues(alpha: 0.38);
 
+  // Tertiary interactive states - for secondary and accent interactions
+  Color get tertiaryInteractive => theme.colorScheme.tertiary;
+  Color get tertiaryInteractiveHover => theme.colorScheme.tertiary.withValues(alpha: 0.8);
+  Color get tertiaryInteractivePressed => theme.colorScheme.tertiary.withValues(alpha: 0.6);
+  Color get tertiaryInteractiveFocus => theme.colorScheme.tertiary.withValues(alpha: 0.12);
+  Color get tertiaryInteractiveSelected => theme.colorScheme.tertiary.withValues(alpha: 0.16);
+
+  // Enhanced tertiary interactive states - comprehensive Material 3 system
+  Color get tertiaryFocused => theme.colorScheme.tertiary.withValues(alpha: 0.12);
+  Color get tertiaryHovered => theme.colorScheme.tertiary.withValues(alpha: 0.08);
+  Color get tertiaryPressed => theme.colorScheme.tertiary.withValues(alpha: 0.16);
+  Color get tertiaryDragged => theme.colorScheme.tertiary.withValues(alpha: 0.20);
+  Color get tertiaryActivated => theme.colorScheme.tertiary.withValues(alpha: 0.24);
+  Color get tertiarySelected => theme.colorScheme.tertiary.withValues(alpha: 0.16);
+  Color get tertiaryDisabled => theme.colorScheme.tertiary.withValues(alpha: 0.38);
+  Color get tertiaryError => Color.lerp(theme.colorScheme.tertiary, theme.colorScheme.error, 0.3) ?? theme.colorScheme.tertiary;
+
+  // Tertiary semantic variations - alternatives to hardcoded colors
+  Color get tertiaryWarning => _adjustColorTone(theme.colorScheme.tertiary, 85); // Amber alternative
+  Color get tertiaryInfo => _adjustColorTone(theme.colorScheme.tertiary, 70);    // Cyan alternative
+  Color get tertiaryNeutral => _adjustColorTone(theme.colorScheme.tertiary, 50); // Grey alternative
+
   // Recording/voice states - semantic alternatives to hardcoded red
   Color get recordingActive => theme.colorScheme.error; // Use error color for recording
   Color get recordingInactive => theme.colorScheme.outline;
@@ -61,6 +83,39 @@ class StandardizedColors {
   Color get statusCancelled => theme.colorScheme.error;
   Color get statusDraft => theme.colorScheme.outline;
 
+  // Tertiary color system - semantic usage for better hierarchy
+  Color get tertiaryBase => theme.colorScheme.tertiary;
+  Color get tertiaryContainer => theme.colorScheme.tertiaryContainer;
+  Color get onTertiary => theme.colorScheme.onTertiary;
+  Color get onTertiaryContainer => theme.colorScheme.onTertiaryContainer;
+  
+  // Tertiary variations with opacity
+  Color get tertiaryLight => theme.colorScheme.tertiary.withValues(alpha: 0.1);
+  Color get tertiaryMedium => theme.colorScheme.tertiary.withValues(alpha: 0.3);
+  Color get tertiaryStrong => theme.colorScheme.tertiary.withValues(alpha: 0.8);
+
+  // Navigation & chrome system - tertiary accents for UI chrome
+  Color get navigationTertiary => theme.colorScheme.tertiary;
+  Color get navigationTertiaryContainer => theme.colorScheme.tertiaryContainer;
+  Color get appBarTertiary => _adjustColorTone(theme.colorScheme.tertiary, 90);
+  Color get tabBarTertiary => _adjustColorTone(theme.colorScheme.tertiary, 95);
+  Color get bottomNavTertiary => _adjustColorTone(theme.colorScheme.tertiary, 85);
+  Color get sideNavTertiary => theme.colorScheme.tertiaryContainer.withValues(alpha: 0.8);
+
+  // Component-specific tertiary variations - for FABs, cards, inputs, etc.
+  Color get fabTertiary => theme.colorScheme.tertiary;
+  Color get fabTertiaryContainer => theme.colorScheme.tertiaryContainer;
+  Color get chipTertiary => _adjustColorTone(theme.colorScheme.tertiary, 80);
+  Color get chipTertiarySelected => theme.colorScheme.tertiary;
+  Color get cardTertiaryAccent => theme.colorScheme.tertiary.withValues(alpha: 0.12);
+  Color get cardTertiaryBorder => theme.colorScheme.tertiary.withValues(alpha: 0.24);
+  Color get inputTertiaryFocus => theme.colorScheme.tertiary;
+  Color get inputTertiaryBorder => theme.colorScheme.tertiary.withValues(alpha: 0.6);
+  Color get buttonTertiaryOutline => theme.colorScheme.tertiary;
+  Color get buttonTertiaryFilled => theme.colorScheme.tertiary;
+  Color get dividerTertiary => theme.colorScheme.tertiary.withValues(alpha: 0.12);
+  Color get shadowTertiary => theme.colorScheme.tertiary.withValues(alpha: 0.08);
+
   // Glassmorphism-specific colors
   Color get glassTintLight => theme.colorScheme.surface.withValues(alpha: 0.8);
   Color get glassTintMedium => theme.colorScheme.surface.withValues(alpha: 0.9);
@@ -77,6 +132,8 @@ class StandardizedColors {
   Color get iconDisabled => theme.colorScheme.onSurface.withValues(alpha: 0.38);
   Color get iconOnPrimary => theme.colorScheme.onPrimary;
   Color get iconOnSecondary => theme.colorScheme.onSecondary;
+  Color get iconTertiary => theme.colorScheme.tertiary;
+  Color get iconOnTertiary => theme.colorScheme.onTertiary;
 
   /// Get priority color by enum value
   Color getPriorityColor(TaskPriority priority) {
@@ -94,6 +151,51 @@ class StandardizedColors {
 
   // Status colors available as individual properties above
 
+  /// Get tertiary color by semantic type
+  Color getTertiaryColor(TertiaryColorType type) {
+    switch (type) {
+      case TertiaryColorType.featureHighlight:
+        return tertiaryBase; // Use pure tertiary for feature highlights
+      case TertiaryColorType.achievement:
+        return tertiaryStrong; // Strong tertiary for achievements
+      case TertiaryColorType.specialCategory:
+        return tertiaryBase; // Pure tertiary for special categories
+      case TertiaryColorType.interactiveAccent:
+        return tertiaryMedium; // Medium opacity for interactive accents
+      case TertiaryColorType.secondaryAction:
+        return tertiaryContainer; // Container color for secondary actions
+      case TertiaryColorType.progressIndicator:
+        return tertiaryBase; // Pure tertiary for progress indicators
+      case TertiaryColorType.cardAccent:
+        return tertiaryLight; // Light tertiary for card accents
+      case TertiaryColorType.navigationHighlight:
+        return tertiaryMedium; // Medium tertiary for navigation
+      case TertiaryColorType.dataVisualization:
+        return tertiaryBase; // Pure tertiary for data viz
+      case TertiaryColorType.formHighlight:
+        return tertiaryLight; // Light tertiary for form success states
+    }
+  }
+
+  /// Get contrasting text color for tertiary backgrounds
+  Color getTertiaryTextColor(TertiaryColorType type) {
+    switch (type) {
+      case TertiaryColorType.featureHighlight:
+      case TertiaryColorType.achievement:
+      case TertiaryColorType.progressIndicator:
+      case TertiaryColorType.dataVisualization:
+        return onTertiary; // Use onTertiary for strong tertiary backgrounds
+      case TertiaryColorType.secondaryAction:
+        return onTertiaryContainer; // Use onTertiaryContainer for container backgrounds
+      case TertiaryColorType.specialCategory:
+      case TertiaryColorType.interactiveAccent:
+      case TertiaryColorType.cardAccent:
+      case TertiaryColorType.navigationHighlight:
+      case TertiaryColorType.formHighlight:
+        return theme.colorScheme.onSurface; // Use standard text color for light tertiary
+    }
+  }
+
   /// Create color with opacity - semantic alternative to hardcoded .withOpacity()
   Color withSemanticOpacity(Color base, SemanticOpacity opacity) {
     switch (opacity) {
@@ -107,6 +209,21 @@ class StandardizedColors {
         return base.withValues(alpha: 0.8);
       case SemanticOpacity.opaque:
         return base.withValues(alpha: 1.0);
+    }
+  }
+
+  /// Adjust color tone - helper for creating semantic color variations
+  /// [tone] value from 0 (darkest) to 100 (lightest)
+  Color _adjustColorTone(Color color, int tone) {
+    // Simple tone adjustment - blend with white/black based on target tone
+    if (tone > 50) {
+      // Lighter tones - blend with white
+      final ratio = (tone - 50) / 50.0;
+      return Color.lerp(color, Colors.white, ratio * 0.6) ?? color;
+    } else {
+      // Darker tones - blend with black
+      final ratio = (50 - tone) / 50.0;
+      return Color.lerp(color, Colors.black, ratio * 0.4) ?? color;
     }
   }
 }
@@ -123,6 +240,48 @@ extension StandardizedColorsExtension on BuildContext {
   
   Color get recordingColor => colors.recordingActive;
   Color get interactiveColor => colors.interactive;
+
+  // Quick access to tertiary interactive states
+  Color get tertiaryInteractiveColor => colors.tertiaryInteractive;
+  Color get tertiaryHoverColor => colors.tertiaryInteractiveHover;
+  Color get tertiaryPressedColor => colors.tertiaryInteractivePressed;
+  Color get tertiaryFocusColor => colors.tertiaryInteractiveFocus;
+  Color get tertiarySelectedColor => colors.tertiaryInteractiveSelected;
+  
+  // Quick access to tertiary colors
+  Color get tertiaryColor => colors.tertiaryBase;
+  Color get tertiaryContainerColor => colors.tertiaryContainer;
+  
+  // Quick access to enhanced tertiary interactive states
+  Color get tertiaryFocusedColor => colors.tertiaryFocused;
+  Color get tertiaryHoveredColor => colors.tertiaryHovered;
+  Color get tertiaryActivatedColor => colors.tertiaryActivated;
+  Color get tertiaryDraggedColor => colors.tertiaryDragged;
+  Color get tertiaryDisabledColor => colors.tertiaryDisabled;
+  
+  // Quick access to semantic tertiary variations
+  Color get tertiaryWarningColor => colors.tertiaryWarning;
+  Color get tertiaryInfoColor => colors.tertiaryInfo;
+  Color get tertiaryNeutralColor => colors.tertiaryNeutral;
+  
+  // Quick access to navigation tertiary colors
+  Color get navigationTertiaryColor => colors.navigationTertiary;
+  Color get appBarTertiaryColor => colors.appBarTertiary;
+  Color get tabBarTertiaryColor => colors.tabBarTertiary;
+  Color get bottomNavTertiaryColor => colors.bottomNavTertiary;
+  
+  // Quick access to component-specific tertiary colors
+  Color get fabTertiaryColor => colors.fabTertiary;
+  Color get chipTertiaryColor => colors.chipTertiary;
+  Color get cardTertiaryAccentColor => colors.cardTertiaryAccent;
+  Color get inputTertiaryFocusColor => colors.inputTertiaryFocus;
+  Color get buttonTertiaryColor => colors.buttonTertiaryFilled;
+  
+  /// Get tertiary color by semantic type
+  Color getTertiaryColor(TertiaryColorType type) => colors.getTertiaryColor(type);
+  
+  /// Get appropriate text color for tertiary backgrounds
+  Color getTertiaryTextColor(TertiaryColorType type) => colors.getTertiaryTextColor(type);
 }
 
 /// Semantic opacity levels instead of hardcoded alpha values
@@ -194,4 +353,37 @@ enum SemanticColorType {
   error,
   info,
   recording,
+}
+
+/// Tertiary color usage types for systematic tertiary color application
+enum TertiaryColorType {
+  /// Feature highlights - New features, tips, discoveries
+  featureHighlight,
+  
+  /// Achievement states - Completed goals, streaks, milestones
+  achievement,
+  
+  /// Special categories - VIP tasks, starred items, featured content
+  specialCategory,
+  
+  /// Interactive accents - Hover effects, selection indicators, focus states
+  interactiveAccent,
+  
+  /// Secondary actions - Supporting buttons, secondary FABs
+  secondaryAction,
+  
+  /// Progress indicators - Completion states, milestone markers
+  progressIndicator,
+  
+  /// Card accents - Featured cards, pinned items, important content
+  cardAccent,
+  
+  /// Navigation highlights - Active secondary nav, breadcrumbs
+  navigationHighlight,
+  
+  /// Data visualization - Third-tier categories in charts/analytics
+  dataVisualization,
+  
+  /// Form highlights - Success validation, completion indicators
+  formHighlight,
 }

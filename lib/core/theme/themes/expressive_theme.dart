@@ -7,8 +7,8 @@ import '../models/theme_effects.dart' as theme_effects;
 import '../models/theme_metadata.dart';
 import '../models/theme_typography.dart';
 import '../typography_constants.dart';
-import 'color_system.dart';
-import 'motion_system.dart';
+import '../material3/color_system.dart';
+import '../material3/motion_system.dart';
 
 /// Material 3 Expressive Theme - "Future 2050"
 /// A cutting-edge theme with dynamic colors, fluid animations, and futuristic design

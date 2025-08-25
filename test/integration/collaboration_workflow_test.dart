@@ -7,7 +7,7 @@ import 'package:task_tracker_app/services/database/database.dart';
 import 'package:task_tracker_app/domain/entities/task_model.dart';
 import 'package:task_tracker_app/domain/entities/task_enums.dart';
 import 'package:task_tracker_app/domain/entities/project.dart';
-import 'package:task_tracker_app/presentation/widgets/task_card.dart';
+import 'package:task_tracker_app/presentation/widgets/advanced_task_card.dart';
 import 'package:task_tracker_app/presentation/widgets/project_card.dart';
 
 void main() {
@@ -294,7 +294,7 @@ void main() {
                 ),
                 body: Column(
                   children: [
-                    TaskCard(
+                    AdvancedTaskCard(
                       key: Key('assignable_task_${testTask.id}'),
                       task: testTask,
                       showAssignment: true,
@@ -406,7 +406,7 @@ void main() {
                 body: SingleChildScrollView(
                   child: Column(
                     children: [
-                      TaskCard(
+                      AdvancedTaskCard(
                         key: Key('collaborative_task_${collaborativeTask.id}'),
                         task: collaborativeTask,
                         showCollaboration: true,

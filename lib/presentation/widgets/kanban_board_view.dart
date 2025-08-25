@@ -12,6 +12,8 @@ import '../../presentation/providers/task_providers.dart';
 import 'glassmorphism_container.dart';
 import 'kanban_column.dart';
 import 'kanban_dialogs.dart';
+import 'standardized_text.dart';
+import 'standardized_spacing.dart';
 
 /// Comprehensive Kanban board view for project management
 /// 
@@ -150,8 +152,8 @@ class _KanbanBoardViewState extends ConsumerState<KanbanBoardView>
   Widget _buildControlsHeader(ThemeData theme) {
     return GlassmorphismContainer(
       level: GlassLevel.interactive,
-      margin: const EdgeInsets.all(SpacingTokens.sm),
-      padding: const EdgeInsets.all(SpacingTokens.md),
+      margin: StandardizedSpacing.margin(SpacingSize.sm),
+      padding: StandardizedSpacing.padding(SpacingSize.md),
       child: Column(
         children: [
           // Search and filter row
@@ -201,7 +203,7 @@ class _KanbanBoardViewState extends ConsumerState<KanbanBoardView>
               FilledButton.icon(
                 onPressed: () => _showCreateTaskDialog(),
                 icon: Icon(PhosphorIcons.plus()),
-                label: const Text('Add Task'),
+                label: const StandardizedText('Add Task', style: StandardizedTextStyle.buttonText),
               ),
             ],
           ),
@@ -275,7 +277,7 @@ class _KanbanBoardViewState extends ConsumerState<KanbanBoardView>
                 return SizedBox(
                   width: columnWidth,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: SpacingTokens.xs),
+                    padding: StandardizedSpacing.paddingSymmetric(horizontal: SpacingSize.xs),
                     child: KanbanColumn(
                       key: _columnKeys[column.id],
                       config: column,
@@ -313,11 +315,9 @@ class _KanbanBoardViewState extends ConsumerState<KanbanBoardView>
       ),
       child: Row(
         children: [
-          Text(
+          StandardizedText(
             '$selectedCount task${selectedCount != 1 ? 's' : ''} selected',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: TypographyConstants.medium,
-            ),
+            style: StandardizedTextStyle.bodyMedium,
           ),
           
           const Spacer(),
@@ -347,12 +347,12 @@ class _KanbanBoardViewState extends ConsumerState<KanbanBoardView>
             tooltip: 'Delete tasks',
           ),
           
-          const SizedBox(width: SpacingTokens.sm),
+          StandardizedGaps.horizontal(SpacingSize.sm),
           
           // Clear selection
           TextButton(
             onPressed: _clearSelection,
-            child: const Text('Clear'),
+            child: const StandardizedText('Clear', style: StandardizedTextStyle.buttonText),
           ),
         ],
       ),
@@ -674,18 +674,19 @@ class _KanbanBoardViewState extends ConsumerState<KanbanBoardView>
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Tasks'),
-        content: Text(
-          'Are you sure you want to delete ${_selectedTaskIds.length} task${_selectedTaskIds.length != 1 ? 's' : ''}?'
+        title: const StandardizedText('Delete Tasks', style: StandardizedTextStyle.headlineSmall),
+        content: StandardizedText(
+          'Are you sure you want to delete ${_selectedTaskIds.length} task${_selectedTaskIds.length != 1 ? 's' : ''}?',
+          style: StandardizedTextStyle.bodyMedium,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: const StandardizedText('Cancel', style: StandardizedTextStyle.buttonText),
           ),
           FilledButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Delete'),
+            child: const StandardizedText('Delete', style: StandardizedTextStyle.buttonText),
           ),
         ],
       ),

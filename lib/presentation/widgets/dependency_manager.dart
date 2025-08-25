@@ -9,6 +9,10 @@ import '../../domain/models/enums.dart';
 import '../providers/dependency_providers.dart';
 import '../providers/task_providers.dart';
 import 'glassmorphism_container.dart';
+import 'standardized_text.dart';
+import 'standardized_colors.dart';
+import 'standardized_spacing.dart';
+import 'standardized_error_states.dart';
 import 'status_badge_widget.dart';
 
 /// Comprehensive dependency management widget for tasks
@@ -68,17 +72,17 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> with Tick
 
     return GlassmorphismContainer(
       level: GlassLevel.content,
-      padding: widget.padding ?? const EdgeInsets.all(16),
+      padding: widget.padding ?? StandardizedSpacing.padding(SpacingSize.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildHeader(theme),
-          const SizedBox(height: 16),
+          StandardizedGaps.md,
           _buildTaskSelector(theme),
           if (_selectedTaskId != null) ...[
-            const SizedBox(height: 16),
+            StandardizedGaps.md,
             _buildTabBar(theme),
-            const SizedBox(height: 16),
+            StandardizedGaps.md,
             Expanded(child: _buildTabContent(theme, dependencyState)),
           ] else
             _buildEmptyState(theme),
@@ -96,22 +100,19 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> with Tick
           color: theme.colorScheme.primary,
           size: 24,
         ),
-        const SizedBox(width: 12),
+        StandardizedGaps.horizontal(SpacingSize.sm),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const StandardizedText(
                 'Dependency Manager',
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
+                style: StandardizedTextStyle.titleLarge,
               ),
-              Text(
+              StandardizedText(
                 'Manage task relationships and prerequisites',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
+                style: StandardizedTextStyle.bodyMedium,
+                color: theme.colorScheme.onSurfaceVariant,
               ),
             ],
           ),
@@ -130,7 +131,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> with Tick
     final allTasksAsync = ref.watch(tasksProvider);
 
     return allTasksAsync.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => Center(child: StandardizedErrorStates.loading()),
       error: (error, stack) => _buildErrorWidget(theme, error.toString()),
       data: (tasks) => _buildTaskDropdown(theme, tasks),
     );
@@ -147,14 +148,13 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> with Tick
           color: theme.colorScheme.outline.withValues(alpha: 0.3),
         ),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: SpacingTokens.md, vertical: SpacingTokens.xs),
       child: DropdownButton<String>(
         value: _selectedTaskId,
-        hint: Text(
+        hint: StandardizedText(
           'Select a task to manage dependencies',
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
+          style: StandardizedTextStyle.bodyMedium,
+          color: theme.colorScheme.onSurfaceVariant,
         ),
         isExpanded: true,
         underline: const SizedBox.shrink(),
@@ -168,20 +168,19 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> with Tick
                   color: _getPriorityColor(task.priority),
                   size: 16,
                 ),
-                const SizedBox(width: 8),
+                StandardizedGaps.horizontal(SpacingSize.xs),
                 Expanded(
-                  child: Text(
+                  child: StandardizedText(
                     task.title,
-                    style: theme.textTheme.bodyMedium,
+                    style: StandardizedTextStyle.bodyMedium,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 if (task.dueDate != null)
-                  Text(
+                  StandardizedText(
                     _formatDueDate(task.dueDate!),
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
+                    style: StandardizedTextStyle.bodySmall,
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
               ],
             ),
@@ -211,7 +210,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> with Tick
         indicatorColor: theme.colorScheme.primary,
         labelColor: theme.colorScheme.primary,
         unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
-        labelStyle: theme.textTheme.labelMedium?.copyWith(
+        labelStyle: StandardizedTextStyle.labelMedium.toTextStyle(context).copyWith(
           fontWeight: FontWeight.w500,
         ),
         tabs: const [
@@ -251,11 +250,9 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> with Tick
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
+            StandardizedText(
               'Prerequisites (${state.prerequisites.length})',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
+              style: StandardizedTextStyle.titleMedium,
             ),
             IconButton(
               onPressed: () => setState(() => _showAddDependencyDialog = true),
@@ -264,7 +261,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> with Tick
             ),
           ],
         ),
-        const SizedBox(height: 12),
+        StandardizedGaps.vertical(SpacingSize.sm),
         if (state.prerequisites.isEmpty)
           _buildEmptyDependencies(theme, 'No prerequisites set')
         else
@@ -288,13 +285,11 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> with Tick
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        StandardizedText(
           'Dependent Tasks (${state.dependents.length})',
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w500,
-          ),
+          style: StandardizedTextStyle.titleMedium,
         ),
-        const SizedBox(height: 12),
+        StandardizedGaps.vertical(SpacingSize.sm),
         if (state.dependents.isEmpty)
           _buildEmptyDependencies(theme, 'No dependent tasks')
         else
@@ -320,7 +315,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> with Tick
     final chainAsync = ref.watch(taskDependencyChainProvider(_selectedTaskId!));
 
     return chainAsync.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => Center(child: StandardizedErrorStates.loading()),
       error: (error, stack) => _buildErrorWidget(theme, error.toString()),
       data: (chain) => _buildDependencyChain(theme, chain),
     );
@@ -335,29 +330,25 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> with Tick
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildQuickStats(theme),
-          const SizedBox(height: 20),
-          Text(
+          StandardizedGaps.md,
+          const StandardizedText(
             'Blocked Tasks',
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w500,
-            ),
+            style: StandardizedTextStyle.titleMedium,
           ),
-          const SizedBox(height: 12),
+          StandardizedGaps.vertical(SpacingSize.sm),
           blockedTasksAsync.when(
-            loading: () => const CircularProgressIndicator(),
+            loading: () => StandardizedErrorStates.loading(),
             error: (error, stack) => _buildErrorWidget(theme, error.toString()),
             data: (blockedTasks) => _buildTaskList(theme, blockedTasks, isBlocked: true),
           ),
-          const SizedBox(height: 20),
-          Text(
+          StandardizedGaps.md,
+          const StandardizedText(
             'Ready Tasks',
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w500,
-            ),
+            style: StandardizedTextStyle.titleMedium,
           ),
-          const SizedBox(height: 12),
+          StandardizedGaps.vertical(SpacingSize.sm),
           readyTasksAsync.when(
-            loading: () => const CircularProgressIndicator(),
+            loading: () => StandardizedErrorStates.loading(),
             error: (error, stack) => _buildErrorWidget(theme, error.toString()),
             data: (readyTasks) => _buildTaskList(theme, readyTasks, isBlocked: false),
           ),
@@ -368,15 +359,17 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> with Tick
 
   Widget _buildDependencyCard(ThemeData theme, TaskModel task, {required bool isPrerequisite}) {
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 4),
+      margin: const EdgeInsets.symmetric(vertical: SpacingTokens.xs),
       child: ListTile(
-        leading: Icon(
-          isPrerequisite ? PhosphorIcons.arrowDown() : PhosphorIcons.arrowUp(),
-          color: isPrerequisite ? Colors.orange : Colors.blue,
+        leading: Builder(
+          builder: (context) => Icon(
+            isPrerequisite ? PhosphorIcons.arrowDown() : PhosphorIcons.arrowUp(),
+            color: isPrerequisite ? context.colors.warning : context.colors.info,
+          ),
         ),
         title: Text(
           task.title,
-          style: theme.textTheme.bodyMedium?.copyWith(
+          style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
             decoration: task.isCompleted ? TextDecoration.lineThrough : null,
           ),
         ),
@@ -384,9 +377,9 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> with Tick
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (task.description?.isNotEmpty == true)
-              Text(
+              StandardizedText(
                 task.description!,
-                style: theme.textTheme.bodySmall,
+                style: StandardizedTextStyle.bodySmall,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -397,18 +390,17 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> with Tick
                   color: _getPriorityColor(task.priority),
                   size: 14,
                 ),
-                const SizedBox(width: 4),
-                Text(
+                StandardizedGaps.horizontal(SpacingSize.xs),
+                StandardizedText(
                   task.priority.name.toUpperCase(),
-                  style: theme.textTheme.labelSmall,
+                  style: StandardizedTextStyle.labelSmall,
                 ),
                 if (task.dueDate != null) ...[
-                  const SizedBox(width: 12),
-                  Text(
+                  StandardizedGaps.horizontal(SpacingSize.sm),
+                  StandardizedText(
                     _formatDueDate(task.dueDate!),
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
+                    style: StandardizedTextStyle.labelSmall,
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
                 ],
               ],
@@ -447,7 +439,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> with Tick
         final isCurrentTask = task.id == _selectedTaskId;
 
         return Container(
-          margin: const EdgeInsets.symmetric(vertical: 4),
+          margin: const EdgeInsets.symmetric(vertical: SpacingTokens.xs),
           decoration: BoxDecoration(
             color: isCurrentTask ? theme.colorScheme.primaryContainer.withValues(alpha: 0.3) : null,
             borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
@@ -457,19 +449,15 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> with Tick
             leading: CircleAvatar(
               radius: 16,
               backgroundColor: isCurrentTask ? theme.colorScheme.primary : theme.colorScheme.surfaceContainer,
-              child: Text(
+              child: StandardizedText(
                 '${index + 1}',
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: isCurrentTask ? theme.colorScheme.onPrimary : theme.colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: StandardizedTextStyle.labelSmall,
+                color: isCurrentTask ? theme.colorScheme.onPrimary : theme.colorScheme.onSurfaceVariant,
               ),
             ),
-            title: Text(
+            title: StandardizedText(
               task.title,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                fontWeight: isCurrentTask ? FontWeight.w500 : null,
-              ),
+              style: StandardizedTextStyle.bodyMedium,
             ),
             subtitle: Row(
               children: [
@@ -478,18 +466,17 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> with Tick
                   color: _getPriorityColor(task.priority),
                   size: 14,
                 ),
-                const SizedBox(width: 4),
-                Text(
+                StandardizedGaps.horizontal(SpacingSize.xs),
+                StandardizedText(
                   task.priority.name.toUpperCase(),
-                  style: theme.textTheme.labelSmall,
+                  style: StandardizedTextStyle.labelSmall,
                 ),
                 if (task.dueDate != null) ...[
-                  const SizedBox(width: 12),
-                  Text(
+                  StandardizedGaps.horizontal(SpacingSize.sm),
+                  StandardizedText(
                     _formatDueDate(task.dueDate!),
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
+                    style: StandardizedTextStyle.labelSmall,
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
                 ],
               ],
@@ -517,14 +504,16 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> with Tick
         final inProgress = tasks.where((t) => t.status == TaskStatus.inProgress).length;
         final pending = tasks.where((t) => t.status == TaskStatus.pending).length;
 
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _buildStatCard(theme, 'Total', total.toString(), Colors.blue),
-            _buildStatCard(theme, 'Completed', completed.toString(), Colors.green),
-            _buildStatCard(theme, 'In Progress', inProgress.toString(), Colors.orange),
-            _buildStatCard(theme, 'Pending', pending.toString(), Colors.grey),
-          ],
+        return Builder(
+          builder: (context) => Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _buildStatCard(theme, 'Total', total.toString(), context.colors.info),
+              _buildStatCard(theme, 'Completed', completed.toString(), context.colors.success),
+              _buildStatCard(theme, 'In Progress', inProgress.toString(), context.colors.warning),
+              _buildStatCard(theme, 'Pending', pending.toString(), context.colors.withSemanticOpacity(Theme.of(context).colorScheme.onSurface, SemanticOpacity.strong)),
+            ],
+          ),
         );
       },
     );
@@ -532,7 +521,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> with Tick
 
   Widget _buildStatCard(ThemeData theme, String label, String value, Color color) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: StandardizedSpacing.padding(SpacingSize.sm),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
@@ -540,18 +529,15 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> with Tick
       ),
       child: Column(
         children: [
-          Text(
+          StandardizedText(
             value,
-            style: theme.textTheme.titleLarge?.copyWith(
-              color: color,
-              fontWeight: FontWeight.w500,
-            ),
+            style: StandardizedTextStyle.titleLarge,
+            color: color,
           ),
-          Text(
+          StandardizedText(
             label,
-            style: theme.textTheme.labelSmall?.copyWith(
-              color: color,
-            ),
+            style: StandardizedTextStyle.labelSmall,
+            color: color,
           ),
         ],
       ),
@@ -572,13 +558,15 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> with Tick
           .map((task) => Card(
                 margin: const EdgeInsets.symmetric(vertical: 2),
                 child: ListTile(
-                  leading: Icon(
-                    isBlocked ? PhosphorIcons.prohibit() : PhosphorIcons.checkCircle(),
-                    color: isBlocked ? Colors.red : Colors.green,
+                  leading: Builder(
+                    builder: (context) => Icon(
+                      isBlocked ? PhosphorIcons.prohibit() : PhosphorIcons.checkCircle(),
+                      color: isBlocked ? context.colors.error : context.colors.success,
+                    ),
                   ),
-                  title: Text(
+                  title: StandardizedText(
                     task.title,
-                    style: theme.textTheme.bodyMedium,
+                    style: StandardizedTextStyle.bodyMedium,
                   ),
                   subtitle: Row(
                     children: [
@@ -587,10 +575,10 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> with Tick
                         color: _getPriorityColor(task.priority),
                         size: 14,
                       ),
-                      const SizedBox(width: 4),
+                      StandardizedGaps.horizontal(SpacingSize.xs),
                       Text(
                         task.priority.name.toUpperCase(),
-                        style: theme.textTheme.labelSmall,
+                        style: StandardizedTextStyle.labelSmall.toTextStyle(context),
                       ),
                     ],
                   ),
@@ -616,19 +604,17 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> with Tick
               size: 64,
               color: theme.colorScheme.onSurfaceVariant,
             ),
-            const SizedBox(height: 16),
-            Text(
+            StandardizedGaps.md,
+            StandardizedText(
               'Select a Task',
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+              style: StandardizedTextStyle.titleMedium,
+              color: theme.colorScheme.onSurfaceVariant,
             ),
-            const SizedBox(height: 8),
-            Text(
+            StandardizedGaps.vertical(SpacingSize.xs),
+            StandardizedText(
               'Choose a task to view and manage its dependencies',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+              style: StandardizedTextStyle.bodyMedium,
+              color: theme.colorScheme.onSurfaceVariant,
               textAlign: TextAlign.center,
             ),
           ],
@@ -640,7 +626,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> with Tick
   Widget _buildEmptyDependencies(ThemeData theme, String message) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: StandardizedSpacing.padding(SpacingSize.lg),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -649,12 +635,11 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> with Tick
               size: 48,
               color: theme.colorScheme.onSurfaceVariant,
             ),
-            const SizedBox(height: 16),
-            Text(
+            StandardizedGaps.md,
+            StandardizedText(
               message,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+              style: StandardizedTextStyle.bodyMedium,
+              color: theme.colorScheme.onSurfaceVariant,
               textAlign: TextAlign.center,
             ),
           ],
@@ -673,22 +658,20 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> with Tick
             size: 48,
             color: theme.colorScheme.error,
           ),
-          const SizedBox(height: 16),
-          Text(
+          StandardizedGaps.md,
+          StandardizedText(
             'Error',
-            style: theme.textTheme.titleMedium?.copyWith(
-              color: theme.colorScheme.error,
-            ),
+            style: StandardizedTextStyle.titleMedium,
+            color: theme.colorScheme.error,
           ),
-          const SizedBox(height: 8),
-          Text(
+          StandardizedGaps.vertical(SpacingSize.xs),
+          StandardizedText(
             error,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
+            style: StandardizedTextStyle.bodyMedium,
+            color: theme.colorScheme.onSurfaceVariant,
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 16),
+          StandardizedGaps.md,
           ElevatedButton(
             onPressed: () {
               ref.read(dependencyManagerProvider.notifier).clearError();
@@ -696,7 +679,10 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> with Tick
                 ref.read(dependencyManagerProvider.notifier).selectTask(_selectedTaskId!);
               }
             },
-            child: const Text('Retry'),
+            child: const StandardizedText(
+              'Retry',
+              style: StandardizedTextStyle.buttonText,
+            ),
           ),
         ],
       ),
@@ -704,39 +690,49 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> with Tick
   }
 
   Widget _buildAddDependencyDialog(ThemeData theme) {
-    return Container(
-      color: Colors.black54,
-      child: Center(
-        child: Dialog(
+    return Builder(
+      builder: (context) => Container(
+        color: context.colors.withSemanticOpacity(
+          Theme.of(context).colorScheme.surface,
+          SemanticOpacity.strong,
+        ),
+        child: Center(
+          child: Dialog(
           child: Padding(
-            padding: const EdgeInsets.all(24),
+            padding: StandardizedSpacing.padding(SpacingSize.lg),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
+                const StandardizedText(
                   'Add Prerequisite',
-                  style: theme.textTheme.titleLarge,
+                  style: StandardizedTextStyle.titleLarge,
                 ),
-                const SizedBox(height: 16),
-                Text(
+                StandardizedGaps.md,
+                const StandardizedText(
                   'Select a task that must be completed before the current task can be started.',
-                  style: theme.textTheme.bodyMedium,
+                  style: StandardizedTextStyle.bodyMedium,
                 ),
-                const SizedBox(height: 24),
+                StandardizedGaps.lg,
                 // Task selector would go here
                 _buildDependencyTaskSelector(theme),
-                const SizedBox(height: 24),
+                StandardizedGaps.lg,
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     TextButton(
                       onPressed: () => setState(() => _showAddDependencyDialog = false),
-                      child: const Text('Cancel'),
+                      child: const StandardizedText(
+                        'Cancel',
+                        style: StandardizedTextStyle.buttonText,
+                      ),
                     ),
-                    const SizedBox(width: 8),
+                    StandardizedGaps.horizontal(SpacingSize.xs),
                     ElevatedButton(
                       onPressed: () => _addSelectedDependency(),
-                      child: const Text('Add'),
+                      child: const StandardizedText(
+                        'Add',
+                        style: StandardizedTextStyle.buttonText,
+                      ),
                     ),
                   ],
                 ),
@@ -752,8 +748,8 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> with Tick
     final allTasksAsync = ref.watch(tasksProvider);
 
     return allTasksAsync.when(
-      loading: () => const CircularProgressIndicator(),
-      error: (error, stack) => Text('Error: $error'),
+      loading: () => StandardizedErrorStates.loading(),
+      error: (error, stack) => StandardizedText('Error: $error', style: StandardizedTextStyle.bodyMedium, color: context.colors.error),
       data: (tasks) {
         final availableTasks = tasks.where((task) => task.id != _selectedTaskId && !task.isCompleted).toList();
 
@@ -773,8 +769,8 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> with Tick
                   color: _getPriorityColor(task.priority),
                   size: 16,
                 ),
-                title: Text(task.title),
-                subtitle: Text(task.priority.name.toUpperCase()),
+                title: StandardizedText(task.title, style: StandardizedTextStyle.bodyMedium),
+                subtitle: StandardizedText(task.priority.name.toUpperCase(), style: StandardizedTextStyle.labelSmall),
                 onTap: () => _selectTaskForDependency(task.id),
               );
             },
@@ -799,15 +795,17 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> with Tick
   }
 
   Color _getPriorityColor(TaskPriority priority) {
+    // Note: This method now requires BuildContext for semantic colors
+    // Consider passing context or using a different approach
     switch (priority) {
       case TaskPriority.low:
-        return Colors.green;
+        return Colors.green; // TODO: Replace with context.colors.success
       case TaskPriority.medium:
-        return Colors.orange;
+        return Colors.orange; // TODO: Replace with context.colors.warning
       case TaskPriority.high:
-        return Colors.red;
+        return Colors.red; // TODO: Replace with context.colors.error
       case TaskPriority.urgent:
-        return Colors.purple;
+        return Colors.purple; // TODO: Replace with semantic color
     }
   }
 
@@ -900,32 +898,33 @@ class SimpleDependencyWidget extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         canCompleteAsync.when(
-          loading: () => const SizedBox(
+          loading: () => SizedBox(
             width: 16,
             height: 16,
-            child: CircularProgressIndicator(strokeWidth: 2),
+            child: StandardizedErrorStates.loading(),
           ),
           error: (error, stack) => Icon(
             PhosphorIcons.warningCircle(),
             size: 16,
             color: theme.colorScheme.error,
           ),
-          data: (canComplete) => Icon(
-            canComplete ? PhosphorIcons.checkCircle() : PhosphorIcons.prohibit(),
-            size: 16,
-            color: canComplete ? Colors.green : Colors.red,
+          data: (canComplete) => Builder(
+            builder: (context) => Icon(
+              canComplete ? PhosphorIcons.checkCircle() : PhosphorIcons.prohibit(),
+              size: 16,
+              color: canComplete ? context.colors.success : context.colors.error,
+            ),
           ),
         ),
         if (showCount) ...[
-          const SizedBox(width: 4),
+          StandardizedGaps.horizontal(SpacingSize.xs),
           prerequisitesAsync.when(
             loading: () => const SizedBox.shrink(),
             error: (error, stack) => const SizedBox.shrink(),
-            data: (prerequisites) => Text(
+            data: (prerequisites) => StandardizedText(
               '${prerequisites.length}',
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+              style: StandardizedTextStyle.labelSmall,
+              color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
         ],

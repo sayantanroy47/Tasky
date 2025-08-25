@@ -9,6 +9,7 @@ import '../../../core/design_system/design_tokens.dart';
 import '../../../services/bulk_operations/bulk_operation_history.dart';
 import '../../../services/bulk_operations/bulk_operation_service.dart';
 import '../glassmorphism_container.dart';
+import '../standardized_text.dart';
 import '../../providers/bulk_operation_providers.dart';
 
 /// Widget for displaying and managing bulk operation history with undo functionality
@@ -120,7 +121,7 @@ class _OperationHistoryWidgetState extends ConsumerState<OperationHistoryWidget>
             children: [
               Text(
                 'Operation History',
-                style: theme.textTheme.titleMedium?.copyWith(
+                style: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -130,7 +131,7 @@ class _OperationHistoryWidgetState extends ConsumerState<OperationHistoryWidget>
                   return metrics.when(
                     data: (metrics) => Text(
                       '${metrics.totalOperations} operations, ${(metrics.successRate * 100).toInt()}% success rate',
-                      style: theme.textTheme.bodySmall?.copyWith(
+                      style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
                         color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                       ),
                     ),
@@ -196,7 +197,7 @@ class _OperationHistoryWidgetState extends ConsumerState<OperationHistoryWidget>
                 ),
                 child: Text(
                   filter.$2,
-                  style: theme.textTheme.bodySmall?.copyWith(
+                  style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
                     color: isSelected
                         ? theme.colorScheme.primary
                         : theme.colorScheme.onSurface,
@@ -260,14 +261,14 @@ class _OperationHistoryWidgetState extends ConsumerState<OperationHistoryWidget>
             const SizedBox(height: SpacingTokens.md),
             Text(
               'No operations found',
-              style: theme.textTheme.titleSmall?.copyWith(
+              style: StandardizedTextStyle.titleSmall.toTextStyle(context).copyWith(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
             ),
             const SizedBox(height: SpacingTokens.sm),
             Text(
               'Bulk operations will appear here',
-              style: theme.textTheme.bodySmall?.copyWith(
+              style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
               ),
             ),
@@ -292,14 +293,14 @@ class _OperationHistoryWidgetState extends ConsumerState<OperationHistoryWidget>
             const SizedBox(height: SpacingTokens.md),
             Text(
               'Error loading history',
-              style: theme.textTheme.titleSmall?.copyWith(
+              style: StandardizedTextStyle.titleSmall.toTextStyle(context).copyWith(
                 color: theme.colorScheme.error,
               ),
             ),
             const SizedBox(height: SpacingTokens.sm),
             Text(
               error.toString(),
-              style: theme.textTheme.bodySmall?.copyWith(
+              style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
               textAlign: TextAlign.center,
@@ -335,7 +336,7 @@ class _OperationHistoryWidgetState extends ConsumerState<OperationHistoryWidget>
                       Expanded(
                         child: Text(
                           record.displayTitle,
-                          style: theme.textTheme.bodyMedium?.copyWith(
+                          style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -346,7 +347,7 @@ class _OperationHistoryWidgetState extends ConsumerState<OperationHistoryWidget>
                   const SizedBox(height: SpacingTokens.xs),
                   Text(
                     record.displayDescription,
-                    style: theme.textTheme.bodySmall?.copyWith(
+                    style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
                       color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
                   ),
@@ -456,7 +457,7 @@ class _OperationHistoryWidgetState extends ConsumerState<OperationHistoryWidget>
       ),
       child: Text(
         text,
-        style: theme.textTheme.labelSmall?.copyWith(
+        style: StandardizedTextStyle.labelSmall.toTextStyle(context).copyWith(
           color: color,
           fontWeight: FontWeight.w600,
         ),
@@ -489,7 +490,7 @@ class _OperationHistoryWidgetState extends ConsumerState<OperationHistoryWidget>
         const Spacer(),
         Text(
           DateFormat('HH:mm').format(record.timestamp),
-          style: theme.textTheme.labelSmall?.copyWith(
+          style: StandardizedTextStyle.labelSmall.toTextStyle(context).copyWith(
             color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
           ),
         ),
@@ -509,7 +510,7 @@ class _OperationHistoryWidgetState extends ConsumerState<OperationHistoryWidget>
       ),
       child: Text(
         text,
-        style: theme.textTheme.labelSmall?.copyWith(
+        style: StandardizedTextStyle.labelSmall.toTextStyle(context).copyWith(
           color: color,
           fontWeight: FontWeight.w500,
         ),
@@ -533,7 +534,7 @@ class _OperationHistoryWidgetState extends ConsumerState<OperationHistoryWidget>
           const SizedBox(width: 4),
           Text(
             'Undo',
-            style: theme.textTheme.bodySmall?.copyWith(
+            style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
               color: theme.colorScheme.primary,
               fontWeight: FontWeight.w600,
               // Using labelSmall size from theme
@@ -562,7 +563,7 @@ class _OperationHistoryWidgetState extends ConsumerState<OperationHistoryWidget>
                 const SizedBox(width: SpacingTokens.xs),
                 Text(
                   'Clear History',
-                  style: theme.textTheme.bodyMedium?.copyWith(
+                  style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
                     color: theme.colorScheme.error,
                     fontWeight: FontWeight.w600,
                   ),
@@ -587,7 +588,7 @@ class _OperationHistoryWidgetState extends ConsumerState<OperationHistoryWidget>
                 const SizedBox(width: SpacingTokens.xs),
                 Text(
                   'Templates',
-                  style: theme.textTheme.bodyMedium?.copyWith(
+                  style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
                   ),
@@ -669,14 +670,14 @@ class _OperationHistoryWidgetState extends ConsumerState<OperationHistoryWidget>
               const SizedBox(height: SpacingTokens.md),
               Text(
                 'Clear Operation History',
-                style: theme.textTheme.titleMedium?.copyWith(
+                style: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
                   fontWeight: FontWeight.w600,
                 ),
               ),
               const SizedBox(height: SpacingTokens.sm),
               Text(
                 'This will permanently delete all operation history. You will no longer be able to undo any operations.',
-                style: theme.textTheme.bodyMedium?.copyWith(
+                style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                 ),
                 textAlign: TextAlign.center,
@@ -782,7 +783,7 @@ class BulkOperationTemplatesDialog extends ConsumerWidget {
                 Expanded(
                   child: Text(
                     'Operation Templates',
-                    style: theme.textTheme.titleMedium?.copyWith(
+                    style: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -853,21 +854,21 @@ class BulkOperationTemplatesDialog extends ConsumerWidget {
                 children: [
                   Text(
                     template.name,
-                    style: theme.textTheme.bodyMedium?.copyWith(
+                    style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   const SizedBox(height: SpacingTokens.xs),
                   Text(
                     template.description,
-                    style: theme.textTheme.bodySmall?.copyWith(
+                    style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
                       color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
                   ),
                   const SizedBox(height: SpacingTokens.xs),
                   Text(
                     '${template.actions.length} actions',
-                    style: theme.textTheme.bodySmall?.copyWith(
+                    style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
                       color: theme.colorScheme.primary,
                       // Using labelSmall size from theme
                     ),
@@ -973,7 +974,7 @@ class OperationHistoryFab extends ConsumerWidget {
                   ),
                   child: Text(
                     '${operations.length}',
-                    style: theme.textTheme.bodySmall?.copyWith(
+                    style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
                       color: Colors.white,
                       // Using labelSmall size from theme
                       fontWeight: FontWeight.bold,

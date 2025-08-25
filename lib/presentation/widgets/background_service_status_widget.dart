@@ -3,9 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../core/design_system/design_tokens.dart';
-import '../../core/theme/typography_constants.dart';
 import '../providers/background_service_providers.dart';
 import 'glassmorphism_container.dart';
+import 'standardized_text.dart';
+import 'standardized_spacing.dart';
+import 'standardized_error_states.dart';
 
 /// Widget to display background service status and controls
 class BackgroundServiceStatusWidget extends ConsumerWidget {
@@ -19,10 +21,10 @@ class BackgroundServiceStatusWidget extends ConsumerWidget {
 
     return GlassmorphismContainer(
       level: GlassLevel.content,
-      padding: const EdgeInsets.all(TypographyConstants.paddingMedium),
-      margin: const EdgeInsets.symmetric(
-        horizontal: TypographyConstants.paddingMedium,
-        vertical: TypographyConstants.paddingSmall,
+      padding: StandardizedSpacing.padding(SpacingSize.md),
+      margin: StandardizedSpacing.marginSymmetric(
+        horizontal: SpacingSize.md,
+        vertical: SpacingSize.sm,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -33,12 +35,10 @@ class BackgroundServiceStatusWidget extends ConsumerWidget {
                 PhosphorIcons.wrench(),
                 color: theme.colorScheme.primary,
               ),
-              const SizedBox(width: 8),
-              Text(
+              StandardizedGaps.horizontal(SpacingSize.xs),
+              const StandardizedText(
                 'Background Services',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w500,
-                ),
+                style: StandardizedTextStyle.titleMedium,
               ),
               const Spacer(),
               IconButton(
@@ -48,10 +48,10 @@ class BackgroundServiceStatusWidget extends ConsumerWidget {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          StandardizedGaps.vertical(SpacingSize.sm),
           backgroundServiceState.when(
-            loading: () => const Center(
-              child: CircularProgressIndicator(),
+            loading: () => Center(
+              child: StandardizedErrorStates.loading(),
             ),
             ready: (status) => _buildStatusContent(
               context,
@@ -92,13 +92,11 @@ class BackgroundServiceStatusWidget extends ConsumerWidget {
               color: isRunning ? Colors.green : Colors.orange,
               size: 20,
             ),
-            const SizedBox(width: 8),
-            Text(
+            StandardizedGaps.horizontal(SpacingSize.xs),
+            StandardizedText(
               isRunning ? 'Running' : 'Stopped',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: isRunning ? Colors.green : Colors.orange,
-                fontWeight: FontWeight.w500,
-              ),
+              style: StandardizedTextStyle.bodyMedium,
+              color: isRunning ? Colors.green /* TODO: context.colors.success */ : Colors.orange, /* TODO: context.colors.warning */
             ),
             const Spacer(),
             Switch(
@@ -108,7 +106,7 @@ class BackgroundServiceStatusWidget extends ConsumerWidget {
           ],
         ),
 
-        const SizedBox(height: 12),
+        StandardizedGaps.vertical(SpacingSize.sm),
 
         // Status details
         if (status['last_cleanup'] != null) ...[
@@ -118,7 +116,7 @@ class BackgroundServiceStatusWidget extends ConsumerWidget {
             _formatDateTime(status['last_cleanup']),
             PhosphorIcons.broom(),
           ),
-          const SizedBox(height: 8),
+          StandardizedGaps.vertical(SpacingSize.xs),
         ],
 
         if (status['analytics_cleanup'] != null) ...[
@@ -128,7 +126,7 @@ class BackgroundServiceStatusWidget extends ConsumerWidget {
             _formatDateTime(status['analytics_cleanup']),
             PhosphorIcons.chartBar(),
           ),
-          const SizedBox(height: 8),
+          StandardizedGaps.vertical(SpacingSize.xs),
         ],
 
         if (status['last_manual_processing'] != null) ...[
@@ -138,10 +136,10 @@ class BackgroundServiceStatusWidget extends ConsumerWidget {
             _formatDateTime(status['last_manual_processing']),
             PhosphorIcons.arrowClockwise(),
           ),
-          const SizedBox(height: 8),
+          StandardizedGaps.vertical(SpacingSize.xs),
         ],
 
-        const SizedBox(height: 12),
+        StandardizedGaps.vertical(SpacingSize.sm),
 
         // Manual trigger buttons
         Row(
@@ -150,25 +148,25 @@ class BackgroundServiceStatusWidget extends ConsumerWidget {
               child: OutlinedButton.icon(
                 onPressed: () => notifier.forceProcessRecurringTasks(),
                 icon: Icon(PhosphorIcons.repeat(), size: 16),
-                label: const Text('Process Recurring'),
+                label: const StandardizedText('Process Recurring', style: StandardizedTextStyle.buttonText),
                 style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
+                  padding: StandardizedSpacing.paddingSymmetric(
+                    horizontal: SpacingSize.sm,
+                    vertical: SpacingSize.xs,
                   ),
                 ),
               ),
             ),
-            const SizedBox(width: 8),
+            StandardizedGaps.horizontal(SpacingSize.xs),
             Expanded(
               child: OutlinedButton.icon(
                 onPressed: () => _showServiceDetails(context, status),
                 icon: Icon(PhosphorIcons.info(), size: 16),
-                label: const Text('Details'),
+                label: const StandardizedText('Details', style: StandardizedTextStyle.buttonText),
                 style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
+                  padding: StandardizedSpacing.paddingSymmetric(
+                    horizontal: SpacingSize.sm,
+                    vertical: SpacingSize.xs,
                   ),
                 ),
               ),
@@ -181,7 +179,7 @@ class BackgroundServiceStatusWidget extends ConsumerWidget {
 
   Widget _buildErrorContent(ThemeData theme, String message) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: StandardizedSpacing.padding(SpacingSize.sm),
       decoration: BoxDecoration(
         color: theme.colorScheme.errorContainer,
         borderRadius: BorderRadius.circular(8),
@@ -192,13 +190,12 @@ class BackgroundServiceStatusWidget extends ConsumerWidget {
             PhosphorIcons.warningCircle(),
             color: theme.colorScheme.error,
           ),
-          const SizedBox(width: 8),
+          StandardizedGaps.horizontal(SpacingSize.xs),
           Expanded(
-            child: Text(
+            child: StandardizedText(
               message,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.error,
-              ),
+              style: StandardizedTextStyle.bodyMedium,
+              color: theme.colorScheme.error,
             ),
           ),
         ],
@@ -219,20 +216,17 @@ class BackgroundServiceStatusWidget extends ConsumerWidget {
           size: 16,
           color: theme.colorScheme.onSurfaceVariant,
         ),
-        const SizedBox(width: 8),
-        Text(
+        StandardizedGaps.horizontal(SpacingSize.xs),
+        StandardizedText(
           label,
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
+          style: StandardizedTextStyle.bodySmall,
+          color: theme.colorScheme.onSurfaceVariant,
         ),
-        const SizedBox(width: 8),
+        StandardizedGaps.horizontal(SpacingSize.xs),
         Expanded(
-          child: Text(
+          child: StandardizedText(
             value,
-            style: theme.textTheme.bodySmall?.copyWith(
-              fontWeight: FontWeight.w500,
-            ),
+            style: StandardizedTextStyle.bodySmall,
             textAlign: TextAlign.end,
           ),
         ),
@@ -244,7 +238,7 @@ class BackgroundServiceStatusWidget extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Background Service Details'),
+        title: const StandardizedText('Background Service Details', style: StandardizedTextStyle.headlineSmall),
         content: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -252,19 +246,19 @@ class BackgroundServiceStatusWidget extends ConsumerWidget {
             children: [
               for (final entry in status.entries)
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  padding: StandardizedSpacing.paddingSymmetric(vertical: SpacingSize.xs),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SizedBox(
                         width: 120,
-                        child: Text(
+                        child: StandardizedText(
                           '${entry.key}:',
-                          style: const TextStyle(fontWeight: FontWeight.w500),
+                          style: StandardizedTextStyle.bodyMedium,
                         ),
                       ),
                       Expanded(
-                        child: Text(entry.value?.toString() ?? 'null'),
+                        child: StandardizedText(entry.value?.toString() ?? 'null', style: StandardizedTextStyle.bodyMedium),
                       ),
                     ],
                   ),
@@ -275,7 +269,7 @@ class BackgroundServiceStatusWidget extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
+            child: const StandardizedText('Close', style: StandardizedTextStyle.buttonText),
           ),
         ],
       ),

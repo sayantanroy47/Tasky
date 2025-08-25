@@ -4,6 +4,8 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../../core/design_system/design_tokens.dart';
 import '../../../core/theme/typography_constants.dart';
 import '../glassmorphism_container.dart';
+import '../standardized_text.dart';
+import '../standardized_colors.dart';
 import 'base_chart_widget.dart';
 
 /// Widget for chart controls including time period selection, chart type switching, and export
@@ -77,7 +79,7 @@ class ChartControlsWidget extends StatelessWidget {
         const SizedBox(width: TypographyConstants.spacingSmall),
         Text(
           'Period:',
-          style: theme.textTheme.labelMedium?.copyWith(
+          style: StandardizedTextStyle.labelMedium.toTextStyle(context).copyWith(
             fontSize: TypographyConstants.labelMedium,
             color: theme.colorScheme.onSurfaceVariant,
           ),
@@ -110,7 +112,7 @@ class ChartControlsWidget extends StatelessWidget {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
       child: Material(
-        color: Colors.transparent,
+        color: context.colors.backgroundTransparent,
         child: InkWell(
           onTap: isLoading ? null : () => onPeriodChanged(period),
           borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall),
@@ -119,7 +121,7 @@ class ChartControlsWidget extends StatelessWidget {
             decoration: BoxDecoration(
               color: isSelected 
                 ? theme.colorScheme.primary.withValues(alpha: 0.1)
-                : Colors.transparent,
+                : context.colors.backgroundTransparent,
               borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall),
               border: Border.all(
                 color: isSelected 
@@ -130,7 +132,7 @@ class ChartControlsWidget extends StatelessWidget {
             ),
             child: Text(
               period.displayName,
-              style: theme.textTheme.labelSmall?.copyWith(
+              style: StandardizedTextStyle.labelSmall.toTextStyle(context).copyWith(
                 fontSize: TypographyConstants.labelSmall,
                 color: isSelected 
                   ? theme.colorScheme.primary
@@ -157,7 +159,7 @@ class ChartControlsWidget extends StatelessWidget {
         const SizedBox(width: TypographyConstants.spacingSmall),
         Text(
           'Type:',
-          style: theme.textTheme.labelMedium?.copyWith(
+          style: StandardizedTextStyle.labelMedium.toTextStyle(context).copyWith(
             fontSize: TypographyConstants.labelMedium,
             color: theme.colorScheme.onSurfaceVariant,
           ),
@@ -192,7 +194,7 @@ class ChartControlsWidget extends StatelessWidget {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
       child: Material(
-        color: Colors.transparent,
+        color: context.colors.backgroundTransparent,
         child: InkWell(
           onTap: isLoading ? null : () => onChartTypeChanged(type),
           borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall),
@@ -201,7 +203,7 @@ class ChartControlsWidget extends StatelessWidget {
             decoration: BoxDecoration(
               color: isSelected 
                 ? theme.colorScheme.primary.withValues(alpha: 0.1)
-                : Colors.transparent,
+                : context.colors.backgroundTransparent,
               borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall),
               border: Border.all(
                 color: isSelected 
@@ -229,7 +231,7 @@ class ChartControlsWidget extends StatelessWidget {
       children: [
         if (onRefresh != null)
           Material(
-            color: Colors.transparent,
+            color: context.colors.backgroundTransparent,
             child: InkWell(
               onTap: isLoading ? null : onRefresh,
               borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall),
@@ -252,7 +254,7 @@ class ChartControlsWidget extends StatelessWidget {
         if (onExport != null) ...[
           const SizedBox(width: 4),
           Material(
-            color: Colors.transparent,
+            color: context.colors.backgroundTransparent,
             child: InkWell(
               onTap: isLoading ? null : onExport,
               borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall),
@@ -383,7 +385,7 @@ class AnalyticsDateRangePicker extends StatelessWidget {
     final theme = Theme.of(context);
     
     return Material(
-      color: Colors.transparent,
+      color: context.colors.backgroundTransparent,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall),
@@ -514,7 +516,7 @@ class AnalyticsQuickFilters extends StatelessWidget {
     bool isActive,
   ) {
     return Material(
-      color: Colors.transparent,
+      color: context.colors.backgroundTransparent,
       child: InkWell(
         onTap: () => onFilterToggled(filter.key),
         borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
@@ -527,7 +529,7 @@ class AnalyticsQuickFilters extends StatelessWidget {
           decoration: BoxDecoration(
             color: isActive 
               ? theme.colorScheme.primary.withValues(alpha: 0.1)
-              : Colors.transparent,
+              : context.colors.backgroundTransparent,
             borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
             border: Border.all(
               color: isActive 

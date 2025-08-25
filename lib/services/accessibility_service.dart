@@ -156,9 +156,10 @@ class AccessibilityService {
     switch (mode) {
       case ColorBlindMode.protanopia:
         return baseScheme.copyWith(
-          primary: Colors.blue[700]!,
-          secondary: Colors.orange[700]!,
-          error: Colors.orange[900]!,
+          primary: const Color(0xFF1976D2), // Blue 700 equivalent
+          secondary: const Color(0xFFF57C00), // Orange 700 equivalent  
+          tertiary: const Color(0xFF388E3C), // Green 700 equivalent
+          error: const Color(0xFFE65100), // Orange 900 equivalent
         );
       case ColorBlindMode.deuteranopia:
         return baseScheme.copyWith(
@@ -168,9 +169,10 @@ class AccessibilityService {
         );
       case ColorBlindMode.tritanopia:
         return baseScheme.copyWith(
-          primary: Colors.red[700]!,
-          secondary: Colors.green[700]!,
-          error: Colors.red[900]!,
+          primary: const Color(0xFFD32F2F), // Red 700 equivalent
+          secondary: const Color(0xFF388E3C), // Green 700 equivalent
+          tertiary: const Color(0xFF1976D2), // Blue 700 equivalent  
+          error: const Color(0xFFB71C1C), // Red 900 equivalent
         );
       case ColorBlindMode.none:
         return baseScheme;

@@ -5,19 +5,15 @@ import 'package:golden_toolkit/golden_toolkit.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import 'package:task_tracker_app/core/theme/app_theme_data.dart';
+import 'package:task_tracker_app/domain/models/enums.dart';
 import 'package:task_tracker_app/core/theme/themes/dracula_ide_theme.dart';
 import 'package:task_tracker_app/core/theme/themes/matrix_theme.dart';
 import 'package:task_tracker_app/core/theme/themes/vegeta_blue_theme.dart';
 import 'package:task_tracker_app/core/theme/theme_factory.dart';
 import 'package:task_tracker_app/domain/entities/task_model.dart';
-import 'package:task_tracker_app/domain/models/enums.dart';
-import 'package:task_tracker_app/presentation/widgets/kanban_board_view.dart';
-import 'package:task_tracker_app/presentation/widgets/kanban_column.dart';
-import 'package:task_tracker_app/presentation/widgets/glassmorphism_container.dart';
 
 import '../mocks/mock_providers.dart';
 import '../test_helpers/test_data_helper.dart';
-import '../test_helpers/golden_test_helper.dart';
 
 void main() {
   group('Kanban Board Golden Tests', () {
@@ -244,14 +240,14 @@ void main() {
       await screenMatchesGolden(tester, 'kanban_drag_drop_states');
     });
 
-    testGoldens('Kanban Task Cards - Priority Variations', (tester) async {
+    testGoldens('Kanban Task Cards - TaskPriority Variations', (tester) async {
       final theme = allThemes[1];
       final themeData = ThemeFactory.createFlutterTheme(theme);
       
       // Create tasks with different priorities
       final priorityTasks = TaskPriority.values.map((priority) => TaskModel(
         id: 'priority_${priority.name}',
-        title: '${priority.name.toUpperCase()} Priority Task',
+        title: '${priority.name.toUpperCase()} TaskPriority Task',
         description: 'This is a ${priority.name} priority task for testing visual hierarchy',
         priority: priority,
         projectId: 'test_project',
@@ -526,26 +522,26 @@ class _KanbanBoardFullView extends StatelessWidget {
             // Task metadata
             Row(
               children: [
-                // Priority indicator
+                // TaskPriority indicator
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
-                    color: _getPriorityColor(task.priority).withOpacity(0.2),
+                    color: _getTaskPriorityColor(task.priority).withOpacity(0.2),
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
-                        _getPriorityIcon(task.priority),
+                        _getTaskPriorityIcon(task.priority),
                         size: 12,
-                        color: _getPriorityColor(task.priority),
+                        color: _getTaskPriorityColor(task.priority),
                       ),
                       const SizedBox(width: 4),
                       Text(
                         task.priority.name.toUpperCase(),
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: _getPriorityColor(task.priority),
+                          color: _getTaskPriorityColor(task.priority),
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -598,7 +594,7 @@ class _KanbanBoardFullView extends StatelessWidget {
     );
   }
 
-  Color _getPriorityColor(Priority priority) {
+  Color _getTaskPriorityColor(TaskPriority priority) {
     switch (priority) {
       case TaskPriority.low:
         return Colors.green;
@@ -611,7 +607,7 @@ class _KanbanBoardFullView extends StatelessWidget {
     }
   }
 
-  IconData _getPriorityIcon(Priority priority) {
+  IconData _getTaskPriorityIcon(TaskPriority priority) {
     switch (priority) {
       case TaskPriority.low:
         return PhosphorIcons.arrowDown();
@@ -699,7 +695,7 @@ class _KanbanBoardMobileView extends StatelessWidget {
                   child: ListTile(
                     title: Text(task.title),
                     subtitle: task.description != null ? Text(task.description!) : null,
-                    trailing: Icon(_getPriorityIcon(task.priority)),
+                    trailing: Icon(_getTaskPriorityIcon(task.priority)),
                     onTap: () {},
                   ),
                 ),
@@ -711,7 +707,7 @@ class _KanbanBoardMobileView extends StatelessWidget {
     );
   }
 
-  IconData _getPriorityIcon(Priority priority) {
+  IconData _getTaskPriorityIcon(TaskPriority priority) {
     switch (priority) {
       case TaskPriority.low:
         return PhosphorIcons.arrowDown();
@@ -889,9 +885,9 @@ class _KanbanColumnShowcase extends StatelessWidget {
                                   )
                                 : null,
                             trailing: Icon(
-                              _getPriorityIcon(tasks[index].priority),
+                              _getTaskPriorityIcon(tasks[index].priority),
                               size: 16,
-                              color: _getPriorityColor(tasks[index].priority),
+                              color: _getTaskPriorityColor(tasks[index].priority),
                             ),
                           ),
                         ),
@@ -907,7 +903,7 @@ class _KanbanColumnShowcase extends StatelessWidget {
     );
   }
 
-  Color _getPriorityColor(Priority priority) {
+  Color _getTaskPriorityColor(TaskPriority priority) {
     switch (priority) {
       case TaskPriority.low:
         return Colors.green;
@@ -920,7 +916,7 @@ class _KanbanColumnShowcase extends StatelessWidget {
     }
   }
 
-  IconData _getPriorityIcon(Priority priority) {
+  IconData _getTaskPriorityIcon(TaskPriority priority) {
     switch (priority) {
       case TaskPriority.low:
         return PhosphorIcons.arrowDown();
@@ -1222,7 +1218,7 @@ class _KanbanTaskPriorityShowcase extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Task Priority Variations',
+          'Task TaskPriority Variations',
           style: Theme.of(context).textTheme.headlineSmall,
         ),
         const SizedBox(height: 16),
@@ -1236,28 +1232,28 @@ class _KanbanTaskPriorityShowcase extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Priority header
+                  // TaskPriority header
                   Row(
                     children: [
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: _getPriorityColor(task.priority).withOpacity(0.2),
+                          color: _getTaskPriorityColor(task.priority).withOpacity(0.2),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(
-                              _getPriorityIcon(task.priority),
+                              _getTaskPriorityIcon(task.priority),
                               size: 16,
-                              color: _getPriorityColor(task.priority),
+                              color: _getTaskPriorityColor(task.priority),
                             ),
                             const SizedBox(width: 6),
                             Text(
                               task.priority.name.toUpperCase(),
                               style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                                color: _getPriorityColor(task.priority),
+                                color: _getTaskPriorityColor(task.priority),
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -1312,7 +1308,7 @@ class _KanbanTaskPriorityShowcase extends StatelessWidget {
     );
   }
 
-  Color _getPriorityColor(Priority priority) {
+  Color _getTaskPriorityColor(TaskPriority priority) {
     switch (priority) {
       case TaskPriority.low:
         return Colors.green;
@@ -1325,7 +1321,7 @@ class _KanbanTaskPriorityShowcase extends StatelessWidget {
     }
   }
 
-  IconData _getPriorityIcon(Priority priority) {
+  IconData _getTaskPriorityIcon(TaskPriority priority) {
     switch (priority) {
       case TaskPriority.low:
         return PhosphorIcons.arrowDown();
@@ -1444,7 +1440,7 @@ class _KanbanBoardAccessibilityView extends StatelessWidget {
                                     return Padding(
                                       padding: const EdgeInsets.only(bottom: 8),
                                       child: Semantics(
-                                        label: 'Task: ${task.title}. Priority: ${task.priority.name}. ${task.description ?? "No description"}',
+                                        label: 'Task: ${task.title}. TaskPriority: ${task.priority.name}. ${task.description ?? "No description"}',
                                         button: true,
                                         child: Card(
                                           elevation: 2,
@@ -1454,8 +1450,8 @@ class _KanbanBoardAccessibilityView extends StatelessWidget {
                                             trailing: Semantics(
                                               label: '${task.priority.name} priority',
                                               child: Icon(
-                                                _getPriorityIcon(task.priority),
-                                                color: _getPriorityColor(task.priority),
+                                                _getTaskPriorityIcon(task.priority),
+                                                color: _getTaskPriorityColor(task.priority),
                                               ),
                                             ),
                                             onTap: () {},
@@ -1481,7 +1477,7 @@ class _KanbanBoardAccessibilityView extends StatelessWidget {
     );
   }
 
-  Color _getPriorityColor(Priority priority) {
+  Color _getTaskPriorityColor(TaskPriority priority) {
     switch (priority) {
       case TaskPriority.low:
         return Colors.green;
@@ -1494,7 +1490,7 @@ class _KanbanBoardAccessibilityView extends StatelessWidget {
     }
   }
 
-  IconData _getPriorityIcon(Priority priority) {
+  IconData _getTaskPriorityIcon(TaskPriority priority) {
     switch (priority) {
       case TaskPriority.low:
         return PhosphorIcons.arrowDown();

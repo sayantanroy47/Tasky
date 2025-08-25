@@ -136,16 +136,16 @@ class _PulsingPriorityChipState extends State<PulsingPriorityChip> with TickerPr
   }
 
   Color _getPriorityColor(BuildContext context) {
-    final theme = Theme.of(context);
+    final colors = context.colors;
     switch (widget.priority) {
       case TaskPriority.urgent:
-        return theme.colorScheme.error; // Semantic urgent color
+        return colors.priorityCritical; // Primary color hierarchy - critical/error
       case TaskPriority.high:
-        return StandardizedColors(theme).priorityHigh; // Semantic high priority color
+        return colors.priorityHigh; // Secondary color hierarchy - warning/amber
       case TaskPriority.medium:
-        return theme.colorScheme.secondary; // Medium priority semantic color
+        return colors.priorityMedium; // Primary color hierarchy - info/blue
       case TaskPriority.low:
-        return theme.colorScheme.tertiary; // Low priority semantic color
+        return colors.getTertiaryColor(TertiaryColorType.progressIndicator); // Tertiary color hierarchy - success/completion
     }
   }
 
@@ -313,9 +313,18 @@ class _PulsingPriorityChipState extends State<PulsingPriorityChip> with TickerPr
   }
 
   Color _getTextColor(Color backgroundColor) {
-    // Calculate contrast and return appropriate text color
-    final luminance = backgroundColor.computeLuminance();
-    return luminance > 0.5 ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.surface; // Theme-aware contrast
+    final colors = context.colors;
+    // Use semantic text colors for proper contrast and hierarchy
+    switch (widget.priority) {
+      case TaskPriority.urgent:
+        return colors.highContrastText; // High contrast for critical priority
+      case TaskPriority.high:
+        return colors.highContrastText; // High contrast for high priority  
+      case TaskPriority.medium:
+        return colors.iconOnPrimary; // Standard contrast for medium priority
+      case TaskPriority.low:
+        return colors.getTertiaryTextColor(TertiaryColorType.progressIndicator); // Tertiary text color for low priority
+    }
   }
 
   @override

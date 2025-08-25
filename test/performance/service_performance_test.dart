@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:task_tracker_app/services/ai/local_task_parser.dart';
 import 'package:task_tracker_app/services/ai/composite_ai_task_parser.dart';
-import 'package:task_tracker_app/services/analytics_service.dart';
+import 'package:task_tracker_app/services/analytics/analytics_service.dart';
 import 'package:task_tracker_app/domain/entities/task_model.dart';
 import 'package:task_tracker_app/domain/models/enums.dart';
 

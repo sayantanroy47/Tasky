@@ -160,6 +160,7 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
         description: _descriptionController.text.isNotEmpty ? _descriptionController.text : null,
         priority: _priority,
         dueDate: fullDueDate,
+        recurrence: _isRecurringTask ? _recurrencePattern : null,
         metadata: {
           'created_from': 'manual_creation',
           'creation_mode': (widget.prePopulatedData?['creationMode'] as String?) ?? 'manual',
@@ -168,8 +169,6 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
           if (_audioFilePath != null) 'audio': _buildAudioMetadata(),
           if (_audioFilePath != null) 'isVoiceCreated': widget.prePopulatedData?['creationMode'] == 'voiceToText',
           if (_audioFilePath != null) 'hasTranscription': (widget.prePopulatedData?['transcribedText'] as String?)?.isNotEmpty ?? false,
-          if (_isRecurringTask && _recurrencePattern != null) 'recurrence_pattern': _recurrencePattern!.toJson(),
-          if (_isRecurringTask) 'is_recurring': 'true',
         },
       );
 
@@ -222,7 +221,7 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
                         height: 16,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : const Text('Create'),
+                    : const Text('Save'),
               ),
             ),
           ],
@@ -653,7 +652,7 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
                 ),
               )
             : Icon(PhosphorIcons.plus()),
-        label: Text(_isCreating ? 'Creating...' : 'Create Task'),
+        label: Text(_isCreating ? 'Saving...' : 'Save Task'),
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(

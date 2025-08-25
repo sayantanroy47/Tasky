@@ -6,6 +6,8 @@ import '../../core/theme/typography_constants.dart';
 import '../../services/accessibility_service.dart';
 import '../../services/responsive_design_service.dart';
 import 'glassmorphism_container.dart';
+import 'standardized_text.dart';
+import 'standardized_spacing.dart';
 
 /// Enhanced responsive widget that adapts to screen size
 class ResponsiveWidget extends ConsumerWidget {
@@ -616,10 +618,10 @@ class _EnhancedLoadingIndicatorState extends ConsumerState<EnhancedLoadingIndica
       children: [
         _buildAnimatedIndicator(),
         if (widget.message != null) ...[
-          const SizedBox(height: 16),
-          Text(
+          StandardizedGaps.vertical(SpacingSize.md),
+          StandardizedText(
             widget.message!,
-            style: Theme.of(context).textTheme.bodyMedium,
+            style: StandardizedTextStyle.bodyMedium,
             textAlign: TextAlign.center,
           ),
         ],
@@ -717,7 +719,7 @@ class _EnhancedLoadingIndicatorState extends ConsumerState<EnhancedLoadingIndica
                 level: GlassLevel.interactive,
                 width: widget.size / 4,
                 height: widget.size / 4,
-                margin: const EdgeInsets.symmetric(horizontal: 2),
+                margin: StandardizedSpacing.marginSymmetric(horizontal: SpacingSize.xs),
                 borderRadius: BorderRadius.circular(widget.size / 8),
                 glassTint: (widget.color ?? Theme.of(context).colorScheme.primary).withValues(alpha: 0.2),
                 child: Container(

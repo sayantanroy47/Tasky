@@ -5,6 +5,8 @@ import '../../core/design_system/design_tokens.dart';
 import '../../core/theme/material3/motion_system.dart';
 import '../../core/theme/typography_constants.dart';
 import 'glassmorphism_container.dart';
+import 'standardized_text.dart';
+import 'standardized_spacing.dart';
 
 /// A reusable confirmation dialog widget with M3 glassmorphism design
 class ConfirmationDialog extends StatefulWidget {
@@ -87,7 +89,7 @@ class _ConfirmationDialogState extends State<ConfirmationDialog> with TickerProv
 
     return Dialog(
       backgroundColor: Colors.transparent,
-      insetPadding: const EdgeInsets.all(24),
+      insetPadding: StandardizedSpacing.padding(SpacingSize.lg),
       child: FadeTransition(
         opacity: _fadeAnimation,
         child: ScaleTransition(
@@ -98,14 +100,14 @@ class _ConfirmationDialogState extends State<ConfirmationDialog> with TickerProv
             borderRadius: BorderRadius.circular(TypographyConstants.dialogRadius),
             glassTint: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
             borderColor: theme.colorScheme.primary.withValues(alpha: 0.2),
-            padding: const EdgeInsets.all(24),
+            padding: StandardizedSpacing.padding(SpacingSize.lg),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 _buildHeader(theme),
-                const SizedBox(height: 16),
+                StandardizedGaps.vertical(SpacingSize.md),
                 _buildContent(theme),
-                const SizedBox(height: 24),
+                StandardizedGaps.vertical(SpacingSize.lg),
                 _buildActions(theme),
               ],
             ),
@@ -120,7 +122,7 @@ class _ConfirmationDialogState extends State<ConfirmationDialog> with TickerProv
       children: [
         if (widget.icon != null) ...[
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: StandardizedSpacing.padding(SpacingSize.xs),
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
@@ -136,15 +138,13 @@ class _ConfirmationDialogState extends State<ConfirmationDialog> with TickerProv
               size: 24,
             ),
           ),
-          const SizedBox(width: 16),
+          StandardizedGaps.horizontal(SpacingSize.md),
         ],
         Expanded(
-          child: Text(
+          child: StandardizedText(
             widget.title,
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w500,
-              color: theme.colorScheme.onSurface,
-            ),
+            style: StandardizedTextStyle.titleLarge,
+            color: theme.colorScheme.onSurface,
           ),
         ),
       ],
@@ -152,12 +152,11 @@ class _ConfirmationDialogState extends State<ConfirmationDialog> with TickerProv
   }
 
   Widget _buildContent(ThemeData theme) {
-    return Text(
+    return StandardizedText(
       widget.content,
-      style: theme.textTheme.bodyLarge?.copyWith(
-        color: theme.colorScheme.onSurfaceVariant,
-        height: 1.5,
-      ),
+      style: StandardizedTextStyle.bodyLarge,
+      color: theme.colorScheme.onSurfaceVariant,
+      lineHeight: 1.5,
     );
   }
 
@@ -177,13 +176,12 @@ class _ConfirmationDialogState extends State<ConfirmationDialog> with TickerProv
                 },
                 borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  padding: StandardizedSpacing.paddingSymmetric(horizontal: SpacingSize.lg, vertical: SpacingSize.sm),
                   child: Center(
-                    child: Text(
+                    child: StandardizedText(
                       widget.cancelText,
-                      style: theme.textTheme.labelLarge?.copyWith(
-                        color: theme.colorScheme.onSurface,
-                      ),
+                      style: StandardizedTextStyle.labelLarge,
+                      color: theme.colorScheme.onSurface,
                     ),
                   ),
                 ),
@@ -191,7 +189,7 @@ class _ConfirmationDialogState extends State<ConfirmationDialog> with TickerProv
             ),
           ),
         ),
-        const SizedBox(width: 16),
+        StandardizedGaps.horizontal(SpacingSize.md),
         Expanded(
           child: GlassmorphismContainer(
             level: GlassLevel.interactive,
@@ -205,7 +203,7 @@ class _ConfirmationDialogState extends State<ConfirmationDialog> with TickerProv
                 },
                 borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  padding: StandardizedSpacing.paddingSymmetric(horizontal: SpacingSize.lg, vertical: SpacingSize.sm),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: widget.isDestructive
@@ -223,12 +221,10 @@ class _ConfirmationDialogState extends State<ConfirmationDialog> with TickerProv
                     borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                   ),
                   child: Center(
-                    child: Text(
+                    child: StandardizedText(
                       widget.confirmText,
-                      style: theme.textTheme.labelLarge?.copyWith(
-                        color: theme.colorScheme.onPrimary, // Fixed hardcoded color violation (was Colors.white)
-                        fontWeight: FontWeight.w500,
-                      ),
+                      style: StandardizedTextStyle.labelLarge,
+                      color: theme.colorScheme.onPrimary, // Fixed hardcoded color violation (was Colors.white)
                     ),
                   ),
                 ),
@@ -265,14 +261,14 @@ class InfoDialog extends StatelessWidget {
 
     return Dialog(
       backgroundColor: Colors.transparent,
-      insetPadding: const EdgeInsets.all(24),
+      insetPadding: StandardizedSpacing.padding(SpacingSize.lg),
       child: GlassmorphismContainer(
         level: GlassLevel.floating,
         width: size.width * 0.85,
         borderRadius: BorderRadius.circular(TypographyConstants.dialogRadius),
         glassTint: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
         borderColor: theme.colorScheme.primary.withValues(alpha: 0.2),
-        padding: const EdgeInsets.all(24),
+        padding: StandardizedSpacing.padding(SpacingSize.lg),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -291,26 +287,23 @@ class InfoDialog extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+              StandardizedGaps.vertical(SpacingSize.md),
             ],
-            Text(
+            StandardizedText(
               title,
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w500,
-                color: theme.colorScheme.onSurface,
-              ),
+              style: StandardizedTextStyle.titleLarge,
+              color: theme.colorScheme.onSurface,
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 16),
-            Text(
+            StandardizedGaps.vertical(SpacingSize.md),
+            StandardizedText(
               content,
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-                height: 1.5,
-              ),
+              style: StandardizedTextStyle.bodyLarge,
+              color: theme.colorScheme.onSurfaceVariant,
+              lineHeight: 1.5,
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 24),
+            StandardizedGaps.vertical(SpacingSize.lg),
             GlassmorphismContainer(
               level: GlassLevel.interactive,
               borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
@@ -324,7 +317,7 @@ class InfoDialog extends StatelessWidget {
                   borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                   child: Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    padding: StandardizedSpacing.paddingSymmetric(horizontal: SpacingSize.lg, vertical: SpacingSize.sm),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
@@ -337,12 +330,10 @@ class InfoDialog extends StatelessWidget {
                       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                     ),
                     child: Center(
-                      child: Text(
+                      child: StandardizedText(
                         buttonText,
-                        style: theme.textTheme.labelLarge?.copyWith(
-                          color: theme.colorScheme.onPrimary, // Fixed hardcoded color violation (was Colors.white)
-                          fontWeight: FontWeight.w500,
-                        ),
+                        style: StandardizedTextStyle.labelLarge,
+                        color: theme.colorScheme.onPrimary, // Fixed hardcoded color violation (was Colors.white)
                       ),
                     ),
                   ),
@@ -412,36 +403,33 @@ class _TextInputDialogState extends State<TextInputDialog> {
 
     return Dialog(
       backgroundColor: Colors.transparent,
-      insetPadding: const EdgeInsets.all(24),
+      insetPadding: StandardizedSpacing.padding(SpacingSize.lg),
       child: GlassmorphismContainer(
         level: GlassLevel.floating,
         width: size.width * 0.85,
         borderRadius: BorderRadius.circular(TypographyConstants.dialogRadius),
         glassTint: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
         borderColor: theme.colorScheme.primary.withValues(alpha: 0.2),
-        padding: const EdgeInsets.all(24),
+        padding: StandardizedSpacing.padding(SpacingSize.lg),
         child: Form(
           key: _formKey,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              StandardizedText(
                 widget.title,
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w500,
+                style: StandardizedTextStyle.titleLarge,
                   color: theme.colorScheme.onSurface,
-                ),
               ),
-              const SizedBox(height: 16),
+              StandardizedGaps.vertical(SpacingSize.md),
               if (widget.content != null) ...[
-                Text(
+                StandardizedText(
                   widget.content!,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
+                  style: StandardizedTextStyle.bodyMedium,
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
-                const SizedBox(height: 16),
+                StandardizedGaps.vertical(SpacingSize.md),
               ],
               GlassmorphismContainer(
                 level: GlassLevel.interactive,
@@ -474,7 +462,7 @@ class _TextInputDialogState extends State<TextInputDialog> {
                   autofocus: true,
                 ),
               ),
-              const SizedBox(height: 24),
+              StandardizedGaps.vertical(SpacingSize.lg),
               Row(
                 children: [
                   Expanded(
@@ -490,13 +478,12 @@ class _TextInputDialogState extends State<TextInputDialog> {
                           },
                           borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                            padding: StandardizedSpacing.paddingSymmetric(horizontal: SpacingSize.lg, vertical: SpacingSize.sm),
                             child: Center(
-                              child: Text(
+                              child: StandardizedText(
                                 widget.cancelText,
-                                style: theme.textTheme.labelLarge?.copyWith(
-                                  color: theme.colorScheme.onSurface,
-                                ),
+                                style: StandardizedTextStyle.labelLarge,
+                                color: theme.colorScheme.onSurface,
                               ),
                             ),
                           ),
@@ -504,7 +491,7 @@ class _TextInputDialogState extends State<TextInputDialog> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 16),
+                  StandardizedGaps.horizontal(SpacingSize.md),
                   Expanded(
                     child: GlassmorphismContainer(
                       level: GlassLevel.interactive,
@@ -520,7 +507,7 @@ class _TextInputDialogState extends State<TextInputDialog> {
                           },
                           borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                            padding: StandardizedSpacing.paddingSymmetric(horizontal: SpacingSize.lg, vertical: SpacingSize.sm),
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
                                 colors: [
@@ -533,13 +520,11 @@ class _TextInputDialogState extends State<TextInputDialog> {
                               borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                             ),
                             child: Center(
-                              child: Text(
+                              child: StandardizedText(
                                 widget.confirmText,
-                                style: theme.textTheme.labelLarge?.copyWith(
-                                  color: theme.colorScheme.onPrimary, // Fixed hardcoded color violation (was Colors.white)
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
+                                style: StandardizedTextStyle.labelLarge,
+                                color: theme.colorScheme.onPrimary, // Fixed hardcoded color violation (was Colors.white)
+                                      ),
                             ),
                           ),
                         ),
@@ -582,25 +567,23 @@ class SelectionDialog<T> extends StatelessWidget {
 
     return Dialog(
       backgroundColor: Colors.transparent,
-      insetPadding: const EdgeInsets.all(24),
+      insetPadding: StandardizedSpacing.padding(SpacingSize.lg),
       child: GlassmorphismContainer(
         level: GlassLevel.floating,
         width: size.width * 0.85,
         borderRadius: BorderRadius.circular(TypographyConstants.dialogRadius),
         glassTint: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
         borderColor: theme.colorScheme.primary.withValues(alpha: 0.2),
-        padding: const EdgeInsets.all(24),
+        padding: StandardizedSpacing.padding(SpacingSize.lg),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
+            StandardizedText(
               title,
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w500,
-                color: theme.colorScheme.onSurface,
-              ),
+              style: StandardizedTextStyle.titleLarge,
+              color: theme.colorScheme.onSurface,
             ),
-            const SizedBox(height: 16),
+            StandardizedGaps.vertical(SpacingSize.md),
             ConstrainedBox(
               constraints: BoxConstraints(
                 maxHeight: size.height * 0.4,
@@ -611,7 +594,7 @@ class SelectionDialog<T> extends StatelessWidget {
                     final isSelected = selectedValue == option;
                     return GlassmorphismContainer(
                       level: isSelected ? GlassLevel.interactive : GlassLevel.content,
-                      margin: const EdgeInsets.only(bottom: 8),
+                      margin: StandardizedSpacing.marginOnly(bottom: SpacingSize.xs),
                       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                       glassTint: isSelected ? theme.colorScheme.primary.withValues(alpha: 0.1) : null,
                       child: Material(
@@ -623,21 +606,19 @@ class SelectionDialog<T> extends StatelessWidget {
                           },
                           borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                           child: Padding(
-                            padding: const EdgeInsets.all(16),
+                            padding: StandardizedSpacing.padding(SpacingSize.md),
                             child: Row(
                               children: [
                                 Icon(
                                   isSelected ? PhosphorIcons.checkCircle() : PhosphorIcons.circle(),
                                   color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
                                 ),
-                                const SizedBox(width: 16),
+                                StandardizedGaps.horizontal(SpacingSize.md),
                                 Expanded(
-                                  child: Text(
+                                  child: StandardizedText(
                                     getDisplayText(option),
-                                    style: theme.textTheme.bodyLarge?.copyWith(
-                                      color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurface,
-                                      fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
-                                    ),
+                                    style: StandardizedTextStyle.bodyLarge,
+                                    color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurface,
                                   ),
                                 ),
                               ],
@@ -650,7 +631,7 @@ class SelectionDialog<T> extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            StandardizedGaps.vertical(SpacingSize.md),
             GlassmorphismContainer(
               level: GlassLevel.interactive,
               borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
@@ -660,13 +641,12 @@ class SelectionDialog<T> extends StatelessWidget {
                   onTap: () => Navigator.of(context).pop(),
                   borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    padding: StandardizedSpacing.paddingSymmetric(horizontal: SpacingSize.lg, vertical: SpacingSize.sm),
                     child: Center(
-                      child: Text(
+                      child: StandardizedText(
                         'Cancel',
-                        style: theme.textTheme.labelLarge?.copyWith(
-                          color: theme.colorScheme.onSurface,
-                        ),
+                        style: StandardizedTextStyle.labelLarge,
+                        color: theme.colorScheme.onSurface,
                       ),
                     ),
                   ),
@@ -698,26 +678,24 @@ class LoadingDialog extends StatelessWidget {
 
     return Dialog(
       backgroundColor: Colors.transparent,
-      insetPadding: const EdgeInsets.all(24),
+      insetPadding: StandardizedSpacing.padding(SpacingSize.lg),
       child: GlassmorphismContainer(
         level: GlassLevel.floating,
         width: size.width * 0.7,
         borderRadius: BorderRadius.circular(TypographyConstants.dialogRadius),
         glassTint: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
         borderColor: theme.colorScheme.primary.withValues(alpha: 0.2),
-        padding: const EdgeInsets.all(32),
+        padding: StandardizedSpacing.padding(SpacingSize.xl),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
+            StandardizedText(
               title,
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w500,
-                color: theme.colorScheme.onSurface,
-              ),
+              style: StandardizedTextStyle.titleLarge,
+              color: theme.colorScheme.onSurface,
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 24),
+            StandardizedGaps.vertical(SpacingSize.lg),
             GlassmorphismContainer(
               level: GlassLevel.content,
               width: 64,
@@ -728,12 +706,11 @@ class LoadingDialog extends StatelessWidget {
               ),
             ),
             if (message != null) ...[
-              const SizedBox(height: 16),
-              Text(
+              StandardizedGaps.vertical(SpacingSize.md),
+              StandardizedText(
                 message!,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
+                style: StandardizedTextStyle.bodyMedium,
+                color: theme.colorScheme.onSurfaceVariant,
                 textAlign: TextAlign.center,
               ),
             ],

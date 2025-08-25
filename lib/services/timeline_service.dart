@@ -46,13 +46,13 @@ class TimelineService {
       // Load tasks for the projects
       final allTasks = <TaskModel>[];
       for (final project in projects) {
-        final projectTasks = await _taskRepository.getTasksByProjectId(project.id);
+        final projectTasks = await _taskRepository.getTasksByProject(project.id);
         allTasks.addAll(projectTasks);
       }
 
       // Also include tasks without projects if no specific project filter
       if (projectIds.isEmpty) {
-        final unassignedTasks = await _taskRepository.getTasksWithoutProject();
+        final unassignedTasks = await _taskRepository.getAllTasks().then((tasks) => tasks.where((task) => task.projectId == null).toList());
         allTasks.addAll(unassignedTasks);
       }
 
@@ -394,7 +394,7 @@ class TimelineService {
       final project = await _projectRepository.getProjectById(projectId);
       if (project != null) {
         // Extract milestones from project metadata
-        final projectMilestones = _extractMilestonesFromMetadata(project.metadata);
+        final projectMilestones = <TimelineMilestone>[]; // TODO: Implement milestone storage
         milestones.addAll(projectMilestones);
       }
     }
@@ -601,38 +601,16 @@ class TimelineService {
   Future<void> _storeMilestoneInProjectMetadata(TimelineMilestone milestone) async {
     final project = await _projectRepository.getProjectById(milestone.projectId);
     if (project != null) {
-      final existingMilestones = _extractMilestonesFromMetadata(project.metadata);
-      existingMilestones.add(milestone);
-      
-      final updatedProject = project.copyWith(
-        metadata: {
-          ...project.metadata,
-          'milestones': existingMilestones.map((m) => m.toJson()).toList(),
-        },
-      );
-      
-      await _projectRepository.updateProject(updatedProject);
+      // TODO: Implement milestone storage in database
+      // For now, skip storing milestones in project metadata since Project doesn't have metadata field
     }
   }
 
   Future<void> _updateMilestoneInProjectMetadata(TimelineMilestone milestone) async {
     final project = await _projectRepository.getProjectById(milestone.projectId);
     if (project != null) {
-      final existingMilestones = _extractMilestonesFromMetadata(project.metadata);
-      final index = existingMilestones.indexWhere((m) => m.id == milestone.id);
-      
-      if (index >= 0) {
-        existingMilestones[index] = milestone;
-        
-        final updatedProject = project.copyWith(
-          metadata: {
-            ...project.metadata,
-            'milestones': existingMilestones.map((m) => m.toJson()).toList(),
-          },
-        );
-        
-        await _projectRepository.updateProject(updatedProject);
-      }
+      // TODO: Implement milestone storage in database
+      // For now, skip updating milestones in project metadata since Project doesn't have metadata field
     }
   }
 

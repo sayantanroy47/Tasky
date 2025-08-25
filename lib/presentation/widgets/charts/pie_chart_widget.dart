@@ -3,6 +3,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'dart:math' as math;
 
 import '../../../core/theme/typography_constants.dart';
+import '../standardized_text.dart';
 import 'base_chart_widget.dart';
 
 /// Interactive pie/donut chart widget with animations and touch handling
@@ -98,13 +99,13 @@ class PieChartWidget extends BaseChartWidget {
             const SizedBox(height: 8),
             Text(
               'No data available',
-              style: theme.textTheme.titleSmall?.copyWith(
+              style: StandardizedTextStyle.titleSmall.toTextStyle(context).copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
             Text(
               'Chart will appear when data is available',
-              style: theme.textTheme.bodySmall?.copyWith(
+              style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
                 color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
               ),
             ),
@@ -150,7 +151,7 @@ class PieChartWidget extends BaseChartWidget {
                 const SizedBox(width: 6),
                 Text(
                   dataPoint.label,
-                  style: theme.textTheme.bodySmall?.copyWith(
+                  style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
                     fontSize: TypographyConstants.bodySmall,
                   ),
                 ),
@@ -158,7 +159,7 @@ class PieChartWidget extends BaseChartWidget {
                   const SizedBox(width: 4),
                   Text(
                     '(${percentage.toStringAsFixed(1)}%)',
-                    style: theme.textTheme.bodySmall?.copyWith(
+                    style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
                       fontSize: TypographyConstants.labelSmall,
                       color: theme.colorScheme.onSurfaceVariant,
                     ),

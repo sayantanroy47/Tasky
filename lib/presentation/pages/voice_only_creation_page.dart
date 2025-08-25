@@ -1047,11 +1047,9 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        StandardizedText(
                           segment.title ?? 'Segment ${index + 1}',
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w500,
-                          ),
+                          style: StandardizedTextStyle.labelLarge,
                         ),
                         StandardizedTextVariants.meta(
                           _formatDuration(segment.duration),
@@ -1100,9 +1098,9 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
           if (_totalDuration.inSeconds > 0) ...[
             Row(
               children: [
-                Text(
+                StandardizedText(
                   _formatDuration(_playbackPosition),
-                  style: theme.textTheme.bodySmall,
+                  style: StandardizedTextStyle.bodySmall,
                 ),
                 Expanded(
                   child: Slider(
@@ -1117,9 +1115,9 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
                     },
                   ),
                 ),
-                Text(
+                StandardizedText(
                   _formatDuration(_totalDuration),
-                  style: theme.textTheme.bodySmall,
+                  style: StandardizedTextStyle.bodySmall,
                 ),
               ],
             ),
@@ -1129,9 +1127,9 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
           // Playback speed controls
           Row(
             children: [
-              Text(
+              const StandardizedText(
                 'Speed: ',
-                style: theme.textTheme.bodyMedium,
+                style: StandardizedTextStyle.bodyMedium,
               ),
               ...List.generate([0.5, 1.0, 1.5, 2.0].length, (index) {
                 final speed = [0.5, 1.0, 1.5, 2.0][index];

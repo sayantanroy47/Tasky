@@ -157,10 +157,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
                 color: theme.colorScheme.error,
               ),
               const SizedBox(height: 16),
-              Text(
-                'Error loading project',
-                style: theme.textTheme.headlineSmall,
-              ),
+              StandardizedTextVariants.pageHeader('Error loading project'),
               const SizedBox(height: 8),
               Text(error.toString()),
               const SizedBox(height: 16),
@@ -207,20 +204,14 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      project.name,
-                      style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
+                    StandardizedTextVariants.pageHeader(project.name),
                     if (project.description != null && project.description!.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.only(top: 4),
-                        child: Text(
+                        child: StandardizedText(
                           project.description!,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
+                          style: StandardizedTextStyle.bodyMedium,
+                          color: theme.colorScheme.onSurfaceVariant,
                         ),
                       ),
                   ],
@@ -242,12 +233,10 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
                       const SizedBox(width: 4),
-                      Text(
+                      StandardizedText(
                         'Archived',
-                        style: TextStyle(
-                          color: theme.colorScheme.onSurfaceVariant,
-                          fontSize: TypographyConstants.bodySmall,
-                        ),
+                        style: StandardizedTextStyle.bodySmall,
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ],
                   ),
@@ -278,12 +267,10 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
                   color: project.isOverdue ? theme.colorScheme.error : theme.colorScheme.onSurfaceVariant,
                 ),
                 const SizedBox(width: 4),
-                Text(
+                StandardizedText(
                   'Deadline: ${_formatDate(project.deadline!)}',
-                  style: TextStyle(
-                    color: project.isOverdue ? theme.colorScheme.error : theme.colorScheme.onSurfaceVariant,
-                    fontWeight: project.isOverdue ? FontWeight.w500 : null,
-                  ),
+                  style: StandardizedTextStyle.bodyMedium,
+                  color: project.isOverdue ? theme.colorScheme.error : theme.colorScheme.onSurfaceVariant,
                 ),
                 if (project.isOverdue) ...[
                   const SizedBox(width: 8),
@@ -293,13 +280,10 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
                       color: theme.colorScheme.error.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
                     ),
-                    child: Text(
+                    child: StandardizedText(
                       'OVERDUE',
-                      style: TextStyle(
-                        color: theme.colorScheme.error,
-                        fontSize: TypographyConstants.labelSmall,
-                        fontWeight: FontWeight.w500,
-                      ),
+                      style: StandardizedTextStyle.labelSmall,
+                      color: theme.colorScheme.error,
                     ),
                   ),
                 ],
@@ -330,11 +314,9 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
               ),
             ),
             const SizedBox(width: 12),
-            Text(
+            StandardizedText(
               '${(stats.completionPercentage * 100).round()}%',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
+              style: StandardizedTextStyle.titleMedium,
             ),
           ],
         ),
@@ -408,20 +390,15 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
         children: [
           Icon(icon, color: color, size: 20),
           const SizedBox(height: 4),
-          Text(
+          StandardizedText(
             value,
-            style: TextStyle(
-              color: color,
-              fontWeight: FontWeight.w500,
-              fontSize: TypographyConstants.bodyLarge,
-            ),
+            style: StandardizedTextStyle.bodyLarge,
+            color: color,
           ),
-          Text(
+          StandardizedText(
             label,
-            style: TextStyle(
-              color: color,
-              fontSize: TypographyConstants.labelSmall,
-            ),
+            style: StandardizedTextStyle.labelSmall,
+            color: color,
           ),
         ],
       ),
@@ -479,12 +456,10 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
           children: [
             Icon(icon, color: color, size: 20),
             const SizedBox(width: 8),
-            Text(
+            StandardizedText(
               '$title (${tasks.length})',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w500,
-                color: color,
-              ),
+              style: StandardizedTextStyle.titleMedium,
+              color: color,
             ),
           ],
         ),
@@ -575,12 +550,10 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
                   ),
                 ),
                 const SizedBox(width: 8),
-                Text(
+                StandardizedText(
                   '$title (${tasks.length})',
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: color,
-                  ),
+                  style: StandardizedTextStyle.titleSmall,
+                  color: color,
                 ),
               ],
             ),
@@ -602,17 +575,15 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(
+                          StandardizedText(
                             task.title,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              fontWeight: FontWeight.w500,
-                            ),
+                            style: StandardizedTextStyle.bodyMedium,
                           ),
                           if (task.description != null && task.description!.isNotEmpty) ...[
                             const SizedBox(height: 4),
                             Text(
                               task.description!,
-                              style: theme.textTheme.bodySmall,
+                              style: StandardizedTextStyle.bodySmall.toTextStyle(context),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -627,12 +598,10 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
                                   color: theme.colorScheme.onSurfaceVariant,
                                 ),
                                 const SizedBox(width: 4),
-                                Text(
+                                StandardizedText(
                                   _formatDate(task.dueDate!),
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    color: theme.colorScheme.onSurfaceVariant,
-                                  ),
+                                  style: StandardizedTextStyle.labelSmall,
+                                  color: theme.colorScheme.onSurfaceVariant,
                                 ),
                               ],
                             ),
@@ -659,9 +628,10 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
         children: [
           Icon(PhosphorIcons.trendUp(), size: 64, color: Theme.of(context).colorScheme.onSurfaceVariant),
           const SizedBox(height: 16),
-          Text(
+          StandardizedText(
             'Progress Charts',
-            style: TextStyle(fontSize: TypographyConstants.headlineSmall, color: Theme.of(context).colorScheme.onSurfaceVariant),
+            style: StandardizedTextStyle.headlineSmall,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
           const SizedBox(height: 8),
           Text(
@@ -687,12 +657,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Project Details',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
+                StandardizedTextVariants.sectionHeader('Project Details'),
                 const SizedBox(height: 12),
                 _buildDetailRow('Created', _formatDate(project.createdAt)),
                 if (project.updatedAt != null) _buildDetailRow('Last Updated', _formatDate(project.updatedAt!)),
@@ -713,12 +678,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Quick Actions',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
+                StandardizedTextVariants.sectionHeader('Quick Actions'),
                 const SizedBox(height: 12),
                 Wrap(
                   spacing: 8,
@@ -759,17 +719,16 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
         children: [
           SizedBox(
             width: 100,
-            child: Text(
+            child: StandardizedText(
               label,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+              style: StandardizedTextStyle.bodyMedium,
+              color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
           Expanded(
             child: Text(
               value,
-              style: theme.textTheme.bodyMedium,
+              style: StandardizedTextStyle.bodyMedium.toTextStyle(context),
             ),
           ),
         ],
@@ -792,18 +751,16 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
               color: theme.colorScheme.onSurfaceVariant,
             ),
             const SizedBox(height: 16),
-            Text(
+            StandardizedText(
               'No Tasks Yet',
-              style: theme.textTheme.headlineSmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+              style: StandardizedTextStyle.headlineSmall,
+              color: theme.colorScheme.onSurfaceVariant,
             ),
             const SizedBox(height: 8),
-            Text(
+            StandardizedText(
               'Add your first task to this project to get started',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
+              style: StandardizedTextStyle.bodyMedium,
+              color: theme.colorScheme.onSurfaceVariant,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
@@ -838,13 +795,11 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
   }
 
   void _editProject(Project project) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => ProjectFormDialog(
-          project: project,
-          onSuccess: () => ref.invalidate(projectsProvider),
-        ),
-        fullscreenDialog: true,
+    showDialog(
+      context: context,
+      builder: (context) => ProjectFormDialog(
+        project: project,
+        onSuccess: () => ref.invalidate(projectsProvider),
       ),
     );
   }

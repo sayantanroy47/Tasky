@@ -9,7 +9,7 @@ import 'package:task_tracker_app/domain/entities/project.dart';
 import 'package:task_tracker_app/domain/models/enums.dart';
 import 'package:task_tracker_app/presentation/widgets/kanban_board_view.dart';
 import 'package:task_tracker_app/presentation/providers/kanban_providers.dart';
-import 'package:task_tracker_app/services/analytics_service.dart';
+import 'package:task_tracker_app/services/analytics/analytics_service.dart';
 
 import '../mocks/test_mocks.mocks.dart';
 
@@ -255,7 +255,7 @@ void main() {
           (_) => Stream.value(projects),
         );
         when(mockTaskRepository.updateTask(any)).thenAnswer((_) async {
-          return null;
+          return;
         });
 
         await tester.pumpWidget(
@@ -299,7 +299,7 @@ void main() {
         final operations = KanbanOperations(mockTaskRepository);
         
         when(mockTaskRepository.updateTask(any)).thenAnswer((_) async {
-          return null;
+          return;
         });
         
         final stopwatch = Stopwatch()..start();
@@ -452,7 +452,7 @@ void main() {
           (_) => Stream.value(projects),
         );
         when(mockTaskRepository.updateTask(any)).thenAnswer((_) async {
-          return null;
+          return;
         });
 
         await tester.pumpWidget(

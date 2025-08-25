@@ -7,9 +7,6 @@ import 'package:task_tracker_app/domain/entities/project.dart';
 import 'package:task_tracker_app/domain/models/enums.dart';
 import 'package:task_tracker_app/services/bulk_operations/bulk_operation_service.dart';
 import 'package:task_tracker_app/services/bulk_operations/project_migration_service.dart';
-import 'package:task_tracker_app/services/bulk_operations/task_selection_manager.dart';
-import 'package:task_tracker_app/services/bulk_operations/bulk_operation_history.dart';
-import 'package:task_tracker_app/presentation/providers/bulk_operation_providers.dart';
 
 import '../mocks/test_mocks.mocks.dart';
 
@@ -18,6 +15,7 @@ void main() {
     late MockTaskRepository mockTaskRepository;
     late MockProjectRepository mockProjectRepository;
     late MockNotificationService mockNotificationService;
+    late MockPerformanceService mockPerformanceService;
     late PerformanceBenchmarker benchmarker;
     late BulkOperationsTestDataGenerator dataGenerator;
 
@@ -25,6 +23,7 @@ void main() {
       mockTaskRepository = MockTaskRepository();
       mockProjectRepository = MockProjectRepository();
       mockNotificationService = MockNotificationService();
+      mockPerformanceService = MockPerformanceService();
       benchmarker = PerformanceBenchmarker();
       dataGenerator = BulkOperationsTestDataGenerator();
     });
@@ -36,11 +35,12 @@ void main() {
           taskRepository: mockTaskRepository,
           projectRepository: mockProjectRepository,
           notificationService: mockNotificationService,
+          performanceService: mockPerformanceService,
         );
         
         // Mock repository responses
         when(mockTaskRepository.updateTask(any)).thenAnswer((_) async {
-          return null;
+          return;
         });
         when(mockTaskRepository.getTasksByIds(any)).thenAnswer((_) async => tasks);
         
@@ -78,10 +78,11 @@ void main() {
           taskRepository: mockTaskRepository,
           projectRepository: mockProjectRepository,
           notificationService: mockNotificationService,
+          performanceService: mockPerformanceService,
         );
         
         when(mockTaskRepository.updateTask(any)).thenAnswer((_) async {
-          return null;
+          return;
         });
         when(mockTaskRepository.getTasksByIds(any)).thenAnswer((_) async => tasks);
         when(mockTaskRepository.getDependentTasks(any)).thenAnswer((_) async => []);
@@ -117,10 +118,11 @@ void main() {
           taskRepository: mockTaskRepository,
           projectRepository: mockProjectRepository,
           notificationService: mockNotificationService,
+          performanceService: mockPerformanceService,
         );
         
         when(mockTaskRepository.updateTask(any)).thenAnswer((_) async {
-          return null;
+          return;
         });
         when(mockTaskRepository.getTasksByIds(any)).thenAnswer((_) async => tasks);
         
@@ -172,10 +174,11 @@ void main() {
           taskRepository: mockTaskRepository,
           projectRepository: mockProjectRepository,
           notificationService: mockNotificationService,
+          performanceService: mockPerformanceService,
         );
         
         when(mockTaskRepository.updateTask(any)).thenAnswer((_) async {
-          return null;
+          return;
         });
         when(mockTaskRepository.getTasksByProjectId(any)).thenAnswer((_) async => tasks.take(120).toList());
         when(mockProjectRepository.getProjectById(any)).thenAnswer((_) async => targetProjects.first);
@@ -217,10 +220,11 @@ void main() {
           taskRepository: mockTaskRepository,
           projectRepository: mockProjectRepository,
           notificationService: mockNotificationService,
+          performanceService: mockPerformanceService,
         );
         
         when(mockTaskRepository.updateTask(any)).thenAnswer((_) async {
-          return null;
+          return;
         });
         when(mockTaskRepository.getTasksByProjectId(any)).thenAnswer((_) async => tasks.take(75).toList());
         when(mockProjectRepository.getProjectById(any)).thenAnswer((_) async => projects.first);
@@ -234,6 +238,9 @@ void main() {
             targetProjectId: projects[10 + i].id,
             migrationOptions: const ProjectMigrationOptions(
               preserveTaskMetadata: true,
+              updateTaskDependencies: true,
+              notifyStakeholders: false,
+              createMigrationLog: false,
               resolveConflicts: true,
               conflictResolutionStrategy: ConflictResolutionStrategy.mergePreferTarget,
             ),
@@ -268,14 +275,15 @@ void main() {
           taskRepository: mockTaskRepository,
           projectRepository: mockProjectRepository,
           notificationService: mockNotificationService,
+          performanceService: mockPerformanceService,
         );
         
         when(mockTaskRepository.updateTask(any)).thenAnswer((_) async {
-          return null;
+          return;
         });
         when(mockTaskRepository.getAllTasks()).thenAnswer((_) async => tasks);
         when(mockProjectRepository.deleteProject(any)).thenAnswer((_) async {
-          return null;
+          return;
         });
         
         final stopwatch = Stopwatch()..start();
@@ -316,10 +324,11 @@ void main() {
           taskRepository: mockTaskRepository,
           projectRepository: mockProjectRepository,
           notificationService: mockNotificationService,
+          performanceService: mockPerformanceService,
         );
         
         when(mockTaskRepository.updateTask(any)).thenAnswer((_) async {
-          return null;
+          return;
         });
         when(mockTaskRepository.getTasksByIds(any)).thenAnswer((_) async => tasks);
         
@@ -366,7 +375,7 @@ void main() {
         );
         
         when(mockTaskRepository.updateTask(any)).thenAnswer((_) async {
-          return null;
+          return;
         });
         when(mockTaskRepository.getTasksByIds(any)).thenAnswer((_) async => tasks);
         
@@ -406,7 +415,7 @@ void main() {
         );
         
         when(mockTaskRepository.updateTask(any)).thenAnswer((_) async {
-          return null;
+          return;
         });
         
         final memoryTracker = MemoryUsageTracker();
@@ -461,7 +470,7 @@ void main() {
           if (updateCount > 800) {
             throw Exception('Simulated database error');
           }
-          return null;
+          return;
         });
         when(mockTaskRepository.getTasksByIds(any)).thenAnswer((_) async => tasks);
         
@@ -471,7 +480,7 @@ void main() {
         final operationResult = await bulkService.transactionalBulkUpdate(
           taskIds: tasks.map((t) => t.id).toList(),
           updateOperations: [
-            TaskUpdateOperation(field: 'priority', value: TaskPriority.critical),
+            const TaskUpdateOperation(field: 'priority', value: TaskPriority.urgent),
           ],
           rollbackOnError: true,
         );
@@ -509,7 +518,7 @@ void main() {
           if (updateCount % 5 == 0 && updateCount < 100) {
             throw Exception('Intermittent failure');
           }
-          return null;
+          return;
         });
         when(mockTaskRepository.getTasksByIds(any)).thenAnswer((_) async => tasks);
         
@@ -551,7 +560,7 @@ void main() {
         );
         
         when(mockTaskRepository.updateTask(any)).thenAnswer((_) async {
-          return null;
+          return;
         });
         when(mockTaskRepository.getTasksByIds(any)).thenAnswer((_) async => tasks);
         
@@ -606,7 +615,7 @@ void main() {
         
         when(mockTaskRepository.updateTask(any)).thenAnswer((_) async {
           await Future.delayed(const Duration(milliseconds: 2));
-          return null; // Simulate work
+          return; // Simulate work
         });
         when(mockTaskRepository.getTasksByIds(any)).thenAnswer((_) async => tasks);
         

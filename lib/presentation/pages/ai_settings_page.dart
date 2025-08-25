@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/glassmorphism_container.dart';
 import '../widgets/standardized_app_bar.dart';
 import '../widgets/standardized_page_dialogs.dart';
+import '../widgets/standardized_text.dart';
 import '../widgets/theme_background_widget.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../services/ai/ai_task_parsing_service.dart';
@@ -270,9 +271,9 @@ Examples:
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
+              StandardizedText(
                 'Your Privacy Matters',
-                style: TextStyle(fontWeight: FontWeight.w500),
+                style: StandardizedTextStyle.titleMedium,
               ),
               SizedBox(height: 16),
               Text('Local Processing:'),
@@ -292,9 +293,9 @@ Examples:
               Text('• Clear usage statistics and data'),
               Text('• Full control over your information'),
               SizedBox(height: 16),
-              Text(
+              StandardizedText(
                 'We recommend using local processing for sensitive tasks.',
-                style: TextStyle(fontWeight: FontWeight.w500),
+                style: StandardizedTextStyle.bodyMedium,
               ),
             ],
           ),

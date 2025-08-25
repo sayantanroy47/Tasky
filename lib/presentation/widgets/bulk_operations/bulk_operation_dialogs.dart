@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/phosphor_icons.dart';
 import '../../../core/theme/typography_constants.dart';
 import '../../../core/design_system/design_tokens.dart';
+import '../standardized_text.dart';
 import '../../../domain/entities/task_model.dart';
 import '../../../domain/entities/project.dart';
 import '../../../domain/models/enums.dart';
@@ -195,14 +196,14 @@ class _BulkOperationProgressDialogState
             children: [
               Text(
                 widget.title,
-                style: theme.textTheme.titleMedium?.copyWith(
+                style: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
                   fontWeight: FontWeight.w600,
                 ),
               ),
               const SizedBox(height: SpacingTokens.xs),
               Text(
                 widget.description,
-                style: theme.textTheme.bodySmall?.copyWith(
+                style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                 ),
               ),
@@ -309,7 +310,7 @@ class _BulkOperationProgressDialogState
               progress != null
                   ? '${progress.processedTasks}/${progress.totalTasks} tasks'
                   : 'Preparing...',
-              style: theme.textTheme.bodyMedium?.copyWith(
+              style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -317,7 +318,7 @@ class _BulkOperationProgressDialogState
               progress != null && progress.totalTasks > 0
                   ? '${(progress.progressPercentage * 100).toInt()}%'
                   : '0%',
-              style: theme.textTheme.bodyMedium?.copyWith(
+              style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
                 color: theme.colorScheme.primary,
                 fontWeight: FontWeight.w600,
               ),
@@ -430,14 +431,14 @@ class _BulkOperationProgressDialogState
           children: [
             Text(
               value,
-              style: theme.textTheme.bodyMedium?.copyWith(
+              style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
                 fontWeight: FontWeight.w600,
                 color: color,
               ),
             ),
             Text(
               label,
-              style: theme.textTheme.labelSmall?.copyWith(
+              style: StandardizedTextStyle.labelSmall.toTextStyle(context).copyWith(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
             ),
@@ -473,7 +474,7 @@ class _BulkOperationProgressDialogState
             const SizedBox(width: 4),
             Text(
               timeText,
-              style: theme.textTheme.labelSmall?.copyWith(
+              style: StandardizedTextStyle.labelSmall.toTextStyle(context).copyWith(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
             ),
@@ -507,7 +508,7 @@ class _BulkOperationProgressDialogState
               const SizedBox(width: SpacingTokens.xs),
               Text(
                 'Errors (${progress.errors.length})',
-                style: theme.textTheme.bodySmall?.copyWith(
+                style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
                   color: theme.colorScheme.error,
                   fontWeight: FontWeight.w600,
                 ),
@@ -520,7 +521,7 @@ class _BulkOperationProgressDialogState
               padding: const EdgeInsets.only(bottom: 4),
               child: Text(
                 '• ${entry.value}',
-                style: theme.textTheme.labelSmall?.copyWith(
+                style: StandardizedTextStyle.labelSmall.toTextStyle(context).copyWith(
                   color: theme.colorScheme.error.withValues(alpha: 0.8),
                 ),
               ),
@@ -529,7 +530,7 @@ class _BulkOperationProgressDialogState
           if (progress.errors.length > 3)
             Text(
               '... and ${progress.errors.length - 3} more',
-              style: theme.textTheme.labelSmall?.copyWith(
+              style: StandardizedTextStyle.labelSmall.toTextStyle(context).copyWith(
                 color: theme.colorScheme.error.withValues(alpha: 0.6),
                 fontStyle: FontStyle.italic,
               ),
@@ -557,7 +558,7 @@ class _BulkOperationProgressDialogState
             const SizedBox(width: SpacingTokens.xs),
             Text(
               'Cancel Operation',
-              style: theme.textTheme.bodyMedium?.copyWith(
+              style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
                 color: theme.colorScheme.error,
                 fontWeight: FontWeight.w600,
               ),
@@ -630,14 +631,14 @@ class BulkDeleteConfirmationDialog extends StatelessWidget {
                     children: [
                       Text(
                         'Delete $taskCount Tasks',
-                        style: theme.textTheme.titleMedium?.copyWith(
+                        style: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                       const SizedBox(height: SpacingTokens.xs),
                       Text(
                         'This action cannot be undone permanently.',
-                        style: theme.textTheme.bodySmall?.copyWith(
+                        style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
                           color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                         ),
                       ),
@@ -666,7 +667,7 @@ class BulkDeleteConfirmationDialog extends StatelessWidget {
                     type: ButtonType.secondary,
                     child: Text(
                       'Cancel',
-                      style: theme.textTheme.bodyMedium?.copyWith(
+                      style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -683,7 +684,7 @@ class BulkDeleteConfirmationDialog extends StatelessWidget {
                     color: theme.colorScheme.error,
                     child: Text(
                       'Delete',
-                      style: theme.textTheme.bodyMedium?.copyWith(
+                      style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.w600,
                       ),
@@ -715,9 +716,9 @@ class BulkDeleteConfirmationDialog extends StatelessWidget {
                   ),
                   const SizedBox(width: SpacingTokens.xs),
                   Expanded(
-                    child: Text(
+                    child: StandardizedText(
                       task.title,
-                      style: theme.textTheme.bodySmall,
+                      style: StandardizedTextStyle.bodySmall,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -823,7 +824,7 @@ class _BulkStatusUpdateDialogState extends State<BulkStatusUpdateDialog> {
             // Header
             Text(
               'Update Status',
-              style: theme.textTheme.titleMedium?.copyWith(
+              style: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -832,7 +833,7 @@ class _BulkStatusUpdateDialogState extends State<BulkStatusUpdateDialog> {
             
             Text(
               'Choose new status for ${widget.selectedTasks.length} tasks',
-              style: theme.textTheme.bodySmall?.copyWith(
+              style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             ),
@@ -858,13 +859,13 @@ class _BulkStatusUpdateDialogState extends State<BulkStatusUpdateDialog> {
                     ),
                     title: Text(
                       status.name.toUpperCase(),
-                      style: theme.textTheme.bodyMedium?.copyWith(
+                      style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     subtitle: Text(
                       '${widget.currentStatistics.statusBreakdown[status] ?? 0} currently',
-                      style: theme.textTheme.bodySmall?.copyWith(
+                      style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
                         color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                     ),
@@ -890,7 +891,7 @@ class _BulkStatusUpdateDialogState extends State<BulkStatusUpdateDialog> {
                     type: ButtonType.secondary,
                     child: Text(
                       'Cancel',
-                      style: theme.textTheme.bodyMedium?.copyWith(
+                      style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -905,7 +906,7 @@ class _BulkStatusUpdateDialogState extends State<BulkStatusUpdateDialog> {
                     type: ButtonType.primary,
                     child: Text(
                       'Update',
-                      style: theme.textTheme.bodyMedium?.copyWith(
+                      style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.w600,
                       ),
@@ -955,7 +956,7 @@ class _BulkPriorityUpdateDialogState extends State<BulkPriorityUpdateDialog> {
             // Header
             Text(
               'Update Priority',
-              style: theme.textTheme.titleMedium?.copyWith(
+              style: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -964,7 +965,7 @@ class _BulkPriorityUpdateDialogState extends State<BulkPriorityUpdateDialog> {
             
             Text(
               'Choose new priority for ${widget.selectedTasks.length} tasks',
-              style: theme.textTheme.bodySmall?.copyWith(
+              style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             ),
@@ -999,7 +1000,7 @@ class _BulkPriorityUpdateDialogState extends State<BulkPriorityUpdateDialog> {
                         const SizedBox(width: SpacingTokens.xs),
                         Text(
                           priority.name.toUpperCase(),
-                          style: theme.textTheme.bodyMedium?.copyWith(
+                          style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
                             fontWeight: FontWeight.w600,
                             color: color,
                           ),
@@ -1008,7 +1009,7 @@ class _BulkPriorityUpdateDialogState extends State<BulkPriorityUpdateDialog> {
                     ),
                     subtitle: Text(
                       '${widget.currentStatistics.priorityBreakdown[priority] ?? 0} currently',
-                      style: theme.textTheme.bodySmall?.copyWith(
+                      style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
                         color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                     ),
@@ -1034,7 +1035,7 @@ class _BulkPriorityUpdateDialogState extends State<BulkPriorityUpdateDialog> {
                     type: ButtonType.secondary,
                     child: Text(
                       'Cancel',
-                      style: theme.textTheme.bodyMedium?.copyWith(
+                      style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -1049,7 +1050,7 @@ class _BulkPriorityUpdateDialogState extends State<BulkPriorityUpdateDialog> {
                     type: ButtonType.primary,
                     child: Text(
                       'Update',
-                      style: theme.textTheme.bodyMedium?.copyWith(
+                      style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.w600,
                       ),
@@ -1114,7 +1115,7 @@ class _BulkProjectMoveDialogState extends State<BulkProjectMoveDialog> {
             // Header
             Text(
               'Move to Project',
-              style: theme.textTheme.titleMedium?.copyWith(
+              style: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -1123,7 +1124,7 @@ class _BulkProjectMoveDialogState extends State<BulkProjectMoveDialog> {
             
             Text(
               'Choose project for ${widget.selectedTasks.length} tasks',
-              style: theme.textTheme.bodySmall?.copyWith(
+              style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             ),
@@ -1148,7 +1149,7 @@ class _BulkProjectMoveDialogState extends State<BulkProjectMoveDialog> {
                   ),
                   title: Text(
                     'No Project',
-                    style: theme.textTheme.bodyMedium?.copyWith(
+                    style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -1181,13 +1182,13 @@ class _BulkProjectMoveDialogState extends State<BulkProjectMoveDialog> {
                     ),
                     title: Text(
                       project.name,
-                      style: theme.textTheme.bodyMedium?.copyWith(
+                      style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     subtitle: Text(
                       '${project.taskCount} tasks',
-                      style: theme.textTheme.bodySmall?.copyWith(
+                      style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
                         color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                       ),
                     ),
@@ -1225,7 +1226,7 @@ class _BulkProjectMoveDialogState extends State<BulkProjectMoveDialog> {
                     type: ButtonType.secondary,
                     child: Text(
                       'Cancel',
-                      style: theme.textTheme.bodyMedium?.copyWith(
+                      style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -1238,7 +1239,7 @@ class _BulkProjectMoveDialogState extends State<BulkProjectMoveDialog> {
                     type: ButtonType.primary,
                     child: Text(
                       'Move',
-                      style: theme.textTheme.bodyMedium?.copyWith(
+                      style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.w600,
                       ),
@@ -1298,7 +1299,7 @@ class _BulkTagsDialogState extends State<BulkTagsDialog> {
             // Header
             Text(
               'Manage Tags',
-              style: theme.textTheme.titleMedium?.copyWith(
+              style: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -1307,7 +1308,7 @@ class _BulkTagsDialogState extends State<BulkTagsDialog> {
             
             Text(
               'Add or remove tags for ${widget.selectedTasks.length} tasks',
-              style: theme.textTheme.bodySmall?.copyWith(
+              style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
               ),
             ),
@@ -1411,7 +1412,7 @@ class _BulkTagsDialogState extends State<BulkTagsDialog> {
                           ),
                           child: Text(
                             tag,
-                            style: theme.textTheme.bodySmall?.copyWith(
+                            style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
                               color: isSelected
                                   ? theme.colorScheme.primary
                                   : theme.colorScheme.onSurface,
@@ -1436,7 +1437,7 @@ class _BulkTagsDialogState extends State<BulkTagsDialog> {
                     type: ButtonType.secondary,
                     child: Text(
                       'Cancel',
-                      style: theme.textTheme.bodyMedium?.copyWith(
+                      style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -1454,7 +1455,7 @@ class _BulkTagsDialogState extends State<BulkTagsDialog> {
                     type: ButtonType.primary,
                     child: Text(
                       'Apply',
-                      style: theme.textTheme.bodyMedium?.copyWith(
+                      style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.w600,
                       ),
@@ -1518,7 +1519,7 @@ class BulkMoreActionsDialog extends StatelessWidget {
             // Header
             Text(
               'More Actions',
-              style: theme.textTheme.titleMedium?.copyWith(
+              style: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -1572,7 +1573,7 @@ class BulkMoreActionsDialog extends StatelessWidget {
                 type: ButtonType.secondary,
                 child: Text(
                   'Close',
-                  style: theme.textTheme.bodyMedium?.copyWith(
+                  style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -1603,13 +1604,13 @@ class BulkMoreActionsDialog extends StatelessWidget {
           ),
           title: Text(
             title,
-            style: theme.textTheme.bodyMedium?.copyWith(
+            style: StandardizedTextStyle.bodyMedium.toTextStyle(context).copyWith(
               fontWeight: FontWeight.w600,
             ),
           ),
           subtitle: Text(
             subtitle,
-            style: theme.textTheme.bodySmall?.copyWith(
+            style: StandardizedTextStyle.bodySmall.toTextStyle(context).copyWith(
               color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
             ),
           ),

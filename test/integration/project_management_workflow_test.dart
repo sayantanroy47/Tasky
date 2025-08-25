@@ -8,8 +8,8 @@ import 'package:task_tracker_app/domain/entities/task_model.dart';
 import 'package:task_tracker_app/domain/entities/task_enums.dart';
 import 'package:task_tracker_app/domain/entities/project.dart';
 import 'package:task_tracker_app/presentation/widgets/project_card.dart';
-import 'package:task_tracker_app/presentation/widgets/project_creation_dialog.dart';
-import 'package:task_tracker_app/presentation/widgets/task_card.dart';
+import 'package:task_tracker_app/presentation/widgets/project_form_dialog.dart';
+import 'package:task_tracker_app/presentation/widgets/advanced_task_card.dart';
 
 void main() {
   group('Project Management Workflow Integration Tests', () {
@@ -46,7 +46,7 @@ void main() {
                       onPressed: () {
                         showDialog(
                           context: tester.element(find.byType(Scaffold)),
-                          builder: (context) => const ProjectCreationDialog(),
+                          builder: (context) => const ProjectFormDialog(),
                         );
                       },
                     ),
@@ -63,7 +63,7 @@ void main() {
         await tester.pump();
 
         // Verify dialog appears
-        expect(find.byType(ProjectCreationDialog), findsOneWidget);
+        expect(find.byType(ProjectFormDialog), findsOneWidget);
 
         // Fill project details
         await tester.enterText(find.byKey(const Key('project_name_field')), 'Mobile App Development');
@@ -87,7 +87,7 @@ void main() {
         await tester.pump();
 
         // Verify project is created and dialog closes
-        expect(find.byType(ProjectCreationDialog), findsNothing);
+        expect(find.byType(ProjectFormDialog), findsNothing);
       });
 
       testWidgets('should assign tasks to project workflow', (tester) async {
@@ -134,7 +134,7 @@ void main() {
                     Expanded(
                       child: ListView(
                         children: unassignedTasks
-                            .map((task) => TaskCard(
+                            .map((task) => AdvancedTaskCard(
                                   key: Key('unassigned_task_${task.id}'),
                                   task: task,
                                   isSelectable: true,
@@ -254,28 +254,28 @@ void main() {
                       ListView(
                         children: tasks
                             .where((t) => t.projectId == '1')
-                            .map((t) => TaskCard(key: Key('task_${t.id}'), task: t))
+                            .map((t) => AdvancedTaskCard(key: Key('task_${t.id}'), task: t))
                             .toList(),
                       ),
                       // Personal Project Tab
                       ListView(
                         children: tasks
                             .where((t) => t.projectId == '2')
-                            .map((t) => TaskCard(key: Key('task_${t.id}'), task: t))
+                            .map((t) => AdvancedTaskCard(key: Key('task_${t.id}'), task: t))
                             .toList(),
                       ),
                       // Learning Project Tab
                       ListView(
                         children: tasks
                             .where((t) => t.projectId == '3')
-                            .map((t) => TaskCard(key: Key('task_${t.id}'), task: t))
+                            .map((t) => AdvancedTaskCard(key: Key('task_${t.id}'), task: t))
                             .toList(),
                       ),
                       // Unassigned Tab
                       ListView(
                         children: tasks
                             .where((t) => t.projectId == null)
-                            .map((t) => TaskCard(key: Key('task_${t.id}'), task: t))
+                            .map((t) => AdvancedTaskCard(key: Key('task_${t.id}'), task: t))
                             .toList(),
                       ),
                     ],

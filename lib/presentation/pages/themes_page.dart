@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/providers/enhanced_theme_provider.dart';
 import '../widgets/glassmorphism_container.dart';
 import '../widgets/standardized_app_bar.dart';
+import '../widgets/standardized_text.dart';
 import '../widgets/theme_background_widget.dart';
 import '../../core/theme/app_theme_data.dart';
 import '../../core/theme/typography_constants.dart';
@@ -229,23 +230,17 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      StandardizedText(
                         'Theme Gallery',
-                        style: TextStyle(
-                          fontSize: TypographyConstants.text2XL,
-                          fontWeight: TypographyConstants.medium,
-                          color: theme.colorScheme.onSurface,
-                          letterSpacing: TypographyConstants.tightLetterSpacing,
-                        ),
+                        style: StandardizedTextStyle.headlineMedium,
+                        color: theme.colorScheme.onSurface,
+                        letterSpacing: TypographyConstants.tightLetterSpacing,
                       ),
                       const SizedBox(height: 4),
-                      Text(
+                      StandardizedText(
                         'Express your style',
-                        style: TextStyle(
-                          fontSize: TypographyConstants.textBase,
-                          color: theme.colorScheme.onSurfaceVariant,
-                          fontWeight: TypographyConstants.medium,
-                        ),
+                        style: StandardizedTextStyle.bodyLarge,
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ],
                   ),
@@ -297,22 +292,16 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        StandardizedText(
                           'Current Theme',
-                          style: TextStyle(
-                            fontSize: TypographyConstants.textSM,
-                            color: theme.colorScheme.onSurfaceVariant,
-                            fontWeight: TypographyConstants.medium,
-                          ),
+                          style: StandardizedTextStyle.bodyMedium,
+                          color: theme.colorScheme.onSurfaceVariant,
                         ),
                         const SizedBox(height: 4),
-                        Text(
+                        StandardizedText(
                           themeState.currentThemeName,
-                          style: TextStyle(
-                            fontSize: TypographyConstants.textLG,
-                            fontWeight: TypographyConstants.medium,
-                            color: theme.colorScheme.onSurface,
-                          ),
+                          style: StandardizedTextStyle.titleLarge,
+                          color: theme.colorScheme.onSurface,
                         ),
                       ],
                     ),
@@ -355,15 +344,12 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
             ),
             const SizedBox(width: 12),
             Expanded(
-              child: Text(
+              child: StandardizedText(
                 _searchQuery.isNotEmpty 
                   ? 'Search: \'$_searchQuery\''
                   : 'Category: ${_selectedCategory ?? 'All'}',
-                style: TextStyle(
-                  fontSize: TypographyConstants.textSM,
-                  fontWeight: TypographyConstants.medium,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
+                style: StandardizedTextStyle.bodyMedium,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
             GlassmorphismContainer(
@@ -569,13 +555,10 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
               // Theme name
               Padding(
                 padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-                child: Text(
+                child: StandardizedText(
                   theme.metadata.name,
-                  style: TextStyle(
-                    fontSize: TypographyConstants.textSM,
-                    fontWeight: TypographyConstants.medium,
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
+                  style: StandardizedTextStyle.bodyMedium,
+                  color: Theme.of(context).colorScheme.onSurface,
                   maxLines: 2,
                   textAlign: TextAlign.center,
                   overflow: TextOverflow.ellipsis,
@@ -643,13 +626,10 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    StandardizedText(
                       theme.metadata.name,
-                      style: TextStyle(
-                        fontSize: TypographyConstants.textLG,
-                        fontWeight: TypographyConstants.medium,
-                        color: Theme.of(context).colorScheme.onSurface,
-                      ),
+                      style: StandardizedTextStyle.titleLarge,
+                      color: Theme.of(context).colorScheme.onSurface,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -750,13 +730,10 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
               padding: const EdgeInsets.all(24),
               child: Column(
                 children: [
-                  Text(
+                  StandardizedText(
                     'Theme Preview',
-                    style: TextStyle(
-                      fontSize: TypographyConstants.text2XL,
-                      fontWeight: TypographyConstants.medium,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
+                    style: StandardizedTextStyle.headlineMedium,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                   
                   const SizedBox(height: 16),
@@ -779,13 +756,10 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
                   
                   const SizedBox(height: 16),
                   
-                  Text(
+                  StandardizedText(
                     _previewTheme!.metadata.name,
-                    style: TextStyle(
-                      fontSize: TypographyConstants.textXL,
-                      fontWeight: TypographyConstants.medium,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
+                    style: StandardizedTextStyle.headlineSmall,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                   
                   const SizedBox(height: 24),
