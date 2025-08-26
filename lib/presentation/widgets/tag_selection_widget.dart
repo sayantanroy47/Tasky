@@ -68,13 +68,19 @@ class _TagSelectionWidgetState extends ConsumerState<TagSelectionWidget> {
         if (!widget.isCompact) ...[
           Row(
             children: [
-              const StandardizedText(
-                'Tags',
-                style: StandardizedTextStyle.titleMedium,
+              const Expanded(
+                child: StandardizedText(
+                  'Tags',
+                  style: StandardizedTextStyle.titleMedium,
+                ),
               ),
-              const Spacer(),
               if (widget.allowCreate)
                 TextButton.icon(
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
                   onPressed: () => setState(() => _showCreateForm = !_showCreateForm),
                   icon: Icon(
                     _showCreateForm ? PhosphorIcons.x() : PhosphorIcons.plus(),
@@ -214,7 +220,12 @@ class _TagSelectionWidgetState extends ConsumerState<TagSelectionWidget> {
               shape: BoxShape.circle,
               border: isSelected
                   ? Border.all(color: theme.colorScheme.primary, width: 3)
-                  : Border.all(color: theme.colorScheme.outline.withValues(alpha: 0.3)),
+                  : Border.all(
+                      color: theme.colorScheme.outline.withValues(
+                        alpha: theme.brightness == Brightness.light ? 0.6 : 0.3
+                      ),
+                      width: 1.5
+                    ),
             ),
             child: isSelected
                 ? Icon(

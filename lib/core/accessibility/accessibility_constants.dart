@@ -52,6 +52,7 @@ class AccessibilityConstants {
   static const Color highContrastText = Color(0xFFFFFFFF);
   static const Color highContrastPrimary = Color(0xFF66BBFF);
   static const Color highContrastError = Color(0xFFFF6B6B);
+  static const Color highContrastCritical = Color(0xFFFF1744); // Red for critical/urgent priority
   static const Color highContrastSuccess = Color(0xFF51CF66);
   static const Color highContrastWarning = Color(0xFFFFD93D);
 }

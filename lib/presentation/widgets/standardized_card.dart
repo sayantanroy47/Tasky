@@ -157,11 +157,15 @@ class StandardizedCard extends StatelessWidget {
 
   /// Tertiary accent card - highlights special content with tertiary border only
   Widget _buildTertiaryAccentCard(BuildContext context, ThemeData theme) {
+    final isLight = theme.brightness == Brightness.light;
+    final borderAlpha = isLight ? 0.5 : 0.3; // Higher alpha for light themes
+    final borderWidth = isLight ? 1.0 : 0.5; // Thicker border for light themes
+    
     return Container(
       decoration: BoxDecoration(
         border: Border.all(
-          color: context.cardTertiaryAccentColor.withValues(alpha: 0.3),
-          width: 0.5,
+          color: context.cardTertiaryAccentColor.withValues(alpha: borderAlpha),
+          width: borderWidth,
         ),
         borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       ),
@@ -171,11 +175,15 @@ class StandardizedCard extends StatelessWidget {
 
   /// Tertiary success card - for completion states with success border only
   Widget _buildTertiarySuccessCard(BuildContext context, ThemeData theme) {
+    final isLight = theme.brightness == Brightness.light;
+    final borderAlpha = isLight ? 0.6 : 0.4; // Higher alpha for light themes
+    final borderWidth = isLight ? 1.0 : 0.5; // Thicker border for light themes
+    
     return Container(
       decoration: BoxDecoration(
         border: Border.all(
-          color: context.successColor.withValues(alpha: 0.4),
-          width: 0.5,
+          color: context.successColor.withValues(alpha: borderAlpha),
+          width: borderWidth,
         ),
         borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
       ),
@@ -185,12 +193,16 @@ class StandardizedCard extends StatelessWidget {
 
   /// Tertiary container card - subtle tertiary border for layering
   Widget _buildTertiaryContainerCard(BuildContext context, ThemeData theme) {
+    final isLight = theme.brightness == Brightness.light;
+    final borderAlpha = isLight ? 0.4 : 0.2; // Higher alpha for light themes
+    final borderWidth = isLight ? 1.0 : 0.5; // Thicker border for light themes
+    
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
         border: Border.all(
-          color: context.tertiaryColor.withValues(alpha: 0.2),
-          width: 0.5,
+          color: context.tertiaryColor.withValues(alpha: borderAlpha),
+          width: borderWidth,
         ),
       ),
       child: _buildCardInner(theme),
@@ -230,7 +242,10 @@ class StandardizedCard extends StatelessWidget {
     if (accentColor != null) {
       return accentColor!.withValues(alpha: 0.3);
     }
-    return theme.colorScheme.outline.withValues(alpha: 0.3);
+    // Fix light theme border visibility - use higher alpha for light themes
+    final isLight = theme.brightness == Brightness.light;
+    final borderAlpha = isLight ? 0.8 : 0.3; // Much higher alpha for light themes for better contrast
+    return theme.colorScheme.outline.withValues(alpha: borderAlpha);
   }
 }
 

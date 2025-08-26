@@ -273,7 +273,7 @@ class GlassmorphismContainer extends StatelessWidget {
             : AccessibilityConstants.highContrastBackground.withValues(alpha: 0.95))
         : (isDarkTheme 
             ? Colors.white.withValues(alpha: effectiveOpacityValue)
-            : Colors.black.withValues(alpha: effectiveOpacityValue * 1.0));
+            : Colors.white.withValues(alpha: effectiveOpacityValue * 0.8)); // Use white with reduced alpha for light themes
     
     final defaultBorderColor = effectiveHighContrast 
         ? (isDarkTheme 
@@ -281,7 +281,7 @@ class GlassmorphismContainer extends StatelessWidget {
             : AccessibilityConstants.highContrastText.withValues(alpha: 0.6))
         : (isDarkTheme 
             ? Colors.white.withValues(alpha: 0.45)
-            : Colors.black.withValues(alpha: 0.35));
+            : Colors.black.withValues(alpha: 0.65)); // Darker border for better contrast in light themes
     
     // Increase border width for high contrast mode
     final effectiveBorderWidth = effectiveHighContrast ? (borderWidth * 2.0).clamp(1.0, 3.0) : borderWidth;

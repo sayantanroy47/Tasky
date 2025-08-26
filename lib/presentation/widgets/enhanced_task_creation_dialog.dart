@@ -16,6 +16,9 @@ import 'standardized_spacing.dart';
 import 'standardized_form_widgets.dart';
 import 'standardized_navigation.dart';
 import 'tag_selection_widget.dart';
+import 'location_task_section.dart';
+import '../../services/location/location_models.dart';
+import '../providers/location_providers.dart';
 
 /// Category option for task categorization
 class CategoryOption {
@@ -85,6 +88,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
   String _notes = '';
   bool _isLoading = false;
   Set<String> _selectedCategories = {};
+  LocationData? _selectedLocation;
   
   final _tagsController = TextEditingController();
   final _notesController = TextEditingController();
@@ -324,6 +328,17 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
             
             // Recurring task section
             _buildRecurrenceSection(Theme.of(context)),
+            StandardizedGaps.vertical(SpacingSize.phi2),
+            
+            // Location section
+            LocationTaskSection(
+              initialLocation: _selectedLocation,
+              onLocationChanged: (location) {
+                setState(() {
+                  _selectedLocation = location;
+                });
+              },
+            ),
             StandardizedGaps.vertical(SpacingSize.phi2),
             
             // Additional notes
@@ -1089,6 +1104,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
         }
       }
 
+
       final task = widget.editingTask != null
         ? TaskModel(
             id: widget.editingTask!.id,
@@ -1102,7 +1118,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
             createdAt: widget.editingTask!.createdAt,
             updatedAt: DateTime.now(),
             status: widget.editingTask!.status,
-            tags: widget.editingTask!.tags,
+            tagIds: widget.editingTask!.tagIds,
             subTasks: widget.editingTask!.subTasks,
             locationTrigger: widget.editingTask!.locationTrigger,
             dependencies: widget.editingTask!.dependencies,
@@ -1119,7 +1135,12 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
             dueDate: finalDueDate,
             recurrence: _recurrencePattern,
             tagIds: _selectedTags.map((tag) => tag.id).toList(), // Use real tag IDs
-            metadata: metadata.isNotEmpty ? metadata : const {},
+            metadata: {
+              ...metadata,
+              // Location metadata
+              if (_selectedLocation != null) 'hasLocation': true,
+              if (_selectedLocation != null) 'locationData': _selectedLocation!.toJson(),
+            },
           );
       
       if (widget.editingTask != null) {
@@ -1131,6 +1152,33 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
         final result = await ref.read(taskOperationsProvider).createTask(task, context: context);
         if (!result.isSuccess) {
           throw Exception(result.error ?? 'Failed to create task');
+        }
+      }
+      
+      // Add location trigger if location is set (for both create and update)
+      if (_selectedLocation != null) {
+        try {
+          final geofence = GeofenceData(
+            id: '${DateTime.now().millisecondsSinceEpoch}_geofence',
+            name: 'Task: ${task.title}',
+            latitude: _selectedLocation!.latitude,
+            longitude: _selectedLocation!.longitude,
+            radius: 300.0, // 300 meters as requested
+            isActive: true,
+            type: GeofenceType.enter,
+            createdAt: DateTime.now(),
+          );
+          
+          final locationTaskService = ref.read(locationTaskServiceProvider);
+          await locationTaskService.addLocationTriggerToTask(
+            taskId: task.id,
+            geofence: geofence,
+          );
+          
+          debugPrint('🔍 Location trigger added for task ${task.id}');
+        } catch (e) {
+          debugPrint('🚨 Error adding location trigger: $e');
+          // Don't fail the task creation if location trigger fails
         }
       }
       

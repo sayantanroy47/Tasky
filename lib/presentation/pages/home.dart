@@ -19,6 +19,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import '../../services/welcome_message_service.dart';
 import '../providers/profile_providers.dart';
 import '../providers/project_providers.dart';
+import '../providers/tag_providers.dart';
 import '../providers/task_provider.dart';
 import '../providers/task_providers.dart';
 import '../widgets/audio_indicator_widget.dart';
@@ -33,6 +34,7 @@ import '../widgets/standardized_icons.dart' show StandardizedIcon, StandardizedI
 import '../widgets/standardized_spacing.dart';
 import '../widgets/standardized_colors.dart';
 import '../widgets/standardized_text.dart';
+import '../widgets/tag_chip.dart';
 import 'analytics_page.dart';
 
 /// Futuristic Material 3 Home Page
@@ -254,7 +256,7 @@ class _HomePageState extends ConsumerState<HomePage> with SingleTickerProviderSt
                         }
 
                         return ListView.builder(
-                          padding: const EdgeInsets.only(bottom: 120), // Bottom navigation bar clearance (80px + 40px extra)
+                          padding: const EdgeInsets.only(bottom: 160), // Bottom navigation bar + FAB clearance (80px + 72px FAB + 8px buffer)
                           itemCount: filteredTasks.length,
                           itemBuilder: (context, index) {
                             final task = filteredTasks[index];
@@ -1071,7 +1073,7 @@ Shared from Tasky - Task Management App
         });
 
         return ListView.builder(
-          padding: const EdgeInsets.only(bottom: 120), // Bottom navigation bar clearance (80px + 40px extra)
+          padding: const EdgeInsets.only(bottom: 160), // Bottom navigation bar + FAB clearance (80px + 72px FAB + 8px buffer)
           itemCount: tasks.length,
           itemBuilder: (context, index) {
             final task = tasks[index];
@@ -1102,7 +1104,7 @@ Shared from Tasky - Task Management App
         });
 
         return ListView.builder(
-          padding: const EdgeInsets.only(bottom: 120), // Bottom navigation bar clearance (80px + 40px extra)
+          padding: const EdgeInsets.only(bottom: 160), // Bottom navigation bar + FAB clearance (80px + 72px FAB + 8px buffer)
           itemCount: projects.length,
           itemBuilder: (context, index) {
             final project = projects[index];
@@ -1146,7 +1148,7 @@ Shared from Tasky - Task Management App
         }
 
         return ListView.builder(
-          padding: const EdgeInsets.only(bottom: 120), // Bottom navigation bar clearance (80px + 40px extra)
+          padding: const EdgeInsets.only(bottom: 160), // Bottom navigation bar + FAB clearance (80px + 72px FAB + 8px buffer)
           itemCount: futureTasks.length,
           itemBuilder: (context, index) {
             final task = futureTasks[index];
@@ -1212,13 +1214,13 @@ Shared from Tasky - Task Management App
                 ),
                 const SizedBox(width: SpacingTokens.phi1), // Golden ratio spacing
                 // Category icon container second
-                if (task.tags.isNotEmpty) ...[
+                if (task.tagIds.isNotEmpty) ...[
                   Builder(builder: (context) {
-                    debugPrint('🎨 Showing category icon for task "${task.title}" with tags: ${task.tags}');
+                    debugPrint('🎨 Showing category icon for task "${task.title}" with tags: ${task.tagIds}');
                     return const SizedBox.shrink();
                   }),
                   CategoryUtils.buildCategoryIconContainer(
-                    category: task.tags.first,
+                    category: task.tagIds.first,
                     size: 32,
                     theme: theme,
                     iconSizeRatio: 0.5,
@@ -1226,7 +1228,7 @@ Shared from Tasky - Task Management App
                   const SizedBox(width: SpacingTokens.phi1), // Golden ratio spacing
                 ] else ...[
                   Builder(builder: (context) {
-                    debugPrint('❌ No category icon for task "${task.title}" - tags: ${task.tags}');
+                    debugPrint('❌ No category icon for task "${task.title}" - tags: ${task.tagIds}');
                     return const SizedBox.shrink();
                   }),
                 ],
@@ -1504,6 +1506,37 @@ Shared from Tasky - Task Management App
                       ),
                     ),
                   ),
+                  // Project tags
+                  if (project.tagIds.isNotEmpty) ...[
+                    const SizedBox(height: 6),
+                    Consumer(
+                      builder: (context, ref, child) {
+                        final tagsProvider = ref.watch(tagsByIdsProvider(project.tagIds));
+                        return tagsProvider.when(
+                          data: (tags) => TagChipList(
+                            tags: tags,
+                            chipSize: TagChipSize.small,
+                            maxChips: 2, // Compact for project cards
+                            spacing: 3.0,
+                            onTagTap: (_) {}, // No action on tap for project cards
+                          ),
+                          loading: () => const SizedBox(
+                            height: 16,
+                            child: Row(
+                              children: [
+                                SizedBox(
+                                  width: 12,
+                                  height: 12,
+                                  child: CircularProgressIndicator(strokeWidth: 1),
+                                ),
+                              ],
+                            ),
+                          ),
+                          error: (_, __) => const SizedBox.shrink(),
+                        );
+                      },
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -1585,7 +1618,7 @@ Shared from Tasky - Task Management App
   /// Build tasks loading state
   Widget _buildTasksLoadingState(ThemeData theme) {
     return ListView.builder(
-      padding: const EdgeInsets.only(bottom: 120), // Bottom navigation bar clearance (80px + 40px extra)
+      padding: const EdgeInsets.only(bottom: 160), // Bottom navigation bar + FAB clearance (80px + 72px FAB + 8px buffer)
       itemCount: 3,
       itemBuilder: (context, index) => GlassmorphismContainer(
         level: GlassLevel.background,
@@ -1726,7 +1759,7 @@ Shared from Tasky - Task Management App
   /// Build projects loading state
   Widget _buildProjectsLoadingState(ThemeData theme) {
     return ListView.builder(
-      padding: const EdgeInsets.only(bottom: 120), // Bottom navigation bar clearance (80px + 40px extra)
+      padding: const EdgeInsets.only(bottom: 160), // Bottom navigation bar + FAB clearance (80px + 72px FAB + 8px buffer)
       itemCount: 3,
       itemBuilder: (context, index) => GlassmorphismContainer(
         level: GlassLevel.background,

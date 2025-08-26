@@ -272,14 +272,14 @@ class _KanbanKeyboardHandlerState extends State<KanbanKeyboardHandler> {
         return KeyEventResult.handled;
         
       case LogicalKeyboardKey.keyM:
-        if (event.isControlPressed || event.isMetaPressed) {
+        if (HardwareKeyboard.instance.isControlPressed || HardwareKeyboard.instance.isMetaPressed) {
           _moveTaskToNextColumn();
           return KeyEventResult.handled;
         }
         break;
         
       case LogicalKeyboardKey.keyC:
-        if (event.isControlPressed || event.isMetaPressed) {
+        if (HardwareKeyboard.instance.isControlPressed || HardwareKeyboard.instance.isMetaPressed) {
           _completeCurrentTask();
           return KeyEventResult.handled;
         }

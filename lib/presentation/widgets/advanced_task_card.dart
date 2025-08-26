@@ -381,7 +381,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with Ticker
         // Priority indicator first (always show)
         _buildPriorityIndicator(theme, size: 20),
         StandardizedGaps.horizontal(SpacingSize.xs),
-        // Category icon container
+        // Category icon container (from legacy tags system)
         if (widget.task.tagIds.isNotEmpty) ...[
           CategoryUtils.buildCategoryIconContainer(
             category: widget.task.tagIds.first,
@@ -795,7 +795,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with Ticker
         width: 60,
         child: Center(child: CircularProgressIndicator(strokeWidth: 1)),
       ),
-      error: (_, __) => const SizedBox.shrink(), // Hide on error
+      error: (error, __) => const SizedBox.shrink(), // Hide on error
     );
   }
 

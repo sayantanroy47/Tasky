@@ -5,6 +5,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../core/theme/typography_constants.dart';
 import '../../core/design_system/design_tokens.dart';
+import '../../core/validation/form_validators.dart';
 import 'standardized_animations.dart';
 import '../../domain/entities/project.dart';
 import '../../services/ui/mobile_gesture_service.dart';
@@ -399,10 +400,10 @@ class _MobileProjectFormState extends ConsumerState<MobileProjectForm>
             semanticLabel: 'Project name input field',
             prefixIcon: Icon(PhosphorIcons.folder()),
             isRequired: true,
-            validator: FieldValidator.compose([
-              FieldValidator.required('Please enter a project name'),
-              FieldValidator.minLength(3, 'Name must be at least 3 characters'),
-            ]),
+            validator: ValidatorBuilder('Project name')
+              .required()
+              .minLength(3)
+              .build(),
             onChanged: (value) {
               setState(() {}); // Trigger rebuild for validation
             },
@@ -950,25 +951,28 @@ class _MobileProjectFormState extends ConsumerState<MobileProjectForm>
     final navigator = widget.isFullScreen ? Navigator.of(context) : null;
 
     try {
-      final projectData = {
-        'name': _nameController.text.trim(),
-        'description': _descriptionController.text.trim().isEmpty 
-            ? null 
-            : _descriptionController.text.trim(),
-        'color': _selectedColor,
-        'deadline': _selectedDeadline,
-      };
+      // Project data is now handled directly in method calls
 
       if (widget.project != null) {
         // Update existing project
-        await ref.read(projectsProvider.notifier).updateProject(
-          widget.project!.id,
-          projectData,
+        final updatedProject = widget.project!.copyWith(
+          name: _nameController.text,
+          description: _descriptionController.text.isEmpty ? null : _descriptionController.text,
+          color: _selectedColor,
+          tagIds: const [],
+          deadline: _selectedDeadline,
         );
+        await ref.read(projectsProvider.notifier).updateProject(updatedProject);
         _showSnackBar('Project updated successfully!');
       } else {
         // Create new project
-        await ref.read(projectsProvider.notifier).createProject(projectData);
+        await ref.read(projectsProvider.notifier).createProject(
+          name: _nameController.text,
+          description: _descriptionController.text.isEmpty ? null : _descriptionController.text,
+          color: _selectedColor,
+          tagIds: const [],
+          deadline: _selectedDeadline,
+        );
         _showSnackBar('Project created successfully!');
       }
 

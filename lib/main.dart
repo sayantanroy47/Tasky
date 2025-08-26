@@ -214,8 +214,8 @@ void _performFastStartupOptimizations() {
         statusBarColor: Colors.transparent,
         systemNavigationBarColor: Colors.transparent,
         systemNavigationBarDividerColor: Colors.transparent,
-        systemNavigationBarIconBrightness: Brightness.light,
-        statusBarIconBrightness: Brightness.light,
+        systemNavigationBarIconBrightness: Brightness.dark, // Changed to dark for better visibility
+        statusBarIconBrightness: Brightness.dark, // Changed to dark for better visibility
         statusBarBrightness: Brightness.dark, // For iOS
       ),
     );
@@ -231,10 +231,10 @@ void _performFastStartupOptimizations() {
           DeviceOrientation.portraitDown,
         ]);
         
-        // Hide navigation bar but keep status bar visible (can take 100ms+)
+        // Hide system navigation bar, keep status bar visible
         await SystemChrome.setEnabledSystemUIMode(
           SystemUiMode.immersiveSticky,
-          overlays: [SystemUiOverlay.top],
+          overlays: [SystemUiOverlay.top], // Only show status bar
         );
         
         if (kDebugMode) {
@@ -282,7 +282,7 @@ class _TaskTrackerAppState extends ConsumerState<TaskTrackerApp> with WidgetsBin
   void _enforceUIMode() {
     SystemChrome.setEnabledSystemUIMode(
       SystemUiMode.immersiveSticky,
-      overlays: [SystemUiOverlay.top],
+      overlays: [SystemUiOverlay.top], // Only show status bar
     );
   }
   
@@ -297,6 +297,8 @@ class _TaskTrackerAppState extends ConsumerState<TaskTrackerApp> with WidgetsBin
             const SystemUiOverlayStyle(
               statusBarColor: Colors.transparent,
               systemNavigationBarColor: Colors.transparent,
+              systemNavigationBarIconBrightness: Brightness.dark,
+              statusBarIconBrightness: Brightness.dark,
             ),
           );
           

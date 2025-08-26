@@ -664,6 +664,7 @@ List<TaskModel> _createTestTasks() {
       priority: TaskPriority.high,
       tags: const ['test', 'urgent'],
       dueDate: now.add(const Duration(days: 1)),
+    ),
     
     TaskModel.create(
       title: 'Test Task 2',
@@ -671,6 +672,7 @@ List<TaskModel> _createTestTasks() {
       priority: TaskPriority.medium,
       tags: const ['test'],
       dueDate: now.add(const Duration(days: 3)),
+    ),
     
     TaskModel.create(
       title: 'Test Task 3',
@@ -688,5 +690,6 @@ List<TaskModel> _createTestTasks() {
       priority: TaskPriority.urgent,
       tags: const ['overdue'],
       dueDate: now.subtract(const Duration(days: 5)),
+    ),
   ];
 }

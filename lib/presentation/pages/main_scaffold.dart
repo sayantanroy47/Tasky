@@ -18,7 +18,6 @@ import '../widgets/theme_background_widget.dart';
 import '../widgets/standardized_spacing.dart';
 import 'calendar_page.dart';
 import 'home.dart';
-import 'location_task_creation_page.dart';
 import 'manual_task_creation_page.dart';
 import 'projects_page.dart';
 import 'settings_page.dart';
@@ -89,6 +88,7 @@ class MainScaffold extends ConsumerWidget {
     return Scaffold(
       backgroundColor: Colors.transparent,
       extendBodyBehindAppBar: true, // Allow background behind app bar
+      resizeToAvoidBottomInset: false, // Prevent keyboard from affecting layout
       body: IndexedStack(
         index: selectedIndex,
         children: pages,
@@ -446,37 +446,45 @@ class MainScaffold extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Enhanced icon with perfectly centered selection rectangle (REQ 0 alignment fix)
+                // Enhanced icon with brighter circular border for selection
                 Flexible(
                   child: Container(
-                    width: 36,
-                    height: 36,
+                    width: 40,
+                    height: 40,
                     alignment: Alignment.center,
-                    child: AnimatedContainer(
+                    child: AnimatedScale(
+                      scale: isSelected ? 1.15 : 1.0,
                       duration: const Duration(milliseconds: 200),
-                      width: 32,
-                      height: 32,
-                      decoration: isSelected
-                          ? BoxDecoration(
-                              color: theme.colorScheme.primary.withValues(alpha: 0.15),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: theme.colorScheme.primary.withValues(alpha: 0.3),
-                                width: 1.5,
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: theme.colorScheme.primary.withValues(alpha: 0.25),
-                                  blurRadius: 8,
-                                  spreadRadius: 0,
-                                ),
-                              ],
-                            )
-                          : null,
-                      child: Icon(
-                        isSelected ? item.selectedIcon : item.icon,
-                        size: 24,
-                        color: isSelected ? theme.colorScheme.onPrimary : theme.colorScheme.onSurfaceVariant,
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          color: isSelected 
+                            ? theme.colorScheme.primary.withValues(alpha: 0.2)
+                            : Colors.transparent,
+                          shape: BoxShape.circle, // Always circular
+                          border: Border.all(
+                            color: isSelected 
+                              ? theme.colorScheme.primary.withValues(alpha: 0.8)
+                              : Colors.transparent,
+                            width: 1.8, // Thinner border as requested
+                          ),
+                          boxShadow: isSelected ? [
+                            BoxShadow(
+                              color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                              blurRadius: 8,
+                              spreadRadius: 1,
+                            ),
+                          ] : [],
+                        ),
+                        child: Icon(
+                          isSelected ? item.selectedIcon : item.icon,
+                          size: 22,
+                          color: isSelected 
+                            ? theme.colorScheme.primary // Use primary color for both themes
+                            : theme.colorScheme.onSurfaceVariant,
+                        ),
                       ),
                     ),
                   ),
@@ -554,26 +562,6 @@ class MainScaffold extends ConsumerWidget {
                         context,
                         MaterialPageRoute(
                           builder: (context) => const VoiceOnlyCreationPage(),
-                        ),
-                      );
-                    },
-                  ),
-
-                  StandardizedGaps.vertical(SpacingSize.sm),
-
-                  _buildTaskCreationOption(
-                    context: context,
-                    icon: PhosphorIcons.mapPin(),
-                    iconColor: Colors.blue,
-                    title: 'Location-Based',
-                    subtitle: 'Create task with geofencing alerts',
-                    onTap: () async {
-                      Navigator.pop(context);
-
-                      await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const LocationTaskCreationPage(),
                         ),
                       );
                     },

@@ -4,11 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/repositories/project_template_repository_impl.dart';
 import '../../domain/entities/project.dart';
 import '../../domain/entities/project_template.dart' as entities;
+import '../../domain/entities/project_template.dart' show ProjectTemplateType;
 import '../../domain/repositories/project_template_repository.dart';
-import '../../services/database/database.dart' as db;
 import '../../services/project_template_service.dart';
 import '../../core/providers/core_providers.dart';
-import 'project_providers.dart';
 
 part 'project_template_providers.g.dart';
 

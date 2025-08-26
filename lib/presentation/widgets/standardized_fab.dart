@@ -31,7 +31,7 @@ class StandardizedFAB extends StatelessWidget {
     final size = isLarge ? 72.0 : 56.0;
     final iconSize = isLarge ? 28.0 : 24.0;
     
-    final fabColors = _getFABColors(colors, colorType);
+    final fabColors = _getFABColors(theme, colors, colorType);
     
     return Container(
       decoration: const BoxDecoration(
@@ -82,13 +82,15 @@ class StandardizedFAB extends StatelessWidget {
   }
   
   /// Get colors for different FAB types
-  _FABColors _getFABColors(StandardizedColors colors, FABColorType colorType) {
+  _FABColors _getFABColors(ThemeData theme, StandardizedColors colors, FABColorType colorType) {
     switch (colorType) {
       case FABColorType.primary:
         return _FABColors(
           baseColor: colors.interactive,
           accentColor: colors.fabTertiary, // Enhanced: Use dedicated FAB tertiary color
-          iconColor: colors.iconOnPrimary,
+          iconColor: theme.brightness == Brightness.dark 
+            ? colors.iconOnPrimary 
+            : theme.colorScheme.onPrimary, // Use onPrimary (white) for light theme contrast
         );
       case FABColorType.secondary:
         return _FABColors(
