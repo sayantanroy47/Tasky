@@ -393,7 +393,7 @@ class DemonSlayerFlameTheme {
       taskMeta: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.taskMeta,
-        fontWeight: TypographyConstants.regular,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.normalLetterSpacing,
         height: TypographyConstants.normalLineHeight,
         color: colors.onSurfaceVariant,
@@ -401,7 +401,7 @@ class DemonSlayerFlameTheme {
       cardTitle: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.titleSmall,
-        fontWeight: TypographyConstants.medium,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.normalLetterSpacing,
         height: TypographyConstants.normalLineHeight,
         color: colors.onSurface,
@@ -409,7 +409,7 @@ class DemonSlayerFlameTheme {
       cardSubtitle: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.bodySmall,
-        fontWeight: TypographyConstants.regular,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.normalLetterSpacing,
         height: TypographyConstants.normalLineHeight,
         color: colors.onSurfaceVariant,
@@ -417,7 +417,7 @@ class DemonSlayerFlameTheme {
       buttonText: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.buttonText,
-        fontWeight: TypographyConstants.medium,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.normalLetterSpacing,
         height: TypographyConstants.normalLineHeight,
         color: colors.onPrimary,
@@ -425,7 +425,7 @@ class DemonSlayerFlameTheme {
       inputText: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.inputText,
-        fontWeight: TypographyConstants.regular,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.normalLetterSpacing,
         height: TypographyConstants.normalLineHeight,
         color: colors.onSurface,
@@ -433,7 +433,7 @@ class DemonSlayerFlameTheme {
       appBarTitle: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.appBarTitle,
-        fontWeight: TypographyConstants.medium,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.normalLetterSpacing,
         height: TypographyConstants.normalLineHeight,
         color: colors.onSurface,
@@ -441,7 +441,7 @@ class DemonSlayerFlameTheme {
       navigationLabel: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.navigationLabel,
-        fontWeight: TypographyConstants.medium,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.normalLetterSpacing,
         height: TypographyConstants.normalLineHeight,
         color: colors.onSurface,

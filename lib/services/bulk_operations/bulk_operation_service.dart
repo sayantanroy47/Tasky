@@ -54,6 +54,7 @@ class BulkOperationService {
     bool enableUndo = true,
   }) async {
     final operationId = const Uuid().v4();
+    final startTime = DateTime.now();
     
     return _performanceService.trackOperation(
       'bulk_delete_tasks',
@@ -96,6 +97,7 @@ class BulkOperationService {
     bool enableUndo = true,
   }) async {
     final operationId = const Uuid().v4();
+    final startTime = DateTime.now();
     
     return _performanceService.trackOperation(
       'bulk_update_status',
@@ -143,6 +145,7 @@ class BulkOperationService {
     bool enableUndo = true,
   }) async {
     final operationId = const Uuid().v4();
+    final startTime = DateTime.now();
     
     return _performanceService.trackOperation(
       'bulk_update_priority',
@@ -188,6 +191,7 @@ class BulkOperationService {
     bool enableUndo = true,
   }) async {
     final operationId = const Uuid().v4();
+    final startTime = DateTime.now();
     
     return _performanceService.trackOperation(
       'bulk_move_to_project',
@@ -233,6 +237,7 @@ class BulkOperationService {
     bool enableUndo = true,
   }) async {
     final operationId = const Uuid().v4();
+    final startTime = DateTime.now();
     
     return _performanceService.trackOperation(
       'bulk_add_tags',
@@ -288,6 +293,7 @@ class BulkOperationService {
     bool enableUndo = true,
   }) async {
     final operationId = const Uuid().v4();
+    final startTime = DateTime.now();
     
     return _performanceService.trackOperation(
       'bulk_remove_tags',
@@ -345,6 +351,7 @@ class BulkOperationService {
     bool enableUndo = true,
   }) async {
     final operationId = const Uuid().v4();
+    final startTime = DateTime.now();
     
     return _performanceService.trackOperation(
       'bulk_reschedule',
@@ -423,6 +430,7 @@ class BulkOperationService {
     bool showNotification = true,
   }) async {
     final operationId = const Uuid().v4();
+    final startTime = DateTime.now();
     
     return _performanceService.trackOperation(
       'bulk_duplicate',

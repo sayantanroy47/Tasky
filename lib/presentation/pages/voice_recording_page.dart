@@ -36,7 +36,7 @@ class RecordingSession {
   final List<Recording> recordings = [];
 
   String get combinedTranscription {
-    return recordings.map((r) => r.transcription).where((t) => t.isNotEmpty).join('\n\n');
+    return recordings.map((r) => r.transcription).where((t) => t.isNotEmpty).join('\n');
   }
 
   Duration get totalDuration {

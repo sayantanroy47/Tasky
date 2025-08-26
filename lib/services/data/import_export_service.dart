@@ -134,6 +134,8 @@ class ImportExportService {
         return _generateTextExport(tasks, options);
       case ExportFormat.pdf:
         throw UnsupportedError('PDF export not yet implemented');
+      case ExportFormat.excel:
+        throw UnsupportedError('Excel export not yet implemented');
     }
   }
   

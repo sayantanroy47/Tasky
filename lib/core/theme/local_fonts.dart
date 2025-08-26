@@ -8,10 +8,19 @@ class LocalFonts {
   /// Font family mappings for themes
   static const Map<String, String> _fontFamilyMap = {
     'Fira Code': 'FiraCode',
-    'JetBrains Mono': 'JetBrainsMono', // Now using actual JetBrains Mono font
+    'JetBrains Mono': 'JetBrainsMono',
     'Orbitron': 'Orbitron',
     'Montserrat': 'Montserrat',
     'Roboto': 'Roboto',
+    'Cinzel': 'Cinzel',
+    'Exo 2': 'Exo2',
+    'Quicksand': 'Quicksand',
+    'Saira': 'Saira',
+    'Sansation': 'Sansation',
+    'Space Mono': 'SpaceMono',
+    'Merriweather': 'Merriweather', // Will fallback to Montserrat until added
+    'Google Sans': 'Montserrat', // Google Sans fallback to Montserrat
+    'Google Sans Text': 'Montserrat', // Google Sans Text fallback to Montserrat
   };
 
   /// Default fallback font family
@@ -64,6 +73,12 @@ class LocalFonts {
     'Orbitron', 
     'Roboto',
     'Montserrat',
+    'Cinzel',
+    'Exo2',
+    'Quicksand',
+    'Saira',
+    'Sansation',
+    'SpaceMono',
   ];
 
   /// Get the local font family name for a given font

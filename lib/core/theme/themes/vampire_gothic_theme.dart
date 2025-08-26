@@ -399,7 +399,7 @@ class VampireGothicTheme {
       taskMeta: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.taskMeta,
-        fontWeight: FontWeight.w400,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.normalLetterSpacing,
         height: TypographyConstants.relaxedLineHeight,
         color: colors.onBackground,
@@ -407,7 +407,7 @@ class VampireGothicTheme {
       cardTitle: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.titleSmall,
-        fontWeight: FontWeight.w500,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.normalLetterSpacing * 1.1,
         height: TypographyConstants.relaxedLineHeight,
         color: colors.onBackground,
@@ -415,7 +415,7 @@ class VampireGothicTheme {
       cardSubtitle: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.bodySmall,
-        fontWeight: FontWeight.w400,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.normalLetterSpacing,
         height: TypographyConstants.relaxedLineHeight,
         color: colors.onBackground,
@@ -423,7 +423,7 @@ class VampireGothicTheme {
       buttonText: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.buttonText,
-        fontWeight: FontWeight.w600,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.wideLetterSpacing * 1.2,
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
@@ -431,7 +431,7 @@ class VampireGothicTheme {
       inputText: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.inputText,
-        fontWeight: FontWeight.w400,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.normalLetterSpacing,
         height: TypographyConstants.relaxedLineHeight,
         color: colors.onBackground,
@@ -439,7 +439,7 @@ class VampireGothicTheme {
       appBarTitle: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.appBarTitle,
-        fontWeight: FontWeight.w500,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.normalLetterSpacing * 1.1,
         height: TypographyConstants.relaxedLineHeight,
         color: colors.onBackground,
@@ -447,7 +447,7 @@ class VampireGothicTheme {
       navigationLabel: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.navigationLabel,
-        fontWeight: FontWeight.w500,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.normalLetterSpacing,
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,

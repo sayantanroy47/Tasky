@@ -394,7 +394,7 @@ class MatrixTheme {
       taskMeta: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.taskMeta,
-        fontWeight: TypographyConstants.regular,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.normalLetterSpacing,
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
@@ -402,7 +402,7 @@ class MatrixTheme {
       cardTitle: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.titleSmall,
-        fontWeight: TypographyConstants.medium,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.normalLetterSpacing,
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
@@ -410,7 +410,7 @@ class MatrixTheme {
       cardSubtitle: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.bodySmall,
-        fontWeight: TypographyConstants.regular,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.normalLetterSpacing,
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
@@ -418,7 +418,7 @@ class MatrixTheme {
       buttonText: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.buttonText,
-        fontWeight: TypographyConstants.medium,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.normalLetterSpacing,
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
@@ -426,7 +426,7 @@ class MatrixTheme {
       inputText: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.inputText,
-        fontWeight: TypographyConstants.regular,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.normalLetterSpacing,
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
@@ -434,7 +434,7 @@ class MatrixTheme {
       appBarTitle: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.appBarTitle,
-        fontWeight: TypographyConstants.medium,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.normalLetterSpacing,
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
@@ -442,7 +442,7 @@ class MatrixTheme {
       navigationLabel: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.navigationLabel,
-        fontWeight: TypographyConstants.medium,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.normalLetterSpacing,
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,

@@ -345,7 +345,7 @@ class VegetaBlueTheme {
       bodySmall: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.bodySmall,
-        fontWeight: TypographyConstants.medium,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.normalLetterSpacing,
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
@@ -370,7 +370,7 @@ class VegetaBlueTheme {
       labelSmall: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.labelSmall,
-        fontWeight: TypographyConstants.medium,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.normalLetterSpacing,
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
@@ -396,7 +396,7 @@ class VegetaBlueTheme {
       taskMeta: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.taskMeta,
-        fontWeight: TypographyConstants.medium,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.normalLetterSpacing,
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
@@ -404,7 +404,7 @@ class VegetaBlueTheme {
       cardTitle: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.titleSmall,
-        fontWeight: TypographyConstants.medium,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.normalLetterSpacing,
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
@@ -412,7 +412,7 @@ class VegetaBlueTheme {
       cardSubtitle: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.bodySmall,
-        fontWeight: TypographyConstants.medium,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.normalLetterSpacing,
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
@@ -420,7 +420,7 @@ class VegetaBlueTheme {
       buttonText: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.buttonText,
-        fontWeight: TypographyConstants.medium,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.normalLetterSpacing,
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
@@ -428,7 +428,7 @@ class VegetaBlueTheme {
       inputText: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.inputText,
-        fontWeight: TypographyConstants.medium,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.normalLetterSpacing,
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
@@ -436,7 +436,7 @@ class VegetaBlueTheme {
       appBarTitle: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.appBarTitle,
-        fontWeight: TypographyConstants.medium,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.normalLetterSpacing,
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
@@ -444,7 +444,7 @@ class VegetaBlueTheme {
       navigationLabel: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.navigationLabel,
-        fontWeight: TypographyConstants.medium,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.normalLetterSpacing,
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,

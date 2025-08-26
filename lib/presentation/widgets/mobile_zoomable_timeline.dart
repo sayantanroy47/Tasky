@@ -4,8 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../core/theme/typography_constants.dart';
+import '../../core/design_system/design_tokens.dart';
 import '../../domain/entities/task_model.dart';
-import '../../domain/entities/project.dart';
 import '../../domain/models/enums.dart';
 import '../../services/ui/mobile_gesture_service.dart';
 import '../providers/task_providers.dart';
@@ -97,7 +97,7 @@ class _MobileZoomableTimelineState extends ConsumerState<MobileZoomableTimeline>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final mobileGestureService = ref.read(mobileGestureServiceProvider);
-    final tasksAsync = ref.watch(projectTasksProvider(widget.projectId));
+    final tasksAsync = ref.watch(tasksForProjectProvider(widget.projectId));
 
     return tasksAsync.when(
       loading: () => _buildLoadingState(theme),
@@ -675,7 +675,7 @@ class _MobileZoomableTimelineState extends ConsumerState<MobileZoomableTimeline>
           ),
           const SizedBox(height: 24),
           EnhancedButton(
-            onPressed: () => ref.invalidate(projectTasksProvider(widget.projectId)),
+            onPressed: () => ref.invalidate(tasksForProjectProvider(widget.projectId)),
             child: const Text('Retry'),
           ),
         ],
@@ -811,6 +811,8 @@ class _MobileZoomableTimelineState extends ConsumerState<MobileZoomableTimeline>
         return Colors.blue;
       case TaskStatus.completed:
         return Colors.green;
+      case TaskStatus.cancelled:
+        return Colors.red;
     }
   }
 
@@ -822,6 +824,8 @@ class _MobileZoomableTimelineState extends ConsumerState<MobileZoomableTimeline>
         return Colors.orange;
       case TaskPriority.high:
         return Colors.red;
+      case TaskPriority.urgent:
+        return Colors.deepPurple;
     }
   }
 
@@ -833,6 +837,8 @@ class _MobileZoomableTimelineState extends ConsumerState<MobileZoomableTimeline>
         return PhosphorIcons.playCircle();
       case TaskStatus.completed:
         return PhosphorIcons.checkCircle();
+      case TaskStatus.cancelled:
+        return PhosphorIcons.xCircle();
     }
   }
 

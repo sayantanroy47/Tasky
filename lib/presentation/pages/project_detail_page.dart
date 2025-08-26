@@ -4,6 +4,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../core/theme/typography_constants.dart';
 import '../../domain/entities/project.dart';
+import '../../core/utils/text_utils.dart';
 import '../../domain/entities/task_model.dart';
 import '../../services/project_service.dart';
 import '../providers/project_providers.dart';
@@ -64,7 +65,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
             backgroundColor: context.colors.backgroundTransparent,
             extendBodyBehindAppBar: true,
             appBar: StandardizedAppBar(
-              title: project.name,
+              title: TextUtils.autoCapitalize(project.name),
               actions: [
                 IconButton(
                   onPressed: () => _editProject(project),
@@ -206,7 +207,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    StandardizedTextVariants.pageHeader(project.name),
+                    StandardizedTextVariants.pageHeader(TextUtils.autoCapitalize(project.name)),
                     if (project.description != null && project.description!.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.only(top: 4),

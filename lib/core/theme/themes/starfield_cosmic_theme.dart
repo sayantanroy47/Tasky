@@ -399,7 +399,7 @@ class StarfieldCosmicTheme {
       taskMeta: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.taskMeta,
-        fontWeight: FontWeight.w400,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.normalLetterSpacing * 0.9,
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
@@ -407,7 +407,7 @@ class StarfieldCosmicTheme {
       cardTitle: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.titleSmall,
-        fontWeight: FontWeight.w400,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.normalLetterSpacing * 1.1,
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
@@ -415,7 +415,7 @@ class StarfieldCosmicTheme {
       cardSubtitle: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.bodySmall,
-        fontWeight: FontWeight.w400,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.normalLetterSpacing * 0.9,
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
@@ -423,7 +423,7 @@ class StarfieldCosmicTheme {
       buttonText: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.buttonText,
-        fontWeight: FontWeight.w700,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.wideLetterSpacing,
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
@@ -431,7 +431,7 @@ class StarfieldCosmicTheme {
       inputText: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.inputText,
-        fontWeight: FontWeight.w400,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.normalLetterSpacing * 0.9,
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
@@ -439,7 +439,7 @@ class StarfieldCosmicTheme {
       appBarTitle: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.appBarTitle,
-        fontWeight: FontWeight.w400,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.normalLetterSpacing * 1.1,
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,
@@ -447,7 +447,7 @@ class StarfieldCosmicTheme {
       navigationLabel: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.navigationLabel,
-        fontWeight: FontWeight.w700,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.normalLetterSpacing,
         height: TypographyConstants.normalLineHeight,
         color: colors.onBackground,

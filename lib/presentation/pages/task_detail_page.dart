@@ -4,6 +4,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../core/design_system/design_tokens.dart';
 import '../../core/theme/typography_constants.dart';
+import '../../core/utils/text_utils.dart';
 import '../../domain/entities/task_audio_extensions.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
@@ -253,7 +254,7 @@ class _TaskDetailView extends ConsumerWidget {
   void _duplicateTask(BuildContext context, WidgetRef ref) {
     final duplicatedTask = task.copyWith(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
-      title: '${task.title} (Copy)',
+      title: '${TextUtils.autoCapitalize(task.title)} (Copy)',
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
       completedAt: null,
@@ -284,7 +285,7 @@ class _TaskDetailView extends ConsumerWidget {
 
   String _generateShareText(TaskModel task) {
     final buffer = StringBuffer();
-    buffer.writeln('Task: ${task.title}');
+    buffer.writeln('Task: ${TextUtils.autoCapitalize(task.title)}');
 
     if (task.description != null) {
       buffer.writeln('Description: ${task.description}');

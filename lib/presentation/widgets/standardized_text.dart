@@ -152,7 +152,7 @@ class StandardizedText extends StatelessWidget {
       case StandardizedTextStyle.bodySmall:
         return TextStyle(
           fontSize: TypographyConstants.bodySmall,
-          fontWeight: TypographyConstants.regular,
+          fontWeight: TypographyConstants.smallTextWeight,
           letterSpacing: TypographyConstants.normalLetterSpacing,
           height: TypographyConstants.relaxedLineHeight,
           color: theme.colorScheme.onSurfaceVariant,
@@ -178,7 +178,7 @@ class StandardizedText extends StatelessWidget {
       case StandardizedTextStyle.labelSmall:
         return TextStyle(
           fontSize: TypographyConstants.labelSmall,
-          fontWeight: TypographyConstants.regular,
+          fontWeight: TypographyConstants.smallTextWeight,
           letterSpacing: TypographyConstants.relaxedLetterSpacing,
           height: TypographyConstants.normalLineHeight,
           color: theme.colorScheme.onSurfaceVariant,
@@ -204,7 +204,7 @@ class StandardizedText extends StatelessWidget {
       case StandardizedTextStyle.taskMeta:
         return TextStyle(
           fontSize: TypographyConstants.taskMeta,
-          fontWeight: TypographyConstants.regular,
+          fontWeight: TypographyConstants.smallTextWeight,
           letterSpacing: TypographyConstants.normalLetterSpacing,
           height: TypographyConstants.normalLineHeight,
           color: theme.colorScheme.onSurfaceVariant,
@@ -388,7 +388,7 @@ extension StandardizedTextStyleExt on StandardizedTextStyle {
       case StandardizedTextStyle.bodySmall:
         return TextStyle(
           fontSize: TypographyConstants.bodySmall,
-          fontWeight: TypographyConstants.regular,
+          fontWeight: TypographyConstants.smallTextWeight,
           letterSpacing: TypographyConstants.normalLetterSpacing,
           height: TypographyConstants.relaxedLineHeight,
           color: theme.colorScheme.onSurfaceVariant,
@@ -414,7 +414,7 @@ extension StandardizedTextStyleExt on StandardizedTextStyle {
       case StandardizedTextStyle.labelSmall:
         return TextStyle(
           fontSize: TypographyConstants.labelSmall,
-          fontWeight: TypographyConstants.regular,
+          fontWeight: TypographyConstants.smallTextWeight,
           letterSpacing: TypographyConstants.relaxedLetterSpacing,
           height: TypographyConstants.normalLineHeight,
           color: theme.colorScheme.onSurfaceVariant,
@@ -440,7 +440,7 @@ extension StandardizedTextStyleExt on StandardizedTextStyle {
       case StandardizedTextStyle.taskMeta:
         return TextStyle(
           fontSize: TypographyConstants.taskMeta,
-          fontWeight: TypographyConstants.regular,
+          fontWeight: TypographyConstants.smallTextWeight,
           letterSpacing: TypographyConstants.normalLetterSpacing,
           height: TypographyConstants.normalLineHeight,
           color: theme.colorScheme.onSurfaceVariant,

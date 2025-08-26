@@ -125,22 +125,22 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget>
         children: [
           // Status text
           _buildStatusText(theme),
-          StandardizedGaps.verticalLg,
+          StandardizedGaps.lg,
           
           // Visual feedback area
           _buildVisualFeedback(colorScheme),
-          StandardizedGaps.verticalLg,
+          StandardizedGaps.lg,
           
           // Transcription display
           if (widget.transcriptionText != null) ...[
             _buildTranscriptionDisplay(theme),
-            StandardizedGaps.verticalMd,
+            StandardizedGaps.md,
           ],
           
           // Error display
           if (widget.errorMessage != null) ...[
             _buildErrorDisplay(theme),
-            StandardizedGaps.verticalMd,
+            StandardizedGaps.md,
           ],
           
           // Control buttons
@@ -219,7 +219,7 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget>
               fontWeight: FontWeight.w500,
             ),
           ),
-          StandardizedGaps.verticalSm,
+          StandardizedGaps.sm,
           Text(
             widget.transcriptionText!,
             style: theme.textTheme.bodyMedium?.copyWith(
@@ -249,7 +249,7 @@ class _VoiceRecordingWidgetState extends State<VoiceRecordingWidget>
             color: theme.colorScheme.error,
             size: 20.0,
           ),
-          StandardizedGaps.horizontalMd,
+          StandardizedGaps.hMd,
           Expanded(
             child: Text(
               widget.errorMessage!,

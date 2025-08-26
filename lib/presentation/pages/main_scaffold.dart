@@ -360,58 +360,70 @@ class MainScaffold extends ConsumerWidget {
 
     return Container(
       decoration: BoxDecoration(
-        // Enhanced glassmorphism background with better transparency
+        // Theme-aware glassmorphism background with complementary gradient
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            theme.colorScheme.surface.withValues(alpha: 0.5),
-            theme.colorScheme.surface.withValues(alpha: 0.7),
+            // Complementary gradient: secondary→primary (opposite of app bar)
+            theme.colorScheme.secondary.withValues(alpha: theme.brightness == Brightness.dark ? 0.2 : 0.4),
+            theme.colorScheme.primary.withValues(alpha: theme.brightness == Brightness.dark ? 0.25 : 0.45),
           ],
         ),
-        // Subtle shadow for depth
+        // Theme-aware shadow using primary color
         boxShadow: [
           BoxShadow(
-            color: theme.colorScheme.shadow.withValues(alpha: 0.1),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
+            color: theme.colorScheme.primary.withValues(alpha: theme.brightness == Brightness.dark ? 0.15 : 0.08),
+            blurRadius: 12,
+            offset: const Offset(0, -3),
           ),
         ],
+        // Theme-specific border
+        border: Border(
+          top: BorderSide(
+            color: theme.colorScheme.secondary.withValues(alpha: 0.3),
+            width: 0.8,
+          ),
+        ),
       ),
       child: ClipRRect(
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 12.0, sigmaY: 12.0),
-          child: BottomAppBar(
-            height: 80,
-            padding: StandardizedSpacing.paddingSymmetric(horizontal: SpacingSize.md),
-            notchMargin: 3, // 3px notch around FAB as requested
-            shape: const CircularNotchedRectangle(),
-            color: Colors.transparent, // Make transparent to show glassmorphism
-            elevation: 0, // Remove default elevation
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                // First two navigation items
-                for (int i = 0; i < 2; i++)
-                  _buildNavItem(
-                    context: context,
-                    item: navigationItems[i],
-                    isSelected: selectedIndex == i,
-                    onTap: () => ref.read(navigationProvider.notifier).navigateToIndex(i),
-                  ),
+          child: Container(
+            // Add theme-aware background tint for better glassmorphism effect
+            color: theme.colorScheme.secondaryContainer.withValues(alpha: theme.brightness == Brightness.dark ? 0.05 : 0.08),
+            child: BottomAppBar(
+              height: 80,
+              padding: StandardizedSpacing.paddingSymmetric(horizontal: SpacingSize.md),
+              notchMargin: 3, // 3px notch around FAB as requested
+              shape: const CircularNotchedRectangle(),
+              color: Colors.transparent, // Make transparent to show glassmorphism
+              elevation: 0, // Remove default elevation
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  // First two navigation items
+                  for (int i = 0; i < 2; i++)
+                    _buildNavItem(
+                      context: context,
+                      item: navigationItems[i],
+                      isSelected: selectedIndex == i,
+                      onTap: () => ref.read(navigationProvider.notifier).navigateToIndex(i),
+                    ),
 
-                // Enhanced spacer for FAB with proper sizing
-                StandardizedGaps.horizontal(SpacingSize.xxl), // Increased width for better spacing
+                  // Enhanced spacer for FAB with proper sizing
+                  StandardizedGaps.horizontal(SpacingSize.xxl), // Increased width for better spacing
 
-                // Last two navigation items
-                for (int i = 2; i < navigationItems.length; i++)
-                  _buildNavItem(
-                    context: context,
-                    item: navigationItems[i],
-                    isSelected: selectedIndex == i,
-                    onTap: () => ref.read(navigationProvider.notifier).navigateToIndex(i),
-                  ),
-              ],
+                  // Last two navigation items
+                  for (int i = 2; i < navigationItems.length; i++)
+                    _buildNavItem(
+                      context: context,
+                      item: navigationItems[i],
+                      isSelected: selectedIndex == i,
+                      onTap: () => ref.read(navigationProvider.notifier).navigateToIndex(i),
+                    ),
+                ],
+              ),
             ),
           ),
         ),

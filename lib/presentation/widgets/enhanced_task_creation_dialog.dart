@@ -1118,7 +1118,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
             createdAt: widget.editingTask!.createdAt,
             updatedAt: DateTime.now(),
             status: widget.editingTask!.status,
-            tagIds: widget.editingTask!.tagIds,
+            tagIds: _selectedTags.map((tag) => tag.id).toList(), // Use updated selected tags
             subTasks: widget.editingTask!.subTasks,
             locationTrigger: widget.editingTask!.locationTrigger,
             dependencies: widget.editingTask!.dependencies,

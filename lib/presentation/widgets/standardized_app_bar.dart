@@ -97,7 +97,7 @@ class StandardizedAppBar extends StatelessWidget implements PreferredSizeWidget 
       actions: _buildActions(),
       bottom: bottom,
       
-      // Enhanced glassmorphism background effect with optional tertiary accents
+      // Enhanced glassmorphism background effect with theme-aware colors
       flexibleSpace: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
@@ -105,21 +105,22 @@ class StandardizedAppBar extends StatelessWidget implements PreferredSizeWidget 
             end: Alignment.bottomCenter,
             colors: useTertiaryAccent ? [
               // Tertiary-enhanced gradient for special screens
-              theme.colorScheme.surface.withValues(alpha: 0.65),
-              theme.colorScheme.surface.withValues(alpha: 0.45),
-              context.appBarTertiaryColor.withValues(alpha: 0.08), // Subtle tertiary tint
+              theme.colorScheme.primary.withValues(alpha: theme.brightness == Brightness.dark ? 0.2 : 0.4),
+              theme.colorScheme.secondary.withValues(alpha: theme.brightness == Brightness.dark ? 0.15 : 0.3),
+              context.appBarTertiaryColor.withValues(alpha: 0.1), // More visible tertiary tint
             ] : [
-              theme.colorScheme.surface.withValues(alpha: 0.6),
-              theme.colorScheme.surface.withValues(alpha: 0.4),
+              // Theme-specific primary/secondary gradient
+              theme.colorScheme.primary.withValues(alpha: theme.brightness == Brightness.dark ? 0.15 : 0.35),
+              theme.colorScheme.secondary.withValues(alpha: theme.brightness == Brightness.dark ? 0.1 : 0.25),
             ],
             stops: useTertiaryAccent ? [0.0, 0.7, 1.0] : [0.0, 1.0],
           ),
           border: Border(
             bottom: BorderSide(
               color: useTertiaryAccent 
-                ? context.appBarTertiaryColor.withValues(alpha: 0.25) // Tertiary accent border
-                : theme.colorScheme.outline.withValues(alpha: 0.2),
-              width: useTertiaryAccent ? 1.0 : 0.5, // Slightly stronger border for tertiary
+                ? context.appBarTertiaryColor.withValues(alpha: 0.4) // Stronger tertiary accent border
+                : theme.colorScheme.primary.withValues(alpha: 0.3), // Theme primary border
+              width: useTertiaryAccent ? 1.0 : 0.8, // Slightly stronger border for visibility
             ),
           ),
         ),
@@ -128,8 +129,8 @@ class StandardizedAppBar extends StatelessWidget implements PreferredSizeWidget 
             filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
             child: Container(
               color: useTertiaryAccent 
-                ? context.appBarTertiaryColor.withValues(alpha: 0.03) // Very subtle tertiary tint
-                : theme.colorScheme.surface.withValues(alpha: 0.05),
+                ? context.appBarTertiaryColor.withValues(alpha: 0.05) // More visible tertiary tint
+                : theme.colorScheme.primaryContainer.withValues(alpha: theme.brightness == Brightness.dark ? 0.08 : 0.12),
             ),
           ),
         ),

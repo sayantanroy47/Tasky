@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:cross_file/cross_file.dart';
 
 import '../../domain/entities/project.dart';
 import '../../domain/entities/task_model.dart';
@@ -120,10 +121,8 @@ class AnalyticsExportService {
       throw Exception('Cannot share unsuccessful export result');
     }
 
-    final xFile = XFile(exportResult.filePath!);
-    
-    await SharePlus.instance.shareXFiles(
-      [xFile],
+    await Share.shareXFiles(
+      [XFile(exportResult.filePath!)],
       subject: subject ?? 'Project Analytics Report',
       text: text ?? 'Analytics report for project exported from Tasky',
     );

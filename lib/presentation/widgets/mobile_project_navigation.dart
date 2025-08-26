@@ -4,9 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../core/theme/typography_constants.dart';
+import '../../core/design_system/design_tokens.dart';
 import '../../domain/entities/project.dart';
 import '../../services/ui/mobile_gesture_service.dart';
-import '../../services/ui/slidable_feedback_service.dart';
 import '../providers/project_providers.dart';
 import 'enhanced_ux_widgets.dart';
 import 'glassmorphism_container.dart';
@@ -93,7 +93,7 @@ class _MobileProjectNavigationState extends ConsumerState<MobileProjectNavigatio
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final mobileGestureService = ref.read(mobileGestureServiceProvider);
-    final projectAsync = ref.watch(projectByIdProvider(widget.projectId));
+    final projectAsync = ref.watch(projectProvider(widget.projectId));
 
     return projectAsync.when(
       loading: () => const Scaffold(

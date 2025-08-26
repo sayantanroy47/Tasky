@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/constants/phosphor_icons.dart';
 import '../../../core/theme/typography_constants.dart';
+import '../../../core/utils/text_utils.dart';
 import '../../../core/design_system/design_tokens.dart';
 import '../../../domain/entities/task_model.dart';
 import '../../../domain/models/enums.dart';
@@ -137,7 +138,7 @@ class _MultiSelectTaskCardState extends ConsumerState<MultiSelectTaskCard>
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(widget.task.title),
+                            Text(TextUtils.autoCapitalize(widget.task.title)),
                             if (widget.task.description?.isNotEmpty == true)
                               Text(widget.task.description!),
                           ],

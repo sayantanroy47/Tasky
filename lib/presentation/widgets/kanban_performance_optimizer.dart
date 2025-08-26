@@ -291,7 +291,7 @@ class OptimizedDragAndDrop {
   static const double _dragThreshold = 10.0;
 
   /// Creates an optimized draggable widget
-  static Widget createDraggable<T>({
+  static Widget createDraggable<T extends Object>({
     required T data,
     required Widget child,
     required Widget Function(T data) feedbackBuilder,
@@ -308,7 +308,7 @@ class OptimizedDragAndDrop {
   }
 
   /// Creates an optimized drag target
-  static Widget createDragTarget<T>({
+  static Widget createDragTarget<T extends Object>({
     required Widget child,
     required bool Function(T? data) onWillAccept,
     required void Function(T data) onAccept,
@@ -323,7 +323,7 @@ class OptimizedDragAndDrop {
   }
 }
 
-class _OptimizedDraggable<T> extends StatefulWidget {
+class _OptimizedDraggable<T extends Object> extends StatefulWidget {
   final T data;
   final Widget child;
   final Widget Function(T data) feedbackBuilder;
@@ -342,7 +342,7 @@ class _OptimizedDraggable<T> extends StatefulWidget {
   State<_OptimizedDraggable<T>> createState() => _OptimizedDraggableState<T>();
 }
 
-class _OptimizedDraggableState<T> extends State<_OptimizedDraggable<T>> {
+class _OptimizedDraggableState<T extends Object> extends State<_OptimizedDraggable<T>> {
   bool _isDragging = false;
 
   @override
@@ -369,15 +369,14 @@ class _OptimizedDraggableState<T> extends State<_OptimizedDraggable<T>> {
       child: AnimatedContainer(
         duration: OptimizedDragAndDrop._animationDuration,
         curve: Curves.easeInOut,
-        transform: Matrix4.identity()
-          ..scaleByDouble(_isDragging ? 1.05 : 1.0),
+        transform: Matrix4.identity().scaled(_isDragging ? 1.05 : 1.0),
         child: widget.child,
       ),
     );
   }
 }
 
-class _OptimizedDragTarget<T> extends StatefulWidget {
+class _OptimizedDragTarget<T extends Object> extends StatefulWidget {
   final Widget child;
   final bool Function(T? data) onWillAccept;
   final void Function(T data) onAccept;
@@ -394,7 +393,7 @@ class _OptimizedDragTarget<T> extends StatefulWidget {
   State<_OptimizedDragTarget<T>> createState() => _OptimizedDragTargetState<T>();
 }
 
-class _OptimizedDragTargetState<T> extends State<_OptimizedDragTarget<T>> {
+class _OptimizedDragTargetState<T extends Object> extends State<_OptimizedDragTarget<T>> {
   bool _isHovering = false;
 
   @override
@@ -419,8 +418,7 @@ class _OptimizedDragTargetState<T> extends State<_OptimizedDragTarget<T>> {
         return AnimatedContainer(
           duration: OptimizedDragAndDrop._animationDuration,
           curve: Curves.easeInOut,
-          transform: Matrix4.identity()
-            ..scaleByDouble(_isHovering ? 1.02 : 1.0),
+          transform: Matrix4.identity().scaled(_isHovering ? 1.02 : 1.0),
           child: widget.child,
         );
       },

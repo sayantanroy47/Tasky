@@ -360,7 +360,7 @@ class UnicornDreamTheme {
       taskMeta: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.labelSmall,
-        fontWeight: TypographyConstants.regular,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.normalLetterSpacing,
         height: TypographyConstants.normalLineHeight,
         color: colors.onSurfaceVariant,
@@ -368,7 +368,7 @@ class UnicornDreamTheme {
       cardTitle: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.titleSmall,
-        fontWeight: TypographyConstants.medium,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.normalLetterSpacing,
         height: TypographyConstants.normalLineHeight,
         color: colors.onSurface,
@@ -376,7 +376,7 @@ class UnicornDreamTheme {
       cardSubtitle: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.bodySmall,
-        fontWeight: TypographyConstants.regular,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.normalLetterSpacing,
         height: TypographyConstants.normalLineHeight,
         color: colors.onSurfaceVariant,
@@ -384,7 +384,7 @@ class UnicornDreamTheme {
       buttonText: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.labelLarge,
-        fontWeight: TypographyConstants.medium,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.normalLetterSpacing,
         height: TypographyConstants.normalLineHeight,
         color: colors.onSurface,
@@ -392,7 +392,7 @@ class UnicornDreamTheme {
       inputText: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.bodyMedium,
-        fontWeight: TypographyConstants.regular,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.normalLetterSpacing,
         height: TypographyConstants.normalLineHeight,
         color: colors.onSurface,
@@ -400,7 +400,7 @@ class UnicornDreamTheme {
       appBarTitle: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.titleLarge,
-        fontWeight: TypographyConstants.medium,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.normalLetterSpacing,
         height: TypographyConstants.normalLineHeight,
         color: colors.onSurface,
@@ -408,7 +408,7 @@ class UnicornDreamTheme {
       navigationLabel: LocalFonts.getFont(
         fontFamily,
         fontSize: TypographyConstants.labelMedium,
-        fontWeight: TypographyConstants.medium,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: TypographyConstants.normalLetterSpacing,
         height: TypographyConstants.normalLineHeight,
         color: colors.onSurface,

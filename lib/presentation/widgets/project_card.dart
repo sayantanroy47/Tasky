@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../core/theme/typography_constants.dart';
+import '../../core/utils/text_utils.dart';
 import '../../domain/entities/project.dart';
 import '../../services/project_service.dart';
 import '../../services/ui/slidable_action_service.dart';
@@ -78,7 +79,7 @@ class ProjectCard extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      project.name,
+                      TextUtils.autoCapitalize(project.name),
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w500,
                       ),
@@ -384,7 +385,7 @@ class ProjectCard extends ConsumerWidget {
       builder: (context) => AlertDialog(
         title: const Text('Delete Project'),
         content: Text(
-          'Are you sure you want to delete "${project.name}"? This will remove the project from all associated tasks but will not delete the tasks themselves.',
+          'Are you sure you want to delete "${TextUtils.autoCapitalize(project.name)}"? This will remove the project from all associated tasks but will not delete the tasks themselves.',
         ),
         actions: [
           TextButton(

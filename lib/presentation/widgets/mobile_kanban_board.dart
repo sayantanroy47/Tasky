@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../core/theme/typography_constants.dart';
+import '../../core/utils/text_utils.dart';
 import '../../core/design_system/design_tokens.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
@@ -657,7 +658,7 @@ class _MobileKanbanBoardState extends ConsumerState<MobileKanbanBoard>
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Task'),
-        content: Text('Are you sure you want to delete "${task.title}"?'),
+        content: Text('Are you sure you want to delete "${TextUtils.autoCapitalize(task.title)}"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),

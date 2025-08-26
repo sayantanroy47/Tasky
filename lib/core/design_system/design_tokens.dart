@@ -188,7 +188,7 @@ class SpacingTokens {
   static const double sectionMargin = phi5;      // 34px - Section separation
   
   // Task-specific sophisticated spacing
-  static const double taskCardHeight = 88.0;     // Golden ratio optimized height
+  static const double taskCardHeight = 93.0;     // Golden ratio optimized height + 5px for tag overflow
   static const double taskCardPadding = phi3;    // 21px internal padding
   static const double taskCardMargin = sm;       // 8px between cards
   static const double taskCardRadius = 12.0;     // Sophisticated corner radius

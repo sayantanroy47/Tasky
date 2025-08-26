@@ -179,8 +179,7 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
         description: _descriptionController.text.isNotEmpty ? _descriptionController.text : null,
         priority: _priority,
         status: TaskStatus.pending,
-        tags: tags, // Legacy category system
-        tagIds: tagIds, // New tag system
+        tagIds: tagIds, // Use new tag system
         dueDate: fullDueDate,
         recurrence: _isRecurringTask ? _recurrencePattern : null,
         createdAt: DateTime.now(),

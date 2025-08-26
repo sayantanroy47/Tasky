@@ -7,6 +7,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../core/design_system/design_tokens.dart';
 import '../../core/design_system/responsive_builder.dart';
+import '../../core/theme/typography_constants.dart';
 import 'glassmorphism_container.dart';
 
 /// Network connectivity status indicator

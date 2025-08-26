@@ -6,6 +6,7 @@ import '../../core/design_system/design_tokens.dart';
 import '../../core/theme/material3/motion_system.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../core/utils/category_utils.dart';
+import '../../core/utils/text_utils.dart';
 import '../../domain/entities/project.dart';
 import '../../domain/entities/task_audio_extensions.dart';
 import '../../domain/entities/task_model.dart';
@@ -396,7 +397,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with Ticker
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               StandardizedTextVariants.taskTitle(
-                widget.task.title,
+                TextUtils.autoCapitalize(widget.task.title),
                 isCompleted: widget.task.isCompleted,
                 maxLines: 1,
               ),
@@ -458,7 +459,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with Ticker
       children: [
         Expanded(
           child: StandardizedTextVariants.taskTitle(
-            widget.task.title,
+            TextUtils.autoCapitalize(widget.task.title),
             isCompleted: widget.task.isCompleted,
           ),
         ),
@@ -493,7 +494,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with Ticker
                 children: [
                   Expanded(
                     child: StandardizedTextVariants.taskTitle(
-                      widget.task.title,
+                      TextUtils.autoCapitalize(widget.task.title),
                       isCompleted: widget.task.isCompleted,
                       color: widget.task.isCompleted ? theme.colorScheme.onSurfaceVariant : null,
                       maxLines: 2,
@@ -795,7 +796,10 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with Ticker
         width: 60,
         child: Center(child: CircularProgressIndicator(strokeWidth: 1)),
       ),
-      error: (error, __) => const SizedBox.shrink(), // Hide on error
+      error: (error, __) {
+        debugPrint('[TAG ERROR] Failed to load tags for task "${widget.task.title}": $error');
+        return const SizedBox.shrink(); // Hide on error
+      },
     );
   }
 
@@ -942,7 +946,7 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with Ticker
           Padding(
             padding: StandardizedSpacing.paddingSymmetric(horizontal: SpacingSize.md),
             child: StandardizedTextVariants.cardTitle(
-              widget.task.title,
+              TextUtils.autoCapitalize(widget.task.title),
               maxLines: 2,
             ),
           ),
@@ -1247,7 +1251,7 @@ class QuickTaskCard extends StatelessWidget {
           ),
         ),
         title: StandardizedTextVariants.taskTitle(
-          task.title,
+          TextUtils.autoCapitalize(task.title),
           isCompleted: task.isCompleted,
         ),
         subtitle: task.dueDate != null ? Text('Due ${_formatQuickDate(task.dueDate!)}') : null,

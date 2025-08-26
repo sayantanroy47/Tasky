@@ -11,16 +11,16 @@ class TypographyConstants {
   // Private constructor to prevent instantiation
   TypographyConstants._();
 
-  // MOBILE-OPTIMIZED TYPOGRAPHY SCALE - Enhanced readability with larger minimum sizes
-  static const double labelSmall = 13.0;       // SMALLEST - Fine print, captions (increased for readability)
-  static const double bodySmall = 13.0;        // Small body text (increased from 11px)
-  static const double labelMedium = 14.0;      // UI labels (increased from 12px)
-  static const double bodyMedium = 14.0;       // Standard body text (increased from 13px)
-  static const double labelLarge = 15.0;       // Button text, larger labels (increased from 14px)
-  static const double bodyLarge = 15.0;        // Primary body text (was 16, -1px)
-  static const double titleSmall = 16.0;       // Small headings (was 17, -1px)
-  static const double titleMedium = 17.0;      // Medium headings - CRITICAL: Task titles (increased for readability)
-  static const double titleLarge = 19.0;       // Large headings - Page headers (increased for readability)
+  // MOBILE-OPTIMIZED TYPOGRAPHY SCALE - Enhanced readability with modest increases + weight adjustments
+  static const double labelSmall = 11.5;       // SMALLEST - Fine print, captions (slight increase + weight boost)
+  static const double bodySmall = 11.5;        // Small body text (slight increase + weight boost)
+  static const double labelMedium = 12.5;      // UI labels (slight increase)
+  static const double bodyMedium = 13.5;       // Standard body text (slight increase)
+  static const double labelLarge = 14.5;       // Button text, larger labels (slight increase)
+  static const double bodyLarge = 15.0;        // Primary body text (unchanged)
+  static const double titleSmall = 16.0;       // Small headings (unchanged)
+  static const double titleMedium = 16.5;      // Medium headings - CRITICAL: Task titles (modest increase)
+  static const double titleLarge = 18.5;       // Large headings - Page headers (modest increase)
   static const double headlineSmall = 20.0;    // Small headlines (was 22, -2px)
   static const double headlineMedium = 22.0;   // Medium headlines (was 24, -2px)
   static const double headlineLarge = 24.0;    // Large headlines (was 26, -2px)
@@ -29,30 +29,30 @@ class TypographyConstants {
   static const double displayLarge = 30.0;     // LARGEST - Hero text (was 32, -2px)
 
   // Legacy simplified aliases for backwards compatibility
-  static const double textXS = bodySmall;      // 13.0 - Captions, tiny labels
-  static const double textSM = bodyMedium;     // 14.0 - Body secondary, small buttons  
+  static const double textXS = bodySmall;      // 11.5 - Captions, tiny labels
+  static const double textSM = bodyMedium;     // 13.5 - Body secondary, small buttons  
   static const double textBase = bodyLarge;    // 15.0 - Body primary, input text
-  static const double textLG = titleLarge;     // 19.0 - Subheadings, card titles
+  static const double textLG = titleLarge;     // 18.5 - Subheadings, card titles
   static const double textXL = headlineSmall;  // 20.0 - Headings, app bar
   static const double text2XL = headlineMedium; // 22.0 - Page titles, section headers
   static const double text3XL = headlineLarge; // 24.0 - Display text, hero content
   static const double text4XL = displaySmall;  // 26.0 - Large display, splash screens
 
   // Specialized component aliases - Mobile-optimized sizes
-  static const double appBarTitle = titleLarge;       // 19.0
-  static const double navigationLabel = labelMedium;  // 14.0
-  static const double buttonText = labelLarge;        // 15.0
+  static const double appBarTitle = titleLarge;       // 18.5
+  static const double navigationLabel = labelMedium;  // 12.5
+  static const double buttonText = labelLarge;        // 14.5
   static const double inputText = bodyLarge;          // 15.0
-  static const double taskTitle = titleMedium;        // 17.0 - CRITICAL: Task titles optimized for readability
-  static const double taskDescription = bodyMedium;   // 14.0  
-  static const double taskMeta = bodySmall;           // 13.0
+  static const double taskTitle = titleMedium;        // 16.5 - CRITICAL: Task titles optimized for readability
+  static const double taskDescription = bodyMedium;   // 13.5  
+  static const double taskMeta = bodySmall;           // 11.5
 
-  // Font weight constants - Proper hierarchy for visual distinction
-  static const FontWeight light = FontWeight.w400;   // Readable light weight (was w300)
-  static const FontWeight regular = FontWeight.w500; // Standard weight  
-  static const FontWeight medium = FontWeight.w600;  // Medium weight
+  // Font weight constants - Enhanced hierarchy for small text readability
+  static const FontWeight light = FontWeight.w400;    // Light weight for large text
+  static const FontWeight regular = FontWeight.w500;  // Standard weight  
+  static const FontWeight medium = FontWeight.w600;   // Medium weight
   static const FontWeight semiBold = FontWeight.w600; // Alias for medium to maintain compatibility
-  // semiBold and bold removed - maximum weight is medium (w500)
+  static const FontWeight smallTextWeight = FontWeight.w600; // Enhanced weight for small text readability
 
   // Line height constants
   static const double tightLineHeight = 1.2;

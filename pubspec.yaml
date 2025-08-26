@@ -184,4 +184,16 @@ flutter:
         - asset: assets/fonts/Saira-VariableFont_wdth,wght.ttf
     - family: Sansation
       fonts:
-        - asset: assets/fonts/Sansation-Regular.ttf    
+        - asset: assets/fonts/Sansation-Regular.ttf
+    - family: Cinzel
+      fonts:
+        - asset: assets/fonts/Cinzel-VariableFont_wght.ttf
+    - family: Exo2
+      fonts:
+        - asset: assets/fonts/Exo2-VariableFont_wght.ttf
+    - family: Quicksand
+      fonts:
+        - asset: assets/fonts/Quicksand-VariableFont_wght.ttf
+    - family: SpaceMono
+      fonts:
+        - asset: assets/fonts/SpaceMono-Regular.ttf    

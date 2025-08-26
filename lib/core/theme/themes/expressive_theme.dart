@@ -214,7 +214,7 @@ class ExpressiveTheme {
       taskMeta: TextStyle(
         fontFamily: 'Google Sans Text',
         fontSize: TypographyConstants.taskMeta, // was 12, now correct mapping
-        fontWeight: FontWeight.w500,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: 0.5,
         height: 1.33,
         color: colorSystem.onSurfaceVariant,
@@ -222,7 +222,7 @@ class ExpressiveTheme {
       cardTitle: TextStyle(
         fontFamily: 'Google Sans',
         fontSize: TypographyConstants.titleSmall, // was 20, should be smaller for cards
-        fontWeight: FontWeight.w500,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: 0,
         height: 1.3,
         color: colorSystem.onSurface,
@@ -230,7 +230,7 @@ class ExpressiveTheme {
       cardSubtitle: TextStyle(
         fontFamily: 'Google Sans Text',
         fontSize: TypographyConstants.bodyMedium, // was 14
-        fontWeight: FontWeight.w400,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: 0.1,
         height: 1.43,
         color: colorSystem.onSurfaceVariant,
@@ -238,7 +238,7 @@ class ExpressiveTheme {
       buttonText: TextStyle(
         fontFamily: 'Google Sans Text',
         fontSize: TypographyConstants.buttonText, // was 14, now correct mapping
-        fontWeight: FontWeight.w500,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: 0.75,
         height: 1.43,
         color: colorSystem.onPrimary,
@@ -246,7 +246,7 @@ class ExpressiveTheme {
       inputText: TextStyle(
         fontFamily: 'Google Sans Text',
         fontSize: TypographyConstants.inputText, // was 16, now correct mapping
-        fontWeight: FontWeight.w400,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: 0.15,
         height: 1.5,
         color: colorSystem.onSurface,
@@ -254,7 +254,7 @@ class ExpressiveTheme {
       appBarTitle: TextStyle(
         fontFamily: 'Google Sans',
         fontSize: TypographyConstants.appBarTitle, // was 22, now correct mapping
-        fontWeight: FontWeight.w500,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: 0,
         height: 1.27,
         color: colorSystem.onSurface,
@@ -262,7 +262,7 @@ class ExpressiveTheme {
       navigationLabel: TextStyle(
         fontFamily: 'Google Sans Text',
         fontSize: TypographyConstants.navigationLabel, // was 12, now correct mapping
-        fontWeight: FontWeight.w500,
+        fontWeight: TypographyConstants.smallTextWeight,
         letterSpacing: 0.5,
         height: 1.33,
         color: colorSystem.onSurface,

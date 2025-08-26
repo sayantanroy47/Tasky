@@ -8,6 +8,7 @@ import '../../core/providers/core_providers.dart';
 import '../../core/routing/app_router.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../core/utils/category_utils.dart';
+import '../../core/utils/text_utils.dart';
 import '../../domain/entities/project.dart';
 import '../../domain/entities/task_audio_extensions.dart';
 import '../../domain/entities/task_model.dart';
@@ -261,7 +262,7 @@ class _HomePageState extends ConsumerState<HomePage> with SingleTickerProviderSt
                           itemBuilder: (context, index) {
                             final task = filteredTasks[index];
                             return ListTile(
-                              title: StandardizedText(task.title, style: StandardizedTextStyle.bodyMedium),
+                              title: StandardizedText(TextUtils.autoCapitalize(task.title), style: StandardizedTextStyle.labelLarge),
                               subtitle: task.description?.isNotEmpty == true
                                   ? StandardizedText(task.description!, style: StandardizedTextStyle.bodySmall)
                                   : null,
@@ -519,7 +520,7 @@ class _HomePageState extends ConsumerState<HomePage> with SingleTickerProviderSt
               padding: const EdgeInsets.symmetric(horizontal: SpacingTokens.md),
               child: StandardizedText(
                 task.title,
-                style: StandardizedTextStyle.titleMedium,
+                style: StandardizedTextStyle.labelLarge,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -1235,31 +1236,69 @@ Shared from Tasky - Task Management App
               ],
             ),
 
-            // Title and description in the middle (takes up most space)
+            // Title and tags in the middle (takes up most space)
             Expanded(
               child: Align(
                 alignment: Alignment.centerLeft,
-                child: Row(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Expanded(
-                      child: StandardizedText(
-                        task.title,
-                        style: StandardizedTextStyle.titleMedium,
-                        color: theme.colorScheme.onSurface,
-                        decoration: task.status == TaskStatus.completed ? TextDecoration.lineThrough : null,
-                        lineHeight: 1.2,
-                        letterSpacing: 0.1,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                    // Title row with audio indicator
+                    Row(
+                      children: [
+                        Expanded(
+                          child: StandardizedText(
+                            task.title,
+                            style: StandardizedTextStyle.labelLarge,
+                            color: theme.colorScheme.onSurface,
+                            decoration: task.status == TaskStatus.completed ? TextDecoration.lineThrough : null,
+                            lineHeight: 1.2,
+                            letterSpacing: 0.1,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        // Sophisticated audio indicator for voice tasks
+                        if (task.hasVoiceMetadata) ...[
+                          StandardizedGaps.hXs,
+                          AudioIndicatorWidget(
+                            task: task,
+                            size: 20,
+                            mode: AudioIndicatorMode.playButton,
+                          ),
+                        ],
+                      ],
                     ),
-                    // Sophisticated audio indicator for voice tasks
-                    if (task.hasVoiceMetadata) ...[
-                      StandardizedGaps.hXs,
-                      AudioIndicatorWidget(
-                        task: task,
-                        size: 20,
-                        mode: AudioIndicatorMode.playButton,
+                    // Tag chips row
+                    if (task.tagIds.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Consumer(
+                        builder: (context, ref, child) {
+                          final tagsProvider = ref.watch(tagsByIdsProvider(task.tagIds));
+                          return tagsProvider.when(
+                            data: (tags) => TagChipList(
+                              tags: tags,
+                              chipSize: TagChipSize.small,
+                              maxChips: 4, // More tags for horizontal layout
+                              spacing: 3.0,
+                              onTagTap: (_) {}, // No action on tap for home cards
+                            ),
+                            loading: () => const SizedBox(
+                              height: 16,
+                              child: Row(
+                                children: [
+                                  SizedBox(
+                                    width: 12,
+                                    height: 12,
+                                    child: CircularProgressIndicator(strokeWidth: 1),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            error: (_, __) => const SizedBox.shrink(),
+                          );
+                        },
                       ),
                     ],
                   ],
@@ -1516,7 +1555,7 @@ Shared from Tasky - Task Management App
                           data: (tags) => TagChipList(
                             tags: tags,
                             chipSize: TagChipSize.small,
-                            maxChips: 2, // Compact for project cards
+                            maxChips: 3, // More tags for project cards horizontal layout
                             spacing: 3.0,
                             onTagTap: (_) {}, // No action on tap for project cards
                           ),
