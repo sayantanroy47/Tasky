@@ -136,4 +136,19 @@ class TaskRepositoryImpl implements TaskRepository {
   Future<void> assignTasksToProject(List<String> taskIds, String? projectId) async {
     await _database.taskDao.assignTasksToProject(taskIds, projectId);
   }
+
+  @override
+  Future<List<TaskModel>> getTasksWithoutProject() async {
+    return await _database.taskDao.getTasksWithoutProject();
+  }
+
+  @override
+  Future<List<TaskModel>> getTasksForProject(String projectId) async {
+    return await getTasksByProject(projectId);
+  }
+
+  @override
+  Future<List<TaskModel>> getTasksByProjectId(String projectId) async {
+    return await getTasksByProject(projectId);
+  }
 }

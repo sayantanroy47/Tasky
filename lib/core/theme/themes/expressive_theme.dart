@@ -294,6 +294,13 @@ class ExpressiveTheme {
         particleType: theme_effects.BackgroundParticleType.floating,
         particleOpacity: 0.05,
         effectIntensity: isDark ? 0.3 : 0.2,
+        geometricPattern: theme_effects.BackgroundGeometricPattern.linear,
+        patternAngle: 0.0,
+        patternDensity: 1.0,
+        accentColors: [
+          isDark ? const Color(0x14FFFFFF) : const Color(0x14000000), // Dynamic primary accent
+          isDark ? const Color(0x0FFFFFFF) : const Color(0x0F000000), // Dynamic secondary accent
+        ],
       ),
     );
   }

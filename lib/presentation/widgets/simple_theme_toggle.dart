@@ -29,34 +29,48 @@ class ThemeToggleButton extends ConsumerWidget {
   void _toggleThemeVariant(WidgetRef ref, String currentThemeId) {
     String targetThemeId;
     
-    // Determine the opposite variant
+    // Determine the opposite variant using a more robust approach
     if (currentThemeId.contains('_dark')) {
-      // Remove '_dark' suffix to get light variant
-      if (currentThemeId == 'expressive_dark') {
-        targetThemeId = 'expressive_light';
-      } else {
-        targetThemeId = currentThemeId.replaceAll('_dark', '');
+      // Current theme is dark, switch to light variant
+      targetThemeId = currentThemeId.replaceAll('_dark', '_light');
+      
+      // Handle special cases where light theme doesn't have '_light' suffix
+      if (targetThemeId.endsWith('_light')) {
+        final baseThemeName = targetThemeId.replaceAll('_light', '');
+        
+        // Check if a light variant exists, otherwise use base name
+        final themeNotifier = ref.read(enhancedThemeProvider.notifier);
+        final lightThemeExists = themeNotifier.getTheme('${baseThemeName}_light') != null;
+        final baseThemeExists = themeNotifier.getTheme(baseThemeName) != null;
+        
+        if (lightThemeExists) {
+          targetThemeId = '${baseThemeName}_light';
+        } else if (baseThemeExists) {
+          targetThemeId = baseThemeName;
+        } else {
+          // Fallback: keep the _light suffix
+          targetThemeId = '${baseThemeName}_light';
+        }
       }
-    } else if (currentThemeId.endsWith('dark')) {
-      // Remove 'dark' suffix and add light (for themes like 'matrix_dark')
-      targetThemeId = currentThemeId.replaceAll('dark', '');
-      if (targetThemeId.endsWith('_')) {
-        targetThemeId = targetThemeId.substring(0, targetThemeId.length - 1);
-      }
-    } else {
+    } else if (currentThemeId.contains('_light')) {
       // Current theme is light, switch to dark variant
-      if (currentThemeId == 'matrix' || currentThemeId == 'vegeta_blue' || currentThemeId == 'dracula_ide') {
-        targetThemeId = '${currentThemeId}_dark';
-      } else if (currentThemeId == 'expressive_light') {
-        targetThemeId = 'expressive_dark';
-      } else {
-        // For themes that don't follow the pattern, try adding '_dark'
-        targetThemeId = '${currentThemeId}_dark';
-      }
+      targetThemeId = currentThemeId.replaceAll('_light', '_dark');
+    } else {
+      // Current theme has no suffix (assumed light), switch to dark variant
+      targetThemeId = '${currentThemeId}_dark';
     }
     
-    // Apply the new theme variant
-    ref.read(enhancedThemeProvider.notifier).setTheme(targetThemeId);
+    // Verify the target theme exists before applying
+    final themeNotifier = ref.read(enhancedThemeProvider.notifier);
+    final targetTheme = themeNotifier.getTheme(targetThemeId);
+    
+    if (targetTheme != null) {
+      // Apply the new theme variant
+      ref.read(enhancedThemeProvider.notifier).setTheme(targetThemeId);
+    } else {
+      // If target theme doesn't exist, log the issue but don't crash
+      debugPrint('Target theme not found: $targetThemeId for current theme: $currentThemeId');
+    }
   }
 }
 

@@ -178,18 +178,8 @@ class SmartNotificationService {
     }
 
     await _notificationService.scheduleNotification(
-      id: 'context_reminder_${task.id}',
-      title: title,
-      body: body,
-      scheduledDate: DateTime.now(),
-      type: NotificationTypeModel.taskReminder,
-      priority: priority,
-      actions: actions,
-      data: {
-        'task_id': task.id,
-        'project_id': task.projectId,
-        'context': context,
-      },
+      task: task,
+      scheduledTime: DateTime.now(),
     );
   }
 
@@ -213,15 +203,11 @@ class SmartNotificationService {
       body += 'You\'ve reached the $milestone milestone with $tasksCompleted tasks completed.';
     }
 
-    await _notificationService.scheduleNotification(
-      id: 'milestone_${project.id}_${DateTime.now().millisecondsSinceEpoch}',
+    await _notificationService.showImmediateNotification(
       title: title,
       body: body,
-      scheduledDate: DateTime.now(),
-      type: NotificationTypeModel.milestone,
-      priority: NotificationPriority.normal,
-      actions: [NotificationAction.view, NotificationAction.dismiss],
-      data: {
+      type: NotificationTypeModel.taskCompleted,
+      payload: {
         'project_id': project.id,
         'milestone': milestone,
         'completion_rate': completionRate,
@@ -254,15 +240,11 @@ class SmartNotificationService {
       body += ' You\'re on track with $remainingTasks tasks remaining.';
     }
 
-    await _notificationService.scheduleNotification(
-      id: 'deadline_warning_${project.id}',
+    await _notificationService.showImmediateNotification(
       title: title,
       body: body,
-      scheduledDate: DateTime.now(),
-      type: NotificationTypeModel.deadlineWarning,
-      priority: priority,
-      actions: [NotificationAction.view, NotificationAction.snooze],
-      data: {
+      type: NotificationTypeModel.overdueTask,
+      payload: {
         'project_id': project.id,
         'days_until_deadline': daysUntilDeadline,
         'remaining_tasks': remainingTasks,
@@ -402,15 +384,11 @@ class SmartNotificationService {
     final issueCount = issues.length;
     final topIssue = issues.first;
 
-    await _notificationService.scheduleNotification(
-      id: 'critical_health_${project.id}',
+    await _notificationService.showImmediateNotification(
       title: '🚨 Critical Project Issues',
       body: '${project.name} has $issueCount critical issues. ${topIssue.title}',
-      scheduledDate: DateTime.now(),
       type: NotificationTypeModel.emergency,
-      priority: NotificationPriority.critical,
-      actions: [NotificationAction.view, NotificationAction.complete],
-      data: {
+      payload: {
         'project_id': project.id,
         'health_score': health.healthScore,
         'critical_issues': issueCount,
@@ -419,15 +397,11 @@ class SmartNotificationService {
   }
 
   Future<void> _sendHealthDeteriorationAlert(Project project, ProjectHealth health) async {
-    await _notificationService.scheduleNotification(
-      id: 'health_deterioration_${project.id}',
+    await _notificationService.showImmediateNotification(
       title: '⚠️ Project Health Declining',
       body: '${project.name} health score is ${health.healthScore.round()}/100. Review needed.',
-      scheduledDate: DateTime.now(),
-      type: NotificationTypeModel.healthAlert,
-      priority: NotificationPriority.high,
-      actions: [NotificationAction.view, NotificationAction.snooze],
-      data: {
+      type: NotificationTypeModel.emergency,
+      payload: {
         'project_id': project.id,
         'health_score': health.healthScore,
       },
@@ -435,15 +409,11 @@ class SmartNotificationService {
   }
 
   Future<void> _sendHealthImprovementAlert(Project project, ProjectHealth health) async {
-    await _notificationService.scheduleNotification(
-      id: 'health_improvement_${project.id}',
+    await _notificationService.showImmediateNotification(
       title: '🎉 Project Thriving',
       body: '${project.name} is in excellent health (${health.healthScore.round()}/100). Keep it up!',
-      scheduledDate: DateTime.now(),
-      type: NotificationTypeModel.milestone,
-      priority: NotificationPriority.normal,
-      actions: [NotificationAction.view, NotificationAction.dismiss],
-      data: {
+      type: NotificationTypeModel.taskCompleted,
+      payload: {
         'project_id': project.id,
         'health_score': health.healthScore,
       },
@@ -456,15 +426,11 @@ class SmartNotificationService {
   ) async {
     final topSuggestion = suggestions.first;
 
-    await _notificationService.scheduleNotification(
-      id: 'urgent_ai_${project.id}',
+    await _notificationService.showImmediateNotification(
       title: '🤖 Urgent AI Recommendation',
       body: '${project.name}: ${topSuggestion.title}',
-      scheduledDate: DateTime.now(),
       type: NotificationTypeModel.smartSuggestion,
-      priority: NotificationPriority.high,
-      actions: [NotificationAction.view, NotificationAction.dismiss],
-      data: {
+      payload: {
         'project_id': project.id,
         'suggestion_id': topSuggestion.id,
         'suggestion_count': suggestions.length,
@@ -479,15 +445,11 @@ class SmartNotificationService {
     final suggestionCount = suggestions.length;
     final topSuggestion = suggestions.first;
 
-    await _notificationService.scheduleNotification(
-      id: 'high_confidence_ai_${project.id}',
+    await _notificationService.showImmediateNotification(
       title: '💡 High-Confidence AI Insights',
       body: '${project.name}: ${topSuggestion.title} + ${suggestionCount - 1} more',
-      scheduledDate: DateTime.now(),
       type: NotificationTypeModel.smartSuggestion,
-      priority: NotificationPriority.normal,
-      actions: [NotificationAction.view, NotificationAction.dismiss],
-      data: {
+      payload: {
         'project_id': project.id,
         'suggestion_count': suggestionCount,
       },
@@ -497,15 +459,11 @@ class SmartNotificationService {
   Future<void> _sendWeeklyAIDigest(Project project, ProjectAISuggestions suggestions) async {
     final activeCount = suggestions.activeSuggestions.length;
 
-    await _notificationService.scheduleNotification(
-      id: 'weekly_ai_digest_${project.id}',
+    await _notificationService.showImmediateNotification(
       title: '📊 Weekly AI Insights',
       body: '${project.name}: $activeCount optimization opportunities available',
-      scheduledDate: DateTime.now(),
       type: NotificationTypeModel.smartSuggestion,
-      priority: NotificationPriority.low,
-      actions: [NotificationAction.view, NotificationAction.dismiss],
-      data: {
+      payload: {
         'project_id': project.id,
         'active_suggestions': activeCount,
         'overall_confidence': suggestions.overallConfidence,
@@ -520,15 +478,11 @@ class SmartNotificationService {
     final riskCount = analytics.riskFactors.length;
     final topRisk = analytics.riskFactors.isNotEmpty ? analytics.riskFactors.first : 'Multiple risk factors';
 
-    await _notificationService.scheduleNotification(
-      id: 'high_risk_prediction_${project.id}',
+    await _notificationService.showImmediateNotification(
       title: '⚠️ High Risk Detected',
       body: '${project.name}: $topRisk (${analytics.successProbability.round()}% success probability)',
-      scheduledDate: DateTime.now(),
-      type: NotificationTypeModel.riskAlert,
-      priority: NotificationPriority.high,
-      actions: [NotificationAction.view, NotificationAction.snooze],
-      data: {
+      type: NotificationTypeModel.emergency,
+      payload: {
         'project_id': project.id,
         'success_probability': analytics.successProbability,
         'risk_factors_count': riskCount,
@@ -541,15 +495,11 @@ class SmartNotificationService {
     ProjectPredictiveAnalytics analytics,
     int daysLate,
   ) async {
-    await _notificationService.scheduleNotification(
-      id: 'completion_delay_${project.id}',
+    await _notificationService.showImmediateNotification(
       title: '📅 Predicted Delay',
       body: '${project.name} may finish $daysLate days late. Consider adjusting timeline.',
-      scheduledDate: DateTime.now(),
-      type: NotificationTypeModel.deadlineWarning,
-      priority: NotificationPriority.high,
-      actions: [NotificationAction.view, NotificationAction.reschedule],
-      data: {
+      type: NotificationTypeModel.overdueTask,
+      payload: {
         'project_id': project.id,
         'predicted_delay_days': daysLate,
         'predicted_completion': analytics.predictedCompletionDate?.toIso8601String(),
@@ -561,15 +511,11 @@ class SmartNotificationService {
     Project project,
     ProjectPredictiveAnalytics analytics,
   ) async {
-    await _notificationService.scheduleNotification(
-      id: 'low_success_${project.id}',
+    await _notificationService.showImmediateNotification(
       title: '🎯 Success Risk Alert',
       body: '${project.name} has ${analytics.successProbability.round()}% success probability. Action needed.',
-      scheduledDate: DateTime.now(),
-      type: NotificationTypeModel.riskAlert,
-      priority: NotificationPriority.high,
-      actions: [NotificationAction.view, NotificationAction.complete],
-      data: {
+      type: NotificationTypeModel.emergency,
+      payload: {
         'project_id': project.id,
         'success_probability': analytics.successProbability,
       },
@@ -577,15 +523,11 @@ class SmartNotificationService {
   }
 
   Future<void> _sendProductivityBoostNotification(int today, int yesterday) async {
-    await _notificationService.scheduleNotification(
-      id: 'productivity_boost_${DateTime.now().millisecondsSinceEpoch}',
+    await _notificationService.showImmediateNotification(
       title: '🚀 Productivity Boost',
       body: 'Great job! You completed $today tasks today vs $yesterday yesterday.',
-      scheduledDate: DateTime.now(),
-      type: NotificationTypeModel.productivityInsight,
-      priority: NotificationPriority.low,
-      actions: [NotificationAction.view, NotificationAction.dismiss],
-      data: {
+      type: NotificationTypeModel.dailySummary,
+      payload: {
         'tasks_today': today,
         'tasks_yesterday': yesterday,
       },
@@ -593,28 +535,20 @@ class SmartNotificationService {
   }
 
   Future<void> _sendProductivityEncouragementNotification() async {
-    await _notificationService.scheduleNotification(
-      id: 'productivity_encouragement_${DateTime.now().millisecondsSinceEpoch}',
+    await _notificationService.showImmediateNotification(
       title: '💪 Stay Motivated',
       body: 'No tasks completed today yet. Even small progress counts!',
-      scheduledDate: DateTime.now(),
-      type: NotificationTypeModel.encouragement,
-      priority: NotificationPriority.low,
-      actions: [NotificationAction.view, NotificationAction.dismiss],
-      data: {},
+      type: NotificationTypeModel.dailySummary,
+      payload: {},
     );
   }
 
   Future<void> _sendBlockerReadyNotification(TaskModel task, int blockingCount) async {
-    await _notificationService.scheduleNotification(
-      id: 'blocker_ready_${task.id}',
+    await _notificationService.showImmediateNotification(
       title: '🚧 Blocker Ready',
       body: '${task.title} can now be started (unblocking $blockingCount tasks)',
-      scheduledDate: DateTime.now(),
-      type: NotificationTypeModel.blockerAlert,
-      priority: NotificationPriority.high,
-      actions: [NotificationAction.view, NotificationAction.complete],
-      data: {
+      type: NotificationTypeModel.overdueTask,
+      payload: {
         'task_id': task.id,
         'blocked_tasks_count': blockingCount,
       },
@@ -622,15 +556,11 @@ class SmartNotificationService {
   }
 
   Future<void> _sendIdleProjectAlert(Project project, int daysSinceActivity) async {
-    await _notificationService.scheduleNotification(
-      id: 'idle_project_${project.id}',
+    await _notificationService.showImmediateNotification(
       title: '😴 Project Idle',
       body: '${project.name} has been inactive for $daysSinceActivity days. Time to check in?',
-      scheduledDate: DateTime.now(),
-      type: NotificationTypeModel.idleAlert,
-      priority: NotificationPriority.normal,
-      actions: [NotificationAction.view, NotificationAction.snooze],
-      data: {
+      type: NotificationTypeModel.overdueTask,
+      payload: {
         'project_id': project.id,
         'days_since_activity': daysSinceActivity,
       },

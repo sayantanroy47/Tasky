@@ -468,13 +468,30 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
           ],
         ),
         const SizedBox(height: 8),
-        ...tasks.map((task) => Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: AdvancedTaskCard(
-                task: task,
-                onTap: () => _viewTask(task),
+        if (tasks.isEmpty)
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surface,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: theme.colorScheme.outline.withValues(alpha: 0.5),
               ),
-            )),
+            ),
+            child: StandardizedText(
+              'No tasks in this category',
+              style: StandardizedTextStyle.bodyMedium,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+            ),
+          )
+        else
+          ...tasks.map((task) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: AdvancedTaskCard(
+                  task: task,
+                  onTap: () => _viewTask(task),
+                ),
+              )),
       ],
     );
   }
@@ -656,6 +673,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
       children: [
         // Project details
         Card(
+          color: theme.colorScheme.surfaceContainerLow,
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -677,6 +695,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
 
         // Quick actions
         Card(
+          color: theme.colorScheme.surfaceContainerLow,
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(

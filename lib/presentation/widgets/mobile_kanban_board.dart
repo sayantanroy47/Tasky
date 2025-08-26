@@ -6,12 +6,12 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../core/design_system/design_tokens.dart';
 import '../../domain/entities/task_model.dart';
-import '../../domain/entities/project.dart';
 import '../../domain/models/enums.dart';
 import '../../services/ui/mobile_gesture_service.dart';
 import '../../services/ui/slidable_feedback_service.dart';
+import '../../services/ui/slidable_action_service.dart';
 import '../providers/task_providers.dart';
-import '../providers/project_providers.dart';
+import '../providers/task_provider.dart';
 import 'enhanced_ux_widgets.dart';
 import 'glassmorphism_container.dart';
 import 'standardized_text.dart';
@@ -88,7 +88,7 @@ class _MobileKanbanBoardState extends ConsumerState<MobileKanbanBoard>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final mobileGestureService = ref.read(mobileGestureServiceProvider);
-    final tasksAsync = ref.watch(projectTasksProvider(widget.projectId));
+    final tasksAsync = ref.watch(tasksForProjectProvider(widget.projectId));
 
     return tasksAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
@@ -480,13 +480,6 @@ class _MobileKanbanBoardState extends ConsumerState<MobileKanbanBoard>
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                      style: StandardizedTextStyle.titleSmall.toTextStyle(context).copyWith(
-                        fontWeight: FontWeight.w500,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
                   if (task.priority.isHigh)
                     Icon(
                       PhosphorIcons.warning(),
@@ -565,7 +558,7 @@ class _MobileKanbanBoardState extends ConsumerState<MobileKanbanBoard>
           ),
         ),
       ),
-    )
+    );
   }
 
   Widget _buildErrorState(String error) {
@@ -591,7 +584,7 @@ class _MobileKanbanBoardState extends ConsumerState<MobileKanbanBoard>
           ),
           StandardizedGaps.vertical(SpacingSize.lg),
           EnhancedButton(
-            onPressed: () => ref.invalidate(projectTasksProvider(widget.projectId)),
+            onPressed: () => ref.invalidate(tasksForProjectProvider(widget.projectId)),
             child: const StandardizedText(
               'Retry',
               style: StandardizedTextStyle.buttonText,
@@ -609,7 +602,8 @@ class _MobileKanbanBoardState extends ConsumerState<MobileKanbanBoard>
     await _refreshAnimationController.forward();
     
     try {
-      await ref.read(taskNotifierProvider.notifier).refreshTasks();
+      // Refresh tasks by invalidating the provider
+      ref.invalidate(tasksForProjectProvider(widget.projectId));
       await SlidableFeedbackService.provideFeedback(SlidableActionType.neutral);
     } finally {
       await _refreshAnimationController.reverse();
@@ -629,11 +623,12 @@ class _MobileKanbanBoardState extends ConsumerState<MobileKanbanBoard>
   }
 
   void _handleTaskDrop(String taskId, TaskStatus newStatus) async {
-    final task = await ref.read(taskByIdProvider(taskId).future);
+    final task = await ref.read(singleTaskProvider(taskId).future);
     if (task == null) return;
 
     if (task.status != newStatus) {
-      await ref.read(taskNotifierProvider.notifier).updateTaskStatus(taskId, newStatus);
+      final taskModel = task.copyWith(status: newStatus);
+      await ref.read(taskOperationsProvider).updateTask(taskModel);
       await SlidableFeedbackService.provideFeedback(SlidableActionType.complete);
     }
     
@@ -650,7 +645,9 @@ class _MobileKanbanBoardState extends ConsumerState<MobileKanbanBoard>
   }
 
   void _archiveTask(TaskModel task) async {
-    await ref.read(taskNotifierProvider.notifier).archiveTask(task.id);
+    // Archive by updating status to cancelled (or delete if no archive status exists)
+    final archivedTask = task.copyWith(status: TaskStatus.cancelled);
+    await ref.read(taskOperationsProvider).updateTask(archivedTask);
     await SlidableFeedbackService.provideFeedback(SlidableActionType.archive);
   }
 
@@ -678,7 +675,7 @@ class _MobileKanbanBoardState extends ConsumerState<MobileKanbanBoard>
     );
 
     if (confirmed == true) {
-      await ref.read(taskNotifierProvider.notifier).deleteTask(task.id);
+      await ref.read(taskOperationsProvider).deleteTask(task);
       await SlidableFeedbackService.provideFeedback(SlidableActionType.destructive);
     }
   }

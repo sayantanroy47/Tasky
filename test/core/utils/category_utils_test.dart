@@ -36,13 +36,13 @@ void main() {
 
       test('getCategoryColor returns correct colors for legacy categories', () {
         final workColor = CategoryUtils.getCategoryColor('work');
-        expect(workColor.value, equals(const Color(0xFF1976D2).value));
+        expect(workColor.toARGB32(), equals(const Color(0xFF1976D2).toARGB32()));
 
         final personalColor = CategoryUtils.getCategoryColor('personal');
-        expect(personalColor.value, equals(const Color(0xFF388E3C).value));
+        expect(personalColor.toARGB32(), equals(const Color(0xFF388E3C).toARGB32()));
 
         final unknownColor = CategoryUtils.getCategoryColor('unknown');
-        expect(unknownColor.value, equals(const Color(0xFF6200EE).value));
+        expect(unknownColor.toARGB32(), equals(const Color(0xFF6200EE).toARGB32()));
       });
 
       test('getCategoryDisplayName formats names correctly', () {
@@ -91,13 +91,13 @@ void main() {
 
       test('getCategoryColorFromEntity parses hex colors correctly', () {
         final color = CategoryUtils.getCategoryColorFromEntity(testCategory);
-        expect(color.value, equals(const Color(0xFF1976D2).value));
+        expect(color.toARGB32(), equals(const Color(0xFF1976D2).toARGB32()));
       });
 
       test('getCategoryColorFromEntity handles invalid color format', () {
         final categoryWithInvalidColor = testCategory.copyWith(color: 'invalid-color');
         final color = CategoryUtils.getCategoryColorFromEntity(categoryWithInvalidColor);
-        expect(color.value, equals(const Color(0xFF6200EE).value)); // Default color
+        expect(color.toARGB32(), equals(const Color(0xFF6200EE).toARGB32())); // Default color
       });
 
       test('getCategoryColorFromEntity uses theme fallback', () {
@@ -106,7 +106,7 @@ void main() {
         
         final categoryWithInvalidColor = testCategory.copyWith(color: 'invalid');
         final color = CategoryUtils.getCategoryColorFromEntity(categoryWithInvalidColor, theme: themeData);
-        expect(color.value, equals(primaryColor.value));
+        expect(color.toARGB32(), equals(primaryColor.toARGB32()));
       });
 
       test('buildCategoryIconContainerFromEntity creates valid widget', () {

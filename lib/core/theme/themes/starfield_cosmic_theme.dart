@@ -510,6 +510,13 @@ class StarfieldCosmicTheme {
         particleType: theme_effects.BackgroundParticleType.floating, // Floating stars
         particleOpacity: 0.5,                    // Stellar particle visibility
         effectIntensity: 0.6,                    // Moderate cosmic effects
+        geometricPattern: theme_effects.BackgroundGeometricPattern.radial, // Cosmic symmetry
+        patternAngle: 0.0, // Centered like a star
+        patternDensity: 1.1, // Stellar density
+        accentColors: [
+          Color(0x1A3F51B5), // Deep space blue at 0.1 alpha
+          Color(0x149C27B0), // Cosmic purple at 0.08 alpha
+        ],
       ),
     );
   }

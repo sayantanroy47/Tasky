@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../domain/entities/ai_suggestion.dart';
+import '../../domain/entities/project_health.dart';
 import '../providers/smart_features_providers.dart';
 import 'glassmorphism_container.dart';
 import 'standardized_text.dart';
@@ -85,7 +86,7 @@ class SmartFeaturesDashboard extends ConsumerWidget {
                 'Urgent Suggestions',
                 data['urgent_suggestions']?.toString() ?? '0',
                 PhosphorIcons.lightbulb(),
-                context.primaryColor,
+                context.colors.interactive,
               ),
             ),
           ],
@@ -277,7 +278,7 @@ class SmartFeaturesDashboard extends ConsumerWidget {
             width: 4,
             height: 40,
             decoration: BoxDecoration(
-              color: _getSuggestionPriorityColor(suggestion.priority),
+              color: _getSuggestionPriorityColor(context, suggestion.priority),
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -305,13 +306,13 @@ class SmartFeaturesDashboard extends ConsumerWidget {
                     Icon(
                       PhosphorIcons.target(),
                       size: 12,
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
+                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
                     ),
                     StandardizedGaps.horizontal(SpacingSize.xs),
                     StandardizedText(
                       '${suggestion.confidence.round()}% confidence',
                       style: StandardizedTextStyle.labelSmall,
-                      color: Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
                     ),
                   ],
                 ),
@@ -323,7 +324,7 @@ class SmartFeaturesDashboard extends ConsumerWidget {
             onPressed: () => _handleSuggestionAction(context, ref, suggestion),
             icon: Icon(
               PhosphorIcons.caretRight(),
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
             ),
           ),
         ],
@@ -350,7 +351,7 @@ class SmartFeaturesDashboard extends ConsumerWidget {
                 width: 12,
                 height: 12,
                 decoration: BoxDecoration(
-                  color: _getHealthLevelColor(health.level),
+                  color: _getHealthLevelColor(context, health.level),
                   shape: BoxShape.circle,
                 ),
               ),
@@ -374,7 +375,7 @@ class SmartFeaturesDashboard extends ConsumerWidget {
               StandardizedText(
                 '${health.healthScore.round()}/100',
                 style: StandardizedTextStyle.labelMedium,
-                color: _getHealthLevelColor(health.level),
+                color: _getHealthLevelColor(context, health.level),
               ),
             ],
           ),
@@ -437,7 +438,7 @@ class SmartFeaturesDashboard extends ConsumerWidget {
             width: 12,
             height: 12,
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.2),
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2),
               shape: BoxShape.circle,
             ),
           ),
@@ -450,7 +451,7 @@ class SmartFeaturesDashboard extends ConsumerWidget {
                   height: 14,
                   width: 120,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -459,7 +460,7 @@ class SmartFeaturesDashboard extends ConsumerWidget {
                   height: 12,
                   width: 80,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -501,19 +502,19 @@ class SmartFeaturesDashboard extends ConsumerWidget {
           Icon(
             PhosphorIcons.robot(),
             size: 48,
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.3),
           ),
           const SizedBox(height: 12),
           StandardizedText(
             'Smart Features Disabled',
             style: StandardizedTextStyle.titleMedium,
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
           ),
           const SizedBox(height: 8),
           StandardizedText(
             'Enable AI-powered insights in settings to see project health monitoring, suggestions, and predictions.',
             style: StandardizedTextStyle.bodyMedium,
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
             textAlign: TextAlign.center,
           ),
         ],
@@ -552,7 +553,7 @@ class SmartFeaturesDashboard extends ConsumerWidget {
           StandardizedText(
             error,
             style: StandardizedTextStyle.bodySmall,
-            color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
             textAlign: TextAlign.center,
           ),
         ],
@@ -587,7 +588,7 @@ class SmartFeaturesDashboard extends ConsumerWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         border: Border.all(
-          color: Theme.of(context).colorScheme.error.withOpacity(0.3),
+          color: Theme.of(context).colorScheme.error.withValues(alpha: 0.3),
         ),
         borderRadius: BorderRadius.circular(8),
       ),
@@ -601,20 +602,20 @@ class SmartFeaturesDashboard extends ConsumerWidget {
 
   // Helper methods
   
-  Color _getSuggestionPriorityColor(SuggestionPriority priority) {
+  Color _getSuggestionPriorityColor(BuildContext context, SuggestionPriority priority) {
     switch (priority) {
       case SuggestionPriority.urgent:
         return context.errorColor;
       case SuggestionPriority.high:
         return context.warningColor;
       case SuggestionPriority.medium:
-        return context.primaryColor;
+        return context.colors.interactive;
       case SuggestionPriority.low:
         return context.successColor;
     }
   }
 
-  Color _getHealthLevelColor(ProjectHealthLevel level) {
+  Color _getHealthLevelColor(BuildContext context, ProjectHealthLevel level) {
     switch (level) {
       case ProjectHealthLevel.excellent:
         return context.successColor;
@@ -668,7 +669,7 @@ class _StatCardSkeleton extends StatelessWidget {
             height: 12,
             width: 80,
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -677,7 +678,7 @@ class _StatCardSkeleton extends StatelessWidget {
             height: 20,
             width: 40,
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(2),
             ),
           ),

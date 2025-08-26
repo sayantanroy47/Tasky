@@ -400,7 +400,6 @@ class _TaskAudioControlsState extends ConsumerState<TaskAudioControls> {
               onTap: () async {
                 Navigator.pop(context);
                 try {
-                  final audioControls = ref.read(audioControlsProvider);
                   final notifier = ref.read(audioPlayerProvider.notifier);
                   await notifier.setSpeed(speed);
                 } catch (e) {

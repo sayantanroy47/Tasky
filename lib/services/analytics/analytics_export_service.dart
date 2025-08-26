@@ -122,7 +122,7 @@ class AnalyticsExportService {
 
     final xFile = XFile(exportResult.filePath!);
     
-    await Share.shareXFiles(
+    await SharePlus.instance.shareXFiles(
       [xFile],
       subject: subject ?? 'Project Analytics Report',
       text: text ?? 'Analytics report for project exported from Tasky',

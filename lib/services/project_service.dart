@@ -19,12 +19,14 @@ class ProjectService {
     required String name,
     String? description,
     String color = '#2196F3',
+    List<String> tagIds = const [],
     DateTime? deadline,
   }) async {
     final project = Project.create(
       name: name,
       description: description,
       color: color,
+      tagIds: tagIds,
       deadline: deadline,
     );
 

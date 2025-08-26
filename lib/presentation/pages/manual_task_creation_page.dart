@@ -7,7 +7,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../core/design_system/design_tokens.dart';
 import '../../core/theme/material3/motion_system.dart';
 import '../../core/theme/typography_constants.dart';
-import '../../core/utils/category_utils.dart';
+import '../../domain/entities/tag.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
 import '../../domain/entities/recurrence_pattern.dart';
@@ -17,6 +17,7 @@ import '../widgets/standardized_app_bar.dart';
 import '../widgets/standardized_text.dart';
 import '../widgets/theme_background_widget.dart';
 import '../widgets/recurrence_pattern_picker.dart';
+import '../widgets/tag_selection_widget.dart';
 
 /// Ultra-modern full-screen manual task creation page
 class ManualTaskCreationPage extends ConsumerStatefulWidget {
@@ -43,7 +44,7 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
 
   // Task properties
   TaskPriority _priority = TaskPriority.medium;
-  String? _selectedCategory;
+  List<Tag> _selectedTags = [];
   DateTime? _dueDate = DateTime.now();
   TimeOfDay? _dueTime;
   DateTime? _reminderDate;
@@ -158,9 +159,9 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
       }
 
       // Debug: Log what we're trying to save
-      debugPrint('🔍 Creating task with category: $_selectedCategory');
-      final tags = <String>[if (_selectedCategory != null) _selectedCategory!];
-      debugPrint('🔍 Tags array: $tags');
+      debugPrint('🔍 Creating task with ${_selectedTags.length} tags: ${_selectedTags.map((t) => t.name).join(', ')}');
+      final tagIds = _selectedTags.map((tag) => tag.id).toList();
+      debugPrint('🔍 TagIds array: $tagIds');
 
       final task = TaskModel(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -168,7 +169,7 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
         description: _descriptionController.text.isNotEmpty ? _descriptionController.text : null,
         priority: _priority,
         status: TaskStatus.pending,
-        tags: tags,
+        tagIds: tagIds,
         dueDate: fullDueDate,
         recurrence: _isRecurringTask ? _recurrencePattern : null,
         createdAt: DateTime.now(),
@@ -185,8 +186,8 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
       );
 
       // Debug: Log task after creation but before saving
-      debugPrint('🔍 Created TaskModel with tags: ${task.tags}');
-      debugPrint('🔍 TaskModel details: id=${task.id}, title=${task.title}, tags=${task.tags}');
+      debugPrint('🔍 Created TaskModel with tagIds: ${task.tagIds}');
+      debugPrint('🔍 TaskModel details: id=${task.id}, title=${task.title}, tagIds=${task.tagIds}');
 
       await ref.read(taskOperationsProvider).createTask(task);
       
@@ -279,8 +280,8 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
 
                     const SizedBox(height: 20),
 
-                    // Category Section
-                    _buildCategorySection(context, theme),
+                    // Tags Section
+                    _buildTagsSection(context, theme),
 
                     const SizedBox(height: 20),
 
@@ -695,13 +696,7 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
     );
   }
 
-  Widget _buildCategorySection(BuildContext context, ThemeData theme) {
-    // Get available categories from CategoryUtils
-    final categories = [
-      'work', 'personal', 'shopping', 'health', 'fitness', 'finance',
-      'education', 'travel', 'home', 'family', 'entertainment', 'food',
-    ];
-
+  Widget _buildTagsSection(BuildContext context, ThemeData theme) {
     return GlassmorphismContainer(
       level: GlassLevel.content,
       padding: const EdgeInsets.all(20),
@@ -717,7 +712,7 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
                 color: theme.colorScheme.primary,
               ),
               const SizedBox(width: 8),
-              StandardizedTextVariants.sectionHeader('Category'),
+              StandardizedTextVariants.sectionHeader('Tags'),
               const SizedBox(width: 8),
               StandardizedText(
                 '(Optional)',
@@ -727,118 +722,17 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
             ],
           ),
           const SizedBox(height: 12),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-            decoration: BoxDecoration(
-              border: Border.all(color: theme.colorScheme.outline.withValues(alpha: 0.3)),
-              borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-            ),
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton<String>(
-                value: _selectedCategory,
-                hint: Row(
-                  children: [
-                    Icon(
-                      PhosphorIcons.tag(),
-                      size: 16,
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                    const SizedBox(width: 8),
-                    const StandardizedText('Select Category', style: StandardizedTextStyle.bodyMedium),
-                  ],
-                ),
-                isExpanded: true,
-                items: [
-                  // Clear selection option
-                  DropdownMenuItem<String>(
-                    value: null,
-                    child: Row(
-                      children: [
-                        Icon(
-                          PhosphorIcons.x(),
-                          size: 16,
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: StandardizedText(
-                            'No Category',
-                            style: StandardizedTextStyle.bodyMedium,
-                            color: theme.colorScheme.onSurfaceVariant,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  // Category options
-                  ...categories.map((category) => DropdownMenuItem<String>(
-                    value: category,
-                    child: Row(
-                      children: [
-                        CategoryUtils.buildCategoryIconContainer(
-                          category: category,
-                          size: 20,
-                          theme: theme,
-                          iconSizeRatio: 0.7,
-                          borderRadius: 4,
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: StandardizedText(
-                            CategoryUtils.getCategoryDisplayName(category), 
-                            style: StandardizedTextStyle.bodyMedium,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                  )),
-                ],
-                onChanged: (value) {
-                  setState(() {
-                    _selectedCategory = value;
-                  });
-                },
-              ),
-            ),
+          TagSelectionWidget(
+            selectedTags: _selectedTags,
+            onTagsChanged: (tags) {
+              setState(() {
+                _selectedTags = tags;
+              });
+            },
+            maxTags: 5,
+            allowCreate: true,
+            isCompact: false,
           ),
-          if (_selectedCategory != null) ...[
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: CategoryUtils.getCategoryColor(_selectedCategory!, theme: theme)
-                    .withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: CategoryUtils.getCategoryColor(_selectedCategory!, theme: theme)
-                      .withValues(alpha: 0.3),
-                  width: 1,
-                ),
-              ),
-              child: Row(
-                children: [
-                  CategoryUtils.buildCategoryIconContainer(
-                    category: _selectedCategory!,
-                    size: 24,
-                    theme: theme,
-                    iconSizeRatio: 0.6,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: StandardizedText(
-                      'Selected: ${CategoryUtils.getCategoryDisplayName(_selectedCategory!)}',
-                      style: StandardizedTextStyle.labelMedium,
-                      color: CategoryUtils.getCategoryColor(_selectedCategory!, theme: theme),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
         ],
       ),
     );

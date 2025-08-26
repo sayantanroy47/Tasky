@@ -292,11 +292,6 @@ class ProjectTemplateService {
     String stepId,
     Map<String, dynamic> stepValues,
   ) async {
-    final step = template.wizardSteps.firstWhere(
-      (s) => s.id == stepId,
-      orElse: () => throw ArgumentError('Step not found: $stepId'),
-    );
-
     final stepVariables = template.getVariablesForStep(stepId);
 
     for (final variable in stepVariables) {
@@ -319,11 +314,6 @@ class ProjectTemplateService {
     String currentStepId,
     Map<String, dynamic> allValues,
   ) {
-    final currentStep = template.wizardSteps.firstWhere(
-      (s) => s.id == currentStepId,
-      orElse: () => throw ArgumentError('Current step not found: $currentStepId'),
-    );
-
     final sortedSteps = template.wizardSteps.toList()
       ..sort((a, b) => a.order.compareTo(b.order));
 

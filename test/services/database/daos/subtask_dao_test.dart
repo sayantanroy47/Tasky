@@ -2,26 +2,25 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:drift/drift.dart' hide isNull, isNotNull;
 import 'package:drift/native.dart';
 
-import 'package:task_tracker_app/services/database/database.dart';
+import 'package:task_tracker_app/services/database/database.dart' as db;
 import 'package:task_tracker_app/services/database/daos/subtask_dao.dart';
-import 'package:task_tracker_app/domain/entities/subtask.dart';
+import 'package:task_tracker_app/domain/entities/subtask.dart' as entities;
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   
   group('SubtaskDao', () {
-    late AppDatabase database;
+    late db.AppDatabase database;
     late SubtaskDao subtaskDao;
-    late SubTask testSubtask;
+    late entities.SubTask testSubtask;
 
     setUp(() async {
-      database = AppDatabase.forTesting(NativeDatabase.memory());
+      database = db.AppDatabase.forTesting(NativeDatabase.memory());
       subtaskDao = database.subtaskDao;
       
-      testSubtask = SubTask.create(
+      testSubtask = entities.SubTask.create(
         title: 'Test Subtask',
         taskId: 'test-task-id',
-        description: 'Test subtask description',
       );
     });
 
@@ -40,10 +39,9 @@ void main() {
       });
 
       test('should create subtask with all properties', () async {
-        final complexSubtask = SubTask.create(
+        final complexSubtask = entities.SubTask.create(
           title: 'Complex Subtask',
           taskId: 'complex-task-id',
-          description: 'Complex subtask description',
           sortOrder: 5,
         ).copyWith(isCompleted: true);
 
@@ -53,19 +51,18 @@ void main() {
         expect(retrieved, isNotNull);
         expect(retrieved!.title, equals('Complex Subtask'));
         expect(retrieved.taskId, equals('complex-task-id'));
-        expect(retrieved.description, equals('Complex subtask description'));
         expect(retrieved.sortOrder, equals(5));
         expect(retrieved.isCompleted, isTrue);
       });
 
       test('should handle multiple subtasks for same task', () async {
-        final subtask1 = SubTask.create(
+        final subtask1 = entities.SubTask.create(
           title: 'Subtask 1',
           taskId: 'shared-task-id',
           sortOrder: 1,
         );
         
-        final subtask2 = SubTask.create(
+        final subtask2 = entities.SubTask.create(
           title: 'Subtask 2',
           taskId: 'shared-task-id',
           sortOrder: 2,
@@ -85,12 +82,11 @@ void main() {
       setUp(() async {
         // Create test data
         await subtaskDao.insertSubtask(testSubtask);
-        await subtaskDao.insertSubtask(SubTask.create(
+        await subtaskDao.insertSubtask(entities.SubTask.create(
           title: 'Another Subtask',
           taskId: 'another-task-id',
-          description: 'Another test subtask',
         ));
-        await subtaskDao.insertSubtask(SubTask.create(
+        await subtaskDao.insertSubtask(entities.SubTask.create(
           title: 'Third Subtask',
           taskId: 'test-task-id', // Same task as testSubtask
           sortOrder: 1,
@@ -127,19 +123,19 @@ void main() {
 
       test('should get subtasks ordered by sort order', () async {
         // Add more subtasks with specific sort orders
-        await subtaskDao.insertSubtask(SubTask.create(
+        await subtaskDao.insertSubtask(entities.SubTask.create(
           title: 'First Subtask',
           taskId: 'ordered-task-id',
           sortOrder: 1,
         ));
         
-        await subtaskDao.insertSubtask(SubTask.create(
+        await subtaskDao.insertSubtask(entities.SubTask.create(
           title: 'Third Subtask',
           taskId: 'ordered-task-id',
           sortOrder: 3,
         ));
         
-        await subtaskDao.insertSubtask(SubTask.create(
+        await subtaskDao.insertSubtask(entities.SubTask.create(
           title: 'Second Subtask',
           taskId: 'ordered-task-id',
           sortOrder: 2,
@@ -161,7 +157,6 @@ void main() {
       test('should update subtask successfully', () async {
         final updatedSubtask = testSubtask.copyWith(
           title: 'Updated Subtask Title',
-          description: 'Updated description',
           isCompleted: true,
           sortOrder: 10,
         );
@@ -171,7 +166,6 @@ void main() {
         final retrieved = await subtaskDao.getSubtaskById(testSubtask.id);
         expect(retrieved, isNotNull);
         expect(retrieved!.title, equals('Updated Subtask Title'));
-        expect(retrieved.description, equals('Updated description'));
         expect(retrieved.isCompleted, isTrue);
         expect(retrieved.sortOrder, equals(10));
       });
@@ -190,7 +184,7 @@ void main() {
     group('Subtask Deletion', () {
       setUp(() async {
         await subtaskDao.insertSubtask(testSubtask);
-        await subtaskDao.insertSubtask(SubTask.create(
+        await subtaskDao.insertSubtask(entities.SubTask.create(
           title: 'Another Subtask',
           taskId: 'another-task-id',
         ));
@@ -217,7 +211,7 @@ void main() {
 
       test('should delete all subtasks for a task', () async {
         // Add more subtasks for the same task
-        await subtaskDao.insertSubtask(SubTask.create(
+        await subtaskDao.insertSubtask(entities.SubTask.create(
           title: 'Third Subtask',
           taskId: 'test-task-id',
         ));
@@ -236,7 +230,7 @@ void main() {
     group('Subtask Completion', () {
       setUp(() async {
         await subtaskDao.insertSubtask(testSubtask);
-        await subtaskDao.insertSubtask(SubTask.create(
+        await subtaskDao.insertSubtask(entities.SubTask.create(
           title: 'Completed Subtask',
           taskId: 'test-task-id',
         ).copyWith(isCompleted: true));
@@ -276,19 +270,19 @@ void main() {
     group('Subtask Sorting', () {
       setUp(() async {
         // Create subtasks with different sort orders
-        await subtaskDao.insertSubtask(SubTask.create(
+        await subtaskDao.insertSubtask(entities.SubTask.create(
           title: 'Middle Subtask',
           taskId: 'sort-test-task',
           sortOrder: 2,
         ));
         
-        await subtaskDao.insertSubtask(SubTask.create(
+        await subtaskDao.insertSubtask(entities.SubTask.create(
           title: 'Last Subtask',
           taskId: 'sort-test-task',
           sortOrder: 3,
         ));
         
-        await subtaskDao.insertSubtask(SubTask.create(
+        await subtaskDao.insertSubtask(entities.SubTask.create(
           title: 'First Subtask',
           taskId: 'sort-test-task',
           sortOrder: 1,
@@ -328,10 +322,9 @@ void main() {
       });
 
       test('should handle malformed data gracefully', () async {
-        final edgeCaseSubtask = SubTask.create(
+        final edgeCaseSubtask = entities.SubTask.create(
           title: 'Edge Case Subtask',
           taskId: 'edge-case-task',
-          description: 'A' * 1000, // Very long description
         );
         
         expect(() => subtaskDao.insertSubtask(edgeCaseSubtask), returnsNormally);
@@ -358,7 +351,7 @@ void main() {
 
     group('Batch Operations', () {
       test('should handle batch subtask insertion', () async {
-        final subtasks = List.generate(10, (index) => SubTask.create(
+        final subtasks = List.generate(10, (index) => entities.SubTask.create(
           title: 'Batch Subtask $index',
           taskId: 'batch-task-id',
           sortOrder: index,
@@ -379,7 +372,7 @@ void main() {
       });
 
       test('should handle batch subtask updates', () async {
-        final subtasks = List.generate(5, (index) => SubTask.create(
+        final subtasks = List.generate(5, (index) => entities.SubTask.create(
           title: 'Update Test Subtask $index',
           taskId: 'update-test-task',
           sortOrder: index,

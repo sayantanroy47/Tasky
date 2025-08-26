@@ -947,6 +947,8 @@ class _MobileProjectFormState extends ConsumerState<MobileProjectForm>
     setState(() => _isLoading = true);
     _loadingAnimationController.forward();
 
+    final navigator = widget.isFullScreen ? Navigator.of(context) : null;
+
     try {
       final projectData = {
         'name': _nameController.text.trim(),
@@ -973,8 +975,8 @@ class _MobileProjectFormState extends ConsumerState<MobileProjectForm>
       await HapticFeedback.heavyImpact(); // Success feedback
       widget.onSuccess?.call();
       
-      if (widget.isFullScreen) {
-        Navigator.of(context).pop();
+      if (widget.isFullScreen && navigator != null) {
+        navigator.pop();
       }
     } catch (e) {
       _showSnackBar('Error saving project: ${e.toString()}', isError: true);

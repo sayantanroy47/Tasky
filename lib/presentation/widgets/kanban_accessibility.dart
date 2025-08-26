@@ -249,9 +249,6 @@ class _KanbanKeyboardHandlerState extends State<KanbanKeyboardHandler> {
   KeyEventResult _handleKeyEvent(FocusNode node, KeyEvent event) {
     if (event is! KeyDownEvent) return KeyEventResult.ignored;
 
-    final currentColumn = widget.columns[_selectedColumnIndex];
-    final currentTasks = widget.tasks[currentColumn.status] ?? [];
-
     switch (event.logicalKey) {
       case LogicalKeyboardKey.arrowLeft:
         _moveToColumn(_selectedColumnIndex - 1);

@@ -211,14 +211,22 @@ class _DetailedHeatmapPageState extends ConsumerState<DetailedHeatmapPage> {
   }
 
   Widget _buildHeatmapView(List<DailyStats> yearData) {
-    switch (_viewMode) {
-      case HeatmapViewMode.daily:
-        return _buildDailyHeatmap(yearData);
-      case HeatmapViewMode.weekly:
-        return _buildWeeklyHeatmap(yearData);
-      case HeatmapViewMode.monthly:
-        return _buildMonthlyHeatmap(yearData);
-    }
+    return Column(
+      children: [
+        // Year statistics section
+        _buildYearStats(yearData),
+        StandardizedGaps.lg,
+        
+        // Heatmap display based on view mode
+        Expanded(
+          child: switch (_viewMode) {
+            HeatmapViewMode.daily => _buildDailyHeatmap(yearData),
+            HeatmapViewMode.weekly => _buildWeeklyHeatmap(yearData),
+            HeatmapViewMode.monthly => _buildMonthlyHeatmap(yearData),
+          },
+        ),
+      ],
+    );
   }
 
   Widget _buildDailyHeatmap(List<DailyStats> yearData) {

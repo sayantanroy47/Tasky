@@ -39,7 +39,7 @@ class AutumnForestTheme {
       colors: _createAutumnColors(isDark: isDark),
       typography: _createAutumnTypography(isDark: isDark),
       animations: _createAutumnAnimations(),
-      effects: _createAutumnEffects(),
+      effects: _createAutumnEffects(isDark: isDark),
       spacing: _createAutumnSpacing(),
       components: _createAutumnComponents(),
     );
@@ -56,12 +56,12 @@ class AutumnForestTheme {
       return const ThemeColors(
         // Midnight Forest - Deep natural colors
         primary: Color(0xFFBF360C), // Dark maple
-        onPrimary: Color(0xFFFFFFFF),
+        onPrimary: Color(0xFFFFF8E8), // Warm autumn-tinted white
         primaryContainer: Color(0xFF8B2500),
         onPrimaryContainer: Color(0xFFFFE5DD),
         
         secondary: Color(0xFFE65100), // Deep sunset
-        onSecondary: Color(0xFFFFFFFF),
+        onSecondary: Color(0xFFFFF5E6), // Sunset-tinted white
         secondaryContainer: Color(0xFFBF3600),
         onSecondaryContainer: Color(0xFFFFF3E0),
         
@@ -422,12 +422,12 @@ class AutumnForestTheme {
   }
 
   static ThemeAnimations _createAutumnAnimations() {
-    return ThemeAnimations.fromThemeStyle(ThemeAnimationStyle.smooth).copyWith(
+    return const ThemeAnimations(
       // Gentle falling leaves
-      fast: const Duration(milliseconds: 200),
-      medium: const Duration(milliseconds: 400),
-      slow: const Duration(milliseconds: 600),
-      verySlow: const Duration(milliseconds: 1000),
+      fast: Duration(milliseconds: 200),
+      medium: Duration(milliseconds: 400),
+      slow: Duration(milliseconds: 600),
+      verySlow: Duration(milliseconds: 1000),
       
       // Natural autumn curves
       primaryCurve: Curves.easeInQuart, // Falling leaf movement
@@ -436,7 +436,7 @@ class AutumnForestTheme {
       exitCurve: Curves.easeInCubic,
       
       enableParticles: true,
-      particleConfig: const ParticleConfig(
+      particleConfig: ParticleConfig(
         density: ParticleDensity.low,
         speed: ParticleSpeed.slow,
         style: ParticleStyle.organic,
@@ -447,8 +447,8 @@ class AutumnForestTheme {
     );
   }
 
-  static theme_effects.ThemeEffects _createAutumnEffects() {
-    return theme_effects.ThemeEffects.fromEffectStyle(theme_effects.ThemeEffectStyle.elegant).copyWith(
+  static theme_effects.ThemeEffects _createAutumnEffects({required bool isDark}) {
+    return theme_effects.ThemeEffects(
       // Natural elegance
       shadowStyle: theme_effects.ShadowStyle.soft,
       gradientStyle: theme_effects.GradientStyle.subtle,
@@ -460,20 +460,27 @@ class AutumnForestTheme {
         style: theme_effects.BlurStyle.outer,
       ),
       
-      glowConfig: const theme_effects.GlowConfig(
+      glowConfig: theme_effects.GlowConfig(
         enabled: true,
-        intensity: 0.4,
-        spread: 6.0,
+        intensity: isDark ? 0.6 : 0.2, // Warmer amber glow in midnight forest
+        spread: isDark ? 8.0 : 4.0, // Wider atmospheric glow in dark forest
         style: theme_effects.GlowStyle.outer,
       ),
       
-      backgroundEffects: const theme_effects.BackgroundEffectConfig(
+      backgroundEffects: theme_effects.BackgroundEffectConfig(
         enableParticles: true,
         enableGradientMesh: true,
         enableScanlines: false,
         particleType: theme_effects.BackgroundParticleType.floating,
-        particleOpacity: 0.1,
-        effectIntensity: 0.4,
+        particleOpacity: isDark ? 0.18 : 0.05, // More falling leaves in midnight forest
+        effectIntensity: isDark ? 0.7 : 0.2, // Stronger forest atmosphere in dark mode
+        geometricPattern: theme_effects.BackgroundGeometricPattern.radial, // Natural harmony
+        patternAngle: 0.0, // Centered radial
+        patternDensity: 0.9, // Organic density
+        accentColors: [
+          (isDark ? const Color(0xFFD84315) : const Color(0xFFFF8F00)).withValues(alpha: 0.08), // Autumn orange
+          (isDark ? const Color(0xFF8D6E63) : const Color(0xFFA1887F)).withValues(alpha: 0.06), // Warm brown
+        ],
       ),
     );
   }

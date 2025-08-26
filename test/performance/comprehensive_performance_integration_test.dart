@@ -4,9 +4,9 @@ import 'dart:math' as math;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:task_tracker_app/domain/entities/task_model.dart';
-import 'package:task_tracker_app/domain/entities/project.dart';
+import 'package:task_tracker_app/domain/entities/project.dart' as entities;
 import 'package:task_tracker_app/domain/models/enums.dart';
-import 'package:task_tracker_app/services/database/database.dart';
+import 'package:task_tracker_app/services/database/database.dart' as db;
 import 'package:task_tracker_app/services/analytics/analytics_service.dart';
 
 import '../mocks/test_mocks.mocks.dart';
@@ -544,12 +544,12 @@ List<TaskModel> _generateMassiveTaskDataset(int count) {
 }
 
 /// Generates project dataset for testing
-List<Project> _generateProjectDataset(int count) {
-  final projects = <Project>[];
+List<entities.Project> _generateProjectDataset(int count) {
+  final projects = <entities.Project>[];
   final random = math.Random(12345);
   
   for (int i = 0; i < count; i++) {
-    final project = Project.create(
+    final project = entities.Project.create(
       name: 'Performance Project ${i + 1}',
       description: 'Generated project for performance testing',
       deadline: random.nextBool() 

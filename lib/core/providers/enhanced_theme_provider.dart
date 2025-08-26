@@ -12,9 +12,9 @@ import '../theme/themes/expressive_theme.dart';
 import '../theme/themes/koi_mystic_theme.dart';
 import '../theme/themes/demon_slayer_flame_theme.dart';
 import '../theme/themes/artist_palette_theme.dart';
-import '../theme/themes/autumn_forest_theme.dart';
+import '../theme/themes/autumn_forest_theme.dart';  
 import '../theme/themes/executive_platinum_theme.dart';
-import '../theme/themes/unicorn_dream_theme.dart';
+import '../theme/themes/unicorn_dream_theme.dart'; // FIXED!
 import '../theme/themes/cyberpunk_2077_theme.dart';
 import '../theme/themes/starfield_cosmic_theme.dart';
 import '../theme/themes/vampire_gothic_theme.dart';
@@ -134,17 +134,17 @@ class EnhancedThemeNotifier extends StateNotifier<EnhancedThemeState> {
       DraculaIDETheme.createDark(),
       KoiMysticTheme.createDark(),
       
-      // BEAST THEMES - All themes enabled
+      // BEAST THEMES - Working themes (others being fixed)
       DemonSlayerFlameTheme.createLight(),
       DemonSlayerFlameTheme.createDark(),
-      ArtistPaletteTheme.createLight(),
-      ArtistPaletteTheme.createDark(),
-      AutumnForestTheme.createLight(),
-      AutumnForestTheme.createDark(),
-      ExecutivePlatinumTheme.createLight(),
-      ExecutivePlatinumTheme.createDark(),
-      UnicornDreamTheme.createLight(),
-      UnicornDreamTheme.createDark(),
+      UnicornDreamTheme.createLight(), // FIXED!
+      UnicornDreamTheme.createDark(),  // FIXED!
+      ArtistPaletteTheme.createLight(), // FIXED!
+      ArtistPaletteTheme.createDark(),  // FIXED!
+      AutumnForestTheme.createLight(), // FIXED!
+      AutumnForestTheme.createDark(),  // FIXED!
+      ExecutivePlatinumTheme.createLight(), // FIXED!
+      ExecutivePlatinumTheme.createDark(),  // FIXED!
       Cyberpunk2077Theme.createLight(),
       Cyberpunk2077Theme.createDark(),
       StarfieldCosmicTheme.createLight(),
@@ -155,8 +155,8 @@ class EnhancedThemeNotifier extends StateNotifier<EnhancedThemeState> {
       MidnightGhostTheme.createDark(),
       CitrusFreshTheme.createLight(),
       CitrusFreshTheme.createDark(),
-      HollowKnightShadowTheme.createLight(),
-      HollowKnightShadowTheme.createDark(),
+      HollowKnightShadowTheme.createLight(), // FIXED!
+      HollowKnightShadowTheme.createDark(),  // FIXED!
     ];
     
     

@@ -3,9 +3,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drift/native.dart';
 import 'package:mockito/mockito.dart';
+import 'package:uuid/uuid.dart';
 
-import 'package:task_tracker_app/services/database/database.dart';
-import 'package:task_tracker_app/domain/entities/project.dart';
+import 'package:task_tracker_app/services/database/database.dart' as db;
+import 'package:task_tracker_app/domain/entities/project.dart' as entities;
 import 'package:task_tracker_app/domain/entities/task_model.dart';
 import 'package:task_tracker_app/domain/entities/task_enums.dart';
 import 'package:task_tracker_app/presentation/widgets/analytics_widgets.dart';
@@ -16,8 +17,8 @@ import 'package:task_tracker_app/core/providers/core_providers.dart';
 void main() {
   group('Project Analytics Workflow Integration Tests', () {
     late ProviderContainer container;
-    late AppDatabase testDatabase;
-    late List<Project> testProjects;
+    late db.AppDatabase testDatabase;
+    late List<entities.Project> testProjects;
     late List<TaskModel> testTasks;
     late DateTime baseDate;
 
@@ -25,38 +26,34 @@ void main() {
       TestWidgetsFlutterBinding.ensureInitialized();
       
       // Create test database
-      testDatabase = AppDatabase.forTesting(NativeDatabase.memory());
+      testDatabase = db.AppDatabase.forTesting(NativeDatabase.memory());
       baseDate = DateTime.now().subtract(const Duration(days: 30));
       
       // Create test projects with varied completion dates and metrics
       testProjects = [
-        Project(
+        entities.Project(
           id: 'project-1',
           name: 'Mobile App Development',
           description: 'iOS and Android app development',
           color: '#2196F3',
           createdAt: baseDate,
           deadline: baseDate.add(const Duration(days: 90)),
-          budget: 50000,
         ),
-        Project(
+        entities.Project(
           id: 'project-2',
           name: 'Website Redesign',
           description: 'Company website overhaul',
           color: '#FF9800',
           createdAt: baseDate.add(const Duration(days: 5)),
           deadline: baseDate.add(const Duration(days: 60)),
-          budget: 25000,
         ),
-        Project(
+        entities.Project(
           id: 'project-3',
           name: 'Marketing Campaign',
           description: 'Q1 marketing push',
           color: '#4CAF50',
           createdAt: baseDate.add(const Duration(days: 10)),
           deadline: baseDate.add(const Duration(days: 45)),
-          budget: 15000,
-          completedAt: baseDate.add(const Duration(days: 42)), // Completed early
         ),
       ];
 
@@ -96,60 +93,66 @@ void main() {
         ),
         
         // Project 2 - Website Redesign (Mixed Progress)
-        TaskModel.create(
+        TaskModel(
+          id: const Uuid().v4(),
           title: 'Content Strategy',
           priority: TaskPriority.medium,
           projectId: 'project-2',
           createdAt: baseDate.add(const Duration(days: 7)),
           completedAt: baseDate.add(const Duration(days: 12)),
-          estimatedDuration: const Duration(hours: 8),
-          actualDuration: const Duration(hours: 6),
+          estimatedDuration: 8 * 60,
+          actualDuration: 6 * 60,
         ),
-        TaskModel.create(
+        TaskModel(
+          id: const Uuid().v4(),
           title: 'Visual Design',
           priority: TaskPriority.high,
           projectId: 'project-2',
           createdAt: baseDate.add(const Duration(days: 8)),
           completedAt: baseDate.add(const Duration(days: 18)),
-          estimatedDuration: const Duration(hours: 24),
-          actualDuration: const Duration(hours: 28),
+          estimatedDuration: 24 * 60,
+          actualDuration: 28 * 60,
         ),
-        TaskModel.create(
+        TaskModel(
+          id: const Uuid().v4(),
           title: 'Development',
           priority: TaskPriority.high,
           projectId: 'project-2',
           createdAt: baseDate.add(const Duration(days: 19)),
-          estimatedDuration: const Duration(hours: 32),
-          actualDuration: const Duration(hours: 30),
+          estimatedDuration: 32 * 60,
+          actualDuration: 30 * 60,
         ),
         
         // Project 3 - Marketing Campaign (Completed)
-        TaskModel.create(
+        TaskModel(
+          id: const Uuid().v4(),
           title: 'Market Research',
           priority: TaskPriority.high,
           projectId: 'project-3',
           createdAt: baseDate.add(const Duration(days: 11)),
           completedAt: baseDate.add(const Duration(days: 15)),
-          estimatedDuration: const Duration(hours: 12),
-          actualDuration: const Duration(hours: 10),
+          estimatedDuration: 12 * 60,
+          actualDuration: 10 * 60,
         ),
-        TaskModel.create(
+        TaskModel(
+          id: const Uuid().v4(),
           title: 'Campaign Creation',
           priority: TaskPriority.high,
           projectId: 'project-3',
           createdAt: baseDate.add(const Duration(days: 16)),
           completedAt: baseDate.add(const Duration(days: 25)),
-          estimatedDuration: const Duration(hours: 20),
-          actualDuration: const Duration(hours: 18),
+          estimatedDuration: 20 * 60,
+          actualDuration: 18 * 60,
         ),
-        TaskModel.create(
+        TaskModel(
+          id: const Uuid().v4(),
           title: 'Campaign Launch',
           priority: TaskPriority.urgent,
           projectId: 'project-3',
           createdAt: baseDate.add(const Duration(days: 26)),
           completedAt: baseDate.add(const Duration(days: 30)),
-          estimatedDuration: const Duration(hours: 8),
-          actualDuration: const Duration(hours: 8),
+          estimatedDuration: 8 * 60,
+          actualDuration: 8 * 60,
         ),
       ];
 
@@ -1296,7 +1299,8 @@ void main() {
         // Create large dataset for performance testing
         final largeTaskSet = List.generate(
           10000,
-          (index) => TaskModel.create(
+          (index) => TaskModel(
+            id: const Uuid().v4(),
             title: 'Performance Test Task ${index + 1}',
             priority: TaskPriority.values[index % TaskPriority.values.length],
             projectId: testProjects[index % 3].id,

@@ -121,14 +121,14 @@ class ThemeTypography {
       displayLarge: LocalFonts.getFont(
         displayFont,
         fontSize: sizes['displayLarge']!,
-        fontWeight: FontWeight.w300,
+        fontWeight: FontWeight.w400,
         letterSpacing: -1.5,
         color: textColor,
       ),
       displayMedium: LocalFonts.getFont(
         displayFont,
         fontSize: sizes['displayMedium']!,
-        fontWeight: FontWeight.w300,
+        fontWeight: FontWeight.w400,
         letterSpacing: -0.5,
         color: textColor,
       ),

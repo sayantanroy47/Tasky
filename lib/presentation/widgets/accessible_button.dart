@@ -5,6 +5,7 @@ import '../../core/design_system/design_tokens.dart';
 import '../../core/theme/typography_constants.dart';
 import 'glassmorphism_container.dart';
 import 'standardized_animations.dart';
+import 'standardized_spacing.dart';
 
 /// Accessible button with glassmorphism design and WCAG AA compliance
 class AccessibleButton extends StatefulWidget {

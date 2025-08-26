@@ -908,7 +908,7 @@ class _ColorSchemeShowcase extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '#${(colorInfo['color'] as Color).value.toRadixString(16).toUpperCase().substring(2)}',
+                  '#${(colorInfo['color'] as Color).toARGB32().toRadixString(16).toUpperCase().substring(2)}',
                   style: TextStyle(
                     color: (colorInfo['onColor'] as Color).withOpacity(0.7),
                     fontSize: 12,

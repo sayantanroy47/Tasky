@@ -90,6 +90,32 @@ abstract class NotificationService {
 
   /// Stream of notification events (for handling background notifications)
   Stream<NotificationEvent> get notificationEvents;
+
+  /// Shows a notification immediately (alias for showImmediateNotification)
+  Future<void> showNotification({
+    required String title,
+    required String body,
+    String? taskId,
+    NotificationTypeModel type = NotificationTypeModel.taskReminder,
+    Map<String, dynamic>? payload,
+  }) => showImmediateNotification(
+    title: title,
+    body: body,
+    taskId: taskId,
+    type: type,
+    payload: payload,
+  );
+
+  /// Schedules a notification (alias for scheduleTaskReminder)
+  Future<int?> scheduleNotification({
+    required TaskModel task,
+    required DateTime scheduledTime,
+    Duration? customReminder,
+  }) => scheduleTaskReminder(
+    task: task,
+    scheduledTime: scheduledTime,
+    customReminder: customReminder,
+  );
 }
 
 /// Events that can be emitted by the notification service

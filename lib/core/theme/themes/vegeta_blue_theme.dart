@@ -501,6 +501,13 @@ class VegetaBlueTheme {
         particleType: theme_effects.BackgroundParticleType.energy,
         particleOpacity: 0.2,
         effectIntensity: 1.0,
+        geometricPattern: theme_effects.BackgroundGeometricPattern.diamond,
+        patternAngle: 0.0,
+        patternDensity: 0.8,
+        accentColors: [
+          Color(0x1A009DFF), // SSGSS Azure blue at 0.1 alpha
+          Color(0x1AFACC15), // Golden plasma yellow at 0.1 alpha
+        ],
       ),
     );
   }
@@ -576,7 +583,7 @@ class _VegetaColorsHelper {
   final bool isDark;
   const _VegetaColorsHelper({this.isDark = false});
   
-  Color get onBackground => isDark ? const Color(0xFFFFFFFF) : const Color(0xFF1a1a1a); // White text for dark theme
+  Color get onBackground => isDark ? const Color(0xFFE8F4FF) : const Color(0xFF1a1a1a); // Blue-tinted white for Vegeta theme consistency
   Color get primary => const Color(0xFF009DFF);  // Updated azure base
   Color get secondary => isDark ? const Color(0xFF87CEEB) : const Color(0xFF66B3FF);
 }

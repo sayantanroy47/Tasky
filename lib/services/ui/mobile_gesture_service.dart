@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../gesture_customization_service.dart';
 import 'slidable_feedback_service.dart';
+import 'slidable_action_service.dart';
 
 /// Comprehensive mobile gesture service for project navigation
 /// Provides touch-optimized interactions with haptic feedback and smooth animations
@@ -119,7 +120,7 @@ class MobileGestureService {
   /// Creates a pull-to-refresh gesture detector
   Widget createPullToRefreshGestureDetector({
     required Widget child,
-    required AsyncCallback onRefresh,
+    required Future<void> Function() onRefresh,
     double refreshThreshold = 100.0,
     String? semanticLabel,
   }) {
@@ -214,6 +215,8 @@ class _MobileGestureDetectorWidget extends StatefulWidget {
     this.onDoubleTap,
     this.onSwipeLeft,
     this.onSwipeRight,
+    this.onSwipeUp,
+    this.onSwipeDown,
   });
 
   @override
@@ -432,9 +435,10 @@ class _TabNavigationGestureDetectorState extends State<_TabNavigationGestureDete
   void _handlePanEnd(DragEndDetails details) async {
     setState(() => _isDragging = false);
 
+    final screenWidth = MediaQuery.of(context).size.width;
+
     if (!await widget.gestureService._isGestureEnabled(GestureType.swipe)) return;
 
-    final screenWidth = MediaQuery.of(context).size.width;
     final swipeThreshold = screenWidth * MobileGestureService._swipeThreshold;
 
     if (_dragDistance.abs() < swipeThreshold) return;
@@ -612,7 +616,7 @@ class _DragDropGestureDetectorState extends State<_DragDropGestureDetector> {
 class _PullToRefreshGestureDetector extends StatefulWidget {
   final MobileGestureService gestureService;
   final Widget child;
-  final AsyncCallback onRefresh;
+  final Future<void> Function() onRefresh;
   final double refreshThreshold;
   final String? semanticLabel;
 

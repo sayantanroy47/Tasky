@@ -697,7 +697,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> with Tick
         ),
         child: Center(
           child: Dialog(
-          child: Padding(
+            child: Padding(
             padding: StandardizedSpacing.padding(SpacingSize.lg),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -738,6 +738,7 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> with Tick
               ],
             ),
           ),
+        ),
         ),
       ),
     );
@@ -794,17 +795,17 @@ class _DependencyManagerState extends ConsumerState<DependencyManager> with Tick
   }
 
   Color _getPriorityColor(TaskPriority priority) {
-    // Note: This method now requires BuildContext for semantic colors
-    // Consider passing context or using a different approach
+    // Note: This method needs BuildContext to use StandardizedColors
+    // For now, returning a fallback - should be refactored to pass context
     switch (priority) {
       case TaskPriority.low:
-        return context.successColor;
+        return Colors.green;
       case TaskPriority.medium:
-        return context.warningColor;
+        return Colors.orange;
       case TaskPriority.high:
-        return context.errorColor;
+        return Colors.red;
       case TaskPriority.urgent:
-        return context.urgentColor;
+        return Colors.deepOrange;
     }
   }
 

@@ -198,9 +198,7 @@ class DependencyConnectionPainter extends CustomPainter {
   }
 
   Offset _calculateControlPoint(Offset start, Offset end, bool isFirst) {
-    final midX = (start.dx + end.dx) / 2;
     final horizontalDistance = (end.dx - start.dx).abs();
-    final verticalDistance = (end.dy - start.dy).abs();
     
     // Create more natural curves
     final controlDistance = math.min(horizontalDistance * 0.5, 100.0);

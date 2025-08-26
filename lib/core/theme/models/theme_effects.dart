@@ -245,6 +245,12 @@ class BackgroundEffectConfig {
   final BackgroundParticleType particleType;
   final double particleOpacity;
   final double effectIntensity;
+  
+  // New geometric pattern system
+  final BackgroundGeometricPattern geometricPattern;
+  final double patternAngle;
+  final double patternDensity;
+  final List<Color> accentColors;
 
   const BackgroundEffectConfig({
     this.enableParticles = false,
@@ -253,6 +259,10 @@ class BackgroundEffectConfig {
     this.particleType = BackgroundParticleType.floating,
     this.particleOpacity = 0.1,
     this.effectIntensity = 0.5,
+    this.geometricPattern = BackgroundGeometricPattern.mesh,
+    this.patternAngle = 0.0,
+    this.patternDensity = 1.0,
+    this.accentColors = const [],
   });
 }
 
@@ -261,4 +271,12 @@ enum BackgroundParticleType {
   floating,   // Subtle floating particles (Dracula)
   energy,     // Energy orbs and particles (Vegeta)
   codeRain,   // Falling code characters (Matrix)
+}
+
+/// Background geometric pattern types
+enum BackgroundGeometricPattern {
+  mesh,     // Current grid system (default) - Balanced structure
+  radial,   // Centered circular symmetry - Natural harmony
+  linear,   // Clean directional gradients - Professional precision
+  diamond,  // Rotated square pattern - Tech geometry aesthetic
 }

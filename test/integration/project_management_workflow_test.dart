@@ -3,10 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drift/native.dart';
 
-import 'package:task_tracker_app/services/database/database.dart';
+import 'package:task_tracker_app/services/database/database.dart' as db;
 import 'package:task_tracker_app/domain/entities/task_model.dart';
-import 'package:task_tracker_app/domain/entities/task_enums.dart';
-import 'package:task_tracker_app/domain/entities/project.dart';
+import 'package:task_tracker_app/domain/entities/project.dart' as entities;
 import 'package:task_tracker_app/presentation/widgets/project_card.dart';
 import 'package:task_tracker_app/presentation/widgets/project_form_dialog.dart';
 import 'package:task_tracker_app/presentation/widgets/advanced_task_card.dart';
@@ -14,12 +13,12 @@ import 'package:task_tracker_app/presentation/widgets/advanced_task_card.dart';
 void main() {
   group('Project Management Workflow Integration Tests', () {
     late ProviderContainer container;
-    late AppDatabase testDatabase;
+    late db.AppDatabase testDatabase;
 
     setUp(() async {
       TestWidgetsFlutterBinding.ensureInitialized();
       
-      testDatabase = AppDatabase.forTesting(NativeDatabase.memory());
+      testDatabase = db.AppDatabase.forTesting(NativeDatabase.memory());
       container = ProviderContainer(
         overrides: [],
       );
@@ -91,7 +90,7 @@ void main() {
       });
 
       testWidgets('should assign tasks to project workflow', (tester) async {
-        final project = Project(
+        final project = entities.Project(
           id: 'test-project',
           name: 'Test Project',
           description: 'Project for testing',
@@ -126,8 +125,6 @@ void main() {
                   children: [
                     ProjectCard(
                       project: project,
-                      taskCount: 0,
-                      completedTaskCount: 0,
                     ),
                     const Divider(),
                     const Text('Available Tasks:'),
@@ -137,10 +134,6 @@ void main() {
                             .map((task) => AdvancedTaskCard(
                                   key: Key('unassigned_task_${task.id}'),
                                   task: task,
-                                  isSelectable: true,
-                                  onSelectionChanged: (isSelected) {
-                                    // Handle selection
-                                  },
                                 ))
                             .toList(),
                       ),
@@ -177,7 +170,7 @@ void main() {
       });
 
       testWidgets('should manage project settings and team members', (tester) async {
-        final project = Project(
+        final project = entities.Project(
           id: 'settings-project',
           name: 'Settings Test Project',
           description: 'Project for testing settings',
@@ -218,9 +211,9 @@ void main() {
     group('Project Organization and Filtering', () {
       testWidgets('should organize tasks by project workflow', (tester) async {
         final projects = [
-          Project(id: '1', name: 'Work Project', description: 'Work tasks', color: '#F44336', createdAt: DateTime.now()),
-          Project(id: '2', name: 'Personal Project', description: 'Personal tasks', color: '#2196F3', createdAt: DateTime.now()),
-          Project(id: '3', name: 'Learning Project', description: 'Learning tasks', color: '#4CAF50', createdAt: DateTime.now()),
+          entities.Project(id: '1', name: 'Work Project', description: 'Work tasks', color: '#F44336', createdAt: DateTime.now()),
+          entities.Project(id: '2', name: 'Personal Project', description: 'Personal tasks', color: '#2196F3', createdAt: DateTime.now()),
+          entities.Project(id: '3', name: 'Learning Project', description: 'Learning tasks', color: '#4CAF50', createdAt: DateTime.now()),
         ];
 
         final tasks = [
@@ -308,7 +301,7 @@ void main() {
 
       testWidgets('should filter projects by status and deadline', (tester) async {
         final projects = [
-          Project(
+          entities.Project(
             id: '1',
             name: 'Active Project',
             description: 'Currently active',
@@ -316,7 +309,7 @@ void main() {
             createdAt: DateTime.now().subtract(const Duration(days: 10)),
             deadline: DateTime.now().add(const Duration(days: 30)),
           ),
-          Project(
+          entities.Project(
             id: '2',
             name: 'Overdue Project',
             description: 'Past deadline',
@@ -324,7 +317,7 @@ void main() {
             createdAt: DateTime.now().subtract(const Duration(days: 60)),
             deadline: DateTime.now().subtract(const Duration(days: 1)),
           ),
-          Project(
+          entities.Project(
             id: '3',
             name: 'Archived Project',
             description: 'Completed project',
@@ -396,7 +389,7 @@ void main() {
 
     group('Project Analytics and Reports', () {
       testWidgets('should display project progress and analytics', (tester) async {
-        final project = Project(
+        final project = entities.Project(
           id: 'analytics-project',
           name: 'Analytics Test Project',
           description: 'Project for testing analytics',

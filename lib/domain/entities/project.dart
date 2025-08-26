@@ -242,6 +242,30 @@ class Project extends Equatable {
   /// Returns true if the project is active (not archived)
   bool get isActive => !isArchived;
 
+  /// Returns the completion progress as a percentage (0.0 to 1.0)
+  /// Note: This is a simple calculation based on task count
+  /// For actual progress calculation, you would need task completion data
+  double get progress => 0.0; // Placeholder - should be calculated from tasks
+
+  /// Returns project metadata as a map
+  /// This is a placeholder that returns basic project information
+  Map<String, dynamic> get metadata => {
+    'id': id,
+    'name': name,
+    'description': description,
+    'color': color,
+    'categoryId': categoryId,
+    'category': category,
+    'taskCount': taskCount,
+    'tagCount': tagCount,
+    'isArchived': isArchived,
+    'hasDeadline': hasDeadline,
+    'isOverdue': isOverdue,
+    'createdAt': createdAt.toIso8601String(),
+    'updatedAt': updatedAt?.toIso8601String(),
+    'deadline': deadline?.toIso8601String(),
+  };
+
   // ============================================================================
   // MIGRATION HELPERS - Support both legacy and new category systems
   // ============================================================================

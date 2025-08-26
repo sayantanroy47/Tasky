@@ -265,8 +265,8 @@ class _MultiSelectTaskCardState extends ConsumerState<MultiSelectTaskCard>
   
   void _handleTap(BuildContext context) {
     final selectionNotifier = ref.read(taskSelectionProvider.notifier);
+    final currentState = ref.read(taskSelectionProvider);
     
-    final currentState = selectionNotifier.state;
     if (currentState.isMultiSelectMode) {
       // In multi-select mode, toggle selection
       selectionNotifier.toggleTask(widget.task);
@@ -281,9 +281,9 @@ class _MultiSelectTaskCardState extends ConsumerState<MultiSelectTaskCard>
     if (!widget.enableMultiSelect) return;
     
     final selectionNotifier = ref.read(taskSelectionProvider.notifier);
+    final currentState = ref.read(taskSelectionProvider);
     
     // Enable multi-select mode and select this task
-    final currentState = selectionNotifier.state;
     if (!currentState.isMultiSelectMode) {
       selectionNotifier.enableMultiSelect();
     }
@@ -367,7 +367,7 @@ class _MultiSelectTaskListState extends ConsumerState<MultiSelectTaskList> {
     if (event is! KeyDownEvent) return KeyEventResult.ignored;
     
     final selectionNotifier = ref.read(taskSelectionProvider.notifier);
-    final currentSelection = selectionNotifier.state;
+    final currentSelection = ref.read(taskSelectionProvider);
     
     // Check for modifier keys using HardwareKeyboard
     final isCtrlOrCmd = HardwareKeyboard.instance.isControlPressed ||

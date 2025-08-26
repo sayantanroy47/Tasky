@@ -194,7 +194,7 @@ class Cyberpunk2077Theme {
       onErrorContainer: Color(0xFF991B1B),
       
       // Special colors - Corporate cyber essence
-      accent: darkMagenta,
+      accent: cyberPink,                           // Use cyber pink as accent
       highlight: hologramBlue,
       shadow: Color(0xFF000000),
       outline: Color(0xFFBBBBBB),
@@ -501,13 +501,20 @@ class Cyberpunk2077Theme {
         style: theme_effects.GlowStyle.outer,
       ),
       
-      backgroundEffects: const theme_effects.BackgroundEffectConfig(
+      backgroundEffects: theme_effects.BackgroundEffectConfig(
         enableParticles: true,                  // Cyber data particles
-        enableGradientMesh: false,              // No gradients in digital space
+        enableGradientMesh: true,               // Enable for geometric pattern
         enableScanlines: true,                  // Cyber scanlines
         particleType: theme_effects.BackgroundParticleType.energy, // Energy data
         particleOpacity: 1.0,                   // Full visibility cyber data
         effectIntensity: 1.0,                   // Maximum cyber intensity
+        geometricPattern: theme_effects.BackgroundGeometricPattern.diamond, // Tech geometry
+        patternAngle: 45.0, // Angular tech aesthetic
+        patternDensity: 1.3, // High-tech density
+        accentColors: [
+          const Color(0xFF00BCD4).withValues(alpha: 0.15), // Cyber cyan
+          const Color(0xFFFF0080).withValues(alpha: 0.12), // Neon pink
+        ],
       ),
     );
   }

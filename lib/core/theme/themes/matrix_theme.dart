@@ -76,7 +76,7 @@ class MatrixTheme {
 
         // Secondary colors - Dark green variations
         secondary: darkGreen,
-        onSecondary: Color(0xFFFFFFFF), // Keep white on dark green (good contrast)
+        onSecondary: Color(0xFFE8FFE8), // Matrix green-tinted white for theme consistency
         secondaryContainer: paleGreen,
         onSecondaryContainer: Color(0xFF003300), // Very dark green text on light containers
 
@@ -496,13 +496,20 @@ class MatrixTheme {
         style: theme_effects.GlowStyle.outer,
       ),
       
-      backgroundEffects: const theme_effects.BackgroundEffectConfig(
+      backgroundEffects: theme_effects.BackgroundEffectConfig(
         enableParticles: true,
-        enableGradientMesh: false,
+        enableGradientMesh: true, // Enable for geometric pattern
         enableScanlines: true,              // Enhanced Matrix scanline effect
         particleType: theme_effects.BackgroundParticleType.codeRain,
         particleOpacity: 0.8,               // Much more visible code rain
         effectIntensity: 1.0,
+        geometricPattern: theme_effects.BackgroundGeometricPattern.mesh, // Digital grid precision
+        patternAngle: 0.0, // Perfect grid alignment
+        patternDensity: 1.5, // Dense digital pattern
+        accentColors: [
+          const Color(0xFF00FF41).withValues(alpha: 0.12), // Matrix green
+          const Color(0xFF008F11).withValues(alpha: 0.08), // Dark green accent
+        ],
       ),
     );
   }

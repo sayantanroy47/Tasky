@@ -80,6 +80,7 @@ class ProjectsNotifier extends StateNotifier<AsyncValue<List<domain.Project>>> {
     required String name,
     String? description,
     String color = '#2196F3',
+    List<String> tagIds = const [],
     DateTime? deadline,
   }) async {
     try {
@@ -87,6 +88,7 @@ class ProjectsNotifier extends StateNotifier<AsyncValue<List<domain.Project>>> {
         name: name,
         description: description,
         color: color,
+        tagIds: tagIds,
         deadline: deadline,
       );
       await loadProjects();

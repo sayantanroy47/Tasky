@@ -170,15 +170,15 @@ class DemonSlayerFlameTheme {
         
         // Surface
         surface: charcoalBlack,
-        onSurface: const Color(0xFFf8f8f2),
+        onSurface: ashGray,                          // Use ashGray for better contrast
         surfaceVariant: smokeGray,
-        onSurfaceVariant: const Color(0xFFf8f8f2),
+        onSurfaceVariant: ashGray,                   // Use ashGray consistently
         inverseSurface: const Color(0xFFf8f8f2),
         onInverseSurface: charcoalBlack,
         
         // Background
         background: charcoalBlack,
-        onBackground: const Color(0xFFf8f8f2),
+        onBackground: ashGray,                       // Use ashGray consistently
         
         // Error
         error: const Color(0xFFFF5555),
@@ -491,11 +491,18 @@ class DemonSlayerFlameTheme {
       
       backgroundEffects: const theme_effects.BackgroundEffectConfig(
         enableParticles: true,
-        enableGradientMesh: false,
+        enableGradientMesh: true,
         enableScanlines: false,
-        particleType: theme_effects.BackgroundParticleType.floating,
+        particleType: theme_effects.BackgroundParticleType.energy,
         particleOpacity: 0.7,
         effectIntensity: 0.8,
+        geometricPattern: theme_effects.BackgroundGeometricPattern.linear,
+        patternAngle: 90.0,
+        patternDensity: 1.1,
+        accentColors: [
+          Color(0x1AFF4500), // Blaze orange at 0.1 alpha
+          Color(0x1FDC143C), // Ember red at 0.12 alpha
+        ],
       ),
     );
   }

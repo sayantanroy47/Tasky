@@ -82,6 +82,11 @@ class TagDao extends DatabaseAccessor<AppDatabase> with _$TagDaoMixin {
     await into(tags).insert(_tagModelToRow(tag));
   }
 
+  /// Inserts a new tag in the database (alias for createTag)
+  Future<void> insertTag(Tag tag) async {
+    await createTag(tag);
+  }
+
   /// Updates an existing tag in the database
   Future<void> updateTag(Tag tag) async {
     await (update(tags)..where((t) => t.id.equals(tag.id)))

@@ -78,19 +78,19 @@ class KoiMysticTheme {
         // Secondary colors - Traditional Koi Red
         secondary: koiRed,
         onSecondary: pureWhite,
-        secondaryContainer: koiRedDark,
+        secondaryContainer: koiRedDeep,         // Deep koi red for container
         onSecondaryContainer: moonlightSilver,
 
         // Tertiary colors - Lotus and lily accents
-        tertiary: lotusGreen,
+        tertiary: lilyPink,
         onTertiary: pureWhite,
-        tertiaryContainer: Color(0xFF1B4F2A),
-        onTertiaryContainer: Color(0xFF7DD87F),
+        tertiaryContainer: Color(0xFF3D1A3D),      // Dark pink container
+        onTertiaryContainer: Color(0xFFE4C7E4),    // Light pink on container
 
         // Surface colors - Pond materials and stones
         surface: slateRipple,
         onSurface: moonlightSilver,
-        surfaceVariant: charcoalStone,
+        surfaceVariant: softRipple,             // Soft ripple highlights variant
         onSurfaceVariant: mistGray,
         inverseSurface: moonlightSilver,
         onInverseSurface: deepWater,
@@ -100,9 +100,9 @@ class KoiMysticTheme {
         onBackground: moonlightSilver,
 
         // Error colors - Autumn koi warning colors
-        error: Color(0xFFFF6B6B),
+        error: koiRedDeep,
         onError: pureWhite,
-        errorContainer: Color(0xFF3D1A1A),
+        errorContainer: koiRedDark,             // Dark koi red error container
         onErrorContainer: Color(0xFFFF9999),
 
         // Special colors - Koi pond ecosystem  
@@ -110,7 +110,7 @@ class KoiMysticTheme {
         highlight: koiRed,
         shadow: Color(0xFF000000),
         outline: mistGray,
-        outlineVariant: charcoalStone,
+        outlineVariant: softRipple,
 
         // Task priority colors - Koi pond life hierarchy
         taskLowPriority: lotusGreen,           // Calm lotus green
@@ -168,7 +168,7 @@ class KoiMysticTheme {
       onPrimaryContainer: deepCharcoal,
       
       // Secondary colors - Traditional Koi Red (warm variant)
-      secondary: koiRed,
+      secondary: koiRedWarm,
       onSecondary: clearWater,
       secondaryContainer: Color(0xFFFFEBEE),
       onSecondaryContainer: Color(0xFFB71C1C),
@@ -199,9 +199,9 @@ class KoiMysticTheme {
       
       // Special colors - Dawn garden serenity
       accent: koiRed,
-      highlight: koiRed,
+      highlight: lilyPink,
       shadow: Color(0xFF000000),
-      outline: Color(0xFFD0D7DE),
+      outline: lightRipple,
       outlineVariant: Color(0xFFE1E4E8),
       
       // Task priority colors - Garden vitality levels
@@ -514,6 +514,13 @@ class KoiMysticTheme {
         particleType: theme_effects.BackgroundParticleType.floating, // Gentle floating
         particleOpacity: 0.1,                // Very subtle presence
         effectIntensity: 0.4,                // Moderate zen effects
+        geometricPattern: theme_effects.BackgroundGeometricPattern.radial,
+        patternAngle: 0.0,
+        patternDensity: 0.6,
+        accentColors: [
+          Color(0x1AE53935), // Traditional koi red at 0.1 alpha
+          Color(0x0C238636), // Lotus green at 0.05 alpha
+        ],
       ),
     );
   }

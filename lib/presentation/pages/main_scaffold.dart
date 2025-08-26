@@ -89,7 +89,6 @@ class MainScaffold extends ConsumerWidget {
     return Scaffold(
       backgroundColor: Colors.transparent,
       extendBodyBehindAppBar: true, // Allow background behind app bar
-      extendBody: true, // Allow background behind bottom navigation
       body: IndexedStack(
         index: selectedIndex,
         children: pages,
@@ -127,7 +126,6 @@ class MainScaffold extends ConsumerWidget {
     return Scaffold(
       backgroundColor: Colors.transparent,
       extendBodyBehindAppBar: true, // Allow background behind app bar
-      extendBody: true, // Allow background behind navigation elements
       body: Row(
         children: [
           // Navigation rail
@@ -230,7 +228,6 @@ class MainScaffold extends ConsumerWidget {
     return Scaffold(
       backgroundColor: Colors.transparent,
       extendBodyBehindAppBar: true, // Allow background behind app bar
-      extendBody: true, // Allow background behind navigation elements
       body: Row(
         children: [
           // Navigation drawer

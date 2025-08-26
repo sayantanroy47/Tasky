@@ -480,6 +480,36 @@ class LocalNotificationService implements NotificationService {
   }
   
   @override
+  Future<void> showNotification({
+    required String title,
+    required String body,
+    String? taskId,
+    NotificationTypeModel type = NotificationTypeModel.taskReminder,
+    Map<String, dynamic>? payload,
+  }) async {
+    await showImmediateNotification(
+      title: title,
+      body: body,
+      taskId: taskId,
+      type: type,
+      payload: payload,
+    );
+  }
+
+  @override
+  Future<int?> scheduleNotification({
+    required TaskModel task,
+    required DateTime scheduledTime,
+    Duration? customReminder,
+  }) async {
+    return await scheduleTaskReminder(
+      task: task,
+      scheduledTime: scheduledTime,
+      customReminder: customReminder,
+    );
+  }
+
+  @override
   Future<void> showImmediateNotification({
     required String title,
     required String body,

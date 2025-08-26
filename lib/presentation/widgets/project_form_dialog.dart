@@ -6,11 +6,13 @@ import '../../core/design_system/design_tokens.dart';
 import '../../core/theme/material3/motion_system.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../domain/entities/project.dart';
+import '../../domain/entities/tag.dart';
 import '../providers/project_providers.dart';
 import 'glassmorphism_container.dart';
 import 'standardized_app_bar.dart';
 import 'standardized_text.dart';
 import 'theme_background_widget.dart';
+import 'tag_selection_widget.dart';
 
 /// Full-screen page for creating and editing projects
 /// 
@@ -43,6 +45,7 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> with Tick
   // Project properties
   String _selectedColor = '#2196F3'; // Default blue color
   DateTime? _selectedDeadline;
+  List<Tag> _selectedTags = [];
   bool _isLoading = false;
   
   bool get isEditing => widget.project != null;
@@ -81,6 +84,7 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> with Tick
       _descriptionController.text = widget.project!.description ?? '';
       _selectedColor = widget.project!.color;
       _selectedDeadline = widget.project!.deadline;
+      // Note: Tags will be loaded by TagSelectionWidget using project.tagIds
     }
 
     _fadeController.forward();
@@ -143,6 +147,11 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> with Tick
 
                     // Color Selection Section
                     _buildColorSection(context, theme),
+
+                    const SizedBox(height: 20),
+
+                    // Tags Section
+                    _buildTagsSection(context, theme),
 
                     const SizedBox(height: 20),
 
@@ -508,6 +517,7 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> with Tick
           description: description.isEmpty ? null : description,
           color: _selectedColor,
           deadline: _selectedDeadline,
+          tagIds: _selectedTags.map((tag) => tag.id).toList(),
           updatedAt: DateTime.now(),
         );
         
@@ -518,6 +528,7 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> with Tick
           name: name,
           description: description.isEmpty ? null : description,
           color: _selectedColor,
+          tagIds: _selectedTags.map((tag) => tag.id).toList(),
           deadline: _selectedDeadline,
         );
       }
@@ -581,6 +592,48 @@ class _ProjectFormDialogState extends ConsumerState<ProjectFormDialog> with Tick
   
   String _formatDate(DateTime date) {
     return '${date.day}/${date.month}/${date.year}';
+  }
+
+  Widget _buildTagsSection(BuildContext context, ThemeData theme) {
+    return GlassmorphismContainer(
+      level: GlassLevel.content,
+      padding: const EdgeInsets.all(20),
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                PhosphorIcons.tag(),
+                size: 20,
+                color: theme.colorScheme.primary,
+              ),
+              const SizedBox(width: 8),
+              StandardizedTextVariants.sectionHeader('Project Tags'),
+              const SizedBox(width: 8),
+              StandardizedText(
+                '(Optional)',
+                style: StandardizedTextStyle.taskMeta,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          TagSelectionWidget(
+            selectedTags: _selectedTags,
+            onTagsChanged: (tags) {
+              setState(() {
+                _selectedTags = tags;
+              });
+            },
+            maxTags: 5,
+            allowCreate: true,
+            isCompact: false,
+          ),
+        ],
+      ),
+    );
   }
 }
 

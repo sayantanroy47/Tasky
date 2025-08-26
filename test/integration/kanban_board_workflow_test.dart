@@ -4,8 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drift/native.dart';
 import 'package:mockito/mockito.dart';
 
-import 'package:task_tracker_app/services/database/database.dart';
-import 'package:task_tracker_app/domain/entities/project.dart';
+import 'package:task_tracker_app/services/database/database.dart' as db;
+import 'package:task_tracker_app/domain/entities/project.dart' as entities;
 import 'package:task_tracker_app/domain/entities/task_model.dart';
 import 'package:task_tracker_app/domain/entities/task_enums.dart';
 import 'package:task_tracker_app/domain/models/enums.dart';
@@ -19,18 +19,18 @@ import 'package:task_tracker_app/core/providers/core_providers.dart';
 void main() {
   group('Kanban Board Workflow Integration Tests', () {
     late ProviderContainer container;
-    late AppDatabase testDatabase;
-    late Project testProject;
+    late db.AppDatabase testDatabase;
+    late entities.Project testProject;
     late List<TaskModel> testTasks;
 
     setUp(() async {
       TestWidgetsFlutterBinding.ensureInitialized();
       
       // Create test database
-      testDatabase = AppDatabase.forTesting(NativeDatabase.memory());
+      testDatabase = db.AppDatabase.forTesting(NativeDatabase.memory());
       
       // Create test project
-      testProject = Project(
+      testProject = entities.Project(
         id: 'kanban-test-project',
         name: 'Kanban Test Project',
         description: 'Project for testing Kanban board functionality',

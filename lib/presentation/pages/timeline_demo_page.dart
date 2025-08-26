@@ -212,7 +212,7 @@ class _TimelineDemoPageState extends ConsumerState<TimelineDemoPage> {
               _buildFeatureChip(
                 icon: PhosphorIcons.calendarBlank(),
                 label: 'Multi-zoom timeline',
-                color: context.primaryColor,
+                color: Theme.of(context).colorScheme.primary,
               ),
               _buildFeatureChip(
                 icon: PhosphorIcons.arrowsOutCardinal(),
@@ -227,7 +227,7 @@ class _TimelineDemoPageState extends ConsumerState<TimelineDemoPage> {
               _buildFeatureChip(
                 icon: PhosphorIcons.flagBanner(),
                 label: 'Project milestones',
-                color: context.urgentColor,
+                color: context.errorColor,
               ),
               _buildFeatureChip(
                 icon: PhosphorIcons.path(),
@@ -237,7 +237,7 @@ class _TimelineDemoPageState extends ConsumerState<TimelineDemoPage> {
               _buildFeatureChip(
                 icon: PhosphorIcons.chartBar(),
                 label: 'Progress tracking',
-                color: context.accentColor,
+                color: Theme.of(context).colorScheme.secondary,
               ),
             ],
           ),
@@ -337,7 +337,7 @@ class _TimelineDemoPageState extends ConsumerState<TimelineDemoPage> {
             icon: PhosphorIcons.clockCountdown(),
             label: 'Overdue',
             value: '${stats.overdueTasks}',
-            color: stats.overdueTasks > 0 ? context.errorColor : context.surfaceVariant,
+            color: stats.overdueTasks > 0 ? context.errorColor : Theme.of(context).colorScheme.surfaceContainerHighest,
           ),
           
           const Spacer(),
@@ -454,7 +454,7 @@ class _TimelineDemoPageState extends ConsumerState<TimelineDemoPage> {
           children: [
             Icon(
               PhosphorIcons.checkSquare(),
-              color: context.onSurface,
+              color: Theme.of(context).colorScheme.onSurface,
               size: 16,
             ),
             const SizedBox(width: 8),
@@ -480,7 +480,7 @@ class _TimelineDemoPageState extends ConsumerState<TimelineDemoPage> {
           children: [
             Icon(
               PhosphorIcons.flagBanner(),
-              color: context.onSurface,
+              color: Theme.of(context).colorScheme.onSurface,
               size: 16,
             ),
             const SizedBox(width: 8),
@@ -517,7 +517,7 @@ class _TimelineDemoPageState extends ConsumerState<TimelineDemoPage> {
           children: [
             Icon(
               PhosphorIcons.calendarCheck(),
-              color: context.onSurface,
+              color: Theme.of(context).colorScheme.onSurface,
               size: 16,
             ),
             const SizedBox(width: 8),

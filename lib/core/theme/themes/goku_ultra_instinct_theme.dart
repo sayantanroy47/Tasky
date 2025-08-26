@@ -117,7 +117,7 @@ class GokuUltraInstinctTheme {
         // Status colors - Divine States
         success: Color(0xFF90EE90),
         warning: vibrantOrange,
-        info: etherealGlow,
+        info: divineBlue,
 
         // Calendar dot colors - Ultra Instinct System
         calendarTodayDot: etherealGlow,
@@ -152,6 +152,7 @@ class GokuUltraInstinctTheme {
     const silverHighlight = Color(0xFFD3D3D3);      // Silver highlights
     const paleBlue = Color(0xFFF0F8FF);             // Pale divine blue
     const lightGray = Color(0xFFF8F8F8);            // Light gray materials
+    const divineBlue = Color(0xFFB0E0E6);           // Soft divine blue accent
     
     return const ThemeColors(
       // Primary colors - Deep Silver (Light)
@@ -181,7 +182,7 @@ class GokuUltraInstinctTheme {
       onInverseSurface: heavenlyWhite,
       
       // Background colors - Heavenly Realm
-      background: heavenlyWhite,
+      background: paleBlue,                         // Pale divine blue background
       onBackground: charcoalText,
       
       // Error colors - Controlled power (light variant)
@@ -206,7 +207,7 @@ class GokuUltraInstinctTheme {
       // Status colors - Light Divine States
       success: Color(0xFF22C55E),
       warning: vibrantOrange,
-      info: Color(0xCCFF6600),  // vibrantOrange with 0.8 alpha
+      info: divineBlue,                            // Divine blue info
       
       // Calendar dot colors - Light Divine System
       calendarTodayDot: vibrantOrange,
@@ -507,6 +508,13 @@ class GokuUltraInstinctTheme {
         particleType: theme_effects.BackgroundParticleType.floating,
         particleOpacity: 0.08,
         effectIntensity: 0.3,
+        geometricPattern: theme_effects.BackgroundGeometricPattern.radial,
+        patternAngle: 0.0,
+        patternDensity: 0.8,
+        accentColors: [
+          Color(0x1AC0C0C0), // Ultra Instinct silver at 0.1 alpha
+          Color(0x0DFF6600), // Vibrant orange gi at 0.05 alpha
+        ],
       ),
     );
   }
@@ -582,7 +590,7 @@ class _GokuColorsHelper {
   final bool isDark;
   const _GokuColorsHelper({this.isDark = true});
   
-  Color get onBackground => isDark ? const Color(0xFFFFFFFF) : const Color(0xFF2F4F4F);
+  Color get onBackground => isDark ? const Color(0xFFF8F8FF) : const Color(0xFF2F4F4F); // Silver-tinted white for Goku Ultra Instinct theme
   Color get primary => isDark ? const Color(0xFFC0C0C0) : const Color(0xFF708090);
   Color get secondary => isDark ? const Color(0xFFF0F8FF) : const Color(0xFF4682B4);
 }

@@ -39,7 +39,7 @@ class ArtistPaletteTheme {
       colors: _createArtistColors(isDark: isDark),
       typography: _createArtistTypography(isDark: isDark),
       animations: _createArtistAnimations(),
-      effects: _createArtistEffects(),
+      effects: _createArtistEffects(isDark: isDark),
       spacing: _createArtistSpacing(),
       components: _createArtistComponents(),
     );
@@ -418,12 +418,12 @@ class ArtistPaletteTheme {
   }
 
   static ThemeAnimations _createArtistAnimations() {
-    return ThemeAnimations.fromThemeStyle(ThemeAnimationStyle.smooth).copyWith(
+    return const ThemeAnimations(
       // Smooth paint brush strokes
-      fast: const Duration(milliseconds: 200),
-      medium: const Duration(milliseconds: 400),
-      slow: const Duration(milliseconds: 600),
-      verySlow: const Duration(milliseconds: 1000),
+      fast: Duration(milliseconds: 200),
+      medium: Duration(milliseconds: 400),
+      slow: Duration(milliseconds: 600),
+      verySlow: Duration(milliseconds: 1000),
       
       // Smooth artistic curves
       primaryCurve: Curves.easeOutQuart, // Paint brush movement
@@ -432,7 +432,7 @@ class ArtistPaletteTheme {
       exitCurve: Curves.easeInCubic,
       
       enableParticles: true,
-      particleConfig: const ParticleConfig(
+      particleConfig: ParticleConfig(
         density: ParticleDensity.medium,
         speed: ParticleSpeed.medium,
         style: ParticleStyle.organic,
@@ -443,8 +443,8 @@ class ArtistPaletteTheme {
     );
   }
 
-  static theme_effects.ThemeEffects _createArtistEffects() {
-    return theme_effects.ThemeEffects.fromEffectStyle(theme_effects.ThemeEffectStyle.elegant).copyWith(
+  static theme_effects.ThemeEffects _createArtistEffects({required bool isDark}) {
+    return theme_effects.ThemeEffects(
       // Refined artistic effects
       shadowStyle: theme_effects.ShadowStyle.soft,
       gradientStyle: theme_effects.GradientStyle.subtle,
@@ -456,20 +456,27 @@ class ArtistPaletteTheme {
         style: theme_effects.BlurStyle.outer,
       ),
       
-      glowConfig: const theme_effects.GlowConfig(
+      glowConfig: theme_effects.GlowConfig(
         enabled: true,
-        intensity: 0.6,
-        spread: 8.0,
+        intensity: isDark ? 0.8 : 0.4, // More vibrant glow for night studio
+        spread: isDark ? 10.0 : 6.0, // Wider paint splatter effect in dark
         style: theme_effects.GlowStyle.outer,
       ),
       
-      backgroundEffects: const theme_effects.BackgroundEffectConfig(
+      backgroundEffects: theme_effects.BackgroundEffectConfig(
         enableParticles: true,
         enableGradientMesh: true,
         enableScanlines: false,
         particleType: theme_effects.BackgroundParticleType.floating,
-        particleOpacity: 0.15,
-        effectIntensity: 0.6,
+        particleOpacity: isDark ? 0.25 : 0.08, // More paint particles in night studio
+        effectIntensity: isDark ? 0.9 : 0.3, // Stronger artistic effects for dark creative mood
+        geometricPattern: theme_effects.BackgroundGeometricPattern.mesh, // Creative balance
+        patternAngle: 15.0, // Subtle artistic rotation
+        patternDensity: 1.0, // Balanced creative density
+        accentColors: [
+          (isDark ? const Color(0xFFFF5722) : const Color(0xFFFF7043)).withValues(alpha: 0.1), // Vermillion
+          (isDark ? const Color(0xFF2196F3) : const Color(0xFF42A5F5)).withValues(alpha: 0.08), // Cerulean
+        ],
       ),
     );
   }

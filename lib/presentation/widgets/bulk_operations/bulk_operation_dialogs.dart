@@ -807,41 +807,45 @@ class _BulkStatusUpdateDialogState extends State<BulkStatusUpdateDialog> {
             const SizedBox(height: SpacingTokens.lg),
             
             // Status options
-            ...TaskStatus.values.map((status) {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: SpacingTokens.sm),
-                child: GlassmorphismContainer(
-                  level: _selectedStatus == status ? GlassLevel.interactive : GlassLevel.whisper,
-                  child: ListTile(
-                    leading: Radio<TaskStatus>(
-                      value: status,
-                      groupValue: _selectedStatus,
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedStatus = value;
-                        });
-                        HapticFeedback.selectionClick();
-                      },
+            RadioGroup<TaskStatus>(
+              groupValue: _selectedStatus,
+              onChanged: (value) {
+                setState(() {
+                  _selectedStatus = value;
+                });
+                HapticFeedback.selectionClick();
+              },
+              child: Column(
+                children: TaskStatus.values.map((status) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: SpacingTokens.sm),
+                    child: GlassmorphismContainer(
+                      level: _selectedStatus == status ? GlassLevel.interactive : GlassLevel.whisper,
+                      child: ListTile(
+                        leading: Radio<TaskStatus>(
+                          value: status,
+                        ),
+                        title: StandardizedText(
+                          status.name.toUpperCase(),
+                          style: StandardizedTextStyle.bodyMedium,
+                        ),
+                        subtitle: StandardizedText(
+                          '${widget.currentStatistics.statusBreakdown[status] ?? 0} currently',
+                          style: StandardizedTextStyle.bodySmall,
+                          color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                        ),
+                        onTap: () {
+                          setState(() {
+                            _selectedStatus = status;
+                          });
+                          HapticFeedback.selectionClick();
+                        },
+                      ),
                     ),
-                    title: StandardizedText(
-                      status.name.toUpperCase(),
-                      style: StandardizedTextStyle.bodyMedium,
-                    ),
-                    subtitle: StandardizedText(
-                      '${widget.currentStatistics.statusBreakdown[status] ?? 0} currently',
-                      style: StandardizedTextStyle.bodySmall,
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                    ),
-                    onTap: () {
-                      setState(() {
-                        _selectedStatus = status;
-                      });
-                      HapticFeedback.selectionClick();
-                    },
-                  ),
-                ),
-              );
-            }),
+                  );
+                }).toList(),
+              ),
+            ),
             
             const SizedBox(height: SpacingTokens.lg),
             
@@ -929,53 +933,57 @@ class _BulkPriorityUpdateDialogState extends State<BulkPriorityUpdateDialog> {
             const SizedBox(height: SpacingTokens.lg),
             
             // Priority options
-            ...TaskPriority.values.map((priority) {
-              final color = _getPriorityColor(priority, theme);
-              return Padding(
-                padding: const EdgeInsets.only(bottom: SpacingTokens.sm),
-                child: GlassmorphismContainer(
-                  level: _selectedPriority == priority ? GlassLevel.interactive : GlassLevel.whisper,
-                  child: ListTile(
-                    leading: Radio<TaskPriority>(
-                      value: priority,
-                      groupValue: _selectedPriority,
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedPriority = value;
-                        });
-                        HapticFeedback.selectionClick();
-                      },
-                    ),
-                    title: Row(
-                      children: [
-                        Icon(
-                          PhosphorIconConstants.allIcons['target']!,
-                          size: 16,
-                          color: color,
+            RadioGroup<TaskPriority>(
+              groupValue: _selectedPriority,
+              onChanged: (value) {
+                setState(() {
+                  _selectedPriority = value;
+                });
+                HapticFeedback.selectionClick();
+              },
+              child: Column(
+                children: TaskPriority.values.map((priority) {
+                  final color = _getPriorityColor(priority, theme);
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: SpacingTokens.sm),
+                    child: GlassmorphismContainer(
+                      level: _selectedPriority == priority ? GlassLevel.interactive : GlassLevel.whisper,
+                      child: ListTile(
+                        leading: Radio<TaskPriority>(
+                          value: priority,
                         ),
-                        const SizedBox(width: SpacingTokens.xs),
-                        StandardizedText(
-                          priority.name.toUpperCase(),
-                          style: StandardizedTextStyle.bodyMedium,
-                          color: color,
+                        title: Row(
+                          children: [
+                            Icon(
+                              PhosphorIconConstants.allIcons['target']!,
+                              size: 16,
+                              color: color,
+                            ),
+                            const SizedBox(width: SpacingTokens.xs),
+                            StandardizedText(
+                              priority.name.toUpperCase(),
+                              style: StandardizedTextStyle.bodyMedium,
+                              color: color,
+                            ),
+                          ],
                         ),
-                      ],
+                        subtitle: StandardizedText(
+                          '${widget.currentStatistics.priorityBreakdown[priority] ?? 0} currently',
+                          style: StandardizedTextStyle.bodySmall,
+                          color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                        ),
+                        onTap: () {
+                          setState(() {
+                            _selectedPriority = priority;
+                          });
+                          HapticFeedback.selectionClick();
+                        },
+                      ),
                     ),
-                    subtitle: StandardizedText(
-                      '${widget.currentStatistics.priorityBreakdown[priority] ?? 0} currently',
-                      style: StandardizedTextStyle.bodySmall,
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                    ),
-                    onTap: () {
-                      setState(() {
-                        _selectedPriority = priority;
-                      });
-                      HapticFeedback.selectionClick();
-                    },
-                  ),
-                ),
-              );
-            }),
+                  );
+                }).toList(),
+              ),
+            ),
             
             const SizedBox(height: SpacingTokens.lg),
             
@@ -1077,84 +1085,83 @@ class _BulkProjectMoveDialogState extends State<BulkProjectMoveDialog> {
             
             const SizedBox(height: SpacingTokens.lg),
             
-            // No project option
-            Padding(
-              padding: const EdgeInsets.only(bottom: SpacingTokens.sm),
-              child: GlassmorphismContainer(
-                level: _selectedProjectId == null ? GlassLevel.interactive : GlassLevel.whisper,
-                child: ListTile(
-                  leading: Radio<String?>(
-                    value: null,
-                    groupValue: _selectedProjectId,
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedProjectId = value;
-                      });
-                      HapticFeedback.selectionClick();
-                    },
-                  ),
-                  title: const StandardizedText(
-                    'No Project',
-                    style: StandardizedTextStyle.bodyMedium,
-                  ),
-                  onTap: () {
-                    setState(() {
-                      _selectedProjectId = null;
-                    });
-                    HapticFeedback.selectionClick();
-                  },
-                ),
-              ),
-            ),
-            
             // Project options
-            ...widget.availableProjects.map((project) {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: SpacingTokens.sm),
-                child: GlassmorphismContainer(
-                  level: _selectedProjectId == project.id ? GlassLevel.interactive : GlassLevel.whisper,
-                  child: ListTile(
-                    leading: Radio<String>(
-                      value: project.id,
-                      groupValue: _selectedProjectId,
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedProjectId = value;
-                        });
-                        HapticFeedback.selectionClick();
-                      },
-                    ),
-                    title: StandardizedText(
-                      project.name,
-                      style: StandardizedTextStyle.bodyMedium,
-                    ),
-                    subtitle: StandardizedText(
-                      '${project.taskCount} tasks',
-                      style: StandardizedTextStyle.bodySmall,
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                    ),
-                    trailing: Container(
-                      width: 20,
-                      height: 20,
-                      decoration: BoxDecoration(
-                        color: Color(int.parse('0xFF${project.color.substring(1)}')),
-                        borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall), // 6.0 - Fixed border radius hierarchy (was 10px)
-                        border: Border.all(
-                          color: theme.colorScheme.outline.withValues(alpha: 0.3),
-                          width: 0.5,
+            RadioGroup<String?>(
+              groupValue: _selectedProjectId,
+              onChanged: (value) {
+                setState(() {
+                  _selectedProjectId = value;
+                });
+                HapticFeedback.selectionClick();
+              },
+              child: Column(
+                children: [
+                  // No project option
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: SpacingTokens.sm),
+                    child: GlassmorphismContainer(
+                      level: _selectedProjectId == null ? GlassLevel.interactive : GlassLevel.whisper,
+                      child: ListTile(
+                        leading: const Radio<String?>(
+                          value: null,
                         ),
+                        title: const StandardizedText(
+                          'No Project',
+                          style: StandardizedTextStyle.bodyMedium,
+                        ),
+                        onTap: () {
+                          setState(() {
+                            _selectedProjectId = null;
+                          });
+                          HapticFeedback.selectionClick();
+                        },
                       ),
                     ),
-                    onTap: () {
-                      setState(() {
-                        _selectedProjectId = project.id;
-                      });
-                      HapticFeedback.selectionClick();
-                    },
                   ),
-                ),
-              );
-            }),
+                  // Project options
+                  ...widget.availableProjects.map((project) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: SpacingTokens.sm),
+                      child: GlassmorphismContainer(
+                        level: _selectedProjectId == project.id ? GlassLevel.interactive : GlassLevel.whisper,
+                        child: ListTile(
+                          leading: Radio<String?>(
+                            value: project.id,
+                          ),
+                          title: StandardizedText(
+                            project.name,
+                            style: StandardizedTextStyle.bodyMedium,
+                          ),
+                          subtitle: StandardizedText(
+                            '${project.taskCount} tasks',
+                            style: StandardizedTextStyle.bodySmall,
+                            color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
+                          ),
+                          trailing: Container(
+                            width: 20,
+                            height: 20,
+                            decoration: BoxDecoration(
+                              color: Color(int.parse('0xFF${project.color.substring(1)}')),
+                              borderRadius: BorderRadius.circular(TypographyConstants.radiusSmall), // 6.0 - Fixed border radius hierarchy (was 10px)
+                              border: Border.all(
+                                color: theme.colorScheme.outline.withValues(alpha: 0.3),
+                                width: 0.5,
+                              ),
+                            ),
+                          ),
+                          onTap: () {
+                            setState(() {
+                              _selectedProjectId = project.id;
+                            });
+                            HapticFeedback.selectionClick();
+                          },
+                        ),
+                      ),
+                    );
+                  }),
+                ],
+              ),
+            ),
             
             const SizedBox(height: SpacingTokens.lg),
             

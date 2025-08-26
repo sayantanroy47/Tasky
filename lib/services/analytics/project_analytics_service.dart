@@ -84,12 +84,6 @@ class ProjectAnalyticsService {
         task.completedAt!.isBefore(endOfDay)
       ).length;
       
-      // Calculate started tasks by this date
-      final startedByDate = tasks.where((task) =>
-        task.status.isInProgress &&
-        task.updatedAt != null &&
-        task.updatedAt!.isBefore(endOfDay)
-      ).length;
       
       // Calculate remaining work
       final remainingTasks = totalTasks - completedByDate;

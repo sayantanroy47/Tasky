@@ -23,6 +23,8 @@ class StandardizedNavigation {
     NavigationTransition transition = NavigationTransition.slideFromRight,
     bool trackAnalytics = true,
   }) async {
+    final navigator = Navigator.of(context);
+    
     // Run route guards
     if (!await _checkRouteGuards(routeName, arguments)) {
       return null;
@@ -39,7 +41,7 @@ class StandardizedNavigation {
       transition: transition,
     );
     
-    return Navigator.of(context).push(route);
+    return navigator.push(route);
   }
   
   /// Replace current route with new route
@@ -50,6 +52,8 @@ class StandardizedNavigation {
     NavigationTransition transition = NavigationTransition.slideFromRight,
     bool trackAnalytics = true,
   }) async {
+    final navigator = Navigator.of(context);
+    
     if (!await _checkRouteGuards(routeName, arguments)) {
       return null;
     }
@@ -64,7 +68,7 @@ class StandardizedNavigation {
       transition: transition,
     );
     
-    return Navigator.of(context).pushReplacement(route);
+    return navigator.pushReplacement(route);
   }
   
   /// Push and clear all previous routes
@@ -75,6 +79,8 @@ class StandardizedNavigation {
     NavigationTransition transition = NavigationTransition.slideFromRight,
     bool trackAnalytics = true,
   }) async {
+    final navigator = Navigator.of(context);
+    
     if (!await _checkRouteGuards(routeName, arguments)) {
       return null;
     }
@@ -89,7 +95,7 @@ class StandardizedNavigation {
       transition: transition,
     );
     
-    return Navigator.of(context).pushAndRemoveUntil(
+    return navigator.pushAndRemoveUntil(
       route, 
       (Route<dynamic> route) => false,
     );

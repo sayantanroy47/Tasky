@@ -177,11 +177,6 @@ class _HomePageState extends ConsumerState<HomePage> with SingleTickerProviderSt
                 ),
               ),
             ),
-            // Enhanced bottom padding to prevent FAB overlap and ensure last task visibility
-            const SliverToBoxAdapter(
-              child:
-                  SizedBox(height: 140), // Increased from 120 to accommodate larger FAB - custom size for FAB clearance
-            ),
           ],
         ),
       ),
@@ -259,6 +254,7 @@ class _HomePageState extends ConsumerState<HomePage> with SingleTickerProviderSt
                         }
 
                         return ListView.builder(
+                          padding: const EdgeInsets.only(bottom: 120), // Bottom navigation bar clearance (80px + 40px extra)
                           itemCount: filteredTasks.length,
                           itemBuilder: (context, index) {
                             final task = filteredTasks[index];
@@ -564,39 +560,124 @@ class _HomePageState extends ConsumerState<HomePage> with SingleTickerProviderSt
 
   /// Personalized welcome section with elegant minimal design
   Widget _buildWelcomeSection(BuildContext context, ThemeData theme) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      child: Builder(builder: (context) {
-        final welcomeData = _getWelcomeData();
-        final welcomeMessage = welcomeData['welcomeMessage'] as WelcomeMessage;
+    return GestureDetector(
+      onTap: () => _showWelcomeDetails(context),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        child: Builder(builder: (context) {
+          final welcomeData = _getWelcomeData();
+          final welcomeMessage = welcomeData['welcomeMessage'] as WelcomeMessage;
 
-        return Row(
-          children: [
-            // Clean icon without borders
-            if (welcomeMessage.icon != null) ...[
+          return Row(
+            children: [
+              // Clean icon without borders
+              if (welcomeMessage.icon != null) ...[
+                Icon(
+                  welcomeMessage.icon!,
+                  size: 28,
+                  color: theme.colorScheme.primary,
+                ),
+                StandardizedGaps.horizontal(SpacingSize.md),
+              ],
+              Expanded(
+                child: StandardizedText(
+                  welcomeMessage.greeting,
+                  style: StandardizedTextStyle.headlineSmall,
+                  color: theme.colorScheme.onSurface,
+                ),
+              ),
+              // Subtle indicator that this section is interactive
               Icon(
-                welcomeMessage.icon!,
-                size: 28,
-                color: theme.colorScheme.primary,
+                Icons.info_outline,
+                size: 16,
+                color: theme.colorScheme.primary.withValues(alpha: 0.6),
               ),
-              StandardizedGaps.horizontal(SpacingSize.md),
             ],
-            Expanded(
-              child: StandardizedText(
-                welcomeMessage.greeting,
-                style: StandardizedTextStyle.headlineSmall,
-                color: theme.colorScheme.onSurface,
-              ),
-            ),
-          ],
-        );
-      }),
+          );
+        }),
+      ),
     );
   }
 
   /// Show welcome details
   void _showWelcomeDetails(BuildContext context) {
-    // Welcome section interaction - currently no action needed
+    final theme = Theme.of(context);
+    final welcomeData = _getWelcomeData();
+    final welcomeMessage = welcomeData['welcomeMessage'] as WelcomeMessage;
+    final timeOfDay = welcomeData['timeOfDay'] as String;
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Row(
+          children: [
+            if (welcomeMessage.icon != null) ...[
+              Icon(
+                welcomeMessage.icon!,
+                color: theme.colorScheme.primary,
+              ),
+              const SizedBox(width: 8),
+            ],
+            Expanded(
+              child: Text(
+                'Welcome Details',
+                style: theme.textTheme.titleLarge,
+              ),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Current Time: $timeOfDay',
+              style: theme.textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Message: ${welcomeMessage.greeting}',
+              style: theme.textTheme.bodyMedium,
+            ),
+            if (welcomeMessage.subtitle.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primaryContainer,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Today\'s Focus',
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: theme.colorScheme.onPrimaryContainer,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      welcomeMessage.subtitle,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onPrimaryContainer,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
   }
 
   /// Builds the main task overview section with quick stats and insights
@@ -966,9 +1047,6 @@ Shared from Tasky - Task Management App
           height: MediaQuery.of(context).size.height * 0.75, // More space for tasks
           child: _buildCurrentTabView(context, theme),
         ),
-
-        // Enhanced bottom padding to prevent FAB overlap with larger FAB
-        const SizedBox(height: 120),
       ],
     );
   }
@@ -993,7 +1071,7 @@ Shared from Tasky - Task Management App
         });
 
         return ListView.builder(
-          padding: const EdgeInsets.only(bottom: 80), // TODO: Use SpacingTokens for FAB clearance
+          padding: const EdgeInsets.only(bottom: 120), // Bottom navigation bar clearance (80px + 40px extra)
           itemCount: tasks.length,
           itemBuilder: (context, index) {
             final task = tasks[index];
@@ -1024,7 +1102,7 @@ Shared from Tasky - Task Management App
         });
 
         return ListView.builder(
-          padding: const EdgeInsets.only(bottom: 80), // TODO: Use SpacingTokens for FAB clearance
+          padding: const EdgeInsets.only(bottom: 120), // Bottom navigation bar clearance (80px + 40px extra)
           itemCount: projects.length,
           itemBuilder: (context, index) {
             final project = projects[index];
@@ -1068,7 +1146,7 @@ Shared from Tasky - Task Management App
         }
 
         return ListView.builder(
-          padding: const EdgeInsets.only(bottom: 80), // TODO: Use SpacingTokens for FAB clearance
+          padding: const EdgeInsets.only(bottom: 120), // Bottom navigation bar clearance (80px + 40px extra)
           itemCount: futureTasks.length,
           itemBuilder: (context, index) {
             final task = futureTasks[index];
@@ -1118,11 +1196,22 @@ Shared from Tasky - Task Management App
         padding: const EdgeInsets.all(SpacingTokens.taskCardPadding),
         child: Row(
           children: [
-            // Sophisticated category indicator with icon and accent bar
+            // Sophisticated priority and category indicator
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Category icon container
+                // Priority indicator first - Elegant vertical accent bar
+                Container(
+                  width: 4,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: task.priority.color,
+                    borderRadius:
+                        BorderRadius.circular(TypographyConstants.radiusXSmall), // 2.0 - Fixed border radius hierarchy
+                  ),
+                ),
+                const SizedBox(width: SpacingTokens.phi1), // Golden ratio spacing
+                // Category icon container second
                 if (task.tags.isNotEmpty) ...[
                   Builder(builder: (context) {
                     debugPrint('🎨 Showing category icon for task "${task.title}" with tags: ${task.tags}');
@@ -1141,17 +1230,6 @@ Shared from Tasky - Task Management App
                     return const SizedBox.shrink();
                   }),
                 ],
-                // Elegant vertical accent bar - priority indicator
-                Container(
-                  width: 4,
-                  height: 32,
-                  decoration: BoxDecoration(
-                    color: task.priority.color,
-                    borderRadius:
-                        BorderRadius.circular(TypographyConstants.radiusXSmall), // 2.0 - Fixed border radius hierarchy
-                  ),
-                ),
-                const SizedBox(width: SpacingTokens.phi1), // Golden ratio spacing
               ],
             ),
 
@@ -1507,6 +1585,7 @@ Shared from Tasky - Task Management App
   /// Build tasks loading state
   Widget _buildTasksLoadingState(ThemeData theme) {
     return ListView.builder(
+      padding: const EdgeInsets.only(bottom: 120), // Bottom navigation bar clearance (80px + 40px extra)
       itemCount: 3,
       itemBuilder: (context, index) => GlassmorphismContainer(
         level: GlassLevel.background,
@@ -1647,6 +1726,7 @@ Shared from Tasky - Task Management App
   /// Build projects loading state
   Widget _buildProjectsLoadingState(ThemeData theme) {
     return ListView.builder(
+      padding: const EdgeInsets.only(bottom: 120), // Bottom navigation bar clearance (80px + 40px extra)
       itemCount: 3,
       itemBuilder: (context, index) => GlassmorphismContainer(
         level: GlassLevel.background,

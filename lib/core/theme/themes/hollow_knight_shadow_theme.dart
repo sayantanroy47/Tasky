@@ -38,7 +38,7 @@ class HollowKnightShadowTheme {
       colors: _createShadowColors(isDark: isDark),
       typography: _createShadowTypography(isDark: isDark),
       animations: _createShadowAnimations(),
-      effects: _createShadowEffects(),
+      effects: _createShadowEffects(isDark: isDark),
       spacing: _createShadowSpacing(),
       components: _createShadowComponents(),
     );
@@ -169,9 +169,9 @@ class HollowKnightShadowTheme {
         onTertiaryContainer: const Color(0xFFF5F5FF),
         
         // Surface
-        surface: deepVoid,
+        surface: shadowGray,
         onSurface: ghostWhite,
-        surfaceVariant: shadowGray,
+        surfaceVariant: mistGray,
         onSurfaceVariant: const Color(0xFFAAAAAA),
         inverseSurface: ghostWhite,
         onInverseSurface: deepVoid,
@@ -231,203 +231,295 @@ class HollowKnightShadowTheme {
   /// Create shadow-inspired typography with Exo 2 font
   static ThemeTypography _createShadowTypography({bool isDark = true}) {
     const fontFamily = 'Exo 2';
-    final baseColor = isDark ? const Color(0xFFCCCCCC) : const Color(0xFF2F2F2F);
-    final primaryColor = isDark ? const Color(0xFF4A90E2) : const Color(0xFF1A237E);
+    final colors = _ShadowColorsHelper(isDark: isDark);
     
     return ThemeTypography(
+      fontFamily: fontFamily,
+      displayFontFamily: fontFamily,
+      monospaceFontFamily: fontFamily,
+      baseSize: TypographyConstants.bodyLarge,
+      scaleRatio: 1.0,
+      baseFontWeight: TypographyConstants.regular,
+      baseLetterSpacing: TypographyConstants.normalLetterSpacing,
+      baseLineHeight: TypographyConstants.normalLineHeight,
+      
       // Display styles - Light and ethereal
-      displayLarge: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 57.0,
-        fontWeight: FontWeight.w200, // Ultra-light for ethereal feel
-        letterSpacing: -0.25,
-        height: 1.12,
-        color: baseColor,
+      displayLarge: LocalFonts.getFont(
+        fontFamily,
+        fontSize: TypographyConstants.displayLarge,
+        fontWeight: TypographyConstants.light,
+        letterSpacing: TypographyConstants.tightLetterSpacing,
+        height: TypographyConstants.tightLineHeight,
+        color: colors.primary,
       ),
-      displayMedium: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 45.0,
-        fontWeight: FontWeight.w200,
-        letterSpacing: -0.25,
-        height: 1.16,
-        color: baseColor,
+      displayMedium: LocalFonts.getFont(
+        fontFamily,
+        fontSize: TypographyConstants.displayMedium,
+        fontWeight: TypographyConstants.light,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
+        color: colors.primary,
       ),
-      displaySmall: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 36.0,
-        fontWeight: FontWeight.w300,
-        letterSpacing: 0,
-        height: 1.22,
-        color: baseColor,
+      displaySmall: LocalFonts.getFont(
+        fontFamily,
+        fontSize: TypographyConstants.displaySmall,
+        fontWeight: TypographyConstants.regular,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
+        color: colors.onSurface,
       ),
       
       // Headline styles - Ghostly presence
-      headlineLarge: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 32.0,
-        fontWeight: FontWeight.w300, // Light for spectral feel
-        letterSpacing: 0,
-        height: 1.25,
-        color: primaryColor,
+      headlineLarge: LocalFonts.getFont(
+        fontFamily,
+        fontSize: TypographyConstants.headlineLarge,
+        fontWeight: TypographyConstants.light,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
+        color: colors.primary,
       ),
-      headlineMedium: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 28.0,
-        fontWeight: FontWeight.w400,
-        letterSpacing: 0.15,
-        height: 1.29,
-        color: primaryColor,
+      headlineMedium: LocalFonts.getFont(
+        fontFamily,
+        fontSize: TypographyConstants.headlineMedium,
+        fontWeight: TypographyConstants.regular,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
+        color: colors.onSurface,
       ),
-      headlineSmall: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 24.0,
-        fontWeight: FontWeight.w400,
-        letterSpacing: 0.15,
-        height: 1.33,
-        color: baseColor,
+      headlineSmall: LocalFonts.getFont(
+        fontFamily,
+        fontSize: TypographyConstants.headlineSmall,
+        fontWeight: TypographyConstants.regular,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
+        color: colors.onSurface,
       ),
       
       // Title styles - Subtle presence
-      titleLarge: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 22.0,
-        fontWeight: FontWeight.w500, // Medium for void balance
-        letterSpacing: 0.15,
-        height: 1.27,
-        color: baseColor,
+      titleLarge: LocalFonts.getFont(
+        fontFamily,
+        fontSize: TypographyConstants.titleLarge,
+        fontWeight: TypographyConstants.medium,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
+        color: colors.onSurface,
       ),
-      titleMedium: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 18.0,
-        fontWeight: FontWeight.w500,
-        letterSpacing: 0.15,
-        height: 1.33,
-        color: baseColor,
+      titleMedium: LocalFonts.getFont(
+        fontFamily,
+        fontSize: TypographyConstants.titleMedium,
+        fontWeight: TypographyConstants.medium,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
+        color: colors.onSurface,
       ),
-      titleSmall: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 16.0,
-        fontWeight: FontWeight.w500,
-        letterSpacing: 0.1,
-        height: 1.25,
-        color: baseColor,
+      titleSmall: LocalFonts.getFont(
+        fontFamily,
+        fontSize: TypographyConstants.titleSmall,
+        fontWeight: TypographyConstants.regular,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
+        color: colors.onSurfaceVariant,
       ),
       
       // Body styles - Ethereal readability
-      bodyLarge: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 16.0,
-        fontWeight: FontWeight.w300, // Light for ghostly feel
-        letterSpacing: 0.15,
-        height: 1.5,
-        color: baseColor,
+      bodyLarge: LocalFonts.getFont(
+        fontFamily,
+        fontSize: TypographyConstants.bodyLarge,
+        fontWeight: TypographyConstants.regular,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.relaxedLineHeight,
+        color: colors.onSurface,
       ),
-      bodyMedium: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 14.0,
-        fontWeight: FontWeight.w300,
-        letterSpacing: 0.25,
-        height: 1.43,
-        color: baseColor,
+      bodyMedium: LocalFonts.getFont(
+        fontFamily,
+        fontSize: TypographyConstants.bodyMedium,
+        fontWeight: TypographyConstants.regular,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
+        color: colors.onSurface,
       ),
-      bodySmall: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 12.0,
-        fontWeight: FontWeight.w300,
-        letterSpacing: 0.4,
-        height: 1.33,
-        color: baseColor.withValues(alpha: 0.7),
+      bodySmall: LocalFonts.getFont(
+        fontFamily,
+        fontSize: TypographyConstants.bodySmall,
+        fontWeight: TypographyConstants.regular,
+        letterSpacing: TypographyConstants.relaxedLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
+        color: colors.onSurfaceVariant,
       ),
       
       // Label styles - Spectral guidance
-      labelLarge: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 15.0,
-        fontWeight: FontWeight.w400,
-        letterSpacing: 0.1,
-        height: 1.27,
-        color: baseColor,
+      labelLarge: LocalFonts.getFont(
+        fontFamily,
+        fontSize: TypographyConstants.labelLarge,
+        fontWeight: TypographyConstants.medium,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
+        color: colors.primary,
       ),
-      labelMedium: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 13.0,
-        fontWeight: FontWeight.w400,
-        letterSpacing: 0.5,
-        height: 1.33,
-        color: baseColor,
+      labelMedium: LocalFonts.getFont(
+        fontFamily,
+        fontSize: TypographyConstants.labelMedium,
+        fontWeight: TypographyConstants.medium,
+        letterSpacing: TypographyConstants.relaxedLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
+        color: colors.onSurface,
       ),
-      labelSmall: TextStyle(
-        fontFamily: fontFamily,
-        fontSize: 11.0,
-        fontWeight: FontWeight.w400,
-        letterSpacing: 0.5,
-        height: 1.45,
-        color: baseColor.withValues(alpha: 0.7),
+      labelSmall: LocalFonts.getFont(
+        fontFamily,
+        fontSize: TypographyConstants.labelSmall,
+        fontWeight: TypographyConstants.medium,
+        letterSpacing: TypographyConstants.relaxedLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
+        color: colors.onSurfaceVariant,
+      ),
+      
+      // Task-specific styles - Shadow realm
+      taskTitle: LocalFonts.getFont(
+        fontFamily,
+        fontSize: TypographyConstants.taskTitle,
+        fontWeight: TypographyConstants.medium,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
+        color: colors.onSurface,
+      ),
+      taskDescription: LocalFonts.getFont(
+        fontFamily,
+        fontSize: TypographyConstants.taskDescription,
+        fontWeight: TypographyConstants.regular,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.relaxedLineHeight,
+        color: colors.onSurfaceVariant,
+      ),
+      taskMeta: LocalFonts.getFont(
+        fontFamily,
+        fontSize: TypographyConstants.taskMeta,
+        fontWeight: TypographyConstants.regular,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
+        color: colors.onSurfaceVariant,
+      ),
+      cardTitle: LocalFonts.getFont(
+        fontFamily,
+        fontSize: TypographyConstants.titleSmall,
+        fontWeight: TypographyConstants.medium,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
+        color: colors.onSurface,
+      ),
+      cardSubtitle: LocalFonts.getFont(
+        fontFamily,
+        fontSize: TypographyConstants.bodySmall,
+        fontWeight: TypographyConstants.regular,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
+        color: colors.onSurfaceVariant,
+      ),
+      buttonText: LocalFonts.getFont(
+        fontFamily,
+        fontSize: TypographyConstants.buttonText,
+        fontWeight: TypographyConstants.medium,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
+        color: colors.onSurface,
+      ),
+      inputText: LocalFonts.getFont(
+        fontFamily,
+        fontSize: TypographyConstants.inputText,
+        fontWeight: TypographyConstants.regular,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
+        color: colors.onSurface,
+      ),
+      appBarTitle: LocalFonts.getFont(
+        fontFamily,
+        fontSize: TypographyConstants.appBarTitle,
+        fontWeight: TypographyConstants.medium,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
+        color: colors.onSurface,
+      ),
+      navigationLabel: LocalFonts.getFont(
+        fontFamily,
+        fontSize: TypographyConstants.navigationLabel,
+        fontWeight: TypographyConstants.medium,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
+        color: colors.onSurface,
       ),
     );
   }
 
   /// Create shadow-inspired animations
   static ThemeAnimations _createShadowAnimations() {
-    return ThemeAnimations(
-      fast: const Duration(milliseconds: 150),    // Spectral fade
-      medium: const Duration(milliseconds: 400),  // Soul drift
-      slow: const Duration(milliseconds: 600),    // Void emergence
-      verySlow: const Duration(milliseconds: 800), // Deep shadow
+    return const ThemeAnimations(
+      fast: Duration(milliseconds: 150),    // Spectral fade
+      medium: Duration(milliseconds: 400),  // Soul drift
+      slow: Duration(milliseconds: 600),    // Void emergence
+      verySlow: Duration(milliseconds: 800), // Deep shadow
       
       primaryCurve: Curves.easeInOutSine,         // Ethereal flow
       secondaryCurve: Curves.easeInOutQuart,      // Void transition
-      emphasisCurve: Curves.easeOutExpo,          // Soul burst
+      entranceCurve: Curves.easeOutCubic,
+      exitCurve: Curves.easeInCubic,
       
-      pageTransition: theme_effects.PageTransitionType.fade,
-      enableHoverAnimations: true,
-      enableFocusAnimations: true,
+      enableParticles: true,
+      particleConfig: ParticleConfig(
+        density: ParticleDensity.medium,
+        speed: ParticleSpeed.slow,
+        style: ParticleStyle.organic,
+        enableGlow: true,
+        opacity: 0.4,
+        size: 1.0,
+      ),
     );
   }
 
   /// Create shadow-inspired effects
-  static theme_effects.ThemeEffects _createShadowEffects() {
+  static theme_effects.ThemeEffects _createShadowEffects({required bool isDark}) {
     return theme_effects.ThemeEffects(
-      elevation: theme_effects.ElevationConfig(
-        card: 2.0,         // Subtle ethereal lift
-        button: 1.0,       // Minimal shadow presence
-        fab: 4.0,
-        appBar: 0.0,
-        drawer: 16.0,
-        dialog: 24.0,
+      shadowStyle: theme_effects.ShadowStyle.soft,
+      gradientStyle: theme_effects.GradientStyle.subtle,
+      borderStyle: theme_effects.BorderStyle.rounded,
+      
+      blurConfig: const theme_effects.BlurConfig(
+        enabled: true,
+        intensity: 2.0,
+        style: theme_effects.BlurStyle.outer,
       ),
       
-      borderRadius: theme_effects.BorderRadiusConfig(
-        small: 12.0,       // Ethereal curves
-        medium: 16.0,
-        large: 20.0,
-        extraLarge: 28.0,
+      glowConfig: theme_effects.GlowConfig(
+        enabled: true,
+        intensity: isDark ? 0.6 : 0.2, // Stronger soul glow in the void
+        spread: isDark ? 16.0 : 8.0, // Wider ethereal spread in darkness
+        style: theme_effects.GlowStyle.outer,
       ),
       
-      animation: theme_effects.AnimationConfig(
-        defaultDuration: const Duration(milliseconds: 400),
-        fastDuration: const Duration(milliseconds: 150),
-        slowDuration: const Duration(milliseconds: 600),
-        curve: Curves.easeInOutSine,
-      ),
-      
-      blur: const theme_effects.BlurConfig(
-        light: 6.0,        // Ethereal blur
-        medium: 12.0,
-        heavy: 20.0,
-      ),
-      
-      glow: const theme_effects.GlowConfig(
-        radius: 12.0,      // Soul glow
-        opacity: 0.4,
-        color: Color(0xFF4A90E2),
+      backgroundEffects: theme_effects.BackgroundEffectConfig(
+        enableParticles: true,
+        enableGradientMesh: true,
+        enableScanlines: false,
+        particleType: theme_effects.BackgroundParticleType.floating,
+        particleOpacity: isDark ? 0.3 : 0.1, // More soul particles in the void
+        effectIntensity: isDark ? 0.6 : 0.2, // Stronger ethereal effects in darkness
+        geometricPattern: theme_effects.BackgroundGeometricPattern.radial, // Ethereal void symmetry
+        patternAngle: 0.0, // Centered ethereal energy
+        patternDensity: 0.7, // Sparse ethereal pattern
+        accentColors: [
+          (isDark ? const Color(0xFF4A90E2) : const Color(0xFF64B5F6)).withValues(alpha: 0.1), // Soul blue
+          (isDark ? const Color(0xFF8A2BE2) : const Color(0xFFBA68C8)).withValues(alpha: 0.06), // Void purple
+        ],
       ),
     );
   }
 
   /// Create shadow-inspired spacing
   static app_theme_data.ThemeSpacing _createShadowSpacing() {
-    return app_theme_data.ThemeSpacing.fromBaseUnit(8.0).copyWith(
+    return const app_theme_data.ThemeSpacing(
+      extraSmall: 4.0,
+      small: 8.0,
+      medium: 16.0,
+      large: 24.0,
+      extraLarge: 32.0,
       cardPadding: 20.0,     // More space for ethereal feel
       screenPadding: 20.0,
       buttonPadding: 16.0,
@@ -489,4 +581,15 @@ class HollowKnightShadowTheme {
       ),
     );
   }
+}
+
+/// Helper class for accessing shadow colors in static context
+class _ShadowColorsHelper {
+  final bool isDark;
+  
+  const _ShadowColorsHelper({required this.isDark});
+  
+  Color get primary => isDark ? const Color(0xFF4A90E2) : const Color(0xFF1A237E);
+  Color get onSurface => isDark ? const Color(0xFFCCCCCC) : const Color(0xFF2F2F2F);
+  Color get onSurfaceVariant => isDark ? const Color(0xFFAAAAAA) : const Color(0xFF708090);
 }

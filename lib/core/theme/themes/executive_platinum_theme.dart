@@ -39,7 +39,7 @@ class ExecutivePlatinumTheme {
       colors: _createExecutiveColors(isDark: isDark),
       typography: _createExecutiveTypography(isDark: isDark),
       animations: _createExecutiveAnimations(),
-      effects: _createExecutiveEffects(),
+      effects: _createExecutiveEffects(isDark: isDark),
       spacing: _createExecutiveSpacing(),
       components: _createExecutiveComponents(),
     );
@@ -79,6 +79,8 @@ class ExecutivePlatinumTheme {
         onSurface: Color(0xFFf8f8f2),
         surfaceVariant: Color(0xFF1E1E1E), // Dark platinum
         onSurfaceVariant: Color(0xFFf8f8f2),
+        inverseSurface: Color(0xFFE0E0E0),
+        onInverseSurface: Color(0xFF212121),
         
         background: Color(0xFF121212), // Executive office
         onBackground: Color(0xFFf8f8f2),
@@ -86,15 +88,25 @@ class ExecutivePlatinumTheme {
         outline: Color(0xFF757575),
         outlineVariant: Color(0xFF424242),
         shadow: Color(0xFF000000),
-        scrim: Color(0xFF000000),
-        inverseSurface: Color(0xFFE0E0E0),
-        onInverseSurface: Color(0xFF212121),
-        inversePrimary: Color(0xFF424242),
         
         // Additional required colors
         accent: Color(0xFFFFB300), // Executive gold accent
+        highlight: Color(0xFFFFD54F), // Bright executive gold highlight
         disabled: Color(0xFF424242),
         focus: Color(0xFF616161), // Primary color for focus
+        hover: Color(0xFF757575), // Light platinum hover
+        pressed: Color(0xFF303030), // Darker platinum pressed
+        
+        // Task priority colors
+        taskLowPriority: Color(0xFF66BB6A), // Green
+        taskMediumPriority: Color(0xFFFFB300), // Gold
+        taskHighPriority: Color(0xFFFF8F00), // Orange
+        taskUrgentPriority: Color(0xFFE57373), // Red
+        
+        // Status colors
+        success: Color(0xFF66BB6A), // Success green
+        warning: Color(0xFFFFB300), // Warning gold
+        info: Color(0xFF42A5F5), // Info blue
         
         // Calendar dot colors - executive theme
         calendarTodayDot: Color(0xFF616161), // Platinum
@@ -102,6 +114,14 @@ class ExecutivePlatinumTheme {
         calendarOverdueDot: Color(0xFFE57373), // Executive red
         calendarHighPriorityDot: Color(0xFFFFB300), // Gold
         calendarFutureDot: Color(0xFF37474F), // Steel
+        
+        // Status badge colors
+        statusPendingBadge: Color(0xFF90A4AE), // Gray
+        statusInProgressBadge: Color(0xFF42A5F5), // Blue
+        statusCompletedBadge: Color(0xFF66BB6A), // Green
+        statusCancelledBadge: Color(0xFF757575), // Dark gray
+        statusOverdueBadge: Color(0xFFE57373), // Red
+        statusOnHoldBadge: Color(0xFFFFB300), // Gold
       );
     } else {
       return const ThemeColors(
@@ -130,6 +150,8 @@ class ExecutivePlatinumTheme {
         onSurface: Color(0xFF2d2d2d),
         surfaceVariant: Color(0xFFF5F5F5), // Light platinum
         onSurfaceVariant: Color(0xFF2d2d2d),
+        inverseSurface: Color(0xFF212121),
+        onInverseSurface: Color(0xFFF5F5F5),
         
         background: Color(0xFFFAFAFA), // Executive office
         onBackground: Color(0xFF2d2d2d),
@@ -137,22 +159,40 @@ class ExecutivePlatinumTheme {
         outline: Color(0xFF757575),
         outlineVariant: Color(0xFFBDBDBD),
         shadow: Color(0xFF000000),
-        scrim: Color(0xFF000000),
-        inverseSurface: Color(0xFF212121),
-        onInverseSurface: Color(0xFFF5F5F5),
-        inversePrimary: Color(0xFF9E9E9E),
         
         // Additional required colors
         accent: Color(0xFFFFB300), // Executive gold accent
+        highlight: Color(0xFFFFC107), // Bright gold highlight
         disabled: Color(0xFFBDBDBD),
         focus: Color(0xFF424242), // Primary color for focus
+        hover: Color(0xFFE0E0E0), // Light hover
+        pressed: Color(0xFF9E9E9E), // Darker pressed
+        
+        // Task priority colors
+        taskLowPriority: Color(0xFF4CAF50), // Green
+        taskMediumPriority: Color(0xFFFFB300), // Gold
+        taskHighPriority: Color(0xFFFF9800), // Orange
+        taskUrgentPriority: Color(0xFFD32F2F), // Red
+        
+        // Status colors
+        success: Color(0xFF4CAF50), // Success green
+        warning: Color(0xFFFFB300), // Warning gold
+        info: Color(0xFF2196F3), // Info blue
         
         // Calendar dot colors - executive theme
         calendarTodayDot: Color(0xFF424242), // Platinum
-        calendarCompletedDot: Color(0xFF66BB6A), // Success green
+        calendarCompletedDot: Color(0xFF4CAF50), // Success green
         calendarOverdueDot: Color(0xFFD32F2F), // Executive red
         calendarHighPriorityDot: Color(0xFFFFB300), // Gold
         calendarFutureDot: Color(0xFF607D8B), // Steel blue
+        
+        // Status badge colors
+        statusPendingBadge: Color(0xFF9E9E9E), // Gray
+        statusInProgressBadge: Color(0xFF2196F3), // Blue
+        statusCompletedBadge: Color(0xFF4CAF50), // Green
+        statusCancelledBadge: Color(0xFF757575), // Dark gray
+        statusOverdueBadge: Color(0xFFD32F2F), // Red
+        statusOnHoldBadge: Color(0xFFFFB300), // Gold
       );
     }
   }
@@ -163,6 +203,13 @@ class ExecutivePlatinumTheme {
     
     return ThemeTypography(
       fontFamily: fontFamily,
+      displayFontFamily: fontFamily,
+      monospaceFontFamily: fontFamily,
+      baseSize: TypographyConstants.bodyLarge,
+      scaleRatio: 1.0,
+      baseFontWeight: TypographyConstants.regular,
+      baseLetterSpacing: TypographyConstants.normalLetterSpacing,
+      baseLineHeight: TypographyConstants.normalLineHeight,
       
       // Display styles - Executive presence
       displayLarge: LocalFonts.getFont(
@@ -311,68 +358,188 @@ class ExecutivePlatinumTheme {
         height: TypographyConstants.relaxedLineHeight,
         color: colors.onSurfaceVariant,
       ),
+      
+      // Additional required typography styles
+      taskMeta: LocalFonts.getFont(
+        fontFamily,
+        fontSize: TypographyConstants.labelSmall,
+        fontWeight: TypographyConstants.regular,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
+        color: colors.onSurfaceVariant,
+      ),
+      cardTitle: LocalFonts.getFont(
+        fontFamily,
+        fontSize: TypographyConstants.titleSmall,
+        fontWeight: TypographyConstants.medium,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
+        color: colors.onSurface,
+      ),
+      cardSubtitle: LocalFonts.getFont(
+        fontFamily,
+        fontSize: TypographyConstants.bodySmall,
+        fontWeight: TypographyConstants.regular,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
+        color: colors.onSurfaceVariant,
+      ),
+      buttonText: LocalFonts.getFont(
+        fontFamily,
+        fontSize: TypographyConstants.labelLarge,
+        fontWeight: TypographyConstants.medium,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
+        color: colors.onSurface,
+      ),
+      inputText: LocalFonts.getFont(
+        fontFamily,
+        fontSize: TypographyConstants.bodyMedium,
+        fontWeight: TypographyConstants.regular,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
+        color: colors.onSurface,
+      ),
+      appBarTitle: LocalFonts.getFont(
+        fontFamily,
+        fontSize: TypographyConstants.titleLarge,
+        fontWeight: TypographyConstants.medium,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
+        color: colors.onSurface,
+      ),
+      navigationLabel: LocalFonts.getFont(
+        fontFamily,
+        fontSize: TypographyConstants.labelMedium,
+        fontWeight: TypographyConstants.medium,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
+        color: colors.onSurface,
+      ),
     );
   }
 
   static ThemeAnimations _createExecutiveAnimations() {
-    return ThemeAnimations.fromThemeStyle(
-      theme_effects.ThemeAnimationStyle.sharp, // Crisp, professional transitions
-      customCurves: {
-        'businessDecision': Curves.easeInOutCubic, // Confident decisions
-        'professionalSlide': Curves.easeOutQuart, // Smooth presentations
-        'executiveReveal': Curves.easeInOutExpo, // Impressive reveals
-      },
+    return const ThemeAnimations(
+      // Crisp, professional transitions
+      fast: Duration(milliseconds: 150),
+      medium: Duration(milliseconds: 300),
+      slow: Duration(milliseconds: 500),
+      verySlow: Duration(milliseconds: 800),
+      
+      // Professional curves
+      primaryCurve: Curves.easeInOutCubic, // Confident decisions
+      secondaryCurve: Curves.easeOutQuart, // Smooth presentations
+      entranceCurve: Curves.easeOutCubic,
+      exitCurve: Curves.easeInCubic,
+      
+      enableParticles: true,
+      particleConfig: ParticleConfig(
+        density: ParticleDensity.low,
+        speed: ParticleSpeed.medium,
+        style: ParticleStyle.geometric,
+        enableGlow: false,
+        opacity: 0.3,
+        size: 1.0,
+      ),
     );
   }
 
-  static theme_effects.ThemeEffects _createExecutiveEffects() {
-    return theme_effects.ThemeEffects.fromEffectStyle(
-      theme_effects.ThemeEffectStyle.elegant, // Refined professional effects
-      backgroundEffect: theme_effects.BackgroundEffectConfig(
+  static theme_effects.ThemeEffects _createExecutiveEffects({required bool isDark}) {
+    return theme_effects.ThemeEffects(
+      // Refined professional effects
+      shadowStyle: theme_effects.ShadowStyle.soft,
+      gradientStyle: theme_effects.GradientStyle.subtle,
+      borderStyle: theme_effects.BorderStyle.rounded,
+      
+      blurConfig: const theme_effects.BlurConfig(
+        enabled: true,
+        intensity: 1.0,
+        style: theme_effects.BlurStyle.outer,
+      ),
+      
+      glowConfig: theme_effects.GlowConfig(
+        enabled: isDark, // Only enable subtle glow in dark executive mode
+        intensity: isDark ? 0.3 : 0.0, // Very subtle platinum glow for night mode
+        spread: isDark ? 4.0 : 0.0, // Minimal spread for professional look
+        style: theme_effects.GlowStyle.outer,
+      ),
+      
+      backgroundEffects: theme_effects.BackgroundEffectConfig(
         enableParticles: true,
         enableGradientMesh: true,
-        particleType: theme_effects.ParticleType.geometric,
-        particleCount: 8, // Subtle professional particles
-        particleColors: [
-          const Color(0xFF424242), // Platinum
-          const Color(0xFFFFB300), // Executive gold
-          const Color(0xFF607D8B), // Steel blue
-          const Color(0xFF9E9E9E), // Light platinum
+        enableScanlines: false,
+        particleType: theme_effects.BackgroundParticleType.floating,
+        particleOpacity: isDark ? 0.15 : 0.03, // Minimal particles for clean professional look
+        effectIntensity: isDark ? 0.4 : 0.1, // Subtle effects maintaining business elegance
+        geometricPattern: theme_effects.BackgroundGeometricPattern.linear, // Clean professional precision
+        patternAngle: 0.0, // Vertical precision
+        patternDensity: 0.8, // Fine professional pattern
+        accentColors: [
+          (isDark ? const Color(0xFF424242) : const Color(0xFFE0E0E0)).withValues(alpha: 0.1), // Platinum accent
+          (isDark ? const Color(0xFFFFB300) : const Color(0xFFFFC107)).withValues(alpha: 0.05), // Gold accent
         ],
-        animationDuration: const Duration(seconds: 6), // Measured, professional
-        meshColors: [
-          const Color(0xFF424242).withOpacity(0.05), // Subtle platinum
-          const Color(0xFFFFB300).withOpacity(0.05), // Hint of gold
-          const Color(0xFF607D8B).withOpacity(0.05), // Steel undertone
-        ],
-        intensity: 0.3, // Refined intensity
-        speed: 0.4, // Professional pace
       ),
     );
   }
 
   static app_theme_data.ThemeSpacing _createExecutiveSpacing() {
     return const app_theme_data.ThemeSpacing(
-      xs: TypographyConstants.spacingSmall / 2, // 4px
-      sm: TypographyConstants.spacingSmall, // 8px
-      md: TypographyConstants.spacingMedium, // 16px
-      lg: TypographyConstants.spacingLarge, // 24px
-      xl: TypographyConstants.spacingXLarge, // 32px
+      extraSmall: TypographyConstants.spacingSmall / 2, // 4px
+      small: TypographyConstants.spacingSmall, // 8px
+      medium: TypographyConstants.spacingMedium, // 16px
+      large: TypographyConstants.spacingLarge, // 24px
+      extraLarge: TypographyConstants.spacingXLarge, // 32px
+      cardPadding: 16.0, // Professional card spacing
+      screenPadding: 16.0, // Professional screen margins
+      buttonPadding: 16.0, // Professional button spacing
+      inputPadding: 16.0, // Professional input spacing
     );
   }
 
   static app_theme_data.ThemeComponents _createExecutiveComponents() {
     return const app_theme_data.ThemeComponents(
-      cardElevation: 4.0, // Professional depth
-      borderRadius: TypographyConstants.radiusSmall, // Clean, professional edges
-      buttonHeight: 48.0, // Standard professional interaction
-      inputHeight: 52.0, // Executive input size
-      iconSize: 24.0, // Professional icons
-      avatarSize: 40.0, // Executive profile size
-      chipHeight: 36.0, // Business chips
-      tabHeight: 48.0, // Professional navigation
-      listItemHeight: 64.0, // Executive list spacing
-      dividerThickness: 1.0, // Clean dividers
+      appBar: app_theme_data.AppBarConfig(
+        elevation: 2.0, // Professional subtle elevation
+        centerTitle: true, // Executive alignment
+        toolbarHeight: kToolbarHeight,
+      ),
+      card: app_theme_data.CardConfig(
+        elevation: 4.0, // Professional depth
+        borderRadius: TypographyConstants.radiusSmall, // Clean edges
+        margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        padding: EdgeInsets.all(16.0),
+      ),
+      button: app_theme_data.ButtonConfig(
+        borderRadius: TypographyConstants.radiusSmall,
+        padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+        elevation: 2.0,
+        height: 48.0, // Standard professional interaction
+        style: app_theme_data.ButtonStyle.elevated,
+      ),
+      input: app_theme_data.InputConfig(
+        borderRadius: TypographyConstants.radiusSmall,
+        contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 16.0),
+        borderStyle: app_theme_data.InputBorderStyle.outline,
+        filled: false,
+      ),
+      fab: app_theme_data.FABConfig(
+        shape: app_theme_data.FABShape.circular,
+        elevation: 6.0,
+      ),
+      navigation: app_theme_data.NavigationConfig(
+        type: app_theme_data.NavigationType.bottomNav,
+        elevation: 8.0,
+        showLabels: true,
+      ),
+      taskCard: app_theme_data.TaskCardConfig(
+        borderRadius: TypographyConstants.radiusSmall,
+        margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+        padding: EdgeInsets.all(16.0),
+        elevation: 2.0, // Professional subtle elevation
+        showPriorityStripe: true, // Executive visual emphasis
+        enableSwipeActions: true, // Professional productivity
+      ),
     );
   }
 }

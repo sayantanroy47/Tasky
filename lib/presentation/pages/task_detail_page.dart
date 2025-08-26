@@ -309,6 +309,7 @@ class _TaskDetailView extends ConsumerWidget {
   }
 
   void _deleteTask(BuildContext context, WidgetRef ref) async {
+    final navigator = Navigator.of(context);
     final confirmed = await context.showConfirmationDialog(
       title: 'Delete Task',
       message: 'Are you sure you want to delete this task?',
@@ -319,8 +320,10 @@ class _TaskDetailView extends ConsumerWidget {
     
     if (confirmed == true) {
       ref.read(taskOperationsProvider).deleteTask(task);
-      Navigator.of(context).pop(); // Go back to previous screen
-      context.notifyTaskDeleted();
+      navigator.pop(); // Go back to previous screen
+      if (context.mounted) {
+        context.notifyTaskDeleted();
+      }
     }
   }
 

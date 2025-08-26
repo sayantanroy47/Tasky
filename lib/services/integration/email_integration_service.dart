@@ -1162,7 +1162,7 @@ class EmailShareOptions {
   final bool includeAttachments;
   final bool includeTaskData;
   final bool includeDataExport;
-  final export_models.ExportFormat? exportFormat;
+  final enums.ExportFormat? exportFormat;
   final bool sendAsHtml;
   final String? customMessage;
 

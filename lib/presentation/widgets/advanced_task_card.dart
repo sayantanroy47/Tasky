@@ -378,11 +378,9 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with Ticker
   Widget _buildCompactContent(ThemeData theme) {
     return Row(
       children: [
-        // Priority indicator first
-        if (widget.task.priority.isHighPriority) ...[
-          _buildPriorityIndicator(theme, size: 20),
-          StandardizedGaps.horizontal(SpacingSize.xs),
-        ],
+        // Priority indicator first (always show)
+        _buildPriorityIndicator(theme, size: 20),
+        StandardizedGaps.horizontal(SpacingSize.xs),
         // Category icon container
         if (widget.task.tagIds.isNotEmpty) ...[
           CategoryUtils.buildCategoryIconContainer(
@@ -402,12 +400,31 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with Ticker
                 isCompleted: widget.task.isCompleted,
                 maxLines: 1,
               ),
-              if (widget.task.dueDate != null)
-                StandardizedText(
-                  _formatDueDate(widget.task.dueDate!),
-                  style: StandardizedTextStyle.taskMeta,
-                  color: _getDueDateColor(theme),
-                ),
+              // Add tags and due date in the same row for compact display
+              Row(
+                children: [
+                  // Show compact tag chips if there are tags
+                  if (widget.task.tagIds.isNotEmpty) ...[
+                    Flexible(
+                      child: _buildCompactTagsPreview(theme),
+                    ),
+                    if (widget.task.dueDate != null) ...[
+                      const SizedBox(width: 4),
+                      const Text('•', style: TextStyle(fontSize: 10)),
+                      const SizedBox(width: 4),
+                    ],
+                  ],
+                  // Show due date if available
+                  if (widget.task.dueDate != null)
+                    Flexible(
+                      child: StandardizedText(
+                        _formatDueDate(widget.task.dueDate!),
+                        style: StandardizedTextStyle.taskMeta,
+                        color: _getDueDateColor(theme),
+                      ),
+                    ),
+                ],
+              ),
             ],
           ),
         ),
@@ -776,6 +793,31 @@ class _AdvancedTaskCardState extends ConsumerState<AdvancedTaskCard> with Ticker
       loading: () => const SizedBox(
         height: 20,
         width: 60,
+        child: Center(child: CircularProgressIndicator(strokeWidth: 1)),
+      ),
+      error: (_, __) => const SizedBox.shrink(), // Hide on error
+    );
+  }
+
+  /// Build compact tag preview for compact cards with minimal space
+  Widget _buildCompactTagsPreview(ThemeData theme) {
+    final tagIds = widget.task.tagIds;
+    if (tagIds.isEmpty) return const SizedBox.shrink();
+    
+    // Use the proper tag provider to get real tag entities
+    final tagsProvider = ref.watch(tagsByIdsProvider(tagIds));
+    
+    return tagsProvider.when(
+      data: (tags) => TagChipList(
+        tags: tags,
+        chipSize: TagChipSize.small,
+        maxChips: 2, // Show only 2 tags in compact mode
+        spacing: 2.0, // Tighter spacing for compact cards
+        onTagTap: widget.onTap != null ? (_) => widget.onTap!() : null,
+      ),
+      loading: () => const SizedBox(
+        height: 16,
+        width: 40,
         child: Center(child: CircularProgressIndicator(strokeWidth: 1)),
       ),
       error: (_, __) => const SizedBox.shrink(), // Hide on error

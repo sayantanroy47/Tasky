@@ -167,7 +167,7 @@ class VampireGothicTheme {
       secondary: richGold,
       onSecondary: ivoryWhite,
       secondaryContainer: Color(0xFFFFF8DC),
-      onSecondaryContainer: Color(0xFF664400),
+      onSecondaryContainer: vintageBrown,
       
       // Tertiary colors - Deep Purple mystery
       tertiary: deepPurple,
@@ -510,6 +510,13 @@ class VampireGothicTheme {
         particleType: theme_effects.BackgroundParticleType.floating, // Floating mist
         particleOpacity: 0.2,                    // Subtle gothic atmosphere
         effectIntensity: 0.5,                    // Moderate aristocratic effects
+        geometricPattern: theme_effects.BackgroundGeometricPattern.mesh,
+        patternAngle: 30.0,
+        patternDensity: 0.9,
+        accentColors: [
+          Color(0x198B0000), // Blood crimson at 0.1 alpha
+          Color(0x1FCFB53B), // Antique gold at 0.12 alpha
+        ],
       ),
     );
   }

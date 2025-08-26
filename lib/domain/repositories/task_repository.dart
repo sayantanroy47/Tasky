@@ -77,6 +77,17 @@ abstract class TaskRepository {
   
   /// Bulk assign tasks to a project
   Future<void> assignTasksToProject(List<String> taskIds, String? projectId);
+
+  // Additional methods required by services
+  
+  /// Gets tasks for a specific project (alias for getTasksByProject)
+  Future<List<TaskModel>> getTasksForProject(String projectId) => getTasksByProject(projectId);
+  
+  /// Gets tasks by project ID (alias for getTasksByProject)
+  Future<List<TaskModel>> getTasksByProjectId(String projectId) => getTasksByProject(projectId);
+  
+  /// Gets tasks that don't belong to any project
+  Future<List<TaskModel>> getTasksWithoutProject();
 }
 
 

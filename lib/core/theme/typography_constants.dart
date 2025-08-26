@@ -48,10 +48,10 @@ class TypographyConstants {
   static const double taskMeta = bodySmall;           // 11.0
 
   // Font weight constants - Proper hierarchy for visual distinction
-  static const FontWeight light = FontWeight.w300;   // Actually light weight
-  static const FontWeight regular = FontWeight.w400; // Standard weight  
-  static const FontWeight medium = FontWeight.w500;  // Medium weight
-  static const FontWeight semiBold = FontWeight.w500; // Alias for medium to maintain compatibility
+  static const FontWeight light = FontWeight.w400;   // Readable light weight (was w300)
+  static const FontWeight regular = FontWeight.w500; // Standard weight  
+  static const FontWeight medium = FontWeight.w600;  // Medium weight
+  static const FontWeight semiBold = FontWeight.w600; // Alias for medium to maintain compatibility
   // semiBold and bold removed - maximum weight is medium (w500)
 
   // Line height constants

@@ -200,7 +200,7 @@ class TasksPage extends ConsumerWidget {
                     subtitle,
                     style: StandardizedTextStyle.bodySmall,
                     color: context.colors.withSemanticOpacity(
-                      Theme.of(context).colorScheme.onSurface,
+                      theme.colorScheme.onSurface,
                       SemanticOpacity.strong,
                     ),
                   ),

@@ -838,11 +838,15 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
           children: [
             Icon(
               PhosphorIcons.paintBrush(),
-              color: Theme.of(context).colorScheme.onPrimary, // Fixed hardcoded white color
+              color: theme.colors.onPrimary, // Use selected theme's contrast color
               size: 20,
             ),
             const SizedBox(width: 12),
-            StandardizedText('${theme.metadata.name} applied!', style: StandardizedTextStyle.bodyMedium),
+            StandardizedText(
+              '${theme.metadata.name} applied!', 
+              style: StandardizedTextStyle.bodyMedium,
+              color: theme.colors.onPrimary, // Ensure text has proper contrast
+            ),
           ],
         ),
         backgroundColor: theme.colors.primary,
@@ -865,20 +869,25 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
     HapticFeedback.heavyImpact();
     
     if (mounted) {
+      final currentTheme = Theme.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Row(
             children: [
               Icon(
                 PhosphorIcons.shuffle(),
-                color: Theme.of(context).colorScheme.onPrimary, // Fixed hardcoded white color
+                color: currentTheme.colorScheme.onPrimary, // Use current theme's proper contrast color
                 size: 20,
               ),
               const SizedBox(width: 12),
-              const StandardizedText('Random theme applied!', style: StandardizedTextStyle.bodyMedium),
+              StandardizedText(
+                'Random theme applied!', 
+                style: StandardizedTextStyle.bodyMedium,
+                color: currentTheme.colorScheme.onPrimary, // Ensure text has proper contrast
+              ),
             ],
           ),
-          backgroundColor: Theme.of(context).colorScheme.primary,
+          backgroundColor: currentTheme.colorScheme.primary,
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),

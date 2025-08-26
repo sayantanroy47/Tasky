@@ -510,6 +510,13 @@ class CitrusFreshTheme {
         particleType: theme_effects.BackgroundParticleType.energy, // Energy bubbles
         particleOpacity: 0.7,                    // Bright vitamin visibility
         effectIntensity: 0.9,                    // High energy citrus effects
+        geometricPattern: theme_effects.BackgroundGeometricPattern.mesh,
+        patternAngle: 60.0,
+        patternDensity: 1.2,
+        accentColors: [
+          Color(0x2032CD32), // Lime green at 0.125 alpha
+          Color(0x26FFFF00), // Lemon yellow at 0.15 alpha
+        ],
       ),
     );
   }

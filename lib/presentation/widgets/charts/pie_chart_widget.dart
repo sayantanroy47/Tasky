@@ -295,14 +295,6 @@ class _PieChartPainter extends CustomPainter {
           center.dx + radius * math.cos(currentAngle),
           center.dy + radius * math.sin(currentAngle),
         );
-        final outerArcEnd = Offset(
-          center.dx + radius * math.cos(currentAngle + sliceAngle),
-          center.dy + radius * math.sin(currentAngle + sliceAngle),
-        );
-        final innerArcStart = Offset(
-          center.dx + innerRadius * math.cos(currentAngle),
-          center.dy + innerRadius * math.sin(currentAngle),
-        );
         final innerArcEnd = Offset(
           center.dx + innerRadius * math.cos(currentAngle + sliceAngle),
           center.dy + innerRadius * math.sin(currentAngle + sliceAngle),

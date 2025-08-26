@@ -510,6 +510,13 @@ class MidnightGhostTheme {
         particleType: theme_effects.BackgroundParticleType.floating, // Floating spirits
         particleOpacity: 0.2,                    // Very subtle spirit presence
         effectIntensity: 0.4,                    // Moderate haunting effects
+        geometricPattern: theme_effects.BackgroundGeometricPattern.radial,
+        patternAngle: 0.0,
+        patternDensity: 0.7,
+        accentColors: [
+          Color(0x194169E1), // Spectral blue at 0.1 alpha
+          Color(0x1498FB98), // Ectoplasm green at 0.08 alpha
+        ],
       ),
     );
   }

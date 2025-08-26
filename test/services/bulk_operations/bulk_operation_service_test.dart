@@ -52,19 +52,19 @@ void main() {
       );
 
       testTasks = [
-        TaskModel.create(
+        TaskModel(
           id: '1',
           title: 'Task 1',
           priority: TaskPriority.high,
           createdAt: DateTime.now(),
         ),
-        TaskModel.create(
+        TaskModel(
           id: '2',
           title: 'Task 2',
           priority: TaskPriority.medium,
           createdAt: DateTime.now(),
         ),
-        TaskModel.create(
+        TaskModel(
           id: '3',
           title: 'Task 3',
           priority: TaskPriority.low,
@@ -403,7 +403,7 @@ void main() {
     group('Progress Tracking', () {
       test('should track progress during large operations', () async {
         // Create a larger set of tasks to test batching
-        final largeTasks = List.generate(150, (i) => TaskModel.create(
+        final largeTasks = List.generate(150, (i) => TaskModel(
           id: 'task_$i',
           title: 'Task $i',
           createdAt: DateTime.now(),
@@ -572,7 +572,7 @@ void main() {
             });
 
         // Create enough tasks for 2 batches
-        final manyTasks = List.generate(100, (i) => TaskModel.create(
+        final manyTasks = List.generate(100, (i) => TaskModel(
           id: 'task_$i',
           title: 'Task $i',
           createdAt: DateTime.now(),
@@ -602,7 +602,7 @@ void main() {
       });
 
       test('should handle large operations efficiently', () async {
-        final largeTasks = List.generate(1000, (i) => TaskModel.create(
+        final largeTasks = List.generate(1000, (i) => TaskModel(
           id: 'task_$i',
           title: 'Task $i',
           createdAt: DateTime.now(),

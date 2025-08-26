@@ -507,13 +507,20 @@ class DraculaIDETheme {
         style: theme_effects.GlowStyle.outer,
       ),
       
-      backgroundEffects: const theme_effects.BackgroundEffectConfig(
+      backgroundEffects: theme_effects.BackgroundEffectConfig(
         enableParticles: true,
         enableGradientMesh: true,
         enableScanlines: false,
         particleType: theme_effects.BackgroundParticleType.floating,
         particleOpacity: 0.12,
         effectIntensity: 0.5,
+        geometricPattern: theme_effects.BackgroundGeometricPattern.mesh, // Elegant sophistication 
+        patternAngle: 45.0, // Diagonal elegance
+        patternDensity: 1.2, // Refined density
+        accentColors: [
+          const Color(0xFFBD93F9).withValues(alpha: 0.08), // Purple accent
+          const Color(0xFFFF79C6).withValues(alpha: 0.06), // Pink accent
+        ],
       ),
     );
   }

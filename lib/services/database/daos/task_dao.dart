@@ -1285,4 +1285,19 @@ class TaskDao extends DatabaseAccessor<AppDatabase> with _$TaskDaoMixin {
       rethrow;
     }
   }
+
+  /// Gets tasks that don't belong to any project
+  Future<List<TaskModel>> getTasksWithoutProject() async {
+    final taskRows = await (select(tasks)
+      ..where((t) => t.projectId.isNull()))
+      .get();
+
+    final taskModels = <TaskModel>[];
+    for (final taskRow in taskRows) {
+      final taskModel = await _taskRowToModel(taskRow);
+      taskModels.add(taskModel);
+    }
+
+    return taskModels;
+  }
 }

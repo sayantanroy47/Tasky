@@ -244,7 +244,7 @@ class _ColorShowcase extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
-        '$label\n${bgColor.value.toRadixString(16).toUpperCase()}',
+        '$label\n${bgColor.toARGB32().toRadixString(16).toUpperCase()}',
         style: TextStyle(color: textColor, fontWeight: FontWeight.w500),
       ),
     );

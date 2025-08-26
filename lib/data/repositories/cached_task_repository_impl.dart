@@ -313,6 +313,21 @@ class CachedTaskRepositoryImpl implements TaskRepository {
     _cache.clearListCachesByType(CacheClearType.projectRelated);
   }
 
+  @override
+  Future<List<TaskModel>> getTasksForProject(String projectId) async {
+    return await _baseRepository.getTasksForProject(projectId);
+  }
+
+  @override
+  Future<List<TaskModel>> getTasksByProjectId(String projectId) async {
+    return await _baseRepository.getTasksByProjectId(projectId);
+  }
+
+  @override
+  Future<List<TaskModel>> getTasksWithoutProject() async {
+    return await _baseRepository.getTasksWithoutProject();
+  }
+
   /// Get cache statistics for monitoring
   CacheStats getCacheStats() {
     return _cache.getStats();

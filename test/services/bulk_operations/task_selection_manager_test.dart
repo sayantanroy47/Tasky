@@ -11,19 +11,19 @@ void main() {
     setUp(() {
       selectionManager = TaskSelectionManager();
       testTasks = [
-        TaskModel.create(
+        TaskModel(
           id: '1',
           title: 'Task 1',
           priority: TaskPriority.high,
           createdAt: DateTime.now(),
         ),
-        TaskModel.create(
+        TaskModel(
           id: '2',
           title: 'Task 2',
           priority: TaskPriority.medium,
           createdAt: DateTime.now(),
         ),
-        TaskModel.create(
+        TaskModel(
           id: '3',
           title: 'Task 3',
           priority: TaskPriority.low,
@@ -166,7 +166,7 @@ void main() {
       });
 
       test('should handle invalid range selection', () {
-        final nonExistentTask = TaskModel.create(
+        final nonExistentTask = TaskModel(
           id: 'nonexistent',
           title: 'Non-existent',
           createdAt: DateTime.now(),
@@ -275,14 +275,14 @@ void main() {
           testTasks[0], // high priority, pending
           testTasks[1], // medium priority, inProgress
           testTasks[2], // low priority, completed
-          TaskModel.create(
+          TaskModel(
             id: '4',
             title: 'Overdue Task',
             priority: TaskPriority.urgent,
             dueDate: DateTime.now().subtract(const Duration(days: 1)),
             createdAt: DateTime.now(),
           ),
-          TaskModel.create(
+          TaskModel(
             id: '5',
             title: 'Due Today Task',
             priority: TaskPriority.medium,
@@ -310,14 +310,14 @@ void main() {
       test('should generate suggested actions based on statistics', () {
         // Select overdue tasks
         final overdueTasks = [
-          TaskModel.create(
+          TaskModel(
             id: '1',
             title: 'Overdue Task 1',
             priority: TaskPriority.high,
             dueDate: DateTime.now().subtract(const Duration(days: 1)),
             createdAt: DateTime.now(),
           ),
-          TaskModel.create(
+          TaskModel(
             id: '2',
             title: 'Overdue Task 2',
             priority: TaskPriority.medium,
@@ -334,7 +334,7 @@ void main() {
         // Should suggest rescheduling overdue tasks
         final rescheduleAction = statistics.suggestedActions
             .firstWhere((action) => action.type == BulkActionType.reschedule);
-        expect(rescheduleAction.priority, equals(BulkActionTaskPriority.high));
+        expect(rescheduleAction.priority, equals(BulkActionPriority.high));
       });
     });
 
@@ -409,7 +409,7 @@ void main() {
       });
 
       test('should handle selection of non-existent tasks gracefully', () {
-        final nonExistentTask = TaskModel.create(
+        final nonExistentTask = TaskModel(
           id: 'nonexistent',
           title: 'Non-existent',
           createdAt: DateTime.now(),
@@ -424,7 +424,7 @@ void main() {
     group('Performance', () {
       test('should handle large selection efficiently', () {
         // Create a large list of tasks
-        final largeTasks = List.generate(1000, (i) => TaskModel.create(
+        final largeTasks = List.generate(1000, (i) => TaskModel(
           id: 'task_$i',
           title: 'Task $i',
           createdAt: DateTime.now(),

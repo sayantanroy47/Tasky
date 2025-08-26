@@ -267,13 +267,6 @@ void main() {
           'task_name': 'Setup Task',
         };
 
-        final expectedProject = Project.create(
-          name: 'My Project Project',
-          description: 'A project for Client ABC',
-          color: template.defaultColor,
-          categoryId: template.projectCategoryId,
-        );
-
         when(mockProjectRepo.createProject(any)).thenAnswer((_) async {});
 
         when(mockTaskRepo.createTask(any)).thenAnswer((_) async {});

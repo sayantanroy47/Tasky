@@ -2,48 +2,41 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drift/native.dart';
-import 'package:mockito/mockito.dart';
 
-import 'package:task_tracker_app/services/database/database.dart';
-import 'package:task_tracker_app/domain/entities/project.dart';
-import 'package:task_tracker_app/domain/entities/project_category.dart';
+import 'package:task_tracker_app/services/database/database.dart' as db;
+import 'package:task_tracker_app/domain/entities/project_category.dart' as entities;
 import 'package:task_tracker_app/domain/entities/task_model.dart';
-import 'package:task_tracker_app/domain/entities/task_enums.dart';
-import 'package:task_tracker_app/presentation/widgets/project_form_dialog.dart';
-import 'package:task_tracker_app/presentation/widgets/project_card.dart';
-import 'package:task_tracker_app/presentation/providers/project_providers.dart';
-import 'package:task_tracker_app/presentation/providers/project_category_providers.dart';
 import 'package:task_tracker_app/core/providers/core_providers.dart';
 
 void main() {
   group('Project Creation Workflow Integration Tests', () {
     late ProviderContainer container;
-    late AppDatabase testDatabase;
-    late List<ProjectCategory> testCategories;
+    late db.AppDatabase testDatabase;
+    late List<entities.ProjectCategory> testCategories;
 
     setUp(() async {
       TestWidgetsFlutterBinding.ensureInitialized();
       
       // Create test database
-      testDatabase = AppDatabase.forTesting(NativeDatabase.memory());
+      testDatabase = db.AppDatabase.forTesting(NativeDatabase.memory());
       
       // Create test categories for project creation
       testCategories = [
-        ProjectCategory.createSystem(
+        entities.ProjectCategory.createSystem(
           id: 'work',
           name: 'Work',
           iconName: 'briefcase',
           color: '#1976D2',
           sortOrder: 0,
         ),
-        ProjectCategory.createSystem(
+        entities.ProjectCategory.createSystem(
           id: 'personal',
           name: 'Personal',
           iconName: 'user',
           color: '#4CAF50',
           sortOrder: 1,
         ),
-        ProjectCategory.createUser(
+        entities.ProjectCategory.createUser(
           name: 'Side Projects',
           iconName: 'lightbulb',
           color: '#FF9800',
@@ -432,14 +425,14 @@ void main() {
 
       testWidgets('should handle category inheritance and hierarchy in project creation', (tester) async {
         // Create hierarchical categories
-        final parentCategory = ProjectCategory.createUser(
+        final parentCategory = entities.ProjectCategory.createUser(
           name: 'Client Work',
           iconName: 'buildings',
           color: '#1976D2',
           sortOrder: 0,
         );
 
-        final childCategory = ProjectCategory.createUser(
+        final childCategory = entities.ProjectCategory.createUser(
           name: 'Web Development',
           iconName: 'globe',
           color: '#1976D2',

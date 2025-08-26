@@ -214,7 +214,6 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
                   'Account Connected',
                   style: StandardizedTextStyle.titleMedium,
                   color: Colors.green,
-                  fontWeight: FontWeight.w500,
                 ),
                 const Spacer(),
                 TextButton(
@@ -303,7 +302,6 @@ class _CloudSyncScreenState extends ConsumerState<CloudSyncScreen> {
         StandardizedText(
           value,
           style: StandardizedTextStyle.headlineSmall,
-          fontWeight: FontWeight.w500,
         ),
         StandardizedText(
           label,

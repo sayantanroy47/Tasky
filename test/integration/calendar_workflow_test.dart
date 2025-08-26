@@ -306,16 +306,14 @@ void main() {
                           AdvancedTaskCard(
                             key: Key('overdue_task_${overdueTask1.id}'),
                             task: overdueTask1,
-                            isOverdue: true,
-                            onReschedule: () {
+                            onEdit: () {
                               // Reschedule individual task
                             },
                           ),
                           AdvancedTaskCard(
                             key: Key('overdue_task_${overdueTask2.id}'),
                             task: overdueTask2,
-                            isOverdue: true,
-                            onReschedule: () {
+                            onEdit: () {
                               // Reschedule individual task
                             },
                           ),
@@ -362,13 +360,6 @@ void main() {
                 body: AdvancedTaskCard(
                   key: Key('tracked_task_${trackedTask.id}'),
                   task: trackedTask,
-                  showTimeTracking: true,
-                  onStartTimer: () {
-                    // Start time tracking
-                  },
-                  onStopTimer: () {
-                    // Stop time tracking
-                  },
                 ),
               ),
             ),

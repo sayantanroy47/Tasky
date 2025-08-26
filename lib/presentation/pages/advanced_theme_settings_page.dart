@@ -497,17 +497,25 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: StandardizedText('Theme data exported successfully (${data.keys.length} items)', style: StandardizedTextStyle.bodyMedium),
-              backgroundColor: Colors.green,
+              content: StandardizedText(
+                'Theme data exported successfully (${data.keys.length} items)', 
+                style: StandardizedTextStyle.bodyMedium,
+                color: Theme.of(context).colorScheme.onTertiary, // Proper contrast for success color
+              ),
+              backgroundColor: Theme.of(context).colorScheme.tertiary, // Use theme's success color
             ),
           );
         }
       } else {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: StandardizedText('Failed to export theme data', style: StandardizedTextStyle.bodyMedium),
-              backgroundColor: Colors.red,
+            SnackBar(
+              content: StandardizedText(
+                'Failed to export theme data', 
+                style: StandardizedTextStyle.bodyMedium,
+                color: Theme.of(context).colorScheme.onError, // Proper contrast for error color
+              ),
+              backgroundColor: Theme.of(context).colorScheme.error, // Use theme's error color
             ),
           );
         }
@@ -531,9 +539,13 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
       // For demo purposes, just show a message
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: StandardizedText('Import feature would open file picker in real app', style: StandardizedTextStyle.bodyMedium),
-            backgroundColor: Colors.blue,
+          SnackBar(
+            content: StandardizedText(
+              'Import feature would open file picker in real app', 
+              style: StandardizedTextStyle.bodyMedium,
+              color: Theme.of(context).colorScheme.onPrimary, // Proper contrast for info color
+            ),
+            backgroundColor: Theme.of(context).colorScheme.primary, // Use theme's primary color for info
           ),
         );
       }
@@ -564,15 +576,24 @@ class _AdvancedThemeSettingsPageState extends ConsumerState<AdvancedThemeSetting
             onPressed: () async {
               final navigator = Navigator.of(context);
               final messenger = ScaffoldMessenger.of(context);
+              final colorScheme = Theme.of(context).colorScheme;
               navigator.pop();
               final success = await notifier.clearAllThemeData();
               if (mounted) {
                 messenger.showSnackBar(
                   SnackBar(
-                    content: StandardizedText(success 
+                    content: StandardizedText(
+                      success 
                         ? 'All theme data cleared successfully'
-                        : 'Failed to clear theme data', style: StandardizedTextStyle.bodyMedium),
-                    backgroundColor: success ? Colors.green : Colors.red,
+                        : 'Failed to clear theme data', 
+                      style: StandardizedTextStyle.bodyMedium,
+                      color: success 
+                        ? colorScheme.onTertiary // Success contrast
+                        : colorScheme.onError,   // Error contrast
+                    ),
+                    backgroundColor: success 
+                      ? colorScheme.tertiary // Success color
+                      : colorScheme.error,    // Error color
                   ),
                 );
               }

@@ -39,7 +39,7 @@ class UnicornDreamTheme {
       colors: _createUnicornColors(isDark: isDark),
       typography: _createUnicornTypography(isDark: isDark),
       animations: _createUnicornAnimations(),
-      effects: _createUnicornEffects(),
+      effects: _createUnicornEffects(isDark: isDark),
       spacing: _createUnicornSpacing(),
       components: _createUnicornComponents(),
     );
@@ -86,15 +86,23 @@ class UnicornDreamTheme {
         outline: Color(0xFF9C27B0),
         outlineVariant: Color(0xFF4A148C),
         shadow: Color(0xFF000000),
-        scrim: Color(0xFF000000),
         inverseSurface: Color(0xFFF3E5F5),
         onInverseSurface: Color(0xFF2E1B4C),
-        inversePrimary: Color(0xFF9C27B0),
         
         // Additional required colors
         accent: Color(0xFFFFEB3B), // Magical gold accent
-        disabled: Color(0xFF4A148C),
-        focus: Color(0xFF7B1FA2), // Primary color for focus
+        highlight: Color(0xFF3F51B5), // Magical blue highlight  
+        
+        // Task priority colors
+        taskLowPriority: Color(0xFF66BB6A), // Magical green
+        taskMediumPriority: Color(0xFFFFEB3B), // Magical gold
+        taskHighPriority: Color(0xFFFF9800), // Magical orange
+        taskUrgentPriority: Color(0xFFE91E63), // Magical pink
+        
+        // Status colors
+        success: Color(0xFF66BB6A), // Magical green
+        warning: Color(0xFFFF9800), // Magical orange
+        info: Color(0xFF3F51B5), // Magical blue
         
         // Calendar dot colors - magical theme
         calendarTodayDot: Color(0xFF7B1FA2), // Magical purple
@@ -102,6 +110,20 @@ class UnicornDreamTheme {
         calendarOverdueDot: Color(0xFFE91E63), // Magical pink
         calendarHighPriorityDot: Color(0xFFFFEB3B), // Magical gold
         calendarFutureDot: Color(0xFF3F51B5), // Magical blue
+        
+        // Status badge colors
+        statusPendingBadge: Color(0xFFFFEB3B), // Magical gold
+        statusInProgressBadge: Color(0xFF3F51B5), // Magical blue
+        statusCompletedBadge: Color(0xFF66BB6A), // Magical green
+        statusCancelledBadge: Color(0xFF4A148C), // Muted purple
+        statusOverdueBadge: Color(0xFFE91E63), // Magical pink
+        statusOnHoldBadge: Color(0xFFFF9800), // Magical orange
+        
+        // Interactive colors
+        hover: Color(0x147B1FA2), // Primary with alpha
+        pressed: Color(0x1F7B1FA2), // Primary with alpha
+        focus: Color(0xFF7B1FA2), // Primary color for focus
+        disabled: Color(0xFF4A148C)
       );
     } else {
       return const ThemeColors(
@@ -137,15 +159,23 @@ class UnicornDreamTheme {
         outline: Color(0xFF9C27B0),
         outlineVariant: Color(0xFFD1C4E9),
         shadow: Color(0xFF000000),
-        scrim: Color(0xFF000000),
         inverseSurface: Color(0xFF2E1B4C),
         onInverseSurface: Color(0xFFF3E5F5),
-        inversePrimary: Color(0xFFBA68C8),
         
         // Additional required colors
         accent: Color(0xFFFFEB3B), // Magical gold accent
-        disabled: Color(0xFFD1C4E9),
-        focus: Color(0xFF9C27B0), // Primary color for focus
+        highlight: Color(0xFF3F51B5), // Magical blue highlight
+        
+        // Task priority colors
+        taskLowPriority: Color(0xFF66BB6A), // Magical green
+        taskMediumPriority: Color(0xFFFFEB3B), // Magical gold
+        taskHighPriority: Color(0xFFFF9800), // Magical orange
+        taskUrgentPriority: Color(0xFFE91E63), // Magical pink
+        
+        // Status colors
+        success: Color(0xFF66BB6A), // Magical green
+        warning: Color(0xFFFF9800), // Magical orange
+        info: Color(0xFF3F51B5), // Magical blue
         
         // Calendar dot colors - magical theme
         calendarTodayDot: Color(0xFF9C27B0), // Magical purple
@@ -153,6 +183,20 @@ class UnicornDreamTheme {
         calendarOverdueDot: Color(0xFFE91E63), // Magical pink
         calendarHighPriorityDot: Color(0xFFFFEB3B), // Magical gold
         calendarFutureDot: Color(0xFF3F51B5), // Magical blue
+        
+        // Status badge colors
+        statusPendingBadge: Color(0xFFFFEB3B), // Magical gold
+        statusInProgressBadge: Color(0xFF3F51B5), // Magical blue
+        statusCompletedBadge: Color(0xFF66BB6A), // Magical green
+        statusCancelledBadge: Color(0xFFD1C4E9), // Muted purple
+        statusOverdueBadge: Color(0xFFE91E63), // Magical pink
+        statusOnHoldBadge: Color(0xFFFF9800), // Magical orange
+        
+        // Interactive colors
+        hover: Color(0x149C27B0), // Primary with alpha
+        pressed: Color(0x1F9C27B0), // Primary with alpha
+        focus: Color(0xFF9C27B0), // Primary color for focus
+        disabled: Color(0xFFD1C4E9)
       );
     }
   }
@@ -311,71 +355,171 @@ class UnicornDreamTheme {
         height: TypographyConstants.relaxedLineHeight,
         color: colors.onSurfaceVariant,
       ),
+      
+      // Additional required typography styles
+      taskMeta: LocalFonts.getFont(
+        fontFamily,
+        fontSize: TypographyConstants.labelSmall,
+        fontWeight: TypographyConstants.regular,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
+        color: colors.onSurfaceVariant,
+      ),
+      cardTitle: LocalFonts.getFont(
+        fontFamily,
+        fontSize: TypographyConstants.titleSmall,
+        fontWeight: TypographyConstants.medium,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
+        color: colors.onSurface,
+      ),
+      cardSubtitle: LocalFonts.getFont(
+        fontFamily,
+        fontSize: TypographyConstants.bodySmall,
+        fontWeight: TypographyConstants.regular,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
+        color: colors.onSurfaceVariant,
+      ),
+      buttonText: LocalFonts.getFont(
+        fontFamily,
+        fontSize: TypographyConstants.labelLarge,
+        fontWeight: TypographyConstants.medium,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
+        color: colors.onSurface,
+      ),
+      inputText: LocalFonts.getFont(
+        fontFamily,
+        fontSize: TypographyConstants.bodyMedium,
+        fontWeight: TypographyConstants.regular,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
+        color: colors.onSurface,
+      ),
+      appBarTitle: LocalFonts.getFont(
+        fontFamily,
+        fontSize: TypographyConstants.titleLarge,
+        fontWeight: TypographyConstants.medium,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
+        color: colors.onSurface,
+      ),
+      navigationLabel: LocalFonts.getFont(
+        fontFamily,
+        fontSize: TypographyConstants.labelMedium,
+        fontWeight: TypographyConstants.medium,
+        letterSpacing: TypographyConstants.normalLetterSpacing,
+        height: TypographyConstants.normalLineHeight,
+        color: colors.onSurface,
+      ),
     );
   }
 
   static ThemeAnimations _createUnicornAnimations() {
-    return ThemeAnimations.fromThemeStyle(
-      theme_effects.ThemeAnimationStyle.smooth, // Magical smooth transitions
-      customCurves: {
-        'magicalSparkle': Curves.elasticOut, // Sparkle animation
-        'unicornGallop': Curves.bounceInOut, // Playful bouncing
-        'rainbowShimmer': Curves.easeInOutSine, // Gentle shimmer
-      },
+    return const ThemeAnimations(
+      fast: Duration(milliseconds: 100), // Sparkle animation
+      medium: Duration(milliseconds: 300), // Standard magical transitions
+      slow: Duration(milliseconds: 500), // Gentle shimmer
+      verySlow: Duration(milliseconds: 800), // Dramatic unicorn effects
+      
+      primaryCurve: Curves.easeInOutCubic, // Smooth magical transitions
+      secondaryCurve: Curves.easeInOut, // Standard transitions
+      entranceCurve: Curves.easeOut, // Gentle entrance
+      exitCurve: Curves.easeIn, // Gentle exit
     );
   }
 
-  static theme_effects.ThemeEffects _createUnicornEffects() {
-    return theme_effects.ThemeEffects.fromEffectStyle(
-      theme_effects.ThemeEffectStyle.dramatic, // Magical dramatic effects
-      backgroundEffect: theme_effects.BackgroundEffectConfig(
-        enableParticles: true,
-        enableGradientMesh: true,
-        particleType: theme_effects.ParticleType.sparkle,
-        particleCount: 25, // Lots of magical sparkles
-        particleColors: [
-          const Color(0xFF9C27B0), // Magical purple
-          const Color(0xFFE91E63), // Magical pink
-          const Color(0xFF3F51B5), // Magical blue
-          const Color(0xFFFFEB3B), // Magical gold
-          const Color(0xFF4CAF50), // Magical green
-          const Color(0xFFFF9800), // Magical orange
-          const Color(0xFFE91E63), // Magical red
+  static theme_effects.ThemeEffects _createUnicornEffects({required bool isDark}) {
+    return theme_effects.ThemeEffects(
+      shadowStyle: theme_effects.ShadowStyle.dramatic, // Magical dramatic shadows
+      gradientStyle: theme_effects.GradientStyle.subtle, // Colorful gradients
+      borderStyle: theme_effects.BorderStyle.rounded, // Soft magical edges
+      blurConfig: const theme_effects.BlurConfig(
+        enabled: true,
+        style: theme_effects.BlurStyle.outer, // Magical glow effect
+        intensity: 0.4, // Medium intensity
+      ),
+      glowConfig: theme_effects.GlowConfig(
+        enabled: true,
+        intensity: isDark ? 0.9 : 0.6, // More intense glow in dark mode for midnight magic
+        spread: isDark ? 8.0 : 4.0, // Wider spread in dark mode
+        style: theme_effects.GlowStyle.outer, // Outer glow
+      ),
+      backgroundEffects: theme_effects.BackgroundEffectConfig(
+        enableParticles: true, // Magical sparkles
+        enableGradientMesh: true, // Magical gradients
+        enableScanlines: false, // Keep it clean
+        particleType: theme_effects.BackgroundParticleType.floating, // Floating sparkles
+        particleOpacity: isDark ? 0.9 : 0.5, // Higher opacity for midnight magic sparkles
+        effectIntensity: isDark ? 1.4 : 0.8, // More intense effects for dark magical atmosphere
+        geometricPattern: theme_effects.BackgroundGeometricPattern.mesh, // Magical precision
+        patternAngle: 30.0, // Magical angle for sparkle distribution
+        patternDensity: 1.1, // Fine magical density
+        accentColors: [
+          (isDark ? const Color(0xFF7B1FA2) : const Color(0xFF9C27B0)).withValues(alpha: 0.12), // Magical purple
+          (isDark ? const Color(0xFFFFEB3B) : const Color(0xFFFFC107)).withValues(alpha: 0.08), // Magical gold
         ],
-        animationDuration: const Duration(seconds: 3), // Quick magical effects
-        meshColors: [
-          const Color(0xFF9C27B0).withOpacity(0.1), // Purple magic
-          const Color(0xFFE91E63).withOpacity(0.1), // Pink magic
-          const Color(0xFF3F51B5).withOpacity(0.1), // Blue magic
-        ],
-        intensity: 0.8, // High magical intensity
-        speed: 1.2, // Fast magical movement
       ),
     );
   }
 
   static app_theme_data.ThemeSpacing _createUnicornSpacing() {
     return const app_theme_data.ThemeSpacing(
-      xs: TypographyConstants.spacingSmall / 2, // 4px
-      sm: TypographyConstants.spacingSmall, // 8px
-      md: TypographyConstants.spacingMedium, // 16px
-      lg: TypographyConstants.spacingLarge, // 24px
-      xl: TypographyConstants.spacingXLarge, // 32px
+      extraSmall: 4.0, // Magical compact spacing
+      small: 8.0, // Small magical spacing
+      medium: 16.0, // Standard magical spacing
+      large: 24.0, // Generous magical spacing
+      extraLarge: 32.0, // Dramatic magical spacing
+      cardPadding: 20.0, // Magical card padding
+      screenPadding: 24.0, // Magical screen padding
+      buttonPadding: 20.0, // Magical button padding
+      inputPadding: 16.0, // Magical input padding
     );
   }
 
   static app_theme_data.ThemeComponents _createUnicornComponents() {
     return const app_theme_data.ThemeComponents(
-      cardElevation: 12.0, // Magical floating elevation
-      borderRadius: TypographyConstants.radiusMedium, // Rounded magical edges
-      buttonHeight: 48.0, // Whimsical interaction size
-      inputHeight: 52.0, // Magical input size
-      iconSize: 24.0, // Magical icons
-      avatarSize: 40.0, // Magical profile size
-      chipHeight: 36.0, // Magical chips
-      tabHeight: 48.0, // Magical navigation
-      listItemHeight: 64.0, // Spacious magical lists
-      dividerThickness: 1.0, // Delicate dividers
+      appBar: app_theme_data.AppBarConfig(
+        elevation: 2.0, // Magical floating app bar
+        centerTitle: true, // Centered magical titles
+        toolbarHeight: 64.0, // Spacious magical toolbar
+      ),
+      card: app_theme_data.CardConfig(
+        elevation: 12.0, // Magical floating elevation
+        borderRadius: TypographyConstants.radiusMedium, // Rounded magical edges
+        margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0), // Magical spacing
+        padding: EdgeInsets.all(20.0), // Generous magical padding
+      ),
+      button: app_theme_data.ButtonConfig(
+        borderRadius: TypographyConstants.radiusMedium, // Rounded magical buttons
+        padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 14.0), // Magical padding
+        elevation: 4.0, // Subtle magical elevation
+        height: 48.0, // Standard magical height
+      ),
+      input: app_theme_data.InputConfig(
+        borderRadius: TypographyConstants.radiusMedium, // Rounded magical inputs
+        contentPadding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0), // Magical padding
+        borderStyle: app_theme_data.InputBorderStyle.outline,
+        filled: true, // Magical filled inputs
+      ),
+      fab: app_theme_data.FABConfig(
+        shape: app_theme_data.FABShape.circular, // Fully rounded magical FAB
+        elevation: 8.0, // Higher magical elevation
+      ),
+      navigation: app_theme_data.NavigationConfig(
+        type: app_theme_data.NavigationType.bottomNav,
+        elevation: 8.0, // Magical navigation elevation
+        showLabels: true, // Show magical navigation labels
+      ),
+      taskCard: app_theme_data.TaskCardConfig(
+        borderRadius: TypographyConstants.radiusSmall, // Rounded magical task cards
+        elevation: 6.0, // Floating magical task cards
+        padding: EdgeInsets.all(16.0), // Magical task card padding
+        margin: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0), // Magical spacing
+        showPriorityStripe: true, // Show magical priority indicators
+        enableSwipeActions: true, // Enable magical swipe actions
+      ),
     );
   }
 }

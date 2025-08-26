@@ -420,6 +420,15 @@ class TaskModel extends Equatable {
   /// Returns the number of tags associated with this task
   int get tagCount => tagIds.length;
 
+  /// Returns true if this task has a due date
+  bool get hasDueDate => dueDate != null;
+
+  /// Returns the number of subtasks
+  int get subtaskCount => subTasks.length;
+
+  /// Returns the number of completed subtasks
+  int get completedSubtaskCount => subTasks.where((st) => st.isCompleted).length;
+
   /// Returns the number of days until the due date (negative if overdue)
   int? get daysUntilDue {
     if (dueDate == null) return null;

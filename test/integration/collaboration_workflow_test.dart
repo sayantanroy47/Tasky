@@ -3,22 +3,22 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drift/native.dart';
 
-import 'package:task_tracker_app/services/database/database.dart';
+import 'package:task_tracker_app/services/database/database.dart' as db;
 import 'package:task_tracker_app/domain/entities/task_model.dart';
 import 'package:task_tracker_app/domain/entities/task_enums.dart';
-import 'package:task_tracker_app/domain/entities/project.dart';
+import 'package:task_tracker_app/domain/entities/project.dart' as entities;
 import 'package:task_tracker_app/presentation/widgets/advanced_task_card.dart';
 import 'package:task_tracker_app/presentation/widgets/project_card.dart';
 
 void main() {
   group('Collaboration and Team Workflow Integration Tests', () {
     late ProviderContainer container;
-    late AppDatabase testDatabase;
+    late db.AppDatabase testDatabase;
 
     setUp(() async {
       TestWidgetsFlutterBinding.ensureInitialized();
       
-      testDatabase = AppDatabase.forTesting(NativeDatabase.memory());
+      testDatabase = db.AppDatabase.forTesting(NativeDatabase.memory());
       container = ProviderContainer(
         overrides: [],
       );
@@ -297,10 +297,6 @@ void main() {
                     AdvancedTaskCard(
                       key: Key('assignable_task_${testTask.id}'),
                       task: testTask,
-                      showAssignment: true,
-                      onAssign: () {
-                        // Open assignment dialog
-                      },
                     ),
                     const SizedBox(height: 16),
                     Card(
@@ -392,7 +388,6 @@ void main() {
         final collaborativeTask = TaskModel.create(
           title: 'Team Discussion Task',
           description: 'Task with team collaboration',
-          assignedTo: 'Alice Johnson',
         );
 
         await tester.pumpWidget(
@@ -409,7 +404,6 @@ void main() {
                       AdvancedTaskCard(
                         key: Key('collaborative_task_${collaborativeTask.id}'),
                         task: collaborativeTask,
-                        showCollaboration: true,
                       ),
                       Card(
                         child: Padding(
@@ -517,7 +511,7 @@ void main() {
 
     group('Project Sharing and Collaboration', () {
       testWidgets('should share projects with team members', (tester) async {
-        final sharedProject = Project(
+        final sharedProject = entities.Project(
           id: 'shared-project',
           name: 'Team Project Alpha',
           description: 'Collaborative project for team',
@@ -537,12 +531,6 @@ void main() {
                   children: [
                     ProjectCard(
                       project: sharedProject,
-                      taskCount: 15,
-                      completedTaskCount: 8,
-                      showCollaboration: true,
-                      onShare: () {
-                        // Open sharing options
-                      },
                     ),
                     Card(
                       child: Padding(

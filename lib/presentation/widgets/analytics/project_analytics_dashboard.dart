@@ -1270,7 +1270,11 @@ class _ExportOptionsSheet extends ConsumerWidget {
   }
 
   Future<void> _exportData(BuildContext context, WidgetRef ref, ExportFormat format) async {
-    Navigator.of(context).pop(); // Close the sheet
+    final navigator = Navigator.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
+    
+    navigator.pop(); // Close the sheet
     
     try {
       final exportService = ref.read(analyticsExportServiceProvider);
@@ -1291,7 +1295,9 @@ class _ExportOptionsSheet extends ConsumerWidget {
         format: format,
       )).future);
       
-      Navigator.of(context).pop(); // Close loading
+      if (context.mounted) {
+        Navigator.of(context).pop(); // Close loading
+      }
       
       if (result.success) {
         // Show success and share option
@@ -1300,19 +1306,21 @@ class _ExportOptionsSheet extends ConsumerWidget {
           subject: 'Analytics Report - ${project.name}',
         );
         
-        ScaffoldMessenger.of(context).showSnackBar(
+        scaffoldMessenger.showSnackBar(
           SnackBar(
             content: const Text('Analytics exported successfully!'),
-            backgroundColor: Theme.of(context).colorScheme.tertiary, // Success state
+            backgroundColor: colorScheme.tertiary, // Success state
           ),
         );
       } else {
         throw Exception(result.error ?? 'Export failed');
       }
     } catch (e) {
-      Navigator.of(context).pop(); // Close loading if still open
+      if (context.mounted) {
+        Navigator.of(context).pop(); // Close loading if still open
+      }
       
-      ScaffoldMessenger.of(context).showSnackBar(
+      scaffoldMessenger.showSnackBar(
         SnackBar(
           content: Text('Export failed: ${e.toString()}'),
           backgroundColor: Colors.red,
