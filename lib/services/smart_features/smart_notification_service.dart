@@ -17,7 +17,7 @@ class SmartNotificationService {
   final ProjectRepository _projectRepository;
   
   final Map<String, DateTime> _lastNotificationTimes = {};
-  final Map<String, int> _notificationCooldowns = {};
+  final Map<String, Duration> _notificationCooldowns = {};
   Timer? _smartMonitoringTimer;
 
   SmartNotificationService({
@@ -362,7 +362,7 @@ class SmartNotificationService {
       if (tasks.isEmpty) continue;
       
       final lastActivity = tasks
-          .map((t) => t.updatedAt)
+          .map((t) => t.updatedAt ?? t.createdAt)
           .reduce((a, b) => a.isAfter(b) ? a : b);
       
       final daysSinceActivity = now.difference(lastActivity).inDays;
@@ -603,7 +603,7 @@ class SmartNotificationService {
 
   void _setCooldown(String key, Duration duration) {
     _lastNotificationTimes[key] = DateTime.now();
-    _notificationCooldowns[key] = duration.inMilliseconds;
+    _notificationCooldowns[key] = duration;
   }
 
   bool _shouldSendWeeklyDigest(String projectId) {

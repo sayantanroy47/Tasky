@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-
 import 'package:task_tracker_app/domain/entities/project.dart';
 import 'package:task_tracker_app/domain/entities/task_model.dart';
 import 'package:task_tracker_app/domain/models/enums.dart';
-import 'package:task_tracker_app/presentation/widgets/project_card.dart';
-import 'package:task_tracker_app/presentation/widgets/kanban_board_view.dart';
 import 'package:task_tracker_app/presentation/widgets/advanced_task_card.dart';
 import 'package:task_tracker_app/presentation/widgets/bulk_operations/bulk_action_toolbar.dart';
 import 'package:task_tracker_app/presentation/widgets/bulk_operations/multi_select_task_card.dart';
+import 'package:task_tracker_app/presentation/widgets/kanban_board_view.dart';
+import 'package:task_tracker_app/presentation/widgets/project_card.dart';
 import 'package:task_tracker_app/presentation/widgets/timeline/timeline_gantt_view.dart';
 
 void main() {
@@ -138,11 +137,8 @@ void main() {
         }
 
         // Test interactive elements within task cards
-        final interactiveElementFinder = find.byWidgetPredicate((widget) =>
-            widget is IconButton ||
-            widget is Checkbox ||
-            widget is Switch ||
-            widget is Radio);
+        final interactiveElementFinder = find.byWidgetPredicate(
+            (widget) => widget is IconButton || widget is Checkbox || widget is Switch || widget is Radio);
 
         for (int i = 0; i < interactiveElementFinder.evaluate().length; i++) {
           final elementSize = tester.getSize(interactiveElementFinder.at(i));
@@ -191,13 +187,13 @@ void main() {
         );
 
         // Test column header interactive elements
-        final columnHeaderFinder = find.byWidgetPredicate((widget) =>
-            widget is Container && widget.child is Text);
-            
+        final columnHeaderFinder = find.byWidgetPredicate((widget) => widget is Container && widget.child is Text);
+
         if (columnHeaderFinder.evaluate().isNotEmpty) {
           for (int i = 0; i < columnHeaderFinder.evaluate().length; i++) {
             final headerSize = tester.getSize(columnHeaderFinder.at(i));
-            if (headerSize.height > 0) { // Only test visible headers
+            if (headerSize.height > 0) {
+              // Only test visible headers
               expect(
                 headerSize.height,
                 greaterThanOrEqualTo(minimumTouchTargetSize),
@@ -249,11 +245,13 @@ void main() {
                     ),
                     Expanded(
                       child: ListView(
-                        children: testTasks.map<Widget>((task) => 
-                          MultiSelectTaskCard(
-                            task: task,
-                          ),
-                        ).toList(),
+                        children: testTasks
+                            .map<Widget>(
+                              (task) => MultiSelectTaskCard(
+                                task: task,
+                              ),
+                            )
+                            .toList(),
                       ),
                     ),
                   ],
@@ -368,7 +366,7 @@ void main() {
                             ),
                           ),
                         ),
-                        
+
                         // Small toggle with proper touch target
                         Material(
                           child: InkWell(
@@ -385,7 +383,7 @@ void main() {
                             ),
                           ),
                         ),
-                        
+
                         // Small action button with proper sizing
                         SizedBox(
                           width: minimumTouchTargetSize,
@@ -399,7 +397,7 @@ void main() {
                         ),
                       ],
                     ),
-                    
+
                     // Test custom touch target enhancement
                     Semantics(
                       button: true,
@@ -501,9 +499,9 @@ void main() {
                           ),
                         ),
                       ),
-                      
+
                       ProjectCard(project: testProject),
-                      
+
                       // H2 level heading
                       Semantics(
                         header: true,
@@ -515,7 +513,7 @@ void main() {
                           ),
                         ),
                       ),
-                      
+
                       // H3 level subheading
                       Semantics(
                         header: true,
@@ -527,7 +525,7 @@ void main() {
                           ),
                         ),
                       ),
-                      
+
                       ...testTasks.map((task) => AdvancedTaskCard(task: task)),
                     ],
                   ),
@@ -546,8 +544,8 @@ void main() {
         expect(find.text('High Priority Tasks'), findsOneWidget);
 
         // Test semantic headers
-        final headerFinder = find.byWidgetPredicate((widget) =>
-            widget is Semantics && widget.properties.header == true);
+        final headerFinder =
+            find.byWidgetPredicate((widget) => widget is Semantics && widget.properties.header == true);
         expect(
           headerFinder.evaluate().length,
           greaterThanOrEqualTo(4),
@@ -587,7 +585,7 @@ void main() {
                         ),
                       ),
                     ),
-                    
+
                     // Footer/toolbar region
                     Semantics(
                       container: true,
@@ -659,7 +657,7 @@ void main() {
                           ),
                         ),
                         const SizedBox(height: 16),
-                        
+
                         Semantics(
                           textField: true,
                           label: 'Task description',
@@ -674,7 +672,7 @@ void main() {
                           ),
                         ),
                         const SizedBox(height: 16),
-                        
+
                         // Priority selection with proper grouping
                         Semantics(
                           container: true,
@@ -704,7 +702,7 @@ void main() {
                           ),
                         ),
                         const SizedBox(height: 24),
-                        
+
                         // Action buttons with proper semantics
                         Row(
                           children: [
@@ -757,8 +755,8 @@ void main() {
         expect(find.bySemanticsLabel('Create new task'), findsOneWidget);
 
         // Test that form fields have proper semantic flags
-        final textFieldFinder = find.byWidgetPredicate((widget) =>
-            widget is Semantics && widget.properties.textField == true);
+        final textFieldFinder =
+            find.byWidgetPredicate((widget) => widget is Semantics && widget.properties.textField == true);
         expect(textFieldFinder.evaluate().length, equals(2));
 
         handle.dispose();
@@ -766,7 +764,7 @@ void main() {
 
       testWidgets('should provide proper error handling and announcements', (tester) async {
         String? currentError;
-        
+
         await tester.pumpWidget(
           ProviderScope(
             child: MaterialApp(
@@ -807,7 +805,7 @@ void main() {
                                 ),
                               ),
                             ),
-                          
+
                           TextFormField(
                             decoration: InputDecoration(
                               labelText: 'Task Title',
@@ -818,7 +816,7 @@ void main() {
                             ),
                           ),
                           const SizedBox(height: 16),
-                          
+
                           ElevatedButton(
                             onPressed: () {
                               setState(() {
@@ -828,7 +826,7 @@ void main() {
                             child: const Text('Trigger Error'),
                           ),
                           const SizedBox(height: 8),
-                          
+
                           TextButton(
                             onPressed: () {
                               setState(() {
@@ -995,7 +993,7 @@ void main() {
             child: MaterialApp(
               theme: ThemeData(
                 // Ensure focus indicators are visible
-                focusColor: Colors.blue.withOpacity(0.3),
+                focusColor: Colors.blue.withValues(alpha: 0.3),
                 visualDensity: VisualDensity.comfortable,
               ),
               home: Scaffold(
@@ -1097,7 +1095,7 @@ void main() {
                         ),
                       ),
                     ),
-                    
+
                     // Main content with proper structure
                     Expanded(
                       child: SingleChildScrollView(
@@ -1114,7 +1112,6 @@ void main() {
                                 ),
                               ),
                             ),
-                            
                             Semantics(
                               container: true,
                               label: 'Project list',
@@ -1124,7 +1121,6 @@ void main() {
                                 ],
                               ),
                             ),
-                            
                             Semantics(
                               header: true,
                               child: const Padding(
@@ -1135,7 +1131,6 @@ void main() {
                                 ),
                               ),
                             ),
-                            
                             Semantics(
                               container: true,
                               label: 'Task list',
@@ -1165,8 +1160,8 @@ void main() {
         expect(find.bySemanticsLabel('Task list'), findsOneWidget);
 
         // Test semantic headers
-        final headerFinder = find.byWidgetPredicate((widget) =>
-            widget is Semantics && widget.properties.header == true);
+        final headerFinder =
+            find.byWidgetPredicate((widget) => widget is Semantics && widget.properties.header == true);
         expect(
           headerFinder.evaluate().length,
           greaterThanOrEqualTo(2),
@@ -1192,4 +1187,3 @@ String _getPriorityDescription(TaskPriority priority) {
       return 'Can be done when time allows';
   }
 }
-

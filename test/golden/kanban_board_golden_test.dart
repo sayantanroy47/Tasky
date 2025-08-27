@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:golden_toolkit/golden_toolkit.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-
 import 'package:task_tracker_app/core/theme/app_theme_data.dart';
-import 'package:task_tracker_app/domain/models/enums.dart';
+import 'package:task_tracker_app/core/theme/theme_factory.dart';
 import 'package:task_tracker_app/core/theme/themes/dracula_ide_theme.dart';
 import 'package:task_tracker_app/core/theme/themes/matrix_theme.dart';
 import 'package:task_tracker_app/core/theme/themes/vegeta_blue_theme.dart';
-import 'package:task_tracker_app/core/theme/theme_factory.dart';
 import 'package:task_tracker_app/domain/entities/task_model.dart';
+import 'package:task_tracker_app/domain/models/enums.dart';
 
 import '../mocks/mock_providers.dart';
 import '../test_helpers/test_data_helper.dart';
@@ -34,7 +33,7 @@ void main() {
 
       // Create test data
       testTasks = TestDataHelper.createTestTasks();
-      
+
       // Create column configurations
       columnConfigs = [
         KanbanColumnConfig(
@@ -73,7 +72,7 @@ void main() {
     testGoldens('Kanban Board - Full View - All Themes', (tester) async {
       for (final theme in allThemes) {
         final themeData = ThemeFactory.createFlutterTheme(theme);
-        
+
         await tester.pumpWidgetBuilder(
           _KanbanBoardFullView(
             tasks: testTasks,
@@ -95,17 +94,14 @@ void main() {
           surfaceSize: const Size(1000, 700),
         );
 
-        await screenMatchesGolden(
-          tester, 
-          'kanban_full_${theme.metadata.id.toLowerCase()}'
-        );
+        await screenMatchesGolden(tester, 'kanban_full_${theme.metadata.id.toLowerCase()}');
       }
     });
 
     testGoldens('Kanban Board - Mobile View', (tester) async {
       final theme = allThemes.first; // Test responsive with one theme
       final themeData = ThemeFactory.createFlutterTheme(theme);
-      
+
       await tester.pumpWidgetBuilder(
         _KanbanBoardMobileView(
           tasks: testTasks.take(6).toList(),
@@ -130,7 +126,7 @@ void main() {
     testGoldens('Kanban Board - Tablet View', (tester) async {
       final theme = allThemes[1]; // Test with different theme
       final themeData = ThemeFactory.createFlutterTheme(theme);
-      
+
       await tester.pumpWidgetBuilder(
         _KanbanBoardTabletView(
           tasks: testTasks,
@@ -153,15 +149,13 @@ void main() {
     });
 
     testGoldens('Kanban Column - Individual Columns', (tester) async {
-      for (final theme in allThemes.take(3)) { // Test with 3 themes for variety
+      for (final theme in allThemes.take(3)) {
+        // Test with 3 themes for variety
         final themeData = ThemeFactory.createFlutterTheme(theme);
-        
+
         for (final config in columnConfigs) {
-          final columnTasks = testTasks
-              .where((task) => task.status == config.status)
-              .take(4)
-              .toList();
-              
+          final columnTasks = testTasks.where((task) => task.status == config.status).take(4).toList();
+
           await tester.pumpWidgetBuilder(
             _KanbanColumnShowcase(
               config: config,
@@ -183,10 +177,7 @@ void main() {
             surfaceSize: const Size(320, 600),
           );
 
-          await screenMatchesGolden(
-            tester, 
-            'kanban_column_${config.id}_${theme.metadata.id.toLowerCase()}'
-          );
+          await screenMatchesGolden(tester, 'kanban_column_${config.id}_${theme.metadata.id.toLowerCase()}');
         }
       }
     });
@@ -194,7 +185,7 @@ void main() {
     testGoldens('Kanban Board - Empty States', (tester) async {
       final theme = allThemes.first;
       final themeData = ThemeFactory.createFlutterTheme(theme);
-      
+
       await tester.pumpWidgetBuilder(
         _KanbanBoardEmptyState(columns: columnConfigs),
         wrapper: (child) => ProviderScope(
@@ -218,7 +209,7 @@ void main() {
     testGoldens('Kanban Board - Drag and Drop States', (tester) async {
       final theme = allThemes[2]; // Matrix theme for visual contrast
       final themeData = ThemeFactory.createFlutterTheme(theme);
-      
+
       await tester.pumpWidgetBuilder(
         _KanbanDragDropShowcase(
           tasks: testTasks.take(8).toList(),
@@ -243,23 +234,25 @@ void main() {
     testGoldens('Kanban Task Cards - TaskPriority Variations', (tester) async {
       final theme = allThemes[1];
       final themeData = ThemeFactory.createFlutterTheme(theme);
-      
+
       // Create tasks with different priorities
-      final priorityTasks = TaskPriority.values.map((priority) => TaskModel(
-        id: 'priority_${priority.name}',
-        title: '${priority.name.toUpperCase()} TaskPriority Task',
-        description: 'This is a ${priority.name} priority task for testing visual hierarchy',
-        priority: priority,
-        projectId: 'test_project',
-        dueDate: DateTime.now().add(Duration(days: TaskPriority.values.indexOf(priority) + 1)),
-        createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
-        tags: ['priority', priority.name],
-        estimatedDuration: (2 + TaskPriority.values.indexOf(priority)) * 60, // Convert hours to minutes
-        dependencies: const [],
-        subTasks: const [],
-        metadata: const {},
-      )).toList();
+      final priorityTasks = TaskPriority.values
+          .map((priority) => TaskModel(
+                id: 'priority_${priority.name}',
+                title: '${priority.name.toUpperCase()} TaskPriority Task',
+                description: 'This is a ${priority.name} priority task for testing visual hierarchy',
+                priority: priority,
+                projectId: 'test_project',
+                dueDate: DateTime.now().add(Duration(days: TaskPriority.values.indexOf(priority) + 1)),
+                createdAt: DateTime.now(),
+                updatedAt: DateTime.now(),
+                tags: ['priority', priority.name],
+                estimatedDuration: (2 + TaskPriority.values.indexOf(priority)) * 60, // Convert hours to minutes
+                dependencies: const [],
+                subTasks: const [],
+                metadata: const {},
+              ))
+          .toList();
 
       await tester.pumpWidgetBuilder(
         _KanbanTaskPriorityShowcase(tasks: priorityTasks),
@@ -285,7 +278,7 @@ void main() {
     testGoldens('Kanban Board - Accessibility High Contrast', (tester) async {
       final theme = allThemes.first;
       final baseThemeData = ThemeFactory.createFlutterTheme(theme);
-      
+
       // Create high contrast theme
       final highContrastTheme = baseThemeData.copyWith(
         colorScheme: baseThemeData.colorScheme.copyWith(
@@ -297,7 +290,7 @@ void main() {
           outline: Colors.black,
         ),
       );
-      
+
       await tester.pumpWidgetBuilder(
         _KanbanBoardAccessibilityView(
           tasks: testTasks.take(9).toList(),
@@ -322,7 +315,7 @@ void main() {
     testGoldens('Kanban Board - Large Text Accessibility', (tester) async {
       final theme = allThemes.first;
       final themeData = ThemeFactory.createFlutterTheme(theme);
-      
+
       await tester.pumpWidgetBuilder(
         _KanbanBoardAccessibilityView(
           tasks: testTasks.take(6).toList(),
@@ -392,16 +385,14 @@ class _KanbanBoardFullView extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          
+
           // Kanban board
           Expanded(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: columns.map((config) {
-                final columnTasks = tasks
-                    .where((task) => task.status == config.status)
-                    .toList();
-                    
+                final columnTasks = tasks.where((task) => task.status == config.status).toList();
+
                 return Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -423,10 +414,10 @@ class _KanbanBoardFullView extends StatelessWidget {
   ) {
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3),
+        color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
         ),
       ),
       child: Column(
@@ -449,28 +440,28 @@ class _KanbanBoardFullView extends StatelessWidget {
                 Text(
                   config.title,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+                        fontWeight: FontWeight.w600,
+                      ),
                 ),
                 const Spacer(),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: config.color.withOpacity(0.2),
+                    color: config.color.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     '${tasks.length}',
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: config.color,
-                      fontWeight: FontWeight.w600,
-                    ),
+                          color: config.color,
+                          fontWeight: FontWeight.w600,
+                        ),
                   ),
                 ),
               ],
             ),
           ),
-          
+
           // Tasks
           Expanded(
             child: ListView.builder(
@@ -501,12 +492,12 @@ class _KanbanBoardFullView extends StatelessWidget {
             Text(
               task.title,
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
+                    fontWeight: FontWeight.w500,
+                  ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
-            
+
             if (task.description?.isNotEmpty == true) ...[
               const SizedBox(height: 4),
               Text(
@@ -516,9 +507,9 @@ class _KanbanBoardFullView extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
             ],
-            
+
             const SizedBox(height: 8),
-            
+
             // Task metadata
             Row(
               children: [
@@ -526,7 +517,7 @@ class _KanbanBoardFullView extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
-                    color: _getTaskPriorityColor(task.priority).withOpacity(0.2),
+                    color: _getTaskPriorityColor(task.priority).withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Row(
@@ -541,16 +532,16 @@ class _KanbanBoardFullView extends StatelessWidget {
                       Text(
                         task.priority.name.toUpperCase(),
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: _getTaskPriorityColor(task.priority),
-                          fontWeight: FontWeight.w600,
-                        ),
+                              color: _getTaskPriorityColor(task.priority),
+                              fontWeight: FontWeight.w600,
+                            ),
                       ),
                     ],
                   ),
                 ),
-                
+
                 const Spacer(),
-                
+
                 // Due date
                 if (task.dueDate != null) ...[
                   Icon(
@@ -566,26 +557,29 @@ class _KanbanBoardFullView extends StatelessWidget {
                 ],
               ],
             ),
-            
+
             // Tags
             if (task.tags.isNotEmpty) ...[
               const SizedBox(height: 8),
               Wrap(
                 spacing: 4,
                 runSpacing: 4,
-                children: task.tags.take(2).map((tag) => Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Text(
-                    tag,
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onPrimaryContainer,
-                    ),
-                  ),
-                )).toList(),
+                children: task.tags
+                    .take(2)
+                    .map((tag) => Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.primaryContainer,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            tag,
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                                ),
+                          ),
+                        ))
+                    .toList(),
               ),
             ],
           ],
@@ -648,7 +642,7 @@ class _KanbanBoardMobileView extends StatelessWidget {
             ),
           ],
         ),
-        
+
         // Column selector
         SizedBox(
           height: 50,
@@ -659,7 +653,7 @@ class _KanbanBoardMobileView extends StatelessWidget {
             itemBuilder: (context, index) {
               final config = columns[index];
               final isSelected = index == 0; // Mock selection
-              
+
               return Padding(
                 padding: const EdgeInsets.only(right: 12),
                 child: FilterChip(
@@ -679,7 +673,7 @@ class _KanbanBoardMobileView extends StatelessWidget {
             },
           ),
         ),
-        
+
         // Tasks for selected column
         Expanded(
           child: ListView.builder(
@@ -688,7 +682,7 @@ class _KanbanBoardMobileView extends StatelessWidget {
             itemBuilder: (context, index) {
               final columnTasks = tasks.where((t) => t.status == columns.first.status).toList();
               final task = columnTasks[index];
-              
+
               return Padding(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: Card(
@@ -746,7 +740,7 @@ class _KanbanBoardTabletView extends StatelessWidget {
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               const SizedBox(height: 16),
-              
+
               // Quick stats
               ...columns.map((config) {
                 final count = tasks.where((t) => t.status == config.status).length;
@@ -770,7 +764,7 @@ class _KanbanBoardTabletView extends StatelessWidget {
                   ),
                 );
               }),
-              
+
               const SizedBox(height: 16),
               ElevatedButton.icon(
                 onPressed: () {},
@@ -780,7 +774,7 @@ class _KanbanBoardTabletView extends StatelessWidget {
             ],
           ),
         ),
-        
+
         // Main kanban area
         Expanded(
           child: _KanbanBoardFullView(tasks: tasks, columns: columns),
@@ -809,14 +803,13 @@ class _KanbanColumnShowcase extends StatelessWidget {
           style: Theme.of(context).textTheme.titleMedium,
         ),
         const SizedBox(height: 16),
-        
         Expanded(
           child: Container(
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3),
+              color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
               ),
             ),
             child: Column(
@@ -838,28 +831,28 @@ class _KanbanColumnShowcase extends StatelessWidget {
                       Text(
                         config.title,
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
+                              fontWeight: FontWeight.w600,
+                            ),
                       ),
                       const Spacer(),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: config.color.withOpacity(0.2),
+                          color: config.color.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
                           '${tasks.length}',
                           style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            color: config.color,
-                            fontWeight: FontWeight.w600,
-                          ),
+                                color: config.color,
+                                fontWeight: FontWeight.w600,
+                              ),
                         ),
                       ),
                     ],
                   ),
                 ),
-                
+
                 // Tasks
                 Expanded(
                   child: ListView.builder(
@@ -946,89 +939,93 @@ class _KanbanBoardEmptyState extends StatelessWidget {
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: 24),
-          
           Expanded(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: columns.map((config) => Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
-                      ),
-                    ),
-                    child: Column(
-                      children: [
-                        // Column header
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 12,
-                                height: 12,
-                                decoration: BoxDecoration(
-                                  color: config.color,
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
+              children: columns
+                  .map((config) => Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
                               ),
-                              const SizedBox(width: 8),
-                              Text(
-                                config.title,
-                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              const Spacer(),
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: config.color.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Text(
-                                  '0',
-                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                    color: config.color,
-                                    fontWeight: FontWeight.w600,
+                            ),
+                            child: Column(
+                              children: [
+                                // Column header
+                                Container(
+                                  padding: const EdgeInsets.all(12),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        width: 12,
+                                        height: 12,
+                                        decoration: BoxDecoration(
+                                          color: config.color,
+                                          borderRadius: BorderRadius.circular(6),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        config.title,
+                                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                      ),
+                                      const Spacer(),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          color: config.color.withValues(alpha: 0.2),
+                                          borderRadius: BorderRadius.circular(12),
+                                        ),
+                                        child: Text(
+                                          '0',
+                                          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                                color: config.color,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        
-                        // Empty state
-                        Expanded(
-                          child: Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  PhosphorIcons.plus(),
-                                  size: 48,
-                                  color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.3),
-                                ),
-                                const SizedBox(height: 16),
-                                Text(
-                                  'No tasks',
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.6),
+
+                                // Empty state
+                                Expanded(
+                                  child: Center(
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Icon(
+                                          PhosphorIcons.plus(),
+                                          size: 48,
+                                          color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
+                                        ),
+                                        const SizedBox(height: 16),
+                                        Text(
+                                          'No tasks',
+                                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .onSurfaceVariant
+                                                    .withValues(alpha: 0.6),
+                                              ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ],
                             ),
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-              )).toList(),
+                      ))
+                  .toList(),
             ),
           ),
         ],
@@ -1058,15 +1055,12 @@ class _KanbanDragDropShowcase extends StatelessWidget {
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: 16),
-          
           Expanded(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: columns.map((config) {
-                final columnTasks = tasks
-                    .where((task) => task.status == config.status)
-                    .toList();
-                    
+                final columnTasks = tasks.where((task) => task.status == config.status).toList();
+
                 return Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -1087,17 +1081,15 @@ class _KanbanDragDropShowcase extends StatelessWidget {
     List<TaskModel> tasks,
   ) {
     final isDragTarget = config.id == 'in_progress'; // Mock drag target state
-    
+
     return Container(
       decoration: BoxDecoration(
-        color: isDragTarget 
-            ? config.color.withOpacity(0.1)
-            : Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3),
+        color: isDragTarget
+            ? config.color.withValues(alpha: 0.1)
+            : Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isDragTarget 
-              ? config.color
-              : Theme.of(context).colorScheme.outline.withOpacity(0.2),
+          color: isDragTarget ? config.color : Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
           width: isDragTarget ? 2 : 1,
         ),
       ),
@@ -1120,9 +1112,9 @@ class _KanbanDragDropShowcase extends StatelessWidget {
                 Text(
                   config.title,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: isDragTarget ? config.color : null,
-                  ),
+                        fontWeight: FontWeight.w600,
+                        color: isDragTarget ? config.color : null,
+                      ),
                 ),
                 const Spacer(),
                 if (isDragTarget) Icon(PhosphorIcons.arrowDown(), color: config.color),
@@ -1130,21 +1122,21 @@ class _KanbanDragDropShowcase extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: config.color.withOpacity(0.2),
+                    color: config.color.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     '${tasks.length}',
                     style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                      color: config.color,
-                      fontWeight: FontWeight.w600,
-                    ),
+                          color: config.color,
+                          fontWeight: FontWeight.w600,
+                        ),
                   ),
                 ),
               ],
             ),
           ),
-          
+
           // Tasks with drag states
           Expanded(
             child: ListView.builder(
@@ -1152,7 +1144,7 @@ class _KanbanDragDropShowcase extends StatelessWidget {
               itemCount: tasks.length,
               itemBuilder: (context, index) {
                 final isDragging = index == 0 && config.id == 'todo'; // Mock dragging state
-                
+
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: Opacity(
@@ -1174,8 +1166,8 @@ class _KanbanDragDropShowcase extends StatelessWidget {
                                     child: Text(
                                       tasks[index].title,
                                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                        fontWeight: FontWeight.w500,
-                                      ),
+                                            fontWeight: FontWeight.w500,
+                                          ),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                     ),
@@ -1222,88 +1214,89 @@ class _KanbanTaskPriorityShowcase extends StatelessWidget {
           style: Theme.of(context).textTheme.headlineSmall,
         ),
         const SizedBox(height: 16),
-        
         ...tasks.map((task) => Padding(
-          padding: const EdgeInsets.only(bottom: 16),
-          child: Card(
-            elevation: 2,
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // TaskPriority header
-                  Row(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Card(
+                elevation: 2,
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: _getTaskPriorityColor(task.priority).withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              _getTaskPriorityIcon(task.priority),
-                              size: 16,
-                              color: _getTaskPriorityColor(task.priority),
+                      // TaskPriority header
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: _getTaskPriorityColor(task.priority).withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(6),
                             ),
-                            const SizedBox(width: 6),
-                            Text(
-                              task.priority.name.toUpperCase(),
-                              style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                                color: _getTaskPriorityColor(task.priority),
-                                fontWeight: FontWeight.w600,
-                              ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  _getTaskPriorityIcon(task.priority),
+                                  size: 16,
+                                  color: _getTaskPriorityColor(task.priority),
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  task.priority.name.toUpperCase(),
+                                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                                        color: _getTaskPriorityColor(task.priority),
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                          const Spacer(),
+                          Text(
+                            '${task.estimatedDuration != null ? (task.estimatedDuration! / 60).round() : 0}h',
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ],
                       ),
-                      const Spacer(),
+
+                      const SizedBox(height: 12),
+
+                      // Task content
                       Text(
-                        '${task.estimatedDuration != null ? (task.estimatedDuration! / 60).round() : 0}h',
-                        style: Theme.of(context).textTheme.bodySmall,
+                        task.title,
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w500,
+                            ),
+                      ),
+
+                      const SizedBox(height: 6),
+
+                      Text(
+                        task.description ?? 'No description',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      // Tags and metadata
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 4,
+                        children: task.tags
+                            .map((tag) => Chip(
+                                  label: Text(tag),
+                                  backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+                                  labelStyle: TextStyle(
+                                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                                  ),
+                                ))
+                            .toList(),
                       ),
                     ],
                   ),
-                  
-                  const SizedBox(height: 12),
-                  
-                  // Task content
-                  Text(
-                    task.title,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 6),
-                  
-                  Text(
-                    task.description ?? 'No description',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  
-                  const SizedBox(height: 12),
-                  
-                  // Tags and metadata
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 4,
-                    children: task.tags.map((tag) => Chip(
-                      label: Text(tag),
-                      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-                      labelStyle: TextStyle(
-                        color: Theme.of(context).colorScheme.onPrimaryContainer,
-                      ),
-                    )).toList(),
-                  ),
-                ],
+                ),
               ),
-            ),
-          ),
-        )),
+            )),
       ],
     );
   }
@@ -1361,15 +1354,12 @@ class _KanbanBoardAccessibilityView extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            
             Expanded(
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: columns.map((config) {
-                  final columnTasks = tasks
-                      .where((task) => task.status == config.status)
-                      .toList();
-                      
+                  final columnTasks = tasks.where((task) => task.status == config.status).toList();
+
                   return Expanded(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -1377,10 +1367,10 @@ class _KanbanBoardAccessibilityView extends StatelessWidget {
                         label: '${config.title} column with ${columnTasks.length} tasks',
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.surfaceContainerHighest.withOpacity(0.3),
+                            color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                              color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
                             ),
                           ),
                           child: Column(
@@ -1404,8 +1394,8 @@ class _KanbanBoardAccessibilityView extends StatelessWidget {
                                       Text(
                                         config.title,
                                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                          fontWeight: FontWeight.w600,
-                                        ),
+                                              fontWeight: FontWeight.w600,
+                                            ),
                                       ),
                                       const Spacer(),
                                       Semantics(
@@ -1413,15 +1403,15 @@ class _KanbanBoardAccessibilityView extends StatelessWidget {
                                         child: Container(
                                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                                           decoration: BoxDecoration(
-                                            color: config.color.withOpacity(0.2),
+                                            color: config.color.withValues(alpha: 0.2),
                                             borderRadius: BorderRadius.circular(12),
                                           ),
                                           child: Text(
                                             '${columnTasks.length}',
                                             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                              color: config.color,
-                                              fontWeight: FontWeight.w600,
-                                            ),
+                                                  color: config.color,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
                                           ),
                                         ),
                                       ),
@@ -1429,7 +1419,7 @@ class _KanbanBoardAccessibilityView extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                              
+
                               // Accessible task list
                               Expanded(
                                 child: ListView.builder(
@@ -1440,7 +1430,8 @@ class _KanbanBoardAccessibilityView extends StatelessWidget {
                                     return Padding(
                                       padding: const EdgeInsets.only(bottom: 8),
                                       child: Semantics(
-                                        label: 'Task: ${task.title}. TaskPriority: ${task.priority.name}. ${task.description ?? "No description"}',
+                                        label:
+                                            'Task: ${task.title}. TaskPriority: ${task.priority.name}. ${task.description ?? "No description"}',
                                         button: true,
                                         child: Card(
                                           elevation: 2,

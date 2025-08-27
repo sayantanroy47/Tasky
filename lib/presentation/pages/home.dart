@@ -573,15 +573,6 @@ class _HomePageState extends ConsumerState<HomePage> with SingleTickerProviderSt
 
           return Row(
             children: [
-              // Clean icon without borders
-              if (welcomeMessage.icon != null) ...[
-                Icon(
-                  welcomeMessage.icon!,
-                  size: 28,
-                  color: theme.colorScheme.primary,
-                ),
-                StandardizedGaps.horizontal(SpacingSize.md),
-              ],
               Expanded(
                 child: StandardizedText(
                   welcomeMessage.greeting,
@@ -614,13 +605,6 @@ class _HomePageState extends ConsumerState<HomePage> with SingleTickerProviderSt
       builder: (context) => AlertDialog(
         title: Row(
           children: [
-            if (welcomeMessage.icon != null) ...[
-              Icon(
-                welcomeMessage.icon!,
-                color: theme.colorScheme.primary,
-              ),
-              const SizedBox(width: 8),
-            ],
             Expanded(
               child: Text(
                 'Welcome Details',
@@ -713,46 +697,77 @@ class _HomePageState extends ConsumerState<HomePage> with SingleTickerProviderSt
                 task.completedAt!.isAfter(todayStart) &&
                 task.completedAt!.isBefore(todayEnd))
             .length;
+        
+        // Add calculations for Overdue and Total tasks
+        final overdueCount = tasks
+            .where((task) =>
+                !task.isCompleted &&
+                task.dueDate != null &&
+                task.dueDate!.isBefore(todayStart))
+            .length;
+        final totalTasks = tasks.length;
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Quick Stats Row
+            // Horizontally Scrollable Quick Stats
             GlassmorphismContainer(
               level: GlassLevel.content,
               borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
               padding: StandardizedSpacing.padding(SpacingSize.md),
-              child: Row(
-                children: [
-                  _buildQuickStat(
-                    theme: theme,
-                    icon: PhosphorIcons.clockCounterClockwise(),
-                    label: 'Pending',
-                    count: pendingCount,
-                    color: theme.colorScheme.primary,
-                  ),
-                  _buildQuickStat(
-                    theme: theme,
-                    icon: PhosphorIcons.arrowUp(),
-                    label: 'Urgent',
-                    count: urgentCount,
-                    color: theme.colorScheme.error,
-                  ),
-                  _buildQuickStat(
-                    theme: theme,
-                    icon: PhosphorIcons.caretUp(),
-                    label: 'High',
-                    count: highCount,
-                    color: theme.colorScheme.secondary,
-                  ),
-                  _buildQuickStat(
-                    theme: theme,
-                    icon: PhosphorIcons.checkCircle(),
-                    label: 'Done',
-                    count: completedToday,
-                    color: context.successColor,
-                  ),
-                ],
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    _buildScrollableQuickStat(
+                      theme: theme,
+                      icon: PhosphorIcons.list(),
+                      label: 'Total',
+                      count: totalTasks,
+                      color: theme.colorScheme.onSurface,
+                    ),
+                    const SizedBox(width: 16),
+                    _buildScrollableQuickStat(
+                      theme: theme,
+                      icon: PhosphorIcons.clockCounterClockwise(),
+                      label: 'Pending',
+                      count: pendingCount,
+                      color: theme.colorScheme.primary,
+                    ),
+                    const SizedBox(width: 16),
+                    _buildScrollableQuickStat(
+                      theme: theme,
+                      icon: PhosphorIcons.arrowUp(),
+                      label: 'Urgent',
+                      count: urgentCount,
+                      color: theme.colorScheme.error,
+                    ),
+                    const SizedBox(width: 16),
+                    _buildScrollableQuickStat(
+                      theme: theme,
+                      icon: PhosphorIcons.caretUp(),
+                      label: 'High',
+                      count: highCount,
+                      color: theme.colorScheme.secondary,
+                    ),
+                    const SizedBox(width: 16),
+                    _buildScrollableQuickStat(
+                      theme: theme,
+                      icon: PhosphorIcons.warning(),
+                      label: 'Overdue',
+                      count: overdueCount,
+                      color: Colors.red,
+                    ),
+                    const SizedBox(width: 16),
+                    _buildScrollableQuickStat(
+                      theme: theme,
+                      icon: PhosphorIcons.checkCircle(),
+                      label: 'Done',
+                      count: completedToday,
+                      color: context.successColor,
+                    ),
+                  ],
+                ),
               ),
             ),
             StandardizedGaps.vertical(SpacingSize.sm),
@@ -1225,6 +1240,7 @@ Shared from Tasky - Task Management App
                     size: 32,
                     theme: theme,
                     iconSizeRatio: 0.5,
+                    borderRadius: 16, // Half of size (32/2) for circular design
                   ),
                   const SizedBox(width: SpacingTokens.phi1), // Golden ratio spacing
                 ] else ...[
@@ -1580,20 +1596,6 @@ Shared from Tasky - Task Management App
               ),
             ),
 
-            // Navigation arrow on the right
-            Container(
-              width: 24,
-              height: 24,
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
-                borderRadius: StandardizedBorderRadius.sm,
-              ),
-              child: Icon(
-                PhosphorIcons.arrowRight(),
-                size: 14,
-                color: theme.colorScheme.primary,
-              ),
-            ),
           ],
         ),
       ),
@@ -1846,12 +1848,18 @@ Shared from Tasky - Task Management App
     return Expanded(
       child: Column(
         children: [
-          GlassmorphismContainer(
-            level: GlassLevel.content,
+          // Circular icon container matching task card category icons
+          Container(
             width: 32,
             height: 32,
-            borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall),
-            glassTint: color.withValues(alpha: 0.15),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle, // Circular like category icons
+              color: color.withValues(alpha: 0.15),
+              border: Border.all(
+                color: color.withValues(alpha: 0.3),
+                width: 1,
+              ),
+            ),
             child: Icon(
               icon,
               size: 16,
@@ -1868,6 +1876,56 @@ Shared from Tasky - Task Management App
             label,
             style: StandardizedTextStyle.bodySmall,
             color: theme.colorScheme.onSurfaceVariant,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Build scrollable quick stat for horizontal scrolling (no Expanded)
+  Widget _buildScrollableQuickStat({
+    required ThemeData theme,
+    required IconData icon,
+    required String label,
+    required int count,
+    required Color color,
+  }) {
+    return SizedBox(
+      width: 70, // Fixed width for scrollable stats
+      child: Column(
+        children: [
+          // Circular icon container matching task card category icons
+          Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle, // Circular like category icons
+              color: color.withValues(alpha: 0.15),
+              border: Border.all(
+                color: color.withValues(alpha: 0.3),
+                width: 1,
+              ),
+            ),
+            child: Icon(
+              icon,
+              size: 16,
+              color: color,
+            ),
+          ),
+          const SizedBox(height: 4),
+          StandardizedText(
+            count.toString(),
+            style: StandardizedTextStyle.titleLarge,
+            color: theme.colorScheme.onSurface,
+            textAlign: TextAlign.center,
+          ),
+          StandardizedText(
+            label,
+            style: StandardizedTextStyle.bodySmall,
+            color: theme.colorScheme.onSurfaceVariant,
+            textAlign: TextAlign.center,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),

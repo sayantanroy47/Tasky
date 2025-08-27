@@ -3,10 +3,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/standardized_app_bar.dart';
 import '../widgets/standardized_spacing.dart';
 import '../widgets/standardized_text.dart';
+import '../widgets/standardized_colors.dart';
 import '../widgets/universal_profile_picture.dart';
 import '../providers/profile_providers.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../domain/entities/user_profile.dart';
+import '../widgets/glassmorphism_container.dart';
+import '../widgets/enhanced_glass_button.dart';
+import '../widgets/theme_background_widget.dart';
+import '../../core/design_system/design_tokens.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Profile Settings Page for managing user profile information
@@ -40,23 +45,23 @@ class _ProfileSettingsPageState extends ConsumerState<ProfileSettingsPage> {
   
   @override
   Widget build(BuildContext context) {
-    debugPrint('ProfileSettingsPage build() called');
-    
     final theme = Theme.of(context);
     final profileAsync = ref.watch(currentProfileProvider);
     
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      extendBodyBehindAppBar: true,
-      appBar: const StandardizedAppBar(
-        title: 'Profile Settings',
-        centerTitle: true,
-      ),
-      body: SafeArea(
-        child: profileAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, stackTrace) => _buildErrorState(theme),
-          data: (profile) => _buildProfileForm(theme, profile),
+    return ThemeBackgroundWidget(
+      child: Scaffold(
+        backgroundColor: context.colors.backgroundTransparent,
+        extendBodyBehindAppBar: true,
+        appBar: const StandardizedAppBar(
+          title: 'Profile',
+          centerTitle: true,
+        ),
+        body: SafeArea(
+          child: profileAsync.when(
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (error, stackTrace) => _buildErrorState(theme),
+            data: (profile) => _buildProfileForm(theme, profile),
+          ),
         ),
       ),
     );
@@ -66,33 +71,37 @@ class _ProfileSettingsPageState extends ConsumerState<ProfileSettingsPage> {
     return Center(
       child: Padding(
         padding: StandardizedSpacing.padding(SpacingSize.lg),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.error_outline,
-              size: 64,
-              color: theme.colorScheme.error,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Failed to load profile',
-              style: StandardizedTextStyle.titleLarge.toTextStyle(context).copyWith(
+        child: GlassmorphismContainer(
+          level: GlassLevel.floating,
+          borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
+          padding: StandardizedSpacing.padding(SpacingSize.xl),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                PhosphorIcons.warningCircle(),
+                size: 64,
                 color: theme.colorScheme.error,
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Please try again',
-              style: StandardizedTextStyle.bodyMedium.toTextStyle(context),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () => ref.invalidate(currentProfileProvider),
-              child: const Text('Retry'),
-            ),
-          ],
+              StandardizedGaps.vertical(SpacingSize.md),
+              StandardizedText(
+                'Failed to load profile',
+                style: StandardizedTextStyle.titleLarge,
+                color: theme.colorScheme.error,
+              ),
+              StandardizedGaps.vertical(SpacingSize.xs),
+              StandardizedText(
+                'Please try again',
+                style: StandardizedTextStyle.bodyMedium,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+              StandardizedGaps.vertical(SpacingSize.md),
+              EnhancedGlassButton(
+                onPressed: () => ref.invalidate(currentProfileProvider),
+                child: const StandardizedText('Retry', style: StandardizedTextStyle.buttonText),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -110,128 +119,169 @@ class _ProfileSettingsPageState extends ConsumerState<ProfileSettingsPage> {
       _locationController.text = '';
     }
     
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return SingleChildScrollView(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(minHeight: constraints.maxHeight),
-            child: Padding(
-              padding: const EdgeInsets.only(
-                top: kToolbarHeight + 28, // App bar height + spacing
-                left: 20,
-                right: 20,
-                bottom: 20,
-              ),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _buildProfilePictureSection(theme),
-                    const SizedBox(height: 32),
-                    _buildPersonalInfoSection(theme),
-                    const SizedBox(height: 24),
-                    _buildLocationSection(theme),
-                    const SizedBox(height: 32),
-                    _buildSaveButton(theme),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-  
-  Widget _buildProfilePictureSection(ThemeData theme) {
-    return Card(
-      elevation: 0,
-      color: theme.colorScheme.surface.withValues(alpha: 0.8),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
-        side: BorderSide(
-          color: theme.colorScheme.outline.withValues(alpha: 0.2),
-          width: 1,
-        ),
+    return SingleChildScrollView(
+      padding: EdgeInsets.only(
+        top: kToolbarHeight + 32, // App bar height + elegant spacing
+        left: 24,
+        right: 24,
+        bottom: 32,
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(24),
+      child: Form(
+        key: _formKey,
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const UniversalProfilePictureLarge(),
-            const SizedBox(height: 16),
-            Text(
-              'Profile Picture',
-              style: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
-                fontWeight: TypographyConstants.medium,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 16,
-              alignment: WrapAlignment.center,
-              children: [
-                TextButton.icon(
-                  onPressed: _changeProfilePicture,
-                  icon: Icon(PhosphorIcons.camera(), size: 18),
-                  label: const Text('Change'),
-                ),
-                TextButton.icon(
-                  onPressed: _removeProfilePicture,
-                  icon: Icon(PhosphorIcons.trash(), size: 18),
-                  label: const Text('Remove'),
-                  style: TextButton.styleFrom(
-                    foregroundColor: theme.colorScheme.error,
-                  ),
-                ),
-              ],
-            ),
+            _buildHeroProfileSection(theme, profile),
+            StandardizedGaps.vertical(SpacingSize.xxl),
+            _buildPersonalInfoSection(theme),
+            StandardizedGaps.vertical(SpacingSize.lg),
+            _buildLocationSection(theme),
+            StandardizedGaps.vertical(SpacingSize.xxl),
+            _buildActionButtons(theme),
           ],
         ),
       ),
     );
   }
   
-  Widget _buildPersonalInfoSection(ThemeData theme) {
-    return Card(
-      elevation: 0,
-      color: theme.colorScheme.surface.withValues(alpha: 0.8),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
-        side: BorderSide(
-          color: theme.colorScheme.outline.withValues(alpha: 0.2),
-          width: 1,
-        ),
+  Widget _buildHeroProfileSection(ThemeData theme, UserProfile? profile) {
+    return GlassmorphismContainer(
+      level: GlassLevel.floating,
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusXLarge),
+      padding: StandardizedSpacing.padding(SpacingSize.xl),
+      child: Column(
+        children: [
+          // Profile picture with elegant backdrop
+          Container(
+            width: 120,
+            height: 120,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                colors: [
+                  theme.colorScheme.primary.withValues(alpha: 0.1),
+                  theme.colorScheme.secondary.withValues(alpha: 0.1),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            padding: const EdgeInsets.all(8),
+            child: const UniversalProfilePictureLarge(),
+          ),
+          StandardizedGaps.vertical(SpacingSize.md),
+          
+          // Welcome message or name display
+          if (profile?.firstName != null) ...[
+            StandardizedText(
+              'Welcome, ${profile!.firstName}!',
+              style: StandardizedTextStyle.headlineSmall,
+              color: theme.colorScheme.onSurface,
+            ),
+            if (profile.lastName?.isNotEmpty == true) 
+              StandardizedText(
+                profile.lastName!,
+                style: StandardizedTextStyle.titleMedium,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+          ] else ...[
+            StandardizedText(
+              'Welcome!',
+              style: StandardizedTextStyle.headlineSmall,
+              color: theme.colorScheme.onSurface,
+            ),
+            StandardizedText(
+              'Set up your profile',
+              style: StandardizedTextStyle.bodyMedium,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ],
+          
+          StandardizedGaps.vertical(SpacingSize.md),
+          
+          // Photo actions with elegant glass buttons
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              EnhancedGlassButton.secondary(
+                onPressed: _changeProfilePicture,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(PhosphorIcons.camera(), size: 16),
+                    const SizedBox(width: 8),
+                    const StandardizedText('Change Photo', style: StandardizedTextStyle.labelMedium),
+                  ],
+                ),
+              ),
+              StandardizedGaps.horizontal(SpacingSize.md),
+              EnhancedGlassButton.secondary(
+                onPressed: _removeProfilePicture,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(PhosphorIcons.trash(), size: 16, color: theme.colorScheme.error),
+                    const SizedBox(width: 8),
+                    StandardizedText('Remove', style: StandardizedTextStyle.labelMedium, color: theme.colorScheme.error),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(
+    );
+  }
+  
+  Widget _buildPersonalInfoSection(ThemeData theme) {
+    return GlassmorphismContainer(
+      level: GlassLevel.content,
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
+      padding: StandardizedSpacing.padding(SpacingSize.lg),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Section header with elegant styling
+          Row(
+            children: [
+              GlassmorphismContainer(
+                level: GlassLevel.interactive,
+                width: 32,
+                height: 32,
+                borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                glassTint: theme.colorScheme.primary.withValues(alpha: 0.15),
+                child: Icon(
                   PhosphorIcons.user(),
-                  size: 20,
+                  size: 16,
                   color: theme.colorScheme.primary,
                 ),
-                const SizedBox(width: 8),
-                Text(
-                  'Personal Information',
-                  style: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
-                    fontWeight: TypographyConstants.medium,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            TextFormField(
+              ),
+              StandardizedGaps.horizontal(SpacingSize.sm),
+              StandardizedText(
+                'Personal Information',
+                style: StandardizedTextStyle.titleMedium,
+                color: theme.colorScheme.onSurface,
+              ),
+            ],
+          ),
+          StandardizedGaps.vertical(SpacingSize.lg),
+          
+          // Form fields with glassmorphism styling
+          GlassmorphismContainer(
+            level: GlassLevel.interactive,
+            borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+            child: TextFormField(
               controller: _firstNameController,
               decoration: InputDecoration(
-                labelText: 'First Name',
+                labelText: 'First Name *',
                 hintText: 'Enter your first name',
                 prefixIcon: Icon(PhosphorIcons.user()),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                fillColor: Colors.transparent,
               ),
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
@@ -243,13 +293,25 @@ class _ProfileSettingsPageState extends ConsumerState<ProfileSettingsPage> {
                 return null;
               },
             ),
-            const SizedBox(height: 16),
-            TextFormField(
+          ),
+          
+          StandardizedGaps.vertical(SpacingSize.md),
+          
+          GlassmorphismContainer(
+            level: GlassLevel.interactive,
+            borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+            child: TextFormField(
               controller: _lastNameController,
               decoration: InputDecoration(
                 labelText: 'Last Name',
                 hintText: 'Enter your last name',
                 prefixIcon: Icon(PhosphorIcons.userCheck()),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                fillColor: Colors.transparent,
               ),
               validator: (value) {
                 if (value != null && value.trim().isNotEmpty && value.trim().length < 2) {
@@ -258,46 +320,50 @@ class _ProfileSettingsPageState extends ConsumerState<ProfileSettingsPage> {
                 return null;
               },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
   
   Widget _buildLocationSection(ThemeData theme) {
-    return Card(
-      elevation: 0,
-      color: theme.colorScheme.surface.withValues(alpha: 0.8),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
-        side: BorderSide(
-          color: theme.colorScheme.outline.withValues(alpha: 0.2),
-          width: 1,
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(
+    return GlassmorphismContainer(
+      level: GlassLevel.content,
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
+      padding: StandardizedSpacing.padding(SpacingSize.lg),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Section header with elegant styling
+          Row(
+            children: [
+              GlassmorphismContainer(
+                level: GlassLevel.interactive,
+                width: 32,
+                height: 32,
+                borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                glassTint: theme.colorScheme.secondary.withValues(alpha: 0.15),
+                child: Icon(
                   PhosphorIcons.mapPin(),
-                  size: 20,
-                  color: theme.colorScheme.primary,
+                  size: 16,
+                  color: theme.colorScheme.secondary,
                 ),
-                const SizedBox(width: 8),
-                Text(
-                  'Location',
-                  style: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
-                    fontWeight: TypographyConstants.medium,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            TextFormField(
+              ),
+              StandardizedGaps.horizontal(SpacingSize.sm),
+              StandardizedText(
+                'Location',
+                style: StandardizedTextStyle.titleMedium,
+                color: theme.colorScheme.onSurface,
+              ),
+            ],
+          ),
+          StandardizedGaps.vertical(SpacingSize.lg),
+          
+          // Location field with glassmorphism styling
+          GlassmorphismContainer(
+            level: GlassLevel.interactive,
+            borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+            child: TextFormField(
               controller: _locationController,
               decoration: InputDecoration(
                 labelText: 'Location (Optional)',
@@ -305,40 +371,86 @@ class _ProfileSettingsPageState extends ConsumerState<ProfileSettingsPage> {
                 prefixIcon: Icon(PhosphorIcons.mapPin()),
                 suffixIcon: IconButton(
                   onPressed: _useCurrentLocation,
-                  icon: Icon(PhosphorIcons.crosshair()),
+                  icon: Icon(
+                    PhosphorIcons.crosshair(),
+                    size: 16,
+                    color: theme.colorScheme.primary,
+                  ),
                   tooltip: 'Use current location',
                 ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                fillColor: Colors.transparent,
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
   
-  Widget _buildSaveButton(ThemeData theme) {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton.icon(
-        onPressed: _isLoading ? null : _saveProfile,
-        icon: _isLoading
-            ? const SizedBox(
-                width: 16,
-                height: 16,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+  Widget _buildActionButtons(ThemeData theme) {
+    return Column(
+      children: [
+        // Primary save button
+        SizedBox(
+          width: double.infinity,
+          child: EnhancedGlassButton(
+            onPressed: _isLoading ? null : _saveProfile,
+            height: 56,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (_isLoading) ...[
+                  SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  ),
+                  StandardizedGaps.horizontal(SpacingSize.sm),
+                ] else ...[
+                  Icon(PhosphorIcons.check(), size: 20, color: Colors.white),
+                  StandardizedGaps.horizontal(SpacingSize.sm),
+                ],
+                StandardizedText(
+                  _isLoading ? 'Saving Profile...' : 'Save Profile',
+                  style: StandardizedTextStyle.buttonText,
+                  color: Colors.white,
                 ),
-              )
-            : Icon(PhosphorIcons.check()),
-        label: Text(_isLoading ? 'Saving...' : 'Save Profile'),
-        style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 32),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
+              ],
+            ),
           ),
         ),
-      ),
+        
+        StandardizedGaps.vertical(SpacingSize.sm),
+        
+        // Secondary cancel button
+        SizedBox(
+          width: double.infinity,
+          child: EnhancedGlassButton.secondary(
+            onPressed: () => Navigator.of(context).pop(),
+            height: 48,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(PhosphorIcons.x(), size: 16, color: theme.colorScheme.onSurface),
+                StandardizedGaps.horizontal(SpacingSize.sm),
+                StandardizedText(
+                  'Cancel',
+                  style: StandardizedTextStyle.labelLarge,
+                  color: theme.colorScheme.onSurface,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
   

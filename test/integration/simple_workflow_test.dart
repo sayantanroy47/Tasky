@@ -1,11 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drift/native.dart';
-
-import 'package:task_tracker_app/services/database/database.dart';
-import 'package:task_tracker_app/domain/entities/task_model.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:task_tracker_app/domain/entities/task_enums.dart';
+import 'package:task_tracker_app/domain/entities/task_model.dart';
+import 'package:task_tracker_app/services/database/database.dart';
 
 void main() {
   group('Simple Workflow Integration Tests', () {
@@ -14,7 +13,7 @@ void main() {
 
     setUp(() async {
       TestWidgetsFlutterBinding.ensureInitialized();
-      
+
       testDatabase = AppDatabase.forTesting(NativeDatabase.memory());
       container = ProviderContainer(
         overrides: [],
@@ -60,7 +59,7 @@ void main() {
                         subtitle: Text(testTask.description ?? ''),
                         trailing: Chip(
                           label: Text(testTask.priority.displayName),
-                          backgroundColor: testTask.priority.color.withOpacity(0.2),
+                          backgroundColor: testTask.priority.color.withValues(alpha: 0.2),
                         ),
                         onTap: () {
                           // Navigate to task detail
@@ -133,7 +132,7 @@ void main() {
                           children: [
                             Chip(
                               label: Text(task.priority.displayName),
-                              backgroundColor: task.priority.color.withOpacity(0.2),
+                              backgroundColor: task.priority.color.withValues(alpha: 0.2),
                             ),
                             PopupMenuButton<TaskPriority>(
                               key: Key('priority_menu_${task.id}'),

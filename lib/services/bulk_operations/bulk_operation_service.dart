@@ -24,7 +24,6 @@ import 'bulk_operation_history.dart';
 /// - Performance monitoring
 class BulkOperationService {
   final TaskRepository _taskRepository;
-  final ProjectRepository _projectRepository;
   final NotificationService _notificationService;
   final PerformanceService _performanceService;
   final BulkOperationHistory _history;
@@ -37,12 +36,10 @@ class BulkOperationService {
   
   BulkOperationService({
     required TaskRepository taskRepository,
-    required ProjectRepository projectRepository,
     required NotificationService notificationService,
     required PerformanceService performanceService,
     BulkOperationHistory? history,
   })  : _taskRepository = taskRepository,
-        _projectRepository = projectRepository,
         _notificationService = notificationService,
         _performanceService = performanceService,
         _history = history ?? BulkOperationHistory();
@@ -430,7 +427,6 @@ class BulkOperationService {
     bool showNotification = true,
   }) async {
     final operationId = const Uuid().v4();
-    final startTime = DateTime.now();
     
     return _performanceService.trackOperation(
       'bulk_duplicate',

@@ -288,7 +288,6 @@ class _VirtualizedTaskListState extends State<_VirtualizedTaskList> {
 /// Optimized drag and drop system
 class OptimizedDragAndDrop {
   static const Duration _animationDuration = Duration(milliseconds: 200);
-  static const double _dragThreshold = 10.0;
 
   /// Creates an optimized draggable widget
   static Widget createDraggable<T extends Object>({
@@ -369,7 +368,7 @@ class _OptimizedDraggableState<T extends Object> extends State<_OptimizedDraggab
       child: AnimatedContainer(
         duration: OptimizedDragAndDrop._animationDuration,
         curve: Curves.easeInOut,
-        transform: Matrix4.identity().scaled(_isDragging ? 1.05 : 1.0),
+        transform: Matrix4.identity()..scale(_isDragging ? 1.05 : 1.0),
         child: widget.child,
       ),
     );
@@ -418,7 +417,7 @@ class _OptimizedDragTargetState<T extends Object> extends State<_OptimizedDragTa
         return AnimatedContainer(
           duration: OptimizedDragAndDrop._animationDuration,
           curve: Curves.easeInOut,
-          transform: Matrix4.identity().scaled(_isHovering ? 1.02 : 1.0),
+          transform: Matrix4.identity()..scale(_isHovering ? 1.02 : 1.0),
           child: widget.child,
         );
       },

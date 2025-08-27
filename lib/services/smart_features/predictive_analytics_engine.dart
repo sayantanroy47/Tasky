@@ -11,15 +11,12 @@ import '../analytics/analytics_service.dart';
 class PredictiveAnalyticsEngine {
   final TaskRepository _taskRepository;
   final ProjectRepository _projectRepository;
-  final AnalyticsService _analyticsService;
 
   PredictiveAnalyticsEngine({
     required TaskRepository taskRepository,
     required ProjectRepository projectRepository,
-    required AnalyticsService analyticsService,
   })  : _taskRepository = taskRepository,
-        _projectRepository = projectRepository,
-        _analyticsService = analyticsService;
+        _projectRepository = projectRepository;
 
   /// Generates comprehensive predictive analytics for a project
   Future<ProjectPredictiveAnalytics> generatePredictiveAnalytics(String projectId) async {
@@ -96,12 +93,10 @@ class PredictiveAnalyticsEngine {
     final scenarios = <PredictionScenario>[];
     DateTime? bestCasePrediction;
     DateTime? worstCasePrediction;
-    DateTime? mostLikelyPrediction;
 
     // Algorithm 1: Velocity-based prediction
     final velocityPrediction = await _predictByVelocity(project, tasks);
     if (velocityPrediction != null) {
-      mostLikelyPrediction = velocityPrediction;
       scenarios.add(PredictionScenario(
         name: 'Current Velocity',
         description: 'Based on recent task completion velocity',

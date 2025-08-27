@@ -24,7 +24,7 @@ class OptimizedThemeBackgroundWidget extends ConsumerWidget {
     }
 
     // Get theme ID and determine if it's dark mode
-    final themeId = currentTheme.metadata?.id ?? '';
+    final themeId = currentTheme.metadata.id;
     final isDark = themeId.contains('_dark');
     
     // Extract theme name from ID

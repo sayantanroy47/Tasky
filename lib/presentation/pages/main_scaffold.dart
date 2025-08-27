@@ -94,23 +94,11 @@ class MainScaffold extends ConsumerWidget {
         children: pages,
       ),
       bottomNavigationBar: _buildBottomNavigation(context, ref, selectedIndex, navigationItems),
-      floatingActionButton: selectedIndex == 2 // Analytics page
-        ? StandardizedFABVariants.analytics(
-            onPressed: () => _showAnalyticsMenu(context),
-            heroTag: 'analyticsFAB',
-            isLarge: true,
-          )
-        : selectedIndex == 0 // Home page - success-focused
-        ? StandardizedFABVariants.create(
-            onPressed: () => _showTaskCreationMenu(context),
-            heroTag: 'mainFAB',
-            isLarge: true,
-          )
-        : StandardizedFABVariants.create(
-            onPressed: () => _showTaskCreationMenu(context),
-            heroTag: 'defaultFAB',
-            isLarge: true,
-          ),
+      floatingActionButton: StandardizedFABVariants.create(
+        onPressed: () => _showTaskCreationMenu(context),
+        heroTag: 'consistentFAB',
+        isLarge: true,
+      ),
       floatingActionButtonLocation: const CenterDockedFloatingActionButtonLocation(),
     );
   }
@@ -612,74 +600,7 @@ class MainScaffold extends ConsumerWidget {
     );
   }
 
-  /// Show analytics menu with tertiary styling
-  void _showAnalyticsMenu(BuildContext context) {
-    final theme = Theme.of(context);
 
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (context) => ThemeBackgroundWidget(
-        child: GlassmorphismContainer(
-          level: GlassLevel.floating,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-          margin: EdgeInsets.zero,
-          child: SafeArea(
-            child: Padding(
-              padding: StandardizedSpacing.padding(SpacingSize.xl),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Header with tertiary accent
-                  StandardizedTextVariants.sectionHeader(
-                    'Analytics & Insights',
-                    color: theme.colorScheme.tertiary,
-                  ),
-                  StandardizedGaps.vertical(SpacingSize.xs),
-                  StandardizedText(
-                    'View your productivity data and trends',
-                    style: StandardizedTextStyle.bodySmall,
-                    color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
-                  ),
-                  StandardizedGaps.vertical(SpacingSize.md),
-
-                  _buildTaskCreationOption(
-                    context: context,
-                    icon: PhosphorIcons.trendUp(),
-                    iconColor: theme.colorScheme.tertiary,
-                    title: 'Progress Overview',
-                    subtitle: 'View completion trends and statistics',
-                    onTap: () {
-                      Navigator.pop(context);
-                      // Navigate to detailed analytics
-                    },
-                  ),
-
-                  StandardizedGaps.vertical(SpacingSize.sm),
-
-                  _buildTaskCreationOption(
-                    context: context,
-                    icon: PhosphorIcons.chartBar(),
-                    iconColor: theme.colorScheme.tertiary,
-                    title: 'Data Visualization',
-                    subtitle: 'Charts and graphs of your productivity',
-                    onTap: () {
-                      Navigator.pop(context);
-                      // Show data visualization
-                    },
-                  ),
-
-                  StandardizedGaps.vertical(SpacingSize.md),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 
   /// Build individual task creation option
   Widget _buildTaskCreationOption({

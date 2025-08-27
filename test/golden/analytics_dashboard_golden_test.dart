@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:golden_toolkit/golden_toolkit.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-
 import 'package:task_tracker_app/core/theme/app_theme_data.dart';
+import 'package:task_tracker_app/core/theme/theme_factory.dart';
 import 'package:task_tracker_app/core/theme/themes/dracula_ide_theme.dart';
 import 'package:task_tracker_app/core/theme/themes/matrix_theme.dart';
 import 'package:task_tracker_app/core/theme/themes/vegeta_blue_theme.dart';
-import 'package:task_tracker_app/core/theme/theme_factory.dart';
 import 'package:task_tracker_app/presentation/widgets/glassmorphism_container.dart';
 
 import '../mocks/mock_providers.dart';
@@ -39,7 +38,7 @@ void main() {
     testGoldens('Analytics Dashboard - Full View - All Themes', (tester) async {
       for (final theme in allThemes) {
         final themeData = ThemeFactory.createFlutterTheme(theme);
-        
+
         await tester.pumpWidgetBuilder(
           _AnalyticsDashboardFullView(data: analyticsData),
           wrapper: (child) => ProviderScope(
@@ -55,17 +54,14 @@ void main() {
           surfaceSize: const Size(400, 1200),
         );
 
-        await screenMatchesGolden(
-          tester, 
-          'analytics_dashboard_full_${theme.metadata.id.toLowerCase()}'
-        );
+        await screenMatchesGolden(tester, 'analytics_dashboard_full_${theme.metadata.id.toLowerCase()}');
       }
     });
 
     testGoldens('Analytics Overview Cards - Theme Variations', (tester) async {
       for (final theme in allThemes) {
         final themeData = ThemeFactory.createFlutterTheme(theme);
-        
+
         await tester.pumpWidgetBuilder(
           _AnalyticsOverviewCards(data: analyticsData),
           wrapper: (child) => ProviderScope(
@@ -84,17 +80,14 @@ void main() {
           surfaceSize: const Size(400, 300),
         );
 
-        await screenMatchesGolden(
-          tester, 
-          'analytics_overview_cards_${theme.metadata.id.toLowerCase()}'
-        );
+        await screenMatchesGolden(tester, 'analytics_overview_cards_${theme.metadata.id.toLowerCase()}');
       }
     });
 
     testGoldens('Productivity Chart - Theme Variations', (tester) async {
       for (final theme in allThemes) {
         final themeData = ThemeFactory.createFlutterTheme(theme);
-        
+
         await tester.pumpWidgetBuilder(
           _ProductivityChart(data: analyticsData),
           wrapper: (child) => ProviderScope(
@@ -113,17 +106,14 @@ void main() {
           surfaceSize: const Size(600, 400),
         );
 
-        await screenMatchesGolden(
-          tester, 
-          'productivity_chart_${theme.metadata.id.toLowerCase()}'
-        );
+        await screenMatchesGolden(tester, 'productivity_chart_${theme.metadata.id.toLowerCase()}');
       }
     });
 
     testGoldens('Task Heatmap - All Themes', (tester) async {
       for (final theme in allThemes) {
         final themeData = ThemeFactory.createFlutterTheme(theme);
-        
+
         await tester.pumpWidgetBuilder(
           _TaskHeatmapShowcase(data: analyticsData),
           wrapper: (child) => ProviderScope(
@@ -142,17 +132,14 @@ void main() {
           surfaceSize: const Size(700, 300),
         );
 
-        await screenMatchesGolden(
-          tester, 
-          'task_heatmap_${theme.metadata.id.toLowerCase()}'
-        );
+        await screenMatchesGolden(tester, 'task_heatmap_${theme.metadata.id.toLowerCase()}');
       }
     });
 
     testGoldens('Project Progress Breakdown - Theme Variations', (tester) async {
       for (final theme in allThemes) {
         final themeData = ThemeFactory.createFlutterTheme(theme);
-        
+
         await tester.pumpWidgetBuilder(
           _ProjectProgressBreakdown(data: analyticsData),
           wrapper: (child) => ProviderScope(
@@ -171,17 +158,14 @@ void main() {
           surfaceSize: const Size(400, 350),
         );
 
-        await screenMatchesGolden(
-          tester, 
-          'project_progress_breakdown_${theme.metadata.id.toLowerCase()}'
-        );
+        await screenMatchesGolden(tester, 'project_progress_breakdown_${theme.metadata.id.toLowerCase()}');
       }
     });
 
     testGoldens('Analytics Mobile Layout', (tester) async {
       final theme = allThemes.first;
       final themeData = ThemeFactory.createFlutterTheme(theme);
-      
+
       await tester.pumpWidgetBuilder(
         _AnalyticsMobileLayout(data: analyticsData),
         wrapper: (child) => ProviderScope(
@@ -203,7 +187,7 @@ void main() {
     testGoldens('Analytics Tablet Layout', (tester) async {
       final theme = allThemes[1];
       final themeData = ThemeFactory.createFlutterTheme(theme);
-      
+
       await tester.pumpWidgetBuilder(
         _AnalyticsTabletLayout(data: analyticsData),
         wrapper: (child) => ProviderScope(
@@ -225,7 +209,7 @@ void main() {
     testGoldens('Analytics Desktop Layout', (tester) async {
       final theme = allThemes[2];
       final themeData = ThemeFactory.createFlutterTheme(theme);
-      
+
       await tester.pumpWidgetBuilder(
         _AnalyticsDesktopLayout(data: analyticsData),
         wrapper: (child) => ProviderScope(
@@ -247,7 +231,7 @@ void main() {
     testGoldens('Analytics Empty State', (tester) async {
       final theme = allThemes.first;
       final themeData = ThemeFactory.createFlutterTheme(theme);
-      
+
       final emptyData = {
         'totalTasks': 0,
         'completedTasks': 0,
@@ -257,7 +241,7 @@ void main() {
         'projectProgress': <Map<String, dynamic>>[],
         'heatmapData': <Map<String, dynamic>>[],
       };
-      
+
       await tester.pumpWidgetBuilder(
         _AnalyticsEmptyState(data: emptyData),
         wrapper: (child) => ProviderScope(
@@ -281,7 +265,7 @@ void main() {
     testGoldens('Analytics Glassmorphism Effects', (tester) async {
       for (final theme in allThemes.take(3)) {
         final themeData = ThemeFactory.createFlutterTheme(theme);
-        
+
         await tester.pumpWidgetBuilder(
           _AnalyticsGlassmorphismShowcase(data: analyticsData),
           wrapper: (child) => MaterialApp(
@@ -293,8 +277,8 @@ void main() {
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      themeData.colorScheme.primary.withOpacity(0.1),
-                      themeData.colorScheme.secondary.withOpacity(0.1),
+                      themeData.colorScheme.primary.withValues(alpha: 0.1),
+                      themeData.colorScheme.secondary.withValues(alpha: 0.1),
                     ],
                   ),
                 ),
@@ -305,17 +289,14 @@ void main() {
           surfaceSize: const Size(400, 600),
         );
 
-        await screenMatchesGolden(
-          tester, 
-          'analytics_glassmorphism_${theme.metadata.id.toLowerCase()}'
-        );
+        await screenMatchesGolden(tester, 'analytics_glassmorphism_${theme.metadata.id.toLowerCase()}');
       }
     });
 
     testGoldens('Analytics High Contrast Accessibility', (tester) async {
       final theme = allThemes.first;
       final baseThemeData = ThemeFactory.createFlutterTheme(theme);
-      
+
       final highContrastTheme = baseThemeData.copyWith(
         colorScheme: baseThemeData.colorScheme.copyWith(
           primary: Colors.black,
@@ -326,7 +307,7 @@ void main() {
           outline: Colors.black,
         ),
       );
-      
+
       await tester.pumpWidgetBuilder(
         _AnalyticsAccessibilityShowcase(data: analyticsData),
         wrapper: (child) => ProviderScope(
@@ -348,7 +329,7 @@ void main() {
     testGoldens('Analytics Large Text Accessibility', (tester) async {
       final theme = allThemes.first;
       final themeData = ThemeFactory.createFlutterTheme(theme);
-      
+
       await tester.pumpWidgetBuilder(
         _AnalyticsAccessibilityShowcase(data: analyticsData),
         wrapper: (child) => MediaQuery(
@@ -410,29 +391,29 @@ class _AnalyticsDashboardFullView extends StatelessWidget {
               ),
             ],
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Overview cards
           _AnalyticsOverviewCards(data: data),
-          
+
           const SizedBox(height: 24),
-          
+
           // Productivity chart
           _ProductivityChart(data: data),
-          
+
           const SizedBox(height: 24),
-          
+
           // Task heatmap
           _TaskHeatmapShowcase(data: data),
-          
+
           const SizedBox(height: 24),
-          
+
           // Project breakdown
           _ProjectProgressBreakdown(data: data),
-          
+
           const SizedBox(height: 24),
-          
+
           // Additional metrics
           _AdditionalMetrics(data: data),
         ],
@@ -454,11 +435,10 @@ class _AnalyticsOverviewCards extends StatelessWidget {
         Text(
           'Overview',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+                fontWeight: FontWeight.w600,
+              ),
         ),
         const SizedBox(height: 12),
-        
         Row(
           children: [
             Expanded(
@@ -482,9 +462,7 @@ class _AnalyticsOverviewCards extends StatelessWidget {
             ),
           ],
         ),
-        
         const SizedBox(height: 12),
-        
         Row(
           children: [
             Expanded(
@@ -531,7 +509,7 @@ class _AnalyticsOverviewCards extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: color.withOpacity(0.1),
+                    color: color.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(
@@ -544,9 +522,9 @@ class _AnalyticsOverviewCards extends StatelessWidget {
                 Text(
                   value,
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: color,
-                  ),
+                        fontWeight: FontWeight.bold,
+                        color: color,
+                      ),
                 ),
               ],
             ),
@@ -554,8 +532,8 @@ class _AnalyticsOverviewCards extends StatelessWidget {
             Text(
               title,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
             ),
           ],
         ),
@@ -572,7 +550,7 @@ class _ProductivityChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final productivity = data['productivity'] as List<Map<String, dynamic>>;
-    
+
     return Card(
       elevation: 2,
       child: Container(
@@ -588,8 +566,8 @@ class _ProductivityChart extends StatelessWidget {
                 Text(
                   'Weekly Productivity',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+                        fontWeight: FontWeight.w600,
+                      ),
                 ),
                 const Spacer(),
                 TextButton.icon(
@@ -599,20 +577,18 @@ class _ProductivityChart extends StatelessWidget {
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 20),
-            
+
             // Chart area
             Expanded(
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: productivity.map<Widget>((day) {
                   final completed = day['completed'] as int;
-                  final maxCompleted = productivity
-                      .map((d) => d['completed'] as int)
-                      .reduce((a, b) => a > b ? a : b);
+                  final maxCompleted = productivity.map((d) => d['completed'] as int).reduce((a, b) => a > b ? a : b);
                   final height = (completed / maxCompleted) * 200;
-                  
+
                   return Expanded(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -625,7 +601,7 @@ class _ProductivityChart extends StatelessWidget {
                             style: Theme.of(context).textTheme.labelSmall,
                           ),
                           const SizedBox(height: 4),
-                          
+
                           // Bar
                           Container(
                             width: double.infinity,
@@ -636,15 +612,15 @@ class _ProductivityChart extends StatelessWidget {
                                 end: Alignment.topCenter,
                                 colors: [
                                   Theme.of(context).colorScheme.primary,
-                                  Theme.of(context).colorScheme.primary.withOpacity(0.6),
+                                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.6),
                                 ],
                               ),
                               borderRadius: BorderRadius.circular(4),
                             ),
                           ),
-                          
+
                           const SizedBox(height: 8),
-                          
+
                           // Day label
                           Text(
                             day['day'] as String,
@@ -672,7 +648,7 @@ class _TaskHeatmapShowcase extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final heatmapData = data['heatmapData'] as List<Map<String, dynamic>>;
-    
+
     return Card(
       elevation: 2,
       child: Container(
@@ -687,8 +663,8 @@ class _TaskHeatmapShowcase extends StatelessWidget {
                 Text(
                   'Activity Heatmap',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+                        fontWeight: FontWeight.w600,
+                      ),
                 ),
                 const Spacer(),
                 TextButton.icon(
@@ -698,9 +674,9 @@ class _TaskHeatmapShowcase extends StatelessWidget {
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Heatmap grid
             SizedBox(
               height: 140,
@@ -714,17 +690,17 @@ class _TaskHeatmapShowcase extends StatelessWidget {
                 itemCount: 49, // 7 weeks
                 itemBuilder: (context, index) {
                   final intensity = (index % 5) / 4.0; // Mock intensity
-                  
+
                   return Tooltip(
                     message: 'Day ${index + 1}: ${(intensity * 10).round()} tasks',
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primary.withOpacity(
-                          intensity == 0 ? 0.1 : intensity,
-                        ),
+                        color: Theme.of(context).colorScheme.primary.withValues(
+                              alpha: intensity == 0 ? 0.1 : intensity,
+                            ),
                         borderRadius: BorderRadius.circular(3),
                         border: Border.all(
-                          color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
                           width: 0.5,
                         ),
                       ),
@@ -733,9 +709,9 @@ class _TaskHeatmapShowcase extends StatelessWidget {
                 },
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Legend
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -752,12 +728,12 @@ class _TaskHeatmapShowcase extends StatelessWidget {
                       height: 12,
                       margin: const EdgeInsets.symmetric(horizontal: 2),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primary.withOpacity(
-                          intensity == 0 ? 0.1 : intensity,
-                        ),
+                        color: Theme.of(context).colorScheme.primary.withValues(
+                              alpha: intensity == 0 ? 0.1 : intensity,
+                            ),
                         borderRadius: BorderRadius.circular(2),
                         border: Border.all(
-                          color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
                           width: 0.5,
                         ),
                       ),
@@ -785,7 +761,7 @@ class _ProjectProgressBreakdown extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final projects = data['projectProgress'] as List<Map<String, dynamic>>;
-    
+
     return Card(
       elevation: 2,
       child: Container(
@@ -800,8 +776,8 @@ class _ProjectProgressBreakdown extends StatelessWidget {
                 Text(
                   'Project Progress',
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
+                        fontWeight: FontWeight.w600,
+                      ),
                 ),
                 const Spacer(),
                 TextButton.icon(
@@ -811,15 +787,15 @@ class _ProjectProgressBreakdown extends StatelessWidget {
                 ),
               ],
             ),
-            
+
             const SizedBox(height: 20),
-            
+
             // Project progress items
             ...projects.map<Widget>((project) {
               final name = project['name'] as String;
               final progress = project['progress'] as double;
               final color = Color(project['color'] as int);
-              
+
               return Padding(
                 padding: const EdgeInsets.only(bottom: 16),
                 child: Column(
@@ -842,23 +818,21 @@ class _ProjectProgressBreakdown extends StatelessWidget {
                             Text(
                               name,
                               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                fontWeight: FontWeight.w500,
-                              ),
+                                    fontWeight: FontWeight.w500,
+                                  ),
                             ),
                           ],
                         ),
                         Text(
                           '${(progress * 100).round()}%',
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w500,
-                            color: color,
-                          ),
+                                fontWeight: FontWeight.w500,
+                                color: color,
+                              ),
                         ),
                       ],
                     ),
-                    
                     const SizedBox(height: 8),
-                    
                     LinearProgressIndicator(
                       value: progress,
                       backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
@@ -907,25 +881,23 @@ class _AdditionalMetrics extends StatelessWidget {
                   Text(
                     '72%',
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: Colors.green,
-                      fontWeight: FontWeight.bold,
-                    ),
+                          color: Colors.green,
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     '+5% from last week',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.green,
-                    ),
+                          color: Colors.green,
+                        ),
                   ),
                 ],
               ),
             ),
           ),
         ),
-        
         const SizedBox(width: 12),
-        
         Expanded(
           child: Card(
             elevation: 2,
@@ -948,16 +920,16 @@ class _AdditionalMetrics extends StatelessWidget {
                   Text(
                     '2.4h',
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: Colors.orange,
-                      fontWeight: FontWeight.bold,
-                    ),
+                          color: Colors.orange,
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     '-12min from avg',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.green,
-                    ),
+                          color: Colors.green,
+                        ),
                   ),
                 ],
               ),
@@ -987,7 +959,6 @@ class _AnalyticsMobileLayout extends StatelessWidget {
             ),
           ],
         ),
-        
         Expanded(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(16),
@@ -1003,15 +974,19 @@ class _AnalyticsMobileLayout extends StatelessWidget {
                   mainAxisSpacing: 12,
                   childAspectRatio: 1.2,
                   children: [
-                    _buildCompactStatCard(context, 'Total', '${data['totalTasks']}', PhosphorIcons.listChecks(), Colors.blue),
-                    _buildCompactStatCard(context, 'Done', '${data['completedTasks']}', PhosphorIcons.checkCircle(), Colors.green),
-                    _buildCompactStatCard(context, 'Active', '${data['inProgressTasks']}', PhosphorIcons.clock(), Colors.orange),
-                    _buildCompactStatCard(context, 'Pending', '${data['todoTasks']}', PhosphorIcons.circle(), Colors.grey),
+                    _buildCompactStatCard(
+                        context, 'Total', '${data['totalTasks']}', PhosphorIcons.listChecks(), Colors.blue),
+                    _buildCompactStatCard(
+                        context, 'Done', '${data['completedTasks']}', PhosphorIcons.checkCircle(), Colors.green),
+                    _buildCompactStatCard(
+                        context, 'Active', '${data['inProgressTasks']}', PhosphorIcons.clock(), Colors.orange),
+                    _buildCompactStatCard(
+                        context, 'Pending', '${data['todoTasks']}', PhosphorIcons.circle(), Colors.grey),
                   ],
                 ),
-                
+
                 const SizedBox(height: 24),
-                
+
                 // Weekly chart
                 Card(
                   child: Container(
@@ -1032,8 +1007,8 @@ class _AnalyticsMobileLayout extends StatelessWidget {
                                 begin: Alignment.bottomCenter,
                                 end: Alignment.topCenter,
                                 colors: [
-                                  Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                                  Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                                  Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
                                 ],
                               ),
                               borderRadius: BorderRadius.circular(8),
@@ -1042,7 +1017,7 @@ class _AnalyticsMobileLayout extends StatelessWidget {
                               child: Icon(
                                 PhosphorIcons.chartLine(),
                                 size: 48,
-                                color: Theme.of(context).colorScheme.primary.withOpacity(0.5),
+                                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
                               ),
                             ),
                           ),
@@ -1077,9 +1052,9 @@ class _AnalyticsMobileLayout extends StatelessWidget {
             Text(
               value,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: color,
-              ),
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                  ),
             ),
             const SizedBox(height: 4),
             Text(
@@ -1115,16 +1090,16 @@ class _AnalyticsTabletLayout extends StatelessWidget {
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               const SizedBox(height: 24),
-              
+
               // Quick stats
               _buildSidebarStatCard(context, 'Total Tasks', '${data['totalTasks']}', Colors.blue),
               const SizedBox(height: 12),
               _buildSidebarStatCard(context, 'Completed', '${data['completedTasks']}', Colors.green),
               const SizedBox(height: 12),
               _buildSidebarStatCard(context, 'In Progress', '${data['inProgressTasks']}', Colors.orange),
-              
+
               const SizedBox(height: 24),
-              
+
               ElevatedButton.icon(
                 onPressed: () {},
                 icon: Icon(PhosphorIcons.export()),
@@ -1133,7 +1108,7 @@ class _AnalyticsTabletLayout extends StatelessWidget {
             ],
           ),
         ),
-        
+
         // Main content
         Expanded(
           child: SingleChildScrollView(
@@ -1163,9 +1138,9 @@ class _AnalyticsTabletLayout extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1178,9 +1153,9 @@ class _AnalyticsTabletLayout extends StatelessWidget {
           Text(
             value,
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              color: color,
-              fontWeight: FontWeight.bold,
-            ),
+                  color: color,
+                  fontWeight: FontWeight.bold,
+                ),
           ),
         ],
       ),
@@ -1221,9 +1196,9 @@ class _AnalyticsDesktopLayout extends StatelessWidget {
               ),
             ],
           ),
-          
+
           const SizedBox(height: 32),
-          
+
           // Main grid
           Expanded(
             child: Row(
@@ -1240,9 +1215,9 @@ class _AnalyticsDesktopLayout extends StatelessWidget {
                     ],
                   ),
                 ),
-                
+
                 const SizedBox(width: 24),
-                
+
                 // Right column
                 Expanded(
                   flex: 1,
@@ -1278,21 +1253,21 @@ class _AnalyticsEmptyState extends StatelessWidget {
           Icon(
             PhosphorIcons.chartBar(),
             size: 64,
-            color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.3),
+            color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
           ),
           const SizedBox(height: 24),
           Text(
             'No Analytics Data',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
           ),
           const SizedBox(height: 12),
           Text(
             'Complete some tasks to see your productivity insights',
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.7),
-            ),
+                  color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 32),
@@ -1322,9 +1297,9 @@ class _AnalyticsGlassmorphismShowcase extends StatelessWidget {
             'Analytics with Glassmorphism',
             style: Theme.of(context).textTheme.headlineMedium,
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Glassmorphism cards
           Row(
             children: [
@@ -1343,8 +1318,8 @@ class _AnalyticsGlassmorphismShowcase extends StatelessWidget {
                         Text(
                           '${data['completedTasks']}',
                           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                                fontWeight: FontWeight.bold,
+                              ),
                         ),
                         const SizedBox(height: 4),
                         Text(
@@ -1356,9 +1331,7 @@ class _AnalyticsGlassmorphismShowcase extends StatelessWidget {
                   ),
                 ),
               ),
-              
               const SizedBox(width: 16),
-              
               Expanded(
                 child: GlassmorphismContainer(
                   child: Padding(
@@ -1374,8 +1347,8 @@ class _AnalyticsGlassmorphismShowcase extends StatelessWidget {
                         Text(
                           '${data['inProgressTasks']}',
                           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                                fontWeight: FontWeight.bold,
+                              ),
                         ),
                         const SizedBox(height: 4),
                         Text(
@@ -1389,9 +1362,9 @@ class _AnalyticsGlassmorphismShowcase extends StatelessWidget {
               ),
             ],
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Large glassmorphism chart container
           GlassmorphismContainer(
             child: Container(
@@ -1403,8 +1376,8 @@ class _AnalyticsGlassmorphismShowcase extends StatelessWidget {
                   Text(
                     'Productivity Trends',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+                          fontWeight: FontWeight.w600,
+                        ),
                   ),
                   const SizedBox(height: 16),
                   Expanded(
@@ -1414,8 +1387,8 @@ class _AnalyticsGlassmorphismShowcase extends StatelessWidget {
                           begin: Alignment.bottomCenter,
                           end: Alignment.topCenter,
                           colors: [
-                            Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                            Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                            Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                            Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
                           ],
                         ),
                         borderRadius: BorderRadius.circular(8),
@@ -1424,8 +1397,8 @@ class _AnalyticsGlassmorphismShowcase extends StatelessWidget {
                         child: Text(
                           'Glassmorphism Chart Area',
                           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
                         ),
                       ),
                     ),
@@ -1461,9 +1434,9 @@ class _AnalyticsAccessibilityShowcase extends StatelessWidget {
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Accessible stat cards
             Semantics(
               label: 'Overview statistics',
@@ -1486,8 +1459,8 @@ class _AnalyticsAccessibilityShowcase extends StatelessWidget {
                               Text(
                                 '${data['totalTasks']}',
                                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                      fontWeight: FontWeight.bold,
+                                    ),
                               ),
                               const Text('Total Tasks'),
                             ],
@@ -1514,8 +1487,8 @@ class _AnalyticsAccessibilityShowcase extends StatelessWidget {
                               Text(
                                 '${data['completedTasks']}',
                                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                      fontWeight: FontWeight.bold,
+                                    ),
                               ),
                               const Text('Completed'),
                             ],
@@ -1527,9 +1500,9 @@ class _AnalyticsAccessibilityShowcase extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Accessible chart
             Semantics(
               label: 'Weekly productivity chart showing task completion over 7 days',
@@ -1551,8 +1524,8 @@ class _AnalyticsAccessibilityShowcase extends StatelessWidget {
                             begin: Alignment.bottomCenter,
                             end: Alignment.topCenter,
                             colors: [
-                              Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                              Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                              Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                              Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
                             ],
                           ),
                           borderRadius: BorderRadius.circular(8),

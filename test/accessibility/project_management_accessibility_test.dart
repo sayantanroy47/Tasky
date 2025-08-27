@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-
 import 'package:task_tracker_app/core/accessibility/color_contrast_validator.dart';
 import 'package:task_tracker_app/domain/entities/project.dart';
 import 'package:task_tracker_app/domain/entities/task_model.dart';
 import 'package:task_tracker_app/domain/models/enums.dart';
-import 'package:task_tracker_app/presentation/widgets/project_card.dart';
-import 'package:task_tracker_app/presentation/widgets/kanban_board_view.dart';
-import 'package:task_tracker_app/presentation/widgets/kanban_column.dart';
-import 'package:task_tracker_app/presentation/widgets/timeline/timeline_gantt_view.dart';
 import 'package:task_tracker_app/presentation/widgets/analytics/project_analytics_dashboard.dart';
 import 'package:task_tracker_app/presentation/widgets/bulk_operations/bulk_action_toolbar.dart';
 import 'package:task_tracker_app/presentation/widgets/bulk_operations/multi_select_task_card.dart';
 import 'package:task_tracker_app/presentation/widgets/charts/bar_chart_widget.dart';
 import 'package:task_tracker_app/presentation/widgets/charts/line_chart_widget.dart';
 import 'package:task_tracker_app/presentation/widgets/charts/pie_chart_widget.dart';
+import 'package:task_tracker_app/presentation/widgets/kanban_board_view.dart';
+import 'package:task_tracker_app/presentation/widgets/kanban_column.dart';
+import 'package:task_tracker_app/presentation/widgets/project_card.dart';
+import 'package:task_tracker_app/presentation/widgets/timeline/timeline_gantt_view.dart';
 
 void main() {
   group('Project Management Accessibility Tests', () {
@@ -41,7 +40,7 @@ void main() {
           projectId: testProject.id,
         ),
         TaskModel.create(
-          title: 'Task 2 - In Progress', 
+          title: 'Task 2 - In Progress',
           description: 'Second task for testing',
           priority: TaskPriority.medium,
           projectId: testProject.id,
@@ -116,13 +115,11 @@ void main() {
         final SemanticsHandle handle = tester.ensureSemantics();
 
         // Look for action buttons with proper semantic labels
-        final editButtonFinder = find.byWidgetPredicate((widget) =>
-            widget is Semantics && 
-            widget.properties.label?.contains('Edit') == true);
-        
-        final deleteButtonFinder = find.byWidgetPredicate((widget) =>
-            widget is Semantics && 
-            widget.properties.label?.contains('Delete') == true);
+        final editButtonFinder = find
+            .byWidgetPredicate((widget) => widget is Semantics && widget.properties.label?.contains('Edit') == true);
+
+        final deleteButtonFinder = find
+            .byWidgetPredicate((widget) => widget is Semantics && widget.properties.label?.contains('Delete') == true);
 
         // Verify action buttons have proper semantics
         if (editButtonFinder.evaluate().isNotEmpty) {
@@ -261,18 +258,18 @@ void main() {
         final SemanticsHandle handle = tester.ensureSemantics();
 
         // Test keyboard focus on columns
-        final firstColumn = find.byWidgetPredicate((widget) =>
-            widget is KanbanColumn && widget.config.status == TaskStatus.pending);
-        
+        final firstColumn =
+            find.byWidgetPredicate((widget) => widget is KanbanColumn && widget.config.status == TaskStatus.pending);
+
         if (firstColumn.evaluate().isNotEmpty) {
           await tester.tap(firstColumn);
           await tester.pump();
-          
+
           // Column should be focusable
           final columnSemantics = tester.getSemantics(firstColumn);
           expect(
             columnSemantics.getSemanticsData().hasFlag(SemanticsFlag.isFocused) ||
-            columnSemantics.getSemanticsData().hasFlag(SemanticsFlag.isFocusable),
+                columnSemantics.getSemanticsData().hasFlag(SemanticsFlag.isFocusable),
             isTrue,
           );
         }
@@ -372,7 +369,7 @@ void main() {
         final timelineSemantics = tester.getSemantics(timelineFinder);
         expect(
           timelineSemantics.getSemanticsData().label.contains('timeline') == true ||
-          timelineSemantics.getSemanticsData().label.contains('gantt') == true,
+              timelineSemantics.getSemanticsData().label.contains('gantt') == true,
           isTrue,
         );
 
@@ -404,9 +401,8 @@ void main() {
         final SemanticsHandle handle = tester.ensureSemantics();
 
         // Look for timeline task rows
-        final taskRowFinder = find.byWidgetPredicate((widget) =>
-            widget is Semantics && 
-            widget.properties.label?.toLowerCase().contains('task') == true);
+        final taskRowFinder = find.byWidgetPredicate(
+            (widget) => widget is Semantics && widget.properties.label?.toLowerCase().contains('task') == true);
 
         if (taskRowFinder.evaluate().isNotEmpty) {
           final taskRowSemantics = tester.getSemantics(taskRowFinder);
@@ -437,8 +433,7 @@ void main() {
 
         // Look for zoom controls, date navigation, etc.
         final controlButtonFinder = find.byWidgetPredicate((widget) =>
-            widget is IconButton || 
-            (widget is Semantics && widget.properties.label?.contains('zoom') == true));
+            widget is IconButton || (widget is Semantics && widget.properties.label?.contains('zoom') == true));
 
         if (controlButtonFinder.evaluate().isNotEmpty) {
           for (int i = 0; i < controlButtonFinder.evaluate().length; i++) {
@@ -475,16 +470,14 @@ void main() {
         expect(dashboardFinder, findsOneWidget);
 
         // Test that charts have proper descriptions
-        final chartFinder = find.byWidgetPredicate((widget) =>
-            widget is LineChartWidget ||
-            widget is BarChartWidget ||
-            widget is PieChartWidget);
+        final chartFinder = find.byWidgetPredicate(
+            (widget) => widget is LineChartWidget || widget is BarChartWidget || widget is PieChartWidget);
 
         if (chartFinder.evaluate().isNotEmpty) {
           final chartSemantics = tester.getSemantics(chartFinder);
           expect(
             chartSemantics.getSemanticsData().label.isNotEmpty == true ||
-            chartSemantics.getSemanticsData().hint.isNotEmpty == true,
+                chartSemantics.getSemanticsData().hint.isNotEmpty == true,
             isTrue,
           );
         }
@@ -511,8 +504,7 @@ void main() {
         final controlFinder = find.byWidgetPredicate((widget) =>
             widget is DropdownButton ||
             widget is ToggleButtons ||
-            (widget is Semantics && 
-             widget.properties.label?.toLowerCase().contains('chart') == true));
+            (widget is Semantics && widget.properties.label?.toLowerCase().contains('chart') == true));
 
         if (controlFinder.evaluate().isNotEmpty) {
           final controlSemantics = tester.getSemantics(controlFinder);
@@ -538,7 +530,7 @@ void main() {
                       hint: 'Chart data: January 10 tasks, February 15 tasks, March 8 tasks',
                       child: Container(
                         height: 200,
-                        color: Colors.blue.withOpacity(0.1),
+                        color: Colors.blue.withValues(alpha: 0.1),
                         child: const Center(child: Text('Mock Bar Chart')),
                       ),
                     ),
@@ -547,7 +539,7 @@ void main() {
                       hint: 'Chart data: High priority 30%, Medium priority 50%, Low priority 20%',
                       child: Container(
                         height: 200,
-                        color: Colors.green.withOpacity(0.1),
+                        color: Colors.green.withValues(alpha: 0.1),
                         child: const Center(child: Text('Mock Pie Chart')),
                       ),
                     ),
@@ -600,18 +592,18 @@ void main() {
 
         // Test bulk action buttons have proper semantics
         final bulkActionsFinder = find.byType(IconButton);
-        
+
         for (int i = 0; i < bulkActionsFinder.evaluate().length; i++) {
           final buttonSemantics = tester.getSemantics(bulkActionsFinder.at(i));
           expect(
             buttonSemantics.getSemanticsData().hasAction(SemanticsAction.tap),
             isTrue,
           );
-          
+
           // Button should have a label or tooltip
           expect(
             buttonSemantics.getSemanticsData().label.isNotEmpty == true ||
-            buttonSemantics.getSemanticsData().hint.isNotEmpty == true,
+                buttonSemantics.getSemanticsData().hint.isNotEmpty == true,
             isTrue,
           );
         }
@@ -700,7 +692,7 @@ void main() {
         final completeButtonFinder = find.byWidgetPredicate((widget) =>
             widget is IconButton &&
             (widget.tooltip?.toLowerCase().contains('complete') == true ||
-             widget.icon.toString().contains('check') == true));
+                widget.icon.toString().contains('check') == true));
 
         if (completeButtonFinder.evaluate().isNotEmpty) {
           await tester.tap(completeButtonFinder);
@@ -770,10 +762,10 @@ void main() {
           (Colors.green, Colors.white, 'Project complete status'),
           (Colors.orange, Colors.black, 'Project warning status'),
           (Colors.red, Colors.white, 'Project error status'),
-          
+
           // Priority colors
           (Colors.red.shade700, Colors.white, 'High priority'),
-          (Colors.orange.shade600, Colors.white, 'Medium priority'), 
+          (Colors.orange.shade600, Colors.white, 'Medium priority'),
           (Colors.green.shade600, Colors.white, 'Low priority'),
         ];
 
@@ -782,13 +774,13 @@ void main() {
             foreground,
             background,
           );
-          
+
           // Test WCAG AA compliance (minimum 4.5:1 for normal text)
           expect(
             contrastRatio,
             greaterThanOrEqualTo(4.5),
             reason: '$description should meet WCAG AA contrast requirements. '
-                   'Current ratio: ${contrastRatio.toStringAsFixed(2)}:1',
+                'Current ratio: ${contrastRatio.toStringAsFixed(2)}:1',
           );
         }
       });
@@ -806,13 +798,13 @@ void main() {
                       // Project management UI with various interactive elements
                       ProjectCard(project: testProject),
                       const SizedBox(height: 16),
-                      
+
                       // Bulk action toolbar
                       BulkActionToolbar(
                         selectedTasks: testTasks.take(2).toList(),
                       ),
                       const SizedBox(height: 16),
-                      
+
                       // Small interactive elements that should be tested
                       Row(
                         children: [
@@ -844,7 +836,7 @@ void main() {
 
         // Test minimum touch target sizes (44x44 logical pixels)
         final iconButtons = find.byType(IconButton);
-        
+
         for (int i = 0; i < iconButtons.evaluate().length; i++) {
           final buttonSize = tester.getSize(iconButtons.at(i));
           expect(
@@ -968,12 +960,12 @@ void main() {
                                 children: [
                                   Chip(
                                     label: const Text('3 tasks'),
-                                    backgroundColor: Colors.blue.withOpacity(0.1),
+                                    backgroundColor: Colors.blue.withValues(alpha: 0.1),
                                   ),
                                   const SizedBox(width: 8),
                                   Chip(
                                     label: const Text('33% complete'),
-                                    backgroundColor: Colors.green.withOpacity(0.1),
+                                    backgroundColor: Colors.green.withValues(alpha: 0.1),
                                   ),
                                 ],
                               ),
@@ -1028,7 +1020,7 @@ void main() {
         );
 
         int taskCount = 3;
-        
+
         await tester.pumpWidget(
           ProviderScope(
             child: MaterialApp(

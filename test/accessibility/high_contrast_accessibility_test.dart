@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:flutter_test/flutter_test.dart';
 import 'package:task_tracker_app/core/accessibility/color_contrast_validator.dart';
 import 'package:task_tracker_app/domain/entities/project.dart';
 import 'package:task_tracker_app/domain/entities/task_model.dart';
 import 'package:task_tracker_app/domain/models/enums.dart';
-import 'package:task_tracker_app/presentation/widgets/project_card.dart';
-import 'package:task_tracker_app/presentation/widgets/kanban_board_view.dart';
 import 'package:task_tracker_app/presentation/widgets/advanced_task_card.dart';
 import 'package:task_tracker_app/presentation/widgets/bulk_operations/bulk_action_toolbar.dart';
+import 'package:task_tracker_app/presentation/widgets/kanban_board_view.dart';
+import 'package:task_tracker_app/presentation/widgets/project_card.dart';
 
 void main() {
   group('High Contrast and Color Accessibility Tests', () {
@@ -66,9 +65,9 @@ void main() {
                       onDelete: () {},
                     ),
                     ...testTasks.map((task) => AdvancedTaskCard(
-                      task: task,
-                      onTap: () {},
-                    )),
+                          task: task,
+                          onTap: () {},
+                        )),
                   ],
                 ),
               ),
@@ -120,9 +119,9 @@ void main() {
                       onTap: () {},
                     ),
                     ...testTasks.map((task) => AdvancedTaskCard(
-                      task: task,
-                      onTap: () {},
-                    )),
+                          task: task,
+                          onTap: () {},
+                        )),
                   ],
                 ),
               ),
@@ -198,7 +197,7 @@ void main() {
         final kanbanSemantics = tester.getSemantics(find.byType(KanbanBoardView));
         expect(
           kanbanSemantics.getSemanticsData().label.isNotEmpty == true ||
-          kanbanSemantics.getSemanticsData().hint.isNotEmpty == true,
+              kanbanSemantics.getSemanticsData().hint.isNotEmpty == true,
           isTrue,
           reason: 'Kanban board should maintain semantic information in high contrast',
         );
@@ -236,23 +235,25 @@ void main() {
                     ),
                     Expanded(
                       child: ListView(
-                        children: testTasks.map((task) =>
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
-                              children: [
-                                Semantics(
-                                  label: 'Select ${task.title}',
-                                  child: Checkbox(
-                                    value: true,
-                                    onChanged: (value) {},
-                                  ),
+                        children: testTasks
+                            .map(
+                              (task) => Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  children: [
+                                    Semantics(
+                                      label: 'Select ${task.title}',
+                                      child: Checkbox(
+                                        value: true,
+                                        onChanged: (value) {},
+                                      ),
+                                    ),
+                                    Expanded(child: AdvancedTaskCard(task: task)),
+                                  ],
                                 ),
-                                Expanded(child: AdvancedTaskCard(task: task)),
-                              ],
-                            ),
-                          ),
-                        ).toList(),
+                              ),
+                            )
+                            .toList(),
                       ),
                     ),
                   ],
@@ -404,8 +405,8 @@ void main() {
               contrastRatio,
               greaterThanOrEqualTo(4.5),
               reason: '${testCase.description} must meet WCAG AA standards. '
-                     'Current ratio: ${contrastRatio.toStringAsFixed(2)}:1, '
-                     'Required: 4.5:1',
+                  'Current ratio: ${contrastRatio.toStringAsFixed(2)}:1, '
+                  'Required: 4.5:1',
             );
           }
 
@@ -414,8 +415,8 @@ void main() {
               contrastRatio,
               greaterThanOrEqualTo(7.0),
               reason: '${testCase.description} should meet WCAG AAA standards. '
-                     'Current ratio: ${contrastRatio.toStringAsFixed(2)}:1, '
-                     'Required: 7.0:1',
+                  'Current ratio: ${contrastRatio.toStringAsFixed(2)}:1, '
+                  'Required: 7.0:1',
             );
           }
         }
@@ -426,14 +427,14 @@ void main() {
         final chartColorSets = [
           // Standard chart colors (should work for most colorblind types)
           [
-            Colors.blue.shade600,    // Blue - safe for all types
-            Colors.orange.shade600,  // Orange - safe for all types  
-            Colors.green.shade700,   // Dark green - better than light green
-            Colors.red.shade700,     // Dark red - better contrast
-            Colors.purple.shade600,  // Purple - distinguishable
-            Colors.brown.shade600,   // Brown - good alternative
+            Colors.blue.shade600, // Blue - safe for all types
+            Colors.orange.shade600, // Orange - safe for all types
+            Colors.green.shade700, // Dark green - better than light green
+            Colors.red.shade700, // Dark red - better contrast
+            Colors.purple.shade600, // Purple - distinguishable
+            Colors.brown.shade600, // Brown - good alternative
           ],
-          
+
           // Alternative colorblind-friendly palette
           [
             Colors.indigo.shade600,
@@ -446,40 +447,40 @@ void main() {
 
         for (int setIndex = 0; setIndex < chartColorSets.length; setIndex++) {
           final colorSet = chartColorSets[setIndex];
-          
+
           // Test each color against white background for contrast
           for (int i = 0; i < colorSet.length; i++) {
             final contrastRatio = ColorContrastValidator.calculateContrastRatio(
               colorSet[i],
               Colors.white,
             );
-            
+
             expect(
               contrastRatio,
               greaterThanOrEqualTo(3.0), // Minimum for large graphical elements
               reason: 'Chart color set $setIndex, color $i should have sufficient '
-                     'contrast against white background. '
-                     'Current ratio: ${contrastRatio.toStringAsFixed(2)}:1',
+                  'contrast against white background. '
+                  'Current ratio: ${contrastRatio.toStringAsFixed(2)}:1',
             );
           }
-          
+
           // Test color distinction within the set
           // This is a simplified test - real colorblind testing would need specialized algorithms
           for (int i = 0; i < colorSet.length; i++) {
             for (int j = i + 1; j < colorSet.length; j++) {
               final color1 = colorSet[i];
               final color2 = colorSet[j];
-              
+
               // Test that colors are sufficiently different
               final luminance1 = color1.computeLuminance();
               final luminance2 = color2.computeLuminance();
               final luminanceDiff = (luminance1 - luminance2).abs();
-              
+
               expect(
                 luminanceDiff,
                 greaterThan(0.05), // Minimum perceptible difference
                 reason: 'Chart colors in set $setIndex should be distinguishable: '
-                       'Color $i vs Color $j have insufficient luminance difference',
+                    'Color $i vs Color $j have insufficient luminance difference',
               );
             }
           }
@@ -493,19 +494,19 @@ void main() {
             seedColor: Colors.blue,
             brightness: Brightness.light,
           ),
-          
+
           // Standard Material 3 dark
           ColorScheme.fromSeed(
             seedColor: Colors.blue,
             brightness: Brightness.dark,
           ),
-          
+
           // High contrast light
           const ColorScheme.highContrastLight(),
-          
+
           // High contrast dark
           const ColorScheme.highContrastDark(),
-          
+
           // Custom accessible scheme
           ColorContrastValidator.createAccessibleColorScheme(
             primary: Colors.blue,
@@ -516,7 +517,7 @@ void main() {
 
         final schemeNames = [
           'Material 3 Light',
-          'Material 3 Dark', 
+          'Material 3 Dark',
           'High Contrast Light',
           'High Contrast Dark',
           'Custom Accessible',
@@ -525,9 +526,9 @@ void main() {
         for (int i = 0; i < testColorSchemes.length; i++) {
           final scheme = testColorSchemes[i];
           final name = schemeNames[i];
-          
+
           final report = ColorContrastValidator.generateReport(scheme);
-          
+
           // High contrast schemes should have no critical issues
           if (name.contains('High Contrast')) {
             expect(
@@ -535,21 +536,21 @@ void main() {
               equals(0),
               reason: '$name should have no critical accessibility issues',
             );
-            
+
             expect(
               report.overallGrade,
               isIn([AccessibilityGrade.a, AccessibilityGrade.b]),
               reason: '$name should have excellent accessibility grade',
             );
           }
-          
+
           // All schemes should be generally accessible
           expect(
             report.isAccessible,
             isTrue,
             reason: '$name should be marked as accessible',
           );
-          
+
           // No scheme should have excessive issues
           expect(
             report.criticalIssues,
@@ -593,7 +594,7 @@ void main() {
                         subtitle: Text('${task.priority.displayName} priority • ${task.status.displayName}'),
                         trailing: Chip(
                           label: Text(_getPriorityLabel(task.priority)),
-                          backgroundColor: _getPriorityColor(task.priority).withOpacity(0.1),
+                          backgroundColor: _getPriorityColor(task.priority).withValues(alpha: 0.1),
                         ),
                       ),
                     );
@@ -610,7 +611,7 @@ void main() {
         for (final task in testTasks) {
           final taskFinder = find.bySemanticsLabel('Task: ${task.title}');
           expect(taskFinder, findsOneWidget);
-          
+
           final taskSemantics = tester.getSemantics(taskFinder);
           expect(
             taskSemantics.getSemanticsData().hint.contains(task.priority.displayName),
@@ -621,9 +622,9 @@ void main() {
 
         // Test that priority icons are present
         expect(find.byIcon(Icons.keyboard_double_arrow_up), findsAtLeastNWidgets(1)); // Urgent
-        expect(find.byIcon(Icons.keyboard_arrow_up), findsAtLeastNWidgets(1));        // High  
-        expect(find.byIcon(Icons.remove), findsAtLeastNWidgets(1));                  // Medium
-        expect(find.byIcon(Icons.keyboard_arrow_down), findsAtLeastNWidgets(1));     // Low
+        expect(find.byIcon(Icons.keyboard_arrow_up), findsAtLeastNWidgets(1)); // High
+        expect(find.byIcon(Icons.remove), findsAtLeastNWidgets(1)); // Medium
+        expect(find.byIcon(Icons.keyboard_arrow_down), findsAtLeastNWidgets(1)); // Low
 
         // Test priority text labels
         expect(find.text('URGENT'), findsAtLeastNWidgets(1));
@@ -669,7 +670,7 @@ void main() {
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                                 decoration: BoxDecoration(
-                                  color: _getStatusColor(task.status).withOpacity(0.1),
+                                  color: _getStatusColor(task.status).withValues(alpha: 0.1),
                                   border: Border.all(color: _getStatusColor(task.status)),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
@@ -708,8 +709,8 @@ void main() {
 
         // Test status icons are present
         expect(find.byIcon(Icons.radio_button_unchecked), findsAtLeastNWidgets(1)); // To Do
-        expect(find.byIcon(Icons.hourglass_empty), findsAtLeastNWidgets(1));        // In Progress
-        expect(find.byIcon(Icons.check_circle), findsAtLeastNWidgets(1));          // Done
+        expect(find.byIcon(Icons.hourglass_empty), findsAtLeastNWidgets(1)); // In Progress
+        expect(find.byIcon(Icons.check_circle), findsAtLeastNWidgets(1)); // Done
 
         handle.dispose();
       });
@@ -820,11 +821,12 @@ void main() {
                         ),
                       ),
                     ),
-                    
+
                     // Static chart representation
                     Semantics(
                       label: 'Task completion chart',
-                      hint: 'Bar chart showing: Monday 2 tasks, Tuesday 3 tasks, Wednesday 1 task, Thursday 4 tasks, Friday 2 tasks',
+                      hint:
+                          'Bar chart showing: Monday 2 tasks, Tuesday 3 tasks, Wednesday 1 task, Thursday 4 tasks, Friday 2 tasks',
                       child: Container(
                         height: 200,
                         padding: const EdgeInsets.all(16),
@@ -851,7 +853,7 @@ void main() {
 
         // Test static progress indicator accessibility
         expect(find.bySemanticsLabel('Project progress'), findsOneWidget);
-        
+
         final progressSemantics = tester.getSemantics(find.bySemanticsLabel('Project progress'));
         expect(
           progressSemantics.getSemanticsData().hint.contains('60%'),
@@ -861,7 +863,7 @@ void main() {
 
         // Test static chart accessibility
         expect(find.bySemanticsLabel('Task completion chart'), findsOneWidget);
-        
+
         final chartSemantics = tester.getSemantics(find.bySemanticsLabel('Task completion chart'));
         expect(
           chartSemantics.getSemanticsData().hint.contains('Bar chart showing'),

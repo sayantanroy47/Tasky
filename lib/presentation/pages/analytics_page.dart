@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-import '../../core/theme/typography_constants.dart';
 import '../../core/design_system/design_tokens.dart';
+import '../../core/theme/typography_constants.dart';
 import '../../services/analytics/analytics_models.dart';
 import '../providers/analytics_providers.dart';
 import '../widgets/analytics_widgets.dart';
 import '../widgets/glassmorphism_container.dart';
 import '../widgets/standardized_app_bar.dart';
-import '../widgets/standardized_text.dart';
 import '../widgets/standardized_colors.dart';
-import '../widgets/standardized_spacing.dart';
 import '../widgets/standardized_error_states.dart';
+import '../widgets/standardized_spacing.dart';
+import '../widgets/standardized_text.dart';
 import '../widgets/task_heatmap_widget.dart';
 import '../widgets/theme_background_widget.dart';
 import 'detailed_heatmap_page.dart';
@@ -23,7 +23,7 @@ class AnalyticsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return ThemeBackgroundWidget(
-      child: Scaffold(
+        child: Scaffold(
       backgroundColor: Colors.transparent, // TODO: Use context.colors.backgroundTransparent
       extendBodyBehindAppBar: true, // Show phone status bar
       appBar: StandardizedAppBar.withTertiaryAccent(
@@ -35,7 +35,8 @@ class AnalyticsPage extends ConsumerWidget {
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: StandardizedText('Date range selector coming soon!', style: StandardizedTextStyle.bodyMedium),
+                  content:
+                      StandardizedText('Date range selector coming soon!', style: StandardizedTextStyle.bodyMedium),
                   behavior: SnackBarBehavior.floating,
                 ),
               );
@@ -422,7 +423,8 @@ class AnalyticsPageBody extends ConsumerWidget {
       // Show loading indicator
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: StandardizedText('Exporting analytics as ${format.displayName}...', style: StandardizedTextStyle.bodyMedium),
+          content: StandardizedText('Exporting analytics as ${format.displayName}...',
+              style: StandardizedTextStyle.bodyMedium),
           duration: const Duration(seconds: 2),
         ),
       );
@@ -434,7 +436,8 @@ class AnalyticsPageBody extends ConsumerWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: StandardizedText('Analytics exported as ${format.displayName} successfully!', style: StandardizedTextStyle.bodyMedium),
+            content: StandardizedText('Analytics exported as ${format.displayName} successfully!',
+                style: StandardizedTextStyle.bodyMedium),
             backgroundColor: context.successColor,
           ),
         );
@@ -444,7 +447,7 @@ class AnalyticsPageBody extends ConsumerWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: StandardizedText('Export failed: ${e.toString()}', style: StandardizedTextStyle.bodyMedium),
-            backgroundColor: Colors.red, // TODO: Replace with context.colors.error
+            backgroundColor: context.colors.error, // TODO: Replace with context.colors.error
           ),
         );
       }

@@ -1,10 +1,7 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
 
 // Import all theme files
 import '../core/theme/themes/artist_palette_theme.dart';
@@ -243,10 +240,10 @@ class _BackgroundGeneratorScreenState extends State<BackgroundGeneratorScreen> {
   }
 
   Gradient _createThemeGradient(app_theme_data.AppThemeData theme) {
-    final backgroundEffects = theme.effects?.backgroundEffects;
+    final backgroundEffects = theme.effects.backgroundEffects;
     final themeColors = theme.colors;
 
-    if (backgroundEffects != null && backgroundEffects.enableGradientMesh) {
+    if (backgroundEffects.enableGradientMesh) {
       // Use geometric patterns with theme colors
       return _createGeometricGradient(backgroundEffects, themeColors);
     } else {
@@ -279,7 +276,6 @@ class _BackgroundGeneratorScreenState extends State<BackgroundGeneratorScreen> {
       case BackgroundGeometricPattern.diamond:
         return _createDiamondGradient(adjustedColors, config.patternAngle, config.patternDensity);
       case BackgroundGeometricPattern.mesh:
-      default:
         return _createMeshGradient(adjustedColors, config.patternAngle, config.patternDensity);
     }
   }

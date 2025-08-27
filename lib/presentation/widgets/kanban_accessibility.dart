@@ -492,7 +492,6 @@ class KanbanHighContrastSupport {
 
 /// Focus management for Kanban board
 class KanbanFocusManager {
-  static final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
   static FocusNode? _currentFocusNode;
 
   /// Set the current focus node

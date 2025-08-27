@@ -520,43 +520,7 @@ class EnhancedCalendarWidget extends ConsumerWidget {
     return '[EVENT] ${event.title}';
   }
 
-  Widget _buildSelectedDateDetails(
-    BuildContext context,
-    WidgetRef ref,
-    EnhancedCalendarState state,
-  ) {
-    final tasks = state.tasksForSelectedDate;
 
-    if (tasks.isEmpty) {
-      return _buildEmptySelectedDate(context, state.selectedDate, ref);
-    }
-
-    return Container(
-      constraints: const BoxConstraints(maxHeight: 120), // Reduced max height
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Tasks for ${_formatDate(state.selectedDate)}',
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontSize: TypographyConstants.titleMedium,
-                  fontWeight: TypographyConstants.medium,
-                ),
-          ),
-          const SizedBox(height: 8),
-          Expanded(
-            child: ListView.builder(
-              itemCount: tasks.length,
-              itemBuilder: (context, index) {
-                final task = tasks[index];
-                return _buildTaskListItem(context, ref, task);
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildEmptySelectedDate(BuildContext context, DateTime date, WidgetRef ref) {
     return Container(

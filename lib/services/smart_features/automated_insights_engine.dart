@@ -6,21 +6,17 @@ import '../../domain/models/enums.dart';
 import '../../domain/repositories/task_repository.dart';
 import '../../domain/repositories/project_repository.dart';
 import '../analytics/analytics_service.dart';
-import '../analytics/analytics_models.dart';
 
 /// Automated insights engine that recognizes patterns and generates actionable intelligence
 class AutomatedInsightsEngine {
   final TaskRepository _taskRepository;
   final ProjectRepository _projectRepository;
-  final AnalyticsService _analyticsService;
 
   AutomatedInsightsEngine({
     required TaskRepository taskRepository,
     required ProjectRepository projectRepository,
-    required AnalyticsService analyticsService,
   })  : _taskRepository = taskRepository,
-        _projectRepository = projectRepository,
-        _analyticsService = analyticsService;
+        _projectRepository = projectRepository;
 
   /// Generates comprehensive insights across all projects and tasks
   Future<Map<String, dynamic>> generateComprehensiveInsights() async {
@@ -736,7 +732,6 @@ class AutomatedInsightsEngine {
     
     // Add recommendations based on patterns and trends
     final patterns = insights['patterns'] as Map<String, dynamic>? ?? {};
-    final trends = insights['trends'] as Map<String, dynamic>? ?? {};
     
     // Add specific recommendations based on findings
     if (patterns['completion_time_patterns']?['insights'] != null) {

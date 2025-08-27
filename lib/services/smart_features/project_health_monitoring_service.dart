@@ -11,15 +11,12 @@ import '../analytics/analytics_service.dart';
 class ProjectHealthMonitoringService {
   final TaskRepository _taskRepository;
   final ProjectRepository _projectRepository;
-  final AnalyticsService _analyticsService;
 
   ProjectHealthMonitoringService({
     required TaskRepository taskRepository,
     required ProjectRepository projectRepository,
-    required AnalyticsService analyticsService,
   })  : _taskRepository = taskRepository,
-        _projectRepository = projectRepository,
-        _analyticsService = analyticsService;
+        _projectRepository = projectRepository;
 
   /// Analyzes and generates health status for a specific project
   Future<ProjectHealth> analyzeProjectHealth(String projectId) async {

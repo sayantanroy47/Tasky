@@ -25,11 +25,11 @@ class ThemeBackgroundWidget extends ConsumerWidget {
     }
 
     // Generate unique background based on theme's color palette
-    final backgroundEffects = currentTheme.effects?.backgroundEffects;
+    final backgroundEffects = currentTheme.effects.backgroundEffects;
     final themeColors = currentTheme.colors;
     final Gradient gradient;
     
-    if (backgroundEffects != null && backgroundEffects.enableGradientMesh) {
+    if (backgroundEffects.enableGradientMesh) {
       // Use geometric patterns with theme colors
       gradient = _createGeometricGradient(backgroundEffects, themeColors);
     } else {
@@ -84,7 +84,6 @@ class ThemeBackgroundWidget extends ConsumerWidget {
       case BackgroundGeometricPattern.diamond:
         return _createDiamondGradient(adjustedColors, config.patternAngle, config.patternDensity);
       case BackgroundGeometricPattern.mesh:
-      default:
         return _createMeshGradient(adjustedColors, config.patternAngle, config.patternDensity);
     }
   }

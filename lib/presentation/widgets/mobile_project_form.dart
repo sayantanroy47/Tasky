@@ -16,7 +16,6 @@ import 'standardized_text.dart';
 import 'standardized_colors.dart';
 import 'standardized_spacing.dart';
 import 'standardized_form_widgets.dart';
-import '../../core/validation/form_validators.dart';
 
 /// Mobile-optimized project form with gesture support and enhanced UX
 class MobileProjectForm extends ConsumerStatefulWidget {
@@ -52,7 +51,6 @@ class _MobileProjectFormState extends ConsumerState<MobileProjectForm>
   String _selectedColor = '#2196F3';
   DateTime? _selectedDeadline;
   bool _isLoading = false;
-  final bool _showColorPicker = false;
   int _currentStep = 0;
 
   final List<ProjectFormStep> _formSteps = [

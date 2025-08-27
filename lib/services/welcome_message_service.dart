@@ -1,6 +1,4 @@
 import 'dart:math';
-import 'package:flutter/material.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Service for generating dynamic welcome messages and productivity insights
 class WelcomeMessageService {
@@ -17,7 +15,6 @@ class WelcomeMessageService {
       greeting: 'Good Morning!',
       subtitle: 'Ready to start your day?',
       timeOfDay: TimeOfDay.morning,
-      icon: PhosphorIcons.sparkle(),
     ),
     WelcomeMessage(
       greeting: 'Good Morning!',
@@ -39,13 +36,12 @@ class WelcomeMessageService {
       subtitle: 'Your future self will thank you',
       timeOfDay: TimeOfDay.morning,
     ),
-    
+
     // Afternoon energy
     WelcomeMessage(
       greeting: 'Afternoon Focus Mode',
       subtitle: 'Momentum is building!',
       timeOfDay: TimeOfDay.afternoon,
-      icon: PhosphorIcons.rocket(),
     ),
     WelcomeMessage(
       greeting: 'Midday Warrior',
@@ -67,13 +63,12 @@ class WelcomeMessageService {
       subtitle: 'Making progress, one task at a time',
       timeOfDay: TimeOfDay.afternoon,
     ),
-    
+
     // Evening wind-down
     WelcomeMessage(
       greeting: 'Evening Reflection',
       subtitle: 'Planning tomorrow\'s victories',
       timeOfDay: TimeOfDay.evening,
-      icon: PhosphorIcons.sun(),
     ),
     WelcomeMessage(
       greeting: 'Sunset Planning',
@@ -95,13 +90,12 @@ class WelcomeMessageService {
       subtitle: 'Finishing strong and planning ahead',
       timeOfDay: TimeOfDay.evening,
     ),
-    
+
     // Late night/general
     WelcomeMessage(
       greeting: 'Night Owl Mode',
       subtitle: 'Quiet hours, focused mind',
       timeOfDay: TimeOfDay.night,
-      icon: PhosphorIcons.moon(),
     ),
     WelcomeMessage(
       greeting: 'Midnight Planner',
@@ -113,7 +107,7 @@ class WelcomeMessageService {
       subtitle: 'Great ideas don\'t follow schedules',
       timeOfDay: TimeOfDay.night,
     ),
-    
+
     // General (any time)
     WelcomeMessage(
       greeting: 'Hello!',
@@ -124,7 +118,6 @@ class WelcomeMessageService {
       greeting: 'Welcome back',
       subtitle: 'What would you like to work on?',
       timeOfDay: TimeOfDay.any,
-      icon: PhosphorIcons.checkCircle(),
     ),
     WelcomeMessage(
       greeting: 'Let\'s get started',
@@ -148,7 +141,7 @@ class WelcomeMessageService {
     final now = DateTime.now();
     final timeOfDay = _getTimeOfDay(now);
     final displayName = firstName ?? 'there';
-    
+
     // Special cases for first-time users
     if (isFirstTimeUser) {
       return WelcomeMessage(
@@ -157,7 +150,7 @@ class WelcomeMessageService {
         timeOfDay: TimeOfDay.any,
       );
     }
-    
+
     // Use static welcome messages based on time of day
     return _getWelcomeMessageForTimeOfDay(timeOfDay, displayName);
   }
@@ -165,21 +158,19 @@ class WelcomeMessageService {
   /// Get welcome message from static list based on time of day
   WelcomeMessage _getWelcomeMessageForTimeOfDay(TimeOfDay timeOfDay, String displayName) {
     // Filter messages by time of day
-    final filteredMessages = _welcomeMessages.where((message) => 
-      message.timeOfDay == timeOfDay || message.timeOfDay == TimeOfDay.any
-    ).toList();
-    
+    final filteredMessages = _welcomeMessages
+        .where((message) => message.timeOfDay == timeOfDay || message.timeOfDay == TimeOfDay.any)
+        .toList();
+
     // If no messages found for specific time, fall back to 'any' time messages
     if (filteredMessages.isEmpty) {
-      final anyTimeMessages = _welcomeMessages.where((message) => 
-        message.timeOfDay == TimeOfDay.any
-      ).toList();
-      final baseMessage = anyTimeMessages.isNotEmpty 
-        ? anyTimeMessages[_random.nextInt(anyTimeMessages.length)]
-        : _welcomeMessages[_random.nextInt(_welcomeMessages.length)];
+      final anyTimeMessages = _welcomeMessages.where((message) => message.timeOfDay == TimeOfDay.any).toList();
+      final baseMessage = anyTimeMessages.isNotEmpty
+          ? anyTimeMessages[_random.nextInt(anyTimeMessages.length)]
+          : _welcomeMessages[_random.nextInt(_welcomeMessages.length)];
       return _personalizeMessage(baseMessage, displayName);
     }
-    
+
     // Return random personalized message from filtered list
     final baseMessage = filteredMessages[_random.nextInt(filteredMessages.length)];
     return _personalizeMessage(baseMessage, displayName);
@@ -206,12 +197,11 @@ class WelcomeMessageService {
         personalizedGreeting = 'Hello, $displayName';
         break;
     }
-    
+
     return WelcomeMessage(
       greeting: personalizedGreeting,
       subtitle: baseMessage.subtitle,
       timeOfDay: baseMessage.timeOfDay,
-      icon: baseMessage.icon,
     );
   }
 
@@ -224,29 +214,29 @@ class WelcomeMessageService {
     if (totalTasks == 0) {
       return 'No tasks yet. Start by adding your first task!';
     }
-    
+
     if (pendingTasks == 0) {
-      return completedToday > 0 
-        ? 'All done for today! [EMOJI] You completed $completedToday ${completedToday == 1 ? 'task' : 'tasks'}.'
-        : 'All caught up! Time to plan tomorrow.';
+      return completedToday > 0
+          ? 'All done for today! [EMOJI] You completed $completedToday ${completedToday == 1 ? 'task' : 'tasks'}.'
+          : 'All caught up! Time to plan tomorrow.';
     }
-    
+
     if (completedToday > 0) {
       return 'Great progress! $completedToday done, $pendingTasks to go.';
     }
-    
+
     if (pendingTasks == 1) {
       return 'One task awaiting your attention.';
     }
-    
+
     if (pendingTasks <= 3) {
       return '$pendingTasks tasks ready for action.';
     }
-    
+
     if (pendingTasks <= 7) {
       return '$pendingTasks tasks on your plate. You\'ve got this!';
     }
-    
+
     return '$pendingTasks tasks queued. Break them into smaller chunks?';
   }
 
@@ -259,30 +249,30 @@ class WelcomeMessageService {
     if (completedToday > completedYesterday && completedToday > 0) {
       return 'You\'re on fire! ${completedToday - completedYesterday} more than yesterday.';
     }
-    
+
     if (completedToday == completedYesterday && completedToday > 0) {
       return 'Consistent performance! Same pace as yesterday.';
     }
-    
+
     if (topPriorities.isNotEmpty) {
       return 'Focus area: ${topPriorities.first}';
     }
-    
+
     if (completedToday > 5) {
       return 'Productivity champion! $completedToday tasks completed.';
     }
-    
+
     if (completedToday > 0) {
       return 'Steady progress with $completedToday completions.';
     }
-    
+
     return 'Fresh start! Ready to tackle new challenges.';
   }
 
   /// Determine time of day category
   TimeOfDay _getTimeOfDay(DateTime dateTime) {
     final hour = dateTime.hour;
-    
+
     if (hour >= 5 && hour < 12) {
       return TimeOfDay.morning;
     } else if (hour >= 12 && hour < 17) {
@@ -300,13 +290,11 @@ class WelcomeMessage {
   final String greeting;
   final String subtitle;
   final TimeOfDay timeOfDay;
-  final IconData? icon;
-  
+
   WelcomeMessage({
     required this.greeting,
     required this.subtitle,
     required this.timeOfDay,
-    this.icon,
   });
 }
 
@@ -318,5 +306,3 @@ enum TimeOfDay {
   night,
   any, // Can be used at any time
 }
-
-

@@ -11,15 +11,12 @@ import '../ai/composite_ai_task_parser.dart';
 class AIProjectAnalysisService {
   final TaskRepository _taskRepository;
   final ProjectRepository _projectRepository;
-  final CompositeAITaskParser _aiParser;
 
   AIProjectAnalysisService({
     required TaskRepository taskRepository,
     required ProjectRepository projectRepository,
-    required CompositeAITaskParser aiParser,
   })  : _taskRepository = taskRepository,
-        _projectRepository = projectRepository,
-        _aiParser = aiParser;
+        _projectRepository = projectRepository;
 
   /// Analyzes a project and generates AI-powered suggestions
   Future<ProjectAISuggestions> analyzeProject(String projectId) async {
@@ -299,10 +296,6 @@ class AIProjectAnalysisService {
     final tasksWithDuration = tasks.where((t) => t.estimatedDuration != null).toList();
     if (tasksWithDuration.length < 3) return suggestions;
 
-    final totalEstimatedHours = tasksWithDuration
-        .map((t) => t.estimatedDuration!)
-        .reduce((a, b) => a + b) / 60; // Convert to hours
-    
     final remainingTasks = tasksWithDuration.where((t) => !t.status.isCompleted).toList();
     final remainingHours = remainingTasks
         .map((t) => t.estimatedDuration!)
@@ -632,7 +625,6 @@ class AIProjectAnalysisService {
         t.completedAt!.isAfter(DateTime.now().subtract(const Duration(days: 7)))
     ).toList();
 
-    final totalTasks = tasks.length;
     final weeklyVelocity = recentCompletions.length;
     final remainingTasks = tasks.where((t) => !t.status.isCompleted).length;
     

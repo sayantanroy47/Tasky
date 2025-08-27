@@ -311,15 +311,7 @@ class _TaskAudioControlsState extends ConsumerState<TaskAudioControls> {
     );
   }
 
-  bool _isCurrentTaskPlaying() {
-    try {
-      final audioControls = ref.read(audioControlsProvider);
-      return audioControls.isTaskPlaying(widget.taskId);
-    } catch (e) {
-      debugPrint('Error checking task playing status: $e');
-      return false;
-    }
-  }
+
 
   Future<void> _togglePlayback(AudioControls audioControls, bool isCurrentlyPlaying) async {
     try {

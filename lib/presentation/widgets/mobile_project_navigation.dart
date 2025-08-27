@@ -39,8 +39,6 @@ class _MobileProjectNavigationState extends ConsumerState<MobileProjectNavigatio
   late AnimationController _gestureAnimationController;
   
   int _currentViewIndex = 0;
-  final bool _isGestureActive = false;
-  final double _gestureProgress = 0.0;
   
   static const List<ProjectView> _projectViews = [
     ProjectView(

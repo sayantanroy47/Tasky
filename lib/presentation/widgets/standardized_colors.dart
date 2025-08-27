@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../domain/models/enums.dart' show TaskPriority;
 
 /// Standardized color system that eliminates hardcoded color chaos
-/// 
+///
 /// Eliminates Hardcoded Color Violations by:
 /// - Providing semantic color mapping for all contexts
 /// - Preventing usage of Colors.red, Colors.blue, etc.
@@ -16,11 +16,11 @@ class StandardizedColors {
 
   // State-based colors - semantic meaning over hardcoded colors
   Color get success => theme.colorScheme.tertiary; // Green semantic - success states
-  Color get warning => theme.colorScheme.onTertiaryContainer; // Amber semantic - warning states  
+  Color get warning => theme.colorScheme.onTertiaryContainer; // Amber semantic - warning states
   Color get error => theme.colorScheme.error; // Red semantic - error states
   Color get info => theme.colorScheme.primary; // Blue semantic - info states
 
-  // Interactive states  
+  // Interactive states
   Color get interactive => theme.colorScheme.primary;
   Color get interactiveHover => theme.colorScheme.primary.withValues(alpha: 0.8);
   Color get interactivePressed => theme.colorScheme.primary.withValues(alpha: 0.6);
@@ -41,11 +41,12 @@ class StandardizedColors {
   Color get tertiaryActivated => theme.colorScheme.tertiary.withValues(alpha: 0.24);
   Color get tertiarySelected => theme.colorScheme.tertiary.withValues(alpha: 0.16);
   Color get tertiaryDisabled => theme.colorScheme.tertiary.withValues(alpha: 0.38);
-  Color get tertiaryError => Color.lerp(theme.colorScheme.tertiary, theme.colorScheme.error, 0.3) ?? theme.colorScheme.tertiary;
+  Color get tertiaryError =>
+      Color.lerp(theme.colorScheme.tertiary, theme.colorScheme.error, 0.3) ?? theme.colorScheme.tertiary;
 
   // Tertiary semantic variations - alternatives to hardcoded colors
   Color get tertiaryWarning => _adjustColorTone(theme.colorScheme.tertiary, 85); // Amber alternative
-  Color get tertiaryInfo => _adjustColorTone(theme.colorScheme.tertiary, 70);    // Cyan alternative
+  Color get tertiaryInfo => _adjustColorTone(theme.colorScheme.tertiary, 70); // Cyan alternative
   Color get tertiaryNeutral => _adjustColorTone(theme.colorScheme.tertiary, 50); // Grey alternative
 
   // Recording/voice states - semantic alternatives to hardcoded red
@@ -62,16 +63,12 @@ class StandardizedColors {
   Color get overlayHeavy => theme.colorScheme.surface.withValues(alpha: 0.95);
 
   // High contrast alternatives - for accessibility
-  Color get highContrastText => theme.brightness == Brightness.dark 
-      ? Colors.white 
-      : Colors.black;
-  Color get highContrastBackground => theme.brightness == Brightness.dark 
-      ? Colors.black 
-      : Colors.white;
+  Color get highContrastText => theme.brightness == Brightness.dark ? Colors.white : Colors.black;
+  Color get highContrastBackground => theme.brightness == Brightness.dark ? Colors.black : Colors.white;
 
-  // Priority-based colors - semantic task priority mapping  
+  // Priority-based colors - semantic task priority mapping
   Color get priorityCritical => theme.colorScheme.error;
-  Color get priorityHigh => theme.colorScheme.onTertiaryContainer; 
+  Color get priorityHigh => theme.colorScheme.onTertiaryContainer;
   Color get priorityMedium => theme.colorScheme.primary;
   Color get priorityLow => theme.colorScheme.outline;
   Color get priorityNone => theme.colorScheme.onSurfaceVariant;
@@ -88,7 +85,7 @@ class StandardizedColors {
   Color get tertiaryContainer => theme.colorScheme.tertiaryContainer;
   Color get onTertiary => theme.colorScheme.onTertiary;
   Color get onTertiaryContainer => theme.colorScheme.onTertiaryContainer;
-  
+
   // Tertiary variations with opacity
   Color get tertiaryLight => theme.colorScheme.tertiary.withValues(alpha: 0.1);
   Color get tertiaryMedium => theme.colorScheme.tertiary.withValues(alpha: 0.3);
@@ -196,7 +193,7 @@ class StandardizedColors {
     }
   }
 
-  /// Create color with opacity - semantic alternative to hardcoded .withOpacity()
+  /// Create color with opacity - semantic alternative to hardcoded .withValues(alpha:)
   Color withSemanticOpacity(Color base, SemanticOpacity opacity) {
     switch (opacity) {
       case SemanticOpacity.subtle:
@@ -231,13 +228,13 @@ class StandardizedColors {
 /// Extension for easy access to standardized colors
 extension StandardizedColorsExtension on BuildContext {
   StandardizedColors get colors => StandardizedColors(Theme.of(this));
-  
+
   // Quick access to common colors
   Color get successColor => colors.success;
   Color get warningColor => colors.warning;
   Color get errorColor => colors.error;
   Color get infoColor => colors.info;
-  
+
   Color get recordingColor => colors.recordingActive;
   Color get interactiveColor => colors.interactive;
 
@@ -247,39 +244,39 @@ extension StandardizedColorsExtension on BuildContext {
   Color get tertiaryPressedColor => colors.tertiaryInteractivePressed;
   Color get tertiaryFocusColor => colors.tertiaryInteractiveFocus;
   Color get tertiarySelectedColor => colors.tertiaryInteractiveSelected;
-  
+
   // Quick access to tertiary colors
   Color get tertiaryColor => colors.tertiaryBase;
   Color get tertiaryContainerColor => colors.tertiaryContainer;
-  
+
   // Quick access to enhanced tertiary interactive states
   Color get tertiaryFocusedColor => colors.tertiaryFocused;
   Color get tertiaryHoveredColor => colors.tertiaryHovered;
   Color get tertiaryActivatedColor => colors.tertiaryActivated;
   Color get tertiaryDraggedColor => colors.tertiaryDragged;
   Color get tertiaryDisabledColor => colors.tertiaryDisabled;
-  
+
   // Quick access to semantic tertiary variations
   Color get tertiaryWarningColor => colors.tertiaryWarning;
   Color get tertiaryInfoColor => colors.tertiaryInfo;
   Color get tertiaryNeutralColor => colors.tertiaryNeutral;
-  
+
   // Quick access to navigation tertiary colors
   Color get navigationTertiaryColor => colors.navigationTertiary;
   Color get appBarTertiaryColor => colors.appBarTertiary;
   Color get tabBarTertiaryColor => colors.tabBarTertiary;
   Color get bottomNavTertiaryColor => colors.bottomNavTertiary;
-  
+
   // Quick access to component-specific tertiary colors
   Color get fabTertiaryColor => colors.fabTertiary;
   Color get chipTertiaryColor => colors.chipTertiary;
   Color get cardTertiaryAccentColor => colors.cardTertiaryAccent;
   Color get inputTertiaryFocusColor => colors.inputTertiaryFocus;
   Color get buttonTertiaryColor => colors.buttonTertiaryFilled;
-  
+
   /// Get tertiary color by semantic type
   Color getTertiaryColor(TertiaryColorType type) => colors.getTertiaryColor(type);
-  
+
   /// Get appropriate text color for tertiary backgrounds
   Color getTertiaryTextColor(TertiaryColorType type) => colors.getTertiaryTextColor(type);
 }
@@ -287,7 +284,7 @@ extension StandardizedColorsExtension on BuildContext {
 /// Semantic opacity levels instead of hardcoded alpha values
 enum SemanticOpacity {
   subtle, // 0.1 - Very light overlay
-  light,  // 0.3 - Light overlay  
+  light, // 0.3 - Light overlay
   medium, // 0.6 - Medium overlay
   strong, // 0.8 - Strong overlay
   opaque, // 1.0 - Fully opaque
@@ -315,7 +312,7 @@ class StandardizedColorContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = StandardizedColors(Theme.of(context));
-    
+
     Color backgroundColor;
     switch (colorType) {
       case SemanticColorType.success:
@@ -359,31 +356,31 @@ enum SemanticColorType {
 enum TertiaryColorType {
   /// Feature highlights - New features, tips, discoveries
   featureHighlight,
-  
+
   /// Achievement states - Completed goals, streaks, milestones
   achievement,
-  
+
   /// Special categories - VIP tasks, starred items, featured content
   specialCategory,
-  
+
   /// Interactive accents - Hover effects, selection indicators, focus states
   interactiveAccent,
-  
+
   /// Secondary actions - Supporting buttons, secondary FABs
   secondaryAction,
-  
+
   /// Progress indicators - Completion states, milestone markers
   progressIndicator,
-  
+
   /// Card accents - Featured cards, pinned items, important content
   cardAccent,
-  
+
   /// Navigation highlights - Active secondary nav, breadcrumbs
   navigationHighlight,
-  
+
   /// Data visualization - Third-tier categories in charts/analytics
   dataVisualization,
-  
+
   /// Form highlights - Success validation, completion indicators
   formHighlight,
 }

@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:cross_file/cross_file.dart';
 
 import '../../domain/entities/project.dart';
 import '../../domain/entities/task_model.dart';
@@ -25,12 +24,12 @@ class AnalyticsExportService {
     try {
       final data = _buildJsonData(analytics, project, tasks);
       final jsonString = const JsonEncoder.withIndent('  ').convert(data);
-      
-      final fileName = customFileName ?? 
-          'project_analytics_${project.name}_${DateTime.now().millisecondsSinceEpoch}.json';
-      
+
+      final fileName =
+          customFileName ?? 'project_analytics_${project.name}_${DateTime.now().millisecondsSinceEpoch}.json';
+
       final file = await _writeToFile(jsonString, fileName);
-      
+
       return ExportResult(
         success: true,
         fileName: fileName,
@@ -58,12 +57,12 @@ class AnalyticsExportService {
     try {
       final csvOptions = options ?? const CsvExportOptions();
       final csvContent = _buildCsvData(analytics, project, tasks, csvOptions);
-      
-      final fileName = customFileName ?? 
-          'project_analytics_${project.name}_${DateTime.now().millisecondsSinceEpoch}.csv';
-      
+
+      final fileName =
+          customFileName ?? 'project_analytics_${project.name}_${DateTime.now().millisecondsSinceEpoch}.csv';
+
       final file = await _writeToFile(csvContent, fileName);
-      
+
       return ExportResult(
         success: true,
         fileName: fileName,
@@ -89,12 +88,11 @@ class AnalyticsExportService {
   }) async {
     try {
       final textContent = _buildTextReport(analytics, project, tasks);
-      
-      final fileName = customFileName ?? 
-          'project_report_${project.name}_${DateTime.now().millisecondsSinceEpoch}.txt';
-      
+
+      final fileName = customFileName ?? 'project_report_${project.name}_${DateTime.now().millisecondsSinceEpoch}.txt';
+
       final file = await _writeToFile(textContent, fileName);
-      
+
       return ExportResult(
         success: true,
         fileName: fileName,
@@ -121,7 +119,7 @@ class AnalyticsExportService {
       throw Exception('Cannot share unsuccessful export result');
     }
 
-    await Share.shareXFiles(
+    await SharePlus.instance.shareXFiles(
       [XFile(exportResult.filePath!)],
       subject: subject ?? 'Project Analytics Report',
       text: text ?? 'Analytics report for project exported from Tasky',
@@ -135,45 +133,51 @@ class AnalyticsExportService {
     bool includeCharts = false,
   }) {
     final buffer = StringBuffer();
-    
+
     buffer.writeln('Project Analytics Summary');
     buffer.writeln('=' * 30);
     buffer.writeln();
-    
+
     buffer.writeln('Project: ${project.name}');
     if (project.description?.isNotEmpty == true) {
       buffer.writeln('Description: ${project.description}');
     }
     buffer.writeln('Report Date: ${DateTime.now().toIso8601String().split('T')[0]}');
-    buffer.writeln('Period: ${analytics.period.name} (${_formatDate(analytics.startDate)} to ${_formatDate(analytics.endDate)})');
+    buffer.writeln(
+        'Period: ${analytics.period.name} (${_formatDate(analytics.startDate)} to ${_formatDate(analytics.endDate)})');
     buffer.writeln();
-    
+
     // Basic statistics
     buffer.writeln('📊 Key Metrics:');
     buffer.writeln('• Total Tasks: ${analytics.basicStats.totalTasks}');
-    buffer.writeln('• Completed: ${analytics.basicStats.completedTasks} (${(analytics.basicStats.completionPercentage * 100).toStringAsFixed(1)}%)');
+    buffer.writeln(
+        '• Completed: ${analytics.basicStats.completedTasks} (${(analytics.basicStats.completionPercentage * 100).toStringAsFixed(1)}%)');
     buffer.writeln('• In Progress: ${analytics.basicStats.inProgressTasks}');
     buffer.writeln('• Pending: ${analytics.basicStats.pendingTasks}');
     if (analytics.basicStats.overdueTasks > 0) {
       buffer.writeln('• ⚠️ Overdue: ${analytics.basicStats.overdueTasks}');
     }
     buffer.writeln();
-    
+
     // Health score
     buffer.writeln('🏥 Project Health Score: ${(analytics.healthScore * 100).toStringAsFixed(1)}%');
-    final healthStatus = analytics.healthScore >= 0.8 ? 'Excellent' :
-                        analytics.healthScore >= 0.6 ? 'Good' :
-                        analytics.healthScore >= 0.4 ? 'Fair' : 'Needs Attention';
+    final healthStatus = analytics.healthScore >= 0.8
+        ? 'Excellent'
+        : analytics.healthScore >= 0.6
+            ? 'Good'
+            : analytics.healthScore >= 0.4
+                ? 'Fair'
+                : 'Needs Attention';
     buffer.writeln('Status: $healthStatus');
     buffer.writeln();
-    
+
     // Velocity
     buffer.writeln('🚀 Velocity Metrics:');
     buffer.writeln('• Average Tasks/Day: ${analytics.velocityData.averageTasksPerDay.toStringAsFixed(1)}');
     buffer.writeln('• Average Tasks/Week: ${analytics.velocityData.averageTasksPerWeek.toStringAsFixed(1)}');
     buffer.writeln('• Trend: ${analytics.velocityData.trend.name}');
     buffer.writeln();
-    
+
     // Risk indicators
     if (analytics.riskData.riskLevel > 0.3) {
       buffer.writeln('⚠️ Risk Indicators:');
@@ -186,14 +190,16 @@ class AnalyticsExportService {
       buffer.writeln('• Overall Risk Level: ${(analytics.riskData.riskLevel * 100).toStringAsFixed(1)}%');
       buffer.writeln();
     }
-    
+
     // Performance
     buffer.writeln('📈 Performance Metrics:');
-    buffer.writeln('• On-time Completion Rate: ${(analytics.performanceData.onTimeCompletionRate * 100).toStringAsFixed(1)}%');
-    buffer.writeln('• Estimation Accuracy: ${(analytics.performanceData.estimationAccuracy * 100).toStringAsFixed(1)}%');
+    buffer.writeln(
+        '• On-time Completion Rate: ${(analytics.performanceData.onTimeCompletionRate * 100).toStringAsFixed(1)}%');
+    buffer
+        .writeln('• Estimation Accuracy: ${(analytics.performanceData.estimationAccuracy * 100).toStringAsFixed(1)}%');
     buffer.writeln('• Avg Completion Time: ${_formatDuration(analytics.performanceData.averageCompletionTime)}');
     buffer.writeln();
-    
+
     // Predicted completion
     if (analytics.predictedCompletionDate != null) {
       buffer.writeln('🎯 Predicted Completion: ${_formatDate(analytics.predictedCompletionDate!)}');
@@ -209,7 +215,7 @@ class AnalyticsExportService {
       }
       buffer.writeln();
     }
-    
+
     // Bottlenecks
     if (analytics.performanceData.bottlenecks.isNotEmpty) {
       buffer.writeln('🚧 Identified Bottlenecks:');
@@ -219,9 +225,9 @@ class AnalyticsExportService {
       }
       buffer.writeln();
     }
-    
+
     buffer.writeln('Generated by Tasky Analytics');
-    
+
     return buffer.toString();
   }
 
@@ -295,11 +301,12 @@ class AnalyticsExportService {
     CsvExportOptions options,
   ) {
     final buffer = StringBuffer();
-    
+
     if (options.includeTaskList) {
       // Task list CSV
-      buffer.writeln('Task ID,Title,Status,Priority,Created Date,Due Date,Completed Date,Estimated Duration,Actual Duration,Tags,Is Overdue');
-      
+      buffer.writeln(
+          'Task ID,Title,Status,Priority,Created Date,Due Date,Completed Date,Estimated Duration,Actual Duration,Tags,Is Overdue');
+
       for (final task in tasks) {
         final fields = [
           task.id,
@@ -316,14 +323,14 @@ class AnalyticsExportService {
         ];
         buffer.writeln(fields.join(','));
       }
-      
+
       buffer.writeln(); // Empty line separator
     }
-    
+
     if (options.includeMetrics) {
       // Metrics CSV
       buffer.writeln('Metric,Value,Unit');
-      
+
       final metrics = [
         ['Total Tasks', analytics.basicStats.totalTasks.toString(), 'count'],
         ['Completed Tasks', analytics.basicStats.completedTasks.toString(), 'count'],
@@ -337,12 +344,12 @@ class AnalyticsExportService {
         ['Estimation Accuracy', (analytics.performanceData.estimationAccuracy * 100).toStringAsFixed(2), '%'],
         ['Risk Level', (analytics.riskData.riskLevel * 100).toStringAsFixed(2), '%'],
       ];
-      
+
       for (final metric in metrics) {
         buffer.writeln(metric.join(','));
       }
     }
-    
+
     return buffer.toString();
   }
 
@@ -352,11 +359,11 @@ class AnalyticsExportService {
     List<TaskModel> tasks,
   ) {
     final buffer = StringBuffer();
-    
+
     buffer.writeln('PROJECT ANALYTICS REPORT');
     buffer.writeln('=' * 50);
     buffer.writeln();
-    
+
     // Project information
     buffer.writeln('PROJECT INFORMATION');
     buffer.writeln('-' * 20);
@@ -372,12 +379,13 @@ class AnalyticsExportService {
     buffer.writeln('Analysis Period: ${analytics.period.name}');
     buffer.writeln('From: ${_formatDate(analytics.startDate)} To: ${_formatDate(analytics.endDate)}');
     buffer.writeln();
-    
+
     // Summary statistics
     buffer.writeln('SUMMARY STATISTICS');
     buffer.writeln('-' * 20);
     buffer.writeln('Total Tasks: ${analytics.basicStats.totalTasks}');
-    buffer.writeln('Completed: ${analytics.basicStats.completedTasks} (${(analytics.basicStats.completionPercentage * 100).toStringAsFixed(1)}%)');
+    buffer.writeln(
+        'Completed: ${analytics.basicStats.completedTasks} (${(analytics.basicStats.completionPercentage * 100).toStringAsFixed(1)}%)');
     buffer.writeln('In Progress: ${analytics.basicStats.inProgressTasks}');
     buffer.writeln('Pending: ${analytics.basicStats.pendingTasks}');
     buffer.writeln('Cancelled: ${analytics.basicStats.cancelledTasks}');
@@ -385,18 +393,22 @@ class AnalyticsExportService {
     buffer.writeln('Due Today: ${analytics.basicStats.dueTodayTasks}');
     buffer.writeln('Due Soon: ${analytics.basicStats.dueSoonTasks}');
     buffer.writeln();
-    
+
     // Health and risk
     buffer.writeln('PROJECT HEALTH');
     buffer.writeln('-' * 20);
     buffer.writeln('Health Score: ${(analytics.healthScore * 100).toStringAsFixed(1)}%');
-    final healthStatus = analytics.healthScore >= 0.8 ? 'EXCELLENT' :
-                        analytics.healthScore >= 0.6 ? 'GOOD' :
-                        analytics.healthScore >= 0.4 ? 'FAIR' : 'NEEDS ATTENTION';
+    final healthStatus = analytics.healthScore >= 0.8
+        ? 'EXCELLENT'
+        : analytics.healthScore >= 0.6
+            ? 'GOOD'
+            : analytics.healthScore >= 0.4
+                ? 'FAIR'
+                : 'NEEDS ATTENTION';
     buffer.writeln('Status: $healthStatus');
     buffer.writeln('Risk Level: ${(analytics.riskData.riskLevel * 100).toStringAsFixed(1)}%');
     buffer.writeln();
-    
+
     // Velocity and performance
     buffer.writeln('VELOCITY & PERFORMANCE');
     buffer.writeln('-' * 20);
@@ -407,28 +419,28 @@ class AnalyticsExportService {
     buffer.writeln('Estimation Accuracy: ${(analytics.performanceData.estimationAccuracy * 100).toStringAsFixed(1)}%');
     buffer.writeln('Avg Completion Time: ${_formatDuration(analytics.performanceData.averageCompletionTime)}');
     buffer.writeln();
-    
+
     // Priority distribution
     buffer.writeln('TASK DISTRIBUTION');
     buffer.writeln('-' * 20);
     buffer.writeln('By Priority:');
     for (final entry in analytics.distributionData.byPriority.entries) {
-      final percentage = analytics.distributionData.totalTasks > 0 
+      final percentage = analytics.distributionData.totalTasks > 0
           ? (entry.value / analytics.distributionData.totalTasks * 100).toStringAsFixed(1)
           : '0.0';
       buffer.writeln('  ${entry.key.name.toUpperCase()}: ${entry.value} ($percentage%)');
     }
     buffer.writeln();
-    
+
     buffer.writeln('By Status:');
     for (final entry in analytics.distributionData.byStatus.entries) {
-      final percentage = analytics.distributionData.totalTasks > 0 
+      final percentage = analytics.distributionData.totalTasks > 0
           ? (entry.value / analytics.distributionData.totalTasks * 100).toStringAsFixed(1)
           : '0.0';
       buffer.writeln('  ${entry.key.name.toUpperCase()}: ${entry.value} ($percentage%)');
     }
     buffer.writeln();
-    
+
     // Milestones
     if (analytics.milestoneData.totalMilestones > 0) {
       buffer.writeln('MILESTONES');
@@ -438,7 +450,7 @@ class AnalyticsExportService {
       buffer.writeln('Upcoming: ${analytics.milestoneData.upcomingMilestones}');
       buffer.writeln();
     }
-    
+
     // Bottlenecks
     if (analytics.performanceData.bottlenecks.isNotEmpty) {
       buffer.writeln('IDENTIFIED BOTTLENECKS');
@@ -448,13 +460,13 @@ class AnalyticsExportService {
       }
       buffer.writeln();
     }
-    
+
     // Predictions
     if (analytics.predictedCompletionDate != null) {
       buffer.writeln('PREDICTIONS');
       buffer.writeln('-' * 20);
       buffer.writeln('Predicted Completion: ${_formatDate(analytics.predictedCompletionDate!)}');
-      
+
       if (project.deadline != null) {
         final daysFromDeadline = analytics.predictedCompletionDate!.difference(project.deadline!).inDays;
         if (daysFromDeadline > 0) {
@@ -467,11 +479,11 @@ class AnalyticsExportService {
       }
       buffer.writeln();
     }
-    
+
     buffer.writeln('=' * 50);
     buffer.writeln('Report generated by Tasky Analytics System');
     buffer.writeln('Generated at: ${DateTime.now().toIso8601String()}');
-    
+
     return buffer.toString();
   }
 
@@ -504,93 +516,93 @@ class AnalyticsExportService {
 
   // Helper methods to convert objects to maps for JSON export
   Map<String, dynamic> _statsToMap(ProjectStats stats) => {
-    'totalTasks': stats.totalTasks,
-    'completedTasks': stats.completedTasks,
-    'inProgressTasks': stats.inProgressTasks,
-    'pendingTasks': stats.pendingTasks,
-    'cancelledTasks': stats.cancelledTasks,
-    'overdueTasks': stats.overdueTasks,
-    'dueTodayTasks': stats.dueTodayTasks,
-    'dueSoonTasks': stats.dueSoonTasks,
-    'highPriorityTasks': stats.highPriorityTasks,
-    'mediumPriorityTasks': stats.mediumPriorityTasks,
-    'lowPriorityTasks': stats.lowPriorityTasks,
-    'totalEstimatedTime': stats.totalEstimatedTime,
-    'totalActualTime': stats.totalActualTime,
-    'completionPercentage': stats.completionPercentage,
-  };
+        'totalTasks': stats.totalTasks,
+        'completedTasks': stats.completedTasks,
+        'inProgressTasks': stats.inProgressTasks,
+        'pendingTasks': stats.pendingTasks,
+        'cancelledTasks': stats.cancelledTasks,
+        'overdueTasks': stats.overdueTasks,
+        'dueTodayTasks': stats.dueTodayTasks,
+        'dueSoonTasks': stats.dueSoonTasks,
+        'highPriorityTasks': stats.highPriorityTasks,
+        'mediumPriorityTasks': stats.mediumPriorityTasks,
+        'lowPriorityTasks': stats.lowPriorityTasks,
+        'totalEstimatedTime': stats.totalEstimatedTime,
+        'totalActualTime': stats.totalActualTime,
+        'completionPercentage': stats.completionPercentage,
+      };
 
   Map<String, dynamic> _bottleneckToMap(Bottleneck bottleneck) => {
-    'type': bottleneck.type.name,
-    'description': bottleneck.description,
-    'affectedTasks': bottleneck.affectedTasks,
-    'severity': bottleneck.severity.name,
-  };
+        'type': bottleneck.type.name,
+        'description': bottleneck.description,
+        'affectedTasks': bottleneck.affectedTasks,
+        'severity': bottleneck.severity.name,
+      };
 
   Map<String, dynamic> _trendToMap(ProductivityTrend trend) => {
-    'period': trend.period,
-    'tasksCompleted': trend.tasksCompleted,
-    'date': trend.date.toIso8601String(),
-  };
+        'period': trend.period,
+        'tasksCompleted': trend.tasksCompleted,
+        'date': trend.date.toIso8601String(),
+      };
 
   Map<String, dynamic> _weeklyVelocityToMap(WeeklyVelocity velocity) => {
-    'weekStart': velocity.weekStart.toIso8601String(),
-    'tasksCompleted': velocity.tasksCompleted,
-    'velocity': velocity.velocity,
-  };
+        'weekStart': velocity.weekStart.toIso8601String(),
+        'tasksCompleted': velocity.tasksCompleted,
+        'velocity': velocity.velocity,
+      };
 
   Map<String, dynamic> _milestoneToMap(MilestoneData milestone) => {
-    'taskId': milestone.taskId,
-    'title': milestone.title,
-    'dueDate': milestone.dueDate?.toIso8601String(),
-    'status': milestone.status.name,
-    'priority': milestone.priority.name,
-    'isCompleted': milestone.isCompleted,
-    'isOverdue': milestone.isOverdue,
-    'dependentTasks': milestone.dependentTasks,
-  };
+        'taskId': milestone.taskId,
+        'title': milestone.title,
+        'dueDate': milestone.dueDate?.toIso8601String(),
+        'status': milestone.status.name,
+        'priority': milestone.priority.name,
+        'isCompleted': milestone.isCompleted,
+        'isOverdue': milestone.isOverdue,
+        'dependentTasks': milestone.dependentTasks,
+      };
 
   Map<String, dynamic> _progressPointToMap(ProgressPoint point) => {
-    'date': point.date.toIso8601String(),
-    'completedTasks': point.completedTasks,
-    'totalTasks': point.totalTasks,
-    'completionPercentage': point.completionPercentage,
-    'velocity': point.velocity,
-  };
+        'date': point.date.toIso8601String(),
+        'completedTasks': point.completedTasks,
+        'totalTasks': point.totalTasks,
+        'completionPercentage': point.completionPercentage,
+        'velocity': point.velocity,
+      };
 
   Map<String, dynamic> _burndownPointToMap(BurndownPoint point) => {
-    'date': point.date.toIso8601String(),
-    'remainingWork': point.remainingWork,
-    'idealBurndown': point.idealBurndown,
-  };
+        'date': point.date.toIso8601String(),
+        'remainingWork': point.remainingWork,
+        'idealBurndown': point.idealBurndown,
+      };
 
   Map<String, dynamic> _cumulativeFlowToMap(CumulativeFlowPoint point) => {
-    'date': point.date.toIso8601String(),
-    'pendingTasks': point.pendingTasks,
-    'inProgressTasks': point.inProgressTasks,
-    'completedTasks': point.completedTasks,
-  };
+        'date': point.date.toIso8601String(),
+        'pendingTasks': point.pendingTasks,
+        'inProgressTasks': point.inProgressTasks,
+        'completedTasks': point.completedTasks,
+      };
 
   Map<String, dynamic> _taskToMap(TaskModel task) => {
-    'id': task.id,
-    'title': task.title,
-    'description': task.description,
-    'createdAt': task.createdAt.toIso8601String(),
-    'updatedAt': task.updatedAt?.toIso8601String(),
-    'dueDate': task.dueDate?.toIso8601String(),
-    'completedAt': task.completedAt?.toIso8601String(),
-    'priority': task.priority.name,
-    'status': task.status.name,
-    'tags': task.tags,
-    'locationTrigger': task.locationTrigger,
-    'projectId': task.projectId,
-    'dependencies': task.dependencies,
-    'metadata': task.metadata,
-    'isPinned': task.isPinned,
-    'estimatedDuration': task.estimatedDuration,
-    'actualDuration': task.actualDuration,
-    'isOverdue': task.isOverdue,
-  };
+        'id': task.id,
+        'title': task.title,
+        'description': task.description,
+        'createdAt': task.createdAt.toIso8601String(),
+        'updatedAt': task.updatedAt?.toIso8601String(),
+        'dueDate': task.dueDate?.toIso8601String(),
+        'completedAt': task.completedAt?.toIso8601String(),
+        'priority': task.priority.name,
+        'status': task.status.name,
+        'tags': task.tags,
+        'locationTrigger': task.locationTrigger,
+        'projectId': task.projectId,
+        'dependencies': task.dependencies,
+        'metadata': task.metadata,
+        'isPinned': task.isPinned,
+        'estimatedDuration': task.estimatedDuration,
+        'actualDuration': task.actualDuration,
+        'isOverdue': task.isOverdue,
+      };
 }
 
 /// Result of an export operation
@@ -611,7 +623,6 @@ class ExportResult {
     this.error,
   });
 }
-
 
 /// Configuration options for CSV export
 class CsvExportOptions {

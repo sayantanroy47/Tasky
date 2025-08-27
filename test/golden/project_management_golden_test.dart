@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:golden_toolkit/golden_toolkit.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-
 import 'package:task_tracker_app/core/theme/app_theme_data.dart';
-import 'package:task_tracker_app/domain/models/enums.dart';
+import 'package:task_tracker_app/core/theme/theme_factory.dart';
 import 'package:task_tracker_app/core/theme/themes/dracula_ide_theme.dart';
 import 'package:task_tracker_app/core/theme/themes/matrix_theme.dart';
 import 'package:task_tracker_app/core/theme/themes/vegeta_blue_theme.dart';
-import 'package:task_tracker_app/core/theme/theme_factory.dart';
 import 'package:task_tracker_app/domain/entities/project.dart';
 import 'package:task_tracker_app/domain/entities/task_model.dart';
-import 'package:task_tracker_app/presentation/widgets/project_card.dart';
+import 'package:task_tracker_app/domain/models/enums.dart';
 import 'package:task_tracker_app/presentation/widgets/glassmorphism_container.dart';
+import 'package:task_tracker_app/presentation/widgets/project_card.dart';
 
 import '../mocks/mock_providers.dart';
 import '../test_helpers/test_data_helper.dart';
@@ -46,7 +45,7 @@ void main() {
     testGoldens('Project Cards - All Theme Variations', (tester) async {
       for (final theme in allThemes) {
         final themeData = ThemeFactory.createFlutterTheme(theme);
-        
+
         await tester.pumpWidgetBuilder(
           _ProjectCardShowcase(projects: testProjects.take(3).toList()),
           wrapper: (child) => ProviderScope(
@@ -65,17 +64,14 @@ void main() {
           surfaceSize: const Size(400, 800),
         );
 
-        await screenMatchesGolden(
-          tester, 
-          'project_cards_${theme.metadata.id.toLowerCase()}'
-        );
+        await screenMatchesGolden(tester, 'project_cards_${theme.metadata.id.toLowerCase()}');
       }
     });
 
     testGoldens('Project Form Dialog - Theme Variations', (tester) async {
       for (final theme in allThemes) {
         final themeData = ThemeFactory.createFlutterTheme(theme);
-        
+
         await tester.pumpWidgetBuilder(
           _ProjectFormShowcase(),
           wrapper: (child) => ProviderScope(
@@ -91,17 +87,14 @@ void main() {
           surfaceSize: const Size(400, 600),
         );
 
-        await screenMatchesGolden(
-          tester, 
-          'project_form_${theme.metadata.id.toLowerCase()}'
-        );
+        await screenMatchesGolden(tester, 'project_form_${theme.metadata.id.toLowerCase()}');
       }
     });
 
     testGoldens('Kanban Board - Theme Variations', (tester) async {
       for (final theme in allThemes) {
         final themeData = ThemeFactory.createFlutterTheme(theme);
-        
+
         await tester.pumpWidgetBuilder(
           _KanbanBoardShowcase(tasks: testTasks),
           wrapper: (child) => ProviderScope(
@@ -120,17 +113,14 @@ void main() {
           surfaceSize: const Size(800, 600),
         );
 
-        await screenMatchesGolden(
-          tester, 
-          'kanban_board_${theme.metadata.id.toLowerCase()}'
-        );
+        await screenMatchesGolden(tester, 'kanban_board_${theme.metadata.id.toLowerCase()}');
       }
     });
 
     testGoldens('Analytics Dashboard - Theme Variations', (tester) async {
       for (final theme in allThemes) {
         final themeData = ThemeFactory.createFlutterTheme(theme);
-        
+
         await tester.pumpWidgetBuilder(
           _AnalyticsDashboardShowcase(),
           wrapper: (child) => ProviderScope(
@@ -149,17 +139,14 @@ void main() {
           surfaceSize: const Size(400, 800),
         );
 
-        await screenMatchesGolden(
-          tester, 
-          'analytics_dashboard_${theme.metadata.id.toLowerCase()}'
-        );
+        await screenMatchesGolden(tester, 'analytics_dashboard_${theme.metadata.id.toLowerCase()}');
       }
     });
 
     testGoldens('Task Heatmap - Theme Variations', (tester) async {
       for (final theme in allThemes) {
         final themeData = ThemeFactory.createFlutterTheme(theme);
-        
+
         await tester.pumpWidgetBuilder(
           _TaskHeatmapShowcase(),
           wrapper: (child) => ProviderScope(
@@ -175,17 +162,14 @@ void main() {
           surfaceSize: const Size(600, 400),
         );
 
-        await screenMatchesGolden(
-          tester, 
-          'task_heatmap_${theme.metadata.id.toLowerCase()}'
-        );
+        await screenMatchesGolden(tester, 'task_heatmap_${theme.metadata.id.toLowerCase()}');
       }
     });
 
     testGoldens('Glassmorphism Effects - Theme Consistency', (tester) async {
       for (final theme in allThemes) {
         final themeData = ThemeFactory.createFlutterTheme(theme);
-        
+
         await tester.pumpWidgetBuilder(
           _GlassmorphismShowcase(),
           wrapper: (child) => MaterialApp(
@@ -198,8 +182,8 @@ void main() {
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      themeData.colorScheme.primary.withOpacity(0.1),
-                      themeData.colorScheme.secondary.withOpacity(0.1),
+                      themeData.colorScheme.primary.withValues(alpha:0.1),
+                      themeData.colorScheme.secondary.withValues(alpha:0.1),
                     ],
                   ),
                 ),
@@ -210,17 +194,14 @@ void main() {
           surfaceSize: const Size(400, 600),
         );
 
-        await screenMatchesGolden(
-          tester, 
-          'glassmorphism_effects_${theme.metadata.id.toLowerCase()}'
-        );
+        await screenMatchesGolden(tester, 'glassmorphism_effects_${theme.metadata.id.toLowerCase()}');
       }
     });
 
     testGoldens('Phosphor Icons - Theme Consistency', (tester) async {
       for (final theme in allThemes) {
         final themeData = ThemeFactory.createFlutterTheme(theme);
-        
+
         await tester.pumpWidgetBuilder(
           _PhosphorIconsShowcase(),
           wrapper: (child) => MaterialApp(
@@ -233,17 +214,14 @@ void main() {
           surfaceSize: const Size(400, 600),
         );
 
-        await screenMatchesGolden(
-          tester, 
-          'phosphor_icons_${theme.metadata.id.toLowerCase()}'
-        );
+        await screenMatchesGolden(tester, 'phosphor_icons_${theme.metadata.id.toLowerCase()}');
       }
     });
 
     testGoldens('Responsive Design - Mobile', (tester) async {
       final theme = allThemes.first; // Test with one theme for responsiveness
       final themeData = ThemeFactory.createFlutterTheme(theme);
-      
+
       await tester.pumpWidgetBuilder(
         _ResponsiveProjectShowcase(projects: testProjects.take(2).toList()),
         wrapper: (child) => ProviderScope(
@@ -265,7 +243,7 @@ void main() {
     testGoldens('Responsive Design - Tablet', (tester) async {
       final theme = allThemes.first;
       final themeData = ThemeFactory.createFlutterTheme(theme);
-      
+
       await tester.pumpWidgetBuilder(
         _ResponsiveProjectShowcase(projects: testProjects.take(4).toList()),
         wrapper: (child) => ProviderScope(
@@ -287,7 +265,7 @@ void main() {
     testGoldens('Responsive Design - Desktop', (tester) async {
       final theme = allThemes.first;
       final themeData = ThemeFactory.createFlutterTheme(theme);
-      
+
       await tester.pumpWidgetBuilder(
         _ResponsiveProjectShowcase(projects: testProjects),
         wrapper: (child) => ProviderScope(
@@ -311,7 +289,7 @@ void main() {
       for (final theme in allThemes) {
         final themeData = ThemeFactory.createFlutterTheme(theme);
         final highContrastTheme = _createHighContrastTheme(themeData);
-        
+
         await tester.pumpWidgetBuilder(
           _AccessibilityTestShowcase(projects: testProjects.take(2).toList()),
           wrapper: (child) => ProviderScope(
@@ -327,17 +305,14 @@ void main() {
           surfaceSize: const Size(400, 600),
         );
 
-        await screenMatchesGolden(
-          tester, 
-          'high_contrast_${theme.metadata.id.toLowerCase()}'
-        );
+        await screenMatchesGolden(tester, 'high_contrast_${theme.metadata.id.toLowerCase()}');
       }
     });
 
     testGoldens('Large Text Accessibility', (tester) async {
       final theme = allThemes.first;
       final themeData = ThemeFactory.createFlutterTheme(theme);
-      
+
       await tester.pumpWidgetBuilder(
         _AccessibilityTestShowcase(projects: testProjects.take(2).toList()),
         wrapper: (child) => MediaQuery(
@@ -383,14 +358,14 @@ class _ProjectCardShowcase extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           ...projects.map((project) => Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: ProjectCard(
-              project: project,
-              onTap: () {},
-              onEdit: () {},
-              onDelete: () {},
-            ),
-          )),
+                padding: const EdgeInsets.only(bottom: 12),
+                child: ProjectCard(
+                  project: project,
+                  onTap: () {},
+                  onEdit: () {},
+                  onDelete: () {},
+                ),
+              )),
         ],
       ),
     );
@@ -524,50 +499,50 @@ class _KanbanBoardShowcase extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           ...tasks.take(3).map((task) => Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      task.title,
-                      style: Theme.of(context).textTheme.bodyLarge,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    if (task.description?.isNotEmpty == true) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        task.description!,
-                        style: Theme.of(context).textTheme.bodySmall,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                    const SizedBox(height: 8),
-                    Row(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(
-                          _getTaskPriorityIcon(task.priority),
-                          size: 16,
-                          color: _getTaskPriorityColor(context, task.priority),
-                        ),
-                        const Spacer(),
-                        Icon(PhosphorIcons.clock(), size: 14),
-                        const SizedBox(width: 4),
                         Text(
-                          '2h',
-                          style: Theme.of(context).textTheme.bodySmall,
+                          task.title,
+                          style: Theme.of(context).textTheme.bodyLarge,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        if (task.description?.isNotEmpty == true) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            task.description!,
+                            style: Theme.of(context).textTheme.bodySmall,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Icon(
+                              _getTaskPriorityIcon(task.priority),
+                              size: 16,
+                              color: _getTaskPriorityColor(context, task.priority),
+                            ),
+                            const Spacer(),
+                            Icon(PhosphorIcons.clock(), size: 14),
+                            const SizedBox(width: 4),
+                            Text(
+                              '2h',
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-          )),
+              )),
         ],
       ),
     );
@@ -644,8 +619,8 @@ class _AnalyticsDashboardShowcase extends StatelessWidget {
                           begin: Alignment.bottomCenter,
                           end: Alignment.topCenter,
                           colors: [
-                            Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                            Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                            Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                            Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
                           ],
                         ),
                         borderRadius: BorderRadius.circular(8),
@@ -703,8 +678,8 @@ class _AnalyticsDashboardShowcase extends StatelessWidget {
                 Text(
                   value,
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
               ],
             ),
@@ -777,10 +752,10 @@ class _TaskHeatmapShowcase extends StatelessWidget {
                   final intensity = (index % 5) / 4; // Mock data
                   return Container(
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary.withOpacity(intensity),
+                      color: Theme.of(context).colorScheme.primary.withValues(alpha:intensity),
                       borderRadius: BorderRadius.circular(4),
                       border: Border.all(
-                        color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                        color: Theme.of(context).colorScheme.outline.withValues(alpha:0.3),
                       ),
                     ),
                   );
@@ -796,18 +771,20 @@ class _TaskHeatmapShowcase extends StatelessWidget {
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
                 Row(
-                  children: List.generate(5, (index) => Container(
-                    width: 12,
-                    height: 12,
-                    margin: const EdgeInsets.symmetric(horizontal: 2),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.primary.withOpacity(index / 4),
-                      borderRadius: BorderRadius.circular(2),
-                      border: Border.all(
-                        color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
-                      ),
-                    ),
-                  )),
+                  children: List.generate(
+                      5,
+                      (index) => Container(
+                            width: 12,
+                            height: 12,
+                            margin: const EdgeInsets.symmetric(horizontal: 2),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.primary.withValues(alpha:index / 4),
+                              borderRadius: BorderRadius.circular(2),
+                              border: Border.all(
+                                color: Theme.of(context).colorScheme.outline.withValues(alpha:0.3),
+                              ),
+                            ),
+                          )),
                 ),
                 Text(
                   'More',
@@ -936,23 +913,25 @@ class _PhosphorIconsShowcase extends StatelessWidget {
             crossAxisCount: 4,
             crossAxisSpacing: 16,
             mainAxisSpacing: 16,
-            children: icons.map((icon) => Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(icon, size: 32),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Icon',
-                      style: Theme.of(context).textTheme.bodySmall,
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
-            )).toList(),
+            children: icons
+                .map((icon) => Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(icon, size: 32),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Icon',
+                              style: Theme.of(context).textTheme.bodySmall,
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ))
+                .toList(),
           ),
         ],
       ),
@@ -1016,12 +995,12 @@ class _ResponsiveProjectShowcase extends StatelessWidget {
           ] else ...[
             // Mobile: Single column
             ...projects.map((project) => Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: ProjectCard(
-                project: project,
-                onTap: () {},
-              ),
-            )),
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: ProjectCard(
+                    project: project,
+                    onTap: () {},
+                  ),
+                )),
           ],
         ],
       ),
@@ -1084,12 +1063,12 @@ class _AccessibilityTestShowcase extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           ...projects.take(2).map((project) => Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: ProjectCard(
-              project: project,
-              onTap: () {},
-            ),
-          )),
+                padding: const EdgeInsets.only(bottom: 8),
+                child: ProjectCard(
+                  project: project,
+                  onTap: () {},
+                ),
+              )),
         ],
       ),
     );

@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import 'package:flutter_test/flutter_test.dart';
 import 'package:task_tracker_app/core/accessibility/color_contrast_validator.dart';
 import 'package:task_tracker_app/domain/entities/project.dart';
 import 'package:task_tracker_app/domain/entities/task_model.dart';
-import 'package:task_tracker_app/domain/entities/timeline_milestone.dart';
 import 'package:task_tracker_app/domain/entities/timeline_dependency.dart';
+import 'package:task_tracker_app/domain/entities/timeline_milestone.dart';
 import 'package:task_tracker_app/domain/models/enums.dart';
 import 'package:task_tracker_app/presentation/widgets/timeline/timeline_gantt_view.dart';
 
@@ -113,8 +112,8 @@ void main() {
         final timelineSemantics = tester.getSemantics(timelineFinder);
         expect(
           timelineSemantics.getSemanticsData().label.toLowerCase().contains('timeline') == true ||
-          timelineSemantics.getSemanticsData().label.toLowerCase().contains('gantt') == true ||
-          timelineSemantics.getSemanticsData().hint.toLowerCase().contains('timeline') == true,
+              timelineSemantics.getSemanticsData().label.toLowerCase().contains('gantt') == true ||
+              timelineSemantics.getSemanticsData().hint.toLowerCase().contains('timeline') == true,
           isTrue,
           reason: 'Timeline should have semantic label identifying it as a timeline or Gantt chart',
         );
@@ -122,7 +121,7 @@ void main() {
         // Test that timeline is marked as a chart/data visualization
         expect(
           timelineSemantics.getSemanticsData().hasFlag(SemanticsFlag.isImage) ||
-          timelineSemantics.getSemanticsData().label.toLowerCase().contains('chart') == true,
+              timelineSemantics.getSemanticsData().label.toLowerCase().contains('chart') == true,
           isTrue,
           reason: 'Timeline should be semantically identified as a data visualization',
         );
@@ -144,10 +143,11 @@ void main() {
                         children: [
                           Expanded(
                             child: Semantics(
-                              label: 'Timeline header showing dates from ${DateTime.now().toString().substring(0, 10)} to ${DateTime.now().add(const Duration(days: 30)).toString().substring(0, 10)}',
+                              label:
+                                  'Timeline header showing dates from ${DateTime.now().toString().substring(0, 10)} to ${DateTime.now().add(const Duration(days: 30)).toString().substring(0, 10)}',
                               hint: 'Time scale with daily intervals',
                               child: Container(
-                                color: Colors.grey.withOpacity(0.1),
+                                color: Colors.grey.withValues(alpha: 0.1),
                                 child: Row(
                                   children: List.generate(7, (index) {
                                     final date = DateTime.now().add(Duration(days: index));
@@ -207,10 +207,10 @@ void main() {
                   children: testTasks.map((task) {
                     return Semantics(
                       label: 'Task: ${task.title}',
-                      hint: 'Duration: ${task.dueDate != null ? 
-                        '${task.dueDate!.difference(task.createdAt).inDays} days' : 'No duration set'}, '
-                        'Priority: ${task.priority.displayName}, '
-                        'Status: ${task.status.displayName}',
+                      hint:
+                          'Duration: ${task.dueDate != null ? '${task.dueDate!.difference(task.createdAt).inDays} days' : 'No duration set'}, '
+                          'Priority: ${task.priority.displayName}, '
+                          'Status: ${task.status.displayName}',
                       button: true,
                       onTap: () {},
                       child: Container(
@@ -235,7 +235,7 @@ void main() {
                               child: Container(
                                 height: 20,
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.3),
+                                  color: Colors.white.withValues(alpha: 0.3),
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                               ),
@@ -292,8 +292,8 @@ void main() {
                     return Semantics(
                       label: 'Milestone: ${milestone.title}',
                       hint: '${milestone.description}, '
-                        'Due: ${milestone.date.toString().substring(0, 10)}, '
-                        '${milestone.isCompleted ? 'Completed' : 'Pending'}',
+                          'Due: ${milestone.date.toString().substring(0, 10)}, '
+                          '${milestone.isCompleted ? 'Completed' : 'Pending'}',
                       button: true,
                       onTap: () {},
                       child: Container(
@@ -303,9 +303,7 @@ void main() {
                         decoration: BoxDecoration(
                           color: Color(int.parse(milestone.color.replaceAll('#', '0xFF'))),
                           borderRadius: BorderRadius.circular(20),
-                          border: milestone.isCompleted
-                              ? Border.all(color: Colors.green, width: 2)
-                              : null,
+                          border: milestone.isCompleted ? Border.all(color: Colors.green, width: 2) : null,
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -425,8 +423,7 @@ void main() {
                           DropdownButton<String>(
                             value: 'Days',
                             hint: const Text('Time scale'),
-                            items: ['Hours', 'Days', 'Weeks', 'Months']
-                                .map((String value) {
+                            items: ['Hours', 'Days', 'Weeks', 'Months'].map((String value) {
                               return DropdownMenuItem<String>(
                                 value: value,
                                 child: Text(value),
@@ -587,10 +584,10 @@ void main() {
                     Semantics(
                       label: 'Timeline data summary',
                       hint: 'Project contains ${testTasks.length} tasks over ${testTasks.length * 7} days. '
-                        '${testTasks.where((t) => t.status == TaskStatus.completed).length} tasks completed, '
-                        '${testTasks.where((t) => t.status == TaskStatus.inProgress).length} in progress, '
-                        '${testTasks.where((t) => t.status == TaskStatus.pending).length} remaining. '
-                        '${testMilestones.length} milestones: ${testMilestones.where((m) => m.isCompleted).length} completed.',
+                          '${testTasks.where((t) => t.status == TaskStatus.completed).length} tasks completed, '
+                          '${testTasks.where((t) => t.status == TaskStatus.inProgress).length} in progress, '
+                          '${testTasks.where((t) => t.status == TaskStatus.pending).length} remaining. '
+                          '${testMilestones.length} milestones: ${testMilestones.where((m) => m.isCompleted).length} completed.',
                       child: Container(
                         padding: const EdgeInsets.all(16),
                         child: Column(
@@ -601,7 +598,8 @@ void main() {
                               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                             ),
                             Text('${testTasks.length} tasks • ${testMilestones.length} milestones'),
-                            Text('${testTasks.where((t) => t.status == TaskStatus.completed).length}/${testTasks.length} completed'),
+                            Text(
+                                '${testTasks.where((t) => t.status == TaskStatus.completed).length}/${testTasks.length} completed'),
                           ],
                         ),
                       ),
@@ -646,7 +644,7 @@ void main() {
                   children: testDependencies.map((dependency) {
                     final fromTask = testTasks.firstWhere((t) => t.id == dependency.prerequisiteTaskId);
                     final toTask = testTasks.firstWhere((t) => t.id == dependency.dependentTaskId);
-                    
+
                     return Semantics(
                       label: 'Task dependency',
                       hint: '${fromTask.title} must ${_getDependencyDescription(dependency.type)} ${toTask.title}',
@@ -655,7 +653,7 @@ void main() {
                         margin: const EdgeInsets.symmetric(vertical: 4),
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         decoration: BoxDecoration(
-                          color: Colors.blue.withOpacity(0.1),
+                          color: Colors.blue.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(color: Colors.blue),
                         ),
@@ -668,7 +666,7 @@ void main() {
                             ),
                             Chip(
                               label: Text(_getDependencyTypeLabel(dependency.type)),
-                              backgroundColor: Colors.blue.withOpacity(0.2),
+                              backgroundColor: Colors.blue.withValues(alpha: 0.2),
                             ),
                           ],
                         ),
@@ -705,11 +703,11 @@ void main() {
           (Colors.red.shade700, Colors.white, 'High priority task'),
           (Colors.orange.shade600, Colors.white, 'Medium priority task'),
           (Colors.green.shade600, Colors.white, 'Low priority task'),
-          
+
           // Timeline grid and text
           (Colors.black87, Colors.white, 'Timeline text'),
           (Colors.grey.shade600, Colors.white, 'Timeline grid lines'),
-          
+
           // Milestone colors
           (Colors.blue.shade700, Colors.white, 'Milestone text'),
           (Colors.purple.shade600, Colors.white, 'Milestone background'),
@@ -725,7 +723,7 @@ void main() {
             contrastRatio,
             greaterThanOrEqualTo(4.5),
             reason: '$description should meet WCAG AA contrast requirements. '
-                   'Current ratio: ${contrastRatio.toStringAsFixed(2)}:1',
+                'Current ratio: ${contrastRatio.toStringAsFixed(2)}:1',
           );
         }
       });
@@ -758,7 +756,7 @@ void main() {
         final timelineSemantics = tester.getSemantics(find.byType(TimelineGanttView));
         expect(
           timelineSemantics.getSemanticsData().label.isNotEmpty == true ||
-          timelineSemantics.getSemanticsData().hint.isNotEmpty == true,
+              timelineSemantics.getSemanticsData().hint.isNotEmpty == true,
           isTrue,
         );
 
@@ -803,7 +801,7 @@ void main() {
           final timelineSemantics = tester.getSemantics(find.byType(TimelineGanttView));
           expect(
             timelineSemantics.getSemanticsData().label.isNotEmpty == true ||
-            timelineSemantics.getSemanticsData().hint.isNotEmpty == true,
+                timelineSemantics.getSemanticsData().hint.isNotEmpty == true,
             isTrue,
             reason: 'Timeline should maintain semantic information at ${scale}x text scale',
           );
@@ -891,10 +889,7 @@ Color _getPriorityColor(TaskPriority priority) {
 }
 
 String _getMonthName(int month) {
-  const months = [
-    '', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-  ];
+  const months = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   return months[month];
 }
 
@@ -926,7 +921,9 @@ String _getDependencyTypeLabel(DependencyType type) {
 
 // Intent classes for keyboard shortcuts
 class _ZoomInIntent extends Intent {}
-class _ZoomOutIntent extends Intent {}
-class _PanLeftIntent extends Intent {}
-class _PanRightIntent extends Intent {}
 
+class _ZoomOutIntent extends Intent {}
+
+class _PanLeftIntent extends Intent {}
+
+class _PanRightIntent extends Intent {}

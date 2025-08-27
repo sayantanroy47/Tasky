@@ -42,7 +42,6 @@ class _MobileZoomableTimelineState extends ConsumerState<MobileZoomableTimeline>
   late AnimationController _loadingAnimationController;
   
   double _currentScale = 1.0;
-  final Offset _currentOffset = Offset.zero;
   DateTime _viewportStart = DateTime.now().subtract(const Duration(days: 30));
   DateTime _viewportEnd = DateTime.now().add(const Duration(days: 30));
   

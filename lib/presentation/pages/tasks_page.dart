@@ -10,20 +10,26 @@ import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
 import '../providers/task_provider.dart';
 import '../providers/task_providers.dart';
-import '../widgets/advanced_task_card.dart';
+import '../providers/tag_providers.dart';
 import '../widgets/custom_dialogs.dart';
 import '../widgets/glassmorphism_container.dart';
 import '../widgets/loading_error_widgets.dart' as loading_widgets;
-import '../widgets/manual_task_creation_dialog.dart';
+
 import '../widgets/simple_theme_toggle.dart';
 import '../widgets/standardized_app_bar.dart';
-import '../widgets/standardized_fab.dart';
 import '../widgets/standardized_text.dart';
+import '../widgets/standardized_card.dart';
+import '../widgets/audio_indicator_widget.dart';
+import '../widgets/tag_chip.dart';
 import '../widgets/task_form_dialog.dart';
 import '../widgets/theme_background_widget.dart';
 import '../widgets/standardized_colors.dart';
 import '../widgets/standardized_spacing.dart';
-import 'voice_recording_page.dart';
+import '../widgets/standardized_border_radius.dart';
+import '../../core/utils/category_utils.dart';
+
+import 'package:flutter_slidable/flutter_slidable.dart';
+
 
 class TasksPage extends ConsumerWidget {
   const TasksPage({super.key});
@@ -56,11 +62,6 @@ class TasksPage extends ConsumerWidget {
             child: TasksPageBody(),
           ),
         ),
-        floatingActionButton: StandardizedFABVariants.create(
-          onPressed: () => _showTaskCreationMenu(context),
-          heroTag: 'tasksFAB',
-          isLarge: true,
-        ),
       ),
     );
   }
@@ -73,153 +74,7 @@ class TasksPage extends ConsumerWidget {
   }
 
 
-  /// Show task creation options menu
-  void _showTaskCreationMenu(BuildContext context) {
-    final theme = Theme.of(context);
 
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: context.colors.backgroundTransparent,
-      isScrollControlled: true,
-      builder: (context) => GlassmorphismContainer(
-        level: GlassLevel.floating,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-        margin: EdgeInsets.zero,
-        child: SafeArea(
-          child: Padding(
-            padding: StandardizedSpacing.padding(SpacingSize.lg),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header
-                const StandardizedText(
-                  'Create New Task',
-                  style: StandardizedTextStyle.headlineSmall,
-                ),
-                StandardizedGaps.vertical(SpacingSize.sm),
-                StandardizedText(
-                  'Choose how you\'d like to create your task',
-                  style: StandardizedTextStyle.bodyMedium,
-                  color: context.colors.withSemanticOpacity(
-                    Theme.of(context).colorScheme.onSurface,
-                    SemanticOpacity.strong,
-                  ),
-                ),
-                StandardizedGaps.lg,
-
-                // Task Creation Options
-                _buildTaskCreationOption(
-                  context: context,
-                  icon: PhosphorIcons.microphone(),
-                  iconColor: theme.colorScheme.primary,
-                  title: 'AI Voice Entry',
-                  subtitle: 'Speak your task, we\'ll transcribe it',
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const VoiceRecordingPage(),
-                      ),
-                    );
-                  },
-                ),
-
-                StandardizedGaps.md,
-
-                _buildTaskCreationOption(
-                  context: context,
-                  icon: PhosphorIcons.pencil(),
-                  iconColor: context.colors.success,
-                  title: 'Manual Entry',
-                  subtitle: 'Type your task details manually',
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const ManualTaskCreationDialog(),
-                      ),
-                    );
-                  },
-                ),
-
-                StandardizedGaps.md,
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  /// Build task creation option tile
-  Widget _buildTaskCreationOption({
-    required BuildContext context,
-    required IconData icon,
-    required Color iconColor,
-    required String title,
-    required String subtitle,
-    required VoidCallback onTap,
-  }) {
-    final theme = Theme.of(context);
-
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge), // 16.0 - Fixed border radius hierarchy
-      child: GlassmorphismContainer(
-        level: GlassLevel.interactive,
-        padding: StandardizedSpacing.padding(SpacingSize.md),
-        borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge), // 16.0 - Fixed border radius hierarchy
-        child: Row(
-          children: [
-            GlassmorphismContainer(
-              level: GlassLevel.interactive,
-              width: 48,
-              height: 48,
-              borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium), // 12.0 - Fixed border radius hierarchy
-              glassTint: iconColor.withValues(alpha: 0.15),
-              child: Icon(
-                icon,
-                color: iconColor,
-                size: 24,
-              ),
-            ),
-            StandardizedGaps.md,
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  StandardizedText(
-                    title,
-                    style: StandardizedTextStyle.titleMedium,
-                  ),
-                  StandardizedGaps.vertical(SpacingSize.xs),
-                  StandardizedText(
-                    subtitle,
-                    style: StandardizedTextStyle.bodySmall,
-                    color: context.colors.withSemanticOpacity(
-                      theme.colorScheme.onSurface,
-                      SemanticOpacity.strong,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Icon(
-              PhosphorIcons.caretRight(),
-              size: 16,
-              color: context.colors.withSemanticOpacity(
-                Theme.of(context).colorScheme.onSurface,
-                SemanticOpacity.strong,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }
 
 class TasksPageBody extends ConsumerWidget {
@@ -603,21 +458,198 @@ class _TaskList extends ConsumerWidget {
       return const _EmptyTaskList();
     }
 
+    final theme = Theme.of(context);
     return Column(
       children: tasks
-          .map((task) => AdvancedTaskCard(
-                task: task,
-                onTap: () => _navigateToTaskDetail(context, task.id),
-                onEdit: () => _editTask(context, task),
-                onDelete: () => _deleteTask(context, ref, task),
-                showProgress: true,
-                showSubtasks: task.subTasks.isNotEmpty,
-                style: TaskCardStyle.elevated,
-                margin: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
-              ))
+          .map((task) => _buildCompactTaskCard(task, theme, ref, context))
           .toList(),
     );
   }
+
+  /// Reuse exact same compact task card from home screen for consistency
+  Widget _buildCompactTaskCard(TaskModel task, ThemeData theme, WidgetRef ref, BuildContext context, {bool isOverdue = false}) {
+    // Simplified actions to avoid context issues
+    final endActions = [
+      SlidableAction(
+        onPressed: (_) => _editTask(context, task),
+        backgroundColor: theme.colorScheme.primary,
+        foregroundColor: Colors.white,
+        icon: PhosphorIcons.pencil(),
+        label: 'Edit',
+      ),
+      SlidableAction(
+        onPressed: (_) => _deleteTask(context, ref, task),
+        backgroundColor: theme.colorScheme.error,
+        foregroundColor: Colors.white,
+        icon: PhosphorIcons.trash(),
+        label: 'Delete',
+      ),
+    ];
+
+    // Choose card style based on task state for enhanced visual hierarchy
+    final cardStyle = _getTaskCardStyle(task, isOverdue);
+
+    final cardContent = SizedBox(
+      height: SpacingTokens.taskCardHeight, // Golden ratio optimized height
+      child: StandardizedCard(
+        style: cardStyle,
+        onTap: () => _navigateToTaskDetail(context, task.id),
+        onLongPress: () => _showTaskContextMenu(context, task),
+        margin: EdgeInsets.zero, // No margin - handled by parent
+        padding: const EdgeInsets.all(SpacingTokens.taskCardPadding),
+        child: Row(
+          children: [
+            // Sophisticated priority and category indicator
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Priority indicator first - Elegant vertical accent bar
+                Container(
+                  width: 4,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: task.priority.color,
+                    borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall),
+                  ),
+                ),
+                const SizedBox(width: SpacingTokens.phi1), // Golden ratio spacing
+                // Category icon container second
+                if (task.tagIds.isNotEmpty) ...[
+                  CategoryUtils.buildCategoryIconContainer(
+                    category: task.tagIds.first,
+                    size: 32,
+                    theme: theme,
+                    iconSizeRatio: 0.5,
+                    borderRadius: 16, // Half of size (32/2) for circular design
+                  ),
+                  const SizedBox(width: SpacingTokens.phi1), // Golden ratio spacing
+                ],
+              ],
+            ),
+
+            // Title and tags in the middle (takes up most space)
+            Expanded(
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Title row with audio indicator
+                    Row(
+                      children: [
+                        Expanded(
+                          child: StandardizedText(
+                            task.title,
+                            style: StandardizedTextStyle.labelLarge,
+                            color: theme.colorScheme.onSurface,
+                            decoration: task.status == TaskStatus.completed ? TextDecoration.lineThrough : null,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        // Sophisticated audio indicator for voice tasks
+                        if (task.metadata.containsKey('audioPath') && 
+                            task.metadata['audioPath'] != null &&
+                            (task.metadata['audioPath'] as String).isNotEmpty) ...[
+                          StandardizedGaps.horizontal(SpacingSize.xs),
+                          AudioIndicatorWidget(
+                            task: task,
+                            size: 20,
+                            mode: AudioIndicatorMode.playButton,
+                          ),
+                        ],
+                      ],
+                    ),
+                    // Tag chips row
+                    if (task.tagIds.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Consumer(
+                        builder: (context, ref, child) {
+                          final tagsProvider = ref.watch(tagsByIdsProvider(task.tagIds));
+                          return tagsProvider.when(
+                            data: (tags) => TagChipList(
+                              tags: tags,
+                              chipSize: TagChipSize.small,
+                              maxChips: 4, // More tags for horizontal layout
+                              spacing: 3.0,
+                              onTagTap: (_) {}, // No action on tap for tasks cards
+                            ),
+                            loading: () => const SizedBox(
+                              height: 16,
+                              child: Row(
+                                children: [
+                                  SizedBox(
+                                    width: 12,
+                                    height: 12,
+                                    child: CircularProgressIndicator(strokeWidth: 1),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            error: (_, __) => const SizedBox.shrink(),
+                          );
+                        },
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+
+            // Sophisticated completion indicator on the right
+            if (task.status == TaskStatus.completed) ...[
+              const SizedBox(width: 16), // 16px spacing
+              Container(
+                width: 20,
+                height: 20,
+                decoration: BoxDecoration(
+                  color: context.colors.withSemanticOpacity(context.successColor, SemanticOpacity.subtle),
+                  borderRadius: StandardizedBorderRadius.sm,
+                  border: Border.all(
+                    color: context.colors.withSemanticOpacity(context.successColor, SemanticOpacity.light),
+                    width: 0.5,
+                  ),
+                ),
+                child: Icon(
+                  PhosphorIcons.check(),
+                  size: 12,
+                  color: context.successColor,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: SpacingTokens.taskCardMargin),
+      child: Slidable(
+        key: ValueKey('compact-task-${task.id}'),
+        endActionPane: ActionPane(
+          motion: const ScrollMotion(),
+          children: endActions,
+        ),
+        child: cardContent,
+      ),
+    );
+  }
+
+  /// Get appropriate tertiary card style based on task state
+  StandardizedCardStyle _getTaskCardStyle(TaskModel task, bool isOverdue) {
+    if (task.isCompleted) {
+      return StandardizedCardStyle.tertiarySuccess; // Completed tasks get success styling
+    } else if (isOverdue) {
+      return StandardizedCardStyle.tertiaryAccent; // Overdue tasks get attention-grabbing accent
+    } else if (task.priority == TaskPriority.urgent) {
+      return StandardizedCardStyle.tertiaryAccent; // High priority tasks get accent
+    } else {
+      return StandardizedCardStyle.tertiaryContainer; // Regular tasks get subtle container
+    }
+  }
+
+
 
   void _navigateToTaskDetail(BuildContext context, String taskId) {
     Navigator.of(context).pushNamed(
@@ -631,6 +663,25 @@ class _TaskList extends ConsumerWidget {
       MaterialPageRoute(
         builder: (context) => TaskFormDialog(task: task),
         fullscreenDialog: true,
+      ),
+    );
+  }
+
+
+
+  void _showTaskContextMenu(BuildContext context, TaskModel task) {
+    // Show context menu with quick actions
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(task.title),
+        content: const Text('Quick actions for this task'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
       ),
     );
   }
@@ -656,6 +707,10 @@ class _TaskList extends ConsumerWidget {
       ),
     );
   }
+
+
+
+
 }
 
 class _EmptyTaskList extends StatelessWidget {

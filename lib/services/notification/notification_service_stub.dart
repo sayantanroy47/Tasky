@@ -101,12 +101,23 @@ class NotificationServiceStub implements NotificationService {
     // No-op for stub
   }
 
-  Future<void> scheduleNotification({
-    required int id,
+  @override
+  Future<int?> scheduleNotification({
+    required TaskModel task,
+    required DateTime scheduledTime,
+    Duration? customReminder,
+  }) async {
+    // No-op for stub
+    return null;
+  }
+
+  @override
+  Future<void> showNotification({
     required String title,
     required String body,
-    required DateTime scheduledTime,
-    String? payload,
+    String? taskId,
+    NotificationTypeModel type = NotificationTypeModel.taskReminder,
+    Map<String, dynamic>? payload,
   }) async {
     // No-op for stub
   }

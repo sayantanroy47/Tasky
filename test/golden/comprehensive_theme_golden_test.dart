@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:golden_toolkit/golden_toolkit.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-
 import 'package:task_tracker_app/core/theme/app_theme_data.dart';
+import 'package:task_tracker_app/core/theme/theme_factory.dart';
 import 'package:task_tracker_app/core/theme/themes/dracula_ide_theme.dart';
 import 'package:task_tracker_app/core/theme/themes/matrix_theme.dart';
 import 'package:task_tracker_app/core/theme/themes/vegeta_blue_theme.dart';
-import 'package:task_tracker_app/core/theme/theme_factory.dart';
 import 'package:task_tracker_app/presentation/widgets/glassmorphism_container.dart';
 import 'package:task_tracker_app/presentation/widgets/project_card.dart';
 
@@ -36,7 +35,7 @@ void main() {
     testGoldens('Material 3 Components - All Themes', (tester) async {
       for (final theme in allThemes) {
         final themeData = ThemeFactory.createFlutterTheme(theme);
-        
+
         await tester.pumpWidgetBuilder(
           _Material3ComponentShowcase(),
           wrapper: (child) => MaterialApp(
@@ -52,17 +51,14 @@ void main() {
           surfaceSize: const Size(400, 1000),
         );
 
-        await screenMatchesGolden(
-          tester, 
-          'material3_components_${theme.metadata.id.toLowerCase()}'
-        );
+        await screenMatchesGolden(tester, 'material3_components_${theme.metadata.id.toLowerCase()}');
       }
     });
 
     testGoldens('Glassmorphism Effects - All Themes', (tester) async {
       for (final theme in allThemes) {
         final themeData = ThemeFactory.createFlutterTheme(theme);
-        
+
         await tester.pumpWidgetBuilder(
           _GlassmorphismEffectShowcase(),
           wrapper: (child) => MaterialApp(
@@ -74,10 +70,10 @@ void main() {
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      themeData.colorScheme.primary.withOpacity(0.1),
-                      themeData.colorScheme.secondary.withOpacity(0.1),
-                      themeData.colorScheme.tertiary.withOpacity(0.1) ?? 
-                        themeData.colorScheme.primary.withOpacity(0.1),
+                      themeData.colorScheme.primary.withValues(alpha: 0.1),
+                      themeData.colorScheme.secondary.withValues(alpha: 0.1),
+                      themeData.colorScheme.tertiary.withValues(alpha: 0.1) ??
+                          themeData.colorScheme.primary.withValues(alpha: 0.1),
                     ],
                   ),
                 ),
@@ -88,17 +84,14 @@ void main() {
           surfaceSize: const Size(400, 600),
         );
 
-        await screenMatchesGolden(
-          tester, 
-          'glassmorphism_effects_${theme.metadata.id.toLowerCase()}'
-        );
+        await screenMatchesGolden(tester, 'glassmorphism_effects_${theme.metadata.id.toLowerCase()}');
       }
     });
 
     testGoldens('Phosphor Icons - All Themes', (tester) async {
       for (final theme in allThemes) {
         final themeData = ThemeFactory.createFlutterTheme(theme);
-        
+
         await tester.pumpWidgetBuilder(
           _PhosphorIconsShowcase(),
           wrapper: (child) => MaterialApp(
@@ -114,10 +107,7 @@ void main() {
           surfaceSize: const Size(400, 800),
         );
 
-        await screenMatchesGolden(
-          tester, 
-          'phosphor_icons_${theme.metadata.id.toLowerCase()}'
-        );
+        await screenMatchesGolden(tester, 'phosphor_icons_${theme.metadata.id.toLowerCase()}');
       }
     });
 
@@ -125,7 +115,7 @@ void main() {
       for (final theme in allThemes) {
         final themeData = ThemeFactory.createFlutterTheme(theme);
         final projects = TestDataHelper.createTestProjects();
-        
+
         await tester.pumpWidgetBuilder(
           _ProjectManagementWidgetShowcase(projects: projects.take(2).toList()),
           wrapper: (child) => ProviderScope(
@@ -144,17 +134,14 @@ void main() {
           surfaceSize: const Size(400, 900),
         );
 
-        await screenMatchesGolden(
-          tester, 
-          'project_widgets_${theme.metadata.id.toLowerCase()}'
-        );
+        await screenMatchesGolden(tester, 'project_widgets_${theme.metadata.id.toLowerCase()}');
       }
     });
 
     testGoldens('Color Scheme Showcase - All Themes', (tester) async {
       for (final theme in allThemes) {
         final themeData = ThemeFactory.createFlutterTheme(theme);
-        
+
         await tester.pumpWidgetBuilder(
           _ColorSchemeShowcase(),
           wrapper: (child) => MaterialApp(
@@ -170,17 +157,14 @@ void main() {
           surfaceSize: const Size(400, 700),
         );
 
-        await screenMatchesGolden(
-          tester, 
-          'color_scheme_${theme.metadata.id.toLowerCase()}'
-        );
+        await screenMatchesGolden(tester, 'color_scheme_${theme.metadata.id.toLowerCase()}');
       }
     });
 
     testGoldens('Typography Showcase - All Themes', (tester) async {
       for (final theme in allThemes) {
         final themeData = ThemeFactory.createFlutterTheme(theme);
-        
+
         await tester.pumpWidgetBuilder(
           _TypographyShowcase(),
           wrapper: (child) => MaterialApp(
@@ -196,17 +180,14 @@ void main() {
           surfaceSize: const Size(400, 800),
         );
 
-        await screenMatchesGolden(
-          tester, 
-          'typography_${theme.metadata.id.toLowerCase()}'
-        );
+        await screenMatchesGolden(tester, 'typography_${theme.metadata.id.toLowerCase()}');
       }
     });
 
     testGoldens('Form Elements - All Themes', (tester) async {
       for (final theme in allThemes) {
         final themeData = ThemeFactory.createFlutterTheme(theme);
-        
+
         await tester.pumpWidgetBuilder(
           _FormElementsShowcase(),
           wrapper: (child) => MaterialApp(
@@ -222,17 +203,14 @@ void main() {
           surfaceSize: const Size(400, 1000),
         );
 
-        await screenMatchesGolden(
-          tester, 
-          'form_elements_${theme.metadata.id.toLowerCase()}'
-        );
+        await screenMatchesGolden(tester, 'form_elements_${theme.metadata.id.toLowerCase()}');
       }
     });
 
     testGoldens('Navigation Components - All Themes', (tester) async {
       for (final theme in allThemes) {
         final themeData = ThemeFactory.createFlutterTheme(theme);
-        
+
         await tester.pumpWidgetBuilder(
           _NavigationComponentsShowcase(),
           wrapper: (child) => MaterialApp(
@@ -245,10 +223,7 @@ void main() {
           surfaceSize: const Size(400, 600),
         );
 
-        await screenMatchesGolden(
-          tester, 
-          'navigation_components_${theme.metadata.id.toLowerCase()}'
-        );
+        await screenMatchesGolden(tester, 'navigation_components_${theme.metadata.id.toLowerCase()}');
       }
     });
 
@@ -272,7 +247,7 @@ void main() {
       for (final entry in themeGroups.entries) {
         final themeName = entry.key;
         final themes = entry.value;
-        
+
         await tester.pumpWidgetBuilder(
           _ThemeComparisonShowcase(
             lightTheme: ThemeFactory.createFlutterTheme(themes[0]),
@@ -282,18 +257,16 @@ void main() {
           surfaceSize: const Size(800, 600),
         );
 
-        await screenMatchesGolden(
-          tester, 
-          'theme_comparison_$themeName'
-        );
+        await screenMatchesGolden(tester, 'theme_comparison_$themeName');
       }
     });
 
     testGoldens('Accessibility Features - High Contrast', (tester) async {
-      for (final theme in allThemes.take(2)) { // Test with 2 themes for variety
+      for (final theme in allThemes.take(2)) {
+        // Test with 2 themes for variety
         final baseThemeData = ThemeFactory.createFlutterTheme(theme);
         final highContrastTheme = _createHighContrastTheme(baseThemeData);
-        
+
         await tester.pumpWidgetBuilder(
           _AccessibilityFeaturesShowcase(),
           wrapper: (child) => MaterialApp(
@@ -309,17 +282,14 @@ void main() {
           surfaceSize: const Size(400, 800),
         );
 
-        await screenMatchesGolden(
-          tester, 
-          'accessibility_high_contrast_${theme.metadata.id.toLowerCase()}'
-        );
+        await screenMatchesGolden(tester, 'accessibility_high_contrast_${theme.metadata.id.toLowerCase()}');
       }
     });
 
     testGoldens('Responsive Breakpoints', (tester) async {
       final theme = allThemes.first;
       final themeData = ThemeFactory.createFlutterTheme(theme);
-      
+
       final breakpoints = [
         {'name': 'mobile', 'size': const Size(360, 640)},
         {'name': 'mobile_large', 'size': const Size(414, 896)},
@@ -342,10 +312,7 @@ void main() {
           surfaceSize: breakpoint['size'] as Size,
         );
 
-        await screenMatchesGolden(
-          tester, 
-          'responsive_${breakpoint['name']}'
-        );
+        await screenMatchesGolden(tester, 'responsive_${breakpoint['name']}');
       }
     });
   });
@@ -364,7 +331,7 @@ class _Material3ComponentShowcase extends StatelessWidget {
           style: Theme.of(context).textTheme.headlineMedium,
         ),
         const SizedBox(height: 24),
-        
+
         // Buttons
         _buildSection(context, 'Buttons', [
           Row(
@@ -387,7 +354,7 @@ class _Material3ComponentShowcase extends StatelessWidget {
             ],
           ),
         ]),
-        
+
         // Cards
         _buildSection(context, 'Cards', [
           Card(
@@ -430,7 +397,7 @@ class _Material3ComponentShowcase extends StatelessWidget {
             ),
           ),
         ]),
-        
+
         // Chips
         _buildSection(context, 'Chips', [
           Wrap(
@@ -445,7 +412,7 @@ class _Material3ComponentShowcase extends StatelessWidget {
             ],
           ),
         ]),
-        
+
         // Progress Indicators
         _buildSection(context, 'Progress Indicators', [
           const LinearProgressIndicator(value: 0.7),
@@ -458,7 +425,7 @@ class _Material3ComponentShowcase extends StatelessWidget {
             ],
           ),
         ]),
-        
+
         // Switches and Checkboxes
         _buildSection(context, 'Selection Controls', [
           Row(
@@ -492,8 +459,8 @@ class _Material3ComponentShowcase extends StatelessWidget {
         Text(
           title,
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+                fontWeight: FontWeight.w600,
+              ),
         ),
         const SizedBox(height: 12),
         ...children,
@@ -514,11 +481,11 @@ class _GlassmorphismEffectShowcase extends StatelessWidget {
           Text(
             'Glassmorphism Effects',
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+                  fontWeight: FontWeight.w600,
+                ),
           ),
           const SizedBox(height: 24),
-          
+
           // Large glassmorphism card
           GlassmorphismContainer(
             child: Container(
@@ -535,8 +502,8 @@ class _GlassmorphismEffectShowcase extends StatelessWidget {
                   Text(
                     'Glassmorphism Container',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+                          fontWeight: FontWeight.w600,
+                        ),
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -548,9 +515,9 @@ class _GlassmorphismEffectShowcase extends StatelessWidget {
               ),
             ),
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Grid of smaller glassmorphism containers
           GridView.count(
             shrinkWrap: true,
@@ -698,48 +665,47 @@ class _PhosphorIconsShowcase extends StatelessWidget {
           style: Theme.of(context).textTheme.headlineMedium,
         ),
         const SizedBox(height: 24),
-        
         ...iconCategories.entries.map((entry) => Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              entry.key,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 12),
-            
-            GridView.count(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              crossAxisCount: 4,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              childAspectRatio: 1,
-              children: entry.value.map((icon) => Card(
-                elevation: 1,
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(icon, size: 28),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Icon',
-                        style: Theme.of(context).textTheme.labelSmall,
-                        textAlign: TextAlign.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  entry.key,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
                       ),
-                    ],
-                  ),
                 ),
-              )).toList(),
-            ),
-            
-            const SizedBox(height: 24),
-          ],
-        )),
+                const SizedBox(height: 12),
+                GridView.count(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  crossAxisCount: 4,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                  childAspectRatio: 1,
+                  children: entry.value
+                      .map((icon) => Card(
+                            elevation: 1,
+                            child: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(icon, size: 28),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    'Icon',
+                                    style: Theme.of(context).textTheme.labelSmall,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ))
+                      .toList(),
+                ),
+                const SizedBox(height: 24),
+              ],
+            )),
       ],
     );
   }
@@ -760,37 +726,37 @@ class _ProjectManagementWidgetShowcase extends StatelessWidget {
           style: Theme.of(context).textTheme.headlineMedium,
         ),
         const SizedBox(height: 24),
-        
+
         // Project cards
         Text(
           'Project Cards',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+                fontWeight: FontWeight.w600,
+              ),
         ),
         const SizedBox(height: 12),
-        
+
         ...projects.map((project) => Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: ProjectCard(
-            project: project,
-            onTap: () {},
-            onEdit: () {},
-            onDelete: () {},
-          ),
-        )),
-        
+              padding: const EdgeInsets.only(bottom: 12),
+              child: ProjectCard(
+                project: project,
+                onTap: () {},
+                onEdit: () {},
+                onDelete: () {},
+              ),
+            )),
+
         const SizedBox(height: 24),
-        
+
         // Project creation form
         Text(
           'Project Creation Form',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+                fontWeight: FontWeight.w600,
+              ),
         ),
         const SizedBox(height: 12),
-        
+
         Card(
           child: Padding(
             padding: const EdgeInsets.all(20),
@@ -858,15 +824,27 @@ class _ColorSchemeShowcase extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    
+
     final colors = [
       {'name': 'Primary', 'color': colorScheme.primary, 'onColor': colorScheme.onPrimary},
       {'name': 'Primary Container', 'color': colorScheme.primaryContainer, 'onColor': colorScheme.onPrimaryContainer},
       {'name': 'Secondary', 'color': colorScheme.secondary, 'onColor': colorScheme.onSecondary},
-      {'name': 'Secondary Container', 'color': colorScheme.secondaryContainer, 'onColor': colorScheme.onSecondaryContainer},
-      {'name': 'Tertiary', 'color': colorScheme.tertiary ?? colorScheme.primary, 'onColor': colorScheme.onTertiary ?? colorScheme.onPrimary},
+      {
+        'name': 'Secondary Container',
+        'color': colorScheme.secondaryContainer,
+        'onColor': colorScheme.onSecondaryContainer
+      },
+      {
+        'name': 'Tertiary',
+        'color': colorScheme.tertiary ?? colorScheme.primary,
+        'onColor': colorScheme.onTertiary ?? colorScheme.onPrimary
+      },
       {'name': 'Surface', 'color': colorScheme.surface, 'onColor': colorScheme.onSurface},
-      {'name': 'Surface Variant', 'color': colorScheme.surfaceContainerHighest, 'onColor': colorScheme.onSurfaceVariant},
+      {
+        'name': 'Surface Variant',
+        'color': colorScheme.surfaceContainerHighest,
+        'onColor': colorScheme.onSurfaceVariant
+      },
       {'name': 'Error', 'color': colorScheme.error, 'onColor': colorScheme.onError},
     ];
 
@@ -878,7 +856,6 @@ class _ColorSchemeShowcase extends StatelessWidget {
           style: Theme.of(context).textTheme.headlineMedium,
         ),
         const SizedBox(height: 24),
-        
         GridView.count(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -886,37 +863,39 @@ class _ColorSchemeShowcase extends StatelessWidget {
           crossAxisSpacing: 12,
           mainAxisSpacing: 12,
           childAspectRatio: 2,
-          children: colors.map((colorInfo) => Container(
-            decoration: BoxDecoration(
-              color: colorInfo['color'] as Color,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
-              ),
-            ),
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  colorInfo['name'] as String,
-                  style: TextStyle(
-                    color: colorInfo['onColor'] as Color,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '#${(colorInfo['color'] as Color).toARGB32().toRadixString(16).toUpperCase().substring(2)}',
-                  style: TextStyle(
-                    color: (colorInfo['onColor'] as Color).withOpacity(0.7),
-                    fontSize: 12,
-                  ),
-                ),
-              ],
-            ),
-          )).toList(),
+          children: colors
+              .map((colorInfo) => Container(
+                    decoration: BoxDecoration(
+                      color: colorInfo['color'] as Color,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+                      ),
+                    ),
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          colorInfo['name'] as String,
+                          style: TextStyle(
+                            color: colorInfo['onColor'] as Color,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '#${(colorInfo['color'] as Color).toARGB32().toRadixString(16).toUpperCase().substring(2)}',
+                          style: TextStyle(
+                            color: (colorInfo['onColor'] as Color).withValues(alpha: 0.7),
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ))
+              .toList(),
         ),
       ],
     );
@@ -927,7 +906,7 @@ class _TypographyShowcase extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    
+
     final typographyStyles = [
       {'name': 'Display Large', 'style': textTheme.displayLarge, 'text': 'Display Large'},
       {'name': 'Display Medium', 'style': textTheme.displayMedium, 'text': 'Display Medium'},
@@ -954,26 +933,25 @@ class _TypographyShowcase extends StatelessWidget {
           style: Theme.of(context).textTheme.headlineMedium,
         ),
         const SizedBox(height: 24),
-        
         ...typographyStyles.map((typeInfo) => Padding(
-          padding: const EdgeInsets.only(bottom: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                typeInfo['name'] as String,
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.primary,
-                ),
+              padding: const EdgeInsets.only(bottom: 16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    typeInfo['name'] as String,
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    typeInfo['text'] as String,
+                    style: typeInfo['style'] as TextStyle?,
+                  ),
+                ],
               ),
-              const SizedBox(height: 4),
-              Text(
-                typeInfo['text'] as String,
-                style: typeInfo['style'] as TextStyle?,
-              ),
-            ],
-          ),
-        )),
+            )),
       ],
     );
   }
@@ -990,7 +968,7 @@ class _FormElementsShowcase extends StatelessWidget {
           style: Theme.of(context).textTheme.headlineMedium,
         ),
         const SizedBox(height: 24),
-        
+
         // Text fields
         TextFormField(
           decoration: const InputDecoration(
@@ -1001,7 +979,7 @@ class _FormElementsShowcase extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        
+
         TextFormField(
           decoration: const InputDecoration(
             labelText: 'Filled Text Field',
@@ -1013,7 +991,7 @@ class _FormElementsShowcase extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        
+
         TextFormField(
           maxLines: 3,
           decoration: const InputDecoration(
@@ -1024,7 +1002,7 @@ class _FormElementsShowcase extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 24),
-        
+
         // Dropdowns and selectors
         DropdownButtonFormField<String>(
           decoration: const InputDecoration(
@@ -1041,7 +1019,7 @@ class _FormElementsShowcase extends StatelessWidget {
           onChanged: (value) {},
         ),
         const SizedBox(height: 24),
-        
+
         // Sliders
         Text('Slider', style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: 8),
@@ -1052,7 +1030,7 @@ class _FormElementsShowcase extends StatelessWidget {
           label: '70%',
         ),
         const SizedBox(height: 16),
-        
+
         RangeSlider(
           values: const RangeValues(0.2, 0.8),
           onChanged: (values) {},
@@ -1060,7 +1038,7 @@ class _FormElementsShowcase extends StatelessWidget {
           labels: const RangeLabels('20%', '80%'),
         ),
         const SizedBox(height: 24),
-        
+
         // Date and time pickers (represented as buttons)
         Row(
           children: [
@@ -1109,7 +1087,7 @@ class _NavigationComponentsShowcase extends StatelessWidget {
             ),
           ],
         ),
-        
+
         // Tab bar
         DefaultTabController(
           length: 3,
@@ -1135,7 +1113,7 @@ class _NavigationComponentsShowcase extends StatelessWidget {
             ],
           ),
         ),
-        
+
         // Bottom navigation bar
         BottomNavigationBar(
           type: BottomNavigationBarType.fixed,
@@ -1186,13 +1164,13 @@ class _ThemeComparisonShowcase extends StatelessWidget {
             ),
           ),
         ),
-        
+
         // Divider
         Container(
           width: 2,
           color: Colors.grey,
         ),
-        
+
         // Dark theme side
         Expanded(
           child: MaterialApp(
@@ -1225,7 +1203,7 @@ class _ThemeVariantContent extends StatelessWidget {
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: 16),
-          
+
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -1256,9 +1234,9 @@ class _ThemeVariantContent extends StatelessWidget {
               ),
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           Row(
             children: [
               Icon(PhosphorIcons.palette()),
@@ -1266,9 +1244,9 @@ class _ThemeVariantContent extends StatelessWidget {
               const Text('Color scheme preview'),
             ],
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Color swatches
           Row(
             children: [
@@ -1299,7 +1277,7 @@ class _ColorSwatch extends StatelessWidget {
         color: color,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
         ),
       ),
     );
@@ -1317,7 +1295,7 @@ class _AccessibilityFeaturesShowcase extends StatelessWidget {
           style: Theme.of(context).textTheme.headlineMedium,
         ),
         const SizedBox(height: 24),
-        
+
         // High contrast elements
         Card(
           child: Padding(
@@ -1330,7 +1308,6 @@ class _AccessibilityFeaturesShowcase extends StatelessWidget {
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: 16),
-                
                 Row(
                   children: [
                     ElevatedButton(
@@ -1344,9 +1321,7 @@ class _AccessibilityFeaturesShowcase extends StatelessWidget {
                     ),
                   ],
                 ),
-                
                 const SizedBox(height: 16),
-                
                 TextFormField(
                   decoration: const InputDecoration(
                     labelText: 'Accessible Input',
@@ -1354,9 +1329,7 @@ class _AccessibilityFeaturesShowcase extends StatelessWidget {
                     border: OutlineInputBorder(),
                   ),
                 ),
-                
                 const SizedBox(height: 16),
-                
                 Row(
                   children: [
                     Checkbox(value: true, onChanged: (value) {}),
@@ -1370,9 +1343,9 @@ class _AccessibilityFeaturesShowcase extends StatelessWidget {
             ),
           ),
         ),
-        
+
         const SizedBox(height: 16),
-        
+
         // Touch target sizes
         Card(
           child: Padding(
@@ -1385,7 +1358,6 @@ class _AccessibilityFeaturesShowcase extends StatelessWidget {
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: 16),
-                
                 Row(
                   children: [
                     IconButton(
@@ -1424,7 +1396,7 @@ class _ResponsiveBreakpointShowcase extends StatelessWidget {
     final isMobile = screenWidth < 600;
     final isTablet = screenWidth >= 600 && screenWidth < 1200;
     final isDesktop = screenWidth >= 1200;
-    
+
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -1435,7 +1407,6 @@ class _ResponsiveBreakpointShowcase extends StatelessWidget {
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 16),
-          
           if (isMobile) ...[
             // Mobile layout - single column
             _buildMobileLayout(context),

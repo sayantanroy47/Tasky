@@ -15,7 +15,12 @@ import '../widgets/enhanced_task_creation_dialog.dart';
 import '../widgets/standardized_app_bar.dart';
 import '../widgets/standardized_text.dart';
 import '../widgets/standardized_colors.dart';
+import '../widgets/standardized_spacing.dart';
+import '../widgets/glassmorphism_container.dart';
 import '../widgets/theme_background_widget.dart';
+import '../pages/voice_recording_page.dart';
+import '../widgets/manual_task_creation_dialog.dart';
+import '../../core/design_system/design_tokens.dart';
 
 /// Detailed view of a single project
 ///
@@ -64,6 +69,13 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
           child: Scaffold(
             backgroundColor: context.colors.backgroundTransparent,
             extendBodyBehindAppBar: true,
+            floatingActionButton: FloatingActionButton(
+              onPressed: () => _showTaskCreationMenu(context, project),
+              backgroundColor: theme.colorScheme.primary,
+              foregroundColor: Colors.white,
+              elevation: 8,
+              child: Icon(PhosphorIcons.plus()),
+            ),
             appBar: StandardizedAppBar(
               title: TextUtils.autoCapitalize(project.name),
               actions: [
@@ -116,15 +128,53 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
                   // Project header with stats
                   _buildProjectHeader(project, projectStatsAsync),
 
-                  // Tabs
-                  TabBar(
-                    controller: _tabController,
-                    tabs: [
-                      Tab(text: 'Tasks', icon: Icon(PhosphorIcons.checkSquare())),
-                      Tab(text: 'Kanban', icon: Icon(PhosphorIcons.columns())),
-                      Tab(text: 'Progress', icon: Icon(PhosphorIcons.trendUp())),
-                      Tab(text: 'Overview', icon: Icon(PhosphorIcons.info())),
-                    ],
+                  // Sophisticated tab bar with elegant styling (matches home screen)
+                  Container(
+                    height: 56, // Increased for touch accessibility
+                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                    child: TabBar(
+                      controller: _tabController,
+                      isScrollable: true, // Make tabs scrollable to prevent cutoff
+                      tabAlignment: TabAlignment.start, // Align tabs to start
+                      // Sophisticated gradient indicator for premium feel
+                      indicator: BoxDecoration(
+                        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                        gradient: LinearGradient(
+                          colors: [
+                            theme.colorScheme.primary.withValues(alpha: 0.1),
+                            theme.colorScheme.primary.withValues(alpha: 0.05),
+                          ],
+                        ),
+                        border: Border.all(
+                          color: theme.colorScheme.primary.withValues(alpha: 0.2),
+                          width: 0.5, // Ultra-thin for sophistication
+                        ),
+                      ),
+
+                      // Sophisticated typography and colors
+                      labelColor: theme.colorScheme.primary,
+                      unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
+                      dividerColor: Colors.transparent,
+                      indicatorSize: TabBarIndicatorSize.tab,
+
+                      // Elegant text styling
+                      labelStyle: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
+                        fontWeight: TypographyConstants.regular, // Regular weight for sophistication
+                        letterSpacing: 0.1, // Subtle letter spacing
+                      ),
+                      unselectedLabelStyle: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
+                        fontWeight: TypographyConstants.light, // Light weight for unselected
+                        letterSpacing: 0.1,
+                      ),
+
+                      tabs: const [
+                        // Text-only tabs for sophisticated elegance
+                        Tab(text: 'Tasks'),
+                        Tab(text: 'Kanban'),
+                        Tab(text: 'Progress'),
+                        Tab(text: 'Overview'),
+                      ],
+                    ),
                   ),
 
                   // Tab content
@@ -326,84 +376,103 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
 
         const SizedBox(height: 12),
 
-        // Stats grid
-        Row(
-          children: [
-            Expanded(
-              child: _buildStatCard(
-                'Total',
-                stats.totalTasks.toString(),
-                PhosphorIcons.checkSquare(),
-                theme.colorScheme.primary,
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: _buildStatCard(
-                'Completed',
-                stats.completedTasks.toString(),
-                PhosphorIcons.checkCircle(),
-                Colors.green,
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: _buildStatCard(
-                'In Progress',
-                stats.inProgressTasks.toString(),
-                PhosphorIcons.playCircle(),
-                Colors.blue,
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: _buildStatCard(
-                'Pending',
-                stats.pendingTasks.toString(),
-                PhosphorIcons.clock(),
-                Colors.orange,
-              ),
-            ),
-            if (stats.overdueTasks > 0) ...[
-              const SizedBox(width: 8),
-              Expanded(
-                child: _buildStatCard(
+        // Scrollable stats cards - wider and always visible
+        SizedBox(
+          height: 110, // Increased height to match card height + margin
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 2),
+            child: Row(
+              children: [
+                _buildScrollableStatCard(
+                  'Total',
+                  stats.totalTasks.toString(),
+                  PhosphorIcons.checkSquare(),
+                  theme.colorScheme.primary,
+                ),
+                const SizedBox(width: 12),
+                _buildScrollableStatCard(
+                  'Completed',
+                  stats.completedTasks.toString(),
+                  PhosphorIcons.checkCircle(),
+                  Colors.green,
+                ),
+                const SizedBox(width: 12),
+                _buildScrollableStatCard(
+                  'In Progress',
+                  stats.inProgressTasks.toString(),
+                  PhosphorIcons.playCircle(),
+                  Colors.blue,
+                ),
+                const SizedBox(width: 12),
+                _buildScrollableStatCard(
+                  'Pending',
+                  stats.pendingTasks.toString(),
+                  PhosphorIcons.clock(),
+                  Colors.orange,
+                ),
+                const SizedBox(width: 12),
+                // Always show overdue card for consistency
+                _buildScrollableStatCard(
                   'Overdue',
                   stats.overdueTasks.toString(),
                   PhosphorIcons.warning(),
-                  Colors.red,
+                  stats.overdueTasks > 0 ? Colors.red : Colors.grey.withValues(alpha: 0.6),
                 ),
-              ),
-            ],
-          ],
+              ],
+            ),
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildStatCard(String label, String value, IconData icon, Color color) {
+
+
+  Widget _buildScrollableStatCard(String label, String value, IconData icon, Color color) {
     return Container(
-      height: 80, // Fixed height for consistent appearance
-      padding: const EdgeInsets.all(8),
+      width: 110, // Increased width for better text space
+      height: 100, // Increased height to ensure text is visible
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12), // Optimized padding
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
-        border: Border.all(color: color.withValues(alpha: 0.1)),
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium),
+        border: Border.all(color: color.withValues(alpha: 0.2), width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: color.withValues(alpha: 0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween, // Changed to spaceBetween for better distribution
+        mainAxisSize: MainAxisSize.max, // Ensure column takes full height
         children: [
-          Icon(icon, color: color, size: 20),
-          const SizedBox(height: 4),
-          StandardizedText(
-            value,
-            style: StandardizedTextStyle.bodyLarge,
-            color: color,
+          // Icon at top
+          Icon(icon, color: color, size: 20), // Slightly smaller icon for more space
+          
+          // Value in middle
+          Flexible(
+            child: StandardizedText(
+              value,
+              style: StandardizedTextStyle.titleLarge, // Changed from headlineSmall to titleLarge
+              color: color,
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
+          
+          // Label at bottom
           StandardizedText(
             label,
-            style: StandardizedTextStyle.labelSmall,
+            style: StandardizedTextStyle.labelSmall, // Changed from labelMedium to labelSmall
             color: color,
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
@@ -708,11 +777,6 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
                   spacing: 8,
                   runSpacing: 8,
                   children: [
-                    ElevatedButton.icon(
-                      onPressed: () => _createTaskForProject(project),
-                      icon: Icon(PhosphorIcons.plus()),
-                      label: const Text('Add Task'),
-                    ),
                     OutlinedButton.icon(
                       onPressed: () => _editProject(project),
                       icon: Icon(PhosphorIcons.pencil()),
@@ -787,14 +851,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
               color: theme.colorScheme.onSurfaceVariant,
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 24),
-            ElevatedButton.icon(
-              onPressed: () => _createTaskForProject(
-                ref.read(projectsProvider).value!.firstWhere((p) => p.id == widget.projectId),
-              ),
-              icon: Icon(PhosphorIcons.plus()),
-              label: const Text('Add Task'),
-            ),
+            const SizedBox(height: 16),
           ],
         ),
       ),
@@ -902,5 +959,167 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
 
   String _formatDate(DateTime date) {
     return '${date.day}/${date.month}/${date.year}';
+  }
+
+  /// Show task creation options menu (same as home screen)
+  void _showTaskCreationMenu(BuildContext context, Project project) {
+    final theme = Theme.of(context);
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: context.colors.backgroundTransparent,
+      isScrollControlled: true,
+      builder: (context) => GlassmorphismContainer(
+        level: GlassLevel.floating,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        margin: EdgeInsets.zero,
+        child: SafeArea(
+          child: Padding(
+            padding: StandardizedSpacing.padding(SpacingSize.lg),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header
+                StandardizedText(
+                  'Add Task to ${project.name}',
+                  style: StandardizedTextStyle.headlineSmall,
+                ),
+                StandardizedGaps.vertical(SpacingSize.sm),
+                StandardizedText(
+                  'Choose how you\'d like to create your task',
+                  style: StandardizedTextStyle.bodyMedium,
+                  color: context.colors.withSemanticOpacity(
+                    Theme.of(context).colorScheme.onSurface,
+                    SemanticOpacity.strong,
+                  ),
+                ),
+                StandardizedGaps.lg,
+
+                // Task Creation Options
+                _buildTaskCreationOption(
+                  context: context,
+                  icon: PhosphorIcons.microphone(),
+                  iconColor: theme.colorScheme.primary,
+                  title: 'AI Voice Entry',
+                  subtitle: 'Speak your task, we\'ll transcribe it',
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const VoiceRecordingPage(),
+                      ),
+                    );
+                  },
+                ),
+
+                StandardizedGaps.md,
+
+                _buildTaskCreationOption(
+                  context: context,
+                  icon: PhosphorIcons.pencil(),
+                  iconColor: context.colors.success,
+                  title: 'Manual Entry',
+                  subtitle: 'Type your task details manually',
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ManualTaskCreationDialog(),
+                      ),
+                    );
+                  },
+                ),
+
+                StandardizedGaps.md,
+
+                _buildTaskCreationOption(
+                  context: context,
+                  icon: PhosphorIcons.sparkle(),
+                  iconColor: theme.colorScheme.tertiary,
+                  title: 'Quick Add',
+                  subtitle: 'Add a simple task quickly',
+                  onTap: () {
+                    Navigator.pop(context);
+                    _createTaskForProject(project);
+                  },
+                ),
+
+                StandardizedGaps.md,
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Build task creation option tile
+  Widget _buildTaskCreationOption({
+    required BuildContext context,
+    required IconData icon,
+    required Color iconColor,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    final theme = Theme.of(context);
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
+      child: GlassmorphismContainer(
+        level: GlassLevel.interactive,
+        padding: StandardizedSpacing.padding(SpacingSize.md),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
+        child: Row(
+          children: [
+            GlassmorphismContainer(
+              level: GlassLevel.interactive,
+              width: 48,
+              height: 48,
+              borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium),
+              glassTint: iconColor.withValues(alpha: 0.15),
+              child: Icon(
+                icon,
+                color: iconColor,
+                size: 24,
+              ),
+            ),
+            StandardizedGaps.md,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  StandardizedText(
+                    title,
+                    style: StandardizedTextStyle.titleMedium,
+                  ),
+                  StandardizedGaps.vertical(SpacingSize.xs),
+                  StandardizedText(
+                    subtitle,
+                    style: StandardizedTextStyle.bodySmall,
+                    color: context.colors.withSemanticOpacity(
+                      theme.colorScheme.onSurface,
+                      SemanticOpacity.strong,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Icon(
+              PhosphorIcons.caretRight(),
+              size: 16,
+              color: context.colors.withSemanticOpacity(
+                Theme.of(context).colorScheme.onSurface,
+                SemanticOpacity.strong,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
