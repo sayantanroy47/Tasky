@@ -29,8 +29,9 @@ class Cyberpunk2077Theme {
         tags: ['cyberpunk', 'futuristic', 'neon', 'tech', 'edgy', 'holographic', 'dystopian', 'night-city'],
         category: 'gaming',
         previewIcon: PhosphorIcons.robot(),
-        primaryPreviewColor: const Color(0xFFFFFF00), // Neon yellow
-        secondaryPreviewColor: const Color(0xFFFF00FF), // Cyber magenta
+        primaryPreviewColor: isDark ? const Color(0xFF050505) : const Color(0xFFFFFFFF), // Ultra-deep black or pure white
+        secondaryPreviewColor: const Color(0xFFFFFF00), // Neon yellow (same for both modes)
+        tertiaryPreviewColor: isDark ? const Color(0xFF00FFFF) : const Color(0xFF0099BB), // Cyberpunk Neon signature accent
         createdAt: now,
         isPremium: false,
         popularityScore: 9.6, // Very popular cyberpunk aesthetic
@@ -54,183 +55,207 @@ class Cyberpunk2077Theme {
   /// Create edgy cyberpunk color palette
   static ThemeColors _createCyberColors({bool isDark = true}) {
     if (isDark) {
-      // ⚡ Dark Mode - "Night City Streets": Deep tech black with neon highlights
-      const techBlack = Color(0xFF0D0D0D);           // Deep tech black background
-      const neonYellow = Color(0xFFFFFF00);          // Neon yellow primary
-      const cyberMagenta = Color(0xFFFF00FF);        // Cyber magenta secondary
-      const electricBlue = Color(0xFF00BFFF);        // Electric blue accent
-      const darkGray = Color(0xFF1A1A1A);            // Dark gray surface
-      const neonWhite = Color(0xFFF0F0F0);           // Neon white text
-      const glitchGreen = Color(0xFF00FF41);          // Matrix-like green
-      const holoPurple = Color(0xFF8A2BE2);          // Holographic purple
-      const cyberRed = Color(0xFFFF073A);            // Cyber danger red
-      const carbonGray = Color(0xFF2A2A2A);          // Carbon fiber gray
+      // ⚡ Dark Mode - "Night City Streets": Super bright, maximum saturation neon highlights
+      const techBlack = Color(0xFF050505);           // Ultra-deep tech black background
+      const neonYellow = Color(0xFFFFFF00);          // Pure neon yellow primary (already max)
+      const cyberMagenta = Color(0xFFFF00FF);        // Pure cyber magenta secondary (already max)
+      const electricBlue = Color(0xFF00DDFF);        // Enhanced electric blue accent
+      const darkGray = Color(0xFF101010);            // Deeper dark gray surface
+      const neonWhite = Color(0xFFFFFFFF);           // Pure white text for maximum readability
+      const glitchGreen = Color(0xFF00FF55);          // Enhanced matrix-like green
+      const holoPurple = Color(0xAAA55FF);          // Enhanced holographic purple
+      const cyberRed = Color(0xFFFF4466);            // Enhanced cyber danger red
+      const carbonGray = Color(0xFF202020);          // Enhanced carbon fiber gray
+      
+      // Cyberpunk Neon Signature Accent - Maximum visibility cyan
+      const cyberpunkNeonSignature = Color(0xFF00FFFF);     // Pure electric cyan signature
+      const onCyberpunkNeonSignature = Color(0xFF000000);   // Pure black for maximum contrast
+      const cyberpunkNeonContainer = Color(0xFF004455);     // Deep cyan container
+      const onCyberpunkNeonContainer = Color(0xFFFFFFFF);   // Pure white for container text
       
       return const ThemeColors(
-        // Primary colors - Neon Yellow dominance
+        // Primary colors - Enhanced Neon Yellow dominance
         primary: neonYellow,
-        onPrimary: techBlack,
-        primaryContainer: Color(0xFF333300),
-        onPrimaryContainer: neonYellow,
+        onPrimary: Color(0xFF000000),           // Pure black for maximum contrast
+        primaryContainer: Color(0xFF444400),    // Enhanced yellow container
+        onPrimaryContainer: Color(0xFFFFFFFF),  // Pure white for container text
 
-        // Secondary colors - Cyber Magenta energy
+        // Secondary colors - Enhanced Cyber Magenta energy
         secondary: cyberMagenta,
-        onSecondary: neonWhite,
-        secondaryContainer: Color(0xFF330033),
-        onSecondaryContainer: Color(0xFFFF66FF),
+        onSecondary: Color(0xFF000000),         // Pure black for maximum contrast
+        secondaryContainer: Color(0xFF440044),  // Enhanced magenta container
+        onSecondaryContainer: Color(0xFFFFFFFF), // Pure white for container text
 
-        // Tertiary colors - Electric Blue power
+        // Tertiary colors - Enhanced Electric Blue power
         tertiary: electricBlue,
-        onTertiary: techBlack,
-        tertiaryContainer: Color(0xFF001F3F),
-        onTertiaryContainer: Color(0xFF66DDFF),
+        onTertiary: Color(0xFF000000),          // Pure black for maximum contrast
+        tertiaryContainer: Color(0xFF002F4F),   // Enhanced blue container
+        onTertiaryContainer: Color(0xFFFFFFFF), // Pure white for container text
 
-        // Surface colors - Tech materials
+        // Surface colors - Enhanced tech materials
         surface: darkGray,
-        onSurface: neonWhite,
+        onSurface: neonWhite,                   // Pure white text
         surfaceVariant: carbonGray,
-        onSurfaceVariant: Color(0xFF999999),
+        onSurfaceVariant: Color(0xFFCCCCCC),   // Enhanced variant text
         inverseSurface: neonWhite,
         onInverseSurface: techBlack,
 
-        // Background colors - Night City void
+        // Background colors - Enhanced Night City void
         background: techBlack,
-        onBackground: neonWhite,
+        onBackground: neonWhite,                // Pure white text
 
-        // Error colors - Cyber danger
+        // Error colors - Enhanced cyber danger
         error: cyberRed,
-        onError: neonWhite,
-        errorContainer: Color(0xFF330A0A),
-        onErrorContainer: Color(0xFFFF6666),
+        onError: Color(0xFF000000),             // Pure black for maximum contrast
+        errorContainer: Color(0xFF440A0A),     // Enhanced red container
+        onErrorContainer: Color(0xFFFFFFFF),   // Pure white for container text
 
-        // Special colors - Cyber essence
-        accent: cyberMagenta,
+        // Special colors - Enhanced with signature accent
+        accent: cyberpunkNeonSignature,         // Use signature cyan as primary accent
         highlight: electricBlue,
         shadow: techBlack,
-        outline: Color(0xFF444444),
+        outline: Color(0xFF555555),             // Enhanced outline
         outlineVariant: carbonGray,
 
-        // Task priority colors - Cyber threat levels
-        taskLowPriority: glitchGreen,            // Low threat - Matrix green
-        taskMediumPriority: neonYellow,          // Medium threat - Neon yellow
-        taskHighPriority: cyberMagenta,          // High threat - Cyber magenta
-        taskUrgentPriority: cyberRed,            // Critical threat - Danger red
+        // Cyberpunk Neon Signature Colors
+        cyberpunkNeon: cyberpunkNeonSignature,
+        onCyberpunkNeon: onCyberpunkNeonSignature,
+        cyberpunkNeonContainer: cyberpunkNeonContainer,
+        onCyberpunkNeonContainer: onCyberpunkNeonContainer,
 
-        // Status colors - System states
+        // Task priority colors - Enhanced cyber threat levels with signature
+        taskLowPriority: glitchGreen,              // Enhanced green - Low threat
+        taskMediumPriority: neonYellow,            // Pure yellow - Medium threat
+        taskHighPriority: cyberpunkNeonSignature,  // Signature cyan - High threat
+        taskUrgentPriority: cyberRed,              // Enhanced red - Critical threat
+
+        // Status colors - Enhanced system states
         success: glitchGreen,
         warning: neonYellow,
-        info: electricBlue,
+        info: cyberpunkNeonSignature,              // Use signature cyan for info
 
-        // Calendar dot colors - Cyber calendar
+        // Calendar dot colors - Enhanced cyber calendar
         calendarTodayDot: neonYellow,
         calendarOverdueDot: cyberRed,
-        calendarFutureDot: electricBlue,
+        calendarFutureDot: cyberpunkNeonSignature, // Signature cyan for future
         calendarCompletedDot: glitchGreen,
-        calendarHighPriorityDot: cyberMagenta,
+        calendarHighPriorityDot: cyberpunkNeonSignature, // Signature cyan for high priority
         
-        // Status badge colors - System activity states
-        statusPendingBadge: Color(0xFF666666),
+        // Status badge colors - Enhanced with signature cyan
+        statusPendingBadge: Color(0xFF777777),
         statusInProgressBadge: cyberMagenta,
-        statusCompletedBadge: glitchGreen,
+        statusCompletedBadge: cyberpunkNeonSignature,   // Signature cyan for completed (achievement)
         statusCancelledBadge: carbonGray,
         statusOverdueBadge: cyberRed,
         statusOnHoldBadge: holoPurple,
 
-        // Interactive colors - Cyber responses
-        hover: Color(0x80FFFF00),    // neonYellow with 0.5 alpha
-        pressed: Color(0xB3FF00FF),  // cyberMagenta with 0.7 alpha
-        focus: electricBlue,
-        disabled: Color(0xFF333333),
+        // Interactive colors - Enhanced cyber responses
+        hover: Color(0x99FFFF00),               // Enhanced yellow hover
+        pressed: Color(0xCCFF00FF),             // Enhanced magenta pressed
+        focus: cyberpunkNeonSignature,          // Use signature cyan for focus
+        disabled: Color(0xFF444444),            // Enhanced disabled
       );
     }
     
-    // ☀️ Light Mode - "Corporate Plaza": Clean tech whites with neon accents
-    const techWhite = Color(0xFFF8F8FF);            // Clean tech white
-    const lightGray = Color(0xFFE8E8E8);            // Light tech gray
-    const silverMetal = Color(0xFFD3D3D3);          // Silver metallic
-    const darkYellow = Color(0xFFE6E600);           // Darker neon yellow for contrast
-    const darkMagenta = Color(0xFFCC00CC);          // Darker cyber magenta
-    const darkBlue = Color(0xFF0080CC);             // Darker electric blue
-    const charcoalText = Color(0xFF1A1A1A);         // Dark charcoal text
-    const hologramBlue = Color(0xFF4169E1);         // Hologram blue
-    const neonGreen = Color(0xFF32CD32);            // Bright neon green
-    const cyberPink = Color(0xFFFF1493);            // Cyber pink accent
+    // ☀️ Light Mode - "Corporate Plaza": Deep contrasting colors for maximum readability
+    const techWhite = Color(0xFFFFFFFF);            // Pure white background
+    const lightGray = Color(0xFFF0F0F0);            // Light tech gray
+    const silverMetal = Color(0xFFBBBBBB);          // Darker silver metallic
+    const deepYellow = Color(0xFFCCCC00);           // Deeper neon yellow for better contrast
+    const deepMagenta = Color(0xFF990099);          // Deeper cyber magenta
+    const deepBlue = Color(0xFF0066AA);             // Deeper electric blue
+    const deepCharcoalText = Color(0xFF1A1A1A);     // Deep charcoal text for maximum readability
+    const deepHologramBlue = Color(0xFF2255CC);     // Deeper hologram blue
+    const deepNeonGreen = Color(0xFF228822);        // Deeper neon green
+    // const deepCyberPink = Color(0xFFCC1177);        // Deeper cyber pink accent (reserved for future use)
+    
+    // Cyberpunk Neon Signature Accent - Deep for light mode contrast
+    const deepCyberpunkNeonSignature = Color(0xFF0099BB);     // Deep electric cyan signature
+    const onDeepCyberpunkNeonSignature = Color(0xFFFFFFFF);   // White text on deep cyan
+    const deepCyberpunkNeonContainer = Color(0xFFE0F7FF);     // Light cyan container
+    const onDeepCyberpunkNeonContainer = Color(0xFF003344);   // Deep cyan container text
     
     return const ThemeColors(
-      // Primary colors - Dark Yellow on light backgrounds
-      primary: darkYellow,
+      // Primary colors - Deep Yellow for better contrast
+      primary: deepYellow,
       onPrimary: techWhite,
-      primaryContainer: Color(0xFFFFFACD),
-      onPrimaryContainer: Color(0xFF666600),
+      primaryContainer: Color(0xFFFFF8CD),
+      onPrimaryContainer: Color(0xFF555500),
       
-      // Secondary colors - Dark Magenta energy
-      secondary: darkMagenta,
+      // Secondary colors - Deep Magenta energy
+      secondary: deepMagenta,
       onSecondary: techWhite,
-      secondaryContainer: Color(0xFFFFE6FF),
-      onSecondaryContainer: Color(0xFF660066),
+      secondaryContainer: Color(0xFFFFE0FF),
+      onSecondaryContainer: Color(0xFF440044),
       
-      // Tertiary colors - Dark Blue power
-      tertiary: darkBlue,
+      // Tertiary colors - Deep Blue power
+      tertiary: deepBlue,
       onTertiary: techWhite,
-      tertiaryContainer: Color(0xFFE6F3FF),
-      onTertiaryContainer: Color(0xFF003366),
+      tertiaryContainer: Color(0xFFE0F0FF),
+      onTertiaryContainer: Color(0xFF002244),
       
-      // Surface colors - Light tech materials
+      // Surface colors - Enhanced contrast light tech materials
       surface: lightGray,
-      onSurface: charcoalText,
+      onSurface: deepCharcoalText,            // Deep text for maximum readability
       surfaceVariant: silverMetal,
-      onSurfaceVariant: Color(0xFF4A4A4A),
-      inverseSurface: charcoalText,
+      onSurfaceVariant: Color(0xFF333333),    // Deeper variant text
+      inverseSurface: deepCharcoalText,
       onInverseSurface: techWhite,
       
-      // Background colors - Corporate cleanliness
+      // Background colors - Enhanced contrast corporate cleanliness
       background: techWhite,
-      onBackground: charcoalText,
+      onBackground: deepCharcoalText,         // Deep text for maximum readability
       
-      // Error colors - Corporate danger
-      error: Color(0xFFDC2626),
+      // Error colors - Deep corporate danger
+      error: Color(0xFFAA1111),              // Deeper red
       onError: techWhite,
-      errorContainer: Color(0xFFFEF2F2),
-      onErrorContainer: Color(0xFF991B1B),
+      errorContainer: Color(0xFFFEF0F0),
+      onErrorContainer: Color(0xFF660000),   // Deeper error container text
       
-      // Special colors - Corporate cyber essence
-      accent: cyberPink,                           // Use cyber pink as accent
-      highlight: hologramBlue,
+      // Special colors - Enhanced with signature accent
+      accent: deepCyberpunkNeonSignature,     // Use signature cyan as primary accent
+      highlight: deepHologramBlue,
       shadow: Color(0xFF000000),
-      outline: Color(0xFFBBBBBB),
+      outline: Color(0xFF999999),             // Deeper outline for better visibility
       outlineVariant: silverMetal,
       
-      // Task priority colors - Corporate threat levels
-      taskLowPriority: neonGreen,
-      taskMediumPriority: darkYellow,
-      taskHighPriority: darkMagenta,
-      taskUrgentPriority: Color(0xFFDC2626),
+      // Cyberpunk Neon Signature Colors
+      cyberpunkNeon: deepCyberpunkNeonSignature,
+      onCyberpunkNeon: onDeepCyberpunkNeonSignature,
+      cyberpunkNeonContainer: deepCyberpunkNeonContainer,
+      onCyberpunkNeonContainer: onDeepCyberpunkNeonContainer,
       
-      // Status colors - Corporate system states
-      success: neonGreen,
-      warning: Color(0xFFF59E0B),
-      info: hologramBlue,
+      // Task priority colors - Enhanced with signature accent
+      taskLowPriority: deepNeonGreen,                    // Deep green - Low priority
+      taskMediumPriority: deepYellow,                    // Deep yellow - Medium priority
+      taskHighPriority: deepCyberpunkNeonSignature,      // Signature cyan - High priority
+      taskUrgentPriority: Color(0xFFAA1111),             // Deep red - Urgent priority
       
-      // Calendar dot colors - Corporate cyber calendar
-      calendarTodayDot: darkYellow,
-      calendarOverdueDot: Color(0xFFDC2626),
-      calendarFutureDot: hologramBlue,
-      calendarCompletedDot: neonGreen,
-      calendarHighPriorityDot: darkMagenta,
+      // Status colors - Deeper corporate system states
+      success: deepNeonGreen,
+      warning: Color(0xFFCC7700),             // Deeper warning
+      info: deepCyberpunkNeonSignature,       // Use signature cyan for info
       
-      // Status badge colors - Corporate activity states
-      statusPendingBadge: Color(0xFF9CA3AF),
-      statusInProgressBadge: darkMagenta,
-      statusCompletedBadge: neonGreen,
+      // Calendar dot colors - Enhanced corporate cyber calendar
+      calendarTodayDot: deepYellow,
+      calendarOverdueDot: Color(0xFFAA1111),
+      calendarFutureDot: deepCyberpunkNeonSignature, // Signature cyan for future
+      calendarCompletedDot: deepNeonGreen,
+      calendarHighPriorityDot: deepCyberpunkNeonSignature, // Signature cyan for high priority
+      
+      // Status badge colors - Enhanced with signature cyan
+      statusPendingBadge: Color(0xFF777777),
+      statusInProgressBadge: deepMagenta,
+      statusCompletedBadge: deepCyberpunkNeonSignature,   // Signature cyan for completed (achievement)
       statusCancelledBadge: silverMetal,
-      statusOverdueBadge: Color(0xFFDC2626),
-      statusOnHoldBadge: Color(0xFF8B5CF6),
+      statusOverdueBadge: Color(0xFFAA1111),
+      statusOnHoldBadge: Color(0xFF6644BB),   // Deeper purple
       
-      // Interactive colors - Corporate cyber responses
-      hover: Color(0x40E6E600),    // darkYellow with 0.25 alpha
-      pressed: Color(0x80CC00CC),  // darkMagenta with 0.5 alpha
-      focus: hologramBlue,
-      disabled: silverMetal,
+      // Interactive colors - Enhanced corporate cyber responses
+      hover: Color(0x60CCCC00),               // Deeper yellow hover
+      pressed: Color(0x99990099),             // Deeper magenta pressed
+      focus: deepCyberpunkNeonSignature,      // Use signature cyan for focus
+      disabled: Color(0xFF999999),            // Deeper disabled
     );
   }
 
@@ -512,8 +537,9 @@ class Cyberpunk2077Theme {
         patternAngle: 45.0, // Angular tech aesthetic
         patternDensity: 1.3, // High-tech density
         accentColors: [
-          const Color(0xFF00BCD4).withValues(alpha: 0.15), // Cyber cyan
-          const Color(0xFFFF0080).withValues(alpha: 0.12), // Neon pink
+          const Color(0xFF00FFFF).withValues(alpha: 0.18), // Enhanced Cyberpunk Neon signature accent (dark mode)
+          const Color(0xFFFF00FF).withValues(alpha: 0.15), // Enhanced cyber magenta accent (dark mode)
+          const Color(0xFFFFFF00).withValues(alpha: 0.12), // Enhanced neon yellow accent (dark mode)
         ],
       ),
     );

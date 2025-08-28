@@ -31,6 +31,7 @@ class KoiMysticTheme {
         previewIcon: PhosphorIcons.fish(),
         primaryPreviewColor: isDark ? const Color(0xFF21262D) : const Color(0xFFE1E4E8), // Koi pond waters
         secondaryPreviewColor: const Color(0xFFE53935), // Traditional koi red
+        tertiaryPreviewColor: isDark ? const Color(0xFFFF6B35) : const Color(0xFFCC4411), // Koi orange signature color
         createdAt: now,
         isPremium: false,
         popularityScore: 9.5, // This is going to be EPIC!
@@ -68,12 +69,24 @@ class KoiMysticTheme {
       const lotusGreen = Color(0xFF238636);          // Lotus leaf green
       const lilyPink = Color(0xFFDA70D6);            // Lily flower pink
       
-      return const ThemeColors(
+      // Koi Orange signature colors - Dark mode: Super bright, highly saturated
+      const koiOrange = Color(0xFFFF6B35);           // Super bright koi orange
+      const onKoiOrange = Color(0xFF000000);         // Pure black for maximum contrast
+      const koiOrangeContainer = Color(0xFF8B2500);  // Deep orange container
+      const onKoiOrangeContainer = Color(0xFFFFFFFF); // Pure white
+      
+      return ThemeColors(
         // Primary colors - Moonlight silver with koi accents
         primary: moonlightSilver,
         onPrimary: deepWater,
         primaryContainer: slateRipple,
         onPrimaryContainer: moonlightSilver,
+        
+        // Koi Orange signature accent colors
+        koiOrange: koiOrange,
+        onKoiOrange: onKoiOrange,
+        koiOrangeContainer: koiOrangeContainer,
+        onKoiOrangeContainer: onKoiOrangeContainer,
 
         // Secondary colors - Traditional Koi Red
         secondary: koiRed,
@@ -112,10 +125,10 @@ class KoiMysticTheme {
         outline: mistGray,
         outlineVariant: softRipple,
 
-        // Task priority colors - Koi pond life hierarchy
+        // Task priority colors - Koi pond life hierarchy (enhanced with signature orange)
         taskLowPriority: lotusGreen,           // Calm lotus green
         taskMediumPriority: moonlightSilver,   // Moonlight silver
-        taskHighPriority: koiRed,              // Traditional koi red
+        taskHighPriority: koiOrange,           // Signature koi orange for high priority
         taskUrgentPriority: Color(0xFFFF4444), // Urgent red ripple
 
         // Status colors - Pond ecosystem health
@@ -130,18 +143,18 @@ class KoiMysticTheme {
         calendarCompletedDot: lotusGreen,
         calendarHighPriorityDot: koiRed,
         
-        // Status badge colors - Koi pond activity states
+        // Status badge colors - Koi pond activity states (enhanced with signature orange)
         statusPendingBadge: mistGray,
-        statusInProgressBadge: koiRed,
-        statusCompletedBadge: lotusGreen,
+        statusInProgressBadge: koiOrange,      // Signature koi orange for active states
+        statusCompletedBadge: lotusGreen,      // Achievement uses signature color for celebration
         statusCancelledBadge: charcoalStone,
         statusOverdueBadge: Color(0xFFFF6B6B),
         statusOnHoldBadge: Color(0xFFFFAB40),
 
-        // Interactive colors - Water ripple responses
-        hover: Color(0x4DE53935),   // koiRed with 0.3 alpha
-        pressed: Color(0xB3E53935), // koiRed with 0.7 alpha
-        focus: koiRed,
+        // Interactive colors - Water ripple responses (enhanced with signature orange)
+        hover: Color(0x4DFF6B35),   // koiOrange with 0.3 alpha
+        pressed: Color(0xB3FF6B35), // koiOrange with 0.7 alpha
+        focus: koiOrange,           // Signature koi orange for focus states
         disabled: Color(0xFF3D3D3D),
       );
     }
@@ -153,19 +166,31 @@ class KoiMysticTheme {
     const koiRed = Color(0xFFE53935);             // Traditional koi red
     const koiRedWarm = Color(0xFFD84315);         // Warm sunrise koi red
     const sunriseGold = Color(0xFFFFB74D);        // Golden sunrise accent
-    const deepCharcoal = Color(0xFF24292F);       // Deep charcoal text
+    const deepCharcoal = Color(0xFF1A1A1A);       // Deep charcoal text (enhanced contrast)
     const stoneGray = Color(0xFF656D76);          // Garden stone gray
     const lightRipple = Color(0xFFD0D7DE);        // Light water ripples
     const lotusGreen = Color(0xFF28A745);         // Bright lotus green
     const lilyPink = Color(0xFFE91E63);           // Bright lily pink
     const bambooGreen = Color(0xFF4CAF50);        // Fresh bamboo green
     
-    return const ThemeColors(
+    // Koi Orange signature colors - Light mode: Deep, substantial colors
+    const koiOrange = Color(0xFFCC4411);          // Deep substantial koi orange
+    const onKoiOrange = Color(0xFFFFFFFF);        // Pure white for contrast
+    const koiOrangeContainer = Color(0xFFFFE5DD); // Light orange container
+    const onKoiOrangeContainer = Color(0xFF1A1A1A); // Deep charcoal
+    
+    return ThemeColors(
       // Primary colors - Warm pearl with sunrise tones
       primary: stoneGray,
       onPrimary: clearWater,
       primaryContainer: morningMist,
       onPrimaryContainer: deepCharcoal,
+      
+      // Koi Orange signature accent colors
+      koiOrange: koiOrange,
+      onKoiOrange: onKoiOrange,
+      koiOrangeContainer: koiOrangeContainer,
+      onKoiOrangeContainer: onKoiOrangeContainer,
       
       // Secondary colors - Traditional Koi Red (warm variant)
       secondary: koiRedWarm,
@@ -204,10 +229,10 @@ class KoiMysticTheme {
       outline: lightRipple,
       outlineVariant: Color(0xFFE1E4E8),
       
-      // Task priority colors - Garden vitality levels
+      // Task priority colors - Garden vitality levels (enhanced with signature orange)
       taskLowPriority: lotusGreen,
       taskMediumPriority: stoneGray,
-      taskHighPriority: koiRed,
+      taskHighPriority: koiOrange,           // Signature koi orange for high priority
       taskUrgentPriority: Color(0xFFDC2626),
       
       // Status colors - Garden health indicators
@@ -222,18 +247,18 @@ class KoiMysticTheme {
       calendarCompletedDot: lotusGreen,
       calendarHighPriorityDot: koiRed,
       
-      // Status badge colors - Garden activity states
+      // Status badge colors - Garden activity states (enhanced with signature orange)
       statusPendingBadge: stoneGray,
-      statusInProgressBadge: koiRed,
-      statusCompletedBadge: lotusGreen,
+      statusInProgressBadge: koiOrange,      // Signature koi orange for active states
+      statusCompletedBadge: lotusGreen,      // Achievement uses signature color for celebration
       statusCancelledBadge: Color(0xFF9CA3AF),
       statusOverdueBadge: Color(0xFFDC2626),
       statusOnHoldBadge: sunriseGold,
       
-      // Interactive colors - Gentle ripple responses
-      hover: Color(0x33E53935),   // koiRed with 0.2 alpha
-      pressed: Color(0x80E53935), // koiRed with 0.5 alpha
-      focus: koiRed,
+      // Interactive colors - Gentle ripple responses (enhanced with signature orange)
+      hover: Color(0x33CC4411),   // koiOrange with 0.2 alpha
+      pressed: Color(0x80CC4411), // koiOrange with 0.5 alpha
+      focus: koiOrange,           // Signature koi orange for focus states
       disabled: Color(0xFFE1E4E8),
     );
   }
@@ -518,7 +543,7 @@ class KoiMysticTheme {
         patternAngle: 0.0,
         patternDensity: 0.6,
         accentColors: [
-          Color(0x1AE53935), // Traditional koi red at 0.1 alpha
+          Color(0x1AFF6B35), // Signature koi orange with proper alpha
           Color(0x0C238636), // Lotus green at 0.05 alpha
         ],
       ),

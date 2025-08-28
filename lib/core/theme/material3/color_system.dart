@@ -49,82 +49,100 @@ class ExpressiveColorSystem {
   late final Color inverseSurface;
   late final Color onInverseSurface;
   
+  // Stellar Gold accent - New signature accent color
+  late final Color stellarGold;
+  late final Color onStellarGold;
+  late final Color stellarGoldContainer;
+  late final Color onStellarGoldContainer;
+  
   ExpressiveColorSystem({required this.isDark}) {
     _initializeColors();
   }
   
   void _initializeColors() {
     if (isDark) {
-      // Dark theme - Deep, rich colors with neon accents
-      primary = const Color(0xFF9575FF);          // Bright purple
-      onPrimary = const Color(0xFF1A0033);
-      primaryContainer = const Color(0xFF4A3A8C);
-      onPrimaryContainer = const Color(0xFFE0D7FF);
+      // Dark theme - Super bright, highly saturated colors for maximum visibility
+      primary = const Color(0xFFAA88FF);          // Enhanced bright purple (more saturated)
+      onPrimary = const Color(0xFF000000);        // Pure black for maximum contrast
+      primaryContainer = const Color(0xFF5A4A9C);
+      onPrimaryContainer = const Color(0xFFFFFFFF);  // Pure white for better contrast
       
-      secondary = const Color(0xFF00E5FF);        // Neon cyan
-      onSecondary = const Color(0xFF003844);
-      secondaryContainer = const Color(0xFF00687B);
-      onSecondaryContainer = const Color(0xFFB2F2FF);
+      secondary = const Color(0xFF00FFFF);        // Pure neon cyan (maximum saturation)
+      onSecondary = const Color(0xFF000000);      // Pure black for maximum contrast
+      secondaryContainer = const Color(0xFF007888);
+      onSecondaryContainer = const Color(0xFFFFFFFF);  // Pure white
       
-      tertiary = const Color(0xFFFF6E90);         // Coral pink
-      onTertiary = const Color(0xFF3E0017);
-      tertiaryContainer = const Color(0xFF5D1F33);
-      onTertiaryContainer = const Color(0xFFFFD9E1);
+      tertiary = const Color(0xFFFF77AA);         // Enhanced coral pink (brighter)
+      onTertiary = const Color(0xFF000000);       // Pure black for maximum contrast
+      tertiaryContainer = const Color(0xFF6D2F44);
+      onTertiaryContainer = const Color(0xFFFFFFFF);  // Pure white
       
-      surface = const Color(0xFF121318);          // Very dark surface
-      onSurface = const Color(0xFFE6E1E9);
-      surfaceVariant = const Color(0xFF1E1F25);
-      onSurfaceVariant = const Color(0xFFC9C4D0);
+      surface = const Color(0xFF0A0A0F);          // Deeper surface for stronger contrast
+      onSurface = const Color(0xFFFFFFFF);        // Pure white for maximum readability
+      surfaceVariant = const Color(0xFF151520);
+      onSurfaceVariant = const Color(0xFFE6E6E6);  // Near-white for excellent contrast
       
-      background = const Color(0xFF0A0B0F);       // Near black
-      onBackground = const Color(0xFFE6E1E9);
+      background = const Color(0xFF050508);       // Even deeper background
+      onBackground = const Color(0xFFFFFFFF);     // Pure white for maximum readability
       
-      error = const Color(0xFFFF5252);
-      onError = const Color(0xFF3D0909);
-      errorContainer = const Color(0xFF93000A);
-      onErrorContainer = const Color(0xFFFFDAD6);
+      error = const Color(0xFFFF4444);            // Enhanced red (brighter)
+      onError = const Color(0xFF000000);          // Pure black for maximum contrast
+      errorContainer = const Color(0xFFA30000);
+      onErrorContainer = const Color(0xFFFFFFFF); // Pure white
       
-      outline = const Color(0xFF938F99);
-      outlineVariant = const Color(0xFF49454E);
+      outline = const Color(0xFFAA99BB);          // Brighter outline
+      outlineVariant = const Color(0xFF554455);
       shadow = const Color(0xFF000000);
-      inverseSurface = const Color(0xFFE6E1E9);
-      onInverseSurface = const Color(0xFF1C1B20);
+      inverseSurface = const Color(0xFFFFFFFF);   // Pure white
+      onInverseSurface = const Color(0xFF000000); // Pure black
+      
+      // Stellar Gold - Maximum vibrant warm accent for dark mode
+      stellarGold = const Color(0xFFFFCC00);      // Enhanced vibrant gold (brighter)
+      onStellarGold = const Color(0xFF000000);    // Pure black for maximum contrast
+      stellarGoldContainer = const Color(0xFF4D3D00);
+      onStellarGoldContainer = const Color(0xFFFFFFFF);  // Pure white
       
     } else {
-      // Light theme - Bright, vibrant colors
-      primary = const Color(0xFF6750A4);          // Material purple
+      // Light theme - Deep, substantial colors for proper contrast
+      primary = const Color(0xFF4A3388);          // Deeper purple (enhanced contrast)
       onPrimary = const Color(0xFFFFFFFF);
-      primaryContainer = const Color(0xFFE9DDFF);
-      onPrimaryContainer = const Color(0xFF22005D);
+      primaryContainer = const Color(0xFFE0D7FF);
+      onPrimaryContainer = const Color(0xFF1A0044);  // Deeper container text
       
-      secondary = const Color(0xFF00ACC1);        // Bright cyan
+      secondary = const Color(0xFF008899);        // Deeper cyan (better contrast)
       onSecondary = const Color(0xFFFFFFFF);
       secondaryContainer = const Color(0xFFB2EBF2);
-      onSecondaryContainer = const Color(0xFF002F34);
+      onSecondaryContainer = const Color(0xFF001F22);  // Deeper container text
       
-      tertiary = const Color(0xFFE91E63);         // Pink
+      tertiary = const Color(0xFFCC1744);         // Deeper pink (better contrast)
       onTertiary = const Color(0xFFFFFFFF);
       tertiaryContainer = const Color(0xFFFFD1DC);
-      onTertiaryContainer = const Color(0xFF3E001E);
+      onTertiaryContainer = const Color(0xFF2A0011);  // Deeper container text
       
-      surface = const Color(0xFFFEFBFF);          // Slightly tinted white
-      onSurface = const Color(0xFF1C1B20);
-      surfaceVariant = const Color(0xFFE7E0EC);
-      onSurfaceVariant = const Color(0xFF49454E);
+      surface = const Color(0xFFFFFFFF);          // Pure white surface
+      onSurface = const Color(0xFF1A1A1A);        // Deeper text (better contrast)
+      surfaceVariant = const Color(0xFFF5F5F5);
+      onSurfaceVariant = const Color(0xFF333333);  // Deeper variant text
       
-      background = const Color(0xFFFEFBFF);
-      onBackground = const Color(0xFF1C1B20);
+      background = const Color(0xFFFFFFFF);       // Pure white background
+      onBackground = const Color(0xFF1A1A1A);     // Deep text for maximum readability
       
-      error = const Color(0xFFBA1A1A);
+      error = const Color(0xFF990000);            // Deeper red (better contrast)
       onError = const Color(0xFFFFFFFF);
       errorContainer = const Color(0xFFFFDAD6);
-      onErrorContainer = const Color(0xFF410002);
+      onErrorContainer = const Color(0xFF330000);  // Deeper error container text
       
-      outline = const Color(0xFF7A757F);
-      outlineVariant = const Color(0xFFCAC4CF);
+      outline = const Color(0xFF666666);          // Deeper outline (better visibility)
+      outlineVariant = const Color(0xFFBBBBBB);
       shadow = const Color(0xFF000000);
-      inverseSurface = const Color(0xFF313034);
-      onInverseSurface = const Color(0xFFF4EFF4);
+      inverseSurface = const Color(0xFF2A2A2A);   // Deeper inverse surface
+      onInverseSurface = const Color(0xFFFFFFFF);
+      
+      // Stellar Gold - Deeper amber accent for light mode (enhanced contrast)
+      stellarGold = const Color(0xFFDD7700);      // Deeper amber (better contrast)
+      onStellarGold = const Color(0xFFFFFFFF);
+      stellarGoldContainer = const Color(0xFFFFE0B3);
+      onStellarGoldContainer = const Color(0xFF221100);  // Deeper container text
     }
   }
   
@@ -162,21 +180,27 @@ class ExpressiveColorSystem {
       onErrorContainer: onErrorContainer,
       
       // Special colors
-      accent: secondary,
+      accent: stellarGold,                          // Stellar gold as primary accent for Expressive theme
       highlight: tertiary,
       shadow: shadow,
       outline: outline,
       outlineVariant: outlineVariant,
       
+      // Stellar Gold colors
+      stellarGold: stellarGold,
+      onStellarGold: onStellarGold,
+      stellarGoldContainer: stellarGoldContainer,
+      onStellarGoldContainer: onStellarGoldContainer,
+      
       // Task priority colors with gradients
       taskLowPriority: const Color(0xFF4CAF50),
       taskMediumPriority: secondary,
-      taskHighPriority: const Color(0xFFFF9800),
+      taskHighPriority: stellarGold,                    // Updated to use stellar gold for high priority
       taskUrgentPriority: error,
       
       // Status colors
       success: const Color(0xFF4CAF50),
-      warning: const Color(0xFFFF9800),
+      warning: stellarGold,                             // Updated to use stellar gold for warnings
       info: secondary,
 
       // Calendar dot colors - Expressive theme (dynamic based on isDark)
@@ -189,10 +213,10 @@ class ExpressiveColorSystem {
       // Status badge colors - Expressive themed (dynamic based on isDark)
       statusPendingBadge: secondary,                  // Secondary color for pending
       statusInProgressBadge: tertiary,                // Tertiary color for in progress
-      statusCompletedBadge: const Color(0xFF4CAF50),  // Success green for completed
+      statusCompletedBadge: stellarGold,              // Stellar gold for completed (achievement)
       statusCancelledBadge: onSurfaceVariant,         // Muted color for cancelled
       statusOverdueBadge: error,                      // Error color for overdue
-      statusOnHoldBadge: const Color(0xFFFF9800),     // Warning color for on hold
+      statusOnHoldBadge: stellarGold,                 // Stellar gold for on hold
       
       // Interactive colors
       hover: primary.withValues(alpha: 0.08),
@@ -266,8 +290,8 @@ class ExpressiveColorSystem {
         ];
       case 'high':
         return [
-          const Color(0xFFFF9800),
-          const Color(0xFFFFC107),
+          stellarGold,
+          harmonize(stellarGold, tertiary),
         ];
       case 'urgent':
         return [
@@ -276,6 +300,40 @@ class ExpressiveColorSystem {
         ];
       default:
         return [surface, surfaceVariant];
+    }
+  }
+  
+  /// Create a gradient featuring stellar gold
+  LinearGradient createStellarGoldGradient({
+    AlignmentGeometry begin = Alignment.topLeft,
+    AlignmentGeometry end = Alignment.bottomRight,
+  }) {
+    return LinearGradient(
+      begin: begin,
+      end: end,
+      colors: [
+        stellarGold,
+        harmonize(stellarGold, primary),
+        harmonize(stellarGold, tertiary),
+      ],
+      stops: const [0.0, 0.5, 1.0],
+    );
+  }
+  
+  /// Get stellar gold color variants for different contexts
+  Color getStellarGoldVariant(String context) {
+    switch (context.toLowerCase()) {
+      case 'achievement':
+      case 'premium':
+        return stellarGold;
+      case 'container':
+        return stellarGoldContainer;
+      case 'subtle':
+        return stellarGold.withValues(alpha: 0.3);
+      case 'vibrant':
+        return stellarGold.withValues(alpha: 0.9);
+      default:
+        return stellarGold;
     }
   }
 }

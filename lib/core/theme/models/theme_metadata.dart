@@ -13,6 +13,7 @@ class ThemeMetadata {
   final IconData previewIcon;
   final Color primaryPreviewColor;
   final Color secondaryPreviewColor;
+  final Color? tertiaryPreviewColor;
   final DateTime createdAt;
   final DateTime? updatedAt;
   final bool isPremium;
@@ -29,6 +30,7 @@ class ThemeMetadata {
     IconData? previewIcon,
     required this.primaryPreviewColor,
     required this.secondaryPreviewColor,
+    this.tertiaryPreviewColor,
     required this.createdAt,
     this.updatedAt,
     this.isPremium = false,
@@ -46,6 +48,7 @@ class ThemeMetadata {
     IconData? previewIcon,
     Color? primaryPreviewColor,
     Color? secondaryPreviewColor,
+    Color? tertiaryPreviewColor,
     DateTime? createdAt,
     DateTime? updatedAt,
     bool? isPremium,
@@ -62,6 +65,7 @@ class ThemeMetadata {
       previewIcon: previewIcon ?? this.previewIcon,
       primaryPreviewColor: primaryPreviewColor ?? this.primaryPreviewColor,
       secondaryPreviewColor: secondaryPreviewColor ?? this.secondaryPreviewColor,
+      tertiaryPreviewColor: tertiaryPreviewColor ?? this.tertiaryPreviewColor,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       isPremium: isPremium ?? this.isPremium,

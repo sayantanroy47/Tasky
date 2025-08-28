@@ -454,7 +454,7 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
                         padding: const EdgeInsets.all(8),
                         child: Column(
                           children: [
-                            // Top section (header/app bar area)
+                            // Top section (header/app bar area) - Updated to show 3 colors including stellar gold
                             Expanded(
                               flex: 1,
                               child: Row(
@@ -468,13 +468,23 @@ class _ThemesPageState extends ConsumerState<ThemesPage>
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(width: 4),
+                                  const SizedBox(width: 3),
                                   Expanded(
                                     flex: 1,
                                     child: Container(
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall), // 2.0 - Fixed border radius hierarchy (was 4px)
                                         color: theme.colors.secondary.withValues(alpha: 0.7),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 3),
+                                  Expanded(
+                                    flex: 1,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall), // 2.0 - Fixed border radius hierarchy (was 4px)
+                                        color: (theme.colors.stellarGold ?? theme.colors.accent).withValues(alpha: 0.8),
                                       ),
                                     ),
                                   ),

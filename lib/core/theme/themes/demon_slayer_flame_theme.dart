@@ -30,6 +30,7 @@ class DemonSlayerFlameTheme {
         previewIcon: PhosphorIcons.fire(),
         primaryPreviewColor: isDark ? const Color(0xFF8B0000) : const Color(0xFFFFF8F0),
         secondaryPreviewColor: const Color(0xFFFF4500),
+        tertiaryPreviewColor: isDark ? const Color(0xFFFF4500) : const Color(0xFFCC2200), // Demon flame signature color
         createdAt: now,
         isPremium: true,
         popularityScore: 9.5,
@@ -57,18 +58,30 @@ class DemonSlayerFlameTheme {
       const blazeOrange = Color(0xFFFF4500);      // Primary flame
       const emberRed = Color(0xFFDC143C);         // Ember red
       const sunriseYellow = Color(0xFFFFD700);    // Golden flame
-      const charcoalGray = Color(0xFF2F2F2F);     // Dark text
+      const charcoalGray = Color(0xFF1A1A1A);     // Dark text (enhanced contrast)
       const smokeGray = Color(0xFF696969);        // Secondary text
       const ashWhite = Color(0xFFFFF8F0);         // Background
       const lightEmber = Color(0xFFFFE4E1);       // Light surface
       const warmGlow = Color(0xFFFFA07A);         // Accent
+      
+      // Demon Flame signature colors - Light mode: Deep, substantial colors
+      const demonFlame = Color(0xFFCC2200);       // Deep substantial demon flame
+      const onDemonFlame = Color(0xFFFFFFFF);     // Pure white for contrast
+      const demonFlameContainer = Color(0xFFFFEBEE); // Light flame container
+      const onDemonFlameContainer = Color(0xFF1A1A1A); // Deep charcoal
       
       return ThemeColors(
         // Primary
         primary: blazeOrange,
         onPrimary: Colors.white,
         primaryContainer: const Color(0xFFFFE4E1),
-        onPrimaryContainer: const Color(0xFF2E0E00),
+        onPrimaryContainer: charcoalGray, // Enhanced contrast
+        
+        // Demon Flame signature accent colors
+        demonFlame: demonFlame,
+        onDemonFlame: onDemonFlame,
+        demonFlameContainer: demonFlameContainer,
+        onDemonFlameContainer: onDemonFlameContainer,
         
         // Secondary
         secondary: emberRed,
@@ -84,15 +97,15 @@ class DemonSlayerFlameTheme {
         
         // Surface
         surface: ashWhite,
-        onSurface: const Color(0xFF2d2d2d),
+        onSurface: charcoalGray, // Enhanced contrast
         surfaceVariant: lightEmber,
-        onSurfaceVariant: const Color(0xFF2d2d2d),
-        inverseSurface: const Color(0xFF2d2d2d),
+        onSurfaceVariant: charcoalGray, // Enhanced contrast
+        inverseSurface: charcoalGray,
         onInverseSurface: ashWhite,
         
         // Background
         background: ashWhite,
-        onBackground: const Color(0xFF2d2d2d),
+        onBackground: charcoalGray, // Enhanced contrast
         
         // Error
         error: emberRed,
@@ -107,10 +120,10 @@ class DemonSlayerFlameTheme {
         outline: smokeGray,
         outlineVariant: const Color(0xFFD3C4B4),
         
-        // Task Priority
+        // Task Priority (enhanced with signature demon flame)
         taskLowPriority: const Color(0xFFFFA07A),
         taskMediumPriority: blazeOrange,
-        taskHighPriority: emberRed,
+        taskHighPriority: demonFlame,            // Signature demon flame for high priority
         taskUrgentPriority: const Color(0xFF8B0000),
         
         // Status
@@ -125,18 +138,18 @@ class DemonSlayerFlameTheme {
         calendarCompletedDot: const Color(0xFF32CD32),
         calendarHighPriorityDot: const Color(0xFF8B0000),
         
-        // Status Badges
+        // Status Badges (enhanced with signature demon flame)
         statusPendingBadge: warmGlow,
-        statusInProgressBadge: blazeOrange,
-        statusCompletedBadge: const Color(0xFF32CD32),
+        statusInProgressBadge: demonFlame,       // Signature demon flame for active states
+        statusCompletedBadge: const Color(0xFF32CD32), // Achievement uses signature color for celebration
         statusCancelledBadge: smokeGray,
         statusOverdueBadge: emberRed,
         statusOnHoldBadge: sunriseYellow,
         
-        // Interactive
-        hover: blazeOrange.withValues(alpha: 0.8),
-        pressed: blazeOrange.withValues(alpha: 0.9),
-        focus: blazeOrange.withValues(alpha: 0.12),
+        // Interactive (enhanced with signature demon flame)
+        hover: demonFlame.withValues(alpha: 0.25),   // demonFlame with 0.25 alpha
+        pressed: demonFlame.withValues(alpha: 0.5),  // demonFlame with 0.5 alpha
+        focus: demonFlame,                           // Signature demon flame for focus states
         disabled: smokeGray.withValues(alpha: 0.5),
       );
     } else {
@@ -147,7 +160,13 @@ class DemonSlayerFlameTheme {
       const flameYellow = Color(0xFFFFD700);      // Golden flame
       const charcoalBlack = Color(0xFF1C1C1C);    // Background
       const smokeGray = Color(0xFF2F2F2F);        // Surface
-      const ashGray = Color(0xFFDDDDDD);          // On surface
+      const ashGray = Color(0xFFFFFFFF);          // Pure white (enhanced contrast)
+      
+      // Demon Flame signature colors - Dark mode: Super bright, highly saturated
+      const demonFlame = Color(0xFFFF4500);       // Super bright demon flame
+      const onDemonFlame = Color(0xFF000000);     // Pure black for maximum contrast
+      const demonFlameContainer = Color(0xFF8B1A1A); // Deep flame container
+      const onDemonFlameContainer = Color(0xFFFFFFFF); // Pure white
       
       return ThemeColors(
         // Primary
@@ -155,6 +174,12 @@ class DemonSlayerFlameTheme {
         onPrimary: Colors.white,
         primaryContainer: deepRed,
         onPrimaryContainer: const Color(0xFFFFE4E1),
+        
+        // Demon Flame signature accent colors
+        demonFlame: demonFlame,
+        onDemonFlame: onDemonFlame,
+        demonFlameContainer: demonFlameContainer,
+        onDemonFlameContainer: onDemonFlameContainer,
         
         // Secondary
         secondary: emberGlow,
@@ -170,15 +195,15 @@ class DemonSlayerFlameTheme {
         
         // Surface
         surface: charcoalBlack,
-        onSurface: ashGray,                          // Use ashGray for better contrast
+        onSurface: ashGray,                          // Enhanced contrast with pure white
         surfaceVariant: smokeGray,
-        onSurfaceVariant: ashGray,                   // Use ashGray consistently
+        onSurfaceVariant: ashGray,                   // Enhanced contrast with pure white
         inverseSurface: const Color(0xFFf8f8f2),
         onInverseSurface: charcoalBlack,
         
         // Background
         background: charcoalBlack,
-        onBackground: ashGray,                       // Use ashGray consistently
+        onBackground: ashGray,                       // Enhanced contrast with pure white
         
         // Error
         error: const Color(0xFFFF5555),
@@ -193,10 +218,10 @@ class DemonSlayerFlameTheme {
         outline: const Color(0xFF6B6B6B),
         outlineVariant: const Color(0xFF4A4A4A),
         
-        // Task Priority
+        // Task Priority (enhanced with signature demon flame)
         taskLowPriority: const Color(0xFFFF8C69),
         taskMediumPriority: blazeOrange,
-        taskHighPriority: emberGlow,
+        taskHighPriority: demonFlame,            // Signature demon flame for high priority
         taskUrgentPriority: deepRed,
         
         // Status
@@ -211,18 +236,18 @@ class DemonSlayerFlameTheme {
         calendarCompletedDot: const Color(0xFF4CAF50),
         calendarHighPriorityDot: deepRed,
         
-        // Status Badges
+        // Status Badges (enhanced with signature demon flame)
         statusPendingBadge: emberGlow,
-        statusInProgressBadge: blazeOrange,
-        statusCompletedBadge: const Color(0xFF4CAF50),
+        statusInProgressBadge: demonFlame,       // Signature demon flame for active states
+        statusCompletedBadge: const Color(0xFF4CAF50), // Achievement uses signature color for celebration
         statusCancelledBadge: const Color(0xFF6B6B6B),
         statusOverdueBadge: deepRed,
         statusOnHoldBadge: flameYellow,
         
-        // Interactive
-        hover: blazeOrange.withValues(alpha: 0.8),
-        pressed: blazeOrange.withValues(alpha: 0.9),
-        focus: blazeOrange.withValues(alpha: 0.12),
+        // Interactive (enhanced with signature demon flame)
+        hover: demonFlame.withValues(alpha: 0.7),    // demonFlame with 0.7 alpha
+        pressed: demonFlame.withValues(alpha: 0.8),  // demonFlame with 0.8 alpha
+        focus: demonFlame,                           // Signature demon flame for focus states
         disabled: const Color(0xFF6B6B6B).withValues(alpha: 0.5),
       );
     }
@@ -500,7 +525,7 @@ class DemonSlayerFlameTheme {
         patternAngle: 90.0,
         patternDensity: 1.1,
         accentColors: [
-          Color(0x1AFF4500), // Blaze orange at 0.1 alpha
+          Color(0x1AFF4500), // Signature demon flame with proper alpha
           Color(0x1FDC143C), // Ember red at 0.12 alpha
         ],
       ),

@@ -29,8 +29,9 @@ class MidnightGhostTheme {
         tags: ['ghost', 'spectral', 'haunting', 'supernatural', 'ethereal', 'phantom', 'spirit', 'mysterious'],
         category: 'dark',
         previewIcon: PhosphorIcons.ghost(),
-        primaryPreviewColor: const Color(0xFF4169E1), // Spectral blue
-        secondaryPreviewColor: const Color(0xFF708090), // Phantom gray
+        primaryPreviewColor: isDark ? const Color(0xFF0C0C1A) : const Color(0xFFF8F8FF), // Enhanced dark vs light
+        secondaryPreviewColor: isDark ? const Color(0xFF4169E1) : const Color(0xFF2F2F2F), // Spectral blue (mode-specific)
+        tertiaryPreviewColor: isDark ? const Color(0xFF4B0082) : const Color(0xFF330055), // Midnight Indigo signature accent
         createdAt: now,
         isPremium: false,
         popularityScore: 9.0, // Mysterious haunting appeal
@@ -65,6 +66,12 @@ class MidnightGhostTheme {
       const hauntingBlue = Color(0xFF6495ED);          // Haunting blue light
       const mistyGray = Color(0xFF778899);             // Misty gray fog
       const etherealCyan = Color(0xFF48D1CC);          // Ethereal cyan energy
+      
+      // Midnight Indigo Signature Accent - Enhanced for dark mode visibility
+      const midnightIndigoSignature = Color(0xFF4B0082);      // Super bright signature indigo
+      const onMidnightIndigoSignature = Color(0xFFFFFFFF);    // Pure white for maximum contrast
+      const midnightIndigoContainer = Color(0xFF2A1A3F);      // Enhanced indigo container
+      const onMidnightIndigoContainer = Color(0xFFFFFFFF);    // Pure white for container text
       
       return const ThemeColors(
         // Primary colors - Spectral Blue manifestation
@@ -103,17 +110,17 @@ class MidnightGhostTheme {
         errorContainer: Color(0xFF2D1B1B),
         onErrorContainer: Color(0xFFFFB3B3),
 
-        // Special colors - Spectral essence
-        accent: spectralBlue,
+        // Special colors - Spectral essence with Midnight Indigo signature accent
+        accent: midnightIndigoSignature,       // Use signature indigo as primary accent
         highlight: ectoplasmGreen,
         shadow: voidBlack,
         outline: mistyGray,
         outlineVariant: shadowGray,
 
-        // Task priority colors - Spectral energy levels
+        // Task priority colors - Spectral energy levels with Midnight Indigo signature accent
         taskLowPriority: etherealCyan,           // Low energy - Ethereal cyan
         taskMediumPriority: spectralBlue,        // Medium energy - Spectral blue
-        taskHighPriority: spiritPurple,          // High energy - Spirit purple
+        taskHighPriority: midnightIndigoSignature, // Signature indigo power
         taskUrgentPriority: Color(0xFFFF6B6B),   // Critical energy - Danger manifestation
 
         // Status colors - Supernatural states
@@ -121,17 +128,17 @@ class MidnightGhostTheme {
         warning: Color(0xFFFFD700),
         info: hauntingBlue,
 
-        // Calendar dot colors - Spectral calendar
+        // Calendar dot colors - Spectral calendar with Midnight Indigo signature accent
         calendarTodayDot: spectralBlue,
         calendarOverdueDot: Color(0xFFFF6B6B),
         calendarFutureDot: phantomGray,
         calendarCompletedDot: ectoplasmGreen,
-        calendarHighPriorityDot: spiritPurple,
+        calendarHighPriorityDot: midnightIndigoSignature,   // Signature indigo for high priority
         
-        // Status badge colors - Phantom activity states
+        // Status badge colors - Phantom activity states with Midnight Indigo signature accent
         statusPendingBadge: mistyGray,
         statusInProgressBadge: spectralBlue,
-        statusCompletedBadge: ectoplasmGreen,
+        statusCompletedBadge: midnightIndigoSignature,     // Signature indigo for completed (achievement)
         statusCancelledBadge: shadowGray,
         statusOverdueBadge: Color(0xFFFF6B6B),
         statusOnHoldBadge: spiritPurple,
@@ -139,8 +146,14 @@ class MidnightGhostTheme {
         // Interactive colors - Spectral responses
         hover: Color(0x4D4169E1),    // spectralBlue with 0.3 alpha
         pressed: Color(0x80708090),  // phantomGray with 0.5 alpha
-        focus: ectoplasmGreen,
+        focus: midnightIndigoSignature,                    // Signature indigo for focus
         disabled: Color(0xFF1A1A1A),
+        
+        // Midnight Indigo Signature Colors
+        midnightIndigo: midnightIndigoSignature,
+        onMidnightIndigo: onMidnightIndigoSignature,
+        midnightIndigoContainer: midnightIndigoContainer,
+        onMidnightIndigoContainer: onMidnightIndigoContainer,
       );
     }
     
@@ -155,6 +168,12 @@ class MidnightGhostTheme {
     const mistyBlue = Color(0xFFB0C4DE);             // Misty blue accent
     const ghostPurple = Color(0xFF9370DB);           // Ghost purple
     const silverMist = Color(0xFFD3D3D3);            // Silver mist
+    
+    // Midnight Indigo Signature Accent - Deeper for light mode contrast
+    const deepMidnightIndigo = Color(0xFF330055);          // Deep signature indigo
+    const onDeepMidnightIndigo = Color(0xFFFFFFFF);         // White text on deep indigo
+    const deepMidnightIndigoContainer = Color(0xFFE8E0FF);  // Light indigo container
+    const onDeepMidnightIndigoContainer = Color(0xFF1A0033); // Deep indigo container text
     
     return const ThemeColors(
       // Primary colors - Medium Blue on ethereal backgrounds
@@ -193,17 +212,17 @@ class MidnightGhostTheme {
       errorContainer: Color(0xFFFEF2F2),
       onErrorContainer: Color(0xFF991B1B),
       
-      // Special colors - Light spectral essence
-      accent: mediumBlue,
+      // Special colors - Light spectral essence with Midnight Indigo signature accent
+      accent: deepMidnightIndigo,            // Use signature indigo as primary accent
       highlight: lightGreen,
       shadow: Color(0xFF000000),
       outline: silverMist,
       outlineVariant: lightGray,
       
-      // Task priority colors - Light spectral energy
+      // Task priority colors - Light spectral energy with Midnight Indigo signature accent
       taskLowPriority: Color(0xFF38B2AC),
       taskMediumPriority: mediumBlue,
-      taskHighPriority: ghostPurple,
+      taskHighPriority: deepMidnightIndigo,  // Signature indigo power
       taskUrgentPriority: Color(0xFFDC2626),
       
       // Status colors - Light supernatural states
@@ -211,17 +230,17 @@ class MidnightGhostTheme {
       warning: Color(0xFFF59E0B),
       info: mistyBlue,
       
-      // Calendar dot colors - Light spectral calendar
+      // Calendar dot colors - Light spectral calendar with Midnight Indigo signature accent
       calendarTodayDot: mediumBlue,
       calendarOverdueDot: Color(0xFFDC2626),
       calendarFutureDot: softGray,
       calendarCompletedDot: Color(0xFF22C55E),
-      calendarHighPriorityDot: ghostPurple,
+      calendarHighPriorityDot: deepMidnightIndigo,       // Signature indigo for high priority
       
-      // Status badge colors - Light spirit activity
+      // Status badge colors - Light spirit activity with Midnight Indigo signature accent
       statusPendingBadge: silverMist,
       statusInProgressBadge: mediumBlue,
-      statusCompletedBadge: Color(0xFF22C55E),
+      statusCompletedBadge: deepMidnightIndigo,          // Signature indigo for completed (achievement)
       statusCancelledBadge: lightGray,
       statusOverdueBadge: Color(0xFFDC2626),
       statusOnHoldBadge: ghostPurple,
@@ -229,8 +248,14 @@ class MidnightGhostTheme {
       // Interactive colors - Light spectral responses
       hover: Color(0x334169E1),    // mediumBlue with 0.2 alpha
       pressed: Color(0x66708090),  // softGray with 0.4 alpha
-      focus: lightGreen,
+      focus: deepMidnightIndigo,               // Signature indigo for focus
       disabled: lightGray,
+      
+      // Midnight Indigo Signature Colors
+      midnightIndigo: deepMidnightIndigo,
+      onMidnightIndigo: onDeepMidnightIndigo,
+      midnightIndigoContainer: deepMidnightIndigoContainer,
+      onMidnightIndigoContainer: onDeepMidnightIndigoContainer,
     );
   }
 
@@ -514,6 +539,7 @@ class MidnightGhostTheme {
         patternAngle: 0.0,
         patternDensity: 0.7,
         accentColors: [
+          Color(0x1A4B0082), // Midnight Indigo signature accent at 0.1 alpha
           Color(0x194169E1), // Spectral blue at 0.1 alpha
           Color(0x1498FB98), // Ectoplasm green at 0.08 alpha
         ],

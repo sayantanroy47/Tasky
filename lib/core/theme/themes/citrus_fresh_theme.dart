@@ -31,6 +31,7 @@ class CitrusFreshTheme {
         previewIcon: PhosphorIcons.orange(),
         primaryPreviewColor: const Color(0xFF32CD32), // Lime green
         secondaryPreviewColor: const Color(0xFFFFFF00), // Lemon yellow
+        tertiaryPreviewColor: isDark ? const Color(0xFFFF8C00) : const Color(0xFFDD6600), // Citrus tangerine signature color
         createdAt: now,
         isPremium: false,
         popularityScore: 8.8, // High energy appeal
@@ -59,19 +60,31 @@ class CitrusFreshTheme {
       const limeGreen = Color(0xFF32CD32);             // Electric lime green
       const lemonYellow = Color(0xFFFFFF00);           // Bright lemon yellow
       const orangeZest = Color(0xFFFF8C00);            // Vibrant orange zest
-      const mintWhite = Color(0xFFF5FFFA);             // Fresh mint white
+      const mintWhite = Color(0xFFFFFFFF);             // Pure white (enhanced contrast)
       const darkLeaf = Color(0xFF1B4D1B);              // Dark leaf green
       const citrusGreen = Color(0xFF9AFF9A);           // Light citrus green
       const tangerineOrange = Color(0xFFFF7F50);       // Tangerine orange
       const vitaminC = Color(0xFFFFA500);              // Vitamin C orange
       const leafGreen = Color(0xFF228B22);             // Natural leaf green
       
-      return const ThemeColors(
+      // Citrus Tangerine signature colors - Dark mode: Super bright, highly saturated
+      const citrusTangerine = Color(0xFFFF8C00);       // Super bright tangerine
+      const onCitrusTangerine = Color(0xFF000000);     // Pure black for maximum contrast
+      const citrusTangerineContainer = Color(0xFF8B4513); // Deep tangerine container
+      const onCitrusTangerineContainer = Color(0xFFFFFFFF); // Pure white
+      
+      return ThemeColors(
         // Primary colors - Lime Green energy
         primary: limeGreen,
         onPrimary: forestGreen,
         primaryContainer: Color(0xFF2E7D2E),
         onPrimaryContainer: citrusGreen,
+        
+        // Citrus Tangerine signature accent colors
+        citrusTangerine: citrusTangerine,
+        onCitrusTangerine: onCitrusTangerine,
+        citrusTangerineContainer: citrusTangerineContainer,
+        onCitrusTangerineContainer: onCitrusTangerineContainer,
 
         // Secondary colors - Lemon Yellow zest
         secondary: lemonYellow,
@@ -110,10 +123,10 @@ class CitrusFreshTheme {
         outline: leafGreen,
         outlineVariant: darkLeaf,
 
-        // Task priority colors - Vitamin energy levels
+        // Task priority colors - Vitamin energy levels (enhanced with signature tangerine)
         taskLowPriority: citrusGreen,            // Low energy - Light citrus
         taskMediumPriority: limeGreen,           // Medium energy - Lime green
-        taskHighPriority: lemonYellow,           // High energy - Lemon yellow
+        taskHighPriority: citrusTangerine,       // Signature citrus tangerine for high priority
         taskUrgentPriority: orangeZest,          // Critical energy - Orange zest
 
         // Status colors - Fresh vitamin states
@@ -128,18 +141,18 @@ class CitrusFreshTheme {
         calendarCompletedDot: limeGreen,
         calendarHighPriorityDot: orangeZest,
         
-        // Status badge colors - Vitamin activity states
+        // Status badge colors - Vitamin activity states (enhanced with signature tangerine)
         statusPendingBadge: citrusGreen,
-        statusInProgressBadge: lemonYellow,
-        statusCompletedBadge: limeGreen,
+        statusInProgressBadge: citrusTangerine,  // Signature citrus tangerine for active states
+        statusCompletedBadge: limeGreen,         // Achievement uses signature color for celebration
         statusCancelledBadge: leafGreen,
         statusOverdueBadge: Color(0xFFFF6B47),
         statusOnHoldBadge: tangerineOrange,
 
-        // Interactive colors - Citrus burst responses
-        hover: Color(0x8032CD32),    // limeGreen with 0.5 alpha
-        pressed: Color(0xB3FFFF00),  // lemonYellow with 0.7 alpha
-        focus: orangeZest,
+        // Interactive colors - Citrus burst responses (enhanced with signature tangerine)
+        hover: Color(0x80FF8C00),    // citrusTangerine with 0.5 alpha
+        pressed: Color(0xB3FF8C00),  // citrusTangerine with 0.7 alpha
+        focus: citrusTangerine,      // Signature citrus tangerine for focus states
         disabled: Color(0xFF2A4A2A),
       );
     }
@@ -151,17 +164,29 @@ class CitrusFreshTheme {
     const vibrantLime = Color(0xFF32CD32);           // Vibrant lime green
     const sunnyYellow = Color(0xFFFFD700);           // Sunny lemon yellow
     const freshOrange = Color(0xFFFF8C00);           // Fresh orange
-    const deepForest = Color(0xFF0D5F0D);            // Deep forest text
+    const deepForest = Color(0xFF1A1A1A);            // Deep forest text (enhanced contrast)
     const naturalGreen = Color(0xFF228B22);          // Natural green
     const citrusGray = Color(0xFF90EE90);            // Light citrus gray
     const energyOrange = Color(0xFFFF7F50);          // Energy orange
     
-    return const ThemeColors(
+    // Citrus Tangerine signature colors - Light mode: Deep, substantial colors
+    const citrusTangerine = Color(0xFFDD6600);       // Deep substantial tangerine
+    const onCitrusTangerine = Color(0xFFFFFFFF);     // Pure white for contrast
+    const citrusTangerineContainer = Color(0xFFFFE4B5); // Light tangerine container
+    const onCitrusTangerineContainer = Color(0xFF1A1A1A); // Deep charcoal
+    
+    return ThemeColors(
       // Primary colors - Vibrant Lime on fresh backgrounds
       primary: vibrantLime,
       onPrimary: citrusWhite,
       primaryContainer: lightLime,
       onPrimaryContainer: deepForest,
+      
+      // Citrus Tangerine signature accent colors
+      citrusTangerine: citrusTangerine,
+      onCitrusTangerine: onCitrusTangerine,
+      citrusTangerineContainer: citrusTangerineContainer,
+      onCitrusTangerineContainer: onCitrusTangerineContainer,
       
       // Secondary colors - Sunny Yellow energy
       secondary: sunnyYellow,
@@ -200,10 +225,10 @@ class CitrusFreshTheme {
       outline: citrusGray,
       outlineVariant: lightLime,
       
-      // Task priority colors - Light vitamin energy
+      // Task priority colors - Light vitamin energy (enhanced with signature tangerine)
       taskLowPriority: naturalGreen,
       taskMediumPriority: vibrantLime,
-      taskHighPriority: sunnyYellow,
+      taskHighPriority: citrusTangerine,       // Signature citrus tangerine for high priority
       taskUrgentPriority: freshOrange,
       
       // Status colors - Light fresh states
@@ -218,18 +243,18 @@ class CitrusFreshTheme {
       calendarCompletedDot: vibrantLime,
       calendarHighPriorityDot: freshOrange,
       
-      // Status badge colors - Light vitamin activity
+      // Status badge colors - Light vitamin activity (enhanced with signature tangerine)
       statusPendingBadge: naturalGreen,
-      statusInProgressBadge: sunnyYellow,
-      statusCompletedBadge: vibrantLime,
+      statusInProgressBadge: citrusTangerine,  // Signature citrus tangerine for active states
+      statusCompletedBadge: vibrantLime,       // Achievement uses signature color for celebration
       statusCancelledBadge: citrusGray,
       statusOverdueBadge: Color(0xFFDC2626),
       statusOnHoldBadge: energyOrange,
       
-      // Interactive colors - Light citrus responses
-      hover: Color(0x4032CD32),    // vibrantLime with 0.25 alpha
-      pressed: Color(0x80FFD700),  // sunnyYellow with 0.5 alpha
-      focus: freshOrange,
+      // Interactive colors - Light citrus responses (enhanced with signature tangerine)
+      hover: Color(0x40DD6600),    // citrusTangerine with 0.25 alpha
+      pressed: Color(0x80DD6600),  // citrusTangerine with 0.5 alpha
+      focus: citrusTangerine,      // Signature citrus tangerine for focus states
       disabled: citrusGray,
     );
   }
@@ -514,8 +539,8 @@ class CitrusFreshTheme {
         patternAngle: 60.0,
         patternDensity: 1.2,
         accentColors: [
+          Color(0x20FF8C00), // Signature citrus tangerine with proper alpha
           Color(0x2032CD32), // Lime green at 0.125 alpha
-          Color(0x26FFFF00), // Lemon yellow at 0.15 alpha
         ],
       ),
     );

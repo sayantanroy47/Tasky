@@ -29,8 +29,9 @@ class UnicornDreamTheme {
         tags: ['magical', 'rainbow', 'unicorn', 'whimsical', 'colorful', 'fantasy', 'sparkle', 'dreamy'],
         category: 'fantasy',
         previewIcon: PhosphorIcons.sparkle(),
-        primaryPreviewColor: const Color(0xFF9C27B0), // Magical purple
-        secondaryPreviewColor: const Color(0xFFE91E63), // Pink magic
+        primaryPreviewColor: isDark ? const Color(0xFF2D1B3D) : const Color(0xFFFFFFFF), // Deep purple void or pure white
+        secondaryPreviewColor: const Color(0xFF9C27B0), // Magical purple
+        tertiaryPreviewColor: isDark ? const Color(0xFFFF69B4) : const Color(0xFFCC3388), // Unicorn Pink signature accent
         createdAt: now,
         isPremium: false,
         popularityScore: 8.9, // High fantasy appeal
@@ -53,6 +54,9 @@ class UnicornDreamTheme {
 
   static ThemeColors _createUnicornColors({required bool isDark}) {
     if (isDark) {
+      // Unicorn Pink signature accent - Super bright pink for magical energy
+      const unicornPink = Color(0xFFFF69B4);           // Bright unicorn pink
+      
       return const ThemeColors(
         // Midnight Magic - Deep magical colors
         primary: Color(0xFF7B1FA2), // Deep magical purple
@@ -119,13 +123,19 @@ class UnicornDreamTheme {
         statusOverdueBadge: Color(0xFFE91E63), // Magical pink
         statusOnHoldBadge: Color(0xFFFF9800), // Magical orange
         
+        // Signature accent - Unicorn Pink magical energy
+        unicornPink: unicornPink,
+        
         // Interactive colors
         hover: Color(0x147B1FA2), // Primary with alpha
         pressed: Color(0x1F7B1FA2), // Primary with alpha
-        focus: Color(0xFF7B1FA2), // Primary color for focus
+        focus: unicornPink,       // Use signature for focus
         disabled: Color(0xFF4A148C)
       );
     } else {
+      // Unicorn Pink signature accent - Deep pink for light mode magical energy
+      const unicornPinkLight = Color(0xFFCC3388);      // Deep unicorn pink
+      
       return const ThemeColors(
         // Rainbow Dreams - Bright magical colors
         primary: Color(0xFF9C27B0), // Magical purple
@@ -192,10 +202,13 @@ class UnicornDreamTheme {
         statusOverdueBadge: Color(0xFFE91E63), // Magical pink
         statusOnHoldBadge: Color(0xFFFF9800), // Magical orange
         
+        // Signature accent - Unicorn Pink deep magical energy
+        unicornPink: unicornPinkLight,
+        
         // Interactive colors
         hover: Color(0x149C27B0), // Primary with alpha
         pressed: Color(0x1F9C27B0), // Primary with alpha
-        focus: Color(0xFF9C27B0), // Primary color for focus
+        focus: unicornPinkLight,  // Use signature for focus
         disabled: Color(0xFFD1C4E9)
       );
     }
@@ -457,8 +470,9 @@ class UnicornDreamTheme {
         patternAngle: 30.0, // Magical angle for sparkle distribution
         patternDensity: 1.1, // Fine magical density
         accentColors: [
-          (isDark ? const Color(0xFF7B1FA2) : const Color(0xFF9C27B0)).withValues(alpha: 0.12), // Magical purple
-          (isDark ? const Color(0xFFFFEB3B) : const Color(0xFFFFC107)).withValues(alpha: 0.08), // Magical gold
+          (isDark ? const Color(0xFFFF69B4) : const Color(0xFFCC3388)).withValues(alpha: 0.12), // Unicorn pink signature
+          (isDark ? const Color(0xFF7B1FA2) : const Color(0xFF9C27B0)).withValues(alpha: 0.08), // Magical purple
+          (isDark ? const Color(0xFFFFEB3B) : const Color(0xFFFFC107)).withValues(alpha: 0.06), // Magical gold
         ],
       ),
     );

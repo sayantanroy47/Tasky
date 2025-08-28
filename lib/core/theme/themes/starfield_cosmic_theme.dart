@@ -29,8 +29,9 @@ class StarfieldCosmicTheme {
         tags: ['space', 'cosmic', 'stars', 'nebula', 'exploration', 'infinite', 'stellar', 'astronomy'],
         category: 'nature',
         previewIcon: PhosphorIcons.planet(),
-        primaryPreviewColor: const Color(0xFF191970), // Deep space navy
-        secondaryPreviewColor: const Color(0xFF9370DB), // Nebula purple
+        primaryPreviewColor: isDark ? const Color(0xFF0C0C1A) : const Color(0xFFF8F8FF), // Enhanced dark vs light
+        secondaryPreviewColor: isDark ? const Color(0xFF191970) : const Color(0xFF2F2F2F), // Deep space navy (mode-specific)
+        tertiaryPreviewColor: isDark ? const Color(0xFF00CED1) : const Color(0xFF008899), // Starfield Aqua signature accent
         createdAt: now,
         isPremium: false,
         popularityScore: 9.3, // Popular space aesthetic
@@ -65,6 +66,8 @@ class StarfieldCosmicTheme {
       const solarGold = Color(0xFFFFD700);              // Solar gold accent
       const asteroidGray = Color(0xFF708090);           // Asteroid gray
       const quantumTeal = Color(0xFF008B8B);            // Quantum teal
+      // Starfield Aqua signature accent - Super bright aqua for cosmic energy
+      const starfieldAqua = Color(0xFF00CED1);           // Bright starfield aqua
       
       return const ThemeColors(
         // Primary colors - Stellar White brilliance
@@ -136,10 +139,13 @@ class StarfieldCosmicTheme {
         statusOverdueBadge: Color(0xFFFF4500),
         statusOnHoldBadge: galaxyPurple,
 
+        // Signature accent - Starfield Aqua cosmic energy
+        starfieldAqua: starfieldAqua,
+        
         // Interactive colors - Cosmic responses
         hover: Color(0x4D9370DB),    // nebulaPurple with 0.3 alpha
         pressed: Color(0x804682B4),  // cosmicBlue with 0.5 alpha
-        focus: solarGold,
+        focus: starfieldAqua,        // Use signature for focus
         disabled: Color(0xFF1A1A2E),
       );
     }
@@ -155,6 +161,8 @@ class StarfieldCosmicTheme {
     const stellarGray = Color(0xFF708090);           // Stellar gray
     const galaxyGold = Color(0xFFFFD700);            // Galaxy gold
     const quantumBlue = Color(0xFF008B8B);           // Quantum blue
+    // Starfield Aqua signature accent - Deep aqua for light mode cosmic energy
+    const starfieldAquaLight = Color(0xFF008899);      // Deep starfield aqua
     
     return const ThemeColors(
       // Primary colors - Deep Cosmic on light backgrounds
@@ -226,10 +234,13 @@ class StarfieldCosmicTheme {
       statusOverdueBadge: Color(0xFFDC2626),
       statusOnHoldBadge: Color(0xFF8B5CF6),
       
+      // Signature accent - Starfield Aqua deep cosmic energy
+      starfieldAqua: starfieldAquaLight,
+      
       // Interactive colors - Light cosmic responses
       hover: Color(0x336A5ACD),    // darkNebula with 0.2 alpha
       pressed: Color(0x664682B4),  // spaceBlue with 0.4 alpha
-      focus: galaxyGold,
+      focus: starfieldAquaLight,   // Use signature for focus
       disabled: cosmicSilver,
     );
   }
@@ -514,8 +525,9 @@ class StarfieldCosmicTheme {
         patternAngle: 0.0, // Centered like a star
         patternDensity: 1.1, // Stellar density
         accentColors: [
-          Color(0x1A3F51B5), // Deep space blue at 0.1 alpha
-          Color(0x149C27B0), // Cosmic purple at 0.08 alpha
+          Color(0x1A00CED1), // Starfield aqua signature at 0.1 alpha
+          Color(0x143F51B5), // Deep space blue at 0.08 alpha
+          Color(0x109C27B0), // Cosmic purple at 0.06 alpha
         ],
       ),
     );

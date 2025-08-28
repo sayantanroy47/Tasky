@@ -501,16 +501,8 @@ class WeekPreviewWidget extends ConsumerWidget {
   }
 
   Color _getPriorityColor(TaskPriority priority, ThemeData theme) {
-    switch (priority) {
-      case TaskPriority.high:
-        return theme.colorScheme.error;
-      case TaskPriority.medium:
-        return theme.colorScheme.secondary;
-      case TaskPriority.low:
-        return theme.colorScheme.tertiary;
-      default:
-        return theme.colorScheme.primary;
-    }
+    // Use the updated enum colors which now have stellar gold fallback for high priority
+    return priority.color;
   }
 
   void _showPreferencesDialog(BuildContext context, WidgetRef ref) {

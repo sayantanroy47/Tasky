@@ -29,8 +29,9 @@ class ExecutivePlatinumTheme {
         tags: ['business', 'executive', 'platinum', 'professional', 'premium', 'corporate', 'elegant', 'sophisticated'],
         category: 'business',
         previewIcon: PhosphorIcons.briefcase(),
-        primaryPreviewColor: const Color(0xFF424242), // Platinum gray
-        secondaryPreviewColor: const Color(0xFFFFB300), // Executive gold
+        primaryPreviewColor: isDark ? const Color(0xFF121212) : const Color(0xFFFAFAFA), // Enhanced dark vs light
+        secondaryPreviewColor: isDark ? const Color(0xFF616161) : const Color(0xFF424242), // Platinum gray (mode-specific)
+        tertiaryPreviewColor: isDark ? const Color(0xFFE91E63) : const Color(0xFFBB1144), // Executive Rose signature accent
         createdAt: now,
         isPremium: false,
         popularityScore: 9.2, // High business appeal
@@ -53,6 +54,12 @@ class ExecutivePlatinumTheme {
 
   static ThemeColors _createExecutiveColors({required bool isDark}) {
     if (isDark) {
+      // Executive Rose Signature Accent - Enhanced for dark mode visibility
+      const executiveRoseSignature = Color(0xFFE91E63);        // Super bright signature rose
+      const onExecutiveRoseSignature = Color(0xFFFFFFFF);      // Pure white for maximum contrast
+      const executiveRoseContainer = Color(0xFF6D1F36);        // Enhanced rose container
+      const onExecutiveRoseContainer = Color(0xFFFFFFFF);      // Pure white for container text
+      
       return const ThemeColors(
         // Executive Night - Deep sophisticated colors
         primary: Color(0xFF616161), // Platinum gray
@@ -89,18 +96,18 @@ class ExecutivePlatinumTheme {
         outlineVariant: Color(0xFF424242),
         shadow: Color(0xFF000000),
         
-        // Additional required colors
-        accent: Color(0xFFFFB300), // Executive gold accent
+        // Additional required colors - Enhanced with Executive Rose signature accent
+        accent: executiveRoseSignature,        // Use signature rose as primary accent
         highlight: Color(0xFFFFD54F), // Bright executive gold highlight
         disabled: Color(0xFF424242),
         focus: Color(0xFF616161), // Primary color for focus
         hover: Color(0xFF757575), // Light platinum hover
         pressed: Color(0xFF303030), // Darker platinum pressed
         
-        // Task priority colors
+        // Task priority colors - Enhanced with Executive Rose signature accent
         taskLowPriority: Color(0xFF66BB6A), // Green
         taskMediumPriority: Color(0xFFFFB300), // Gold
-        taskHighPriority: Color(0xFFFF8F00), // Orange
+        taskHighPriority: executiveRoseSignature, // Signature rose power
         taskUrgentPriority: Color(0xFFE57373), // Red
         
         // Status colors
@@ -108,22 +115,34 @@ class ExecutivePlatinumTheme {
         warning: Color(0xFFFFB300), // Warning gold
         info: Color(0xFF42A5F5), // Info blue
         
-        // Calendar dot colors - executive theme
+        // Calendar dot colors - executive theme with Executive Rose signature accent
         calendarTodayDot: Color(0xFF616161), // Platinum
         calendarCompletedDot: Color(0xFF66BB6A), // Success green
         calendarOverdueDot: Color(0xFFE57373), // Executive red
-        calendarHighPriorityDot: Color(0xFFFFB300), // Gold
+        calendarHighPriorityDot: executiveRoseSignature, // Signature rose for high priority
         calendarFutureDot: Color(0xFF37474F), // Steel
         
-        // Status badge colors
+        // Status badge colors - Enhanced with Executive Rose signature accent
         statusPendingBadge: Color(0xFF90A4AE), // Gray
         statusInProgressBadge: Color(0xFF42A5F5), // Blue
-        statusCompletedBadge: Color(0xFF66BB6A), // Green
+        statusCompletedBadge: executiveRoseSignature, // Signature rose for completed (achievement)
         statusCancelledBadge: Color(0xFF757575), // Dark gray
         statusOverdueBadge: Color(0xFFE57373), // Red
         statusOnHoldBadge: Color(0xFFFFB300), // Gold
+        
+        // Executive Rose Signature Colors
+        executiveRose: executiveRoseSignature,
+        onExecutiveRose: onExecutiveRoseSignature,
+        executiveRoseContainer: executiveRoseContainer,
+        onExecutiveRoseContainer: onExecutiveRoseContainer,
       );
     } else {
+      // Executive Rose Signature Accent - Deeper for light mode contrast
+      const deepExecutiveRose = Color(0xFFBB1144);            // Deep signature rose
+      const onDeepExecutiveRose = Color(0xFFFFFFFF);           // White text on deep rose
+      const deepExecutiveRoseContainer = Color(0xFFFFE6ED);    // Light rose container
+      const onDeepExecutiveRoseContainer = Color(0xFF5A0A20);  // Deep rose container text
+      
       return const ThemeColors(
         // Corporate Platinum - Clean professional colors
         primary: Color(0xFF424242), // Platinum gray
@@ -160,18 +179,18 @@ class ExecutivePlatinumTheme {
         outlineVariant: Color(0xFFBDBDBD),
         shadow: Color(0xFF000000),
         
-        // Additional required colors
-        accent: Color(0xFFFFB300), // Executive gold accent
+        // Additional required colors - Enhanced with Executive Rose signature accent
+        accent: deepExecutiveRose,             // Use signature rose as primary accent
         highlight: Color(0xFFFFC107), // Bright gold highlight
         disabled: Color(0xFFBDBDBD),
         focus: Color(0xFF424242), // Primary color for focus
         hover: Color(0xFFE0E0E0), // Light hover
         pressed: Color(0xFF9E9E9E), // Darker pressed
         
-        // Task priority colors
+        // Task priority colors - Enhanced with Executive Rose signature accent
         taskLowPriority: Color(0xFF4CAF50), // Green
         taskMediumPriority: Color(0xFFFFB300), // Gold
-        taskHighPriority: Color(0xFFFF9800), // Orange
+        taskHighPriority: deepExecutiveRose,   // Signature rose power
         taskUrgentPriority: Color(0xFFD32F2F), // Red
         
         // Status colors
@@ -179,20 +198,26 @@ class ExecutivePlatinumTheme {
         warning: Color(0xFFFFB300), // Warning gold
         info: Color(0xFF2196F3), // Info blue
         
-        // Calendar dot colors - executive theme
+        // Calendar dot colors - executive theme with Executive Rose signature accent
         calendarTodayDot: Color(0xFF424242), // Platinum
         calendarCompletedDot: Color(0xFF4CAF50), // Success green
         calendarOverdueDot: Color(0xFFD32F2F), // Executive red
-        calendarHighPriorityDot: Color(0xFFFFB300), // Gold
+        calendarHighPriorityDot: deepExecutiveRose,        // Signature rose for high priority
         calendarFutureDot: Color(0xFF607D8B), // Steel blue
         
-        // Status badge colors
+        // Status badge colors - Enhanced with Executive Rose signature accent
         statusPendingBadge: Color(0xFF9E9E9E), // Gray
         statusInProgressBadge: Color(0xFF2196F3), // Blue
-        statusCompletedBadge: Color(0xFF4CAF50), // Green
+        statusCompletedBadge: deepExecutiveRose,           // Signature rose for completed (achievement)
         statusCancelledBadge: Color(0xFF757575), // Dark gray
         statusOverdueBadge: Color(0xFFD32F2F), // Red
         statusOnHoldBadge: Color(0xFFFFB300), // Gold
+        
+        // Executive Rose Signature Colors
+        executiveRose: deepExecutiveRose,
+        onExecutiveRose: onDeepExecutiveRose,
+        executiveRoseContainer: deepExecutiveRoseContainer,
+        onExecutiveRoseContainer: onDeepExecutiveRoseContainer,
       );
     }
   }
@@ -476,6 +501,7 @@ class ExecutivePlatinumTheme {
         patternAngle: 0.0, // Vertical precision
         patternDensity: 0.8, // Fine professional pattern
         accentColors: [
+          (isDark ? const Color(0xFFE91E63) : const Color(0xFFBB1144)).withValues(alpha: 0.12), // Executive Rose signature accent
           (isDark ? const Color(0xFF424242) : const Color(0xFFE0E0E0)).withValues(alpha: 0.1), // Platinum accent
           (isDark ? const Color(0xFFFFB300) : const Color(0xFFFFC107)).withValues(alpha: 0.05), // Gold accent
         ],

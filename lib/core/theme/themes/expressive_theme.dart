@@ -298,8 +298,11 @@ class ExpressiveTheme {
         patternAngle: 0.0,
         patternDensity: 1.0,
         accentColors: [
-          isDark ? const Color(0x14FFFFFF) : const Color(0x14000000), // Dynamic primary accent
-          isDark ? const Color(0x0FFFFFFF) : const Color(0x0F000000), // Dynamic secondary accent
+          // Use stellar gold as the primary accent color in gradients
+          isDark ? const Color(0x40FFB300) : const Color(0x66FF8F00), // Stellar gold with good alpha
+          isDark ? const Color(0x329575FF) : const Color(0x4D6750A4), // Primary purple
+          isDark ? const Color(0x2800E5FF) : const Color(0x3D00ACC1), // Secondary cyan
+          isDark ? const Color(0x1EFF6E90) : const Color(0x32E91E63), // Tertiary coral
         ],
       ),
     );

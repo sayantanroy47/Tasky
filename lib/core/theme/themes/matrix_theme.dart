@@ -28,8 +28,9 @@ class MatrixTheme {
         tags: ['cyberpunk', 'hacker', 'digital', 'green', 'terminal', 'retro'],
         category: 'developer',
         previewIcon: PhosphorIcons.terminal(),
-        primaryPreviewColor: isDark ? const Color(0xFF000000) : const Color(0xFFf8f8f8), // Pure black or light gray
-        secondaryPreviewColor: const Color(0xFF00ff00), // Neon green (same)
+        primaryPreviewColor: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF), // Pure black or white
+        secondaryPreviewColor: const Color(0xFF00FF00), // Neon green (same)
+        tertiaryPreviewColor: isDark ? const Color(0xFF00FF55) : const Color(0xFF008833), // Matrix Green signature accent
         createdAt: now,
         isPremium: false,
         popularityScore: 9.2,
@@ -56,180 +57,204 @@ class MatrixTheme {
     if (!isDark) {
       // Matrix Light Variant: Cinematic Terminal
       
-      // Matrix neon colors for light variant
-      const darkNeonGreen = Color(0xFF00FF00);      // Primary neon
-      const darkGreen = Color(0xFF008000);          // Secondary
-      const darkBrightGreen = Color(0xFF39FF14);    // Highlight
-      const darkTerminalGreen = Color(0xFF00CC00);  // Accent
+      // Matrix neon colors for light variant - Enhanced contrast
+      const deepNeonGreen = Color(0xFF00BB00);      // Deeper primary neon for better contrast
+      const deepGreen = Color(0xFF005500);          // Deeper secondary
+      const deepBrightGreen = Color(0xFF228833);    // Deeper highlight for better contrast
+      const deepTerminalGreen = Color(0xFF008800);  // Deeper accent
       
-      // Light terminal backgrounds
-      const lightestGray = Color(0xFFFFFFFF);       // Background white
-      const lightGray = Color(0xFFF3F4F6);          // Surface
-      const paleGreen = Color(0xFFECFDF5);          // Container tint
+      // Light terminal backgrounds - Enhanced contrast
+      const pureWhite = Color(0xFFFFFFFF);          // Pure white background
+      const lightGray = Color(0xFFF8F8F8);          // Light surface
+      const paleGreen = Color(0xFFE8F8E8);          // Light green container tint
+      
+      // Matrix Green Signature Accent - Deep for light mode contrast
+      const deepMatrixGreenSignature = Color(0xFF008833);       // Deep signature matrix green
+      const onDeepMatrixGreenSignature = Color(0xFFFFFFFF);     // White text on deep green
+      const deepMatrixGreenContainer = Color(0xFFE0F8E0);       // Light green container
+      const onDeepMatrixGreenContainer = Color(0xFF002211);     // Deep green container text
       
       return const ThemeColors(
-        // Primary colors - Dark neon green on light background
-        primary: darkNeonGreen,
-        onPrimary: Color(0xFF000000), // Black text on neon green for better contrast
+        // Primary colors - Enhanced deep neon green for better contrast
+        primary: deepNeonGreen,
+        onPrimary: pureWhite,
         primaryContainer: paleGreen,
-        onPrimaryContainer: Color(0xFF003300), // Very dark green text on light containers
+        onPrimaryContainer: Color(0xFF002200), // Deeper container text
 
-        // Secondary colors - Dark green variations
-        secondary: darkGreen,
-        onSecondary: Color(0xFFE8FFE8), // Matrix green-tinted white for theme consistency
+        // Secondary colors - Enhanced deep green variations
+        secondary: deepGreen,
+        onSecondary: pureWhite,
         secondaryContainer: paleGreen,
-        onSecondaryContainer: Color(0xFF003300), // Very dark green text on light containers
+        onSecondaryContainer: Color(0xFF002200), // Deeper container text
 
-        // Tertiary colors - Bright green highlights
-        tertiary: darkBrightGreen,
-        onTertiary: Color(0xFF000000), // Black text on bright green for better contrast
+        // Tertiary colors - Enhanced deep bright green highlights
+        tertiary: deepBrightGreen,
+        onTertiary: pureWhite,
         tertiaryContainer: paleGreen,
-        onTertiaryContainer: Color(0xFF003300), // Very dark green text on light containers
+        onTertiaryContainer: Color(0xFF002200), // Deeper container text
 
-        // Surface colors - Light backgrounds
+        // Surface colors - Enhanced contrast light backgrounds
         surface: lightGray,
-        onSurface: Color(0xFF1a1a1a), // Dark text for light surfaces
-        surfaceVariant: Color(0xFFf5f5f5),
-        onSurfaceVariant: Color(0xFF2a2a2a), // Dark text for light surfaces
-        inverseSurface: darkGreen,
-        onInverseSurface: lightestGray,
+        onSurface: Color(0xFF1A1A1A), // Deep text for maximum readability
+        surfaceVariant: Color(0xFFF0F0F0),
+        onSurfaceVariant: Color(0xFF333333), // Deeper variant text
+        inverseSurface: deepGreen,
+        onInverseSurface: pureWhite,
 
-        // Background colors - Lightest gray as requested
-        background: lightestGray,
-        onBackground: Color(0xFF0a0a0a), // Very dark text for light backgrounds
+        // Background colors - Pure white for maximum contrast
+        background: pureWhite,
+        onBackground: Color(0xFF1A1A1A), // Deep text for maximum readability
 
-        // Error colors - Red warnings
-        error: Color(0xFFDC2626),
-        onError: lightestGray,
-        errorContainer: Color(0xFFffebee),
-        onErrorContainer: Color(0xFFDC2626),
+        // Error colors - Enhanced red warnings
+        error: Color(0xFFBB1111), // Deeper error red
+        onError: pureWhite,
+        errorContainer: Color(0xFFFEF0F0),
+        onErrorContainer: Color(0xFF660000), // Deeper error container text
 
-        // Special colors
-        accent: darkTerminalGreen,
-        highlight: darkBrightGreen,
+        // Special colors - Enhanced with signature accent
+        accent: deepMatrixGreenSignature, // Use signature matrix green as primary accent
+        highlight: deepBrightGreen,
         shadow: Color(0xFF000000),
-        outline: darkGreen,
-        outlineVariant: darkTerminalGreen,
+        outline: Color(0xFF888888), // Deeper outline for better visibility
+        outlineVariant: deepTerminalGreen,
 
-        // Task priority colors - Green theme variants
-        taskLowPriority: Color(0xFF10B981),
-        taskMediumPriority: darkNeonGreen,
-        taskHighPriority: darkBrightGreen,
-        taskUrgentPriority: Color(0xFFDC2626),
+        // Matrix Green Signature Colors
+        matrixGreen: deepMatrixGreenSignature,
+        onMatrixGreen: onDeepMatrixGreenSignature,
+        matrixGreenContainer: deepMatrixGreenContainer,
+        onMatrixGreenContainer: onDeepMatrixGreenContainer,
 
-        // Status colors
-        success: Color(0xFF10B981),
-        warning: Color(0xFFF59E0B),
-        info: darkTerminalGreen,
+        // Task priority colors - Enhanced with signature accent
+        taskLowPriority: Color(0xFF117744), // Deeper success green
+        taskMediumPriority: deepNeonGreen,
+        taskHighPriority: deepMatrixGreenSignature, // Signature matrix green - High priority
+        taskUrgentPriority: Color(0xFFBB1111), // Deeper urgent red
 
-        // Calendar dot colors
-        calendarTodayDot: darkNeonGreen,
-        calendarOverdueDot: Color(0xFFDC2626),
-        calendarFutureDot: darkTerminalGreen,
-        calendarCompletedDot: Color(0xFF10B981),
-        calendarHighPriorityDot: darkBrightGreen,
+        // Status colors - Deeper for better contrast
+        success: Color(0xFF117744), // Deeper success green
+        warning: Color(0xFFCC7700), // Deeper warning
+        info: deepMatrixGreenSignature, // Use signature matrix green for info
+
+        // Calendar dot colors - Enhanced
+        calendarTodayDot: deepNeonGreen,
+        calendarOverdueDot: Color(0xFFBB1111),
+        calendarFutureDot: deepTerminalGreen,
+        calendarCompletedDot: Color(0xFF117744),
+        calendarHighPriorityDot: deepMatrixGreenSignature, // Signature matrix green for high priority
         
-        // Status badge colors
-        statusPendingBadge: darkTerminalGreen,
-        statusInProgressBadge: darkBrightGreen,
-        statusCompletedBadge: Color(0xFF10B981),
-        statusCancelledBadge: Color(0xFF9e9e9e),
-        statusOverdueBadge: Color(0xFFDC2626),
-        statusOnHoldBadge: Color(0xFFF59E0B),
+        // Status badge colors - Enhanced with signature matrix green
+        statusPendingBadge: deepTerminalGreen,
+        statusInProgressBadge: deepBrightGreen,
+        statusCompletedBadge: deepMatrixGreenSignature, // Signature matrix green for completed (achievement)
+        statusCancelledBadge: Color(0xFF888888),
+        statusOverdueBadge: Color(0xFFBB1111),
+        statusOnHoldBadge: Color(0xFFCC7700),
 
-        // Interactive colors
-        hover: Color(0xFF059669),
-        pressed: Color(0xFF047857),
-        focus: darkBrightGreen,
-        disabled: Color(0xFF9e9e9e),
+        // Interactive colors - Enhanced for better visibility
+        hover: Color(0x60BB00), // Deeper green hover
+        pressed: Color(0x99005500), // Deeper green pressed
+        focus: deepMatrixGreenSignature, // Use signature matrix green for focus
+        disabled: Color(0xFF999999), // Enhanced disabled
       );
     }
     
-    // Dark variant: Refined Matrix colors
-    const pureBlack = Color(0xFF000000);          // The void
-    const neonGreen = Color(0xFF00FF00);          // Primary Matrix code
-    const darkGreen = Color(0xFF006400);          // Deeper authentic green
-    const brightGreen = Color(0xFF39FF14);        // Neon highlight
-    const terminalGreen = Color(0xFF00CC00);      // Terminal accent
-    const darkGray = Color(0xFF111827);           // Subtle contrast surface
-    const matrixGreen = Color(0xFF003300);        // Container depth green
-    const shadowEmerald = Color(0xFF064E3B);      // Muted emerald for UI layering
+    // Dark variant: Super bright, maximum saturation Matrix colors
+    const pureBlack = Color(0xFF000000);          // Pure void (already perfect)
+    const neonGreen = Color(0xFF00FF00);          // Pure Matrix code (already perfect)
+    const enhancedDarkGreen = Color(0xFF00BB00);  // Enhanced deeper green (brighter)
+    const enhancedBrightGreen = Color(0xFF55FF55); // Enhanced neon highlight (brighter)
+    const enhancedTerminalGreen = Color(0xFF00DD00); // Enhanced terminal accent (brighter)
+    const deeperGray = Color(0xFF080808);         // Ultra-deep surface for stronger contrast
+    const enhancedMatrixGreen = Color(0xFF004400); // Enhanced container green (brighter)
+    const enhancedEmerald = Color(0xFF00AA55);    // Enhanced emerald for UI (brighter)
+    
+    // Matrix Green Signature Accent - Maximum visibility matrix green
+    const matrixGreenSignature = Color(0xFF00FF55);       // Super bright signature matrix green
+    const onMatrixGreenSignature = Color(0xFF000000);     // Pure black for maximum contrast
+    const matrixGreenContainer = Color(0xFF003322);       // Deep matrix container
+    const onMatrixGreenContainer = Color(0xFFFFFFFF);     // Pure white for container text
     
     return const ThemeColors(
-      // Primary colors - Neon green like Matrix code
+      // Primary colors - Enhanced neon green Matrix code
       primary: neonGreen,
-      onPrimary: pureBlack,
-      primaryContainer: matrixGreen,
-      onPrimaryContainer: neonGreen,
+      onPrimary: Color(0xFF000000), // Pure black for maximum contrast
+      primaryContainer: enhancedMatrixGreen,
+      onPrimaryContainer: Color(0xFFFFFFFF), // Pure white for container text
 
-      // Secondary colors - Dark green variations
-      secondary: darkGreen,
-      onSecondary: neonGreen,
-      secondaryContainer: shadowEmerald,
-      onSecondaryContainer: terminalGreen,
+      // Secondary colors - Enhanced dark green variations
+      secondary: enhancedDarkGreen,
+      onSecondary: Color(0xFF000000), // Pure black for maximum contrast
+      secondaryContainer: enhancedEmerald,
+      onSecondaryContainer: Color(0xFFFFFFFF), // Pure white for container text
 
-      // Tertiary colors - Bright green highlights
-      tertiary: brightGreen,
-      onTertiary: pureBlack,
-      tertiaryContainer: matrixGreen,
-      onTertiaryContainer: brightGreen,
+      // Tertiary colors - Enhanced bright green highlights
+      tertiary: enhancedBrightGreen,
+      onTertiary: Color(0xFF000000), // Pure black for maximum contrast
+      tertiaryContainer: enhancedMatrixGreen,
+      onTertiaryContainer: Color(0xFFFFFFFF), // Pure white for container text
 
-      // Surface colors - Dark with green tint
-      surface: darkGray,
-      onSurface: neonGreen,
-      surfaceVariant: shadowEmerald,
-      onSurfaceVariant: terminalGreen,
+      // Surface colors - Enhanced dark with green tint
+      surface: deeperGray,
+      onSurface: Color(0xFFFFFFFF), // Pure white text
+      surfaceVariant: enhancedEmerald,
+      onSurfaceVariant: Color(0xFFDDDDDD), // Near-white for excellent contrast
       inverseSurface: neonGreen,
       onInverseSurface: pureBlack,
 
-      // Background colors - Pure black void
+      // Background colors - Enhanced pure black void
       background: pureBlack,
-      onBackground: neonGreen,
+      onBackground: Color(0xFFFFFFFF), // Pure white text
 
-      // Error colors - Red warnings in the Matrix
-      error: Color(0xFFFF0040),
-      onError: pureBlack,
-      errorContainer: Color(0xFF330008),
-      onErrorContainer: Color(0xFFFF6680),
+      // Error colors - Enhanced red warnings in the Matrix
+      error: Color(0xFFFF4466), // Enhanced error red
+      onError: Color(0xFF000000), // Pure black for maximum contrast
+      errorContainer: Color(0xFF440A0A), // Enhanced red container
+      onErrorContainer: Color(0xFFFFFFFF), // Pure white for container text
 
-      // Special colors
-      accent: terminalGreen,
-      highlight: brightGreen,
+      // Special colors - Enhanced with signature accent
+      accent: matrixGreenSignature, // Use signature matrix green as primary accent
+      highlight: enhancedBrightGreen,
       shadow: pureBlack,
-      outline: shadowEmerald,
-      outlineVariant: matrixGreen,
+      outline: Color(0xFF444444), // Enhanced outline
+      outlineVariant: enhancedMatrixGreen,
 
-      // Task priority colors - Different shades of green
-      taskLowPriority: Color(0xFF40FF40),    // Light green - Low priority
-      taskMediumPriority: neonGreen,         // Standard green - Medium
-      taskHighPriority: brightGreen,         // Bright green - High priority
-      taskUrgentPriority: Color(0xFFFF0040), // Red - System alert
+      // Matrix Green Signature Colors
+      matrixGreen: matrixGreenSignature,
+      onMatrixGreen: onMatrixGreenSignature,
+      matrixGreenContainer: matrixGreenContainer,
+      onMatrixGreenContainer: onMatrixGreenContainer,
 
-      // Status colors
-      success: Color(0xFF00FF80),
-      warning: Color(0xFFFFFF00),
-      info: terminalGreen,
+      // Task priority colors - Enhanced with signature accent
+      taskLowPriority: Color(0xFF55FF55), // Enhanced light green - Low priority
+      taskMediumPriority: neonGreen, // Pure matrix green - Medium
+      taskHighPriority: matrixGreenSignature, // Signature matrix green - High priority
+      taskUrgentPriority: Color(0xFFFF4466), // Enhanced red - System alert
 
-      // Calendar dot colors - Matrix green theme
-      calendarTodayDot: neonGreen,                    // Bright green for today
-      calendarOverdueDot: Color(0xFFFF0040),          // Red for overdue
-      calendarFutureDot: terminalGreen,               // Standard green for future
-      calendarCompletedDot: Color(0xFF00FF80),        // Success green for completed
-      calendarHighPriorityDot: brightGreen,           // Bright green for high priority
+      // Status colors - Enhanced brightness
+      success: Color(0xFF44FF88), // Enhanced success green
+      warning: Color(0xFFFFFF00), // Pure yellow (already perfect)
+      info: matrixGreenSignature, // Use signature matrix green for info
+
+      // Calendar dot colors - Enhanced Matrix green theme
+      calendarTodayDot: neonGreen, // Pure green for today
+      calendarOverdueDot: Color(0xFFFF4466), // Enhanced red for overdue
+      calendarFutureDot: enhancedTerminalGreen, // Enhanced green for future
+      calendarCompletedDot: Color(0xFF44FF88), // Enhanced success green for completed
+      calendarHighPriorityDot: matrixGreenSignature, // Signature matrix green for high priority
       
-      // Status badge colors - Matrix themed
-      statusPendingBadge: terminalGreen,              // Standard green for pending
-      statusInProgressBadge: brightGreen,             // Bright green for in progress
-      statusCompletedBadge: Color(0xFF00FF80),        // Success green for completed
-      statusCancelledBadge: Color(0xFF666666),        // Gray for cancelled
-      statusOverdueBadge: Color(0xFFFF0040),          // Red for overdue
-      statusOnHoldBadge: Color(0xFFFFFF00),           // Yellow for on hold
+      // Status badge colors - Enhanced with signature matrix green
+      statusPendingBadge: enhancedTerminalGreen, // Enhanced green for pending
+      statusInProgressBadge: enhancedBrightGreen, // Enhanced bright green for in progress
+      statusCompletedBadge: matrixGreenSignature, // Signature matrix green for completed (achievement)
+      statusCancelledBadge: Color(0xFF777777), // Enhanced gray for cancelled
+      statusOverdueBadge: Color(0xFFFF4466), // Enhanced red for overdue
+      statusOnHoldBadge: Color(0xFFFFFF00), // Pure yellow for on hold
 
-      // Interactive colors
-      hover: Color(0xFF00CC00),
-      pressed: Color(0xFF008000),
-      focus: brightGreen,
-      disabled: Color(0xFF333333),
+      // Interactive colors - Enhanced visibility
+      hover: Color(0xFF00DD00), // Enhanced hover
+      pressed: Color(0xFF00AA00), // Enhanced pressed
+      focus: matrixGreenSignature, // Use signature matrix green for focus
+      disabled: Color(0xFF444444), // Enhanced disabled
     );
   }
 

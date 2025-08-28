@@ -39,17 +39,18 @@ enum TaskPriority {
   /// Get priority value for sorting (alias for value)
   int get sortValue => value;
 
-  /// Get color for priority
+  /// Get color for priority (fallback - prefer using theme colors)
+  /// NOTE: This provides fallback colors. Use ThemeColors.taskHighPriority etc. for theme-aware colors
   Color get color {
     switch (this) {
       case TaskPriority.low:
-        return Colors.green;
+        return const Color(0xFF4CAF50);  // Green
       case TaskPriority.medium:
-        return Colors.orange;
+        return const Color(0xFF2196F3);  // Blue  
       case TaskPriority.high:
-        return Colors.red;
+        return const Color(0xFFFF8F00);  // Amber/Gold (stellar gold fallback)
       case TaskPriority.urgent:
-        return Colors.deepPurple;
+        return const Color(0xFFE91E63);  // Pink/Red
     }
   }
 

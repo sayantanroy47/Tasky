@@ -28,8 +28,9 @@ class GokuUltraInstinctTheme {
         tags: ['anime', 'ultra-instinct', 'silver', 'orange', 'divine', 'mastery', 'goku'],
         category: 'gaming',
         previewIcon: PhosphorIcons.sparkle(),
-        primaryPreviewColor: const Color(0xFFC0C0C0), // Ultra Instinct Silver
-        secondaryPreviewColor: const Color(0xFFFF8C00), // Goku's Orange Gi
+        primaryPreviewColor: isDark ? const Color(0xFF1A0D26) : const Color(0xFFFFFFFF), // Purple void or heavenly white
+        secondaryPreviewColor: const Color(0xFFC0C0C0), // Ultra Instinct Silver
+        tertiaryPreviewColor: isDark ? const Color(0xFFFF8844) : const Color(0xFFDD5500), // Goku Orange signature accent
         createdAt: now,
         isPremium: false,
         popularityScore: 9.2,
@@ -53,182 +54,206 @@ class GokuUltraInstinctTheme {
   /// Create Goku Ultra Instinct color palette
   static ThemeColors _createGokuColors({bool isDark = false}) {
     if (isDark) {
-      // Dark Mode - "Cosmic Mastery": Purple void with ethereal silver energy
-      const purpleVoid = Color(0xFF1A0D26);           // Purple-tinted cosmic void
-      const ultraSilver = Color(0xFFC0C0C0);          // Ultra Instinct silver hair
-      const etherealGlow = Color(0xFFF0F8FF);         // Ethereal aura glow
-      const vibrantOrange = Color(0xFFFF6600);        // Vibrant orange gi
+      // Dark Mode - "Cosmic Mastery": Super bright, maximum saturation divine energy
+      const purpleVoid = Color(0xFF0F0520);           // Ultra-deep purple cosmic void
+      const enhancedUltraSilver = Color(0xFFDDDDDD);  // Enhanced Ultra Instinct silver (brighter)
+      const enhancedEtherealGlow = Color(0xFFFFFFFF); // Pure white ethereal glow
+      const enhancedVibrantOrange = Color(0xFFFF7733); // Enhanced vibrant orange gi (brighter)
       const pureWhite = Color(0xFFFFFFFF);            // Pure white text
-      const silverMist = Color(0xFFE8E8E8);           // Silver mist effects
-      const purpleShadow = Color(0xFF2D1B3D);         // Purple-tinted shadows
-      const divineBlue = Color(0xFFB0E0E6);           // Soft divine blue accent
-      const darkPurple = Color(0xFF3D2A4F);           // Dark purple material
+      const enhancedSilverMist = Color(0xFFEEEEEE);   // Enhanced silver mist (brighter)
+      const purpleShadow = Color(0xFF1A0A2A);         // Deeper purple shadows
+      const enhancedDivineBlue = Color(0xFFCCEEFF);   // Enhanced divine blue (brighter)
+      const darkPurple = Color(0xFF2A1F3A);           // Enhanced dark purple material
+      
+      // Goku Orange Signature Accent - Maximum visibility orange energy
+      const gokuOrangeSignature = Color(0xFFFF8844);         // Super bright signature orange
+      const onGokuOrangeSignature = Color(0xFF000000);       // Pure black for maximum contrast
+      const gokuOrangeContainer = Color(0xFF442211);         // Deep orange container
+      const onGokuOrangeContainer = Color(0xFFFFFFFF);       // Pure white for container text
       
       return const ThemeColors(
-        // Primary colors - Ultra Instinct Silver
-        primary: ultraSilver,
-        onPrimary: purpleVoid,
+        // Primary colors - Enhanced Ultra Instinct Silver
+        primary: enhancedUltraSilver,
+        onPrimary: Color(0xFF000000), // Pure black for maximum contrast
         primaryContainer: darkPurple,
-        onPrimaryContainer: etherealGlow,
+        onPrimaryContainer: Color(0xFFFFFFFF), // Pure white for container text
 
-        // Secondary colors - Orange Gi Energy
-        secondary: vibrantOrange,
-        onSecondary: purpleVoid,
-        secondaryContainer: Color(0xFF8B4513),
-        onSecondaryContainer: etherealGlow,
+        // Secondary colors - Enhanced Orange Gi Energy
+        secondary: enhancedVibrantOrange,
+        onSecondary: Color(0xFF000000), // Pure black for maximum contrast
+        secondaryContainer: Color(0xFF553311), // Enhanced brown container
+        onSecondaryContainer: Color(0xFFFFFFFF), // Pure white for container text
 
-        // Tertiary colors - Orange Gi Accents
-        tertiary: vibrantOrange,
-        onTertiary: purpleVoid,
-        tertiaryContainer: Color(0xFF8B4513),
-        onTertiaryContainer: pureWhite,
+        // Tertiary colors - Enhanced Orange Gi Accents
+        tertiary: enhancedVibrantOrange,
+        onTertiary: Color(0xFF000000), // Pure black for maximum contrast
+        tertiaryContainer: Color(0xFF553311), // Enhanced brown container
+        onTertiaryContainer: Color(0xFFFFFFFF), // Pure white for container text
 
-        // Surface colors - Cosmic Materials
+        // Surface colors - Enhanced cosmic materials
         surface: purpleShadow,
-        onSurface: pureWhite,
+        onSurface: pureWhite, // Pure white text
         surfaceVariant: darkPurple,
-        onSurfaceVariant: silverMist,
+        onSurfaceVariant: enhancedSilverMist, // Enhanced silver text
         inverseSurface: pureWhite,
         onInverseSurface: purpleVoid,
 
-        // Background colors - Deep Cosmic Void
+        // Background colors - Enhanced deep cosmic void
         background: purpleVoid,
-        onBackground: pureWhite,
+        onBackground: pureWhite, // Pure white text
 
-        // Error colors - Controlled destruction energy
-        error: Color(0xFFFF4444),
-        onError: pureWhite,
-        errorContainer: Color(0xFF2A0A0A),
-        onErrorContainer: Color(0xFFFF8888),
+        // Error colors - Enhanced controlled destruction energy
+        error: Color(0xFFFF5555), // Enhanced error red
+        onError: Color(0xFF000000), // Pure black for maximum contrast
+        errorContainer: Color(0xFF440A0A), // Enhanced red container
+        onErrorContainer: Color(0xFFFFFFFF), // Pure white for container text
 
-        // Special colors - Ultra Instinct Energy System
-        accent: vibrantOrange,
-        highlight: vibrantOrange,
+        // Special colors - Enhanced with signature accent
+        accent: gokuOrangeSignature, // Use signature orange as primary accent
+        highlight: enhancedVibrantOrange,
         shadow: Color(0xFF000000),
-        outline: silverMist,
+        outline: Color(0xFF666666), // Enhanced outline
         outlineVariant: darkPurple,
 
-        // Task priority colors - Divine Power Levels
-        taskLowPriority: Color(0xFF90EE90),      // Light green
-        taskMediumPriority: ultraSilver,         // Ultra Instinct silver
-        taskHighPriority: vibrantOrange,         // Vibrant orange gi
-        taskUrgentPriority: Color(0xFFFF4444),   // Controlled power
+        // Goku Orange Signature Colors
+        gokuOrange: gokuOrangeSignature,
+        onGokuOrange: onGokuOrangeSignature,
+        gokuOrangeContainer: gokuOrangeContainer,
+        onGokuOrangeContainer: onGokuOrangeContainer,
 
-        // Status colors - Divine States
-        success: Color(0xFF90EE90),
-        warning: vibrantOrange,
-        info: divineBlue,
+        // Task priority colors - Enhanced divine power levels with signature
+        taskLowPriority: Color(0xAABBEE90), // Enhanced light green
+        taskMediumPriority: enhancedUltraSilver, // Enhanced Ultra Instinct silver
+        taskHighPriority: gokuOrangeSignature, // Signature orange - High priority
+        taskUrgentPriority: Color(0xFFFF5555), // Enhanced controlled power
 
-        // Calendar dot colors - Ultra Instinct System
-        calendarTodayDot: etherealGlow,
-        calendarOverdueDot: Color(0xFFFF4444),
-        calendarFutureDot: silverMist,
-        calendarCompletedDot: Color(0xFF90EE90),
-        calendarHighPriorityDot: vibrantOrange,
+        // Status colors - Enhanced divine states
+        success: Color(0xAABBEE90), // Enhanced success green
+        warning: enhancedVibrantOrange,
+        info: enhancedDivineBlue,
+
+        // Calendar dot colors - Enhanced Ultra Instinct System
+        calendarTodayDot: enhancedEtherealGlow,
+        calendarOverdueDot: Color(0xFFFF5555),
+        calendarFutureDot: enhancedSilverMist,
+        calendarCompletedDot: Color(0xAABBEE90),
+        calendarHighPriorityDot: gokuOrangeSignature, // Signature orange for high priority
         
-        // Status badge colors - Divine Power States
-        statusPendingBadge: etherealGlow,
-        statusInProgressBadge: vibrantOrange,
-        statusCompletedBadge: Color(0xFF90EE90),
+        // Status badge colors - Enhanced with signature orange
+        statusPendingBadge: enhancedEtherealGlow,
+        statusInProgressBadge: enhancedVibrantOrange,
+        statusCompletedBadge: gokuOrangeSignature, // Signature orange for completed (achievement)
         statusCancelledBadge: darkPurple,
-        statusOverdueBadge: Color(0xFFFF4444),
-        statusOnHoldBadge: silverMist,
+        statusOverdueBadge: Color(0xFFFF5555),
+        statusOnHoldBadge: enhancedSilverMist,
 
-        // Interactive colors - Divine Responses
-        hover: Color(0x4DFF6600),  // vibrantOrange with 0.3 alpha
-        pressed: Color(0xB3FF6600),  // vibrantOrange with 0.7 alpha
-        focus: vibrantOrange,
-        disabled: Color(0xFF333333),
+        // Interactive colors - Enhanced divine responses
+        hover: Color(0x66FF7733), // Enhanced orange hover
+        pressed: Color(0xCCFF7733), // Enhanced orange pressed
+        focus: gokuOrangeSignature, // Use signature orange for focus
+        disabled: Color(0xFF444444), // Enhanced disabled
       );
     }
     
-    // Light Mode - "Divine Awakening": Heavenly realm with warm energy
+    // Light Mode - "Divine Awakening": Deep contrasting colors for maximum readability
     const heavenlyWhite = Color(0xFFFFFFFF);        // Pure white background
-    const deepSilver = Color(0xFF708090);           // Deep silver for contrast
-    const softGlow = Color(0xFFE6F3FF);             // Soft ethereal glow
-    const vibrantOrange = Color(0xFFFF6600);        // Vibrant orange gi
-    const charcoalText = Color(0xFF2F4F4F);         // Dark charcoal text
+    const deepSilver = Color(0xFF556677);           // Deeper silver for better contrast
+    const softGlow = Color(0xFFE0E8F0);             // Light ethereal glow
+    const deepVibrantOrange = Color(0xFFDD5500);    // Deeper orange gi for better contrast
+    const deepCharcoalText = Color(0xFF1A1A1A);     // Deep charcoal text for maximum readability
+    
+    // Goku Orange Signature Accent - Deep for light mode contrast
+    const deepGokuOrangeSignature = Color(0xFFDD5500);        // Deep signature orange
+    const onDeepGokuOrangeSignature = Color(0xFFFFFFFF);      // White text on deep orange
+    const deepGokuOrangeContainer = Color(0xFFFFE5CC);        // Light orange container
+    const onDeepGokuOrangeContainer = Color(0xFF441100);      // Deep orange container text
     const lightSilver = Color(0xFFF5F5F5);          // Light silver surface
-    const silverHighlight = Color(0xFFD3D3D3);      // Silver highlights
-    const paleBlue = Color(0xFFF0F8FF);             // Pale divine blue
+    // const silverHighlight = Color(0xFFD3D3D3);      // Silver highlights (reserved for future use)
+    // const paleBlue = Color(0xFFF0F8FF);             // Pale divine blue (reserved for future use)
     const lightGray = Color(0xFFF8F8F8);            // Light gray materials
-    const divineBlue = Color(0xFFB0E0E6);           // Soft divine blue accent
+    // const divineBlue = Color(0xFFB0E0E6);           // Soft divine blue accent (reserved for future use)
     
     return const ThemeColors(
-      // Primary colors - Deep Silver (Light)
+      // Primary colors - Enhanced deep silver for better contrast
       primary: deepSilver,
       onPrimary: heavenlyWhite,
       primaryContainer: softGlow,
-      onPrimaryContainer: deepSilver,
+      onPrimaryContainer: Color(0xFF333344), // Deeper container text
       
-      // Secondary colors - Orange Gi (Light)
-      secondary: vibrantOrange,
+      // Secondary colors - Enhanced deep orange gi
+      secondary: deepVibrantOrange,
       onSecondary: heavenlyWhite,
-      secondaryContainer: Color(0xFFFFF8DC),
-      onSecondaryContainer: Color(0xFF8B4513),
+      secondaryContainer: Color(0xFFFFF0DC),
+      onSecondaryContainer: Color(0xFF663311), // Deeper container text
       
-      // Tertiary colors - Warm Orange (Light)
-      tertiary: vibrantOrange,
+      // Tertiary colors - Enhanced deep orange
+      tertiary: deepVibrantOrange,
       onTertiary: heavenlyWhite,
-      tertiaryContainer: Color(0xFFFFF8DC),
-      onTertiaryContainer: Color(0xFF8B4513),
+      tertiaryContainer: Color(0xFFFFF0DC),
+      onTertiaryContainer: Color(0xFF663311), // Deeper container text
       
-      // Surface colors - Light Materials
+      // Surface colors - Enhanced contrast light materials
       surface: lightSilver,
-      onSurface: charcoalText,
+      onSurface: deepCharcoalText, // Deep text for maximum readability
       surfaceVariant: lightGray,
-      onSurfaceVariant: Color(0xFF4A4A4A),
-      inverseSurface: charcoalText,
+      onSurfaceVariant: Color(0xFF333333), // Deeper variant text
+      inverseSurface: deepCharcoalText,
       onInverseSurface: heavenlyWhite,
       
-      // Background colors - Heavenly Realm
-      background: paleBlue,                         // Pale divine blue background
-      onBackground: charcoalText,
+      // Background colors - Enhanced contrast heavenly realm
+      background: heavenlyWhite, // Pure white for maximum contrast
+      onBackground: deepCharcoalText, // Deep text for maximum readability
       
-      // Error colors - Controlled power (light variant)
-      error: Color(0xFFDC2626),
+      // Error colors - Enhanced controlled power
+      error: Color(0xFFBB1111), // Deeper error red
       onError: heavenlyWhite,
-      errorContainer: Color(0xFFFEF2F2),
-      onErrorContainer: Color(0xFF991B1B),
+      errorContainer: Color(0xFFFEF0F0),
+      onErrorContainer: Color(0xFF660000), // Deeper error container text
       
-      // Special colors - Light Divine System
-      accent: vibrantOrange,
-      highlight: vibrantOrange,
+      // Special colors - Enhanced with signature accent
+      accent: deepGokuOrangeSignature, // Use signature orange as primary accent
+      highlight: deepVibrantOrange,
       shadow: Color(0xFF000000),
-      outline: Color(0xFFBBBBBB),
-      outlineVariant: Color(0xFFDDDDDD),
+      outline: Color(0xFF888888), // Deeper outline for better visibility
+      outlineVariant: Color(0xFFCCCCCC),
       
-      // Task priority colors - Light Divine System
-      taskLowPriority: Color(0xFF22C55E),
+      // Goku Orange Signature Colors
+      gokuOrange: deepGokuOrangeSignature,
+      onGokuOrange: onDeepGokuOrangeSignature,
+      gokuOrangeContainer: deepGokuOrangeContainer,
+      onGokuOrangeContainer: onDeepGokuOrangeContainer,
+      
+      // Task priority colors - Enhanced with signature accent
+      taskLowPriority: Color(0xFF118844), // Deeper success green
       taskMediumPriority: deepSilver,
-      taskHighPriority: vibrantOrange,
-      taskUrgentPriority: Color(0xFFDC2626),
+      taskHighPriority: deepGokuOrangeSignature, // Signature orange - High priority
+      taskUrgentPriority: Color(0xFFBB1111), // Deeper urgent red
       
-      // Status colors - Light Divine States
-      success: Color(0xFF22C55E),
-      warning: vibrantOrange,
-      info: divineBlue,                            // Divine blue info
+      // Status colors - Enhanced light divine states
+      success: Color(0xFF118844), // Deeper success green
+      warning: deepVibrantOrange,
+      info: Color(0xFF6699CC), // Deeper divine blue
       
-      // Calendar dot colors - Light Divine System
-      calendarTodayDot: vibrantOrange,
-      calendarOverdueDot: Color(0xFFDC2626),
-      calendarFutureDot: silverHighlight,
-      calendarCompletedDot: Color(0xFF22C55E),
-      calendarHighPriorityDot: vibrantOrange,
+      // Calendar dot colors - Enhanced light divine system
+      calendarTodayDot: deepVibrantOrange,
+      calendarOverdueDot: Color(0xFFBB1111),
+      calendarFutureDot: deepSilver,
+      calendarCompletedDot: Color(0xFF118844),
+      calendarHighPriorityDot: deepGokuOrangeSignature, // Signature orange for high priority
       
-      // Status badge colors - Light Divine States
-      statusPendingBadge: Color(0xB3FF6600),  // vibrantOrange with 0.7 alpha
-      statusInProgressBadge: vibrantOrange,
-      statusCompletedBadge: Color(0xFF22C55E),
-      statusCancelledBadge: Color(0xFF9CA3AF),
-      statusOverdueBadge: Color(0xFFDC2626),
-      statusOnHoldBadge: Color(0xFFEAB308),
+      // Status badge colors - Enhanced with signature orange
+      statusPendingBadge: deepSilver,
+      statusInProgressBadge: deepVibrantOrange,
+      statusCompletedBadge: deepGokuOrangeSignature, // Signature orange for completed (achievement)
+      statusCancelledBadge: Color(0xFF888888),
+      statusOverdueBadge: Color(0xFFBB1111),
+      statusOnHoldBadge: Color(0xFFCC8800),
       
-      // Interactive colors - Light Divine Responses
-      hover: Color(0x33FF6600),  // vibrantOrange with 0.2 alpha
-      pressed: Color(0x80FF6600),  // vibrantOrange with 0.5 alpha
-      focus: vibrantOrange,
-      disabled: Color(0xFFE5E5E5),
+      // Interactive colors - Enhanced light divine responses
+      hover: Color(0x60DD5500), // Deeper orange hover
+      pressed: Color(0x99DD5500), // Deeper orange pressed
+      focus: deepGokuOrangeSignature, // Use signature orange for focus
+      disabled: Color(0xFFBBBBBB), // Enhanced disabled
     );
   }
 

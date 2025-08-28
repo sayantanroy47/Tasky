@@ -156,18 +156,61 @@ class ThemeBackgroundWidget extends ConsumerWidget {
 
   /// Generate theme-specific accent colors from theme palette
   List<Color> _getThemeAccentColors(ThemeColors themeColors) {
-    return [
-      themeColors.primary.withValues(alpha: 0.6),    // Much higher base alpha
-      themeColors.secondary.withValues(alpha: 0.5),  // Much higher base alpha  
-      themeColors.tertiary.withValues(alpha: 0.4),   // Much higher base alpha
-    ];
+    // Check if theme has stellar gold accent (Expressive theme)
+    if (themeColors.stellarGold != null) {
+      // Use stellar gold if available
+      return [
+        themeColors.stellarGold!.withValues(alpha: 0.7),  // Stellar gold prominence
+        themeColors.primary.withValues(alpha: 0.6),       // Much higher base alpha
+        themeColors.secondary.withValues(alpha: 0.5),     // Much higher base alpha
+        themeColors.tertiary.withValues(alpha: 0.4),      // Much higher base alpha
+      ];
+    } else {
+      // Fallback for themes without stellar gold
+      return [
+        themeColors.primary.withValues(alpha: 0.6),    // Much higher base alpha
+        themeColors.secondary.withValues(alpha: 0.5),  // Much higher base alpha  
+        themeColors.tertiary.withValues(alpha: 0.4),   // Much higher base alpha
+      ];
+    }
   }
   
   /// Create theme signature background from color palette
   Gradient _createThemeSignatureBackground(ThemeColors themeColors) {
     final isLight = themeColors.background.computeLuminance() > 0.5;
     
-    // Create unique gradient using theme's primary colors
+    // Create enhanced gradients for Expressive theme with stellar gold
+    if (themeColors.stellarGold != null) {
+      if (isLight) {
+        return LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            themeColors.background,
+            (themeColors.stellarGoldContainer ?? themeColors.accent).withValues(alpha: 0.4),
+            themeColors.primaryContainer.withValues(alpha: 0.3),
+            themeColors.secondaryContainer.withValues(alpha: 0.2),
+            themeColors.background,
+          ],
+          stops: const [0.0, 0.3, 0.5, 0.7, 1.0],
+        );
+      } else {
+        return LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            themeColors.background,
+            themeColors.stellarGold!.withValues(alpha: 0.25),
+            themeColors.primary.withValues(alpha: 0.2),
+            themeColors.secondary.withValues(alpha: 0.15),
+            themeColors.background,
+          ],
+          stops: const [0.0, 0.3, 0.5, 0.7, 1.0],
+        );
+      }
+    }
+    
+    // Original gradient for other themes
     if (isLight) {
       return RadialGradient(
         center: Alignment.center,

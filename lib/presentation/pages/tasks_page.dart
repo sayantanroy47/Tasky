@@ -18,12 +18,13 @@ import '../widgets/loading_error_widgets.dart' as loading_widgets;
 import '../widgets/simple_theme_toggle.dart';
 import '../widgets/standardized_app_bar.dart';
 import '../widgets/standardized_text.dart';
+import '../widgets/standardized_colors.dart';
+import 'tasks_page_priority_helper.dart';
 import '../widgets/standardized_card.dart';
 import '../widgets/audio_indicator_widget.dart';
 import '../widgets/tag_chip.dart';
 import '../widgets/task_form_dialog.dart';
 import '../widgets/theme_background_widget.dart';
-import '../widgets/standardized_colors.dart';
 import '../widgets/standardized_spacing.dart';
 import '../widgets/standardized_border_radius.dart';
 import '../../core/utils/category_utils.dart';
@@ -508,7 +509,7 @@ class _TaskList extends ConsumerWidget {
                   width: 4,
                   height: 32,
                   decoration: BoxDecoration(
-                    color: task.priority.color,
+                    color: getPriorityColor(task.priority, context),
                     borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall),
                   ),
                 ),

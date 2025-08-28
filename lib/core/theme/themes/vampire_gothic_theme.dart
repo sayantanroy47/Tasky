@@ -29,8 +29,9 @@ class VampireGothicTheme {
         tags: ['gothic', 'vampire', 'aristocratic', 'elegant', 'victorian', 'dark', 'blood', 'classical'],
         category: 'dark',
         previewIcon: PhosphorIcons.crown(),
-        primaryPreviewColor: const Color(0xFF8B0000), // Blood crimson
-        secondaryPreviewColor: const Color(0xFF000000), // Midnight black
+        primaryPreviewColor: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF), // Pure midnight black or white
+        secondaryPreviewColor: isDark ? const Color(0xFFBB1144) : const Color(0xFF770000), // Enhanced blood crimson (mode-specific)
+        tertiaryPreviewColor: isDark ? const Color(0xFFFF4466) : const Color(0xFF990022), // Vampire Blood signature accent
         createdAt: now,
         isPremium: false,
         popularityScore: 9.1, // Classic gothic appeal
@@ -54,183 +55,207 @@ class VampireGothicTheme {
   /// Create elegant gothic color palette
   static ThemeColors _createGothicColors({bool isDark = true}) {
     if (isDark) {
-      // 🌑 Dark Mode - "Midnight Manor": Aristocratic darkness with blood accents
-      const midnightBlack = Color(0xFF000000);        // Pure midnight black
-      const bloodCrimson = Color(0xFF8B0000);         // Deep blood crimson
-      const ivoryWhite = Color(0xFFFFFFF0);           // Elegant ivory white
-      const antiqueGold = Color(0xFFCFB53B);          // Rich antique gold
-      const deepCharcoal = Color(0xFF1C1C1C);         // Deep charcoal for depth
-      const velvetRed = Color(0xFF800020);            // Rich velvet red
-      const parchmentCream = Color(0xFFF5F5DC);       // Aged parchment cream
-      const gothicPurple = Color(0xFF4B0082);         // Deep gothic purple
-      const silverMist = Color(0xFFC0C0C0);           // Elegant silver mist
-      const darkWine = Color(0xFF722F37);             // Dark wine burgundy
+      // 🌑 Dark Mode - "Midnight Manor": Super bright, maximum saturation gothic elegance
+      const midnightBlack = Color(0xFF000000);        // Pure midnight black (already perfect)
+      const bloodCrimson = Color(0xFFBB1144);         // Enhanced blood crimson (brighter)
+      const ivoryWhite = Color(0xFFFFFFFF);           // Pure white for maximum readability
+      const antiqueGold = Color(0xFFFFDD55);          // Enhanced antique gold (brighter)
+      const deepCharcoal = Color(0xFF0A0A0A);         // Ultra-deep charcoal for stronger contrast
+      // const velvetRed = Color(0xFFAA3355);            // Enhanced velvet red (reserved for future use)
+      // const parchmentCream = Color(0xFFFFF8DC);       // Enhanced parchment cream (reserved for future use)
+      const gothicPurple = Color(0xFF7744BB);         // Enhanced gothic purple (brighter)
+      const silverMist = Color(0xFFDDDDDD);           // Enhanced silver mist (brighter)
+      const darkWine = Color(0xFF993366);             // Enhanced dark wine (brighter)
+      
+      // Vampire Blood Signature Accent - Maximum visibility blood red
+      const vampireBloodSignature = Color(0xFFFF4466);       // Super bright signature blood red
+      const onVampireBloodSignature = Color(0xFF000000);     // Pure black for maximum contrast
+      const vampireBloodContainer = Color(0xFF551122);       // Deep blood container
+      const onVampireBloodContainer = Color(0xFFFFFFFF);     // Pure white for container text
       
       return const ThemeColors(
-        // Primary colors - Blood Crimson nobility
+        // Primary colors - Enhanced Blood Crimson nobility
         primary: bloodCrimson,
-        onPrimary: ivoryWhite,
+        onPrimary: Color(0xFF000000),           // Pure black for maximum contrast
         primaryContainer: darkWine,
-        onPrimaryContainer: parchmentCream,
+        onPrimaryContainer: Color(0xFFFFFFFF),  // Pure white for container text
 
-        // Secondary colors - Antique Gold elegance
+        // Secondary colors - Enhanced Antique Gold elegance
         secondary: antiqueGold,
-        onSecondary: midnightBlack,
-        secondaryContainer: Color(0xFF8B7500),
-        onSecondaryContainer: Color(0xFFFFF8DC),
+        onSecondary: Color(0xFF000000),         // Pure black for maximum contrast
+        secondaryContainer: Color(0xFFBB8800),  // Enhanced gold container
+        onSecondaryContainer: Color(0xFFFFFFFF), // Pure white for container text
 
-        // Tertiary colors - Gothic Purple mystery
+        // Tertiary colors - Enhanced Gothic Purple mystery
         tertiary: gothicPurple,
-        onTertiary: ivoryWhite,
-        tertiaryContainer: Color(0xFF301934),
-        onTertiaryContainer: Color(0xFFDDA0DD),
+        onTertiary: Color(0xFF000000),          // Pure black for maximum contrast
+        tertiaryContainer: Color(0xFF442255),   // Enhanced purple container
+        onTertiaryContainer: Color(0xFFFFFFFF), // Pure white for container text
 
-        // Surface colors - Gothic manor materials
+        // Surface colors - Enhanced gothic manor materials
         surface: deepCharcoal,
-        onSurface: ivoryWhite,
-        surfaceVariant: Color(0xFF2A2A2A),
-        onSurfaceVariant: silverMist,
+        onSurface: ivoryWhite,                  // Pure white text
+        surfaceVariant: Color(0xFF1A1A1A),     // Enhanced surface variant
+        onSurfaceVariant: silverMist,          // Enhanced silver text
         inverseSurface: ivoryWhite,
         onInverseSurface: midnightBlack,
 
-        // Background colors - Midnight manor depths
+        // Background colors - Enhanced midnight manor depths
         background: midnightBlack,
-        onBackground: ivoryWhite,
+        onBackground: ivoryWhite,               // Pure white text
 
-        // Error colors - Dangerous blood magic
-        error: Color(0xFFDC143C),
-        onError: ivoryWhite,
-        errorContainer: Color(0xFF330A0A),
-        onErrorContainer: Color(0xFFFF6B6B),
+        // Error colors - Enhanced dangerous blood magic
+        error: Color(0xFFFF5555),              // Enhanced error red
+        onError: Color(0xFF000000),            // Pure black for maximum contrast
+        errorContainer: Color(0xFF440A0A),     // Enhanced red container
+        onErrorContainer: Color(0xFFFFFFFF),   // Pure white for container text
 
-        // Special colors - Gothic essence
-        accent: bloodCrimson,
+        // Special colors - Enhanced with signature accent
+        accent: vampireBloodSignature,          // Use signature blood red as primary accent
         highlight: antiqueGold,
         shadow: midnightBlack,
-        outline: Color(0xFF444444),
+        outline: Color(0xFF555555),             // Enhanced outline
         outlineVariant: deepCharcoal,
 
-        // Task priority colors - Aristocratic hierarchy
-        taskLowPriority: Color(0xFF9ACD32),      // Noble green
-        taskMediumPriority: antiqueGold,         // Gold nobility
-        taskHighPriority: bloodCrimson,          // Blood importance
-        taskUrgentPriority: Color(0xFFDC143C),   // Crimson danger
+        // Vampire Blood Signature Colors
+        vampireBlood: vampireBloodSignature,
+        onVampireBlood: onVampireBloodSignature,
+        vampireBloodContainer: vampireBloodContainer,
+        onVampireBloodContainer: onVampireBloodContainer,
 
-        // Status colors - Gothic manor states
-        success: Color(0xFF228B22),
+        // Task priority colors - Enhanced aristocratic hierarchy with signature
+        taskLowPriority: Color(0xAABBDD55),            // Enhanced noble green
+        taskMediumPriority: antiqueGold,               // Enhanced gold nobility
+        taskHighPriority: vampireBloodSignature,       // Signature blood red - High priority
+        taskUrgentPriority: Color(0xFFFF5555),         // Enhanced crimson danger
+
+        // Status colors - Enhanced gothic manor states
+        success: Color(0xFF44BB44),             // Enhanced success green
         warning: antiqueGold,
         info: silverMist,
 
-        // Calendar dot colors - Gothic calendar
+        // Calendar dot colors - Enhanced gothic calendar
         calendarTodayDot: bloodCrimson,
-        calendarOverdueDot: Color(0xFFDC143C),
+        calendarOverdueDot: Color(0xFFFF5555),
         calendarFutureDot: antiqueGold,
-        calendarCompletedDot: Color(0xFF228B22),
-        calendarHighPriorityDot: velvetRed,
+        calendarCompletedDot: Color(0xFF44BB44),
+        calendarHighPriorityDot: vampireBloodSignature, // Signature blood red for high priority
         
-        // Status badge colors - Manor activity states
+        // Status badge colors - Enhanced with signature blood red
         statusPendingBadge: silverMist,
         statusInProgressBadge: bloodCrimson,
-        statusCompletedBadge: Color(0xFF228B22),
-        statusCancelledBadge: Color(0xFF444444),
-        statusOverdueBadge: Color(0xFFDC143C),
+        statusCompletedBadge: vampireBloodSignature,    // Signature blood red for completed (achievement)
+        statusCancelledBadge: Color(0xFF555555),
+        statusOverdueBadge: Color(0xFFFF5555),
         statusOnHoldBadge: gothicPurple,
 
-        // Interactive colors - Gothic manor responses
-        hover: Color(0x808B0000),    // bloodCrimson with 0.5 alpha
-        pressed: Color(0xB3CFB53B),  // antiqueGold with 0.7 alpha
-        focus: antiqueGold,
-        disabled: Color(0xFF2A2A2A),
+        // Interactive colors - Enhanced gothic manor responses
+        hover: Color(0x99BB1144),               // Enhanced blood crimson hover
+        pressed: Color(0xCCFFDD55),             // Enhanced antique gold pressed
+        focus: vampireBloodSignature,           // Use signature blood red for focus
+        disabled: Color(0xFF333333),            // Enhanced disabled
       );
     }
     
-    // ☀️ Light Mode - "Victorian Court": Elegant ivory with gothic accents
-    const ivoryWhite = Color(0xFFFFFFF0);           // Pure ivory background
-    const parchmentCream = Color(0xFFF5F5DC);       // Parchment cream surface
-    const warmBeige = Color(0xFFE6E6E6);            // Warm beige
-    const darkCrimson = Color(0xFF8B0000);          // Dark crimson (consistent)
-    const richGold = Color(0xFFB8860B);             // Rich dark gold
-    const deepPurple = Color(0xFF4B0082);           // Deep purple (consistent)
-    const charcoalText = Color(0xFF2F2F2F);         // Charcoal text
-    const elegantSilver = Color(0xFF999999);        // Elegant silver
-    const vintageBrown = Color(0xFF8B4513);         // Vintage brown
-    const regalBlue = Color(0xFF191970);            // Regal midnight blue
+    // ☀️ Light Mode - "Victorian Court": Deep contrasting colors for maximum readability
+    const ivoryWhite = Color(0xFFFFFFFF);           // Pure white background
+    const parchmentCream = Color(0xFFF8F8F8);       // Light cream surface
+    const warmBeige = Color(0xFFE0E0E0);            // Deeper warm beige
+    const deepCrimson = Color(0xFF770000);          // Deeper dark crimson for better contrast
+    const deepGold = Color(0xFF996600);             // Deeper rich gold
+    const deepPurple = Color(0xFF330055);           // Deeper purple for better contrast
+    const deepCharcoalText = Color(0xFF1A1A1A);     // Deep charcoal text for maximum readability
+    const deepSilver = Color(0xFF666666);           // Deeper elegant silver
+    const deepBrown = Color(0xFF663311);            // Deeper vintage brown
+    const deepRegalBlue = Color(0xFF001144);        // Deeper regal midnight blue
+    
+    // Vampire Blood Signature Accent - Deep for light mode contrast
+    const deepVampireBloodSignature = Color(0xFF990022);       // Deep signature blood red
+    const onDeepVampireBloodSignature = Color(0xFFFFFFFF);     // White text on deep blood red
+    const deepVampireBloodContainer = Color(0xFFFFE5E5);       // Light blood container
+    const onDeepVampireBloodContainer = Color(0xFF440011);     // Deep blood container text
     
     return const ThemeColors(
-      // Primary colors - Dark Crimson elegance
-      primary: darkCrimson,
+      // Primary colors - Enhanced Deep Crimson elegance
+      primary: deepCrimson,
       onPrimary: ivoryWhite,
       primaryContainer: parchmentCream,
-      onPrimaryContainer: Color(0xFF660000),
+      onPrimaryContainer: Color(0xFF440000),  // Deeper container text
       
-      // Secondary colors - Rich Gold nobility  
-      secondary: richGold,
+      // Secondary colors - Enhanced Deep Gold nobility  
+      secondary: deepGold,
       onSecondary: ivoryWhite,
-      secondaryContainer: Color(0xFFFFF8DC),
-      onSecondaryContainer: vintageBrown,
+      secondaryContainer: Color(0xFFFFF0CD),
+      onSecondaryContainer: deepBrown,        // Enhanced brown
       
-      // Tertiary colors - Deep Purple mystery
+      // Tertiary colors - Enhanced Deep Purple mystery
       tertiary: deepPurple,
       onTertiary: ivoryWhite,
-      tertiaryContainer: Color(0xFFE6E6FA),
-      onTertiaryContainer: Color(0xFF2D1B42),
+      tertiaryContainer: Color(0xFFE0E0FA),
+      onTertiaryContainer: Color(0xFF220033),  // Deeper container text
       
-      // Surface colors - Victorian court materials
+      // Surface colors - Enhanced contrast Victorian court materials
       surface: parchmentCream,
-      onSurface: charcoalText,
+      onSurface: deepCharcoalText,            // Deep text for maximum readability
       surfaceVariant: warmBeige,
-      onSurfaceVariant: Color(0xFF5A5A5A),
-      inverseSurface: charcoalText,
+      onSurfaceVariant: Color(0xFF444444),    // Deeper variant text
+      inverseSurface: deepCharcoalText,
       onInverseSurface: ivoryWhite,
       
-      // Background colors - Ivory elegance
+      // Background colors - Enhanced contrast ivory elegance
       background: ivoryWhite,
-      onBackground: charcoalText,
+      onBackground: deepCharcoalText,         // Deep text for maximum readability
       
-      // Error colors - Victorian danger
-      error: Color(0xFFDC2626),
+      // Error colors - Enhanced Victorian danger
+      error: Color(0xFFBB1111),              // Deeper error red
       onError: ivoryWhite,
-      errorContainer: Color(0xFFFEF2F2),
-      onErrorContainer: Color(0xFF991B1B),
+      errorContainer: Color(0xFFFEF0F0),
+      onErrorContainer: Color(0xFF660000),   // Deeper error container text
       
-      // Special colors - Light gothic essence
-      accent: darkCrimson,
-      highlight: richGold,
+      // Special colors - Enhanced with signature accent
+      accent: deepVampireBloodSignature,      // Use signature blood red as primary accent
+      highlight: deepGold,
       shadow: Color(0xFF000000),
-      outline: elegantSilver,
+      outline: deepSilver,                    // Deeper outline for better visibility
       outlineVariant: warmBeige,
       
-      // Task priority colors - Light aristocratic hierarchy
-      taskLowPriority: Color(0xFF22C55E),
-      taskMediumPriority: richGold,
-      taskHighPriority: darkCrimson,
-      taskUrgentPriority: Color(0xFFDC2626),
+      // Vampire Blood Signature Colors
+      vampireBlood: deepVampireBloodSignature,
+      onVampireBlood: onDeepVampireBloodSignature,
+      vampireBloodContainer: deepVampireBloodContainer,
+      onVampireBloodContainer: onDeepVampireBloodContainer,
       
-      // Status colors - Light gothic states
-      success: Color(0xFF22C55E),
-      warning: Color(0xFFF59E0B),
-      info: regalBlue,
+      // Task priority colors - Enhanced with signature accent
+      taskLowPriority: Color(0xFF118844),            // Deeper success green
+      taskMediumPriority: deepGold,                  // Deep gold nobility
+      taskHighPriority: deepVampireBloodSignature,   // Signature blood red - High priority
+      taskUrgentPriority: Color(0xFFBB1111),         // Deeper urgent red
       
-      // Calendar dot colors - Light gothic calendar
-      calendarTodayDot: darkCrimson,
-      calendarOverdueDot: Color(0xFFDC2626),
-      calendarFutureDot: richGold,
-      calendarCompletedDot: Color(0xFF22C55E),
-      calendarHighPriorityDot: deepPurple,
+      // Status colors - Enhanced deeper gothic states
+      success: Color(0xFF118844),             // Deeper success green
+      warning: Color(0xFFCC7700),             // Deeper warning
+      info: deepRegalBlue,                    // Deep regal blue
       
-      // Status badge colors - Light court activity
-      statusPendingBadge: elegantSilver,
-      statusInProgressBadge: darkCrimson,
-      statusCompletedBadge: Color(0xFF22C55E),
+      // Calendar dot colors - Enhanced light gothic calendar
+      calendarTodayDot: deepCrimson,
+      calendarOverdueDot: Color(0xFFBB1111),
+      calendarFutureDot: deepGold,
+      calendarCompletedDot: Color(0xFF118844),
+      calendarHighPriorityDot: deepVampireBloodSignature, // Signature blood red for high priority
+      
+      // Status badge colors - Enhanced with signature blood red
+      statusPendingBadge: deepSilver,
+      statusInProgressBadge: deepCrimson,
+      statusCompletedBadge: deepVampireBloodSignature,    // Signature blood red for completed (achievement)
       statusCancelledBadge: warmBeige,
-      statusOverdueBadge: Color(0xFFDC2626),
+      statusOverdueBadge: Color(0xFFBB1111),
       statusOnHoldBadge: deepPurple,
       
-      // Interactive colors - Light gothic responses
-      hover: Color(0x408B0000),    // darkCrimson with 0.25 alpha
-      pressed: Color(0x80B8860B),  // richGold with 0.5 alpha
-      focus: richGold,
-      disabled: warmBeige,
+      // Interactive colors - Enhanced light gothic responses
+      hover: Color(0x60770000),               // Deeper crimson hover
+      pressed: Color(0x99996600),             // Deeper gold pressed
+      focus: deepVampireBloodSignature,       // Use signature blood red for focus
+      disabled: Color(0xFFBBBBBB),            // Enhanced disabled
     );
   }
 

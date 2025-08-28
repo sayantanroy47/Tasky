@@ -75,7 +75,6 @@ class EnhancedCalendarWidget extends ConsumerWidget {
             },
           ),
         ),
-
       ],
     );
   }
@@ -194,9 +193,6 @@ class EnhancedCalendarWidget extends ConsumerWidget {
 
       // Task and event count logging for debugging markers
       final totalTasks = tasksByDate.values.fold(0, (sum, tasks) => sum + tasks.length);
-      if (totalTasks > 0) {
-        debugPrint('Calendar Debug: Loaded $totalTasks tasks with due dates');
-      }
 
       // Convert tasks to calendar appointments with enhanced styling
       final appointments = <Appointment>[];
@@ -240,11 +236,6 @@ class EnhancedCalendarWidget extends ConsumerWidget {
             id: event.id, // Add unique ID for event identification
           ));
         }
-      }
-
-      // Log appointment count for debugging
-      if (appointments.isNotEmpty) {
-        debugPrint('Calendar Debug: Created ${appointments.length} appointments for display');
       }
 
       return ClipRRect(
@@ -519,8 +510,6 @@ class EnhancedCalendarWidget extends ConsumerWidget {
     // Add event indicator to distinguish from tasks
     return '[EVENT] ${event.title}';
   }
-
-
 
   Widget _buildEmptySelectedDate(BuildContext context, DateTime date, WidgetRef ref) {
     return Container(

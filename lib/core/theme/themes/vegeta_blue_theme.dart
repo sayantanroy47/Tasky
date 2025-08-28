@@ -28,8 +28,9 @@ class VegetaBlueTheme {
         tags: ['anime', 'ssgss', 'cosmic', 'azure', 'royal', 'energy', 'dramatic'],
         category: 'gaming',
         previewIcon: PhosphorIcons.lightning(),
-        primaryPreviewColor: const Color(0xFF1E3A8A), // SSGSS battle suit
-        secondaryPreviewColor: const Color(0xFF009DFF), // Azure blue base
+        primaryPreviewColor: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF), // Enhanced dark vs pure white
+        secondaryPreviewColor: isDark ? const Color(0xFF009DFF) : const Color(0xFF1E3A8A), // Azure blue (mode-specific)
+        tertiaryPreviewColor: isDark ? const Color(0xFF0F52BA) : const Color(0xFF0A3377), // Vegeta Sapphire signature accent
         createdAt: now,
         isPremium: false,
         popularityScore: 8.5,
@@ -64,6 +65,12 @@ class VegetaBlueTheme {
       const deepShadow = Color(0xFF050505);          // Nearly black shadows
       const lightAzure = Color(0xFF87CEEB);          // Light azure highlights
       const darkPurple = Color(0xFF0A0A0F);          // Very dark cosmic depth
+      
+      // Vegeta Sapphire Signature Accent - Enhanced for dark mode visibility
+      const vegetaSapphireSignature = Color(0xFF0F52BA);     // Super bright signature sapphire
+      const onVegetaSapphireSignature = Color(0xFFFFFFFF);   // Pure white for maximum contrast
+      const vegetaSapphireContainer = Color(0xFF1A3C6B);     // Enhanced sapphire container
+      const onVegetaSapphireContainer = Color(0xFFFFFFFF);   // Pure white for container text
       
       return const ThemeColors(
         // Primary colors - SSGSS Azure
@@ -102,17 +109,17 @@ class VegetaBlueTheme {
         errorContainer: Color(0xFFDC2626),
         onErrorContainer: pureWhite,
 
-        // Special colors - SSGSS Energy System
-        accent: skyBlue,
+        // Special colors - SSGSS Energy System with Signature Accent
+        accent: vegetaSapphireSignature,        // Use signature sapphire as primary accent
         highlight: plasmaYellow,
         shadow: Color(0xFF000000),
         outline: lightAzure,
         outlineVariant: darkPurple,
 
-        // Task priority colors - Power Level System
+        // Task priority colors - Power Level System with Signature Accent
         taskLowPriority: Color(0xFF10B981),      // Calm energy green
         taskMediumPriority: azureBlue,           // SSGSS azure blue
-        taskHighPriority: plasmaYellow,          // Golden power
+        taskHighPriority: vegetaSapphireSignature, // Signature sapphire power
         taskUrgentPriority: Color(0xFFEF4444),   // Destructive red
 
         // Status colors - Energy States
@@ -120,17 +127,17 @@ class VegetaBlueTheme {
         warning: plasmaYellow,
         info: skyBlue,
 
-        // Calendar dot colors - SSGSS Power System
+        // Calendar dot colors - SSGSS Power System with Signature Accent
         calendarTodayDot: skyBlue,
         calendarOverdueDot: Color(0xFFEF4444),
         calendarFutureDot: lightAzure,
         calendarCompletedDot: Color(0xFF10B981),
-        calendarHighPriorityDot: plasmaYellow,
+        calendarHighPriorityDot: vegetaSapphireSignature,  // Signature sapphire for high priority
         
-        // Status badge colors - Saiyan Power States
+        // Status badge colors - Saiyan Power States with Signature Accent
         statusPendingBadge: skyBlue,
         statusInProgressBadge: plasmaYellow,
-        statusCompletedBadge: Color(0xFF10B981),
+        statusCompletedBadge: vegetaSapphireSignature,     // Signature sapphire for completed (achievement)
         statusCancelledBadge: darkPurple,
         statusOverdueBadge: Color(0xFFEF4444),
         statusOnHoldBadge: lightAzure,
@@ -138,8 +145,14 @@ class VegetaBlueTheme {
         // Interactive colors - Energy Responses
         hover: lightAzure,
         pressed: royalNavy,
-        focus: plasmaYellow,
+        focus: vegetaSapphireSignature,                    // Signature sapphire for focus
         disabled: darkPurple,
+        
+        // Vegeta Sapphire Signature Colors
+        vegetaSapphire: vegetaSapphireSignature,
+        onVegetaSapphire: onVegetaSapphireSignature,
+        vegetaSapphireContainer: vegetaSapphireContainer,
+        onVegetaSapphireContainer: onVegetaSapphireContainer,
       );
     }
     
@@ -156,6 +169,12 @@ class VegetaBlueTheme {
     const lightSilver = Color(0xFFF3F4F6);            // Soft armor gray
     const paleBlue = Color(0xFFDBEAFE);               // Gentle aura tint
     const lightAzure = Color(0xFFB3D9FF);             // Light azure highlight
+    
+    // Vegeta Sapphire Signature Accent - Deeper for light mode contrast
+    const deepVegetaSapphire = Color(0xFF0A3377);          // Deep signature sapphire
+    const onDeepVegetaSapphire = Color(0xFFFFFFFF);         // White text on deep sapphire
+    const deepVegetaSapphireContainer = Color(0xFFE6F3FF);  // Light sapphire container
+    const onDeepVegetaSapphireContainer = Color(0xFF001B44); // Deep sapphire container text
     
     return const ThemeColors(
       // Primary colors - SSGSS Battle Suit (Light)
@@ -194,17 +213,17 @@ class VegetaBlueTheme {
       errorContainer: Color(0xFFFEF2F2), // Light red container
       onErrorContainer: Color(0xFF991B1B), // Dark red text
       
-      // Special colors - SSGSS Light Energy System
-      accent: darkAzureGlow,
+      // Special colors - SSGSS Light Energy System with Signature Accent
+      accent: deepVegetaSapphire,            // Use signature sapphire as primary accent
       highlight: darkPlasmaYellow,
       shadow: Color(0xFF000000),
       outline: Color(0xFF64748B), // Slate outline
       outlineVariant: Color(0xFF94A3B8), // Light slate outline
       
-      // Task priority colors - Light Power Level System
+      // Task priority colors - Light Power Level System with Signature Accent
       taskLowPriority: Color(0xFF059669),      // Strong green
       taskMediumPriority: darkAzureBlue,       // SSGSS azure blue
-      taskHighPriority: darkPlasmaYellow,      // Golden power
+      taskHighPriority: deepVegetaSapphire,    // Signature sapphire power
       taskUrgentPriority: Color(0xFFDC2626),   // Strong red
       
       // Status colors - Light Energy States
@@ -212,17 +231,17 @@ class VegetaBlueTheme {
       warning: Color(0xFFD97706), // Strong amber
       info: darkAzureGlow,
       
-      // Calendar dot colors - SSGSS Light Power System
+      // Calendar dot colors - SSGSS Light Power System with Signature Accent
       calendarTodayDot: darkAzureGlow,
       calendarOverdueDot: Color(0xFFDC2626),
       calendarFutureDot: lightAzure,
       calendarCompletedDot: Color(0xFF059669),
-      calendarHighPriorityDot: darkPlasmaYellow,
+      calendarHighPriorityDot: deepVegetaSapphire,       // Signature sapphire for high priority
       
-      // Status badge colors - Light Saiyan Power States
+      // Status badge colors - Light Saiyan Power States with Signature Accent
       statusPendingBadge: darkAzureGlow,
       statusInProgressBadge: darkPlasmaYellow,
-      statusCompletedBadge: Color(0xFF059669),
+      statusCompletedBadge: deepVegetaSapphire,           // Signature sapphire for completed (achievement)
       statusCancelledBadge: Color(0xFF64748B), // Neutral slate
       statusOverdueBadge: Color(0xFFDC2626),
       statusOnHoldBadge: Color(0xFFD97706), // Amber
@@ -230,8 +249,14 @@ class VegetaBlueTheme {
       // Interactive colors - Light Energy Responses
       hover: lightAzure,
       pressed: darkRoyalNavy,
-      focus: darkPlasmaYellow,
+      focus: deepVegetaSapphire,              // Signature sapphire for focus
       disabled: Color(0xFF94A3B8), // Light slate
+      
+      // Vegeta Sapphire Signature Colors
+      vegetaSapphire: deepVegetaSapphire,
+      onVegetaSapphire: onDeepVegetaSapphire,
+      vegetaSapphireContainer: deepVegetaSapphireContainer,
+      onVegetaSapphireContainer: onDeepVegetaSapphireContainer,
     );
   }
 
@@ -505,6 +530,7 @@ class VegetaBlueTheme {
         patternAngle: 0.0,
         patternDensity: 0.8,
         accentColors: [
+          Color(0x1A0F52BA), // Vegeta Sapphire signature accent at 0.1 alpha
           Color(0x1A009DFF), // SSGSS Azure blue at 0.1 alpha
           Color(0x1AFACC15), // Golden plasma yellow at 0.1 alpha
         ],

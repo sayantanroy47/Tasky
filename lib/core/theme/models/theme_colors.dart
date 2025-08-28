@@ -45,6 +45,93 @@ class ThemeColors {
   final Color outline;
   final Color outlineVariant;
 
+  // Stellar Gold Accent Colors (new signature accent) - Optional for pilot
+  final Color? stellarGold;
+  final Color? onStellarGold;
+  final Color? stellarGoldContainer;
+  final Color? onStellarGoldContainer;
+
+  // Theme-specific signature accent colors (optional for enhanced visual identity)
+  final Color? draculaPurple;
+  final Color? onDraculaPurple;
+  final Color? draculaPurpleContainer;
+  final Color? onDraculaPurpleContainer;
+
+  final Color? cyberpunkNeon;
+  final Color? onCyberpunkNeon;
+  final Color? cyberpunkNeonContainer;
+  final Color? onCyberpunkNeonContainer;
+
+  final Color? vampireBlood;
+  final Color? onVampireBlood;
+  final Color? vampireBloodContainer;
+  final Color? onVampireBloodContainer;
+
+  final Color? matrixGreen;
+  final Color? onMatrixGreen;
+  final Color? matrixGreenContainer;
+  final Color? onMatrixGreenContainer;
+
+  final Color? koiOrange;
+  final Color? onKoiOrange;
+  final Color? koiOrangeContainer;
+  final Color? onKoiOrangeContainer;
+
+  final Color? citrusTangerine;
+  final Color? onCitrusTangerine;
+  final Color? citrusTangerineContainer;
+  final Color? onCitrusTangerineContainer;
+
+  final Color? autumnAmber;
+  final Color? onAutumnAmber;
+  final Color? autumnAmberContainer;
+  final Color? onAutumnAmberContainer;
+
+  final Color? artistTeal;
+  final Color? onArtistTeal;
+  final Color? artistTealContainer;
+  final Color? onArtistTealContainer;
+
+  final Color? demonFlame;
+  final Color? onDemonFlame;
+  final Color? demonFlameContainer;
+  final Color? onDemonFlameContainer;
+
+  final Color? gokuOrange;
+  final Color? onGokuOrange;
+  final Color? gokuOrangeContainer;
+  final Color? onGokuOrangeContainer;
+
+  final Color? vegetaSapphire;
+  final Color? onVegetaSapphire;
+  final Color? vegetaSapphireContainer;
+  final Color? onVegetaSapphireContainer;
+
+  final Color? hollowSilver;
+  final Color? onHollowSilver;
+  final Color? hollowSilverContainer;
+  final Color? onHollowSilverContainer;
+
+  final Color? executiveRose;
+  final Color? onExecutiveRose;
+  final Color? executiveRoseContainer;
+  final Color? onExecutiveRoseContainer;
+
+  final Color? midnightIndigo;
+  final Color? onMidnightIndigo;
+  final Color? midnightIndigoContainer;
+  final Color? onMidnightIndigoContainer;
+
+  final Color? starfieldAqua;
+  final Color? onStarfieldAqua;
+  final Color? starfieldAquaContainer;
+  final Color? onStarfieldAquaContainer;
+
+  final Color? unicornPink;
+  final Color? onUnicornPink;
+  final Color? unicornPinkContainer;
+  final Color? onUnicornPinkContainer;
+
   // Task Priority Colors
   final Color taskLowPriority;
   final Color taskMediumPriority;
@@ -120,6 +207,78 @@ class ThemeColors {
     required this.shadow,
     required this.outline,
     required this.outlineVariant,
+
+    // Stellar Gold (optional for pilot - only Expressive theme has it)
+    this.stellarGold,
+    this.onStellarGold,
+    this.stellarGoldContainer,
+    this.onStellarGoldContainer,
+
+    // Theme-specific signature accent colors (optional)
+    this.draculaPurple,
+    this.onDraculaPurple,
+    this.draculaPurpleContainer,
+    this.onDraculaPurpleContainer,
+    this.cyberpunkNeon,
+    this.onCyberpunkNeon,
+    this.cyberpunkNeonContainer,
+    this.onCyberpunkNeonContainer,
+    this.vampireBlood,
+    this.onVampireBlood,
+    this.vampireBloodContainer,
+    this.onVampireBloodContainer,
+    this.matrixGreen,
+    this.onMatrixGreen,
+    this.matrixGreenContainer,
+    this.onMatrixGreenContainer,
+    this.koiOrange,
+    this.onKoiOrange,
+    this.koiOrangeContainer,
+    this.onKoiOrangeContainer,
+    this.citrusTangerine,
+    this.onCitrusTangerine,
+    this.citrusTangerineContainer,
+    this.onCitrusTangerineContainer,
+    this.autumnAmber,
+    this.onAutumnAmber,
+    this.autumnAmberContainer,
+    this.onAutumnAmberContainer,
+    this.artistTeal,
+    this.onArtistTeal,
+    this.artistTealContainer,
+    this.onArtistTealContainer,
+    this.demonFlame,
+    this.onDemonFlame,
+    this.demonFlameContainer,
+    this.onDemonFlameContainer,
+    this.gokuOrange,
+    this.onGokuOrange,
+    this.gokuOrangeContainer,
+    this.onGokuOrangeContainer,
+    this.vegetaSapphire,
+    this.onVegetaSapphire,
+    this.vegetaSapphireContainer,
+    this.onVegetaSapphireContainer,
+    this.hollowSilver,
+    this.onHollowSilver,
+    this.hollowSilverContainer,
+    this.onHollowSilverContainer,
+    this.executiveRose,
+    this.onExecutiveRose,
+    this.executiveRoseContainer,
+    this.onExecutiveRoseContainer,
+    this.midnightIndigo,
+    this.onMidnightIndigo,
+    this.midnightIndigoContainer,
+    this.onMidnightIndigoContainer,
+    this.starfieldAqua,
+    this.onStarfieldAqua,
+    this.starfieldAquaContainer,
+    this.onStarfieldAquaContainer,
+    this.unicornPink,
+    this.onUnicornPink,
+    this.unicornPinkContainer,
+    this.onUnicornPinkContainer,
 
     // Task Priority
     required this.taskLowPriority,
@@ -239,6 +398,75 @@ class ThemeColors {
     Color? shadow,
     Color? outline,
     Color? outlineVariant,
+    Color? stellarGold,
+    Color? onStellarGold,
+    Color? stellarGoldContainer,
+    Color? onStellarGoldContainer,
+    // Theme-specific signature accent colors
+    Color? draculaPurple,
+    Color? onDraculaPurple,
+    Color? draculaPurpleContainer,
+    Color? onDraculaPurpleContainer,
+    Color? cyberpunkNeon,
+    Color? onCyberpunkNeon,
+    Color? cyberpunkNeonContainer,
+    Color? onCyberpunkNeonContainer,
+    Color? vampireBlood,
+    Color? onVampireBlood,
+    Color? vampireBloodContainer,
+    Color? onVampireBloodContainer,
+    Color? matrixGreen,
+    Color? onMatrixGreen,
+    Color? matrixGreenContainer,
+    Color? onMatrixGreenContainer,
+    Color? koiOrange,
+    Color? onKoiOrange,
+    Color? koiOrangeContainer,
+    Color? onKoiOrangeContainer,
+    Color? citrusTangerine,
+    Color? onCitrusTangerine,
+    Color? citrusTangerineContainer,
+    Color? onCitrusTangerineContainer,
+    Color? autumnAmber,
+    Color? onAutumnAmber,
+    Color? autumnAmberContainer,
+    Color? onAutumnAmberContainer,
+    Color? artistTeal,
+    Color? onArtistTeal,
+    Color? artistTealContainer,
+    Color? onArtistTealContainer,
+    Color? demonFlame,
+    Color? onDemonFlame,
+    Color? demonFlameContainer,
+    Color? onDemonFlameContainer,
+    Color? gokuOrange,
+    Color? onGokuOrange,
+    Color? gokuOrangeContainer,
+    Color? onGokuOrangeContainer,
+    Color? vegetaSapphire,
+    Color? onVegetaSapphire,
+    Color? vegetaSapphireContainer,
+    Color? onVegetaSapphireContainer,
+    Color? hollowSilver,
+    Color? onHollowSilver,
+    Color? hollowSilverContainer,
+    Color? onHollowSilverContainer,
+    Color? executiveRose,
+    Color? onExecutiveRose,
+    Color? executiveRoseContainer,
+    Color? onExecutiveRoseContainer,
+    Color? midnightIndigo,
+    Color? onMidnightIndigo,
+    Color? midnightIndigoContainer,
+    Color? onMidnightIndigoContainer,
+    Color? starfieldAqua,
+    Color? onStarfieldAqua,
+    Color? starfieldAquaContainer,
+    Color? onStarfieldAquaContainer,
+    Color? unicornPink,
+    Color? onUnicornPink,
+    Color? unicornPinkContainer,
+    Color? onUnicornPinkContainer,
     Color? taskLowPriority,
     Color? taskMediumPriority,
     Color? taskHighPriority,
@@ -295,6 +523,75 @@ class ThemeColors {
       shadow: shadow ?? this.shadow,
       outline: outline ?? this.outline,
       outlineVariant: outlineVariant ?? this.outlineVariant,
+      stellarGold: stellarGold ?? this.stellarGold,
+      onStellarGold: onStellarGold ?? this.onStellarGold,
+      stellarGoldContainer: stellarGoldContainer ?? this.stellarGoldContainer,
+      onStellarGoldContainer: onStellarGoldContainer ?? this.onStellarGoldContainer,
+      // Theme-specific signature colors
+      draculaPurple: draculaPurple ?? this.draculaPurple,
+      onDraculaPurple: onDraculaPurple ?? this.onDraculaPurple,
+      draculaPurpleContainer: draculaPurpleContainer ?? this.draculaPurpleContainer,
+      onDraculaPurpleContainer: onDraculaPurpleContainer ?? this.onDraculaPurpleContainer,
+      cyberpunkNeon: cyberpunkNeon ?? this.cyberpunkNeon,
+      onCyberpunkNeon: onCyberpunkNeon ?? this.onCyberpunkNeon,
+      cyberpunkNeonContainer: cyberpunkNeonContainer ?? this.cyberpunkNeonContainer,
+      onCyberpunkNeonContainer: onCyberpunkNeonContainer ?? this.onCyberpunkNeonContainer,
+      vampireBlood: vampireBlood ?? this.vampireBlood,
+      onVampireBlood: onVampireBlood ?? this.onVampireBlood,
+      vampireBloodContainer: vampireBloodContainer ?? this.vampireBloodContainer,
+      onVampireBloodContainer: onVampireBloodContainer ?? this.onVampireBloodContainer,
+      matrixGreen: matrixGreen ?? this.matrixGreen,
+      onMatrixGreen: onMatrixGreen ?? this.onMatrixGreen,
+      matrixGreenContainer: matrixGreenContainer ?? this.matrixGreenContainer,
+      onMatrixGreenContainer: onMatrixGreenContainer ?? this.onMatrixGreenContainer,
+      koiOrange: koiOrange ?? this.koiOrange,
+      onKoiOrange: onKoiOrange ?? this.onKoiOrange,
+      koiOrangeContainer: koiOrangeContainer ?? this.koiOrangeContainer,
+      onKoiOrangeContainer: onKoiOrangeContainer ?? this.onKoiOrangeContainer,
+      citrusTangerine: citrusTangerine ?? this.citrusTangerine,
+      onCitrusTangerine: onCitrusTangerine ?? this.onCitrusTangerine,
+      citrusTangerineContainer: citrusTangerineContainer ?? this.citrusTangerineContainer,
+      onCitrusTangerineContainer: onCitrusTangerineContainer ?? this.onCitrusTangerineContainer,
+      autumnAmber: autumnAmber ?? this.autumnAmber,
+      onAutumnAmber: onAutumnAmber ?? this.onAutumnAmber,
+      autumnAmberContainer: autumnAmberContainer ?? this.autumnAmberContainer,
+      onAutumnAmberContainer: onAutumnAmberContainer ?? this.onAutumnAmberContainer,
+      artistTeal: artistTeal ?? this.artistTeal,
+      onArtistTeal: onArtistTeal ?? this.onArtistTeal,
+      artistTealContainer: artistTealContainer ?? this.artistTealContainer,
+      onArtistTealContainer: onArtistTealContainer ?? this.onArtistTealContainer,
+      demonFlame: demonFlame ?? this.demonFlame,
+      onDemonFlame: onDemonFlame ?? this.onDemonFlame,
+      demonFlameContainer: demonFlameContainer ?? this.demonFlameContainer,
+      onDemonFlameContainer: onDemonFlameContainer ?? this.onDemonFlameContainer,
+      gokuOrange: gokuOrange ?? this.gokuOrange,
+      onGokuOrange: onGokuOrange ?? this.onGokuOrange,
+      gokuOrangeContainer: gokuOrangeContainer ?? this.gokuOrangeContainer,
+      onGokuOrangeContainer: onGokuOrangeContainer ?? this.onGokuOrangeContainer,
+      vegetaSapphire: vegetaSapphire ?? this.vegetaSapphire,
+      onVegetaSapphire: onVegetaSapphire ?? this.onVegetaSapphire,
+      vegetaSapphireContainer: vegetaSapphireContainer ?? this.vegetaSapphireContainer,
+      onVegetaSapphireContainer: onVegetaSapphireContainer ?? this.onVegetaSapphireContainer,
+      hollowSilver: hollowSilver ?? this.hollowSilver,
+      onHollowSilver: onHollowSilver ?? this.onHollowSilver,
+      hollowSilverContainer: hollowSilverContainer ?? this.hollowSilverContainer,
+      onHollowSilverContainer: onHollowSilverContainer ?? this.onHollowSilverContainer,
+      executiveRose: executiveRose ?? this.executiveRose,
+      onExecutiveRose: onExecutiveRose ?? this.onExecutiveRose,
+      executiveRoseContainer: executiveRoseContainer ?? this.executiveRoseContainer,
+      onExecutiveRoseContainer: onExecutiveRoseContainer ?? this.onExecutiveRoseContainer,
+      midnightIndigo: midnightIndigo ?? this.midnightIndigo,
+      onMidnightIndigo: onMidnightIndigo ?? this.onMidnightIndigo,
+      midnightIndigoContainer: midnightIndigoContainer ?? this.midnightIndigoContainer,
+      onMidnightIndigoContainer: onMidnightIndigoContainer ?? this.onMidnightIndigoContainer,
+      starfieldAqua: starfieldAqua ?? this.starfieldAqua,
+      onStarfieldAqua: onStarfieldAqua ?? this.onStarfieldAqua,
+      starfieldAquaContainer: starfieldAquaContainer ?? this.starfieldAquaContainer,
+      onStarfieldAquaContainer: onStarfieldAquaContainer ?? this.onStarfieldAquaContainer,
+      unicornPink: unicornPink ?? this.unicornPink,
+      onUnicornPink: onUnicornPink ?? this.onUnicornPink,
+      unicornPinkContainer: unicornPinkContainer ?? this.unicornPinkContainer,
+      onUnicornPinkContainer: onUnicornPinkContainer ?? this.onUnicornPinkContainer,
       taskLowPriority: taskLowPriority ?? this.taskLowPriority,
       taskMediumPriority: taskMediumPriority ?? this.taskMediumPriority,
       taskHighPriority: taskHighPriority ?? this.taskHighPriority,

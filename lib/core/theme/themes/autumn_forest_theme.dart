@@ -31,6 +31,7 @@ class AutumnForestTheme {
         previewIcon: PhosphorIcons.tree(),
         primaryPreviewColor: const Color(0xFFD84315), // Maple leaf red
         secondaryPreviewColor: const Color(0xFFFF8F00), // Sunset orange
+        tertiaryPreviewColor: isDark ? const Color(0xFFFFBF00) : const Color(0xFFCC9900), // Autumn amber signature color
         createdAt: now,
         isPremium: false,
         popularityScore: 8.5, // High natural appeal
@@ -53,12 +54,24 @@ class AutumnForestTheme {
 
   static ThemeColors _createAutumnColors({required bool isDark}) {
     if (isDark) {
-      return const ThemeColors(
+      // Autumn Amber signature colors - Dark mode: Super bright, highly saturated
+      const autumnAmber = Color(0xFFFFBF00);           // Super bright amber
+      const onAutumnAmber = Color(0xFF000000);         // Pure black for maximum contrast
+      const autumnAmberContainer = Color(0xFF8B6500);  // Deep amber container
+      const onAutumnAmberContainer = Color(0xFFFFFFFF); // Pure white
+      
+      return ThemeColors(
         // Midnight Forest - Deep natural colors
         primary: Color(0xFFBF360C), // Dark maple
-        onPrimary: Color(0xFFFFF8E8), // Warm autumn-tinted white
+        onPrimary: Color(0xFFFFFFFF), // Pure white (enhanced contrast)
         primaryContainer: Color(0xFF8B2500),
         onPrimaryContainer: Color(0xFFFFE5DD),
+        
+        // Autumn Amber signature accent colors
+        autumnAmber: autumnAmber,
+        onAutumnAmber: onAutumnAmber,
+        autumnAmberContainer: autumnAmberContainer,
+        onAutumnAmberContainer: onAutumnAmberContainer,
         
         secondary: Color(0xFFE65100), // Deep sunset
         onSecondary: Color(0xFFFFF5E6), // Sunset-tinted white
@@ -76,14 +89,14 @@ class AutumnForestTheme {
         onErrorContainer: Color(0xFFFFEBEE),
         
         surface: Color(0xFF1A1611), // Dark forest floor
-        onSurface: Color(0xFFF7F0E8),
+        onSurface: Color(0xFFFFFFFF), // Pure white (enhanced contrast)
         surfaceVariant: Color(0xFF1F1B16), // Dark leaves
-        onSurfaceVariant: Color(0xFFD3C4B4),
+        onSurfaceVariant: Color(0xFFE6E6E6), // Near-white for excellent contrast
         inverseSurface: Color(0xFFF7F0E8),
         onInverseSurface: Color(0xFF34302A),
         
         background: Color(0xFF1A1611), // Night forest
-        onBackground: Color(0xFFF7F0E8),
+        onBackground: Color(0xFFFFFFFF), // Pure white (enhanced contrast)
         
         outline: Color(0xFF9A8F80),
         outlineVariant: Color(0xFF4F4539),
@@ -93,10 +106,10 @@ class AutumnForestTheme {
         accent: Color(0xFFFFAB00), // Golden amber accent
         highlight: Color(0xFFFFCC02), // Bright golden highlight
         
-        // Task priority colors - autumn theme
+        // Task priority colors - autumn theme (enhanced with signature amber)
         taskLowPriority: Color(0xFF66BB6A), // Forest green
         taskMediumPriority: Color(0xFFE65100), // Deep orange
-        taskHighPriority: Color(0xFFBF360C), // Primary maple
+        taskHighPriority: autumnAmber,       // Signature autumn amber for high priority
         taskUrgentPriority: Color(0xFF6D1B00), // Dark red
         
         // Status colors
@@ -111,27 +124,39 @@ class AutumnForestTheme {
         calendarHighPriorityDot: Color(0xFFE65100), // Deep orange
         calendarFutureDot: Color(0xFF5D4037), // Deep bark
         
-        // Status badge colors - autumn theme
+        // Status badge colors - autumn theme (enhanced with signature amber)
         statusPendingBadge: Color(0xFFE65100), // Deep orange
-        statusInProgressBadge: Color(0xFFFFAB00), // Golden amber
-        statusCompletedBadge: Color(0xFF66BB6A), // Forest green
+        statusInProgressBadge: autumnAmber,    // Signature autumn amber for active states
+        statusCompletedBadge: Color(0xFF66BB6A), // Achievement uses signature color for celebration
         statusCancelledBadge: Color(0xFF9E9E9E), // Gray
         statusOverdueBadge: Color(0xFF6D1B00), // Dark red
         statusOnHoldBadge: Color(0xFF5D4037), // Deep bark
         
-        // Interactive colors
-        hover: Color(0xFF8B2500), // Darker maple
-        pressed: Color(0xFF6A1B00), // Even darker maple
-        focus: Color(0xFFBF360C), // Primary color for focus
+        // Interactive colors (enhanced with signature amber)
+        hover: Color(0xB3FFBF00), // autumnAmber with 0.7 alpha
+        pressed: Color(0xCCFFBF00), // autumnAmber with 0.8 alpha
+        focus: autumnAmber,       // Signature autumn amber for focus states
         disabled: Color(0xFF4F4539)
       );
     } else {
-      return const ThemeColors(
+      // Autumn Amber signature colors - Light mode: Deep, substantial colors
+      const autumnAmber = Color(0xFFCC9900);          // Deep substantial amber
+      const onAutumnAmber = Color(0xFFFFFFFF);        // Pure white for contrast
+      const autumnAmberContainer = Color(0xFFFFFDE7); // Light amber container
+      const onAutumnAmberContainer = Color(0xFF1A1A1A); // Deep charcoal
+      
+      return ThemeColors(
         // Golden Autumn Day - Warm forest colors
         primary: Color(0xFFD84315), // Maple leaf red
         onPrimary: Color(0xFFFFFFFF),
         primaryContainer: Color(0xFFFFE5DD),
-        onPrimaryContainer: Color(0xFF2E0E00),
+        onPrimaryContainer: Color(0xFF1A1A1A), // Deep charcoal (enhanced contrast)
+        
+        // Autumn Amber signature accent colors
+        autumnAmber: autumnAmber,
+        onAutumnAmber: onAutumnAmber,
+        autumnAmberContainer: autumnAmberContainer,
+        onAutumnAmberContainer: onAutumnAmberContainer,
         
         secondary: Color(0xFFFF8F00), // Sunset orange  
         onSecondary: Color(0xFFFFFFFF),
@@ -149,14 +174,14 @@ class AutumnForestTheme {
         onErrorContainer: Color(0xFF2F0000),
         
         surface: Color(0xFFFFFBF5), // Morning mist
-        onSurface: Color(0xFF1F1B16),
+        onSurface: Color(0xFF1A1A1A), // Deep charcoal (enhanced contrast)
         surfaceVariant: Color(0xFFF7F2EA), // Dried leaves
-        onSurfaceVariant: Color(0xFF4F4539),
+        onSurfaceVariant: Color(0xFF1A1A1A), // Deep charcoal (enhanced contrast)
         inverseSurface: Color(0xFF34302A),
         onInverseSurface: Color(0xFFF7F0E8),
         
         background: Color(0xFFFFFBF5), // Autumn clearing
-        onBackground: Color(0xFF1F1B16),
+        onBackground: Color(0xFF1A1A1A), // Deep charcoal (enhanced contrast)
         
         outline: Color(0xFF807567),
         outlineVariant: Color(0xFFD3C4B4),
@@ -166,10 +191,10 @@ class AutumnForestTheme {
         accent: Color(0xFFFFAB00), // Golden amber accent
         highlight: Color(0xFFFFD54F), // Bright golden highlight
         
-        // Task priority colors - autumn theme
+        // Task priority colors - autumn theme (enhanced with signature amber)
         taskLowPriority: Color(0xFF66BB6A), // Forest green
         taskMediumPriority: Color(0xFFFF8F00), // Sunset orange
-        taskHighPriority: Color(0xFFD84315), // Primary maple
+        taskHighPriority: autumnAmber,      // Signature autumn amber for high priority
         taskUrgentPriority: Color(0xFF8B0000), // Deep red
         
         // Status colors
@@ -184,18 +209,18 @@ class AutumnForestTheme {
         calendarHighPriorityDot: Color(0xFFFF8F00), // Sunset orange
         calendarFutureDot: Color(0xFF6A4C39), // Rich bark
         
-        // Status badge colors - autumn theme
+        // Status badge colors - autumn theme (enhanced with signature amber)
         statusPendingBadge: Color(0xFFFF8F00), // Sunset orange
-        statusInProgressBadge: Color(0xFFFFAB00), // Golden amber
-        statusCompletedBadge: Color(0xFF66BB6A), // Forest green
+        statusInProgressBadge: autumnAmber,    // Signature autumn amber for active states
+        statusCompletedBadge: Color(0xFF66BB6A), // Achievement uses signature color for celebration
         statusCancelledBadge: Color(0xFF9E9E9E), // Gray
         statusOverdueBadge: Color(0xFF8B0000), // Deep red
         statusOnHoldBadge: Color(0xFF6A4C39), // Rich bark
         
-        // Interactive colors
-        hover: Color(0xFFE64A19), // Darker maple
-        pressed: Color(0xFFD84315), // Even darker maple
-        focus: Color(0xFFD84315), // Primary color for focus
+        // Interactive colors (enhanced with signature amber)
+        hover: Color(0x40CC9900), // autumnAmber with 0.25 alpha
+        pressed: Color(0x80CC9900), // autumnAmber with 0.5 alpha
+        focus: autumnAmber,       // Signature autumn amber for focus states
         disabled: Color(0xFFD3C4B4)
       );
     }
@@ -478,7 +503,7 @@ class AutumnForestTheme {
         patternAngle: 0.0, // Centered radial
         patternDensity: 0.9, // Organic density
         accentColors: [
-          (isDark ? const Color(0xFFD84315) : const Color(0xFFFF8F00)).withValues(alpha: 0.08), // Autumn orange
+          (isDark ? const Color(0xFFFFBF00) : const Color(0xFFCC9900)).withValues(alpha: 0.08), // Signature autumn amber
           (isDark ? const Color(0xFF8D6E63) : const Color(0xFFA1887F)).withValues(alpha: 0.06), // Warm brown
         ],
       ),

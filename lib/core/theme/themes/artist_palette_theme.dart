@@ -89,10 +89,10 @@ class ArtistPaletteTheme {
         inverseSurface: Color(0xFFF0E6DE),
         onInverseSurface: Color(0xFF34302A),
         
-        // Missing required arguments
+        // Missing required arguments (enhanced with signature teal)
         highlight: Color(0xFFFFCC02), // Golden highlight
-        hover: Color(0xFFBF360C), // Darker vermillion for hover
-        pressed: Color(0xFF8D2E0C), // Even darker for press
+        hover: Color(0xB320B2AA), // artistTeal with 0.7 alpha
+        pressed: Color(0xCC20B2AA), // artistTeal with 0.8 alpha
         info: Color(0xFF03DAC6), // Cyan info
         success: Color(0xFF4CAF50), // Green success
         warning: Color(0xFFFF9800), // Orange warning
@@ -111,10 +111,10 @@ class ArtistPaletteTheme {
         taskHighPriority: Color(0xFFFF9800), // Orange
         taskUrgentPriority: Color(0xFFC2185B), // Dark magenta
         
-        // Additional required colors
+        // Additional required colors (enhanced with signature teal)
         accent: Color(0xFFFFEB3B), // Cadmium yellow accent
         disabled: Color(0xFF4F4539),
-        focus: Color(0xFFD84315), // Primary color for focus
+        focus: Color(0xFF20B2AA), // Signature artist teal for focus states (dark)
         
         // Calendar dot colors - artistic theme
         calendarTodayDot: Color(0xFFD84315), // Primary vermillion
@@ -160,10 +160,10 @@ class ArtistPaletteTheme {
         inverseSurface: Color(0xFF34302A),
         onInverseSurface: Color(0xFFF7F0E8),
         
-        // Missing required arguments
+        // Missing required arguments (enhanced with signature teal)
         highlight: Color(0xFFFFEB3B), // Cadmium yellow highlight
-        hover: Color(0xFFE64A19), // Darker vermillion for hover
-        pressed: Color(0xFFD84315), // Even darker for press
+        hover: Color(0x40118877), // artistTeal with 0.25 alpha
+        pressed: Color(0x80118877), // artistTeal with 0.5 alpha
         info: Color(0xFF00BCD4), // Light cyan info
         success: Color(0xFF4CAF50), // Green success
         warning: Color(0xFFFF9800), // Orange warning
@@ -182,10 +182,10 @@ class ArtistPaletteTheme {
         taskHighPriority: Color(0xFFFF9800), // Orange
         taskUrgentPriority: Color(0xFFE91E63), // Magenta
         
-        // Additional required colors
+        // Additional required colors (enhanced with signature teal)
         accent: Color(0xFFFFEB3B), // Cadmium yellow accent
         disabled: Color(0xFFD3C4B4),
-        focus: Color(0xFFFF5722), // Primary color for focus
+        focus: Color(0xFF118877), // Signature artist teal for focus states (light)
         
         // Calendar dot colors - artistic theme
         calendarTodayDot: Color(0xFFFF5722), // Primary vermillion

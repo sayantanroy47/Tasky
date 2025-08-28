@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../core/design_system/design_tokens.dart';
 import '../../core/providers/core_providers.dart';
+import '../../core/providers/enhanced_theme_provider.dart';
 import '../../core/routing/app_router.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../core/utils/category_utils.dart';
@@ -16,7 +18,6 @@ import '../../domain/models/enums.dart';
 import '../../services/ui/slidable_action_service.dart';
 import '../../services/ui/slidable_feedback_service.dart';
 import '../../services/ui/slidable_theme_service.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import '../../services/welcome_message_service.dart';
 import '../providers/profile_providers.dart';
 import '../providers/project_providers.dart';
@@ -30,10 +31,10 @@ import '../widgets/simple_theme_toggle.dart';
 import '../widgets/standardized_app_bar.dart';
 import '../widgets/standardized_border_radius.dart';
 import '../widgets/standardized_card.dart';
+import '../widgets/standardized_colors.dart';
 import '../widgets/standardized_error_states.dart';
 import '../widgets/standardized_icons.dart' show StandardizedIcon, StandardizedIconSize, StandardizedIconStyle;
 import '../widgets/standardized_spacing.dart';
-import '../widgets/standardized_colors.dart';
 import '../widgets/standardized_text.dart';
 import '../widgets/tag_chip.dart';
 import 'analytics_page.dart';
@@ -257,12 +258,14 @@ class _HomePageState extends ConsumerState<HomePage> with SingleTickerProviderSt
                         }
 
                         return ListView.builder(
-                          padding: const EdgeInsets.only(bottom: 160), // Bottom navigation bar + FAB clearance (80px + 72px FAB + 8px buffer)
+                          padding: const EdgeInsets.only(
+                              bottom: 160), // Bottom navigation bar + FAB clearance (80px + 72px FAB + 8px buffer)
                           itemCount: filteredTasks.length,
                           itemBuilder: (context, index) {
                             final task = filteredTasks[index];
                             return ListTile(
-                              title: StandardizedText(TextUtils.autoCapitalize(task.title), style: StandardizedTextStyle.labelLarge),
+                              title: StandardizedText(TextUtils.autoCapitalize(task.title),
+                                  style: StandardizedTextStyle.labelLarge),
                               subtitle: task.description?.isNotEmpty == true
                                   ? StandardizedText(task.description!, style: StandardizedTextStyle.bodySmall)
                                   : null,
@@ -408,9 +411,9 @@ class _HomePageState extends ConsumerState<HomePage> with SingleTickerProviderSt
                                     color: Theme.of(context).colorScheme.error),
                                 _buildInsightRow('Overdue', '$overdueTasks', PhosphorIcons.warning(),
                                     color: Theme.of(context).colorScheme.error),
-                                
+
                                 StandardizedGaps.lg,
-                                
+
                                 // Quick Actions Section
                                 Row(
                                   children: [
@@ -428,7 +431,8 @@ class _HomePageState extends ConsumerState<HomePage> with SingleTickerProviderSt
                                             Icon(PhosphorIcons.list(), size: 16),
                                             const SizedBox(width: 8),
                                             const Flexible(
-                                              child: StandardizedText('View All Tasks', style: StandardizedTextStyle.buttonText),
+                                              child: StandardizedText('View All Tasks',
+                                                  style: StandardizedTextStyle.buttonText),
                                             ),
                                           ],
                                         ),
@@ -454,7 +458,8 @@ class _HomePageState extends ConsumerState<HomePage> with SingleTickerProviderSt
                                             Icon(PhosphorIcons.chartBar(), size: 16),
                                             const SizedBox(width: 8),
                                             const Flexible(
-                                              child: StandardizedText('Analytics', style: StandardizedTextStyle.buttonText),
+                                              child: StandardizedText('Analytics',
+                                                  style: StandardizedTextStyle.buttonText),
                                             ),
                                           ],
                                         ),
@@ -599,7 +604,7 @@ class _HomePageState extends ConsumerState<HomePage> with SingleTickerProviderSt
     final welcomeData = _getWelcomeData();
     final welcomeMessage = welcomeData['welcomeMessage'] as WelcomeMessage;
     final timeOfDay = welcomeData['timeOfDay'] as String;
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -697,13 +702,10 @@ class _HomePageState extends ConsumerState<HomePage> with SingleTickerProviderSt
                 task.completedAt!.isAfter(todayStart) &&
                 task.completedAt!.isBefore(todayEnd))
             .length;
-        
+
         // Add calculations for Overdue and Total tasks
         final overdueCount = tasks
-            .where((task) =>
-                !task.isCompleted &&
-                task.dueDate != null &&
-                task.dueDate!.isBefore(todayStart))
+            .where((task) => !task.isCompleted && task.dueDate != null && task.dueDate!.isBefore(todayStart))
             .length;
         final totalTasks = tasks.length;
 
@@ -1000,61 +1002,61 @@ Shared from Tasky - Task Management App
           height: 56, // Increased for touch accessibility
           padding: StandardizedSpacing.padding(SpacingSize.xs),
           child: TabBar(
-              controller: _tabController,
-              // Sophisticated gradient indicator for premium feel
-              indicator: BoxDecoration(
-                borderRadius:
-                    BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
-                gradient: LinearGradient(
-                  colors: [
-                    theme.colorScheme.primary.withValues(alpha: 0.1),
-                    theme.colorScheme.primary.withValues(alpha: 0.05),
-                  ],
-                ),
-                border: Border.all(
-                  color: theme.colorScheme.primary.withValues(alpha: 0.2),
-                  width: 0.5, // Ultra-thin for sophistication
-                ),
+            controller: _tabController,
+            // Sophisticated gradient indicator for premium feel
+            indicator: BoxDecoration(
+              borderRadius:
+                  BorderRadius.circular(TypographyConstants.radiusStandard), // 8.0 - Fixed border radius hierarchy
+              gradient: LinearGradient(
+                colors: [
+                  theme.colorScheme.primary.withValues(alpha: 0.1),
+                  theme.colorScheme.primary.withValues(alpha: 0.05),
+                ],
               ),
+              border: Border.all(
+                color: theme.colorScheme.primary.withValues(alpha: 0.2),
+                width: 0.5, // Ultra-thin for sophistication
+              ),
+            ),
 
-              // Sophisticated typography and colors
-              labelColor: theme.colorScheme.primary,
-              unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
-              dividerColor: Colors.transparent, // TODO: Use context.colors.backgroundTransparent
-              indicatorSize: TabBarIndicatorSize.tab,
+            // Sophisticated typography and colors
+            labelColor: theme.colorScheme.primary,
+            unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
+            dividerColor: Colors.transparent, // TODO: Use context.colors.backgroundTransparent
+            indicatorSize: TabBarIndicatorSize.tab,
 
-              // Elegant text styling
-              labelStyle: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
-                    // Using standardized titleMedium (16) for clarity
-                    fontWeight: TypographyConstants.regular, // Regular weight for sophistication
-                    letterSpacing: 0.1, // Subtle letter spacing
-                  ),
-              unselectedLabelStyle: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
-                    // Using standardized titleMedium (16) for consistency
-                    fontWeight: TypographyConstants.light, // Light weight for unselected
-                    letterSpacing: 0.1,
-                  ),
+            // Elegant text styling
+            labelStyle: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
+                  // Using standardized titleMedium (16) for clarity
+                  fontWeight: TypographyConstants.regular, // Regular weight for sophistication
+                  letterSpacing: 0.1, // Subtle letter spacing
+                ),
+            unselectedLabelStyle: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
+                  // Using standardized titleMedium (16) for consistency
+                  fontWeight: TypographyConstants.light, // Light weight for unselected
+                  letterSpacing: 0.1,
+                ),
 
-              tabs: [
-                // Text-only tabs for sophisticated elegance
-                Semantics(
-                  label: 'Today\'s tasks tab',
-                  hint: 'View tasks due today',
-                  button: true,
-                  child: const Tab(text: 'Today'),
-                ),
-                Semantics(
-                  label: 'Projects tab',
-                  hint: 'View active projects',
-                  button: true,
-                  child: const Tab(text: 'Projects'),
-                ),
-                Semantics(
-                  label: 'Planned tasks tab',
-                  hint: 'View planned upcoming tasks',
-                  button: true,
-                  child: const Tab(text: 'Planned'), // Renamed from 'Future' for clarity
-                ),
+            tabs: [
+              // Text-only tabs for sophisticated elegance
+              Semantics(
+                label: 'Today\'s tasks tab',
+                hint: 'View tasks due today',
+                button: true,
+                child: const Tab(text: 'Today'),
+              ),
+              Semantics(
+                label: 'Projects tab',
+                hint: 'View active projects',
+                button: true,
+                child: const Tab(text: 'Projects'),
+              ),
+              Semantics(
+                label: 'Planned tasks tab',
+                hint: 'View planned upcoming tasks',
+                button: true,
+                child: const Tab(text: 'Planned'), // Renamed from 'Future' for clarity
+              ),
             ],
           ),
         ),
@@ -1089,7 +1091,8 @@ Shared from Tasky - Task Management App
         });
 
         return ListView.builder(
-          padding: const EdgeInsets.only(bottom: 160), // Bottom navigation bar + FAB clearance (80px + 72px FAB + 8px buffer)
+          padding: const EdgeInsets.only(
+              bottom: 160), // Bottom navigation bar + FAB clearance (80px + 72px FAB + 8px buffer)
           itemCount: tasks.length,
           itemBuilder: (context, index) {
             final task = tasks[index];
@@ -1120,7 +1123,8 @@ Shared from Tasky - Task Management App
         });
 
         return ListView.builder(
-          padding: const EdgeInsets.only(bottom: 160), // Bottom navigation bar + FAB clearance (80px + 72px FAB + 8px buffer)
+          padding: const EdgeInsets.only(
+              bottom: 160), // Bottom navigation bar + FAB clearance (80px + 72px FAB + 8px buffer)
           itemCount: projects.length,
           itemBuilder: (context, index) {
             final project = projects[index];
@@ -1164,7 +1168,8 @@ Shared from Tasky - Task Management App
         }
 
         return ListView.builder(
-          padding: const EdgeInsets.only(bottom: 160), // Bottom navigation bar + FAB clearance (80px + 72px FAB + 8px buffer)
+          padding: const EdgeInsets.only(
+              bottom: 160), // Bottom navigation bar + FAB clearance (80px + 72px FAB + 8px buffer)
           itemCount: futureTasks.length,
           itemBuilder: (context, index) {
             final task = futureTasks[index];
@@ -1223,7 +1228,7 @@ Shared from Tasky - Task Management App
                   width: 4,
                   height: 32,
                   decoration: BoxDecoration(
-                    color: task.priority.color,
+                    color: _getPriorityColor(task.priority, context),
                     borderRadius:
                         BorderRadius.circular(TypographyConstants.radiusXSmall), // 2.0 - Fixed border radius hierarchy
                   ),
@@ -1232,7 +1237,6 @@ Shared from Tasky - Task Management App
                 // Category icon container second
                 if (task.tagIds.isNotEmpty) ...[
                   Builder(builder: (context) {
-                    debugPrint('🎨 Showing category icon for task "${task.title}" with tags: ${task.tagIds}');
                     return const SizedBox.shrink();
                   }),
                   CategoryUtils.buildCategoryIconContainer(
@@ -1245,7 +1249,6 @@ Shared from Tasky - Task Management App
                   const SizedBox(width: SpacingTokens.phi1), // Golden ratio spacing
                 ] else ...[
                   Builder(builder: (context) {
-                    debugPrint('❌ No category icon for task "${task.title}" - tags: ${task.tagIds}');
                     return const SizedBox.shrink();
                   }),
                 ],
@@ -1487,9 +1490,8 @@ Shared from Tasky - Task Management App
                       // Progress percentage badge on the right side of task info
                       projectStatsAsync.when(
                         data: (stats) {
-                          final progressPercentage = stats.totalTasks > 0 
-                              ? (stats.completedTasks / stats.totalTasks) 
-                              : 0.0;
+                          final progressPercentage =
+                              stats.totalTasks > 0 ? (stats.completedTasks / stats.totalTasks) : 0.0;
                           return Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                             decoration: BoxDecoration(
@@ -1534,9 +1536,7 @@ Shared from Tasky - Task Management App
                   // Progress bar below text
                   projectStatsAsync.when(
                     data: (stats) {
-                      final progressPercentage = stats.totalTasks > 0 
-                          ? (stats.completedTasks / stats.totalTasks) 
-                          : 0.0;
+                      final progressPercentage = stats.totalTasks > 0 ? (stats.completedTasks / stats.totalTasks) : 0.0;
                       return LinearProgressIndicator(
                         value: progressPercentage,
                         backgroundColor: theme.colorScheme.surfaceContainerHighest,
@@ -1595,7 +1595,6 @@ Shared from Tasky - Task Management App
                 ],
               ),
             ),
-
           ],
         ),
       ),
@@ -1659,7 +1658,8 @@ Shared from Tasky - Task Management App
   /// Build tasks loading state
   Widget _buildTasksLoadingState(ThemeData theme) {
     return ListView.builder(
-      padding: const EdgeInsets.only(bottom: 160), // Bottom navigation bar + FAB clearance (80px + 72px FAB + 8px buffer)
+      padding:
+          const EdgeInsets.only(bottom: 160), // Bottom navigation bar + FAB clearance (80px + 72px FAB + 8px buffer)
       itemCount: 3,
       itemBuilder: (context, index) => GlassmorphismContainer(
         level: GlassLevel.background,
@@ -1800,7 +1800,8 @@ Shared from Tasky - Task Management App
   /// Build projects loading state
   Widget _buildProjectsLoadingState(ThemeData theme) {
     return ListView.builder(
-      padding: const EdgeInsets.only(bottom: 160), // Bottom navigation bar + FAB clearance (80px + 72px FAB + 8px buffer)
+      padding:
+          const EdgeInsets.only(bottom: 160), // Bottom navigation bar + FAB clearance (80px + 72px FAB + 8px buffer)
       itemCount: 3,
       itemBuilder: (context, index) => GlassmorphismContainer(
         level: GlassLevel.background,
@@ -1948,7 +1949,8 @@ Shared from Tasky - Task Management App
       insightIcon = PhosphorIcons.arrowUp();
     } else if (highCount > 0) {
       insight = highCount == 1 ? '1 high priority task to focus on' : '$highCount high priority tasks to focus on';
-      insightColor = theme.colorScheme.secondary;
+      insightColor =
+          ref.read(enhancedThemeProvider).currentTheme?.colors.taskHighPriority ?? theme.colorScheme.secondary;
       insightIcon = PhosphorIcons.caretUp();
     } else if (pendingCount > 0) {
       insight = 'Great progress! Stay focused on remaining tasks';
@@ -1983,6 +1985,26 @@ Shared from Tasky - Task Management App
         ],
       ),
     );
+  }
+
+  /// Get theme-aware priority color that uses stellar gold for high priority
+  Color _getPriorityColor(TaskPriority priority, BuildContext context) {
+    // Get the current theme from enhanced theme provider
+    final currentTheme = ref.read(enhancedThemeProvider).currentTheme;
+    if (currentTheme == null) {
+      return priority.color; // Fallback to enum color
+    }
+
+    switch (priority) {
+      case TaskPriority.low:
+        return currentTheme.colors.taskLowPriority;
+      case TaskPriority.medium:
+        return currentTheme.colors.taskMediumPriority;
+      case TaskPriority.high:
+        return currentTheme.colors.taskHighPriority; // Now uses stellar gold!
+      case TaskPriority.urgent:
+        return currentTheme.colors.taskUrgentPriority;
+    }
   }
 }
 

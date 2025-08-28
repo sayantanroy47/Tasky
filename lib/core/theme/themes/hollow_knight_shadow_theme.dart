@@ -29,7 +29,8 @@ class HollowKnightShadowTheme {
         category: 'Gaming',
         previewIcon: PhosphorIcons.ghost(),
         primaryPreviewColor: isDark ? const Color(0xFF0A0A0F) : const Color(0xFFF8F8FF),
-        secondaryPreviewColor: const Color(0xFF4A90E2),
+        secondaryPreviewColor: isDark ? const Color(0xFF4A90E2) : const Color(0xFF2F2F2F),
+        tertiaryPreviewColor: isDark ? const Color(0xFFC0C0C0) : const Color(0xFF888888), // Hollow Silver signature accent
         createdAt: now,
         isPremium: true,
         popularityScore: 9.2,
@@ -62,6 +63,12 @@ class HollowKnightShadowTheme {
       const etherealWhite = Color(0xFFF8F8FF);    // Background
       const lightVoid = Color(0xFFF0F8FF);        // Light surface
       const ghostGlow = Color(0xFFB0C4DE);        // Accent
+      
+      // Hollow Silver Signature Accent - Deeper for light mode contrast
+      const deepHollowSilver = Color(0xFF888888);            // Deep signature silver
+      const onDeepHollowSilver = Color(0xFFFFFFFF);           // White text on deep silver
+      const deepHollowSilverContainer = Color(0xFFF5F5F5);    // Light silver container
+      const onDeepHollowSilverContainer = Color(0xFF2A2A2A);  // Deep silver container text
       
       return ThemeColors(
         // Primary
@@ -100,17 +107,17 @@ class HollowKnightShadowTheme {
         errorContainer: const Color(0xFFFFEBEE),
         onErrorContainer: const Color(0xFF2D0001),
         
-        // Special
-        accent: ghostGlow,
+        // Special - Enhanced with Hollow Silver signature accent
+        accent: deepHollowSilver,              // Use signature silver as primary accent
         highlight: spectraiWhite,
         shadow: Colors.black26,
         outline: mistGray,
         outlineVariant: const Color(0xFFCFCFD4),
         
-        // Task Priority
+        // Task Priority - Enhanced with Hollow Silver signature accent
         taskLowPriority: ghostGlow,
         taskMediumPriority: soulBlue,
-        taskHighPriority: voidPurple,
+        taskHighPriority: deepHollowSilver,        // Signature silver power
         taskUrgentPriority: const Color(0xFF4527A0),
         
         // Status
@@ -118,17 +125,17 @@ class HollowKnightShadowTheme {
         warning: const Color(0xFFF57C00),
         info: soulBlue,
         
-        // Calendar Dots
+        // Calendar Dots - Enhanced with Hollow Silver signature accent
         calendarTodayDot: soulBlue,
         calendarOverdueDot: voidPurple,
         calendarFutureDot: ghostGlow,
         calendarCompletedDot: const Color(0xFF2E7D32),
-        calendarHighPriorityDot: const Color(0xFF4527A0),
+        calendarHighPriorityDot: deepHollowSilver,         // Signature silver for high priority
         
-        // Status Badges
+        // Status Badges - Enhanced with Hollow Silver signature accent
         statusPendingBadge: ghostGlow,
         statusInProgressBadge: soulBlue,
-        statusCompletedBadge: const Color(0xFF2E7D32),
+        statusCompletedBadge: deepHollowSilver,            // Signature silver for completed (achievement)
         statusCancelledBadge: mistGray,
         statusOverdueBadge: voidPurple,
         statusOnHoldBadge: spectraiWhite,
@@ -136,8 +143,14 @@ class HollowKnightShadowTheme {
         // Interactive
         hover: soulBlue.withValues(alpha: 0.8),
         pressed: soulBlue.withValues(alpha: 0.9),
-        focus: soulBlue.withValues(alpha: 0.12),
+        focus: deepHollowSilver,                           // Signature silver for focus
         disabled: mistGray.withValues(alpha: 0.5),
+        
+        // Hollow Silver Signature Colors
+        hollowSilver: deepHollowSilver,
+        onHollowSilver: onDeepHollowSilver,
+        hollowSilverContainer: deepHollowSilverContainer,
+        onHollowSilverContainer: onDeepHollowSilverContainer,
       );
     } else {
       // Shadow Dark - Void depths
@@ -148,6 +161,12 @@ class HollowKnightShadowTheme {
       const shadowGray = Color(0xFF1A1A1F);       // Surface
       const mistGray = Color(0xFF2A2A2F);         // Variant surface
       const ghostWhite = Color(0xFFCCCCCC);       // On surface
+      
+      // Hollow Silver Signature Accent - Enhanced for dark mode visibility
+      const hollowSilverSignature = Color(0xFFC0C0C0);      // Super bright signature silver
+      const onHollowSilverSignature = Color(0xFF000000);    // Pure black for maximum contrast
+      const hollowSilverContainer = Color(0xFF3A3A3F);      // Enhanced silver container
+      const onHollowSilverContainer = Color(0xFFFFFFFF);    // Pure white for container text
       
       return ThemeColors(
         // Primary
@@ -186,17 +205,17 @@ class HollowKnightShadowTheme {
         errorContainer: const Color(0xFF930006),
         onErrorContainer: const Color(0xFFFFEBEE),
         
-        // Special
-        accent: voidPurple,
+        // Special - Enhanced with Hollow Silver signature accent
+        accent: hollowSilverSignature,         // Use signature silver as primary accent
         highlight: spectralWhite,
         shadow: Colors.black87,
         outline: const Color(0xFF5A5A5F),
         outlineVariant: const Color(0xFF3A3A3F),
         
-        // Task Priority
+        // Task Priority - Enhanced with Hollow Silver signature accent
         taskLowPriority: const Color(0xFF7986CB),
         taskMediumPriority: soulBlue,
-        taskHighPriority: voidPurple,
+        taskHighPriority: hollowSilverSignature,      // Signature silver power
         taskUrgentPriority: const Color(0xFF4527A0),
         
         // Status
@@ -204,17 +223,17 @@ class HollowKnightShadowTheme {
         warning: const Color(0xFFFF9800),
         info: soulBlue,
         
-        // Calendar Dots
+        // Calendar Dots - Enhanced with Hollow Silver signature accent
         calendarTodayDot: soulBlue,
         calendarOverdueDot: const Color(0xFF4527A0),
         calendarFutureDot: voidPurple,
         calendarCompletedDot: const Color(0xFF4CAF50),
-        calendarHighPriorityDot: const Color(0xFF4527A0),
+        calendarHighPriorityDot: hollowSilverSignature,   // Signature silver for high priority
         
-        // Status Badges
+        // Status Badges - Enhanced with Hollow Silver signature accent
         statusPendingBadge: voidPurple,
         statusInProgressBadge: soulBlue,
-        statusCompletedBadge: const Color(0xFF4CAF50),
+        statusCompletedBadge: hollowSilverSignature,       // Signature silver for completed (achievement)
         statusCancelledBadge: const Color(0xFF5A5A5F),
         statusOverdueBadge: const Color(0xFF4527A0),
         statusOnHoldBadge: spectralWhite,
@@ -222,8 +241,14 @@ class HollowKnightShadowTheme {
         // Interactive
         hover: soulBlue.withValues(alpha: 0.8),
         pressed: soulBlue.withValues(alpha: 0.9),
-        focus: soulBlue.withValues(alpha: 0.12),
+        focus: hollowSilverSignature,                      // Signature silver for focus
         disabled: const Color(0xFF5A5A5F).withValues(alpha: 0.5),
+        
+        // Hollow Silver Signature Colors
+        hollowSilver: hollowSilverSignature,
+        onHollowSilver: onHollowSilverSignature,
+        hollowSilverContainer: hollowSilverContainer,
+        onHollowSilverContainer: onHollowSilverContainer,
       );
     }
   }
@@ -505,6 +530,7 @@ class HollowKnightShadowTheme {
         patternAngle: 0.0, // Centered ethereal energy
         patternDensity: 0.7, // Sparse ethereal pattern
         accentColors: [
+          (isDark ? const Color(0xFFC0C0C0) : const Color(0xFF888888)).withValues(alpha: 0.12), // Hollow Silver signature accent
           (isDark ? const Color(0xFF4A90E2) : const Color(0xFF64B5F6)).withValues(alpha: 0.1), // Soul blue
           (isDark ? const Color(0xFF8A2BE2) : const Color(0xFFBA68C8)).withValues(alpha: 0.06), // Void purple
         ],

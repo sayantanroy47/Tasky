@@ -28,8 +28,9 @@ class DraculaIDETheme {
         tags: ['developer', 'ide', 'dark', 'purple', 'pink', 'elegant', 'syntax'],
         category: 'developer',
         previewIcon: PhosphorIcons.code(),
-        primaryPreviewColor: isDark ? const Color(0xFF282a36) : const Color(0xFFf8f8f2), // Dark purple or light
-        secondaryPreviewColor: const Color(0xFFff79c6), // Pink (same)
+        primaryPreviewColor: isDark ? const Color(0xFF1A1C26) : const Color(0xFFFFFFFF), // Enhanced dark purple or pure white
+        secondaryPreviewColor: isDark ? const Color(0xFFFF88DD) : const Color(0xFFDD4499), // Enhanced pink (mode-specific)
+        tertiaryPreviewColor: isDark ? const Color(0xFFE6C1FF) : const Color(0xFF6633AA), // Dracula Purple signature accent
         createdAt: now,
         isPremium: false,
         popularityScore: 9.7,
@@ -56,187 +57,211 @@ class DraculaIDETheme {
     if (!isDark) {
       // Dracula Light Variant: Refined & Usable
       
-      // Dracula colors maintained at full vibrancy
-      const darkDraculaPink = Color(0xFFFF79C6);          // Pink primary
-      const darkDraculaPurple = Color(0xFFBD93F9);        // Purple secondary  
-      const darkDraculaCyan = Color(0xFF8BE9FD);          // Bright cyan
-      const darkDraculaGreen = Color(0xFF50FA7B);         // Vibrant green
-      const darkDraculaOrange = Color(0xFFFFB86C);        // Warm orange
-      const darkDraculaRed = Color(0xFFFF5555);           // Strong red
-      const darkDraculaYellow = Color(0xFFF1FA8C);        // Yellow highlight
-      const darkDraculaComment = Color(0xFF6B7280);       // Adjusted for readability on light bg
+      // Dracula colors - Deeper variants for better contrast on light backgrounds
+      const deepDraculaPink = Color(0xFFDD4499);          // Deeper pink primary
+      const deepDraculaPurple = Color(0xFF8855CC);        // Deeper purple secondary  
+      const deepDraculaCyan = Color(0xFF4499BB);          // Deeper cyan
+      const deepDraculaGreen = Color(0xFF338855);         // Deeper green
+      const deepDraculaOrange = Color(0xFFDD7744);        // Deeper orange
+      const deepDraculaRed = Color(0xFFCC2222);           // Deeper red
+      const deepDraculaYellow = Color(0xFFBBBB44);        // Deeper yellow
+      const deepDraculaComment = Color(0xFF556677);       // Deeper comment color for readability
       
-      // Light backgrounds and containers
-      const pureWhite = Color(0xFFFFFFFF);                // Background
-      const lightSurface = Color(0xFFF3F4F6);             // Soft gray surface
-      const paleContainer = Color(0xFFEDE9FE);            // Light purple tint container
-      const accentInk = Color(0xFF1E293B);                // Neutral text ink
+      // Light backgrounds and containers - Enhanced contrast
+      const pureWhite = Color(0xFFFFFFFF);                // Pure white background
+      const lightSurface = Color(0xFFF8F8F8);             // Light gray surface
+      const paleContainer = Color(0xFFE8E0FF);            // Light purple tint container
+      const deepTextInk = Color(0xFF1A1A1A);              // Deep text for maximum readability
+      
+      // Dracula Purple Signature Accent - Deeper for light mode contrast
+      const deepDraculaPurpleSignature = Color(0xFF6633AA);    // Deep signature purple
+      const onDeepDraculaPurpleSignature = Color(0xFFFFFFFF);  // White text on deep purple
+      const deepDraculaPurpleContainer = Color(0xFFE8E0FF);    // Light purple container
+      const onDeepDraculaPurpleContainer = Color(0xFF2A1155);  // Deep purple container text
       
       
       return const ThemeColors(
-        // Primary colors - Dracula pink
-        primary: darkDraculaPink,
+        // Primary colors - Deep Dracula pink for better contrast
+        primary: deepDraculaPink,
         onPrimary: pureWhite,
         primaryContainer: paleContainer,
-        onPrimaryContainer: darkDraculaPink,
+        onPrimaryContainer: deepDraculaPink,
 
-        // Secondary colors - Dracula purple
-        secondary: darkDraculaPurple,
+        // Secondary colors - Deep Dracula purple for better contrast
+        secondary: deepDraculaPurple,
         onSecondary: pureWhite,
         secondaryContainer: paleContainer,
-        onSecondaryContainer: darkDraculaPurple,
+        onSecondaryContainer: deepDraculaPurple,
 
-        // Tertiary colors - Dracula cyan
-        tertiary: darkDraculaCyan,
+        // Tertiary colors - Deep Dracula cyan for better contrast
+        tertiary: deepDraculaCyan,
         onTertiary: pureWhite,
         tertiaryContainer: paleContainer,
-        onTertiaryContainer: darkDraculaCyan,
+        onTertiaryContainer: deepDraculaCyan,
 
-        // Surface colors - Light backgrounds
+        // Surface colors - Enhanced contrast
         surface: lightSurface,
-        onSurface: accentInk,
+        onSurface: deepTextInk,                // Deep text for maximum readability
         surfaceVariant: lightSurface,
-        onSurfaceVariant: accentInk,
-        inverseSurface: darkDraculaPink,
+        onSurfaceVariant: deepTextInk,         // Deep text for variants too
+        inverseSurface: deepDraculaPink,
         onInverseSurface: pureWhite,
 
-        // Background colors - Light backgrounds
+        // Background colors - Enhanced contrast
         background: pureWhite,
-        onBackground: accentInk,
+        onBackground: deepTextInk,             // Deep text for maximum readability
 
-        // Error colors - Dracula red
-        error: darkDraculaRed,
+        // Error colors - Deep Dracula red for better contrast
+        error: deepDraculaRed,
         onError: pureWhite,
         errorContainer: paleContainer,
-        onErrorContainer: darkDraculaRed,
+        onErrorContainer: deepDraculaRed,
 
-        // Special colors
-        accent: darkDraculaCyan,
-        highlight: darkDraculaYellow,
+        // Special colors - Enhanced with signature accent
+        accent: deepDraculaPurpleSignature,    // Use signature purple as primary accent
+        highlight: deepDraculaYellow,
         shadow: Color(0xFF000000),
-        outline: darkDraculaComment,
-        outlineVariant: darkDraculaComment,
+        outline: deepDraculaComment,           // Deeper outline for better visibility
+        outlineVariant: Color(0xFF889999),    // Enhanced outline variant
 
-        // Task priority colors - Dracula syntax colors
-        taskLowPriority: darkDraculaGreen,
-        taskMediumPriority: darkDraculaCyan,
-        taskHighPriority: darkDraculaOrange,
-        taskUrgentPriority: darkDraculaRed,
+        // Dracula Purple Signature Colors
+        draculaPurple: deepDraculaPurpleSignature,
+        onDraculaPurple: onDeepDraculaPurpleSignature,
+        draculaPurpleContainer: deepDraculaPurpleContainer,
+        onDraculaPurpleContainer: onDeepDraculaPurpleContainer,
 
-        // Status colors
-        success: darkDraculaGreen,
-        warning: darkDraculaOrange,
-        info: darkDraculaCyan,
+        // Task priority colors - Enhanced with signature accent
+        taskLowPriority: deepDraculaGreen,          // Deep green - Low priority
+        taskMediumPriority: deepDraculaCyan,        // Deep cyan - Medium priority
+        taskHighPriority: deepDraculaPurpleSignature, // Signature purple - High priority
+        taskUrgentPriority: deepDraculaRed,         // Deep red - Urgent priority
 
-        // Calendar dot colors - Dracula IDE theme (light)
-        calendarTodayDot: darkDraculaPink,
-        calendarOverdueDot: darkDraculaRed,
-        calendarFutureDot: darkDraculaCyan,
-        calendarCompletedDot: darkDraculaGreen,
-        calendarHighPriorityDot: darkDraculaOrange,
+        // Status colors - Deeper for better contrast
+        success: deepDraculaGreen,
+        warning: deepDraculaOrange,
+        info: deepDraculaCyan,
+
+        // Calendar dot colors - Dracula IDE theme (light) - Enhanced
+        calendarTodayDot: deepDraculaPink,                  // Deep pink for today
+        calendarOverdueDot: deepDraculaRed,                 // Deep red for overdue
+        calendarFutureDot: deepDraculaCyan,                 // Deep cyan for future
+        calendarCompletedDot: deepDraculaGreen,             // Deep green for completed
+        calendarHighPriorityDot: deepDraculaPurpleSignature, // Signature purple for high priority
         
-        // Status badge colors - Dracula IDE themed (light)
-        statusPendingBadge: darkDraculaCyan,
-        statusInProgressBadge: darkDraculaOrange,
-        statusCompletedBadge: darkDraculaGreen,
-        statusCancelledBadge: darkDraculaComment,
-        statusOverdueBadge: darkDraculaRed,
-        statusOnHoldBadge: darkDraculaYellow,
+        // Status badge colors - Enhanced with signature purple
+        statusPendingBadge: deepDraculaCyan,                // Deep cyan for pending
+        statusInProgressBadge: deepDraculaOrange,           // Deep orange for in progress
+        statusCompletedBadge: deepDraculaPurpleSignature,   // Signature purple for completed (achievement)
+        statusCancelledBadge: deepDraculaComment,           // Deep comment color for cancelled
+        statusOverdueBadge: deepDraculaRed,                 // Deep red for overdue
+        statusOnHoldBadge: deepDraculaYellow,               // Deep yellow for on hold
 
-        // Interactive colors
-        hover: Color(0xFFf565a7),
-        pressed: Color(0xFFe84d96),
-        focus: darkDraculaYellow,
-        disabled: darkDraculaComment,
+        // Interactive colors - Enhanced for better visibility
+        hover: Color(0xFFCC5588),              // Deeper hover state
+        pressed: Color(0xFFAA3366),            // Deeper pressed state
+        focus: deepDraculaYellow,
+        disabled: deepDraculaComment,
       );
     }
     
-    // Dracula Dark Variant: Refined & Usable moody aesthetics
-    const draculaBackground = Color(0xFF282A36);    // Dark purple background
-    const draculaCurrentLine = Color(0xFF44475A);   // Lighter purple for contrast
-    const draculaForeground = Color(0xFFF8F8F2);    // Foreground text
-    const draculaComment = Color(0xFF6272A4);       // Subdued blue-gray comments
-    const draculaCyan = Color(0xFF8BE9FD);          // Bright cyan
-    const draculaGreen = Color(0xFF50FA7B);         // Vibrant green
-    const draculaOrange = Color(0xFFFFB86C);        // Warm orange
-    const draculaPink = Color(0xFFFF79C6);          // Pink primary
-    const draculaPurple = Color(0xFFBD93F9);        // Purple secondary
-    const draculaRed = Color(0xFFFF5555);           // Strong red
-    const draculaYellow = Color(0xFFF1FA8C);        // Yellow highlight
+    // Dracula Dark Variant: Super bright, highly saturated colors for maximum visibility
+    const draculaBackground = Color(0xFF1A1C26);    // Deeper dark purple background
+    const draculaCurrentLine = Color(0xFF2A2D3A);   // Deeper current line for stronger contrast
+    const draculaForeground = Color(0xFFFFFFFF);    // Pure white foreground for maximum readability
+    const draculaComment = Color(0xFF7788BB);       // Enhanced blue-gray comments (brighter)
+    const draculaCyan = Color(0xFF00FFFF);          // Pure neon cyan (maximum saturation)
+    const draculaGreen = Color(0xFF55FF88);         // Enhanced vibrant green (brighter)
+    const draculaOrange = Color(0xFFFFCC77);        // Enhanced warm orange (brighter)
+    const draculaPink = Color(0xFFFF88DD);          // Enhanced pink primary (brighter)
+    const draculaPurple = Color(0xFFCC99FF);        // Enhanced purple secondary (brighter)
+    const draculaRed = Color(0xFFFF6666);           // Enhanced red (brighter)
+    const draculaYellow = Color(0xFFFFFF99);        // Enhanced yellow highlight (brighter)
+    
+    // Dracula Purple Signature Accent - Enhanced for dark mode visibility
+    const draculaPurpleSignature = Color(0xFFE6C1FF);     // Super bright signature purple
+    const onDraculaPurpleSignature = Color(0xFF000000);   // Pure black for maximum contrast
+    const draculaPurpleContainer = Color(0xFF5A3A7A);     // Enhanced purple container
+    const onDraculaPurpleContainer = Color(0xFFFFFFFF);   // Pure white for container text
     
     return const ThemeColors(
-      // Primary colors - Dracula pink
+      // Primary colors - Enhanced Dracula pink
       primary: draculaPink,
-      onPrimary: draculaBackground,
-      primaryContainer: Color(0xFF4a1a36),
-      onPrimaryContainer: draculaPink,
+      onPrimary: Color(0xFF000000),           // Pure black for maximum contrast
+      primaryContainer: Color(0xFF5A2A46),    // Enhanced pink container
+      onPrimaryContainer: Color(0xFFFFFFFF),  // Pure white for container text
 
-      // Secondary colors - Dracula purple
+      // Secondary colors - Enhanced Dracula purple
       secondary: draculaPurple,
-      onSecondary: draculaBackground,
-      secondaryContainer: Color(0xFF3d2a4f),
-      onSecondaryContainer: draculaPurple,
+      onSecondary: Color(0xFF000000),         // Pure black for maximum contrast
+      secondaryContainer: Color(0xFF4D3A6F),  // Enhanced purple container
+      onSecondaryContainer: Color(0xFFFFFFFF), // Pure white for container text
 
-      // Tertiary colors - Dracula cyan
+      // Tertiary colors - Enhanced Dracula cyan
       tertiary: draculaCyan,
-      onTertiary: draculaBackground,
-      tertiaryContainer: Color(0xFF1a3a3f),
-      onTertiaryContainer: draculaCyan,
+      onTertiary: Color(0xFF000000),          // Pure black for maximum contrast
+      tertiaryContainer: Color(0xFF2A4A5F),   // Enhanced cyan container
+      onTertiaryContainer: Color(0xFFFFFFFF), // Pure white for container text
 
-      // Surface colors - Dracula current line
+      // Surface colors - Enhanced contrast
       surface: draculaCurrentLine,
-      onSurface: draculaForeground,
-      surfaceVariant: Color(0xFF3a3c4a),
-      onSurfaceVariant: Color(0xFFc6c8d0),
+      onSurface: draculaForeground,           // Pure white text
+      surfaceVariant: Color(0xFF2A2D3A),     // Enhanced surface variant
+      onSurfaceVariant: Color(0xFFE6E6E6),   // Near-white for excellent contrast
       inverseSurface: draculaForeground,
       onInverseSurface: draculaBackground,
 
-      // Background colors - Dracula background
+      // Background colors - Enhanced contrast
       background: draculaBackground,
-      onBackground: draculaForeground,
+      onBackground: draculaForeground,        // Pure white text
 
-      // Error colors - Dracula red
+      // Error colors - Enhanced Dracula red
       error: draculaRed,
-      onError: draculaForeground,
-      errorContainer: Color(0xFF4a1a1a),
-      onErrorContainer: draculaRed,
+      onError: Color(0xFF000000),             // Pure black for maximum contrast
+      errorContainer: Color(0xFF5A2A2A),     // Enhanced red container
+      onErrorContainer: Color(0xFFFFFFFF),   // Pure white for container text
 
-      // Special colors
-      accent: draculaCyan,
+      // Special colors - Enhanced with signature accent
+      accent: draculaPurpleSignature,         // Use signature purple as primary accent
       highlight: draculaYellow,
       shadow: Color(0xFF000000),
       outline: draculaComment,
-      outlineVariant: Color(0xFF4a4d5a),
+      outlineVariant: Color(0xFF5A5D6A),     // Enhanced outline variant
 
-      // Task priority colors - Dracula syntax colors
-      taskLowPriority: draculaGreen,     // Green - Low priority
-      taskMediumPriority: draculaCyan,   // Cyan - Medium priority
-      taskHighPriority: draculaOrange,   // Orange - High priority
-      taskUrgentPriority: draculaRed,    // Red - Urgent priority
+      // Dracula Purple Signature Colors
+      draculaPurple: draculaPurpleSignature,
+      onDraculaPurple: onDraculaPurpleSignature,
+      draculaPurpleContainer: draculaPurpleContainer,
+      onDraculaPurpleContainer: onDraculaPurpleContainer,
 
-      // Status colors
+      // Task priority colors - Enhanced with signature accent
+      taskLowPriority: draculaGreen,          // Enhanced green - Low priority
+      taskMediumPriority: draculaCyan,        // Enhanced cyan - Medium priority
+      taskHighPriority: draculaPurpleSignature, // Signature purple - High priority
+      taskUrgentPriority: draculaRed,         // Enhanced red - Urgent priority
+
+      // Status colors - Enhanced brightness
       success: draculaGreen,
       warning: draculaOrange,
       info: draculaCyan,
 
       // Calendar dot colors - Dracula IDE theme (dark)
-      calendarTodayDot: draculaPink,                  // Pink for today
-      calendarOverdueDot: draculaRed,                 // Red for overdue
-      calendarFutureDot: draculaCyan,                 // Cyan for future
-      calendarCompletedDot: draculaGreen,             // Green for completed
-      calendarHighPriorityDot: draculaOrange,         // Orange for high priority
+      calendarTodayDot: draculaPink,                  // Enhanced pink for today
+      calendarOverdueDot: draculaRed,                 // Enhanced red for overdue
+      calendarFutureDot: draculaCyan,                 // Enhanced cyan for future
+      calendarCompletedDot: draculaGreen,             // Enhanced green for completed
+      calendarHighPriorityDot: draculaPurpleSignature, // Signature purple for high priority
       
-      // Status badge colors - Dracula IDE themed (dark)
-      statusPendingBadge: draculaCyan,                // Cyan for pending
-      statusInProgressBadge: draculaOrange,           // Orange for in progress
-      statusCompletedBadge: draculaGreen,             // Green for completed
-      statusCancelledBadge: draculaComment,           // Comment color for cancelled
-      statusOverdueBadge: draculaRed,                 // Red for overdue
-      statusOnHoldBadge: draculaYellow,               // Yellow for on hold
+      // Status badge colors - Enhanced with signature purple
+      statusPendingBadge: draculaCyan,                // Enhanced cyan for pending
+      statusInProgressBadge: draculaOrange,           // Enhanced orange for in progress
+      statusCompletedBadge: draculaPurpleSignature,   // Signature purple for completed (achievement)
+      statusCancelledBadge: draculaComment,           // Enhanced comment color for cancelled
+      statusOverdueBadge: draculaRed,                 // Enhanced red for overdue
+      statusOnHoldBadge: draculaYellow,               // Enhanced yellow for on hold
 
-      // Interactive colors
-      hover: Color(0xFFf565a7),
-      pressed: Color(0xFFe84d96),
+      // Interactive colors - Enhanced visibility
+      hover: Color(0xFFFF99EE),               // Brighter hover state
+      pressed: Color(0xFFFF77DD),             // Enhanced pressed state
       focus: draculaYellow,
       disabled: draculaComment,
     );
@@ -518,8 +543,9 @@ class DraculaIDETheme {
         patternAngle: 45.0, // Diagonal elegance
         patternDensity: 1.2, // Refined density
         accentColors: [
-          const Color(0xFFBD93F9).withValues(alpha: 0.08), // Purple accent
-          const Color(0xFFFF79C6).withValues(alpha: 0.06), // Pink accent
+          const Color(0xFFE6C1FF).withValues(alpha: 0.12), // Enhanced Dracula Purple signature accent (dark mode)
+          const Color(0xFFFF88DD).withValues(alpha: 0.08), // Enhanced pink accent (dark mode)
+          const Color(0xFF00FFFF).withValues(alpha: 0.06), // Enhanced cyan accent (dark mode)
         ],
       ),
     );
