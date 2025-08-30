@@ -24,7 +24,7 @@ class AnalyticsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return ThemeBackgroundWidget(
         child: Scaffold(
-      backgroundColor: Colors.transparent, // TODO: Use context.colors.backgroundTransparent
+      backgroundColor: context.colors.backgroundTransparent,
       extendBodyBehindAppBar: true, // Show phone status bar
       appBar: StandardizedAppBar.withTertiaryAccent(
         title: 'Analytics',

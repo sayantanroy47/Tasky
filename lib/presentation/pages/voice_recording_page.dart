@@ -216,7 +216,9 @@ class _WaveformVisualizerState extends State<WaveformVisualizer> with TickerProv
 
 /// Multi-Recording Voice Entry Page
 class VoiceRecordingPage extends ConsumerStatefulWidget {
-  const VoiceRecordingPage({super.key});
+  final String? projectId;
+  
+  const VoiceRecordingPage({super.key, this.projectId});
 
   @override
   ConsumerState<VoiceRecordingPage> createState() => _VoiceRecordingPageState();
@@ -1078,6 +1080,7 @@ class _VoiceRecordingPageState extends ConsumerState<VoiceRecordingPage> with Ti
         'transcribedText': _session.combinedTranscription,
         'creationMode': 'voiceToText',
         'audioFilePath': finalAudioPath,
+        if (widget.projectId != null) 'projectId': widget.projectId,
         'audioData': {
           'filePath': finalAudioPath,
           'format': 'aac',

@@ -5,8 +5,8 @@ import '../../core/design_system/design_tokens.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../services/analytics/analytics_models.dart';
 import 'glassmorphism_container.dart';
-import 'standardized_text.dart';
 import 'standardized_spacing.dart';
+import 'standardized_text.dart';
 
 /// Collection of reusable widgets for analytics display
 
@@ -384,7 +384,7 @@ class ProductivityInsightsWidget extends StatelessWidget {
         icon: PhosphorIcons.trendUp(),
         title: 'Improving Trend',
         description: 'Your completion rate improved from $monthlyRate% to $weeklyRate%',
-        color: Colors.green, // TODO: Replace with context.colors.success
+        color: Colors.green,
       ));
     }
 
@@ -493,7 +493,9 @@ class StreakWidget extends StatelessWidget {
               children: [
                 Icon(
                   PhosphorIcons.fire(),
-                  color: streakInfo.isStreakActive ? Theme.of(context).colorScheme.secondary : Theme.of(context).colorScheme.onSurfaceVariant, // Fixed hardcoded colors
+                  color: streakInfo.isStreakActive
+                      ? Theme.of(context).colorScheme.secondary
+                      : Theme.of(context).colorScheme.onSurfaceVariant, // Fixed hardcoded colors
                   size: 24,
                 ),
                 const SizedBox(width: 8),
@@ -701,7 +703,8 @@ class ProductivityPatternsWidget extends StatelessWidget {
             // Consistency score
             Row(
               children: [
-                Icon(PhosphorIcons.trendUp(), color: Theme.of(context).colorScheme.primary, size: 20), // Fixed hardcoded blue
+                Icon(PhosphorIcons.trendUp(),
+                    color: Theme.of(context).colorScheme.primary, size: 20), // Fixed hardcoded blue
                 const SizedBox(width: 8),
                 StandardizedText(
                   'Consistency Score: ${(patterns.consistencyScore * 100).round()}%',
@@ -722,7 +725,8 @@ class ProductivityPatternsWidget extends StatelessWidget {
                     padding: const EdgeInsets.only(bottom: SpacingTokens.xs),
                     child: Row(
                       children: [
-                        Icon(PhosphorIcons.clock(), color: Theme.of(context).colorScheme.secondary, size: 16), // Fixed hardcoded orange
+                        Icon(PhosphorIcons.clock(),
+                            color: Theme.of(context).colorScheme.secondary, size: 16), // Fixed hardcoded orange
                         StandardizedGaps.horizontal(SpacingSize.xs),
                         StandardizedText(
                           '${_formatHour(peak.hour)} - ${(peak.efficiency * 100).round()}% efficiency',
@@ -831,7 +835,7 @@ class PeakHoursAnalysisWidget extends StatelessWidget {
                     title: 'Peak Hours',
                     value: analysis.peakHours.take(3).map(_formatHour).join(', '),
                     icon: PhosphorIcons.clock(),
-                    color: Colors.green, // TODO: Replace with context.colors.success // TODO: Replace with context.colors.success
+                    color: Colors.green,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -841,7 +845,7 @@ class PeakHoursAnalysisWidget extends StatelessWidget {
                     value:
                         '${_formatHour(analysis.recommendedWorkingWindow.startHour)}-${_formatHour(analysis.recommendedWorkingWindow.endHour)}',
                     icon: PhosphorIcons.clock(),
-                    color: Theme.of(context).colorScheme.primary, // TODO: Replace with context.colors.info
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
               ],
@@ -856,7 +860,7 @@ class PeakHoursAnalysisWidget extends StatelessWidget {
                     title: 'Peak Score',
                     value: '${(analysis.peakProductivityScore * 100).round()}%',
                     icon: PhosphorIcons.trendUp(),
-                    color: Theme.of(context).colorScheme.onTertiaryContainer, // TODO: Replace with context.colors.warning
+                    color: Theme.of(context).colorScheme.onTertiaryContainer,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -865,7 +869,7 @@ class PeakHoursAnalysisWidget extends StatelessWidget {
                     title: 'Average Score',
                     value: '${(analysis.averageProductivityScore * 100).round()}%',
                     icon: PhosphorIcons.chartBar(),
-                    color: Colors.purple, // TODO: Replace with semantic color
+                    color: Colors.purple,
                   ),
                 ),
               ],
@@ -955,7 +959,7 @@ class AdvancedCategoryAnalyticsWidget extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: SpacingTokens.xs),
                   child: Row(
                     children: [
-                      Icon(PhosphorIcons.star(), color: Colors.amber /* TODO: context.colors.warning */, size: 16),
+                      Icon(PhosphorIcons.star(), color: Colors.amber, size: 16),
                       StandardizedGaps.horizontal(SpacingSize.xs),
                       Expanded(
                         child: StandardizedText(
@@ -1055,7 +1059,7 @@ class AdvancedProductivityInsightsWidget extends StatelessWidget {
                     child: StandardizedText(
                       insights.overallScore.grade,
                       style: StandardizedTextStyle.titleMedium,
-                      color: Colors.white, // TODO: Use semantic on-color
+                      color: Colors.white,
                     ),
                   ),
                   StandardizedGaps.md,
@@ -1177,17 +1181,15 @@ class AdvancedProductivityInsightsWidget extends StatelessWidget {
   }
 
   Color _getScoreColor(double score) {
-    // TODO: Replace with semantic colors when context is available
-    if (score >= 80) return Colors.green; // TODO: context.colors.success
-    if (score >= 60) return Colors.orange; // TODO: context.colors.warning
-    return Colors.red; // TODO: context.colors.error
+    if (score >= 80) return Colors.green;
+    if (score >= 60) return Colors.orange;
+    return Colors.red;
   }
 
   Color _getImpactColor(double impact) {
-    // TODO: Replace with semantic colors when context is available
-    if (impact >= 0.7) return Colors.red; // TODO: context.colors.error
-    if (impact >= 0.5) return Colors.orange; // TODO: context.colors.warning
-    return Colors.blue; // TODO: context.colors.info
+    if (impact >= 0.7) return Colors.red;
+    if (impact >= 0.5) return Colors.orange;
+    return Colors.blue;
   }
 
   IconData _getSuggestionIcon(String actionType) {

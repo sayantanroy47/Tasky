@@ -6,6 +6,8 @@ import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
 import '../providers/audio_providers.dart';
 import '../providers/task_provider.dart';
+import '../providers/task_providers.dart';
+import '../providers/project_providers.dart';
 import '../widgets/glassmorphism_container.dart';
 import '../widgets/theme_background_widget.dart';
 import '../../core/design_system/design_tokens.dart';
@@ -23,7 +25,9 @@ import 'task_detail_page.dart';
 
 /// Ultra-modern full-screen voice-only task creation page
 class VoiceOnlyCreationPage extends ConsumerStatefulWidget {
-  const VoiceOnlyCreationPage({super.key});
+  final String? projectId;
+  
+  const VoiceOnlyCreationPage({super.key, this.projectId});
 
   @override
   ConsumerState<VoiceOnlyCreationPage> createState() => _VoiceOnlyCreationPageState();
@@ -899,6 +903,7 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
       final task = TaskModel.create(
         title: _titleController.text.trim(),
         priority: _priority,
+        projectId: widget.projectId,
         metadata: {
           // Standard audio metadata format for compatibility
           'audio': {
@@ -922,6 +927,9 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
       );
 
       await ref.read(taskOperationsProvider).createTask(task);
+      
+      // Invalidate providers to refresh UI
+      _invalidateProvidersAfterTaskCreation();
 
       if (mounted) {
         // REQ 7: Guide to task edit page after recording (consistent UX flow)
@@ -1221,6 +1229,25 @@ class _VoiceOnlyCreationPageState extends ConsumerState<VoiceOnlyCreationPage>
         ],
       ),
     );
+  }
+
+  /// Invalidate providers to refresh UI after task creation
+  void _invalidateProvidersAfterTaskCreation() {
+    // Invalidate all task providers to refresh task lists
+    ref.invalidate(tasksProvider);
+    ref.invalidate(pendingTasksProvider);
+    ref.invalidate(completedTasksProvider);
+    ref.invalidate(todayTasksProvider);
+    ref.invalidate(tasksCreatedTodayProvider);
+    
+    // Invalidate all projects providers to refresh project cards on home screen
+    ref.invalidate(projectsProvider);
+    ref.invalidate(activeProjectsProvider);
+    
+    // If this task has a project, invalidate its stats
+    if (widget.projectId != null && widget.projectId!.isNotEmpty) {
+      ref.invalidate(projectStatsProvider(widget.projectId!));
+    }
   }
 }
 

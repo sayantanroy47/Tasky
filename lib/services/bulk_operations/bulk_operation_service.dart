@@ -6,7 +6,6 @@ import 'package:uuid/uuid.dart';
 
 import '../../domain/entities/task_model.dart';
 import '../../domain/repositories/task_repository.dart';
-import '../../domain/repositories/project_repository.dart';
 import '../../domain/models/enums.dart';
 import '../notification/notification_service.dart';
 import '../performance_service.dart';

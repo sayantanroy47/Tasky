@@ -14,6 +14,8 @@ import '../../domain/models/enums.dart';
 import '../../domain/entities/recurrence_pattern.dart';
 import '../../services/location/location_models.dart';
 import '../providers/task_provider.dart' show taskOperationsProvider;
+import '../providers/task_providers.dart';
+import '../providers/project_providers.dart';
 import '../providers/location_providers.dart';
 import '../widgets/glassmorphism_container.dart';
 import '../widgets/standardized_app_bar.dart';
@@ -180,6 +182,7 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
         priority: _priority,
         status: TaskStatus.pending,
         tagIds: tagIds, // Use new tag system
+        projectId: widget.prePopulatedData?['projectId'] as String?,
         dueDate: fullDueDate,
         recurrence: _isRecurringTask ? _recurrencePattern : null,
         createdAt: DateTime.now(),
@@ -203,6 +206,9 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
       debugPrint('🔍 TaskModel details: id=${task.id}, title=${task.title}, tags=${task.tags}, tagIds=${task.tagIds}');
 
       await ref.read(taskOperationsProvider).createTask(task);
+      
+      // Invalidate providers to refresh UI
+      _invalidateProvidersAfterTaskCreation();
       
       // Debug: Log after database operation
       debugPrint('🔍 Task saved to database');
@@ -1016,6 +1022,26 @@ class _ManualTaskCreationPageState extends ConsumerState<ManualTaskCreationPage>
         'isConcatenated': false,
         'originalFileCount': 1,
       };
+    }
+  }
+
+  /// Invalidate providers to refresh UI after task creation
+  void _invalidateProvidersAfterTaskCreation() {
+    // Invalidate all task providers to refresh task lists
+    ref.invalidate(tasksProvider);
+    ref.invalidate(pendingTasksProvider);
+    ref.invalidate(completedTasksProvider);
+    ref.invalidate(todayTasksProvider);
+    ref.invalidate(tasksCreatedTodayProvider);
+    
+    // Invalidate all projects providers to refresh project cards on home screen
+    ref.invalidate(projectsProvider);
+    ref.invalidate(activeProjectsProvider);
+    
+    // If this task has a project, invalidate its stats
+    final projectId = widget.prePopulatedData?['projectId'] as String?;
+    if (projectId != null && projectId.isNotEmpty) {
+      ref.invalidate(projectStatsProvider(projectId));
     }
   }
 }

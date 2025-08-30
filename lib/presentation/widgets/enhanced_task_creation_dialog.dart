@@ -1,35 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../domain/entities/task_model.dart';
-import '../../domain/entities/tag.dart';
-import '../../domain/entities/recurrence_pattern.dart';
-import '../../domain/models/enums.dart';
-import '../providers/task_provider.dart' show taskOperationsProvider;
-import '../providers/project_providers.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+
+import '../../core/design_system/design_tokens.dart';
 import '../../core/providers/core_providers.dart';
 import '../../core/theme/typography_constants.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'glassmorphism_container.dart';
-import '../../core/design_system/design_tokens.dart';
-import 'standardized_text.dart';
-import 'standardized_spacing.dart';
-import 'standardized_form_widgets.dart';
-import 'standardized_navigation.dart';
-import 'tag_selection_widget.dart';
-import 'location_task_section.dart';
+import '../../domain/entities/recurrence_pattern.dart';
+import '../../domain/entities/tag.dart';
+import '../../domain/entities/task_model.dart';
+import '../../domain/models/enums.dart';
 import '../../services/location/location_models.dart';
 import '../providers/location_providers.dart';
+import '../providers/project_providers.dart';
+import '../providers/task_provider.dart' show taskOperationsProvider;
+import 'glassmorphism_container.dart';
+import 'location_task_section.dart';
+import 'standardized_form_widgets.dart';
+import 'standardized_navigation.dart';
+import 'standardized_spacing.dart';
+import 'standardized_text.dart';
+import 'tag_selection_widget.dart';
 
 /// Category option for task categorization
 class CategoryOption {
   final String id;
   final String label;
   final IconData icon;
-  
+
   const CategoryOption(this.id, this.label, this.icon);
 }
 
-/// Predefined category options with icons  
+/// Predefined category options with icons
 final List<CategoryOption> _predefinedCategories = [
   CategoryOption('work', 'Work', PhosphorIcons.briefcase()),
   CategoryOption('personal', 'Personal', PhosphorIcons.user()),
@@ -50,21 +51,21 @@ class EnhancedTaskCreationDialog extends ConsumerStatefulWidget {
   final TaskModel? editingTask;
   final Map<String, dynamic>? prePopulatedData;
   final Function(TaskModel)? onTaskCreated;
-  
+
   const EnhancedTaskCreationDialog({
     super.key,
     this.editingTask,
     this.prePopulatedData,
     this.onTaskCreated,
   });
-  
+
   @override
   ConsumerState<EnhancedTaskCreationDialog> createState() => _EnhancedTaskCreationDialogState();
 }
 
 class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreationDialog> {
   late final GlobalKey<FormState> _formKey;
-  
+
   @override
   void initState() {
     super.initState();
@@ -73,9 +74,10 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
     debugPrint('Manual: Building EnhancedTaskCreationDialog');
     _initializeFromData();
   }
+
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
-  
+
   TaskPriority _selectedPriority = TaskPriority.medium;
   String? _selectedProjectId;
   DateTime? _selectedDueDate;
@@ -89,11 +91,10 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
   bool _isLoading = false;
   Set<String> _selectedCategories = {};
   LocationData? _selectedLocation;
-  
+
   final _tagsController = TextEditingController();
   final _notesController = TextEditingController();
-  
-  
+
   void _initializeFromData() {
     if (widget.editingTask != null) {
       final task = widget.editingTask!;
@@ -109,9 +110,10 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
         _notes = task.metadata['notes'] ?? '';
         _notesController.text = _notes;
         // Initialize selected categories from existing tags
-        _selectedCategories = _tags.where((tag) => 
-          _predefinedCategories.any((cat) => cat.id == tag.toLowerCase())
-        ).map((tag) => tag.toLowerCase()).toSet();
+        _selectedCategories = _tags
+            .where((tag) => _predefinedCategories.any((cat) => cat.id == tag.toLowerCase()))
+            .map((tag) => tag.toLowerCase())
+            .toSet();
       }
       // Load existing tags asynchronously for editing
       if (task.tagIds.isNotEmpty) {
@@ -119,21 +121,21 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
       }
     } else if (widget.prePopulatedData != null) {
       final data = widget.prePopulatedData!;
-      
+
       // Handle title
       _titleController.text = data['title'] ?? '';
-      
+
       // Handle AI Voice Entry mode - description comes from transcription
       if (data['creationMode'] == 'voiceToText' && data['transcribedText'] != null) {
         _descriptionController.text = data['transcribedText'];
       } else {
         _descriptionController.text = data['description'] ?? '';
       }
-      
+
       // Store audio file path and creation mode
       _audioFilePath = data['audioFilePath'];
       _creationMode = data['creationMode'];
-      
+
       // Handle priority
       if (data['priority'] != null) {
         _selectedPriority = TaskPriority.values.firstWhere(
@@ -141,14 +143,14 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
           orElse: () => TaskPriority.medium,
         );
       }
-      
+
       // Handle due date
       if (data['dueDate'] != null && data['dueDate'] is DateTime) {
         _selectedDueDate = data['dueDate'];
       }
     }
   }
-  
+
   @override
   void dispose() {
     _titleController.dispose();
@@ -161,18 +163,18 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
   /// Load existing tags when editing a task
   Future<void> _loadExistingTags(List<String> tagIds) async {
     if (!mounted) return;
-    
+
     try {
       final tagRepository = ref.read(tagRepositoryProvider);
       final List<Tag> existingTags = [];
-      
+
       for (final tagId in tagIds) {
         final tag = await tagRepository.getTagById(tagId);
         if (tag != null) {
           existingTags.add(tag);
         }
       }
-      
+
       if (mounted) {
         setState(() {
           _selectedTags = existingTags;
@@ -183,7 +185,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
       print('Error loading existing tags: $e');
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -218,8 +220,8 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
                       Text(
                         widget.editingTask != null ? 'Update task details' : 'Add a new task to your list',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            ),
                       ),
                     ],
                   ),
@@ -241,13 +243,13 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
                 const SizedBox(width: 8),
                 ElevatedButton(
                   onPressed: _isLoading ? null : _saveTask,
-                  child: _isLoading 
-                    ? const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : Text(widget.editingTask != null ? 'Update Task' : 'Save Task'),
+                  child: _isLoading
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : Text(widget.editingTask != null ? 'Update Task' : 'Save Task'),
                 ),
               ],
             ),
@@ -269,13 +271,13 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
               _buildAudioSection(Theme.of(context)),
               StandardizedGaps.md,
             ],
-            
+
             // Creation mode indicator
             if (_creationMode != null) ...[
               _buildCreationModeIndicator(Theme.of(context)),
               StandardizedGaps.md,
             ],
-            
+
             // Title field with validation
             StandardizedFormField(
               label: 'Task Title',
@@ -288,7 +290,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
               prefixIcon: Icon(PhosphorIcons.checkSquare()),
             ),
             StandardizedGaps.vertical(SpacingSize.phi2),
-            
+
             // Description field
             StandardizedFormField(
               label: 'Description',
@@ -300,23 +302,23 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
               prefixIcon: Icon(PhosphorIcons.fileText()),
             ),
             StandardizedGaps.vertical(SpacingSize.phi2),
-            
+
             // Priority selector with visual indicators
             _buildEnhancedPrioritySelector(Theme.of(context)),
             StandardizedGaps.vertical(SpacingSize.phi2),
-            
+
             // Project selector
             _buildProjectSelector(Theme.of(context)),
             StandardizedGaps.vertical(SpacingSize.phi2),
-            
+
             // Due date and time picker
             _buildEnhancedDateTimePicker(context, Theme.of(context)),
             StandardizedGaps.vertical(SpacingSize.phi2),
-            
+
             // Categories section (predefined options)
             _buildCategoriesSection(Theme.of(context)),
             StandardizedGaps.vertical(SpacingSize.phi2),
-            
+
             // Tags section (user-created tags with colors)
             TagSelectionWidget(
               selectedTags: _selectedTags,
@@ -325,11 +327,11 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
               allowCreate: true,
             ),
             StandardizedGaps.vertical(SpacingSize.phi2),
-            
+
             // Recurring task section
             _buildRecurrenceSection(Theme.of(context)),
             StandardizedGaps.vertical(SpacingSize.phi2),
-            
+
             // Location section
             LocationTaskSection(
               initialLocation: _selectedLocation,
@@ -340,7 +342,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
               },
             ),
             StandardizedGaps.vertical(SpacingSize.phi2),
-            
+
             // Additional notes
             StandardizedFormField(
               label: 'Additional Notes',
@@ -358,7 +360,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
       ),
     );
   }
-  
+
   String _getDialogTitle() {
     if (widget.editingTask != null) {
       return 'Edit Task';
@@ -368,13 +370,33 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
     }
     return 'Create New Task';
   }
-  
+
   Widget _buildEnhancedPrioritySelector(ThemeData theme) {
     final priorities = [
-      {'value': TaskPriority.low, 'label': 'Low', 'icon': PhosphorIcons.arrowDown(), 'color': theme.colorScheme.primary},
-      {'value': TaskPriority.medium, 'label': 'Medium', 'icon': PhosphorIcons.minus(), 'color': theme.colorScheme.secondary},
-      {'value': TaskPriority.high, 'label': 'High', 'icon': PhosphorIcons.arrowUp(), 'color': theme.colorScheme.tertiary},
-      {'value': TaskPriority.urgent, 'label': 'Urgent', 'icon': PhosphorIcons.warning(), 'color': theme.colorScheme.error},
+      {
+        'value': TaskPriority.low,
+        'label': 'Low',
+        'icon': PhosphorIcons.arrowDown(),
+        'color': theme.colorScheme.primary
+      },
+      {
+        'value': TaskPriority.medium,
+        'label': 'Medium',
+        'icon': PhosphorIcons.minus(),
+        'color': theme.colorScheme.secondary
+      },
+      {
+        'value': TaskPriority.high,
+        'label': 'High',
+        'icon': PhosphorIcons.arrowUp(),
+        'color': theme.colorScheme.tertiary
+      },
+      {
+        'value': TaskPriority.urgent,
+        'label': 'Urgent',
+        'icon': PhosphorIcons.warning(),
+        'color': theme.colorScheme.error
+      },
     ];
 
     return Column(
@@ -424,7 +446,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
       ],
     );
   }
-  
+
   Widget _buildProjectSelector(ThemeData theme) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -465,7 +487,9 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
                                 width: 12,
                                 height: 12,
                                 decoration: BoxDecoration(
-                                  color: project.color.isNotEmpty ? Color(int.tryParse(project.color) ?? 0xFF2196F3) : const Color(0xFF2196F3), // Fixed hardcoded Colors.blue
+                                  color: project.color.isNotEmpty
+                                      ? Color(int.tryParse(project.color) ?? 0xFF2196F3)
+                                      : const Color(0xFF2196F3), // Fixed hardcoded Colors.blue
                                   shape: BoxShape.circle,
                                 ),
                               ),
@@ -497,7 +521,8 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
                     border: Border.all(color: theme.colorScheme.outline),
-                    borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall), // 2.0 - Fixed border radius hierarchy (was 4px)
+                    borderRadius: BorderRadius.circular(
+                        TypographyConstants.radiusXSmall), // 2.0 - Fixed border radius hierarchy (was 4px)
                   ),
                   child: Row(
                     children: [
@@ -525,7 +550,8 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
                     border: Border.all(color: theme.colorScheme.error),
-                    borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall), // 2.0 - Fixed border radius hierarchy (was 4px)
+                    borderRadius: BorderRadius.circular(
+                        TypographyConstants.radiusXSmall), // 2.0 - Fixed border radius hierarchy (was 4px)
                   ),
                   child: Row(
                     children: [
@@ -548,7 +574,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
       ],
     );
   }
-  
+
   Widget _buildEnhancedDateTimePicker(BuildContext context, ThemeData theme) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -581,9 +607,9 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
                   },
                   icon: Icon(PhosphorIcons.calendar()),
                   label: StandardizedText(
-                    _selectedDueDate != null 
-                      ? '${_selectedDueDate!.day}/${_selectedDueDate!.month}/${_selectedDueDate!.year}'
-                      : 'Set Date',
+                    _selectedDueDate != null
+                        ? '${_selectedDueDate!.day}/${_selectedDueDate!.month}/${_selectedDueDate!.year}'
+                        : 'Set Date',
                     style: StandardizedTextStyle.buttonText,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -593,22 +619,22 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
               // Time picker
               Expanded(
                 child: OutlinedButton.icon(
-                  onPressed: _selectedDueDate != null ? () async {
-                    final time = await showTimePicker(
-                      context: context,
-                      initialTime: _selectedDueTime ?? TimeOfDay.now(),
-                    );
-                    if (time != null) {
-                      setState(() {
-                        _selectedDueTime = time;
-                      });
-                    }
-                  } : null,
+                  onPressed: _selectedDueDate != null
+                      ? () async {
+                          final time = await showTimePicker(
+                            context: context,
+                            initialTime: _selectedDueTime ?? TimeOfDay.now(),
+                          );
+                          if (time != null) {
+                            setState(() {
+                              _selectedDueTime = time;
+                            });
+                          }
+                        }
+                      : null,
                   icon: Icon(PhosphorIcons.clock()),
                   label: StandardizedText(
-                    _selectedDueTime != null 
-                      ? _selectedDueTime!.format(context)
-                      : 'Time',
+                    _selectedDueTime != null ? _selectedDueTime!.format(context) : 'Time',
                     style: StandardizedTextStyle.buttonText,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -642,11 +668,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
       ],
     );
   }
-  
 
-
-
-  
   Widget _buildCategoriesSection(ThemeData theme) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -694,9 +716,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
           Wrap(
             spacing: SpacingTokens.sm,
             runSpacing: SpacingTokens.xs,
-            children: _tags
-                .where((tag) => !_predefinedCategories.any((cat) => cat.id == tag.toLowerCase()))
-                .map((tag) {
+            children: _tags.where((tag) => !_predefinedCategories.any((cat) => cat.id == tag.toLowerCase())).map((tag) {
               return Chip(
                 label: StandardizedText(
                   tag,
@@ -727,9 +747,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
           Icon(
             category.icon,
             size: 16,
-            color: isSelected
-                ? theme.colorScheme.onPrimary
-                : theme.colorScheme.primary,
+            color: isSelected ? theme.colorScheme.onPrimary : theme.colorScheme.primary,
           ),
           StandardizedGaps.horizontal(SpacingSize.xs),
           StandardizedText(
@@ -742,9 +760,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
       selectedColor: theme.colorScheme.primary,
       checkmarkColor: theme.colorScheme.onPrimary,
       labelStyle: TextStyle(
-        color: isSelected
-            ? theme.colorScheme.onPrimary
-            : theme.colorScheme.onSurface,
+        color: isSelected ? theme.colorScheme.onPrimary : theme.colorScheme.onSurface,
       ),
     );
   }
@@ -822,7 +838,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
         ),
       ),
     );
-    
+
     if (result != null && result.isNotEmpty && !_tags.contains(result)) {
       setState(() {
         _tags.add(result);
@@ -924,7 +940,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
       ],
     );
   }
-  
+
   IconData _getRecurrenceIcon(RecurrenceType type) {
     switch (type) {
       case RecurrenceType.none:
@@ -941,7 +957,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
         return PhosphorIcons.gear();
     }
   }
-  
+
   String _getRecurrenceLabel(RecurrenceType type) {
     switch (type) {
       case RecurrenceType.none:
@@ -958,7 +974,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
         return 'custom interval(s)';
     }
   }
-  
+
   Widget _buildAudioSection(ThemeData theme) {
     return Container(
       width: double.infinity,
@@ -984,15 +1000,11 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
       ),
     );
   }
-  
+
   Widget _buildCreationModeIndicator(ThemeData theme) {
-    final IconData modeIcon = _creationMode == 'voiceToText' 
-        ? PhosphorIcons.microphone() 
-        : PhosphorIcons.pencil();
-    final String modeText = _creationMode == 'voiceToText' 
-        ? 'Created with AI Voice Entry' 
-        : 'Manual Entry';
-    
+    final IconData modeIcon = _creationMode == 'voiceToText' ? PhosphorIcons.microphone() : PhosphorIcons.pencil();
+    final String modeText = _creationMode == 'voiceToText' ? 'Created with AI Voice Entry' : 'Manual Entry';
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(8),
@@ -1017,59 +1029,58 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
       ),
     );
   }
-  
-  
+
   Future<void> _saveTask() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
-    
+
     setState(() {
       _isLoading = true;
     });
-    
+
     try {
       final metadata = <String, dynamic>{};
-      
+
       // Store creation mode
       if (_creationMode != null) {
         metadata['creationMode'] = _creationMode;
       }
-      
+
       // Store audio data if present
       if (_audioFilePath != null) {
         metadata['hasAudio'] = true;
-        
+
         final audioMetadata = <String, dynamic>{
           'filePath': _audioFilePath,
           'format': 'aac', // AudioRecordingService creates AAC files
           'recordingTimestamp': DateTime.now().toIso8601String(),
         };
-        
+
         // Include additional audio metadata from pre-populated data
         if (widget.prePopulatedData != null && widget.prePopulatedData!['audioData'] != null) {
           final prePopulatedAudio = widget.prePopulatedData!['audioData'] as Map<String, dynamic>;
-          
+
           if (prePopulatedAudio['duration'] != null) {
             audioMetadata['duration'] = prePopulatedAudio['duration'];
           }
-          
+
           if (prePopulatedAudio['fileSize'] != null) {
             audioMetadata['fileSize'] = prePopulatedAudio['fileSize'];
           }
-          
+
           if (prePopulatedAudio['format'] != null) {
             audioMetadata['format'] = prePopulatedAudio['format'];
           }
-          
+
           if (prePopulatedAudio['timestamp'] != null) {
             audioMetadata['recordingTimestamp'] = prePopulatedAudio['timestamp'];
           }
         }
-        
+
         metadata['audio'] = audioMetadata;
       }
-      
+
       // Store voice/transcription metadata if present
       if (_creationMode == 'voiceToText' && widget.prePopulatedData?['transcribedText'] != null) {
         metadata['hasTranscription'] = true;
@@ -1079,7 +1090,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
           'originalText': widget.prePopulatedData!['transcribedText'],
         };
       }
-      
+
       // Store category tags and notes in metadata, real tags in tagIds
       if (_tags.isNotEmpty) {
         metadata['tags'] = _tags;
@@ -1087,7 +1098,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
       if (_notes.trim().isNotEmpty) {
         metadata['notes'] = _notes.trim();
       }
-      
+
       // Combine date and time if both are set
       DateTime? finalDueDate;
       if (_selectedDueDate != null) {
@@ -1104,45 +1115,44 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
         }
       }
 
-
       final task = widget.editingTask != null
-        ? TaskModel(
-            id: widget.editingTask!.id,
-            title: _titleController.text.trim(),
-            description: _descriptionController.text.trim().isEmpty ? null : _descriptionController.text.trim(),
-            priority: _selectedPriority,
-            projectId: _selectedProjectId,
-            dueDate: finalDueDate,
-            recurrence: _recurrencePattern,
-            metadata: metadata.isNotEmpty ? metadata : const {},
-            createdAt: widget.editingTask!.createdAt,
-            updatedAt: DateTime.now(),
-            status: widget.editingTask!.status,
-            tagIds: _selectedTags.map((tag) => tag.id).toList(), // Use updated selected tags
-            subTasks: widget.editingTask!.subTasks,
-            locationTrigger: widget.editingTask!.locationTrigger,
-            dependencies: widget.editingTask!.dependencies,
-            isPinned: widget.editingTask!.isPinned,
-            estimatedDuration: widget.editingTask!.estimatedDuration,
-            actualDuration: widget.editingTask!.actualDuration,
-            completedAt: widget.editingTask!.completedAt,
-          )
-        : TaskModel.create(
-            title: _titleController.text.trim(),
-            description: _descriptionController.text.trim().isEmpty ? null : _descriptionController.text.trim(),
-            priority: _selectedPriority,
-            projectId: _selectedProjectId,
-            dueDate: finalDueDate,
-            recurrence: _recurrencePattern,
-            tagIds: _selectedTags.map((tag) => tag.id).toList(), // Use real tag IDs
-            metadata: {
-              ...metadata,
-              // Location metadata
-              if (_selectedLocation != null) 'hasLocation': true,
-              if (_selectedLocation != null) 'locationData': _selectedLocation!.toJson(),
-            },
-          );
-      
+          ? TaskModel(
+              id: widget.editingTask!.id,
+              title: _titleController.text.trim(),
+              description: _descriptionController.text.trim().isEmpty ? null : _descriptionController.text.trim(),
+              priority: _selectedPriority,
+              projectId: _selectedProjectId,
+              dueDate: finalDueDate,
+              recurrence: _recurrencePattern,
+              metadata: metadata.isNotEmpty ? metadata : const {},
+              createdAt: widget.editingTask!.createdAt,
+              updatedAt: DateTime.now(),
+              status: widget.editingTask!.status,
+              tagIds: _selectedTags.map((tag) => tag.id).toList(), // Use updated selected tags
+              subTasks: widget.editingTask!.subTasks,
+              locationTrigger: widget.editingTask!.locationTrigger,
+              dependencies: widget.editingTask!.dependencies,
+              isPinned: widget.editingTask!.isPinned,
+              estimatedDuration: widget.editingTask!.estimatedDuration,
+              actualDuration: widget.editingTask!.actualDuration,
+              completedAt: widget.editingTask!.completedAt,
+            )
+          : TaskModel.create(
+              title: _titleController.text.trim(),
+              description: _descriptionController.text.trim().isEmpty ? null : _descriptionController.text.trim(),
+              priority: _selectedPriority,
+              projectId: _selectedProjectId,
+              dueDate: finalDueDate,
+              recurrence: _recurrencePattern,
+              tagIds: _selectedTags.map((tag) => tag.id).toList(), // Use real tag IDs
+              metadata: {
+                ...metadata,
+                // Location metadata
+                if (_selectedLocation != null) 'hasLocation': true,
+                if (_selectedLocation != null) 'locationData': _selectedLocation!.toJson(),
+              },
+            );
+
       if (widget.editingTask != null) {
         final result = await ref.read(taskOperationsProvider).updateTask(task, context: context);
         if (!result.isSuccess) {
@@ -1154,7 +1164,7 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
           throw Exception(result.error ?? 'Failed to create task');
         }
       }
-      
+
       // Add location trigger if location is set (for both create and update)
       if (_selectedLocation != null) {
         try {
@@ -1168,31 +1178,29 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
             type: GeofenceType.enter,
             createdAt: DateTime.now(),
           );
-          
+
           final locationTaskService = ref.read(locationTaskServiceProvider);
           await locationTaskService.addLocationTriggerToTask(
             taskId: task.id,
             geofence: geofence,
           );
-          
-          debugPrint('🔍 Location trigger added for task ${task.id}');
         } catch (e) {
           debugPrint('🚨 Error adding location trigger: $e');
           // Don't fail the task creation if location trigger fails
         }
       }
-      
+
       if (mounted) {
         widget.onTaskCreated?.call(task);
         context.popRoute(task);
-        
+
         String successMessage;
         if (_creationMode == 'voiceToText') {
           successMessage = 'AI Voice task created successfully!';
         } else {
           successMessage = widget.editingTask != null ? 'Task updated successfully!' : 'Task created successfully!';
         }
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: StandardizedText(successMessage, style: StandardizedTextStyle.bodyMedium),
@@ -1218,6 +1226,3 @@ class _EnhancedTaskCreationDialogState extends ConsumerState<EnhancedTaskCreatio
     }
   }
 }
-
-
-

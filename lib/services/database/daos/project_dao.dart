@@ -116,8 +116,8 @@ class ProjectDao extends DatabaseAccessor<AppDatabase> with _$ProjectDaoMixin {
           final projectTagRows = await (select(projectTags)..where((pt) => pt.projectId.equals(project.id))).get();
           tagIds = projectTagRows.map((pt) => pt.tagId).toList();
         } catch (e) {
-          // Handle case where project_tags table doesn't exist yet
-          print('Warning: project_tags table not found, using empty tag list: $e');
+          // Silently handle missing project_tags table - this is expected in current schema
+          // print('Warning: project_tags table not found, using empty tag list: $e');
         }
 
         projectMap[project.id] = ProjectWithTaskCount(
@@ -263,8 +263,9 @@ class ProjectDao extends DatabaseAccessor<AppDatabase> with _$ProjectDaoMixin {
       final projectTagRows = await (select(projectTags)..where((pt) => pt.projectId.equals(projectRow.id))).get();
       tagIds = projectTagRows.map((pt) => pt.tagId).toList();
     } catch (e) {
-      // Handle case where project_tags table doesn't exist yet
-      print('Warning: project_tags table not found, using empty tag list: $e');
+      // Silently handle missing project_tags table - this is expected in current schema
+      // print('Warning: project_tags table not found, using empty tag list: $e');
+      tagIds = []; // Use empty list when table doesn't exist
     }
 
     return domain.Project(

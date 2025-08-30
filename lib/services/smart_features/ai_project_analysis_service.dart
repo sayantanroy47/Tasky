@@ -5,7 +5,6 @@ import '../../domain/entities/task_model.dart';
 import '../../domain/entities/ai_suggestion.dart';
 import '../../domain/repositories/task_repository.dart';
 import '../../domain/repositories/project_repository.dart';
-import '../ai/composite_ai_task_parser.dart';
 
 /// Service for AI-powered project analysis and intelligent suggestions
 class AIProjectAnalysisService {

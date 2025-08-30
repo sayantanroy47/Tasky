@@ -23,6 +23,9 @@ import '../presentation/providers/timeline_providers.dart';
 class TimelineService {
   final TaskRepository _taskRepository;
   final ProjectRepository _projectRepository;
+  
+  // Simple in-memory storage for milestones (can be upgraded to proper repository later)
+  static final Map<String, List<TimelineMilestone>> _projectMilestones = {};
 
   const TimelineService({
     required TaskRepository taskRepository,
@@ -393,8 +396,8 @@ class TimelineService {
     for (final projectId in projectIds) {
       final project = await _projectRepository.getProjectById(projectId);
       if (project != null) {
-        // Extract milestones from project metadata
-        final projectMilestones = <TimelineMilestone>[]; // TODO: Implement milestone storage
+        // Get milestones from storage
+        final projectMilestones = _projectMilestones[projectId] ?? <TimelineMilestone>[];
         milestones.addAll(projectMilestones);
       }
     }
@@ -601,21 +604,71 @@ class TimelineService {
   Future<void> _storeMilestoneInProjectMetadata(TimelineMilestone milestone) async {
     final project = await _projectRepository.getProjectById(milestone.projectId);
     if (project != null) {
-      // TODO: Implement milestone storage in database
-      // For now, skip storing milestones in project metadata since Project doesn't have metadata field
+      // Store milestone in project milestones list
+      final projectMilestones = _projectMilestones[milestone.projectId] ?? <TimelineMilestone>[];
+      projectMilestones.add(milestone);
+      _projectMilestones[milestone.projectId] = projectMilestones;
     }
   }
 
   Future<void> _updateMilestoneInProjectMetadata(TimelineMilestone milestone) async {
     final project = await _projectRepository.getProjectById(milestone.projectId);
     if (project != null) {
-      // TODO: Implement milestone storage in database
-      // For now, skip updating milestones in project metadata since Project doesn't have metadata field
+      // Update milestone in project milestones list
+      final projectMilestones = _projectMilestones[milestone.projectId] ?? <TimelineMilestone>[];
+      final index = projectMilestones.indexWhere((m) => m.id == milestone.id);
+      if (index != -1) {
+        projectMilestones[index] = milestone;
+        _projectMilestones[milestone.projectId] = projectMilestones;
+      }
     }
   }
 
   Future<void> _removeMilestoneFromProjectMetadata(String milestoneId) async {
-    // Remove milestone from project metadata - requires iterating through projects
+    // Find and remove milestone from any project
+    for (final projectId in _projectMilestones.keys) {
+      final projectMilestones = _projectMilestones[projectId]!;
+      projectMilestones.removeWhere((milestone) => milestone.id == milestoneId);
+      if (projectMilestones.isEmpty) {
+        _projectMilestones.remove(projectId);
+      } else {
+        _projectMilestones[projectId] = projectMilestones;
+      }
+    }
+  }
+  
+  /// Public method to create a milestone
+  Future<TimelineMilestone> createMilestone({
+    required String projectId,
+    required String title,
+    required DateTime date,
+    String? description,
+  }) async {
+    final milestone = TimelineMilestone(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      projectId: projectId,
+      title: title,
+      date: date,
+      description: description,
+    );
+    
+    await _storeMilestoneInProjectMetadata(milestone);
+    return milestone;
+  }
+  
+  /// Public method to update a milestone
+  Future<void> updateMilestone(TimelineMilestone milestone) async {
+    await _updateMilestoneInProjectMetadata(milestone);
+  }
+  
+  /// Public method to delete a milestone
+  Future<void> deleteMilestone(String milestoneId) async {
+    await _removeMilestoneFromProjectMetadata(milestoneId);
+  }
+  
+  /// Get all milestones for a specific project
+  Future<List<TimelineMilestone>> getMilestonesForProject(String projectId) async {
+    return _projectMilestones[projectId] ?? <TimelineMilestone>[];
   }
 
   // Critical path calculation using compute isolate

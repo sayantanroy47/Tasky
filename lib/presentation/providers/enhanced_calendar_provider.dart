@@ -1,12 +1,12 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
+
+import '../../core/providers/core_providers.dart';
 import '../../domain/entities/calendar_event.dart';
 import '../../domain/entities/calendar_event_extensions.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
 import '../../services/calendar_service.dart';
-import '../../core/providers/core_providers.dart';
 
 /// Enhanced calendar view mode
 enum CalendarViewMode { month, week, day }
@@ -67,12 +67,12 @@ class EnhancedCalendarState {
       lastUpdated: updateTimestamp ? DateTime.now() : lastUpdated,
     );
   }
-  
+
   /// Check if state has been recently updated to prevent unnecessary rebuilds
   bool get wasRecentlyUpdated {
     return DateTime.now().difference(lastUpdated).inMilliseconds < 100;
   }
-  
+
   /// Check if calendar is in a stable state (not loading or changing views)
   bool get isStable {
     return !isLoading && !isViewChanging && errorMessage == null;
@@ -83,29 +83,29 @@ class EnhancedCalendarState {
 class EnhancedCalendarNotifier extends StateNotifier<EnhancedCalendarState> {
   final CalendarService _calendarService;
   final Ref _ref;
-  
+
   /// Check if notifier is still active (simple check)
   bool get _isActive => true; // Simplified for now
 
-  EnhancedCalendarNotifier(this._calendarService, this._ref) 
-    : super(EnhancedCalendarState(
-        selectedDate: DateTime.now(),
-        focusedDate: DateTime.now(),
-        lastUpdated: DateTime.now(),
-      )) {
+  EnhancedCalendarNotifier(this._calendarService, this._ref)
+      : super(EnhancedCalendarState(
+          selectedDate: DateTime.now(),
+          focusedDate: DateTime.now(),
+          lastUpdated: DateTime.now(),
+        )) {
     _initialize();
   }
 
   /// Initialize the calendar service and load data
   Future<void> _initialize() async {
     state = state.copyWith(isLoading: true);
-    
+
     try {
       await _loadAllData();
       state = state.copyWith(isLoading: false, errorMessage: null);
     } catch (error) {
       state = state.copyWith(
-        isLoading: false, 
+        isLoading: false,
         errorMessage: error.toString(),
       );
     }
@@ -120,9 +120,6 @@ class EnhancedCalendarNotifier extends StateNotifier<EnhancedCalendarState> {
 
     // Log task loading summary for debugging
     final tasksWithDueDates = allTasks.where((task) => task.dueDate != null).toList();
-    if (tasksWithDueDates.isNotEmpty) {
-      debugPrint('Calendar Provider: Loaded ${tasksWithDueDates.length} tasks with due dates');
-    }
 
     state = state.copyWith(
       allTasks: allTasks,
@@ -148,14 +145,14 @@ class EnhancedCalendarNotifier extends StateNotifier<EnhancedCalendarState> {
   /// Select a date and load tasks for that date with validation
   void selectDate(DateTime date) {
     // Prevent redundant updates if same date is selected
-    if (state.selectedDate.day == date.day && 
-        state.selectedDate.month == date.month && 
+    if (state.selectedDate.day == date.day &&
+        state.selectedDate.month == date.month &&
         state.selectedDate.year == date.year) {
       return;
     }
-    
+
     final tasksForDate = _getTasksForDate(state.allTasks, date);
-    
+
     state = state.copyWith(
       selectedDate: date,
       tasksForSelectedDate: tasksForDate,
@@ -167,14 +164,13 @@ class EnhancedCalendarNotifier extends StateNotifier<EnhancedCalendarState> {
   void changeFocusedDate(DateTime date) {
     // Minimal debouncing to prevent rapid updates while allowing navigation
     final now = DateTime.now();
-    if (_lastFocusedUpdate != null && 
-        now.difference(_lastFocusedUpdate!).inMilliseconds < 10) {
+    if (_lastFocusedUpdate != null && now.difference(_lastFocusedUpdate!).inMilliseconds < 10) {
       return;
     }
-    
+
     // Safety check to prevent duplicate updates
-    if (state.focusedDate.day != date.day || 
-        state.focusedDate.month != date.month || 
+    if (state.focusedDate.day != date.day ||
+        state.focusedDate.month != date.month ||
         state.focusedDate.year != date.year) {
       _lastFocusedUpdate = now;
       state = state.copyWith(focusedDate: date);
@@ -185,17 +181,17 @@ class EnhancedCalendarNotifier extends StateNotifier<EnhancedCalendarState> {
   void changeViewMode(CalendarViewMode mode) {
     // Prevent unnecessary state updates if mode is already selected
     if (state.viewMode == mode) return;
-    
+
     // Prevent rapid view changes if one is already in progress
     if (state.isViewChanging) return;
-    
+
     try {
       // Set view changing state to prevent conflicts
       state = state.copyWith(
         isViewChanging: true,
         clearError: true,
       );
-      
+
       // Map CalendarViewMode to CalendarView for consistency
       CalendarView format;
       switch (mode) {
@@ -209,7 +205,7 @@ class EnhancedCalendarNotifier extends StateNotifier<EnhancedCalendarState> {
           format = CalendarView.day;
           break;
       }
-      
+
       // Update both viewMode and calendarFormat atomically after brief delay
       Future.microtask(() {
         if (_isActive) {
@@ -234,7 +230,7 @@ class EnhancedCalendarNotifier extends StateNotifier<EnhancedCalendarState> {
   void goToToday() {
     final today = DateTime.now();
     final todayTasks = _getTasksForDate(state.allTasks, today);
-    
+
     state = state.copyWith(
       selectedDate: today,
       focusedDate: today,
@@ -244,17 +240,16 @@ class EnhancedCalendarNotifier extends StateNotifier<EnhancedCalendarState> {
 
   /// Create task for specific date
   Future<bool> createTaskForDate(TaskModel task) async {
-    
     try {
       final taskRepository = _ref.read(taskRepositoryProvider);
       await taskRepository.updateTask(task); // Use updateTask for inserts too
-      
+
       // Create corresponding calendar event if task has a due date
       if (task.dueDate != null) {
         final event = CalendarEventTaskExtension.fromTask(task);
         await _calendarService.addEvent(event);
       }
-      
+
       await _loadAllData();
       return true;
     } catch (error) {
@@ -268,13 +263,13 @@ class EnhancedCalendarNotifier extends StateNotifier<EnhancedCalendarState> {
     try {
       final taskRepository = _ref.read(taskRepositoryProvider);
       await taskRepository.updateTask(task);
-      
+
       // Update corresponding calendar event if task has a due date
       if (task.dueDate != null) {
         final event = CalendarEventTaskExtension.fromTask(task);
         await _calendarService.updateEvent(event);
       }
-      
+
       await _loadAllData();
       return true;
     } catch (error) {
@@ -288,17 +283,17 @@ class EnhancedCalendarNotifier extends StateNotifier<EnhancedCalendarState> {
     try {
       final taskRepository = _ref.read(taskRepositoryProvider);
       final task = await taskRepository.getTaskById(taskId);
-      
+
       if (task != null) {
         final completedTask = task.markCompleted();
         await taskRepository.updateTask(completedTask);
-        
+
         // Update calendar event to reflect completion
         if (completedTask.dueDate != null) {
           final event = CalendarEventTaskExtension.fromTask(completedTask);
           await _calendarService.updateEvent(event);
         }
-        
+
         await _loadAllData();
         return true;
       }
@@ -324,7 +319,7 @@ class EnhancedCalendarNotifier extends StateNotifier<EnhancedCalendarState> {
   /// Get tasks with due dates for calendar markers
   Map<DateTime, List<TaskModel>> getTasksByDate() {
     final Map<DateTime, List<TaskModel>> tasksByDate = {};
-    
+
     for (final task in state.allTasks) {
       if (task.dueDate != null) {
         final date = DateTime(
@@ -332,34 +327,34 @@ class EnhancedCalendarNotifier extends StateNotifier<EnhancedCalendarState> {
           task.dueDate!.month,
           task.dueDate!.day,
         );
-        
+
         if (tasksByDate[date] == null) {
           tasksByDate[date] = [];
         }
         tasksByDate[date]!.add(task);
       }
     }
-    
+
     return tasksByDate;
   }
 
   /// Get events for calendar markers
   Map<DateTime, List<CalendarEvent>> getEventsByDate() {
     final Map<DateTime, List<CalendarEvent>> eventsByDate = {};
-    
+
     for (final event in state.events) {
       final date = DateTime(
         event.startTime.year,
         event.startTime.month,
         event.startTime.day,
       );
-      
+
       if (eventsByDate[date] == null) {
         eventsByDate[date] = [];
       }
       eventsByDate[date]!.add(event);
     }
-    
+
     return eventsByDate;
   }
 
@@ -367,7 +362,6 @@ class EnhancedCalendarNotifier extends StateNotifier<EnhancedCalendarState> {
   Future<void> refresh() async {
     await _loadAllData();
   }
-
 }
 
 /// Enhanced calendar provider
@@ -387,7 +381,7 @@ final todaysTasksProvider = Provider<List<TaskModel>>((ref) {
   final calendarState = ref.watch(enhancedCalendarProvider);
   final today = DateTime.now();
   final todayDate = DateTime(today.year, today.month, today.day);
-  
+
   return calendarState.allTasks.where((task) {
     if (task.dueDate == null) return false;
     final taskDate = DateTime(
@@ -404,7 +398,7 @@ final upcomingTasksProvider = Provider<List<TaskModel>>((ref) {
   final calendarState = ref.watch(enhancedCalendarProvider);
   final now = DateTime.now();
   final nextWeek = now.add(const Duration(days: 7));
-  
+
   return calendarState.allTasks.where((task) {
     if (task.dueDate == null) return false;
     return task.dueDate!.isAfter(now) && task.dueDate!.isBefore(nextWeek);
@@ -415,7 +409,7 @@ final upcomingTasksProvider = Provider<List<TaskModel>>((ref) {
 final overdueTasksProvider = Provider<List<TaskModel>>((ref) {
   final calendarState = ref.watch(enhancedCalendarProvider);
   final now = DateTime.now();
-  
+
   return calendarState.allTasks.where((task) {
     if (task.dueDate == null) return false;
     return task.dueDate!.isBefore(now) && task.status != TaskStatus.completed;
@@ -428,7 +422,7 @@ final calendarStatsProvider = Provider<CalendarStats>((ref) {
   final upcomingTasks = ref.watch(upcomingTasksProvider);
   final overdueTasks = ref.watch(overdueTasksProvider);
   final calendarState = ref.watch(enhancedCalendarProvider);
-  
+
   return CalendarStats(
     totalTasks: calendarState.allTasks.length,
     todaysTasks: todaysTasks.length,

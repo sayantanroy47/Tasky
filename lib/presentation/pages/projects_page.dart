@@ -10,12 +10,11 @@ import '../widgets/glassmorphism_container.dart';
 import '../widgets/project_card.dart';
 import '../widgets/project_form_dialog.dart';
 import '../widgets/standardized_app_bar.dart';
-import '../widgets/standardized_fab.dart';
+import '../widgets/standardized_colors.dart';
+import '../widgets/standardized_error_states.dart';
+import '../widgets/standardized_spacing.dart';
 import '../widgets/standardized_text.dart';
 import '../widgets/theme_background_widget.dart';
-import '../widgets/standardized_colors.dart';
-import '../widgets/standardized_spacing.dart';
-import '../widgets/standardized_error_states.dart';
 
 /// Page for managing projects
 ///
@@ -75,75 +74,73 @@ class _ProjectsPageState extends ConsumerState<ProjectsPage> with SingleTickerPr
             ),
           ],
         ),
-        floatingActionButton: StandardizedFABVariants.createProject(
-          onPressed: _createProject,
-          heroTag: 'projectsFAB',
-        ),
-        body: Padding(
-          padding: const EdgeInsets.only(top: kToolbarHeight + SpacingTokens.xl), // Account for TabBar
-          child: Column(
-            children: [
-              // Search bar (if searching)
-              if (_searchQuery.isNotEmpty)
-                Padding(
-                  padding: StandardizedSpacing.padding(SpacingSize.md),
-                  child: GlassmorphismContainer(
-                    level: GlassLevel.content,
-                    borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.only(top: NavigationTokens.tabBarHeight + 8), // Account for TabBar + small buffer
+            child: Column(
+              children: [
+                // Search bar (if searching)
+                if (_searchQuery.isNotEmpty)
+                  Padding(
                     padding: StandardizedSpacing.padding(SpacingSize.md),
-                    child: Row(
-                      children: [
-                        Icon(
-                          PhosphorIcons.magnifyingGlass(),
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                        StandardizedGaps.horizontal(SpacingSize.sm),
-                        Expanded(
-                          child: StandardizedText(
-                            'Searching for: "$_searchQuery"',
-                            style: StandardizedTextStyle.bodyMedium,
-                            color: context.colors.withSemanticOpacity(
-                              Theme.of(context).colorScheme.onSurface,
-                              SemanticOpacity.strong,
-                            ),
+                    child: GlassmorphismContainer(
+                      level: GlassLevel.content,
+                      borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+                      padding: StandardizedSpacing.padding(SpacingSize.md),
+                      child: Row(
+                        children: [
+                          Icon(
+                            PhosphorIcons.magnifyingGlass(),
+                            color: theme.colorScheme.onSurfaceVariant,
                           ),
-                        ),
-                        GlassmorphismContainer(
-                          level: GlassLevel.interactive,
-                          borderRadius: BorderRadius.circular(20),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              onTap: () {
-                                setState(() {
-                                  _searchQuery = '';
-                                });
-                              },
-                              borderRadius: BorderRadius.circular(20),
-                              child: Padding(
-                                padding: StandardizedSpacing.padding(SpacingSize.sm),
-                                child: Icon(PhosphorIcons.x(), size: 20),
+                          StandardizedGaps.horizontal(SpacingSize.sm),
+                          Expanded(
+                            child: StandardizedText(
+                              'Searching for: "$_searchQuery"',
+                              style: StandardizedTextStyle.bodyMedium,
+                              color: context.colors.withSemanticOpacity(
+                                Theme.of(context).colorScheme.onSurface,
+                                SemanticOpacity.strong,
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                          GlassmorphismContainer(
+                            level: GlassLevel.interactive,
+                            borderRadius: BorderRadius.circular(20),
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    _searchQuery = '';
+                                  });
+                                },
+                                borderRadius: BorderRadius.circular(20),
+                                child: Padding(
+                                  padding: StandardizedSpacing.padding(SpacingSize.sm),
+                                  child: Icon(PhosphorIcons.x(), size: 20),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
 
-              // Tab content
-              Expanded(
-                child: TabBarView(
-                  controller: _tabController,
-                  children: [
-                    _buildActiveProjectsTab(),
-                    _buildArchivedProjectsTab(),
-                    _buildAtRiskProjectsTab(),
-                  ],
+                // Tab content
+                Expanded(
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: [
+                      _buildActiveProjectsTab(),
+                      _buildArchivedProjectsTab(),
+                      _buildAtRiskProjectsTab(),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

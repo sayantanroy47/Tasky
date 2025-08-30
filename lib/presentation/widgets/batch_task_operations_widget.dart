@@ -2,16 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
+
 import '../../core/accessibility/touch_target_validator.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
+import '../../services/data/import_export_service.dart';
+import '../../core/providers/core_providers.dart';
+import '../../core/design_system/design_tokens.dart';
 import '../providers/project_providers.dart';
 import '../providers/task_provider.dart' show taskOperationsProvider;
 import '../providers/task_providers.dart';
 import 'glassmorphism_container.dart';
 import 'loading_error_widgets.dart' as loading_widgets;
 import 'standardized_spacing.dart';
+import 'enhanced_glass_button.dart';
+import 'standardized_text.dart';
 
 /// Comprehensive batch operations widget for managing multiple tasks
 class BatchTaskOperationsWidget extends ConsumerStatefulWidget {
@@ -580,8 +588,168 @@ class _BatchTaskOperationsWidgetState extends ConsumerState<BatchTaskOperationsW
 
   /// Export selected tasks
   Future<void> _exportTasks() async {
-    // TODO: Implement task export functionality
-    _showSuccess('Export functionality coming soon!');
+    if (_selectedTaskIds.isEmpty) {
+      _showError('Please select tasks to export');
+      return;
+    }
+
+    final format = await _showExportFormatDialog();
+    if (format == null) return;
+
+    try {
+      // Get selected tasks
+      final tasksAsync = ref.read(tasksProvider);
+      final allTasks = tasksAsync.maybeWhen(
+        data: (tasks) => tasks,
+        orElse: () => <TaskModel>[],
+      );
+      
+      final selectedTasks = allTasks.where((task) => _selectedTaskIds.contains(task.id)).toList();
+      
+      if (selectedTasks.isEmpty) {
+        _showError('No tasks found to export');
+        return;
+      }
+
+      // Create export service
+      final repository = ref.read(taskRepositoryProvider);
+      final exportService = ImportExportService(repository);
+      
+      // Generate filename
+      final timestamp = DateTime.now().toIso8601String().replaceAll(':', '-').split('.').first;
+      final filename = 'tasks_export_$timestamp${format.extension}';
+      
+      // Get temporary directory for export
+      final tempDir = await getTemporaryDirectory();
+      final filePath = '${tempDir.path}/$filename';
+      
+      // Export tasks
+      final result = await exportService.exportTasks(
+        format: format,
+        filePath: filePath,
+        taskIds: _selectedTaskIds.toList(),
+        options: const ExportOptions(
+          includeCompleted: true,
+          includeArchived: false,
+        ),
+      );
+      
+      if (result.success) {
+        // Share the exported file
+        await Share.shareXFiles(
+          [XFile(filePath)],
+          subject: 'Task Export - ${selectedTasks.length} tasks',
+          text: 'Exported ${selectedTasks.length} tasks in ${format.displayName} format',
+        );
+        
+        _showSuccess('Successfully exported ${selectedTasks.length} tasks as ${format.displayName}');
+      } else {
+        _showError('Export failed: ${result.error}');
+      }
+    } catch (e) {
+      _showError('Export failed: $e');
+    }
+  }
+
+  /// Show export format selection dialog
+  Future<ExportFormat?> _showExportFormatDialog() async {
+    return await showDialog<ExportFormat>(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: GlassmorphismContainer(
+          level: GlassLevel.floating,
+          borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
+          padding: StandardizedSpacing.padding(SpacingSize.lg),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              StandardizedText(
+                'Choose Export Format',
+                style: StandardizedTextStyle.headlineSmall,
+              ),
+              StandardizedGaps.vertical(SpacingSize.sm),
+              StandardizedText(
+                'Select the format for exporting ${_selectedTaskIds.length} selected tasks.',
+                style: StandardizedTextStyle.bodyMedium,
+              ),
+              StandardizedGaps.vertical(SpacingSize.lg),
+              ...ExportFormat.values.map((format) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: EnhancedGlassButton.secondary(
+                    onPressed: () => Navigator.of(context).pop(format),
+                    child: Row(
+                      children: [
+                        Icon(_getFormatIcon(format), size: 20),
+                        StandardizedGaps.horizontal(SpacingSize.sm),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              StandardizedText(
+                                format.displayName,
+                                style: StandardizedTextStyle.titleSmall,
+                              ),
+                              StandardizedText(
+                                _getFormatDescription(format),
+                                style: StandardizedTextStyle.bodySmall,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              )),
+              StandardizedGaps.vertical(SpacingSize.md),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  EnhancedGlassButton.secondary(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const StandardizedText('Cancel', style: StandardizedTextStyle.buttonText),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  IconData _getFormatIcon(ExportFormat format) {
+    switch (format) {
+      case ExportFormat.json:
+        return PhosphorIcons.bracketsCurly();
+      case ExportFormat.csv:
+        return PhosphorIcons.table();
+      case ExportFormat.txt:
+        return PhosphorIcons.textT();
+      case ExportFormat.pdf:
+        return PhosphorIcons.filePdf();
+      case ExportFormat.excel:
+        return PhosphorIcons.microsoftExcelLogo();
+    }
+  }
+
+  String _getFormatDescription(ExportFormat format) {
+    switch (format) {
+      case ExportFormat.json:
+        return 'Full data with metadata - best for backup/import';
+      case ExportFormat.csv:
+        return 'Spreadsheet format - good for analysis';
+      case ExportFormat.txt:
+        return 'Plain text - human readable format';
+      case ExportFormat.pdf:
+        return 'Formatted document - good for printing';
+      case ExportFormat.excel:
+        return 'Excel format with statistics';
+    }
   }
 
   /// Show status filter

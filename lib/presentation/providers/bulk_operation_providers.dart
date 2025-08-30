@@ -5,10 +5,10 @@ import '../../services/bulk_operations/task_selection_manager.dart';
 import '../../services/bulk_operations/bulk_operation_service.dart';
 import '../../services/bulk_operations/project_migration_service.dart';
 import '../../services/bulk_operations/bulk_operation_history.dart';
-import '../../services/notification/notification_service.dart';
 import '../../services/performance_service.dart';
 import '../../domain/models/enums.dart';
 import '../../domain/entities/task_model.dart';
+import 'notification_providers.dart';
 
 /// Provider for task selection manager (global selection state)
 final taskSelectionProvider = StateNotifierProvider<TaskSelectionManager, TaskSelectionState>((ref) {
@@ -23,14 +23,12 @@ final bulkOperationHistoryProvider = Provider<BulkOperationHistory>((ref) {
 /// Provider for bulk operation service
 final bulkOperationServiceProvider = Provider<BulkOperationService>((ref) {
   final taskRepository = ref.watch(taskRepositoryProvider);
-  final projectRepository = ref.watch(projectRepositoryProvider);
   final notificationService = ref.watch(notificationServiceProvider);
   final performanceService = ref.watch(performanceServiceProvider);
   final history = ref.watch(bulkOperationHistoryProvider);
   
   return BulkOperationService(
     taskRepository: taskRepository,
-    projectRepository: projectRepository,
     notificationService: notificationService,
     performanceService: performanceService,
     history: history,
@@ -54,11 +52,6 @@ final projectMigrationServiceProvider = Provider<ProjectMigrationService>((ref) 
   );
 });
 
-/// Provider for notification service (placeholder - should be in core providers)
-final notificationServiceProvider = Provider<NotificationService>((ref) {
-  // This should be implemented in your core providers
-  throw UnimplementedError('NotificationService provider not implemented');
-});
 
 /// Provider for performance service
 final performanceServiceProvider = Provider<PerformanceService>((ref) {

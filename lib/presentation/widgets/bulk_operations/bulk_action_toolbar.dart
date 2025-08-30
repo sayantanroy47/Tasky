@@ -10,6 +10,7 @@ import '../../../domain/entities/project.dart';
 import '../../../domain/models/enums.dart';
 import '../../../services/bulk_operations/task_selection_manager.dart';
 import '../../../services/bulk_operations/bulk_operation_service.dart';
+import '../../providers/bulk_operation_providers.dart';
 import '../glassmorphism_container.dart';
 import 'bulk_operation_dialogs.dart';
 
@@ -890,8 +891,3 @@ class BulkTagsResult {
 }
 
 /// Import missing enums and classes
-
-/// Placeholder providers (will be implemented in providers file)
-final bulkOperationServiceProvider = Provider<BulkOperationService>((ref) {
-  throw UnimplementedError('Provider not implemented');
-});

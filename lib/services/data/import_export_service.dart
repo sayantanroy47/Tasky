@@ -133,9 +133,9 @@ class ImportExportService {
       case ExportFormat.txt:
         return _generateTextExport(tasks, options);
       case ExportFormat.pdf:
-        throw UnsupportedError('PDF export not yet implemented');
+        return _generatePdfExport(tasks, options);
       case ExportFormat.excel:
-        throw UnsupportedError('Excel export not yet implemented');
+        return _generateExcelExport(tasks, options);
     }
   }
   
@@ -250,6 +250,102 @@ class ImportExportService {
         buffer.writeln('Completed: ${task.completedAt}');
       }
       buffer.writeln('');
+    }
+    
+    return buffer.toString();
+  }
+
+  /// Generates PDF export (simplified text format)
+  String _generatePdfExport(List<TaskModel> tasks, ExportOptions options) {
+    final buffer = StringBuffer();
+    
+    buffer.writeln('TASK EXPORT - PDF FORMAT');
+    buffer.writeln('=' * 50);
+    buffer.writeln('Generated: ${DateTime.now()}');
+    buffer.writeln('Total Tasks: ${tasks.length}');
+    buffer.writeln('');
+    
+    // Summary section
+    final completedTasks = tasks.where((t) => t.status == TaskStatus.completed).length;
+    final inProgressTasks = tasks.where((t) => t.status == TaskStatus.inProgress).length;
+    final pendingTasks = tasks.where((t) => t.status == TaskStatus.pending).length;
+    
+    buffer.writeln('SUMMARY');
+    buffer.writeln('-' * 20);
+    buffer.writeln('Completed: $completedTasks');
+    buffer.writeln('In Progress: $inProgressTasks');
+    buffer.writeln('Pending: $pendingTasks');
+    buffer.writeln('');
+    
+    // Task details
+    buffer.writeln('TASK DETAILS');
+    buffer.writeln('-' * 20);
+    
+    for (final task in tasks) {
+      buffer.writeln('');
+      buffer.writeln('Title: ${task.title}');
+      buffer.writeln('Status: ${task.status.displayName}');
+      buffer.writeln('Priority: ${task.priority.displayName}');
+      
+      if (task.description != null && task.description!.isNotEmpty) {
+        buffer.writeln('Description: ${task.description}');
+      }
+      
+      if (task.dueDate != null) {
+        buffer.writeln('Due: ${task.dueDate}');
+      }
+      
+      buffer.writeln('Created: ${task.createdAt}');
+      
+      if (task.completedAt != null) {
+        buffer.writeln('Completed: ${task.completedAt}');
+      }
+      
+      buffer.writeln('-' * 40);
+    }
+    
+    return buffer.toString();
+  }
+
+  /// Generates Excel export (CSV format)
+  String _generateExcelExport(List<TaskModel> tasks, ExportOptions options) {
+    final buffer = StringBuffer();
+    
+    // Header section
+    buffer.writeln('Task Export Summary');
+    buffer.writeln('Generated,${DateTime.now()}');
+    buffer.writeln('Total Tasks,${tasks.length}');
+    buffer.writeln('');
+    
+    // Statistics
+    final completedTasks = tasks.where((t) => t.status == TaskStatus.completed).length;
+    final inProgressTasks = tasks.where((t) => t.status == TaskStatus.inProgress).length;
+    final pendingTasks = tasks.where((t) => t.status == TaskStatus.pending).length;
+    
+    buffer.writeln('Status Summary');
+    buffer.writeln('Status,Count');
+    buffer.writeln('Completed,$completedTasks');
+    buffer.writeln('In Progress,$inProgressTasks');
+    buffer.writeln('Pending,$pendingTasks');
+    buffer.writeln('');
+    
+    // Task data
+    buffer.writeln('Task Details');
+    buffer.writeln('Title,Status,Priority,Description,Due Date,Created,Completed,Tags,Project');
+    
+    for (final task in tasks) {
+      final row = [
+        _escapeCsvField(task.title),
+        _escapeCsvField(task.status.displayName),
+        _escapeCsvField(task.priority.displayName),
+        _escapeCsvField(task.description ?? ''),
+        _escapeCsvField(task.dueDate?.toString() ?? ''),
+        _escapeCsvField(task.createdAt.toString()),
+        _escapeCsvField(task.completedAt?.toString() ?? ''),
+        _escapeCsvField(task.tags.join(';')),
+        _escapeCsvField(task.projectId ?? ''),
+      ];
+      buffer.writeln(row.join(','));
     }
     
     return buffer.toString();

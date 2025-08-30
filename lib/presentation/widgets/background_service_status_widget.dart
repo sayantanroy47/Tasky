@@ -5,9 +5,9 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../../core/design_system/design_tokens.dart';
 import '../providers/background_service_providers.dart';
 import 'glassmorphism_container.dart';
-import 'standardized_text.dart';
-import 'standardized_spacing.dart';
 import 'standardized_error_states.dart';
+import 'standardized_spacing.dart';
+import 'standardized_text.dart';
 
 /// Widget to display background service status and controls
 class BackgroundServiceStatusWidget extends ConsumerWidget {
@@ -96,7 +96,7 @@ class BackgroundServiceStatusWidget extends ConsumerWidget {
             StandardizedText(
               isRunning ? 'Running' : 'Stopped',
               style: StandardizedTextStyle.bodyMedium,
-              color: isRunning ? Colors.green /* TODO: context.colors.success */ : Colors.orange, /* TODO: context.colors.warning */
+              color: isRunning ? Colors.green : Colors.orange,
             ),
             const Spacer(),
             Switch(
@@ -258,7 +258,8 @@ class BackgroundServiceStatusWidget extends ConsumerWidget {
                         ),
                       ),
                       Expanded(
-                        child: StandardizedText(entry.value?.toString() ?? 'null', style: StandardizedTextStyle.bodyMedium),
+                        child: StandardizedText(entry.value?.toString() ?? 'null',
+                            style: StandardizedTextStyle.bodyMedium),
                       ),
                     ],
                   ),

@@ -5,7 +5,6 @@ import '../../domain/entities/task_model.dart';
 import '../../domain/entities/project_health.dart';
 import '../../domain/repositories/task_repository.dart';
 import '../../domain/repositories/project_repository.dart';
-import '../analytics/analytics_service.dart';
 
 /// Service for automated project health monitoring and issue detection
 class ProjectHealthMonitoringService {

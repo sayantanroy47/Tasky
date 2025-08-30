@@ -136,6 +136,9 @@ dev_dependencies:
     sdk: flutter
 
   tasky: any
+  logger: any
+  flutter_sound_platform_interface: any
+  permission_handler_platform_interface: any
 dependency_overrides:
   timezone: ^0.10.1
   flutter_local_notifications: ^19.4.1

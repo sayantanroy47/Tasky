@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+
 import '../../domain/models/enums.dart';
-import 'standardized_text.dart';
-import 'standardized_spacing.dart';
 import 'standardized_error_states.dart';
+import 'standardized_spacing.dart';
+import 'standardized_text.dart';
 
 // Stub providers for compilation
 final dataExportNotifierProvider = StateNotifierProvider<DataExportNotifier, Object>((ref) {
@@ -15,12 +16,12 @@ final isExportingProvider = Provider<bool>((ref) => false);
 
 class DataExportNotifier extends StateNotifier<Object> {
   DataExportNotifier() : super(Object());
-  
+
   Future<void> exportData({required ExportFormat format}) async {
     // Stub implementation
     await Future.delayed(const Duration(milliseconds: 100));
   }
-  
+
   Future<void> shareData({required ExportFormat format}) async {
     // Stub implementation
     await Future.delayed(const Duration(milliseconds: 100));
@@ -43,7 +44,7 @@ class TimePeriodSelector extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final periods = ['Week', 'Month', 'Quarter', 'Year'];
-    
+
     return Card(
       child: Padding(
         padding: StandardizedSpacing.padding(SpacingSize.md),
@@ -56,10 +57,12 @@ class TimePeriodSelector extends ConsumerWidget {
             ),
             StandardizedGaps.vertical(SpacingSize.xs),
             SegmentedButton<String>(
-              segments: periods.map((period) => ButtonSegment<String>(
-                value: period,
-                label: StandardizedText(period, style: StandardizedTextStyle.bodyMedium),
-              )).toList(),
+              segments: periods
+                  .map((period) => ButtonSegment<String>(
+                        value: period,
+                        label: StandardizedText(period, style: StandardizedTextStyle.bodyMedium),
+                      ))
+                  .toList(),
               selected: {selectedPeriod},
               onSelectionChanged: (Set<String> selection) {
                 if (selection.isNotEmpty) {
@@ -136,7 +139,7 @@ class AnalyticsMetricCard extends StatelessWidget {
                   StandardizedText(
                     trend!,
                     style: StandardizedTextStyle.bodySmall,
-                    color: isPositiveTrend == true ? Colors.green /* TODO: context.colors.success */ : Colors.red, /* TODO: context.colors.error */
+                    color: isPositiveTrend == true ? Colors.green : Colors.red,
                   ),
                 ],
               ),
@@ -150,7 +153,7 @@ class AnalyticsMetricCard extends StatelessWidget {
 
 class StreakWidget extends StatelessWidget {
   final Map<String, dynamic>? streakInfo;
-  
+
   const StreakWidget({
     super.key,
     this.streakInfo,
@@ -160,7 +163,7 @@ class StreakWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final streak = streakInfo?['current'] ?? 7;
     final longestStreak = streakInfo?['longest'] ?? 12;
-    
+
     return Card(
       child: Padding(
         padding: StandardizedSpacing.padding(SpacingSize.md),
@@ -193,7 +196,7 @@ class SimpleBarChart extends StatelessWidget {
   final List<double> values;
   final List<String> labels;
   final String title;
-  
+
   const SimpleBarChart({
     super.key,
     required this.values,
@@ -382,7 +385,8 @@ class PeakHoursAnalysisWidget extends StatelessWidget {
               children: [
                 Icon(PhosphorIcons.clock(), color: Theme.of(context).colorScheme.primary),
                 StandardizedGaps.horizontal(SpacingSize.xs),
-                const StandardizedText('Peak productivity: 9:00 AM - 11:00 AM', style: StandardizedTextStyle.bodyMedium),
+                const StandardizedText('Peak productivity: 9:00 AM - 11:00 AM',
+                    style: StandardizedTextStyle.bodyMedium),
               ],
             ),
           ],
@@ -394,7 +398,7 @@ class PeakHoursAnalysisWidget extends StatelessWidget {
 
 class AdvancedCategoryAnalyticsWidget extends StatelessWidget {
   final Map<String, dynamic>? analytics;
-  
+
   const AdvancedCategoryAnalyticsWidget({
     super.key,
     this.analytics,
@@ -433,7 +437,7 @@ class AdvancedCategoryAnalyticsWidget extends StatelessWidget {
 
 class AdvancedProductivityInsightsWidget extends StatelessWidget {
   final Map<String, dynamic>? insights;
-  
+
   const AdvancedProductivityInsightsWidget({
     super.key,
     this.insights,
@@ -475,7 +479,7 @@ class AnalyticsExportWidget extends ConsumerWidget {
   final VoidCallback? onExportJson;
   final VoidCallback? onExportPdf;
   final VoidCallback? onExportExcel;
-  
+
   const AnalyticsExportWidget({
     super.key,
     this.onExportCsv,
@@ -503,107 +507,128 @@ class AnalyticsExportWidget extends ConsumerWidget {
               spacing: 8,
               children: [
                 ElevatedButton(
-                  onPressed: isExporting ? null : (onExportCsv ?? () async {
-                    try {
-                      await dataExportNotifier.exportData(format: ExportFormat.csv);
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: StandardizedText('Analytics exported to CSV successfully', style: StandardizedTextStyle.bodyMedium),
-                            backgroundColor: Colors.green,
-                          ),
-                        );
-                      }
-                    } catch (e) {
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: StandardizedText('Export failed: $e', style: StandardizedTextStyle.bodyMedium),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
-                      }
-                    }
-                  }),
-                  child: isExporting ? SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: StandardizedErrorStates.loading(),
-                  ) : const StandardizedText('Export CSV', style: StandardizedTextStyle.buttonText),
+                  onPressed: isExporting
+                      ? null
+                      : (onExportCsv ??
+                          () async {
+                            try {
+                              await dataExportNotifier.exportData(format: ExportFormat.csv);
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: StandardizedText('Analytics exported to CSV successfully',
+                                        style: StandardizedTextStyle.bodyMedium),
+                                    backgroundColor: Colors.green,
+                                  ),
+                                );
+                              }
+                            } catch (e) {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content:
+                                        StandardizedText('Export failed: $e', style: StandardizedTextStyle.bodyMedium),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              }
+                            }
+                          }),
+                  child: isExporting
+                      ? SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: StandardizedErrorStates.loading(),
+                        )
+                      : const StandardizedText('Export CSV', style: StandardizedTextStyle.buttonText),
                 ),
                 ElevatedButton(
-                  onPressed: isExporting ? null : (onExportJson ?? () async {
-                    try {
-                      await dataExportNotifier.exportData(format: ExportFormat.json);
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: StandardizedText('Analytics exported to JSON successfully', style: StandardizedTextStyle.bodyMedium),
-                            backgroundColor: Colors.green,
-                          ),
-                        );
-                      }
-                    } catch (e) {
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: StandardizedText('Export failed: $e', style: StandardizedTextStyle.bodyMedium),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
-                      }
-                    }
-                  }),
+                  onPressed: isExporting
+                      ? null
+                      : (onExportJson ??
+                          () async {
+                            try {
+                              await dataExportNotifier.exportData(format: ExportFormat.json);
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: StandardizedText('Analytics exported to JSON successfully',
+                                        style: StandardizedTextStyle.bodyMedium),
+                                    backgroundColor: Colors.green,
+                                  ),
+                                );
+                              }
+                            } catch (e) {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content:
+                                        StandardizedText('Export failed: $e', style: StandardizedTextStyle.bodyMedium),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              }
+                            }
+                          }),
                   child: const StandardizedText('Export JSON', style: StandardizedTextStyle.buttonText),
                 ),
                 ElevatedButton(
-                  onPressed: isExporting ? null : (onExportPdf ?? () async {
-                    try {
-                      await dataExportNotifier.exportData(format: ExportFormat.pdf);
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: StandardizedText('Analytics exported to PDF successfully', style: StandardizedTextStyle.bodyMedium),
-                            backgroundColor: Colors.green,
-                          ),
-                        );
-                      }
-                    } catch (e) {
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: StandardizedText('Export failed: $e', style: StandardizedTextStyle.bodyMedium),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
-                      }
-                    }
-                  }),
+                  onPressed: isExporting
+                      ? null
+                      : (onExportPdf ??
+                          () async {
+                            try {
+                              await dataExportNotifier.exportData(format: ExportFormat.pdf);
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: StandardizedText('Analytics exported to PDF successfully',
+                                        style: StandardizedTextStyle.bodyMedium),
+                                    backgroundColor: Colors.green,
+                                  ),
+                                );
+                              }
+                            } catch (e) {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content:
+                                        StandardizedText('Export failed: $e', style: StandardizedTextStyle.bodyMedium),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              }
+                            }
+                          }),
                   child: const StandardizedText('Export PDF', style: StandardizedTextStyle.buttonText),
                 ),
                 ElevatedButton(
-                  onPressed: isExporting ? null : (onExportExcel ?? () async {
-                    try {
-                      await dataExportNotifier.shareData(format: ExportFormat.excel);
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: StandardizedText('Analytics shared as Excel successfully', style: StandardizedTextStyle.bodyMedium),
-                            backgroundColor: Colors.green,
-                          ),
-                        );
-                      }
-                    } catch (e) {
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Share failed: $e'),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
-                      }
-                    }
-                  }),
+                  onPressed: isExporting
+                      ? null
+                      : (onExportExcel ??
+                          () async {
+                            try {
+                              await dataExportNotifier.shareData(format: ExportFormat.excel);
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: StandardizedText('Analytics shared as Excel successfully',
+                                        style: StandardizedTextStyle.bodyMedium),
+                                    backgroundColor: Colors.green,
+                                  ),
+                                );
+                              }
+                            } catch (e) {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text('Share failed: $e'),
+                                    backgroundColor: Colors.red,
+                                  ),
+                                );
+                              }
+                            }
+                          }),
                   child: const StandardizedText('Export Excel', style: StandardizedTextStyle.buttonText),
                 ),
               ],
@@ -614,4 +639,3 @@ class AnalyticsExportWidget extends ConsumerWidget {
     );
   }
 }
-

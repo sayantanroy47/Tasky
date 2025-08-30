@@ -109,9 +109,19 @@ final analyticsExportProvider = FutureProvider.family.autoDispose<ExportResult, 
           customFileName: request.customFileName,
         );
       case ExportFormat.pdf:
-        throw UnimplementedError('PDF export not yet implemented');
+        return await exportService.exportToPdf(
+          analytics: request.analytics,
+          project: project,
+          tasks: tasks,
+          customFileName: request.customFileName,
+        );
       case ExportFormat.excel:
-        throw UnimplementedError('Excel export not yet implemented');
+        return await exportService.exportToExcel(
+          analytics: request.analytics,
+          project: project,
+          tasks: tasks,
+          customFileName: request.customFileName,
+        );
     }
   },
 );

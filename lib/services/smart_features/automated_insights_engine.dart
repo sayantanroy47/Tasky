@@ -5,7 +5,6 @@ import '../../domain/entities/task_model.dart';
 import '../../domain/models/enums.dart';
 import '../../domain/repositories/task_repository.dart';
 import '../../domain/repositories/project_repository.dart';
-import '../analytics/analytics_service.dart';
 
 /// Automated insights engine that recognizes patterns and generates actionable intelligence
 class AutomatedInsightsEngine {

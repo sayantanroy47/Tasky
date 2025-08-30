@@ -16,6 +16,7 @@ import '../widgets/standardized_fab.dart';
 import '../widgets/standardized_text.dart';
 import '../widgets/theme_background_widget.dart';
 import '../widgets/standardized_spacing.dart';
+import '../widgets/project_form_dialog.dart';
 import 'calendar_page.dart';
 import 'home.dart';
 import 'manual_task_creation_page.dart';
@@ -95,7 +96,7 @@ class MainScaffold extends ConsumerWidget {
       ),
       bottomNavigationBar: _buildBottomNavigation(context, ref, selectedIndex, navigationItems),
       floatingActionButton: StandardizedFABVariants.create(
-        onPressed: () => _showTaskCreationMenu(context),
+        onPressed: () => _showTaskCreationMenu(context, ref),
         heroTag: 'consistentFAB',
         isLarge: true,
       ),
@@ -185,7 +186,7 @@ class MainScaffold extends ConsumerWidget {
 
                   // FAB
                   StandardizedFABVariants.create(
-                    onPressed: () => _showTaskCreationMenu(context),
+                    onPressed: () => _showTaskCreationMenu(context, ref),
                     heroTag: 'tabletFAB',
                   ),
                 ],
@@ -309,7 +310,7 @@ class MainScaffold extends ConsumerWidget {
                   SizedBox(
                     width: double.infinity,
                     child: StandardizedFABVariants.create(
-                      onPressed: () => _showTaskCreationMenu(context),
+                      onPressed: () => _showTaskCreationMenu(context, ref),
                       heroTag: 'desktopFAB',
                     ),
                   ),
@@ -482,7 +483,7 @@ class MainScaffold extends ConsumerWidget {
                           isSelected ? item.selectedIcon : item.icon,
                           size: 22,
                           color: isSelected 
-                            ? theme.colorScheme.primary // Use primary color for both themes
+                            ? (theme.brightness == Brightness.light ? Colors.white : theme.colorScheme.primary)
                             : theme.colorScheme.onSurfaceVariant,
                         ),
                       ),
@@ -497,8 +498,21 @@ class MainScaffold extends ConsumerWidget {
     );
   }
 
+  /// Show context-aware creation menu (tasks or projects)
+  void _showTaskCreationMenu(BuildContext context, WidgetRef ref) {
+    final selectedIndex = ref.watch(selectedIndexProvider);
+    
+    // Index 2 is ProjectsPage - show project creation menu
+    if (selectedIndex == 2) {
+      _showProjectCreationMenu(context);
+    } else {
+      // All other pages - show task creation menu
+      _showTaskCreationMenuInternal(context);
+    }
+  }
+
   /// Show task creation options menu
-  void _showTaskCreationMenu(BuildContext context) {
+  void _showTaskCreationMenuInternal(BuildContext context) {
     final theme = Theme.of(context);
 
     showModalBottomSheet(
@@ -585,6 +599,65 @@ class MainScaffold extends ConsumerWidget {
                               'creationMode': 'manual',
                             },
                           ),
+                        ),
+                      );
+                    },
+                  ),
+
+                  StandardizedGaps.vertical(SpacingSize.md),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Show project creation menu
+  void _showProjectCreationMenu(BuildContext context) {
+    final theme = Theme.of(context);
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => ThemeBackgroundWidget(
+        child: GlassmorphismContainer(
+          level: GlassLevel.floating,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          margin: EdgeInsets.zero,
+          child: SafeArea(
+            child: Padding(
+              padding: StandardizedSpacing.padding(SpacingSize.xl),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header
+                  StandardizedTextVariants.sectionHeader(
+                    'Create New Project',
+                  ),
+                  StandardizedGaps.vertical(SpacingSize.xs),
+                  StandardizedTextVariants.body(
+                    'Start organizing your tasks with a new project',
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                  StandardizedGaps.vertical(SpacingSize.lg),
+
+                  // Single project creation option
+                  _buildTaskCreationOption(
+                    context: context,
+                    icon: PhosphorIcons.folder(),
+                    iconColor: theme.colorScheme.primary,
+                    title: 'New Project',
+                    subtitle: 'Create a project to organize your tasks',
+                    onTap: () {
+                      Navigator.pop(context);
+                      // Navigate to project creation using the same pattern as projects page
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const ProjectFormDialog(),
                         ),
                       );
                     },

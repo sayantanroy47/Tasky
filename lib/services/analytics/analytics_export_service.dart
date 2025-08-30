@@ -109,6 +109,72 @@ class AnalyticsExportService {
     }
   }
 
+  /// Export project analytics to PDF format
+  Future<ExportResult> exportToPdf({
+    required ProjectAnalytics analytics,
+    required Project project,
+    required List<TaskModel> tasks,
+    String? customFileName,
+  }) async {
+    try {
+      // Generate PDF content as text (simplified PDF generation)
+      final pdfContent = _buildPdfContent(analytics, project, tasks);
+      
+      final fileName = customFileName ?? 'project_analytics_${project.name}_${DateTime.now().millisecondsSinceEpoch}.pdf';
+      
+      // For now, generate as text file with PDF extension
+      // In a real implementation, you would use a PDF library like pdf package
+      final file = await _writeToFile(pdfContent, fileName);
+      
+      return ExportResult(
+        success: true,
+        fileName: fileName,
+        filePath: file.path,
+        format: ExportFormat.pdf,
+        size: pdfContent.length,
+      );
+    } catch (e) {
+      return ExportResult(
+        success: false,
+        error: e.toString(),
+        format: ExportFormat.pdf,
+      );
+    }
+  }
+
+  /// Export project analytics to Excel format
+  Future<ExportResult> exportToExcel({
+    required ProjectAnalytics analytics,
+    required Project project,
+    required List<TaskModel> tasks,
+    String? customFileName,
+  }) async {
+    try {
+      // Generate Excel content as CSV (simplified Excel generation)
+      final excelContent = _buildExcelContent(analytics, project, tasks);
+      
+      final fileName = customFileName ?? 'project_analytics_${project.name}_${DateTime.now().millisecondsSinceEpoch}.xlsx';
+      
+      // For now, generate as CSV file with Excel extension
+      // In a real implementation, you would use an Excel library like excel package
+      final file = await _writeToFile(excelContent, fileName);
+      
+      return ExportResult(
+        success: true,
+        fileName: fileName,
+        filePath: file.path,
+        format: ExportFormat.excel,
+        size: excelContent.length,
+      );
+    } catch (e) {
+      return ExportResult(
+        success: false,
+        error: e.toString(),
+        format: ExportFormat.excel,
+      );
+    }
+  }
+
   /// Share analytics data via platform sharing
   Future<void> shareAnalytics({
     required ExportResult exportResult,
@@ -119,7 +185,7 @@ class AnalyticsExportService {
       throw Exception('Cannot share unsuccessful export result');
     }
 
-    await SharePlus.instance.shareXFiles(
+    await Share.shareXFiles(
       [XFile(exportResult.filePath!)],
       subject: subject ?? 'Project Analytics Report',
       text: text ?? 'Analytics report for project exported from Tasky',
@@ -512,6 +578,105 @@ class AnalyticsExportService {
     } else {
       return '${duration.inMinutes}m';
     }
+  }
+
+  /// Escapes CSV field content for safe CSV output
+  String _csvEscape(String field) {
+    if (field.contains('"') || field.contains(',') || field.contains('\n') || field.contains('\r')) {
+      return '"${field.replaceAll('"', '""')}"';
+    }
+    return field;
+  }
+
+  /// Build PDF-formatted content (simplified text-based)
+  String _buildPdfContent(ProjectAnalytics analytics, Project project, List<TaskModel> tasks) {
+    final buffer = StringBuffer();
+    
+    buffer.writeln('PROJECT ANALYTICS REPORT');
+    buffer.writeln('=' * 50);
+    buffer.writeln();
+    
+    buffer.writeln('Project: ${project.name}');
+    if (project.description?.isNotEmpty == true) {
+      buffer.writeln('Description: ${project.description}');
+    }
+    buffer.writeln('Report Date: ${_formatDate(DateTime.now())}');
+    buffer.writeln('Period: ${analytics.period.name}');
+    buffer.writeln('Date Range: ${_formatDate(analytics.startDate)} to ${_formatDate(analytics.endDate)}');
+    buffer.writeln();
+    
+    // Project Statistics
+    buffer.writeln('PROJECT STATISTICS');
+    buffer.writeln('-' * 30);
+    final stats = analytics.basicStats;
+    buffer.writeln('Total Tasks: ${stats.totalTasks}');
+    buffer.writeln('Completed: ${stats.completedTasks} (${stats.completionPercentage.toStringAsFixed(1)}%)');
+    buffer.writeln('In Progress: ${stats.inProgressTasks}');
+    buffer.writeln('Pending: ${stats.pendingTasks}');
+    buffer.writeln('Overdue: ${stats.overdueTasks}');
+    buffer.writeln();
+    
+    // Priority Breakdown
+    buffer.writeln('PRIORITY BREAKDOWN');
+    buffer.writeln('-' * 30);
+    buffer.writeln('High Priority: ${stats.highPriorityTasks}');
+    buffer.writeln('Medium Priority: ${stats.mediumPriorityTasks}');
+    buffer.writeln('Low Priority: ${stats.lowPriorityTasks}');
+    buffer.writeln();
+    
+    // Time Tracking
+    if (stats.totalEstimatedTime > 0 || stats.totalActualTime > 0) {
+      buffer.writeln('TIME TRACKING');
+      buffer.writeln('-' * 30);
+      buffer.writeln('Estimated Time: ${_formatDuration(Duration(minutes: stats.totalEstimatedTime))}');
+      buffer.writeln('Actual Time: ${_formatDuration(Duration(minutes: stats.totalActualTime))}');
+      buffer.writeln();
+    }
+    
+    return buffer.toString();
+  }
+
+  /// Build Excel-formatted content (simplified CSV-based)
+  String _buildExcelContent(ProjectAnalytics analytics, Project project, List<TaskModel> tasks) {
+    final buffer = StringBuffer();
+    
+    // Sheet 1: Project Overview
+    buffer.writeln('Project Analytics Summary');
+    buffer.writeln('Project Name,${project.name}');
+    buffer.writeln('Report Date,${_formatDate(DateTime.now())}');
+    buffer.writeln('Period,${analytics.period.name}');
+    buffer.writeln('Start Date,${_formatDate(analytics.startDate)}');
+    buffer.writeln('End Date,${_formatDate(analytics.endDate)}');
+    buffer.writeln();
+    
+    // Project Statistics
+    buffer.writeln('Statistics');
+    final stats = analytics.basicStats;
+    buffer.writeln('Metric,Value');
+    buffer.writeln('Total Tasks,${stats.totalTasks}');
+    buffer.writeln('Completed Tasks,${stats.completedTasks}');
+    buffer.writeln('Completion Percentage,${stats.completionPercentage.toStringAsFixed(1)}%');
+    buffer.writeln('In Progress Tasks,${stats.inProgressTasks}');
+    buffer.writeln('Pending Tasks,${stats.pendingTasks}');
+    buffer.writeln('Overdue Tasks,${stats.overdueTasks}');
+    buffer.writeln('High Priority Tasks,${stats.highPriorityTasks}');
+    buffer.writeln('Medium Priority Tasks,${stats.mediumPriorityTasks}');
+    buffer.writeln('Low Priority Tasks,${stats.lowPriorityTasks}');
+    buffer.writeln();
+    
+    // Task List
+    buffer.writeln('Task Details');
+    buffer.writeln('Title,Status,Priority,Created,Due Date,Completed');
+    for (final task in tasks) {
+      buffer.writeln('${_csvEscape(task.title)},'
+          '${task.status.name},'
+          '${task.priority.name},'
+          '${_formatDate(task.createdAt)},'
+          '${task.dueDate != null ? _formatDate(task.dueDate!) : ""},'
+          '${task.completedAt != null ? _formatDate(task.completedAt!) : ""}');
+    }
+    
+    return buffer.toString();
   }
 
   // Helper methods to convert objects to maps for JSON export

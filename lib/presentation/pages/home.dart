@@ -147,15 +147,47 @@ class _HomePageState extends ConsumerState<HomePage> with SingleTickerProviderSt
         forceBackButton: false, // Home is main tab - no back button
         actions: [
           const ThemeToggleButton(),
-          IconButton(
-            icon: Icon(PhosphorIcons.chartLine()),
-            onPressed: () => _showTaskInsights(context),
-            tooltip: 'Task insights',
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 4),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+                width: 1,
+              ),
+              color: Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.1),
+            ),
+            child: IconButton(
+              icon: Icon(PhosphorIcons.chartLine()),
+              onPressed: () => _showTaskInsights(context),
+              tooltip: 'Task insights',
+              style: IconButton.styleFrom(
+                backgroundColor: Colors.transparent,
+                foregroundColor: Theme.of(context).colorScheme.primary,
+                padding: const EdgeInsets.all(8),
+              ),
+            ),
           ),
-          IconButton(
-            icon: Icon(PhosphorIcons.magnifyingGlass()),
-            onPressed: () => _showTaskSearch(context),
-            tooltip: 'Search tasks',
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 4),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2),
+                width: 1,
+              ),
+              color: Theme.of(context).colorScheme.surfaceContainer.withValues(alpha: 0.1),
+            ),
+            child: IconButton(
+              icon: Icon(PhosphorIcons.magnifyingGlass()),
+              onPressed: () => _showTaskSearch(context),
+              tooltip: 'Search tasks',
+              style: IconButton.styleFrom(
+                backgroundColor: Colors.transparent,
+                foregroundColor: Theme.of(context).colorScheme.primary,
+                padding: const EdgeInsets.all(8),
+              ),
+            ),
           ),
         ],
       ),
@@ -222,7 +254,7 @@ class _HomePageState extends ConsumerState<HomePage> with SingleTickerProviderSt
                     borderSide: BorderSide.none,
                   ),
                   filled: true,
-                  fillColor: Colors.transparent, // TODO: Use context.colors.backgroundTransparent
+                  fillColor: context.colors.backgroundTransparent,
                 ),
                 onChanged: (value) => searchQuery = value,
               ),
@@ -259,7 +291,7 @@ class _HomePageState extends ConsumerState<HomePage> with SingleTickerProviderSt
 
                         return ListView.builder(
                           padding: const EdgeInsets.only(
-                              bottom: 160), // Bottom navigation bar + FAB clearance (80px + 72px FAB + 8px buffer)
+                              bottom: 400), // Standardized padding after last card
                           itemCount: filteredTasks.length,
                           itemBuilder: (context, index) {
                             final task = filteredTasks[index];
@@ -431,7 +463,7 @@ class _HomePageState extends ConsumerState<HomePage> with SingleTickerProviderSt
                                             Icon(PhosphorIcons.list(), size: 16),
                                             const SizedBox(width: 8),
                                             const Flexible(
-                                              child: StandardizedText('View All Tasks',
+                                              child: StandardizedText('All Tasks',
                                                   style: StandardizedTextStyle.buttonText),
                                             ),
                                           ],
@@ -834,9 +866,9 @@ class _HomePageState extends ConsumerState<HomePage> with SingleTickerProviderSt
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  Colors.transparent, // TODO: Use context.colors.backgroundTransparent
+                  context.colors.backgroundTransparent,
                   theme.colorScheme.primary.withValues(alpha: 0.1),
-                  Colors.transparent, // TODO: Use context.colors.backgroundTransparent
+                  context.colors.backgroundTransparent,
                 ],
                 stops: const [0.0, 0.5, 1.0],
                 begin: Alignment.centerLeft,
@@ -898,7 +930,7 @@ class _HomePageState extends ConsumerState<HomePage> with SingleTickerProviderSt
     showDialog(
       context: context,
       builder: (context) => Dialog(
-        backgroundColor: Colors.transparent, // TODO: Use context.colors.backgroundTransparent
+        backgroundColor: context.colors.backgroundTransparent,
         child: GlassmorphismContainer(
           level: GlassLevel.floating,
           borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge), // 16.0 - Fixed border radius hierarchy
@@ -1022,7 +1054,7 @@ Shared from Tasky - Task Management App
             // Sophisticated typography and colors
             labelColor: theme.colorScheme.primary,
             unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
-            dividerColor: Colors.transparent, // TODO: Use context.colors.backgroundTransparent
+            dividerColor: context.colors.backgroundTransparent,
             indicatorSize: TabBarIndicatorSize.tab,
 
             // Elegant text styling
@@ -1092,7 +1124,7 @@ Shared from Tasky - Task Management App
 
         return ListView.builder(
           padding: const EdgeInsets.only(
-              bottom: 160), // Bottom navigation bar + FAB clearance (80px + 72px FAB + 8px buffer)
+              bottom: 400), // Standardized padding after last card
           itemCount: tasks.length,
           itemBuilder: (context, index) {
             final task = tasks[index];
@@ -1124,7 +1156,7 @@ Shared from Tasky - Task Management App
 
         return ListView.builder(
           padding: const EdgeInsets.only(
-              bottom: 160), // Bottom navigation bar + FAB clearance (80px + 72px FAB + 8px buffer)
+              bottom: 400), // Standardized padding after last card
           itemCount: projects.length,
           itemBuilder: (context, index) {
             final project = projects[index];
@@ -1169,7 +1201,7 @@ Shared from Tasky - Task Management App
 
         return ListView.builder(
           padding: const EdgeInsets.only(
-              bottom: 160), // Bottom navigation bar + FAB clearance (80px + 72px FAB + 8px buffer)
+              bottom: 400), // Standardized padding after last card
           itemCount: futureTasks.length,
           itemBuilder: (context, index) {
             final task = futureTasks[index];
@@ -1659,7 +1691,7 @@ Shared from Tasky - Task Management App
   Widget _buildTasksLoadingState(ThemeData theme) {
     return ListView.builder(
       padding:
-          const EdgeInsets.only(bottom: 160), // Bottom navigation bar + FAB clearance (80px + 72px FAB + 8px buffer)
+          const EdgeInsets.only(bottom: 400), // Standardized padding after last card
       itemCount: 3,
       itemBuilder: (context, index) => GlassmorphismContainer(
         level: GlassLevel.background,
@@ -1801,7 +1833,7 @@ Shared from Tasky - Task Management App
   Widget _buildProjectsLoadingState(ThemeData theme) {
     return ListView.builder(
       padding:
-          const EdgeInsets.only(bottom: 160), // Bottom navigation bar + FAB clearance (80px + 72px FAB + 8px buffer)
+          const EdgeInsets.only(bottom: 400), // Standardized padding after last card
       itemCount: 3,
       itemBuilder: (context, index) => GlassmorphismContainer(
         level: GlassLevel.background,
@@ -2006,6 +2038,7 @@ Shared from Tasky - Task Management App
         return currentTheme.colors.taskUrgentPriority;
     }
   }
+
 }
 
 /// Search Dialog with Material 3 design

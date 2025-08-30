@@ -5,7 +5,6 @@ import '../../domain/entities/task_model.dart';
 import '../../domain/entities/project_prediction.dart';
 import '../../domain/repositories/task_repository.dart';
 import '../../domain/repositories/project_repository.dart';
-import '../analytics/analytics_service.dart';
 
 /// Advanced predictive analytics engine for project completion forecasting
 class PredictiveAnalyticsEngine {

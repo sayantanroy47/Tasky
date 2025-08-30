@@ -7,9 +7,14 @@ import '../../domain/models/enums.dart';
 import '../../core/theme/typography_constants.dart';
 import '../../core/design_system/design_tokens.dart';
 import '../../core/theme/material3/motion_system.dart';
+import '../../core/routing/app_router.dart';
+import '../providers/task_provider.dart';
 import 'glassmorphism_container.dart';
 import 'advanced_task_card.dart';
 import 'kanban_board_view.dart';
+import 'enhanced_glass_button.dart';
+import 'standardized_spacing.dart';
+import 'standardized_text.dart';
 
 /// Individual Kanban column widget with drag-and-drop functionality
 /// 
@@ -326,15 +331,21 @@ class _KanbanColumnState extends ConsumerState<KanbanColumn>
                       fontWeight: TypographyConstants.medium,
                       color: widget.config.color,
                     ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
                   if (widget.showTaskCount) ...[
                     const SizedBox(height: 2),
                     Row(
                       children: [
-                        Text(
-                          '$taskCount task${taskCount != 1 ? 's' : ''}',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
+                        Flexible(
+                          child: Text(
+                            '$taskCount task${taskCount != 1 ? 's' : ''}',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
                           ),
                         ),
                         if (hasFilters) ...[
@@ -444,6 +455,33 @@ class _KanbanColumnState extends ConsumerState<KanbanColumn>
       onStatusChanged: (status) => widget.onTaskMoved?.call(task, status),
       onPriorityChanged: (priority) => _updateTaskPriority(task, priority),
     );
+    
+    // Make the task card draggable if enabled
+    if (widget.enableDragAndDrop) {
+      taskCard = LongPressDraggable<TaskModel>(
+        data: task,
+        feedback: Material(
+          elevation: 8,
+          borderRadius: BorderRadius.circular(TypographyConstants.radiusStandard),
+          child: Container(
+            width: 280,
+            child: AdvancedTaskCard(
+              task: task,
+              style: TaskCardStyle.glass,
+              margin: EdgeInsets.zero,
+              accentColor: theme.colorScheme.primary,
+              enableSwipeActions: false,
+              enableContextMenu: false,
+            ),
+          ),
+        ),
+        childWhenDragging: Opacity(
+          opacity: 0.5,
+          child: taskCard,
+        ),
+        child: taskCard,
+      );
+    }
     
     // Add selection overlay
     if (widget.selectedTaskIds.isNotEmpty) {
@@ -679,32 +717,75 @@ class _KanbanColumnState extends ConsumerState<KanbanColumn>
   }
 
   void _editTask(TaskModel task) {
-    // TODO: Implement task editing
-    widget.onTaskTapped?.call(task);
+    // Navigate to task detail page for editing
+    AppRouter.navigateToTaskDetail(context, task.id);
   }
 
-  void _deleteTask(TaskModel task) {
-    // TODO: Implement task deletion with confirmation
-    showDialog(
+  void _deleteTask(TaskModel task) async {
+    final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Delete Task'),
-        content: Text('Are you sure you want to delete "${task.title}"?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: GlassmorphismContainer(
+          level: GlassLevel.floating,
+          borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
+          padding: StandardizedSpacing.padding(SpacingSize.lg),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              StandardizedText(
+                'Delete Task',
+                style: StandardizedTextStyle.headlineSmall,
+              ),
+              StandardizedGaps.vertical(SpacingSize.sm),
+              StandardizedText(
+                'Are you sure you want to delete "${task.title}"? This action cannot be undone.',
+                style: StandardizedTextStyle.bodyMedium,
+              ),
+              StandardizedGaps.vertical(SpacingSize.lg),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  EnhancedGlassButton.secondary(
+                    onPressed: () => Navigator.of(context).pop(false),
+                    child: const StandardizedText('Cancel', style: StandardizedTextStyle.buttonText),
+                  ),
+                  StandardizedGaps.horizontal(SpacingSize.sm),
+                  EnhancedGlassButton(
+                    onPressed: () => Navigator.of(context).pop(true),
+                    child: const StandardizedText('Delete', style: StandardizedTextStyle.buttonText),
+                  ),
+                ],
+              ),
+            ],
           ),
-          FilledButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-              // Delete task through provider
-            },
-            child: const Text('Delete'),
-          ),
-        ],
+        ),
       ),
-    );
+    ) ?? false;
+    
+    if (confirmed) {
+      try {
+        await ref.read(taskOperationsProvider).deleteTask(task.id);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: StandardizedText('Task "${task.title}" deleted', style: StandardizedTextStyle.bodyMedium),
+              backgroundColor: Theme.of(context).colorScheme.primary,
+            ),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: StandardizedText('Failed to delete task: $e', style: StandardizedTextStyle.bodyMedium),
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+          );
+        }
+      }
+    }
   }
 
   void _toggleTaskComplete(TaskModel task) {
@@ -712,8 +793,34 @@ class _KanbanColumnState extends ConsumerState<KanbanColumn>
     widget.onTaskMoved?.call(task, newStatus);
   }
 
-  void _updateTaskPriority(TaskModel task, TaskPriority priority) {
-    // TODO: Update task priority through provider
-    // This would typically update the task and trigger a rebuild
+  void _updateTaskPriority(TaskModel task, TaskPriority priority) async {
+    if (task.priority == priority) return;
+    
+    try {
+      final updatedTask = task.copyWith(priority: priority);
+      await ref.read(taskOperationsProvider).updateTask(updatedTask);
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: StandardizedText(
+              'Task priority updated to ${priority.name.toUpperCase()}', 
+              style: StandardizedTextStyle.bodyMedium
+            ),
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: StandardizedText('Failed to update priority: $e', style: StandardizedTextStyle.bodyMedium),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    }
   }
 }

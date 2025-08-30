@@ -215,8 +215,6 @@ class _MobileGestureDetectorWidget extends StatefulWidget {
     this.onDoubleTap,
     this.onSwipeLeft,
     this.onSwipeRight,
-    this.onSwipeUp,
-    this.onSwipeDown,
   });
 
   @override

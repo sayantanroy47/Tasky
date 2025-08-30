@@ -1,26 +1,45 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-import '../../core/theme/typography_constants.dart';
-import '../../domain/entities/project.dart';
-import '../../core/utils/text_utils.dart';
-import '../../domain/entities/task_model.dart';
-import '../../services/project_service.dart';
-import '../providers/project_providers.dart';
-import '../providers/task_providers.dart';
-import '../widgets/advanced_task_card.dart';
-import '../widgets/project_form_dialog.dart';
-import '../widgets/enhanced_task_creation_dialog.dart';
-import '../widgets/standardized_app_bar.dart';
-import '../widgets/standardized_text.dart';
-import '../widgets/standardized_colors.dart';
-import '../widgets/standardized_spacing.dart';
-import '../widgets/glassmorphism_container.dart';
-import '../widgets/theme_background_widget.dart';
-import '../pages/voice_recording_page.dart';
-import '../widgets/manual_task_creation_dialog.dart';
+import '../../core/accessibility/accessibility_constants.dart';
 import '../../core/design_system/design_tokens.dart';
+import '../../core/providers/enhanced_theme_provider.dart';
+import '../../core/providers/navigation_provider.dart';
+import '../../core/routing/app_router.dart';
+import '../../core/theme/typography_constants.dart';
+import '../../core/utils/category_utils.dart';
+import '../../core/utils/text_utils.dart';
+import '../../domain/entities/project.dart';
+import '../../domain/entities/task_audio_extensions.dart';
+import '../../domain/entities/task_model.dart';
+import '../../domain/models/enums.dart';
+import '../../services/project_service.dart';
+import '../../services/ui/slidable_action_service.dart';
+import '../../services/ui/slidable_feedback_service.dart';
+import '../../services/ui/slidable_theme_service.dart';
+import '../pages/manual_task_creation_page.dart';
+import '../pages/voice_only_creation_page.dart';
+import '../pages/voice_recording_page.dart';
+import '../providers/project_providers.dart';
+import '../providers/tag_providers.dart';
+import '../providers/task_provider.dart';
+import '../providers/task_providers.dart';
+import '../widgets/adaptive_navigation.dart';
+import '../widgets/audio_indicator_widget.dart';
+import '../widgets/glassmorphism_container.dart';
+import '../widgets/project_form_dialog.dart';
+import '../widgets/standardized_app_bar.dart';
+import '../widgets/standardized_border_radius.dart';
+import '../widgets/standardized_card.dart';
+import '../widgets/standardized_colors.dart';
+import '../widgets/standardized_fab.dart';
+import '../widgets/standardized_spacing.dart';
+import '../widgets/standardized_text.dart';
+import '../widgets/tag_chip.dart';
+import '../widgets/theme_background_widget.dart';
 
 /// Detailed view of a single project
 ///
@@ -57,6 +76,35 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
     final theme = Theme.of(context);
     final projectsAsync = ref.watch(projectsProvider);
     final projectStatsAsync = ref.watch(projectStatsProvider(widget.projectId));
+    final selectedIndex = ref.watch(selectedIndexProvider);
+
+    // Define navigation items (same as MainScaffold)
+    final navigationItems = [
+      AdaptiveNavigationItem(
+        icon: PhosphorIcons.house(),
+        selectedIcon: PhosphorIcons.house(),
+        label: '',
+        tooltip: 'Go to home screen',
+      ),
+      AdaptiveNavigationItem(
+        icon: PhosphorIcons.calendar(),
+        selectedIcon: PhosphorIcons.calendar(),
+        label: '',
+        tooltip: 'Go to calendar view',
+      ),
+      AdaptiveNavigationItem(
+        icon: PhosphorIcons.folder(),
+        selectedIcon: PhosphorIcons.folder(),
+        label: '',
+        tooltip: 'View all projects',
+      ),
+      AdaptiveNavigationItem(
+        icon: PhosphorIcons.gear(),
+        selectedIcon: PhosphorIcons.gear(),
+        label: '',
+        tooltip: 'Go to settings and menu',
+      ),
+    ];
 
     return projectsAsync.when(
       data: (projects) {
@@ -69,13 +117,14 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
           child: Scaffold(
             backgroundColor: context.colors.backgroundTransparent,
             extendBodyBehindAppBar: true,
-            floatingActionButton: FloatingActionButton(
+            resizeToAvoidBottomInset: false, // Prevent keyboard from affecting layout
+            bottomNavigationBar: _buildBottomNavigation(context, ref, selectedIndex, navigationItems),
+            floatingActionButton: StandardizedFABVariants.create(
               onPressed: () => _showTaskCreationMenu(context, project),
-              backgroundColor: theme.colorScheme.primary,
-              foregroundColor: Colors.white,
-              elevation: 8,
-              child: Icon(PhosphorIcons.plus()),
+              heroTag: 'projectDetailFAB',
+              isLarge: true,
             ),
+            floatingActionButtonLocation: const CenterDockedFloatingActionButtonLocation(),
             appBar: StandardizedAppBar(
               title: TextUtils.autoCapitalize(project.name),
               actions: [
@@ -159,13 +208,13 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
 
                       // Elegant text styling
                       labelStyle: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
-                        fontWeight: TypographyConstants.regular, // Regular weight for sophistication
-                        letterSpacing: 0.1, // Subtle letter spacing
-                      ),
+                            fontWeight: TypographyConstants.regular, // Regular weight for sophistication
+                            letterSpacing: 0.1, // Subtle letter spacing
+                          ),
                       unselectedLabelStyle: StandardizedTextStyle.titleMedium.toTextStyle(context).copyWith(
-                        fontWeight: TypographyConstants.light, // Light weight for unselected
-                        letterSpacing: 0.1,
-                      ),
+                            fontWeight: TypographyConstants.light, // Light weight for unselected
+                            letterSpacing: 0.1,
+                          ),
 
                       tabs: const [
                         // Text-only tabs for sophisticated elegance
@@ -427,8 +476,6 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
     );
   }
 
-
-
   Widget _buildScrollableStatCard(String label, String value, IconData icon, Color color) {
     return Container(
       width: 110, // Increased width for better text space
@@ -452,7 +499,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
         children: [
           // Icon at top
           Icon(icon, color: color, size: 20), // Slightly smaller icon for more space
-          
+
           // Value in middle
           Flexible(
             child: StandardizedText(
@@ -464,7 +511,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          
+
           // Label at bottom
           StandardizedText(
             label,
@@ -557,10 +604,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
         else
           ...tasks.map((task) => Padding(
                 padding: const EdgeInsets.only(bottom: 8),
-                child: AdvancedTaskCard(
-                  task: task,
-                  onTap: () => _viewTask(task),
-                ),
+                child: _buildCompactTaskCard(task, theme),
               )),
       ],
     );
@@ -584,27 +628,37 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
 
         return Padding(
           padding: const EdgeInsets.all(16),
-          child: SizedBox(
-            height: MediaQuery.of(context).size.height - 300, // Constrain height
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // To Do Column
-                Expanded(
-                  child: _buildKanbanColumn('To Do', todoTasks, Colors.orange),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SizedBox(
+                height: constraints.maxHeight - 100, // Better responsive height
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // To Do Column
+                      SizedBox(
+                        width: constraints.maxWidth * 0.3,
+                        child: _buildKanbanColumn('To Do', todoTasks, Colors.orange),
+                      ),
+                      const SizedBox(width: 8), // Reduce spacing
+                      // In Progress Column
+                      SizedBox(
+                        width: constraints.maxWidth * 0.3,
+                        child: _buildKanbanColumn('In Progress', inProgressTasks, Colors.blue),
+                      ),
+                      const SizedBox(width: 8), // Reduce spacing
+                      // Done Column
+                      SizedBox(
+                        width: constraints.maxWidth * 0.3,
+                        child: _buildKanbanColumn('Done', completedTasks, Colors.green),
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(width: 12),
-                // In Progress Column
-                Expanded(
-                  child: _buildKanbanColumn('In Progress', inProgressTasks, Colors.blue),
-                ),
-                const SizedBox(width: 12),
-                // Done Column
-                Expanded(
-                  child: _buildKanbanColumn('Done', completedTasks, Colors.green),
-                ),
-              ],
-            ),
+              );
+            },
           ),
         );
       },
@@ -627,54 +681,118 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Column header
+          // Column header - smaller and supports 2 lines
           Padding(
-            padding: const EdgeInsets.all(12),
-            child: Row(
+            padding: const EdgeInsets.all(8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  width: 3,
-                  height: 16,
-                  decoration: BoxDecoration(
-                    color: color,
-                    borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall), // 2.0 - Fixed border radius hierarchy
-                  ),
+                Row(
+                  children: [
+                    Container(
+                      width: 3,
+                      height: 12,
+                      decoration: BoxDecoration(
+                        color: color,
+                        borderRadius: BorderRadius.circular(TypographyConstants.radiusXSmall),
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Flexible(
+                      child: StandardizedText(
+                        title,
+                        style: StandardizedTextStyle.labelSmall,
+                        color: color,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(height: 2),
                 StandardizedText(
-                  '$title (${tasks.length})',
-                  style: StandardizedTextStyle.labelLarge,
-                  color: color,
+                  '${tasks.length} task${tasks.length != 1 ? 's' : ''}',
+                  style: StandardizedTextStyle.bodySmall,
+                  color: theme.colorScheme.onSurfaceVariant,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
           ),
-          // Tasks
+          // Tasks with drag and drop
           Flexible(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              itemCount: tasks.length,
-              itemBuilder: (context, index) {
-                final task = tasks[index];
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: Card(
-                    margin: EdgeInsets.zero,
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
+            child: DragTarget<TaskModel>(
+              onWillAcceptWithDetails: (details) => true,
+              onAcceptWithDetails: (details) => _moveTaskToColumn(details.data, title),
+              builder: (context, candidateData, rejectedData) {
+                return Container(
+                  decoration: candidateData.isNotEmpty
+                      ? BoxDecoration(
+                          color: color.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: color, width: 2),
+                        )
+                      : null,
+                  child: ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    itemCount: tasks.length,
+                    itemBuilder: (context, index) {
+                      final task = tasks[index];
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Draggable<TaskModel>(
+                          data: task,
+                          feedback: Material(
+                            elevation: 8,
+                            borderRadius: BorderRadius.circular(8),
+                            child: SizedBox(
+                              width: 200,
+                              child: StandardizedCard(
+                                style: _getTaskCardStyle(task, false),
+                                margin: EdgeInsets.zero,
+                                padding: const EdgeInsets.all(8),
+                                child: StandardizedText(
+                                  task.title,
+                                  style: StandardizedTextStyle.bodySmall,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ),
+                          ),
+                          childWhenDragging: Container(
+                            height: 60,
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: theme.colorScheme.outline.withValues(alpha: 0.5),
+                                style: BorderStyle.solid,
+                                width: 2,
+                              ),
+                            ),
+                          ),
+                          child: StandardizedCard(
+                            style: _getTaskCardStyle(task, false),
+                            margin: EdgeInsets.zero,
+                            padding: const EdgeInsets.all(8),
+                            onTap: () => _viewTask(task),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
                           StandardizedText(
                             task.title,
                             style: StandardizedTextStyle.bodySmall,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
                           if (task.description != null && task.description!.isNotEmpty) ...[
                             const SizedBox(height: 4),
-                            Text(
+                            StandardizedText(
                               task.description!,
-                              style: StandardizedTextStyle.labelSmall.toTextStyle(context),
+                              style: StandardizedTextStyle.labelSmall,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -682,6 +800,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
                           if (task.dueDate != null) ...[
                             const SizedBox(height: 8),
                             Row(
+                              mainAxisSize: MainAxisSize.min,
                               children: [
                                 Icon(
                                   PhosphorIcons.clock(),
@@ -689,10 +808,14 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
                                   color: theme.colorScheme.onSurfaceVariant,
                                 ),
                                 const SizedBox(width: 4),
-                                StandardizedText(
-                                  _formatDate(task.dueDate!),
-                                  style: StandardizedTextStyle.labelSmall,
-                                  color: theme.colorScheme.onSurfaceVariant,
+                                Flexible(
+                                  child: StandardizedText(
+                                    _formatDate(task.dueDate!),
+                                    style: StandardizedTextStyle.labelSmall,
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
                               ],
                             ),
@@ -700,6 +823,9 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
                         ],
                       ),
                     ),
+                  ),
+                        );
+                    },
                   ),
                 );
               },
@@ -711,26 +837,53 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
   }
 
   Widget _buildProgressTab(Project project) {
-    // This would show charts and progress tracking
-    // For now, we'll show a placeholder
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(PhosphorIcons.trendUp(), size: 64, color: Theme.of(context).colorScheme.onSurfaceVariant),
-          const SizedBox(height: 16),
-          StandardizedText(
-            'Progress Charts',
-            style: StandardizedTextStyle.headlineSmall,
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
+    final tasksAsync = ref.watch(tasksProvider);
+    final projectStatsAsync = ref.watch(projectStatsProvider(project.id));
+
+    return tasksAsync.when(
+      data: (allTasks) {
+        final projectTasks = allTasks.where((task) => task.projectId == project.id).toList();
+        
+        return projectStatsAsync.when(
+          data: (stats) {
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Overall Progress Section
+                  _buildProgressOverview(stats, projectTasks),
+                  const SizedBox(height: 24),
+                  
+                  // Task Status Breakdown
+                  _buildTaskStatusBreakdown(projectTasks),
+                  const SizedBox(height: 24),
+                  
+                  // Priority Distribution
+                  _buildPriorityDistribution(projectTasks),
+                  const SizedBox(height: 24),
+                  
+                  // Recent Activity
+                  _buildRecentActivity(projectTasks),
+                ],
+              ),
+            );
+          },
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, _) => Center(
+            child: StandardizedText(
+              'Error loading progress data: $error',
+              style: StandardizedTextStyle.bodyMedium,
+            ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            'Coming soon - detailed progress tracking and analytics',
-            style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
-            textAlign: TextAlign.center,
-          ),
-        ],
+        );
+      },
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, _) => Center(
+        child: StandardizedText(
+          'Error loading tasks: $error',
+          style: StandardizedTextStyle.bodyMedium,
+        ),
       ),
     );
   }
@@ -742,55 +895,52 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
       padding: const EdgeInsets.all(16),
       children: [
         // Project details
-        Card(
-          color: theme.colorScheme.surfaceContainerLow,
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                StandardizedTextVariants.sectionHeader('Project Details'),
-                const SizedBox(height: 12),
-                _buildDetailRow('Created', _formatDate(project.createdAt)),
-                if (project.updatedAt != null) _buildDetailRow('Last Updated', _formatDate(project.updatedAt!)),
-                if (project.deadline != null) _buildDetailRow('Deadline', _formatDate(project.deadline!)),
-                _buildDetailRow('Status', project.isArchived ? 'Archived' : 'Active'),
-                _buildDetailRow('Color', project.color),
-              ],
-            ),
+        GlassmorphismContainer(
+          level: GlassLevel.content,
+          margin: EdgeInsets.zero,
+          padding: StandardizedSpacing.padding(SpacingSize.md),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              StandardizedTextVariants.sectionHeader('Project Details'),
+              StandardizedGaps.vertical(SpacingSize.xs),
+              _buildDetailRow('Created', _formatDate(project.createdAt)),
+              if (project.updatedAt != null) _buildDetailRow('Last Updated', _formatDate(project.updatedAt!)),
+              if (project.deadline != null) _buildDetailRow('Deadline', _formatDate(project.deadline!)),
+              _buildDetailRow('Status', project.isArchived ? 'Archived' : 'Active'),
+            ],
           ),
         ),
 
-        const SizedBox(height: 16),
+        StandardizedGaps.vertical(SpacingSize.md),
 
         // Quick actions
-        Card(
-          color: theme.colorScheme.surfaceContainerLow,
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                StandardizedTextVariants.sectionHeader('Quick Actions'),
-                const SizedBox(height: 12),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    OutlinedButton.icon(
-                      onPressed: () => _editProject(project),
-                      icon: Icon(PhosphorIcons.pencil()),
-                      label: const Text('Edit Project'),
-                    ),
-                    OutlinedButton.icon(
-                      onPressed: () => _duplicateProject(project),
-                      icon: Icon(PhosphorIcons.copy()),
-                      label: const Text('Duplicate'),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+        GlassmorphismContainer(
+          level: GlassLevel.content,
+          margin: EdgeInsets.zero,
+          padding: StandardizedSpacing.padding(SpacingSize.md),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              StandardizedTextVariants.sectionHeader('Quick Actions'),
+              StandardizedGaps.vertical(SpacingSize.xs),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  OutlinedButton.icon(
+                    onPressed: () => _editProject(project),
+                    icon: Icon(PhosphorIcons.pencil()),
+                    label: const Text('Edit Project'),
+                  ),
+                  OutlinedButton.icon(
+                    onPressed: () => _duplicateProject(project),
+                    icon: Icon(PhosphorIcons.copy()),
+                    label: const Text('Duplicate'),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ],
@@ -923,28 +1073,6 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
     );
   }
 
-  void _createTaskForProject(Project project) {
-    showDialog(
-      context: context,
-      builder: (context) => EnhancedTaskCreationDialog(
-        prePopulatedData: {
-          'projectId': project.id,
-        },
-        onTaskCreated: (task) {
-          // Refresh the tasks for this project
-          ref.invalidate(tasksForProjectProvider(project.id));
-          
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Task "${task.title}" created for ${project.name}'),
-              backgroundColor: Theme.of(context).colorScheme.primary,
-            ),
-          );
-        },
-      ),
-    );
-  }
-
   void _viewTask(TaskModel task) {
     Navigator.of(context).pushNamed('/task-detail', arguments: task.id);
   }
@@ -961,94 +1089,112 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
     return '${date.day}/${date.month}/${date.year}';
   }
 
-  /// Show task creation options menu (same as home screen)
+  /// Show task creation options menu (exact copy from MainScaffold)
   void _showTaskCreationMenu(BuildContext context, Project project) {
     final theme = Theme.of(context);
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: context.colors.backgroundTransparent,
+      backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (context) => GlassmorphismContainer(
-        level: GlassLevel.floating,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-        margin: EdgeInsets.zero,
-        child: SafeArea(
-          child: Padding(
-            padding: StandardizedSpacing.padding(SpacingSize.lg),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header
-                StandardizedText(
-                  'Add Task to ${project.name}',
-                  style: StandardizedTextStyle.headlineSmall,
-                ),
-                StandardizedGaps.vertical(SpacingSize.sm),
-                StandardizedText(
-                  'Choose how you\'d like to create your task',
-                  style: StandardizedTextStyle.bodyMedium,
-                  color: context.colors.withSemanticOpacity(
-                    Theme.of(context).colorScheme.onSurface,
-                    SemanticOpacity.strong,
+      builder: (context) => ThemeBackgroundWidget(
+        child: GlassmorphismContainer(
+          level: GlassLevel.floating,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          margin: EdgeInsets.zero,
+          child: SafeArea(
+            child: Padding(
+              padding: StandardizedSpacing.padding(SpacingSize.xl),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header
+                  StandardizedTextVariants.sectionHeader(
+                    'Create New Task',
                   ),
-                ),
-                StandardizedGaps.lg,
+                  StandardizedGaps.vertical(SpacingSize.xs),
+                  StandardizedTextVariants.body(
+                    'Choose how you\'d like to create your task',
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                  StandardizedGaps.vertical(SpacingSize.lg),
 
-                // Task Creation Options
-                _buildTaskCreationOption(
-                  context: context,
-                  icon: PhosphorIcons.microphone(),
-                  iconColor: theme.colorScheme.primary,
-                  title: 'AI Voice Entry',
-                  subtitle: 'Speak your task, we\'ll transcribe it',
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const VoiceRecordingPage(),
-                      ),
-                    );
-                  },
-                ),
+                  // Task Creation Options in order: AI, Voice-Only, Manual
+                  _buildTaskCreationOption(
+                    context: context,
+                    icon: PhosphorIcons.microphone(),
+                    iconColor: theme.colorScheme.primary,
+                    title: 'AI Voice Entry',
+                    subtitle: 'Speak your task, we\'ll transcribe it',
+                    onTap: () async {
+                      Navigator.pop(context);
 
-                StandardizedGaps.md,
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => VoiceRecordingPage(projectId: project.id),
+                        ),
+                      );
+                      
+                      // Invalidate providers to refresh task counts and project stats
+                      _invalidateProvidersAfterTaskCreation();
+                    },
+                  ),
 
-                _buildTaskCreationOption(
-                  context: context,
-                  icon: PhosphorIcons.pencil(),
-                  iconColor: context.colors.success,
-                  title: 'Manual Entry',
-                  subtitle: 'Type your task details manually',
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const ManualTaskCreationDialog(),
-                      ),
-                    );
-                  },
-                ),
+                  StandardizedGaps.vertical(SpacingSize.sm),
 
-                StandardizedGaps.md,
+                  _buildTaskCreationOption(
+                    context: context,
+                    icon: PhosphorIcons.waveform(),
+                    iconColor: Colors.orange,
+                    title: 'Voice-Only',
+                    subtitle: 'Record audio notes without transcription',
+                    onTap: () async {
+                      Navigator.pop(context);
 
-                _buildTaskCreationOption(
-                  context: context,
-                  icon: PhosphorIcons.sparkle(),
-                  iconColor: theme.colorScheme.tertiary,
-                  title: 'Quick Add',
-                  subtitle: 'Add a simple task quickly',
-                  onTap: () {
-                    Navigator.pop(context);
-                    _createTaskForProject(project);
-                  },
-                ),
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => VoiceOnlyCreationPage(projectId: project.id),
+                        ),
+                      );
+                      
+                      // Invalidate providers to refresh task counts and project stats
+                      _invalidateProvidersAfterTaskCreation();
+                    },
+                  ),
 
-                StandardizedGaps.md,
-              ],
+                  StandardizedGaps.vertical(SpacingSize.sm),
+
+                  _buildTaskCreationOption(
+                    context: context,
+                    icon: PhosphorIcons.pencil(),
+                    iconColor: Colors.green,
+                    title: 'Manual Entry',
+                    subtitle: 'Type your task details manually',
+                    onTap: () async {
+                      Navigator.pop(context);
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ManualTaskCreationPage(
+                            prePopulatedData: <String, dynamic>{
+                              'creationMode': 'manual',
+                              'projectId': project.id,
+                            },
+                          ),
+                        ),
+                      );
+                      
+                      // Invalidate providers to refresh task counts and project stats
+                      _invalidateProvidersAfterTaskCreation();
+                    },
+                  ),
+
+                  StandardizedGaps.vertical(SpacingSize.md),
+                ],
+              ),
             ),
           ),
         ),
@@ -1056,7 +1202,7 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
     );
   }
 
-  /// Build task creation option tile
+  /// Build individual task creation option (exact copy from MainScaffold)
   Widget _buildTaskCreationOption({
     required BuildContext context,
     required IconData icon,
@@ -1069,57 +1215,933 @@ class _ProjectDetailPageState extends ConsumerState<ProjectDetailPage> with Sing
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
+      borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge), // 16.0 - Fixed border radius hierarchy
       child: GlassmorphismContainer(
         level: GlassLevel.interactive,
         padding: StandardizedSpacing.padding(SpacingSize.md),
-        borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge),
+        borderRadius: BorderRadius.circular(TypographyConstants.radiusLarge), // 16.0 - Fixed border radius hierarchy
         child: Row(
           children: [
-            GlassmorphismContainer(
-              level: GlassLevel.interactive,
+            Container(
               width: 48,
               height: 48,
-              borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium),
-              glassTint: iconColor.withValues(alpha: 0.15),
+              decoration: BoxDecoration(
+                color: iconColor.withValues(alpha: 0.15),
+                borderRadius:
+                    BorderRadius.circular(TypographyConstants.radiusMedium), // 12.0 - Fixed border radius hierarchy
+              ),
               child: Icon(
                 icon,
                 color: iconColor,
                 size: 24,
               ),
             ),
-            StandardizedGaps.md,
+            StandardizedGaps.horizontal(SpacingSize.md),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  StandardizedText(
+                  StandardizedTextVariants.cardTitle(
                     title,
-                    style: StandardizedTextStyle.titleMedium,
                   ),
                   StandardizedGaps.vertical(SpacingSize.xs),
                   StandardizedText(
                     subtitle,
                     style: StandardizedTextStyle.bodySmall,
-                    color: context.colors.withSemanticOpacity(
-                      theme.colorScheme.onSurface,
-                      SemanticOpacity.strong,
-                    ),
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
                 ],
               ),
             ),
             Icon(
               PhosphorIcons.caretRight(),
-              size: 16,
-              color: context.colors.withSemanticOpacity(
-                Theme.of(context).colorScheme.onSurface,
-                SemanticOpacity.strong,
-              ),
+              color: theme.colorScheme.onSurfaceVariant,
+              size: 20,
             ),
           ],
         ),
       ),
     );
   }
+
+  /// Navigate to different sections based on bottom nav selection
+  void _navigateToIndex(BuildContext context, int index) {
+    // Update the navigation provider to set the selected index
+    ref.read(navigationProvider.notifier).navigateToIndex(index);
+
+    // Navigate back to the main scaffold (home route) which will show the correct page
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      AppRouter.home,
+      (route) => false,
+    );
+  }
+
+  /// Build bottom navigation for mobile with Material 3 design and glassmorphism
+  Widget _buildBottomNavigation(
+    BuildContext context,
+    WidgetRef ref,
+    int selectedIndex,
+    List<AdaptiveNavigationItem> navigationItems,
+  ) {
+    final theme = Theme.of(context);
+
+    return Container(
+      decoration: BoxDecoration(
+        // Theme-aware glassmorphism background with complementary gradient
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            // Complementary gradient: secondary→primary (opposite of app bar)
+            theme.colorScheme.secondary.withValues(alpha: theme.brightness == Brightness.dark ? 0.2 : 0.4),
+            theme.colorScheme.primary.withValues(alpha: theme.brightness == Brightness.dark ? 0.25 : 0.45),
+          ],
+        ),
+        // Theme-aware shadow using primary color
+        boxShadow: [
+          BoxShadow(
+            color: theme.colorScheme.primary.withValues(alpha: theme.brightness == Brightness.dark ? 0.15 : 0.08),
+            blurRadius: 12,
+            offset: const Offset(0, -3),
+          ),
+        ],
+        // Theme-specific border
+        border: Border(
+          top: BorderSide(
+            color: theme.colorScheme.secondary.withValues(alpha: 0.3),
+            width: 0.8,
+          ),
+        ),
+      ),
+      child: ClipRRect(
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 12.0, sigmaY: 12.0),
+          child: Container(
+            // Add theme-aware background tint for better glassmorphism effect
+            color: theme.colorScheme.secondaryContainer
+                .withValues(alpha: theme.brightness == Brightness.dark ? 0.05 : 0.08),
+            child: BottomAppBar(
+              height: 80,
+              padding: StandardizedSpacing.paddingSymmetric(horizontal: SpacingSize.md),
+              notchMargin: 3, // 3px notch around FAB as requested
+              shape: const CircularNotchedRectangle(),
+              color: Colors.transparent, // Make transparent to show glassmorphism
+              elevation: 0, // Remove default elevation
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  // First two navigation items
+                  for (int i = 0; i < 2; i++)
+                    _buildNavItem(
+                      context: context,
+                      item: navigationItems[i],
+                      isSelected: selectedIndex == i,
+                      onTap: () => _navigateToIndex(context, i),
+                    ),
+
+                  // Enhanced spacer for FAB with proper sizing
+                  StandardizedGaps.horizontal(SpacingSize.xxl), // Increased width for better spacing
+
+                  // Last two navigation items
+                  for (int i = 2; i < navigationItems.length; i++)
+                    _buildNavItem(
+                      context: context,
+                      item: navigationItems[i],
+                      isSelected: selectedIndex == i,
+                      onTap: () => _navigateToIndex(context, i),
+                    ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Build navigation item for bottom app bar with accessibility and glassmorphism
+  Widget _buildNavItem({
+    required BuildContext context,
+    required AdaptiveNavigationItem item,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    final theme = Theme.of(context);
+
+    return Semantics(
+      label: '${item.label} ${AccessibilityConstants.navigationSemanticLabel}',
+      hint: item.tooltip,
+      button: true,
+      selected: isSelected,
+      child: SizedBox(
+        width: AccessibilityConstants.minTouchTarget,
+        height: AccessibilityConstants.minTouchTarget,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(TypographyConstants.radiusMedium),
+          child: Padding(
+            padding: StandardizedSpacing.paddingSymmetric(vertical: SpacingSize.xs, horizontal: SpacingSize.xs),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Enhanced icon with brighter circular border for selection
+                Flexible(
+                  child: Container(
+                    width: 40,
+                    height: 40,
+                    alignment: Alignment.center,
+                    child: AnimatedScale(
+                      scale: isSelected ? 1.15 : 1.0,
+                      duration: const Duration(milliseconds: 200),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          color: isSelected ? theme.colorScheme.primary.withValues(alpha: 0.2) : Colors.transparent,
+                          shape: BoxShape.circle, // Always circular
+                          border: Border.all(
+                            color: isSelected ? theme.colorScheme.primary.withValues(alpha: 0.8) : Colors.transparent,
+                            width: 1.8, // Thinner border as requested
+                          ),
+                          boxShadow: isSelected
+                              ? [
+                                  BoxShadow(
+                                    color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                                    blurRadius: 8,
+                                    spreadRadius: 1,
+                                  ),
+                                ]
+                              : [],
+                        ),
+                        child: Icon(
+                          isSelected ? item.selectedIcon : item.icon,
+                          size: 22,
+                          color: isSelected
+                              ? theme.colorScheme.primary // Use primary color for both themes
+                              : theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Invalidate providers to refresh UI after task creation
+  void _invalidateProvidersAfterTaskCreation() {
+    // Invalidate project stats to refresh task counts
+    ref.invalidate(projectStatsProvider(widget.projectId));
+    
+    // Invalidate all projects providers to refresh project cards on home screen
+    ref.invalidate(projectsProvider);
+    ref.invalidate(activeProjectsProvider);
+    
+    // Invalidate task providers to refresh task lists
+    ref.invalidate(tasksProvider);
+    ref.invalidate(pendingTasksProvider);
+    ref.invalidate(completedTasksProvider);
+    ref.invalidate(todayTasksProvider);
+    ref.invalidate(tasksCreatedTodayProvider);
+  }
+
+  /// Sophisticated task card with golden ratio proportions matching home page design
+  Widget _buildCompactTaskCard(TaskModel task, ThemeData theme, {bool isOverdue = false}) {
+    final balancedActions = SlidableActionService.getBalancedCompactTaskActions(
+      task,
+      colorScheme: theme.colorScheme,
+      onComplete: () => _toggleTaskCompletion(task),
+      onQuickEdit: () => _quickEditTask(task),
+      onDelete: () => _confirmDeleteTask(task),
+      onMore: () => _showMoreActions(task),
+    );
+
+    // Choose card style based on task state for enhanced visual hierarchy
+    final cardStyle = _getTaskCardStyle(task, isOverdue);
+
+    final cardContent = SizedBox(
+      height: SpacingTokens.taskCardHeight, // Golden ratio optimized height
+      child: StandardizedCard(
+        style: cardStyle,
+        onTap: () => _viewTask(task),
+        onLongPress: () => _showTaskContextMenu(context, task),
+        margin: EdgeInsets.zero, // No margin - handled by parent
+        padding: const EdgeInsets.all(SpacingTokens.taskCardPadding),
+        child: Row(
+          children: [
+            // Sophisticated priority and category indicator
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Priority indicator first - Elegant vertical accent bar
+                Container(
+                  width: 4,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: _getPriorityColor(task.priority, context),
+                    borderRadius:
+                        BorderRadius.circular(TypographyConstants.radiusXSmall), // 2.0 - Fixed border radius hierarchy
+                  ),
+                ),
+                const SizedBox(width: SpacingTokens.phi1), // Golden ratio spacing
+                // Category icon container second
+                if (task.tagIds.isNotEmpty) ...[
+                  Builder(builder: (context) {
+                    return const SizedBox.shrink();
+                  }),
+                  CategoryUtils.buildCategoryIconContainer(
+                    category: task.tagIds.first,
+                    size: 32,
+                    theme: theme,
+                    iconSizeRatio: 0.5,
+                    borderRadius: 16, // Half of size (32/2) for circular design
+                  ),
+                  const SizedBox(width: SpacingTokens.phi1), // Golden ratio spacing
+                ] else ...[
+                  Builder(builder: (context) {
+                    return const SizedBox.shrink();
+                  }),
+                ],
+              ],
+            ),
+
+            // Title and tags in the middle (takes up most space)
+            Expanded(
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // Title row with audio indicator
+                    Row(
+                      children: [
+                        Expanded(
+                          child: StandardizedText(
+                            task.title,
+                            style: StandardizedTextStyle.labelLarge,
+                            color: theme.colorScheme.onSurface,
+                            decoration: task.status == TaskStatus.completed ? TextDecoration.lineThrough : null,
+                            lineHeight: 1.2,
+                            letterSpacing: 0.1,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        // Sophisticated audio indicator for voice tasks
+                        if (task.hasVoiceMetadata) ...[
+                          StandardizedGaps.hXs,
+                          AudioIndicatorWidget(
+                            task: task,
+                            size: 20,
+                            mode: AudioIndicatorMode.playButton,
+                          ),
+                        ],
+                      ],
+                    ),
+                    // Tag chips row
+                    if (task.tagIds.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Consumer(
+                        builder: (context, ref, child) {
+                          final tagsProvider = ref.watch(tagsByIdsProvider(task.tagIds));
+                          return tagsProvider.when(
+                            data: (tags) => TagChipList(
+                              tags: tags,
+                              chipSize: TagChipSize.small,
+                              maxChips: 4, // More tags for horizontal layout
+                              spacing: 3.0,
+                              onTagTap: (_) {}, // No action on tap for project cards
+                            ),
+                            loading: () => const SizedBox(
+                              height: 16,
+                              child: Row(
+                                children: [
+                                  SizedBox(
+                                    width: 12,
+                                    height: 12,
+                                    child: CircularProgressIndicator(strokeWidth: 1),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            error: (_, __) => const SizedBox.shrink(),
+                          );
+                        },
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+
+            // Sophisticated completion indicator on the right
+            if (task.status == TaskStatus.completed) ...[
+              const SizedBox(width: 16), // 16px spacing
+              Container(
+                width: 20,
+                height: 20,
+                decoration: BoxDecoration(
+                  color: context.colors.withSemanticOpacity(context.successColor, SemanticOpacity.subtle),
+                  borderRadius: StandardizedBorderRadius.sm,
+                  border: Border.all(
+                    color: context.colors.withSemanticOpacity(context.successColor, SemanticOpacity.light),
+                    width: 0.5,
+                  ),
+                ),
+                child: Icon(
+                  PhosphorIcons.check(),
+                  size: 12,
+                  color: context.successColor,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: SpacingTokens.taskCardMargin),
+      child: SlidableThemeService.createBalancedCompactCardSlidable(
+        key: ValueKey('compact-task-${task.id}'),
+        groupTag: 'project-compact-cards',
+        startActions: balancedActions['startActions'] ?? [],
+        endActions: balancedActions['endActions'] ?? [],
+        enableFastSwipe: true,
+        context: context,
+        child: cardContent,
+      ),
+    );
+  }
+
+  // Helper methods for compact card slide actions
+  void _toggleTaskCompletion(TaskModel task) async {
+    await SlidableFeedbackService.provideFeedback(SlidableActionType.complete);
+    try {
+      await ref.read(taskOperationsProvider).toggleTaskCompletion(task);
+      _invalidateProvidersAfterTaskCreation(); // Refresh UI
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: StandardizedText('Error updating task: $e', style: StandardizedTextStyle.bodyMedium)),
+        );
+      }
+    }
+  }
+
+  void _quickEditTask(TaskModel task) {
+    SlidableFeedbackService.provideFeedback(SlidableActionType.edit);
+    _viewTask(task); // Use existing view task method
+  }
+
+  void _showMoreActions(TaskModel task) {
+    SlidableFeedbackService.provideFeedback(SlidableActionType.neutral);
+    _showTaskContextMenu(context, task);
+  }
+
+  void _confirmDeleteTask(TaskModel task) {
+    SlidableFeedbackService.provideFeedback(SlidableActionType.destructive);
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Task'),
+        content: const Text('Are you sure you want to delete this task?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _deleteTask(task);
+            },
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _deleteTask(TaskModel task) async {
+    try {
+      await ref.read(taskOperationsProvider).deleteTask(task);
+      _invalidateProvidersAfterTaskCreation(); // Refresh UI
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Task deleted')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error deleting task: $e')),
+        );
+      }
+    }
+  }
+
+  void _showTaskContextMenu(BuildContext context, TaskModel task) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: Icon(PhosphorIcons.eye()),
+              title: const Text('View Details'),
+              onTap: () {
+                Navigator.pop(context);
+                _viewTask(task);
+              },
+            ),
+            ListTile(
+              leading: Icon(task.isCompleted ? PhosphorIcons.arrowClockwise() : PhosphorIcons.checkCircle()),
+              title: Text(task.isCompleted ? 'Mark Incomplete' : 'Mark Complete'),
+              onTap: () {
+                Navigator.pop(context);
+                _toggleTaskCompletion(task);
+              },
+            ),
+            ListTile(
+              leading: Icon(PhosphorIcons.trash()),
+              title: const Text('Delete'),
+              onTap: () {
+                Navigator.pop(context);
+                _confirmDeleteTask(task);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Get task card style based on state (matching home page exactly)
+  StandardizedCardStyle _getTaskCardStyle(TaskModel task, bool isOverdue) {
+    if (task.isCompleted) {
+      return StandardizedCardStyle.tertiarySuccess; // Completed tasks get success styling
+    } else if (isOverdue) {
+      return StandardizedCardStyle.tertiaryAccent; // Overdue tasks get attention-grabbing accent
+    } else if (task.priority == TaskPriority.urgent) {
+      return StandardizedCardStyle.tertiaryAccent; // High priority tasks get accent
+    } else {
+      return StandardizedCardStyle.tertiaryContainer; // Regular tasks get subtle container
+    }
+  }
+
+  /// Get theme-aware priority color
+  Color _getPriorityColor(TaskPriority priority, BuildContext context) {
+    // Get the current theme from enhanced theme provider
+    final currentTheme = ref.read(enhancedThemeProvider).currentTheme;
+    if (currentTheme == null) {
+      return priority.color; // Fallback to enum color
+    }
+
+    switch (priority) {
+      case TaskPriority.low:
+        return currentTheme.colors.taskLowPriority;
+      case TaskPriority.medium:
+        return currentTheme.colors.taskMediumPriority;
+      case TaskPriority.high:
+        return currentTheme.colors.taskHighPriority; // Now uses stellar gold!
+      case TaskPriority.urgent:
+        return currentTheme.colors.taskUrgentPriority;
+    }
+  }
+
+  /// Move task to different column (change status)
+  void _moveTaskToColumn(TaskModel task, String columnTitle) async {
+    TaskStatus newStatus;
+    switch (columnTitle) {
+      case 'To Do':
+        newStatus = TaskStatus.pending;
+        break;
+      case 'In Progress':
+        newStatus = TaskStatus.inProgress;
+        break;
+      case 'Done':
+        newStatus = TaskStatus.completed;
+        break;
+      default:
+        return; // Unknown column
+    }
+
+    if (task.status == newStatus) return; // No change needed
+
+    final updatedTask = task.copyWith(
+      status: newStatus,
+      updatedAt: DateTime.now(),
+    );
+
+    try {
+      await ref.read(taskOperationsProvider).updateTask(updatedTask);
+      _invalidateProvidersAfterTaskCreation(); // Refresh UI
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Task moved to $columnTitle'),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error moving task: $e'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    }
+  }
+
+
+  // Progress Tab Helper Methods
+  Widget _buildProgressOverview(dynamic stats, List<TaskModel> tasks) {
+    final theme = Theme.of(context);
+    final completionRate = tasks.isEmpty ? 0.0 : (stats.completedTasks / stats.totalTasks);
+
+    return StandardizedCard(
+      style: StandardizedCardStyle.elevated,
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(PhosphorIcons.chartPie(), size: 24, color: theme.colorScheme.primary),
+              const SizedBox(width: 8),
+              StandardizedText(
+                'Project Progress',
+                style: StandardizedTextStyle.titleMedium,
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          
+          // Progress Bar
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  StandardizedText(
+                    '${stats.completedTasks}/${stats.totalTasks} tasks completed',
+                    style: StandardizedTextStyle.bodyMedium,
+                  ),
+                  StandardizedText(
+                    '${(completionRate * 100).round()}%',
+                    style: StandardizedTextStyle.labelLarge,
+                    color: theme.colorScheme.primary,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              LinearProgressIndicator(
+                value: completionRate,
+                backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTaskStatusBreakdown(List<TaskModel> tasks) {
+    final theme = Theme.of(context);
+    final pendingCount = tasks.where((t) => t.status.isPending).length;
+    final inProgressCount = tasks.where((t) => t.status.isInProgress).length;
+    final completedCount = tasks.where((t) => t.status.isCompleted).length;
+
+    return StandardizedCard(
+      style: StandardizedCardStyle.filled,
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(PhosphorIcons.listChecks(), size: 24, color: theme.colorScheme.secondary),
+              const SizedBox(width: 8),
+              StandardizedText(
+                'Task Status Breakdown',
+                style: StandardizedTextStyle.titleMedium,
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          
+          // Status Cards
+          Row(
+            children: [
+              Expanded(child: _buildStatusCard('Pending', pendingCount, Colors.orange, PhosphorIcons.clock())),
+              const SizedBox(width: 8),
+              Expanded(child: _buildStatusCard('In Progress', inProgressCount, Colors.blue, PhosphorIcons.play())),
+              const SizedBox(width: 8),
+              Expanded(child: _buildStatusCard('Completed', completedCount, Colors.green, PhosphorIcons.checkCircle())),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatusCard(String label, int count, Color color, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: color, size: 32),
+          const SizedBox(height: 8),
+          StandardizedText(
+            count.toString(),
+            style: StandardizedTextStyle.headlineSmall,
+            color: color,
+          ),
+          const SizedBox(height: 4),
+          StandardizedText(
+            label,
+            style: StandardizedTextStyle.bodySmall,
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPriorityDistribution(List<TaskModel> tasks) {
+    final theme = Theme.of(context);
+    final lowCount = tasks.where((t) => t.priority == TaskPriority.low).length;
+    final mediumCount = tasks.where((t) => t.priority == TaskPriority.medium).length;
+    final highCount = tasks.where((t) => t.priority == TaskPriority.high).length;
+    final urgentCount = tasks.where((t) => t.priority == TaskPriority.urgent).length;
+
+    return StandardizedCard(
+      style: StandardizedCardStyle.tertiaryContainer,
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(PhosphorIcons.gauge(), size: 24, color: theme.colorScheme.tertiary),
+              const SizedBox(width: 8),
+              StandardizedText(
+                'Priority Distribution',
+                style: StandardizedTextStyle.titleMedium,
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          
+          Column(
+            children: [
+              _buildPriorityBar('Low', lowCount, Colors.green, tasks.length),
+              const SizedBox(height: 8),
+              _buildPriorityBar('Medium', mediumCount, Colors.orange, tasks.length),
+              const SizedBox(height: 8),
+              _buildPriorityBar('High', highCount, Colors.red, tasks.length),
+              const SizedBox(height: 8),
+              _buildPriorityBar('Urgent', urgentCount, Colors.purple, tasks.length),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPriorityBar(String label, int count, Color color, int total) {
+    final percentage = total > 0 ? (count / total) : 0.0;
+    
+    return Row(
+      children: [
+        SizedBox(
+          width: 60,
+          child: StandardizedText(
+            label,
+            style: StandardizedTextStyle.bodySmall,
+          ),
+        ),
+        Expanded(
+          child: Container(
+            height: 8,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(4),
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+            ),
+            child: FractionallySizedBox(
+              alignment: Alignment.centerLeft,
+              widthFactor: percentage,
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                  color: color,
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 8),
+        SizedBox(
+          width: 30,
+          child: StandardizedText(
+            count.toString(),
+            style: StandardizedTextStyle.bodySmall,
+            textAlign: TextAlign.right,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRecentActivity(List<TaskModel> tasks) {
+    final theme = Theme.of(context);
+    final recentTasks = tasks
+        .where((t) => t.updatedAt != null && t.updatedAt!.isAfter(DateTime.now().subtract(const Duration(days: 7))))
+        .toList()
+      ..sort((a, b) => b.updatedAt!.compareTo(a.updatedAt!));
+    
+    final recentTasksToShow = recentTasks.take(5).toList();
+
+    return StandardizedCard(
+      style: StandardizedCardStyle.outlined,
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(PhosphorIcons.clockCounterClockwise(), size: 24, color: theme.colorScheme.onSurfaceVariant),
+              const SizedBox(width: 8),
+              StandardizedText(
+                'Recent Activity',
+                style: StandardizedTextStyle.titleMedium,
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          
+          if (recentTasksToShow.isEmpty)
+            StandardizedText(
+              'No recent activity in the past 7 days',
+              style: StandardizedTextStyle.bodyMedium,
+              color: theme.colorScheme.onSurfaceVariant,
+            )
+          else
+            Column(
+              children: recentTasksToShow.map((task) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: _getStatusColor(task.status),
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          StandardizedText(
+                            task.title,
+                            style: StandardizedTextStyle.bodyMedium,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          StandardizedText(
+                            _formatRelativeDate(task.updatedAt ?? task.createdAt),
+                            style: StandardizedTextStyle.bodySmall,
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              )).toList(),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Color _getStatusColor(TaskStatus status) {
+    switch (status) {
+      case TaskStatus.pending:
+        return Colors.orange;
+      case TaskStatus.inProgress:
+        return Colors.blue;
+      case TaskStatus.completed:
+        return Colors.green;
+      case TaskStatus.cancelled:
+        return Colors.red;
+    }
+  }
+
+  String _formatRelativeDate(DateTime date) {
+    final now = DateTime.now();
+    final difference = now.difference(date);
+
+    if (difference.inDays > 0) {
+      return '${difference.inDays} day${difference.inDays == 1 ? '' : 's'} ago';
+    } else if (difference.inHours > 0) {
+      return '${difference.inHours} hour${difference.inHours == 1 ? '' : 's'} ago';
+    } else if (difference.inMinutes > 0) {
+      return '${difference.inMinutes} minute${difference.inMinutes == 1 ? '' : 's'} ago';
+    } else {
+      return 'Just now';
+    }
+  }
+}
+
+/// Custom FloatingActionButtonLocation that centers the FAB vertically within the bottom toolbar
+class CenterDockedFloatingActionButtonLocation extends FloatingActionButtonLocation {
+  const CenterDockedFloatingActionButtonLocation();
+
+  @override
+  Offset getOffset(ScaffoldPrelayoutGeometry scaffoldGeometry) {
+    // Get the FAB size (72x72 as defined in _buildFloatingActionButton)
+    const fabSize = 72.0;
+
+    // Get the bottom navigation bar height (80px as defined in _buildBottomNavigation)
+    const bottomNavHeight = 80.0;
+
+    // Calculate horizontal center
+    final double fabX = (scaffoldGeometry.scaffoldSize.width - fabSize) / 2.0;
+
+    // Calculate vertical center within the bottom navigation bar
+    // Position FAB so its center aligns with the center of the 80px toolbar
+    // Fixed position - ignore system insets to prevent FAB movement
+    final double fabY = scaffoldGeometry.scaffoldSize.height - bottomNavHeight + (bottomNavHeight - fabSize) / 2.0;
+
+    return Offset(fabX, fabY);
+  }
+
+  @override
+  String toString() => 'CenterDockedFloatingActionButtonLocation';
 }

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/models/enums.dart';
-import '../../core/providers/enhanced_theme_provider.dart';
 
 /// Get theme-aware priority color that uses stellar gold for high priority
 Color getPriorityColor(TaskPriority priority, BuildContext context) {
